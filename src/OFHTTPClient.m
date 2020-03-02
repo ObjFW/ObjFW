@@ -49,6 +49,8 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
+#import "socket_helpers.h"
+
 #define REDIRECTS_DEFAULT 10
 
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate>
@@ -731,10 +733,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)dealloc
 {
-	[self close];
+	if (_socket != nil)
+		[self close];
 
 	[_handler release];
-	[_socket release];
 
 	[super dealloc];
 }
@@ -787,7 +789,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (void)close
 {
 	if (_socket == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
@@ -797,6 +799,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	[_socket release];
 	_socket = nil;
+
+	[super close];
 }
 
 - (int)fileDescriptorForWriting
@@ -819,7 +823,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)dealloc
 {
-	[_socket release];
+	if (_socket != nil)
+		[self close];
 
 	[super dealloc];
 }
@@ -882,14 +887,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		_toRead -= ret;
 
-		if (_toRead == 0) {
+		if (_toRead == 0)
 			_atEndOfStream = true;
-
-			if (!_keepAlive) {
-				[_socket release];
-				_socket = nil;
-			}
-		}
 
 		return ret;
 	}
@@ -951,9 +950,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				if (line.length > 0)
 					@throw [OFInvalidServerReplyException
 					    exception];
-			} else {
-				[_socket release];
-				_socket = nil;
 			}
 		}
 
@@ -992,6 +988,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)close
 {
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	_atEndOfStream = false;
 
 	[_socket release];

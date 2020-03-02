@@ -107,7 +107,9 @@ callMain(id object)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: thread.class];
 
+#ifndef OF_OBJFW_RUNTIME
 	thread->_pool = objc_autoreleasePoolPush();
+#endif
 
 	name = thread.name;
 	if (name != nil)
@@ -138,7 +140,11 @@ callMain(id object)
 
 	[thread handleTermination];
 
+#ifdef OF_OBJFW_RUNTIME
+	objc_autoreleasePoolPop((void *)(uintptr_t)-1);
+#else
 	objc_autoreleasePoolPop(thread->_pool);
+#endif
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)

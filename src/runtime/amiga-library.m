@@ -142,6 +142,11 @@ extern void *glue_objc_destructInstance(void);
 extern void *glue_objc_autoreleasePoolPush(void);
 extern void glue_objc_autoreleasePoolPop(void);
 extern id glue__objc_rootAutorelease(void);
+extern struct objc_hashtable *glue_objc_hashtable_new(void);
+extern void glue_objc_hashtable_set(void);
+extern void *glue_objc_hashtable_get(void);
+extern void glue_objc_hashtable_delete(void);
+extern void glue_objc_hashtable_free(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -663,6 +668,11 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_autoreleasePoolPush,
 	(CONST_APTR)glue_objc_autoreleasePoolPop,
 	(CONST_APTR)glue__objc_rootAutorelease,
+	(CONST_APTR)glue_objc_hashtable_new,
+	(CONST_APTR)glue_objc_hashtable_set,
+	(CONST_APTR)glue_objc_hashtable_get,
+	(CONST_APTR)glue_objc_hashtable_delete,
+	(CONST_APTR)glue_objc_hashtable_free,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

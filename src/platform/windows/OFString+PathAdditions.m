@@ -15,11 +15,19 @@
  * file.
  */
 
+/*
+ * This file is also used for MS-DOS! Don't forget to #ifdef Windows-specific
+ * parts!
+ */
+
 #include "config.h"
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
+#import "OFFileURLHandler.h"
+#import "OFURL.h"
 
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
 int _OFString_PathAdditions_reference;
@@ -78,6 +86,7 @@ int _OFString_PathAdditions_reference;
 		return ret;
 	}
 
+#ifdef OF_WINDOWS
 	if ([self hasPrefix: @"\\\\"]) {
 		isUNC = true;
 		[ret addObject: @"\\\\"];
@@ -85,6 +94,7 @@ int _OFString_PathAdditions_reference;
 		cString += 2;
 		cStringLength -= 2;
 	}
+#endif
 
 	for (i = 0; i < cStringLength; i++) {
 		if (cString[i] == '\\' || cString[i] == '/') {
@@ -310,5 +320,66 @@ int _OFString_PathAdditions_reference;
 
 		return ret;
 	}
+}
+
+- (bool)of_isDirectoryPath
+{
+	return ([self hasSuffix: @"\\"] || [self hasSuffix: @"/"] ||
+	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+}
+
+- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+{
+	OFString *path = self;
+
+	if ([path hasPrefix: @"\\\\"]) {
+		OFArray *components = path.pathComponents;
+
+		if (components.count < 2)
+			@throw [OFInvalidFormatException exception];
+
+		*URLEncodedHost = [[components objectAtIndex: 1]
+		     stringByURLEncodingWithAllowedCharacters:
+		     [OFCharacterSet URLHostAllowedCharacterSet]];
+		path = [OFString pathWithComponents: [components
+		    objectsInRange: of_range(2, components.count - 2)]];
+	}
+
+	path = [path stringByReplacingOccurrencesOfString: @"\\"
+					       withString: @"/"];
+	path = [path stringByPrependingString: @"/"];
+
+	return path;
+}
+
+- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+{
+	OFString *path = self;
+
+	if (path.length > 1 && [path hasSuffix: @"/"] &&
+	    ![path hasSuffix: @":/"])
+		path = [path substringWithRange: of_range(0, path.length - 1)];
+
+	path = [path substringWithRange: of_range(1, path.length - 1)];
+	path = [path stringByReplacingOccurrencesOfString: @"/"
+					       withString: @"\\"];
+
+	if (URLEncodedHost != nil) {
+		OFString *host = [URLEncodedHost stringByURLDecoding];
+
+		if (path.length == 0)
+			path = [OFString stringWithFormat: @"\\\\%@", host];
+		else
+			path = [OFString stringWithFormat: @"\\\\%@\\%@",
+							   host, path];
+	}
+
+	return path;
+}
+
+- (OFString *)of_pathComponentToURLPathComponent
+{
+	return [self stringByReplacingOccurrencesOfString: @"\\"
+					       withString: @"/"];
 }
 @end

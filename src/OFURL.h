@@ -343,6 +343,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern bool of_url_is_ipv6_host(OFString *host);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END
 
 #import "OFMutableURL.h"

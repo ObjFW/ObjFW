@@ -33,7 +33,8 @@ SRCS = arc.m			\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
 	       ../mutex.m	\
-	       ../once.m
+	       ../once.m	\
+	       ../tlskey.m
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 

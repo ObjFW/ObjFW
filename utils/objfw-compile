@@ -67,7 +67,7 @@ Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
     -pthread        Pass -pthread to the compiler and linker
     -std=*          Pass the specified -std= flag to the compiler
     -Wl,*           Pass the specified -Wl, flag to the linker
-    -W*             Pass the specified -W flag to the compiler"
+    -W*             Pass the specified -W flag to the compiler
     --help          Show this help
 __EOF__
 }

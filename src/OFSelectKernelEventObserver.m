@@ -49,24 +49,29 @@
 {
 	self = [super init];
 
+	@try {
 #ifdef OF_AMIGAOS
-	_maxFD = 0;
+		_maxFD = 0;
 #else
 # ifndef OF_WINDOWS
-	if (_cancelFD[0] >= (int)FD_SETSIZE)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self.class];
+		if (_cancelFD[0] >= (int)FD_SETSIZE)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
 # endif
 
-	FD_ZERO(&_readFDs);
-	FD_ZERO(&_writeFDs);
-	FD_SET(_cancelFD[0], &_readFDs);
+		FD_ZERO(&_readFDs);
+		FD_ZERO(&_writeFDs);
+		FD_SET(_cancelFD[0], &_readFDs);
 
-	if (_cancelFD[0] > INT_MAX)
-		@throw [OFOutOfRangeException exception];
+		if (_cancelFD[0] > INT_MAX)
+			@throw [OFOutOfRangeException exception];
 
-	_maxFD = (int)_cancelFD[0];
+		_maxFD = (int)_cancelFD[0];
 #endif
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -75,7 +80,11 @@
 {
 	int fd = object.fileDescriptorForReading;
 
-	if (fd < 0 || fd > INT_MAX - 1)
+	if (fd < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
+
+	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
@@ -95,7 +104,11 @@
 {
 	int fd = object.fileDescriptorForWriting;
 
-	if (fd < 0 || fd > INT_MAX - 1)
+	if (fd < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
+
+	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
@@ -118,7 +131,8 @@
 	int fd = object.fileDescriptorForReading;
 
 	if (fd < 0)
-		@throw [OFOutOfRangeException exception];
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
 
 #ifndef OF_WINDOWS
 	if (fd >= (int)FD_SETSIZE)
@@ -137,7 +151,9 @@
 	int fd = object.fileDescriptorForWriting;
 
 	if (fd < 0)
-		@throw [OFOutOfRangeException exception];
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
+
 
 #ifndef OF_WINDOWS
 	if (fd >= (int)FD_SETSIZE)

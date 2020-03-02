@@ -178,7 +178,11 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -237,7 +241,11 @@
 
 	pool = objc_autoreleasePoolPush();
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -259,7 +267,11 @@
 	if (_stream == nil)
 		return;
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -296,7 +308,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -354,6 +367,9 @@
 
 - (void)close
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[self of_skip];
 
 	[_stream release];
@@ -429,7 +445,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -476,13 +493,15 @@
 
 - (void)close
 {
-	if (_stream == nil)
-		return;
+	uint64_t remainder;
 
-	uint64_t remainder = 512 - _entry.size % 512;
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
+
+	remainder = 512 - _entry.size % 512;
 
 	if (remainder != 512) {
 		bool wasWriteBuffered = _stream.writeBuffered;

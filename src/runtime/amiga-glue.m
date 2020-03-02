@@ -749,3 +749,53 @@ glue__objc_rootAutorelease PPC_PARAMS(id object)
 
 	return _objc_rootAutorelease(object);
 }
+
+struct objc_hashtable *__saveds
+glue_objc_hashtable_new PPC_PARAMS(objc_hashtable_hash_func hash,
+    objc_hashtable_equal_func equal, uint32_t size)
+{
+	M68K_ARG(objc_hashtable_hash_func, hash, a0)
+	M68K_ARG(objc_hashtable_equal_func, equal, a1)
+	M68K_ARG(uint32_t, size, d0)
+
+	return objc_hashtable_new(hash, equal, size);
+}
+
+void __saveds
+glue_objc_hashtable_set PPC_PARAMS(struct objc_hashtable *table,
+    const void *key, const void *object)
+{
+	M68K_ARG(struct objc_hashtable *, table, a0)
+	M68K_ARG(const void *, key, a1)
+	M68K_ARG(const void *, object, a2)
+
+	objc_hashtable_set(table, key, object);
+}
+
+void *__saveds
+glue_objc_hashtable_get PPC_PARAMS(struct objc_hashtable *table,
+    const void *key)
+{
+	M68K_ARG(struct objc_hashtable *, table, a0)
+	M68K_ARG(const void *, key, a1)
+
+	return objc_hashtable_get(table, key);
+}
+
+void __saveds
+glue_objc_hashtable_delete PPC_PARAMS(struct objc_hashtable *table,
+    const void *key)
+{
+	M68K_ARG(struct objc_hashtable *, table, a0)
+	M68K_ARG(const void *, key, a1)
+
+	objc_hashtable_delete(table, key);
+}
+
+void __saveds
+glue_objc_hashtable_free PPC_PARAMS(struct objc_hashtable *table)
+{
+	M68K_ARG(struct objc_hashtable *, table, a0)
+
+	objc_hashtable_free(table);
+}

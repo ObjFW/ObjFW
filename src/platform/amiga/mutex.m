@@ -15,7 +15,11 @@
  * file.
  */
 
+#include "config.h"
+
 #include <errno.h>
+
+#import "mutex.h"
 
 #include <proto/exec.h>
 

@@ -70,8 +70,13 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _URLEncodedHost;
 
-	_URLEncodedHost = [[host stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLHostAllowedCharacterSet]] copy];
+	if (of_url_is_ipv6_host(host))
+		_URLEncodedHost = [[OFString alloc]
+		    initWithFormat: @"[%@]", host];
+	else
+		_URLEncodedHost = [[host
+		    stringByURLEncodingWithAllowedCharacters:
+		    [OFCharacterSet URLHostAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -82,7 +87,12 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	if (URLEncodedHost != nil)
+	if ([URLEncodedHost hasPrefix: @"["] &&
+	    [URLEncodedHost hasSuffix: @"]"]) {
+		if (!of_url_is_ipv6_host([URLEncodedHost substringWithRange:
+		    of_range(1, URLEncodedHost.length - 2)]))
+			@throw [OFInvalidFormatException exception];
+	} else if (URLEncodedHost != nil)
 		of_url_verify_escaped(URLEncodedHost,
 		    [OFCharacterSet URLHostAllowedCharacterSet]);
 

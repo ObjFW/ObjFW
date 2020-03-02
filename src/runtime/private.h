@@ -29,6 +29,10 @@
 # endif
 #endif
 
+typedef uint32_t (*_Nonnull objc_hashtable_hash_func)(const void *_Nonnull key);
+typedef bool (*_Nonnull objc_hashtable_equal_func)(const void *_Nonnull key1,
+    const void *_Nonnull key2);
+
 struct objc_class {
 	Class _Nonnull isa;
 	Class _Nullable superclass;
@@ -189,9 +193,8 @@ struct objc_hashtable_bucket {
 };
 
 struct objc_hashtable {
-	uint32_t (*_Nonnull hash)(const void *_Nonnull key);
-	bool (*_Nonnull equal)(const void *_Nonnull key1,
-	    const void *_Nonnull key2);
+	objc_hashtable_hash_func hash;
+	objc_hashtable_equal_func equal;
 	uint32_t count, size;
 	struct objc_hashtable_bucket *_Nonnull *_Nullable data;
 };
@@ -278,8 +281,7 @@ extern void objc_unregister_all_classes(void);
 extern uint32_t objc_hash_string(const void *_Nonnull);
 extern bool objc_equal_string(const void *_Nonnull, const void *_Nonnull);
 extern struct objc_hashtable *_Nonnull objc_hashtable_new(
-    uint32_t (*_Nonnull)(const void *_Nonnull),
-    bool (*_Nonnull)(const void *_Nonnull, const void *_Nonnull), uint32_t);
+    objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t);
 extern struct objc_hashtable_bucket objc_deleted_bucket;
 extern void objc_hashtable_set(struct objc_hashtable *_Nonnull,
     const void *_Nonnull, const void *_Nonnull);

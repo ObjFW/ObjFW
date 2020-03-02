@@ -73,9 +73,17 @@
       fileDescriptor: (int)fd
 	      events: (short)events
 {
-	struct pollfd *FDs = _FDs.mutableItems;
-	size_t count = _FDs.count;
-	bool found = false;
+	struct pollfd *FDs;
+	size_t count;
+	bool found;
+
+	if (fd < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
+
+	FDs = _FDs.mutableItems;
+	count = _FDs.count;
+	found = false;
 
 	for (size_t i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
@@ -104,8 +112,15 @@
 	 fileDescriptor: (int)fd
 		 events: (short)events
 {
-	struct pollfd *FDs = _FDs.mutableItems;
-	size_t nFDs = _FDs.count;
+	struct pollfd *FDs;
+	size_t nFDs;
+
+	if (fd < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EBADF];
+
+	FDs = _FDs.mutableItems;
+	nFDs = _FDs.count;
 
 	for (size_t i = 0; i < nFDs; i++) {
 		if (FDs[i].fd == fd) {
@@ -162,6 +177,7 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
+	void *pool;
 	struct pollfd *FDs;
 	int events;
 	size_t nFDs;
@@ -169,7 +185,9 @@
 	if ([self of_processReadBuffers])
 		return;
 
-	FDs = _FDs.mutableItems;
+	pool = objc_autoreleasePoolPush();
+
+	FDs = [[[_FDs mutableCopy] autorelease] mutableItems];
 	nFDs = _FDs.count;
 
 #ifdef OPEN_MAX
@@ -188,7 +206,7 @@
 		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
-			void *pool;
+			void *pool2;
 
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
@@ -204,28 +222,30 @@
 				continue;
 			}
 
-			pool = objc_autoreleasePoolPush();
+			pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
 				    _FDToObject[FDs[i].fd]];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		if (FDs[i].revents & (POLLOUT | POLLHUP)) {
-			void *pool = objc_autoreleasePoolPush();
+			void *pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
 				    _FDToObject[FDs[i].fd]];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		FDs[i].revents = 0;
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

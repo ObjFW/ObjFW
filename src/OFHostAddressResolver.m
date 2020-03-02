@@ -242,6 +242,13 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		[_addresses release];
 		_addresses = nil;
 
+		if ([exception isKindOfClass:
+		    [OFDNSQueryFailedException class]])
+			exception = [OFResolveHostFailedException
+			    exceptionWithHost: _host
+				addressFamily: _addressFamily
+					error: [exception error]];
+
 		if (exception == nil)
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host

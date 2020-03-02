@@ -675,3 +675,35 @@ _objc_rootAutorelease(id object)
 {
 	return glue__objc_rootAutorelease(object);
 }
+
+struct objc_hashtable *
+objc_hashtable_new(objc_hashtable_hash_func hash,
+    objc_hashtable_equal_func equal, uint32_t size)
+{
+	return glue_objc_hashtable_new(hash, equal, size);
+}
+
+void
+objc_hashtable_set(struct objc_hashtable *table, const void *key,
+    const void *object)
+{
+	glue_objc_hashtable_set(table, key, object);
+}
+
+void *
+objc_hashtable_get(struct objc_hashtable *table, const void *key)
+{
+	return glue_objc_hashtable_get(table, key);
+}
+
+void
+objc_hashtable_delete(struct objc_hashtable *table, const void *key)
+{
+	glue_objc_hashtable_delete(table, key);
+}
+
+void
+objc_hashtable_free(struct objc_hashtable *table)
+{
+	glue_objc_hashtable_free(table);
+}

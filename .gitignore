@@ -1,5 +1,6 @@
 *.a
 *.bundle
+*.dep
 *.dll
 *.dylib
 *.library

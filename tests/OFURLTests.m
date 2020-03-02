@@ -27,7 +27,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 - (void)URLTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURL *u1, *u2, *u3, *u4, *u5;
+	OFURL *u1, *u2, *u3, *u4, *u5, *u6, *u7;
 	OFMutableURL *mu;
 
 	TEST(@"+[URLWithString:]",
@@ -35,7 +35,9 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R(u2 = [OFURL URLWithString: @"http://foo:80"]) &&
 	    R(u3 = [OFURL URLWithString: @"http://bar/"]) &&
 	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]) &&
-	    R(u5 = [OFURL URLWithString: @"http://foo/bar/qux/foo%2fbar"]))
+	    R(u5 = [OFURL URLWithString: @"http://foo/bar/qux/foo%2fbar"]) &&
+	    R(u6 = [OFURL URLWithString: @"https://[12:34::56:abcd]/"]) &&
+	    R(u7 = [OFURL URLWithString: @"https://[12:34::56:abcd]:234/"]))
 
 	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -56,6 +58,18 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #5",
 	    OFInvalidFormatException,
 	    [OFURL URLWithString: @"http://foo/foo?foo#`"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #6",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"https://[g]/"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #7",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"https://[f]:/"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #8",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"https://[f]:f/"])
 
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
@@ -139,8 +153,12 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"-[user]", [u1.user isEqual: @"us:er"] && u4.user == nil)
 	TEST(@"-[password]",
 	    [u1.password isEqual: @"p@w"] && u4.password == nil)
-	TEST(@"-[host]", [u1.host isEqual: @"ho:st"] && [u4 port] == nil)
-	TEST(@"-[port]", [u1.port isEqual: [OFNumber numberWithUInt16: 1234]])
+	TEST(@"-[host]", [u1.host isEqual: @"ho:st"] &&
+	    [u6.host isEqual: @"12:34::56:abcd"] &&
+	    [u7.host isEqual: @"12:34::56:abcd"])
+	TEST(@"-[port]", [u1.port isEqual: [OFNumber numberWithUInt16: 1234]] &&
+	    [u4 port] == nil &&
+	    [u7.port isEqual: [OFNumber numberWithUInt16: 234]])
 	TEST(@"-[path]",
 	    [u1.path isEqual: @"/pa?th"] && [u4.path isEqual: @"/etc/passwd"])
 	TEST(@"-[pathComponents]",
@@ -188,13 +206,27 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    OFInvalidFormatException, mu.URLEncodedScheme = @"~")
 
 	TEST(@"-[setHost:]",
-	    (mu.host = @"ho:st") && [mu.URLEncodedHost isEqual: @"ho%3Ast"])
+	    (mu.host = @"ho:st") && [mu.URLEncodedHost isEqual: @"ho%3Ast"] &&
+	    (mu.host = @"12:34:ab") &&
+	    [mu.URLEncodedHost isEqual: @"[12:34:ab]"] &&
+	    (mu.host = @"12:34:aB") &&
+	    [mu.URLEncodedHost isEqual: @"[12:34:aB]"] &&
+	    (mu.host = @"12:34:g") &&
+	    [mu.URLEncodedHost isEqual: @"12%3A34%3Ag"])
 
 	TEST(@"-[setURLEncodedHost:]",
-	    (mu.URLEncodedHost = @"ho%3Ast") && [mu.host isEqual: @"ho:st"])
+	    (mu.URLEncodedHost = @"ho%3Ast") && [mu.host isEqual: @"ho:st"] &&
+	    (mu.URLEncodedHost = @"[12:34]") && [mu.host isEqual: @"12:34"] &&
+	    (mu.URLEncodedHost = @"[12::ab]") && [mu.host isEqual: @"12::ab"])
 
-	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedHost = @"/")
+	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
+	    " #1", OFInvalidFormatException, mu.URLEncodedHost = @"/")
+
+	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
+	    " #2", OFInvalidFormatException, mu.URLEncodedHost = @"[12:34")
+
+	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
+	    " #3", OFInvalidFormatException, mu.URLEncodedHost = @"[a::g]")
 
 	TEST(@"-[setUser:]",
 	    (mu.user = @"us:er") && [mu.URLEncodedUser isEqual: @"us%3Aer"])

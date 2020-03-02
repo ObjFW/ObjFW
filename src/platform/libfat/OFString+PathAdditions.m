@@ -19,6 +19,7 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
+#import "OFFileURLHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -315,5 +316,31 @@ int _OFString_PathAdditions_reference;
 
 		return ret;
 	}
+}
+
+- (bool)of_isDirectoryPath
+{
+	return ([self hasSuffix: @"/"] ||
+	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+}
+
+- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+{
+	return [self stringByPrependingString: @"/"];
+}
+
+- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+{
+	OFString *path = self;
+
+	if (path.length > 1 && [path hasSuffix: @"/"])
+		path = [path substringWithRange: of_range(0, path.length - 1)];
+
+	return [path substringWithRange: of_range(1, path.length - 1)];
+}
+
+- (OFString *)of_pathComponentToURLPathComponent
+{
+	return self;
 }
 @end

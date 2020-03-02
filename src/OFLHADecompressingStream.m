@@ -123,7 +123,8 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	if (_codeLenTree != NULL)
 		of_huffman_tree_release(_codeLenTree);
@@ -516,6 +517,9 @@ start:
 
 - (void)close
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	/* Give back our buffer to the stream, in case it's shared */
 	[_stream unreadFromBuffer: _buffer + _bufferIndex
 			   length: _bufferLength - _bufferIndex];

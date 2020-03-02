@@ -65,7 +65,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_inflateStream release];
 	[_modificationDate release];
@@ -323,6 +324,9 @@
 
 - (void)close
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[_stream release];
 	_stream = nil;
 

@@ -152,7 +152,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[super dealloc];
 }
@@ -167,7 +168,11 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -226,7 +231,11 @@
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -242,9 +251,13 @@
 - (void)close
 {
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -297,10 +310,9 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil || _decompressedStream != nil)
+		[self close];
 
-	[_stream release];
-	[_decompressedStream release];
 	[_entry release];
 
 	[super dealloc];
@@ -417,6 +429,9 @@
 
 - (void)close
 {
+	if (_stream == nil || _decompressedStream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[self of_skip];
 
 	[_stream release];
@@ -460,7 +475,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -513,7 +529,7 @@
 	of_offset_t offset;
 
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	_entry.uncompressedSize = _bytesWritten;
 	_entry.compressedSize = _bytesWritten;

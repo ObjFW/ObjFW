@@ -1013,6 +1013,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			# Compiler TLS is broken on AArch64 Android with Clang
 			enable_compiler_tls="no"
 			;;
+		m68k-*-amigaos | powerpc-*-amigaos)
+			# Compiler TLS is broken on AmigaOS
+			enable_compiler_tls="no"
+			;;
 	esac
 
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
@@ -1760,6 +1764,13 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(RUN_TESTS, "run")
 ])
 
+AC_ARG_WITH(fish_completions,
+	AS_HELP_STRING([--with-fish-completions],
+		[install completions for the fish shell]))
+AS_IF([test x"$with_fish_completions" = x"yes"], [
+	AC_SUBST(FISH_COMPLETIONS, fish)
+])
+
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
 dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
@@ -1767,7 +1778,7 @@ AC_SUBST(CPPFLAGS)
 dnl We use the ObjC compiler as our assembler
 AC_SUBST(AS, $OBJC)
 AC_SUBST(ASFLAGS)
-AC_SUBST(AS_DEPENDS, '${OBJC_DEPENDS}')
+AC_SUBST(DEP_ASFLAGS, '${DEP_OBJCFLAGS}')
 
 AC_SUBST(OBJFW_CPPFLAGS)
 AC_SUBST(OBJFW_OBJCFLAGS)

@@ -15,7 +15,13 @@
  * file.
  */
 
+#include "config.h"
+
 #include <errno.h>
+
+#import "condition.h"
+
+#include <windows.h>
 
 bool
 of_condition_new(of_condition_t *condition)

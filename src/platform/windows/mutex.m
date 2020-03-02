@@ -15,7 +15,13 @@
  * file.
  */
 
+#include "config.h"
+
 #include <errno.h>
+
+#import "mutex.h"
+
+#include <windows.h>
 
 bool
 of_mutex_new(of_mutex_t *mutex)

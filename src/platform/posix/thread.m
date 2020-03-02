@@ -15,6 +15,8 @@
  * file.
  */
 
+#include "config.h"
+
 #include <errno.h>
 
 #ifdef HAVE_PTHREAD_NP_H
@@ -25,6 +27,7 @@
 # include <kernel/OS.h>
 #endif
 
+#import "thread.h"
 #import "macros.h"
 
 static int minPrio = 0, maxPrio = 0, normalPrio = 0;

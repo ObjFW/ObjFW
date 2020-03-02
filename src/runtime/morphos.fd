@@ -1,7 +1,7 @@
 ##base _ObjFWRTBase
 ##bias 30
 ##public
-* Functions that are only for the linklib.
+* The following function is only for the linklib.
 glue_objc_init(version,libc,stdout,stderr)(sysv,r12base)
 glue___objc_exec_class(module)(sysv,r12base)
 glue_objc_msg_lookup(object,selector)(sysv,r12base)
@@ -78,7 +78,13 @@ glue_class_copyPropertyList(class_,outCount)(sysv,r12base)
 glue_property_getName(property)(sysv,r12base)
 glue_property_copyAttributeValue(property,name)(sysv,r12base)
 glue_objc_destructInstance(object)(sysv,r12base)
-objc_autoreleasePoolPush()(sysv,r12base)
-objc_autoreleasePoolPop(pool)(sysv,r12base)
-_objc_rootAutorelease(object)(sysv,r12base)
+glue_objc_autoreleasePoolPush()(sysv,r12base)
+glue_objc_autoreleasePoolPop(pool)(sysv,r12base)
+glue__objc_rootAutorelease(object)(sysv,r12base)
+* The following functions are private! Don't use!
+glue_objc_hashtable_new(hash,equal,size)(sysv,r12base)
+glue_objc_hashtable_set(table,key,object)(sysv,r12base)
+glue_objc_hashtable_get(table,key)(sysv,r12base)
+glue_objc_hashtable_delete(table,key)(sysv,r12base)
+glue_objc_hashtable_free(table)(sysv,r12base)
 ##end
