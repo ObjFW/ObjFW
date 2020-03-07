@@ -363,3 +363,11 @@ script:
 
             build ac_cv_prog_wiiload= --host=powerpc-eabi --with-wii;
     fi
+
+notifications:
+  webhooks:
+    urls:
+      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MGpzJTNBbmlsLmltLyUyMW5ZaURCZWphc2Jmdm9GZEZ2QSUzQW5pbC5pbQ"
+    on_success: always
+    on_failure: always
+    on_start: never
