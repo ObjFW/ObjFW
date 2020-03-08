@@ -63,7 +63,7 @@ extern void *__deregister_frame_info(const void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
-static void
+static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
@@ -116,7 +116,7 @@ ctor(void)
 	initialized = true;
 }
 
-static void __attribute__((__unused__))
+static void __attribute__((__used__))
 dtor(void)
 {
 	CloseLibrary(ObjFWRTBase);
