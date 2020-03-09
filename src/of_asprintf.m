@@ -354,6 +354,9 @@ formatConversionSpecifierState(struct context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
+#ifndef HAVE_ASPRINTF_L
+	OFString *point;
+#endif
 
 	if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 		return false;
@@ -553,7 +556,9 @@ formatConversionSpecifierState(struct context *ctx)
 		 * use this ugly hack to replace the locale's decimal point
 		 * back to ".".
 		 */
-		if (!ctx->useLocale) {
+		point = [OFLocale decimalPoint];
+
+		if (!ctx->useLocale && point != nil && ![point isEqual: @"."]) {
 			void *pool = objc_autoreleasePoolPush();
 			char *tmp2;
 
@@ -561,13 +566,12 @@ formatConversionSpecifierState(struct context *ctx)
 				OFMutableString *tmpStr = [OFMutableString
 				    stringWithUTF8String: tmp
 						  length: tmpLen];
-				OFString *point = [OFLocale decimalPoint];
-				if (point != nil)
-					[tmpStr
-					    replaceOccurrencesOfString: point
-							    withString: @"."];
+				[tmpStr replaceOccurrencesOfString: point
+							withString: @"."];
+
 				if (tmpStr.UTF8StringLength > INT_MAX)
 					return false;
+
 				tmpLen = (int)tmpStr.UTF8StringLength;
 				tmp2 = malloc(tmpLen);
 				memcpy(tmp2, tmpStr.UTF8String, tmpLen);
