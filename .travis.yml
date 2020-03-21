@@ -367,7 +367,7 @@ script:
 notifications:
   webhooks:
     urls:
-      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MGpzJTNBbmlsLmltLyUyMW5ZaURCZWphc2Jmdm9GZEZ2QSUzQW5pbC5pbQ"
+      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MGpzJTNBbmlsLmltLyUyMUZZSVhDS2dOZlltd2Z4ZFJkZiUzQW5pbC5pbQ"
     on_success: always
     on_failure: always
     on_start: never
