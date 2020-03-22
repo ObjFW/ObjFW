@@ -844,6 +844,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
 {
+	if (_method == OF_HTTP_REQUEST_METHOD_HEAD)
+		goto next;
+
 	if (_detectFileNameRequest) {
 		_currentFileName = [fileNameFromContentDisposition(
 		    [response.headers objectForKey: @"Content-Disposition"])
