@@ -71,4 +71,12 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFString *)stringWithEncoding: (of_string_encoding_t)encoding;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFString *_Nonnull of_http_status_code_to_string(short code);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

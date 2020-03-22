@@ -682,10 +682,15 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"error", error,
 		    @"exception", e)];
 	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
+		short statusCode = [[e response] statusCode];
+		OFString *codeString = [OFString stringWithFormat: @"%d %@",
+		    statusCode, of_http_status_code_to_string(statusCode)];
 		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
-		    @"%[prog]: Failed to download <%[url]>!",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  HTTP status code: %[code]",
 		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string)];
+		    @"url", request.URL.string,
+		    @"code", codeString)];
 	} else
 		@throw e;
 
@@ -713,7 +718,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"download_failed_exception",
-		    @"%[prog]: Failed to download <%[url]>: %[exception]",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  %[exception]",
 		    @"prog", [OFApplication programName],
 		    @"url", URL,
 		    @"exception", exception)];

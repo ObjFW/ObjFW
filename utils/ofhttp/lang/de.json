@@ -63,9 +63,13 @@
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  %[error]: %[exception]"
     ],
-    "download_failed": "%[prog]: Fehler beim Download von <%[url]>!",
+    "download_failed": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  HTTP Status-Code: %[code]"
+    ],
     "download_failed_exception": [
-        "%[prog]: Fehler beim Download von <%[url]>: %[exception]"
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  %[exception]"
     ],
     "download_done": "Fertig!",
     "invalid_url": "%[prog]: Ungültige URL: <%[url]>!",
