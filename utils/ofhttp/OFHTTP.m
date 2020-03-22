@@ -37,6 +37,7 @@
 
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
@@ -337,19 +338,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	method = method.uppercaseString;
 
-	if ([method isEqual: @"GET"])
-		_method = OF_HTTP_REQUEST_METHOD_GET;
-	else if ([method isEqual: @"HEAD"])
-		_method = OF_HTTP_REQUEST_METHOD_HEAD;
-	else if ([method isEqual: @"POST"])
-		_method = OF_HTTP_REQUEST_METHOD_POST;
-	else if ([method isEqual: @"PUT"])
-		_method = OF_HTTP_REQUEST_METHOD_PUT;
-	else if ([method isEqual: @"DELETE"])
-		_method = OF_HTTP_REQUEST_METHOD_DELETE;
-	else if ([method isEqual: @"TRACE"])
-		_method = OF_HTTP_REQUEST_METHOD_TRACE;
-	else {
+	@try {
+		_method = of_http_request_method_from_string(method);
+	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_method",
 		    @"%[prog]: Invalid request method %[method]!",
 		    @"prog", [OFApplication programName],

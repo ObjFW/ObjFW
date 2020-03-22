@@ -26,6 +26,7 @@
 #import "OFData.h"
 #import "OFArray.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
@@ -56,26 +57,26 @@ of_http_request_method_to_string(of_http_request_method_t method)
 }
 
 of_http_request_method_t
-of_http_request_method_from_string(const char *string)
+of_http_request_method_from_string(OFString *string)
 {
-	if (strcmp(string, "OPTIONS") == 0)
+	if ([string isEqual: @"OPTIONS"])
 		return OF_HTTP_REQUEST_METHOD_OPTIONS;
-	if (strcmp(string, "GET") == 0)
+	if ([string isEqual: @"GET"])
 		return OF_HTTP_REQUEST_METHOD_GET;
-	if (strcmp(string, "HEAD") == 0)
+	if ([string isEqual: @"HEAD"])
 		return OF_HTTP_REQUEST_METHOD_HEAD;
-	if (strcmp(string, "POST") == 0)
+	if ([string isEqual: @"POST"])
 		return OF_HTTP_REQUEST_METHOD_POST;
-	if (strcmp(string, "PUT") == 0)
+	if ([string isEqual: @"PUT"])
 		return OF_HTTP_REQUEST_METHOD_PUT;
-	if (strcmp(string, "DELETE") == 0)
+	if ([string isEqual: @"DELETE"])
 		return OF_HTTP_REQUEST_METHOD_DELETE;
-	if (strcmp(string, "TRACE") == 0)
+	if ([string isEqual: @"TRACE"])
 		return OF_HTTP_REQUEST_METHOD_TRACE;
-	if (strcmp(string, "CONNECT") == 0)
+	if ([string isEqual: @"CONNECT"])
 		return OF_HTTP_REQUEST_METHOD_CONNECT;
 
-	@throw [OFInvalidFormatException exception];
+	@throw [OFInvalidArgumentException exception];
 }
 
 @implementation OFHTTPRequest

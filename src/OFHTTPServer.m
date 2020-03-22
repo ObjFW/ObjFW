@@ -372,8 +372,8 @@ normalizedKey(OFString *key)
 
 	method = [line substringWithRange: of_range(0, pos)];
 	@try {
-		_method = of_http_request_method_from_string(method.UTF8String);
-	} @catch (OFInvalidFormatException *e) {
+		_method = of_http_request_method_from_string(method);
+	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
 

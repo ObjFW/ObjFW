@@ -156,7 +156,7 @@ extern const char *_Nullable of_http_request_method_to_string(
  * @return The request method for the specified string
  */
 extern of_http_request_method_t of_http_request_method_from_string(
-    const char *string);
+    OFString *string);
 #ifdef __cplusplus
 }
 #endif
