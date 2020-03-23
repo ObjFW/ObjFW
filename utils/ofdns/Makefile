@@ -2,6 +2,8 @@ include ../../extra.mk
 
 PROG = ofdns${PROG_SUFFIX}
 SRCS = OFDNS.m
+DATA = lang/de.json		\
+       lang/languages.json
 
 include ../../buildsys.mk
 
