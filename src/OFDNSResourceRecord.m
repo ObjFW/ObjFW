@@ -120,6 +120,8 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 		recordType = OF_DNS_RECORD_TYPE_AAAA;
 	else if ([string isEqual: @"SRV"])
 		recordType = OF_DNS_RECORD_TYPE_SRV;
+	else if ([string isEqual: @"ALL"])
+		recordType = OF_DNS_RECORD_TYPE_ALL;
 	else {
 		@try {
 			recordType =
