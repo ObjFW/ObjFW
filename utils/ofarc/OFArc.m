@@ -151,7 +151,7 @@ writingNotSupported(OFString *type)
 @implementation OFArc
 - (void)applicationDidFinishLaunching
 {
-	OFString *outputDir = nil, *encodingString = nil, *type = nil;
+	OFString *outputDir, *encodingString, *type;
 	const of_options_parser_option_t options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
 		{ 'c', @"create", 0, NULL, NULL },
@@ -168,9 +168,9 @@ writingNotSupported(OFString *type)
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
 	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
+	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
 
@@ -293,6 +293,7 @@ writingNotSupported(OFString *type)
 			}
 
 			[OFApplication terminateWithStatus: 1];
+			break;
 		}
 	}
 

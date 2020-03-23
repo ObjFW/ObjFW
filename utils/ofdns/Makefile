@@ -12,7 +12,8 @@ ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
-	    -I../..
+	    -I../..					\
+	    -DLANGUAGE_DIR=\"${datadir}/ofdns/lang\"
 LIBS := -L../../src -lobjfw						\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}

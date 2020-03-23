@@ -20,13 +20,44 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFLocale.h"
+#import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
+{
+	size_t _inFlight;
+	int _errors;
+}
 @end
 
 OF_APPLICATION_DELEGATE(OFDNS)
+
+static void
+help(OFStream *stream, bool full, int status)
+{
+	[of_stderr writeLine:
+	    OF_LOCALIZED(@"usage",
+	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
+	    @"prog", [OFApplication programName])];
+
+	if (full) {
+		[stream writeString: @"\n"];
+		[stream writeLine: OF_LOCALIZED(@"full_usage",
+		    @"Options:\n    "
+		    @"-c  --class "
+		    @"  The DNS class to query (defaults to IN)\n    "
+		    @"-h  --help  "
+		    @"  Show this help\n    "
+		    @"-s  --server"
+		    @"  The server to query\n    "
+		    @"-t  --type  "
+		    @"  The record type to query (defaults to ALL)")];
+	}
+
+	[OFApplication terminateWithStatus: status];
+}
 
 @implementation OFDNS
 -  (void)resolver: (OFDNSResolver *)resolver
@@ -34,23 +65,46 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	 response: (OFDNSResponse *)response
 	exception: (id)exception
 {
-	if (exception != nil) {
-		[of_stderr writeFormat: @"Failed to resolve: %@\n", exception];
-		[OFApplication terminateWithStatus: 1];
+	_inFlight--;
+
+	if (exception == nil)
+		[of_stdout writeFormat: @"%@\n", response];
+	else {
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"failed_to_resolve",
+		    @"Failed to resolve: %[exception]",
+		    @"exception", exception)];
+		_errors++;
 	}
 
-	[of_stdout writeFormat: @"%@\n", response];
-
-	[OFApplication terminate];
+	if (_inFlight == 0)
+		[OFApplication terminateWithStatus: _errors];
 }
 
 - (void)applicationDidFinishLaunching
 {
-	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
-	of_dns_class_t DNSClass = OF_DNS_CLASS_ANY;
-	of_dns_record_type_t recordType = OF_DNS_RECORD_TYPE_ALL;
-	OFDNSQuery *query;
+	OFString *DNSClassString, *server, *recordTypeString;
+	const of_options_parser_option_t options[] = {
+		{ 'c', @"class", 1, NULL, &DNSClassString },
+		{ 'h', @"help", 0, NULL, NULL },
+		{ 's', @"server", 1, NULL, &server },
+		{ 't', @"type", 1, NULL, &recordTypeString },
+		{ '\0', nil, 0, NULL, NULL }
+	};
+	OFOptionsParser *optionsParser;
+	of_unichar_t option;
+	OFArray OF_GENERIC(OFString *) *remainingArguments;
 	OFDNSResolver *resolver;
+	of_dns_class_t DNSClass;
+	of_dns_record_type_t recordType;
+
+#ifdef OF_HAVE_FILES
+# ifndef OF_AMIGAOS
+	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+# else
+	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofdns/lang"];
+# endif
+#endif
 
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [[OFSandbox alloc] init];
@@ -64,32 +118,84 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	}
 #endif
 
-	if (arguments.count < 1 || arguments.count > 4) {
-		[of_stderr writeFormat:
-		    @"Usage: %@ host [type [class [server]]]\n",
-		    [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
+	optionsParser = [OFOptionsParser parserWithOptions: options];
+	while ((option = [optionsParser nextOption]) != '\0') {
+		switch (option) {
+		case 'h':
+			help(of_stdout, true, 0);
+			break;
+		case ':':
+			if (optionsParser.lastLongOption != nil)
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"long_option_required_argument",
+				    @"%[prog]: Option --%[opt] requires an "
+				    @"argument",
+				    @"prog", [OFApplication programName],
+				    @"opt", optionsParser.lastLongOption)];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%C",
+				    optionsParser.lastOption];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"option_requires_argument",
+				    @"%[prog]: Option -%[opt] requires an "
+				    @"argument",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
+
+			[OFApplication terminateWithStatus: 1];
+			break;
+		case '?':
+			if (optionsParser.lastLongOption != nil)
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"unknown_long_option",
+				    @"%[prog]: Unknown option: --%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", optionsParser.lastLongOption)];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%C",
+				    optionsParser.lastOption];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"Unknown_option",
+				    @"%[prog]: Unknown option: -%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
+
+			[OFApplication terminateWithStatus: 1];
+			break;
+		}
 	}
+
+	remainingArguments = optionsParser.remainingArguments;
+
+	if (remainingArguments.count < 1)
+		help(of_stderr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
+	recordType = (recordTypeString != nil
+	    ? of_dns_record_type_parse(recordTypeString)
+	    : OF_DNS_RECORD_TYPE_ALL);
+	DNSClass = (DNSClassString != nil
+	    ? of_dns_class_parse(DNSClassString)
+	    : OF_DNS_CLASS_IN);
 
-	if (arguments.count >= 2)
-		recordType = of_dns_record_type_parse(
-		    [arguments objectAtIndex: 1]);
-
-	if (arguments.count >= 3)
-		DNSClass = of_dns_class_parse([arguments objectAtIndex: 2]);
-
-	if (arguments.count >= 4) {
+	if (server != nil) {
 		resolver.configReloadInterval = 0;
-		resolver.nameServers =
-		    [arguments objectsInRange: of_range(3, 1)];
+		resolver.nameServers = [OFArray arrayWithObject: server];
 	}
 
-	query = [OFDNSQuery queryWithDomainName: [arguments objectAtIndex: 0]
-				       DNSClass: DNSClass
-				     recordType: recordType];
-	[resolver asyncPerformQuery: query
-			   delegate: self];
+	_inFlight = remainingArguments.count;
+	for (OFString *domainName in remainingArguments) {
+		OFDNSQuery *query =
+		    [OFDNSQuery queryWithDomainName: domainName
+					   DNSClass: DNSClass
+					 recordType: recordType];
+
+		[resolver asyncPerformQuery: query
+				   delegate: self];
+	}
 }
 @end
