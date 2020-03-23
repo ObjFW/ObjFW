@@ -53,7 +53,8 @@ help(OFStream *stream, bool full, int status)
 		    @"-s  --server"
 		    @"  The server to query\n    "
 		    @"-t  --type  "
-		    @"  The record type to query (defaults to ALL)")];
+		    @"  The record type to query (defaults to ALL, can be "
+		    @"repeated)")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -83,20 +84,20 @@ help(OFStream *stream, bool full, int status)
 
 - (void)applicationDidFinishLaunching
 {
-	OFString *DNSClassString, *server, *recordTypeString;
+	OFString *DNSClassString, *server;
 	const of_options_parser_option_t options[] = {
 		{ 'c', @"class", 1, NULL, &DNSClassString },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 's', @"server", 1, NULL, &server },
-		{ 't', @"type", 1, NULL, &recordTypeString },
+		{ 't', @"type", 1, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
+	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
 	OFOptionsParser *optionsParser;
 	of_unichar_t option;
 	OFArray OF_GENERIC(OFString *) *remainingArguments;
 	OFDNSResolver *resolver;
 	of_dns_class_t DNSClass;
-	of_dns_record_type_t recordType;
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
@@ -118,9 +119,14 @@ help(OFStream *stream, bool full, int status)
 	}
 #endif
 
+	recordTypes = [OFMutableArray array];
+
 	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case 't':
+			[recordTypes addObject: optionsParser.argument];
+			break;
 		case 'h':
 			help(of_stdout, true, 0);
 			break;
@@ -175,27 +181,31 @@ help(OFStream *stream, bool full, int status)
 		help(of_stderr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
-	recordType = (recordTypeString != nil
-	    ? of_dns_record_type_parse(recordTypeString)
-	    : OF_DNS_RECORD_TYPE_ALL);
 	DNSClass = (DNSClassString != nil
 	    ? of_dns_class_parse(DNSClassString)
 	    : OF_DNS_CLASS_IN);
+
+	if (recordTypes.count == 0)
+		[recordTypes addObject: @"ALL"];
 
 	if (server != nil) {
 		resolver.configReloadInterval = 0;
 		resolver.nameServers = [OFArray arrayWithObject: server];
 	}
 
-	_inFlight = remainingArguments.count;
 	for (OFString *domainName in remainingArguments) {
-		OFDNSQuery *query =
-		    [OFDNSQuery queryWithDomainName: domainName
-					   DNSClass: DNSClass
-					 recordType: recordType];
+		for (OFString *recordTypeString in recordTypes) {
+			of_dns_record_type_t recordType =
+			    of_dns_record_type_parse(recordTypeString);
+			OFDNSQuery *query =
+			    [OFDNSQuery queryWithDomainName: domainName
+						   DNSClass: DNSClass
+						 recordType: recordType];
 
-		[resolver asyncPerformQuery: query
-				   delegate: self];
+			_inFlight++;
+			[resolver asyncPerformQuery: query
+					   delegate: self];
+		}
 	}
 }
 @end
