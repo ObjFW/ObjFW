@@ -76,6 +76,7 @@
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFTCPSocket *_socket;
+	bool _chunked;
 	uintmax_t _toWrite;
 	bool _atEndOfStream;
 }
@@ -550,6 +551,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	bytesWritten: (size_t)bytesWritten
 	   exception: (id)exception
 {
+	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFString *transferEncoding;
+
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
 		    ([exception errNo] == ECONNRESET ||
@@ -565,7 +569,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	_firstLine = true;
 
-	if ([_request.headers objectForKey: @"Content-Length"] != nil) {
+	headers = _request.headers;
+	transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
+
+	if ([transferEncoding isEqual: @"chunked"] ||
+	    [headers objectForKey: @"Content-Length"] != nil) {
 		stream.delegate = nil;
 
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
@@ -704,24 +712,28 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 		intmax_t contentLength;
-		OFString *contentLengthString;
+		OFString *transferEncoding, *contentLengthString;
 
 		_handler = [handler retain];
 		_socket = [sock retain];
 
 		headers = _handler->_request.headers;
 
+		transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
+		_chunked = [transferEncoding isEqual: @"chunked"];
+
 		contentLengthString = [headers objectForKey: @"Content-Length"];
-		if (contentLengthString == nil)
-			@throw [OFInvalidArgumentException exception];
+		if (contentLengthString != nil) {
+			if (_chunked)
+				@throw [OFInvalidArgumentException
+				    exception];
 
-		contentLength = contentLengthString.decimalValue;
-		if (contentLength < 0)
-			@throw [OFOutOfRangeException exception];
+			contentLength = contentLengthString.decimalValue;
+			if (contentLength < 0)
+				@throw [OFOutOfRangeException exception];
 
-		_toWrite = contentLength;
-
-		if ([headers objectForKey: @"Transfer-Encoding"] != nil)
+			_toWrite = contentLength;
+		} else if (!_chunked)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
@@ -750,6 +762,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	/*
+	 * We must not send a chunk of size 0, as that would end the body. We
+	 * always ignore writing 0 bytes to still allow writing 0 bytes after
+	 * the end of stream.
+	 */
+	if (length == 0)
+		return 0;
+
 	if (_atEndOfStream)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
@@ -757,7 +777,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			   bytesWritten: 0
 				  errNo: 0];
 
-	if (length > _toWrite)
+	if (_chunked)
+		[_socket writeFormat: @"%zX\r\n", length];
+	else if (length > _toWrite)
 		length = (size_t)_toWrite;
 
 	ret = [_socket writeBuffer: buffer
@@ -766,10 +788,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (ret > length)
 		@throw [OFOutOfRangeException exception];
 
-	_toWrite -= ret;
+	if (!_chunked) {
+		_toWrite -= ret;
 
-	if (_toWrite == 0)
-		_atEndOfStream = true;
+		if (_toWrite == 0)
+			_atEndOfStream = true;
+	}
 
 	if (requestedLength > length)
 		@throw [OFWriteFailedException
@@ -791,7 +815,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_toWrite > 0)
+	if (_chunked)
+		[_socket writeString: @"0\r\n"];
+	else if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
 	_socket.delegate = _handler;
@@ -840,6 +866,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
+		if (_chunked)
+			@throw [OFInvalidServerReplyException exception];
+
 		_hasContentLength = true;
 
 		@try {

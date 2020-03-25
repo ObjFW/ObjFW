@@ -3,6 +3,7 @@
     "full_usage": [
         "Optionen:\n",
         "    -b  --body             Angegebene Datei als Body übergeben\n",
+        "                           (- für Standard-Eingabe)\n",
         "    -c  --continue         Download von existierender Datei ",
         "fortsetzen\n",
         "    -f  --force            Existierende Datei überschreiben\n",

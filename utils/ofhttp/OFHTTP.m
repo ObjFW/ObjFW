@@ -92,6 +92,8 @@ help(OFStream *stream, bool full, int status)
 		    @"Options:\n    "
 		    @"-b  --body           "
 		    @"  Specify the file to send as body\n    "
+		    @"                     "
+		    @"  (- for standard input)\n    "
 		    @"-c  --continue       "
 		    @"  Continue download of existing file\n    "
 		    @"-f  --force          "
@@ -320,16 +322,32 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 - (void)setBody: (OFString *)path
 {
-	uintmax_t bodySize;
+	OFString *contentLength = nil;
 
 	[_body release];
-	_body = [[OFFile alloc] initWithPath: path
-					mode: @"r"];
+	_body = nil;
 
-	bodySize = [[OFFileManager defaultManager] attributesOfItemAtPath: path]
-	    .fileSize;
-	[_clientHeaders setObject: [OFString stringWithFormat: @"%ju", bodySize]
-			   forKey: @"Content-Length"];
+	if ([path isEqual: @"-"])
+		_body = [of_stdin copy];
+	else {
+		_body = [[OFFile alloc] initWithPath: path
+						mode: @"r"];
+
+		@try {
+			uintmax_t fileSize = [[OFFileManager defaultManager]
+			    attributesOfItemAtPath: path].fileSize;
+
+			contentLength =
+			    [OFString stringWithFormat: @"%ju", fileSize];
+			[_clientHeaders setObject: contentLength
+					   forKey: @"Content-Length"];
+		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		}
+	}
+
+	if (contentLength == nil)
+		[_clientHeaders setObject: @"chunked"
+				   forKey: @"Transfer-Encoding"];
 }
 
 - (void)setMethod: (OFString *)method
