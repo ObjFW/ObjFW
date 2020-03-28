@@ -36,10 +36,12 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -99,11 +101,13 @@
 @interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
 {
 	OFTCPSocket *_socket;
-	uintmax_t _toRead;
-	bool _atEndOfStream;
+	bool _chunked;
+	intmax_t _toRead;
+	bool _atEndOfStream, _setAtEndOfStream;
 }
 
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
+		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength;
 @end
 
@@ -405,27 +409,33 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		OFString *contentLengthString;
+		bool chunked = [[_headers objectForKey: @"Transfer-Encoding"]
+		    isEqual: @"chunked"];
+		OFString *contentLengthString =
+		    [_headers objectForKey: @"Content-Length"];
+		intmax_t contentLength = 0;
 
-		if ((contentLengthString =
-		    [_headers objectForKey: @"Content-Length"]) != nil) {
-			intmax_t contentLength;
+		if (contentLengthString != nil) {
+			if (chunked)
+				return [self sendErrorAndClose: 400];
 
 			@try {
 				contentLength =
 				    contentLengthString.decimalValue;
-
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}
 
 			if (contentLength < 0)
 				return [self sendErrorAndClose: 400];
+		}
 
+		if (chunked || contentLengthString != nil) {
 			[_requestBody release];
 			_requestBody = nil;
 			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
 			    initWithSocket: _socket
+				   chunked: chunked
 			     contentLength: contentLength];
 
 			[_timer invalidate];
@@ -572,13 +582,18 @@ normalizedKey(OFString *key)
 
 @implementation OFHTTPServerRequestBodyStream
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
+		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength
 {
 	self = [super init];
 
 	@try {
 		_socket = [sock retain];
+		_chunked = chunked;
 		_toRead = contentLength;
+
+		if (_chunked && _toRead > 0)
+			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -603,22 +618,121 @@ normalizedKey(OFString *key)
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
-	size_t ret;
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_toRead == 0) {
-		_atEndOfStream = true;
+	if (_atEndOfStream)
 		return 0;
+
+	if (_socket.atEndOfStream)
+		@throw [OFTruncatedDataException exception];
+
+	/* Content-Length */
+	if (!_chunked) {
+		size_t ret;
+
+		if (length > (uintmax_t)_toRead)
+			length = (size_t)_toRead;
+
+		ret = [_socket readIntoBuffer: buffer
+				       length: length];
+
+		_toRead -= ret;
+
+		if (_toRead == 0)
+			_atEndOfStream = true;
+
+		return ret;
 	}
 
-	if (length > _toRead)
-		length = (size_t)_toRead;
+	/* Chunked */
+	if (_toRead == -2) {
+		char tmp[2];
 
-	ret = [_socket readIntoBuffer: buffer
-			       length: length];
+		switch ([_socket readIntoBuffer: tmp
+					 length: 2]) {
+		case 2:
+			_toRead++;
+			if (tmp[1] != '\n')
+				@throw [OFInvalidFormatException exception];
+		case 1:
+			_toRead++;
+			if (tmp[0] != '\r')
+				@throw [OFInvalidFormatException exception];
+		}
 
-	_toRead -= ret;
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
 
-	return ret;
+		return 0;
+	} else if (_toRead == -1) {
+		char tmp;
+
+		if ([_socket readIntoBuffer: &tmp
+				     length: 1] == 1) {
+			_toRead++;
+			if (tmp != '\n')
+				@throw [OFInvalidFormatException exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead > 0) {
+		if (length > (uintmax_t)_toRead)
+			length = (size_t)_toRead;
+
+		length = [_socket readIntoBuffer: buffer
+					  length: length];
+
+		_toRead -= length;
+
+		if (_toRead == 0)
+			_toRead = -2;
+
+		return length;
+	} else {
+		void *pool = objc_autoreleasePoolPush();
+		OFString *line;
+		of_range_t range;
+
+		@try {
+			line = [_socket readLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidFormatException exception];
+		}
+
+		range = [line rangeOfString: @";"];
+		if (range.location != OF_NOT_FOUND)
+			line = [line substringWithRange:
+			    of_range(0, range.location)];
+
+		if (line.length < 1) {
+			/*
+			 * We read the empty string because the socket is at
+			 * end of stream.
+			 */
+			if (_socket.atEndOfStream &&
+			    range.location == OF_NOT_FOUND)
+				@throw [OFTruncatedDataException exception];
+			else
+				@throw [OFInvalidFormatException exception];
+		}
+
+		_toRead = line.hexadecimalValue;
+		if (_toRead < 0)
+			@throw [OFOutOfRangeException exception];
+
+		if (_toRead == 0) {
+			_setAtEndOfStream = true;
+			_toRead = -2;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
+		return 0;
+	}
 }
 
 - (bool)hasDataInReadBuffer

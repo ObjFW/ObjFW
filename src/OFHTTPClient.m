@@ -88,8 +88,9 @@
 @interface OFHTTPClientResponse: OFHTTPResponse <OFReadyForReadingObserving>
 {
 	OFTCPSocket *_socket;
-	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
-	uintmax_t _toRead;
+	bool _hasContentLength, _chunked, _keepAlive;
+	bool _atEndOfStream, _setAtEndOfStream;
+	intmax_t _toRead;
 }
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
@@ -872,13 +873,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_hasContentLength = true;
 
 		@try {
-			intmax_t toRead = contentLength.decimalValue;
+			_toRead = contentLength.decimalValue;
 
-			if (toRead < 0)
+			if (_toRead < 0)
 				@throw [OFInvalidServerReplyException
 				    exception];
-
-			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -905,7 +904,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (!_chunked) {
 		size_t ret;
 
-		if (length > _toRead)
+		if (length > (uintmax_t)_toRead)
 			length = (size_t)_toRead;
 
 		ret = [_socket readIntoBuffer: buffer
@@ -923,8 +922,44 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 
 	/* Chunked */
-	if (_toRead > 0) {
-		if (length > _toRead)
+	if (_toRead == -2) {
+		char tmp[2];
+
+		switch ([_socket readIntoBuffer: tmp
+					 length: 2]) {
+		case 2:
+			_toRead++;
+			if (tmp[1] != '\n')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		case 1:
+			_toRead++;
+			if (tmp[0] != '\r')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead == -1) {
+		char tmp;
+
+		if ([_socket readIntoBuffer: &tmp
+				     length: 1] == 1) {
+			_toRead++;
+			if (tmp != '\n')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead > 0) {
+		if (length > (uintmax_t)_toRead)
 			length = (size_t)_toRead;
 
 		length = [_socket readIntoBuffer: buffer
@@ -933,9 +968,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_toRead -= length;
 
 		if (_toRead == 0)
-			if ([_socket readLine].length > 0)
-				@throw [OFInvalidServerReplyException
-				    exception];
+			_toRead = -2;
 
 		return length;
 	} else {
@@ -954,32 +987,20 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			line = [line substringWithRange:
 			    of_range(0, range.location)];
 
+		if (line.length < 1)
+			@throw [OFInvalidServerReplyException exception];
+
 		@try {
-			intmax_t toRead = line.hexadecimalValue;
-
-			if (toRead < 0)
+			_toRead = line.hexadecimalValue;
+			if (_toRead < 0)
 				@throw [OFOutOfRangeException exception];
-
-			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
 
 		if (_toRead == 0) {
-			_atEndOfStream = true;
-
-			if (_keepAlive) {
-				@try {
-					line = [_socket readLine];
-				} @catch (OFInvalidEncodingException *e) {
-					@throw [OFInvalidServerReplyException
-					    exception];
-				}
-
-				if (line.length > 0)
-					@throw [OFInvalidServerReplyException
-					    exception];
-			}
+			_setAtEndOfStream = true;
+			_toRead = -2;
 		}
 
 		objc_autoreleasePoolPop(pool);
