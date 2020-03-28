@@ -785,6 +785,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	ret = [_socket writeBuffer: buffer
 			    length: length];
+	if (_chunked)
+		[_socket writeString: @"\r\n"];
 
 	if (ret > length)
 		@throw [OFOutOfRangeException exception];
@@ -817,7 +819,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_chunked)
-		[_socket writeString: @"0\r\n"];
+		[_socket writeString: @"0\r\n\r\n"];
 	else if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
