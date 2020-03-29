@@ -415,7 +415,7 @@ normalizedKey(OFString *key)
 		intmax_t contentLength = 0;
 
 		if (contentLengthString != nil) {
-			if (chunked)
+			if (chunked || contentLengthString.length == 0)
 				return [self sendErrorAndClose: 400];
 
 			@try {
@@ -719,8 +719,7 @@ normalizedKey(OFString *key)
 				@throw [OFInvalidFormatException exception];
 		}
 
-		_toRead = line.hexadecimalValue;
-		if (_toRead < 0)
+		if ((_toRead = line.hexadecimalValue) < 0)
 			@throw [OFOutOfRangeException exception];
 
 		if (_toRead == 0) {

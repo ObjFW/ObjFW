@@ -120,6 +120,7 @@ constructRequestString(OFHTTPRequest *request)
 	OFString *user = URL.user, *password = URL.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	bool hasContentLength, chunked;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
@@ -187,7 +188,11 @@ constructRequestString(OFHTTPRequest *request)
 		[headers setObject: @"keep-alive"
 			    forKey: @"Connection"];
 
-	if ([headers objectForKey: @"Content-Length"] != nil &&
+	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
+	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	if ((hasContentLength || chunked) &&
 	    [headers objectForKey: @"Content-Type"] == nil)
 		[headers setObject: @"application/x-www-form-"
 				    @"urlencoded; charset=UTF-8"
@@ -553,7 +558,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	   exception: (id)exception
 {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFString *transferEncoding;
+	bool chunked;
 
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
@@ -571,10 +576,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	_firstLine = true;
 
 	headers = _request.headers;
-	transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
+	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
 
-	if ([transferEncoding isEqual: @"chunked"] ||
-	    [headers objectForKey: @"Content-Length"] != nil) {
+	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
 		stream.delegate = nil;
 
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
@@ -725,7 +730,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		contentLengthString = [headers objectForKey: @"Content-Length"];
 		if (contentLengthString != nil) {
-			if (_chunked)
+			if (_chunked || contentLengthString.length == 0)
 				@throw [OFInvalidArgumentException
 				    exception];
 
@@ -869,7 +874,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
-		if (_chunked)
+		if (_chunked || contentLength.length == 0)
 			@throw [OFInvalidServerReplyException exception];
 
 		_hasContentLength = true;
@@ -1003,8 +1008,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		}
 
 		@try {
-			_toRead = line.hexadecimalValue;
-			if (_toRead < 0)
+			if ((_toRead = line.hexadecimalValue) < 0)
 				@throw [OFOutOfRangeException exception];
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
