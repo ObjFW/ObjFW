@@ -235,13 +235,12 @@ normalizedKey(OFString *key)
 				     length: length];
 
 	pool = objc_autoreleasePoolPush();
-	[_socket writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
+	[_socket writeString: [OFString stringWithFormat: @"%zX\r\n", length]];
 	objc_autoreleasePoolPop(pool);
 
 	[_socket writeBuffer: buffer
 		      length: length];
-	[_socket writeBuffer: "\r\n"
-		      length: 2];
+	[_socket writeString: @"\r\n"];
 
 	return length;
 }
@@ -710,8 +709,8 @@ normalizedKey(OFString *key)
 
 		if (line.length < 1) {
 			/*
-			 * We read the empty string because the socket is at
-			 * end of stream.
+			 * We have read the empty string because the socket is
+			 * at end of stream.
 			 */
 			if (_socket.atEndOfStream &&
 			    range.location == OF_NOT_FOUND)

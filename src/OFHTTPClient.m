@@ -989,8 +989,18 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			line = [line substringWithRange:
 			    of_range(0, range.location)];
 
-		if (line.length < 1)
-			@throw [OFInvalidServerReplyException exception];
+		if (line.length < 1) {
+			/*
+			 * We have read the empty string because the socket is
+			 * at end of stream.
+			 */
+			if (_socket.atEndOfStream &&
+			    range.location == OF_NOT_FOUND)
+				@throw [OFTruncatedDataException exception];
+			else
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
 
 		@try {
 			_toRead = line.hexadecimalValue;
