@@ -255,8 +255,7 @@ normalizedKey(OFString *key)
 			[self of_sendHeaders];
 
 		if (_chunked)
-			[_socket writeBuffer: "0\r\n\r\n"
-				      length: 5];
+			[_socket writeString: @"0\r\n\r\n"];
 	} @catch (OFWriteFailedException *e) {
 		id <OFHTTPServerDelegate> delegate = _server.delegate;
 

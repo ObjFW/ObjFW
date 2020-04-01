@@ -315,8 +315,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
 	if ([_version isEqual: @"1.1"]) {
 		if (connectionHeader != nil)
-			keepAlive = ([connectionHeader caseInsensitiveCompare:
-			    @"close"] != OF_ORDERED_SAME);
+			keepAlive = [connectionHeader isEqual: @"close"];
 		else
 			keepAlive = true;
 	} else {
@@ -695,7 +694,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		[_client close];
 
-		if ([URL.scheme isEqual: @"https"]) {
+		if ([URL.scheme caseInsensitiveCompare: @"https"] ==
+		    OF_ORDERED_SAME) {
 			if (of_tls_socket_class == Nil)
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
@@ -1247,7 +1247,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	OFURL *URL = request.URL;
 	OFString *scheme = URL.scheme;
 
-	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
+	if ([scheme caseInsensitiveCompare: @"http"] != OF_ORDERED_SAME &&
+	    [scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	if (_inProgress)
