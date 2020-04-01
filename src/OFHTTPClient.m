@@ -337,27 +337,38 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_client->_lastResponse = [response retain];
 	}
 
-	/* FIXME: Case-insensitive check of redirect's scheme */
 	if (_redirects > 0 && (_status == 301 || _status == 302 ||
 	    _status == 303 || _status == 307) &&
-	    (location = [_serverHeaders objectForKey: @"Location"]) != nil &&
-	    (_client->_insecureRedirectsAllowed ||
-	    [URL.scheme isEqual: @"http"] ||
-	    [location hasPrefix: @"https://"])) {
+	    (location = [_serverHeaders objectForKey: @"Location"]) != nil) {
+		bool follow = true;
 		OFURL *newURL;
-		bool follow;
+		OFString *newURLScheme;
 
 		newURL = [OFURL URLWithString: location
 				relativeToURL: URL];
+		newURLScheme = newURL.scheme;
 
-		if ([_client->_delegate respondsToSelector: @selector(client:
-		    shouldFollowRedirect:statusCode:request:response:)])
+		if ([newURLScheme caseInsensitiveCompare: @"http"] !=
+		    OF_ORDERED_SAME &&
+		    [newURLScheme caseInsensitiveCompare: @"https"] !=
+		    OF_ORDERED_SAME)
+			follow = false;
+
+		if (!_client->_insecureRedirectsAllowed &&
+		    [URL.scheme caseInsensitiveCompare: @"https"] ==
+		    OF_ORDERED_SAME &&
+		    [newURLScheme caseInsensitiveCompare: @"http"] ==
+		    OF_ORDERED_SAME)
+			follow = false;
+
+		if (follow && [_client->_delegate respondsToSelector: @selector(
+		    client:shouldFollowRedirect:statusCode:request:response:)])
 			follow = [_client->_delegate client: _client
 				       shouldFollowRedirect: newURL
 						 statusCode: _status
 						    request: _request
 						   response: response];
-		else
+		else if (follow)
 			follow = defaultShouldFollow(_request.method, _status);
 
 		if (follow) {
