@@ -24,7 +24,18 @@
 
 OF_DESTRUCTOR()
 {
-	objc_unregister_class(objc_getClass("TestPlugin"));
+	Class class = objc_getClass("TestPlugin");
+
+	if (class == Nil)
+		/*
+		 * musl has broken dlclose(): Instead of calling the destructor
+		 * on dlclose(), they call it on exit(). This of course means
+		 * that our tests might have already called objc_exit() and the
+		 * class is already gone.
+		 */
+		return;
+
+	objc_unregister_class(class);
 }
 #endif
 
