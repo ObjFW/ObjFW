@@ -429,8 +429,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	egrep_cpp_yes
 	#endif
 ], [
-	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
 	AC_MSG_RESULT(yes)
+	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	gnu_source="yes"
 ], [
 	AC_MSG_RESULT(no)
 ])
@@ -1235,6 +1236,35 @@ AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
 AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
+AS_IF([test x"$gnu_source" != x"yes" -a \( \
+    x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
+    x"$ac_cv_func_asprintf_l" = x"yes" \)], [
+	AC_MSG_CHECKING(whether *_l functions need _GNU_SOURCE)
+	AC_TRY_COMPILE([
+		#include <stdlib.h>
+		#include <stdio.h>
+
+		#include <locale.h>
+		#ifdef HAVE_XLOCALE_H
+		# include <xlocale.h>
+		#endif
+	], [
+		#ifdef HAVE_STRTOD_L
+		(void)strtod_l;
+		#endif
+		#ifdef HAVE_STRTOF_L
+		(void)strtof_l;
+		#endif
+		#ifdef HAVE_ASPRINTF_L
+		(void)asprintf_l;
+		#endif
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	])
+])
 
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
