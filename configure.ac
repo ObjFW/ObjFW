@@ -825,8 +825,6 @@ case "$host_cpu" in
 		;;
 esac
 
-AC_CHECK_FUNCS(strerror_r)
-
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
@@ -1263,6 +1261,26 @@ AS_IF([test x"$gnu_source" != x"yes" -a \( \
 	], [
 		AC_MSG_RESULT(yes)
 		CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	])
+])
+
+dnl This check needs to happen after the above, as _GNU_SOURCE can change the
+dnl return type.
+AC_CHECK_FUNCS(strerror_r, [
+	AC_MSG_CHECKING(for return type of strerror_r)
+	AC_TRY_COMPILE([
+		#include <stdio.h>
+		#include <string.h>
+	], [
+		switch (strerror_r(0, NULL, 0)) {
+		case 0:;
+		}
+	], [
+		AC_MSG_RESULT(int)
+	], [
+		AC_MSG_RESULT(char *)
+		AC_DEFINE(STRERROR_R_RETURNS_CHARP, 1,
+			[Whether strerror_r returns char *])
 	])
 ])
 

@@ -171,7 +171,7 @@ of_strerror(int errNo)
 	}
 #endif
 
-#if defined(HAVE_STRERROR_R) && defined(_GNU_SOURCE)
+#if defined(STRERROR_R_RETURNS_CHARP)
 	/* glibc uses a different strerror_r when _GNU_SOURCE is defined */
 	char *string;
 
