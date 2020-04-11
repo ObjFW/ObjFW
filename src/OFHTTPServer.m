@@ -696,10 +696,13 @@ normalizedKey(OFString *key)
 		of_range_t range;
 
 		@try {
-			line = [_socket readLine];
+			line = [_socket tryReadLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidFormatException exception];
 		}
+
+		if (line == nil)
+			return 0;
 
 		range = [line rangeOfString: @";"];
 		if (range.location != OF_NOT_FOUND)
