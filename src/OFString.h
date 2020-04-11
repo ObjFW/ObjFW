@@ -15,6 +15,9 @@
  * file.
  */
 
+#ifndef OBJFW_OF_STRING_H
+#define OBJFW_OF_STRING_H
+
 #ifndef __STDC_LIMIT_MACROS
 # define __STDC_LIMIT_MACROS
 #endif
@@ -22,7 +25,7 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#import "objfw-defs.h"
+#include "objfw-defs.h"
 
 #ifdef OF_HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -34,16 +37,23 @@
 # include <inttypes.h>
 #endif
 
-#import "OFObject.h"
-#import "OFSerialization.h"
-#import "OFJSONRepresentation.h"
-#import "OFMessagePackRepresentation.h"
+#include "OFObject.h"
+#ifdef __OBJC__
+# import "OFSerialization.h"
+# import "OFJSONRepresentation.h"
+# import "OFMessagePackRepresentation.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
+#ifdef __OBJC__
 @class OFConstantString;
+@class OFString;
+#else
+typedef void OFString;
+#endif
 
 #if defined(__cplusplus) && __cplusplus >= 201103L
 typedef char16_t of_char16_t;
@@ -110,6 +120,7 @@ enum {
 typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 
+#ifdef __OBJC__
 @class OFArray OF_GENERIC(ObjectType);
 @class OFCharacterSet;
 @class OFURL;
@@ -264,7 +275,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
-#ifdef OF_HAVE_UNICODE_TABLES
+# ifdef OF_HAVE_UNICODE_TABLES
 /*!
  * @brief The string in Unicode Normalization Form D (NFD).
  */
@@ -275,7 +286,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic)
     OFString *decomposedStringWithCompatibilityMapping;
-#endif
+# endif
 
 /*!
  * @brief Creates a new OFString.
@@ -491,7 +502,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithFormat: (OFConstantString *)format, ...;
 
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFString with the contents of the specified UTF-8
  *	  encoded file.
@@ -511,9 +522,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (of_string_encoding_t)encoding;
-#endif
+# endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
+# if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Creates a new OFString with the contents of the specified URL.
  *
@@ -538,7 +549,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfURL: (OFURL *)URL
 			       encoding: (of_string_encoding_t)encoding;
-#endif
+# endif
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -765,7 +776,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments;
 
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
  *	  specified file in the specified encoding.
@@ -785,7 +796,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (of_string_encoding_t)encoding;
-#endif
+# endif
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -1170,7 +1181,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (OFData *)dataWithEncoding: (of_string_encoding_t)encoding;
 
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 /*!
  * @brief Writes the string into the specified file using UTF-8 encoding.
  *
@@ -1187,7 +1198,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding;
-#endif
+# endif
 
 /*!
  * @brief Writes the string to the specified URL using UTF-8 encoding.
@@ -1205,15 +1216,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (void)writeToURL: (OFURL *)URL
 	  encoding: (of_string_encoding_t)encoding;
 
-#ifdef OF_HAVE_BLOCKS
+# ifdef OF_HAVE_BLOCKS
 /*!
  * Enumerates all lines in the receiver using the specified block.
  *
  * @brief block The block to call for each line
  */
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block;
-#endif
+# endif
 @end
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1230,20 +1242,22 @@ extern size_t of_string_utf32_length(const of_char32_t *);
 
 OF_ASSUME_NONNULL_END
 
-#import "OFConstantString.h"
-#import "OFMutableString.h"
-#import "OFString+CryptoHashing.h"
-#import "OFString+JSONValue.h"
-#ifdef OF_HAVE_FILES
-# import "OFString+PathAdditions.h"
+#include "OFConstantString.h"
+#include "OFMutableString.h"
+#ifdef __OBJC__
+# import "OFString+CryptoHashing.h"
+# import "OFString+JSONValue.h"
+# ifdef OF_HAVE_FILES
+#  import "OFString+PathAdditions.h"
+# endif
+# import "OFString+PropertyListValue.h"
+# import "OFString+Serialization.h"
+# import "OFString+URLEncoding.h"
+# import "OFString+XMLEscaping.h"
+# import "OFString+XMLUnescaping.h"
 #endif
-#import "OFString+PropertyListValue.h"
-#import "OFString+Serialization.h"
-#import "OFString+URLEncoding.h"
-#import "OFString+XMLEscaping.h"
-#import "OFString+XMLUnescaping.h"
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#if defined(__OBJC__) && !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
 /*
  * Very *ugly* hack required for string boxing literals to work.
  *
@@ -1258,4 +1272,6 @@ OF_ASSUME_NONNULL_END
  */
 @interface NSString: OFString
 @end
+#endif
+
 #endif

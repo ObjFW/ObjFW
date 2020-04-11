@@ -15,6 +15,9 @@
  * file.
  */
 
+#ifndef OBJFW_OF_OBJECT_H
+#define OBJFW_OF_OBJECT_H
+
 #include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
@@ -29,8 +32,8 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#import "macros.h"
-#import "block.h"
+#include "macros.h"
+#include "block.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -277,6 +280,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 	return true;
 }
 
+#ifdef __OBJC__
 @class OFMethodSignature;
 @class OFString;
 @class OFThread;
@@ -290,11 +294,11 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 /*!
  * @brief The class of the object.
  */
-#ifndef __cplusplus
+# ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
-#else
+# else
 @property (readonly, nonatomic, getter=class) Class class_;
-#endif
+# endif
 
 /*!
  * @brief The superclass of the object.
@@ -492,33 +496,35 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)retainWeakReference;
 @end
+#endif
 
 /*!
  * @class OFObject OFObject.h ObjFW/OFObject.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
+#ifdef __OBJC__
 OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @private
-#ifndef __clang_analyzer__
+# ifndef __clang_analyzer__
 	Class _isa;
-#else
+# else
 	Class _isa __attribute__((__unused__));
-#endif
+# endif
 }
 
-#ifdef OF_HAVE_CLASS_PROPERTIES
-# ifndef __cplusplus
+# ifdef OF_HAVE_CLASS_PROPERTIES
+#  ifndef __cplusplus
 @property (class, readonly, nonatomic) Class class;
-# else
+#  else
 @property (class, readonly, nonatomic, getter=class) Class class_;
-# endif
+#  endif
 @property (class, readonly, nonatomic) OFString *className;
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
-#endif
+# endif
 
 /*!
  * @brief The name of the object's class.
@@ -937,7 +943,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object4
 	     afterDelay: (of_time_interval_t)delay;
 
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 /*!
  * @brief Performs the specified selector on the specified thread.
  *
@@ -1195,7 +1201,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
 	     afterDelay: (of_time_interval_t)delay;
-#endif
+# endif
 
 /*!
  * @brief This method is called when @ref resolveClassMethod: or
@@ -1220,7 +1226,11 @@ OF_ROOT_CLASS
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
+#else
+typedef void OFObject;
+#endif
 
+#ifdef __OBJC__
 /*!
  * @protocol OFCopying OFObject.h ObjFW/OFObject.h
  *
@@ -1272,6 +1282,7 @@ OF_ROOT_CLASS
  */
 - (of_comparison_result_t)compare: (id <OFComparing>)object;
 @end
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1290,5 +1301,9 @@ extern uint32_t of_hash_seed;
 
 OF_ASSUME_NONNULL_END
 
-#import "OFObject+KeyValueCoding.h"
-#import "OFObject+Serialization.h"
+#ifdef __OBJC__
+# import "OFObject+KeyValueCoding.h"
+# import "OFObject+Serialization.h"
+#endif
+
+#endif

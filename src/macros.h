@@ -15,6 +15,9 @@
  * file.
  */
 
+#ifndef OBJFW_MACROS_H
+#define OBJFW_MACROS_H
+
 #include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
@@ -37,15 +40,15 @@
 
 #ifdef OF_OBJFW_RUNTIME
 # ifdef OF_COMPILING_OBJFW
-#  import "ObjFWRT.h"
+#  include "ObjFWRT.h"
 # else
-#  import <ObjFWRT/ObjFWRT.h>
+#  include <ObjFWRT/ObjFWRT.h>
 # endif
 #endif
 #ifdef OF_APPLE_RUNTIME
-# import <objc/objc.h>
-# import <objc/runtime.h>
-# import <objc/message.h>
+# include <objc/objc.h>
+# include <objc/runtime.h>
+# include <objc/message.h>
 #endif
 
 #if defined(__GNUC__)
@@ -888,3 +891,5 @@ of_random(void) {
 	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
 #endif
 }
+
+#endif
