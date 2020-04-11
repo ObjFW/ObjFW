@@ -27,6 +27,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
 #ifdef OF_AMIGAOS
@@ -83,6 +84,61 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	}
 }
 #endif
+
+static OFString *
+evaluateDictionary(OFDictionary *dictionary, OFDictionary *variables)
+{
+	OFEnumerator *keyEnumerator = [dictionary keyEnumerator];
+	OFEnumerator *objectEnumerator = [dictionary objectEnumerator];
+	OFString *key;
+	id object;
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		OFString *var, *expected;
+		size_t pos;
+
+		if (![key isKindOfClass: [OFString class]] ||
+		    ![object isKindOfClass: [OFString class]])
+			@throw [OFInvalidFormatException exception];
+
+		if (key.length == 0)
+			continue;
+
+		pos = [key rangeOfString: @"="].location;
+		if (pos == OF_NOT_FOUND)
+			@throw [OFInvalidFormatException exception];
+
+		var = [key substringWithRange: of_range(0, pos)];
+		expected = [key substringWithRange:
+		    of_range(pos + 1, key.length - pos - 1)];
+
+		if ([[variables objectForKey: var] isEqual: expected])
+			return object;
+	}
+
+	return [dictionary objectForKey: @""];
+}
+
+static OFString *
+evaluateArray(OFArray *array, OFDictionary *variables)
+{
+	OFMutableString *string = [OFMutableString string];
+
+	for (id object in array) {
+		if ([object isKindOfClass: [OFString class]])
+			[string appendString: object];
+		else if ([object isKindOfClass: [OFDictionary class]])
+			[string appendString:
+			    evaluateDictionary(object, variables)];
+		else
+			@throw [OFInvalidFormatException exception];
+	}
+
+	[string makeImmutable];
+
+	return string;
+}
 
 @implementation OFLocale
 @synthesize language = _language, territory = _territory, encoding = _encoding;
@@ -315,9 +371,16 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
+	OFMutableDictionary *variables;
+	OFConstantString *name;
 	const char *UTF8String = NULL;
 	size_t last, UTF8StringLength;
 	int state = 0;
+
+	variables = [OFMutableDictionary dictionary];
+	while ((name = va_arg(arguments, OFConstantString *)) != nil)
+		[variables setObject: [va_arg(arguments, id) description]
+			      forKey: name];
 
 	for (OFDictionary *strings in _localizedStrings) {
 		id string = [strings objectForKey: ID];
@@ -326,7 +389,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			continue;
 
 		if ([string isKindOfClass: [OFArray class]])
-			string = [string componentsJoinedByString: @""];
+			string = evaluateArray(string, variables);
 
 		UTF8String = [string UTF8String];
 		UTF8StringLength = [string UTF8StringLength];
@@ -362,34 +425,13 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			break;
 		case 2:
 			if (UTF8String[i] == ']') {
-				va_list argsCopy;
-				OFConstantString *name;
-
 				OFString *var = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
+				OFString *value = [variables objectForKey: var];
 
-				/*
-				 * We loop, as most of the time, we only have
-				 * one or maybe two variables, meaning looping
-				 * is faster than constructing a dictionary.
-				 */
-				va_copy(argsCopy, arguments);
-				while ((name = va_arg(argsCopy,
-				    OFConstantString *)) != nil) {
-					id value = va_arg(argsCopy, id);
-
-					if (value == nil)
-						@throw
-						    [OFInvalidArgumentException
-						    exception];
-
-					if ([name isEqual: var]) {
-						[ret appendString:
-						    [value description]];
-						break;
-					}
-				}
+				if (value != nil)
+					[ret appendString: value];
 
 				last = i + 1;
 				state = 0;
