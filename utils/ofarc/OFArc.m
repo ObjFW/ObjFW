@@ -674,7 +674,8 @@ error:
 			[of_stdout writeLine: OF_LOCALIZED(@"skipping_file",
 			    @"Skipping %[file]...",
 			    @"file", fileName)];
-			return false;
+
+		return false;
 	}
 
 	if (_outputLevel >= 0)
