@@ -111,7 +111,8 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 			TYPE_MODULO,
 			TYPE_AND,
 			TYPE_OR,
-			TYPE_NOT
+			TYPE_NOT,
+			TYPE_IS_REAL
 		} type;
 		id var, first, second;
 		size_t stackSize;
@@ -138,11 +139,14 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 			type = TYPE_OR;
 		} else if ([atom isEqual: @"!"]) {
 			type = TYPE_NOT;
+		} else if ([atom isEqual: @"."]) {
+			type = TYPE_IS_REAL;
 		} else {
 			of_unichar_t firstCharacter =
 			    [atom characterAtIndex: 0];
 
-			if (firstCharacter >= '0' && firstCharacter <= '9')
+			if ((firstCharacter >= '0' && firstCharacter <= '9') ||
+			    firstCharacter == '-')
 				type = TYPE_LITERAL;
 			else
 				type = TYPE_VARIABLE;
@@ -151,15 +155,15 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 		switch (type) {
 		case TYPE_LITERAL:
 			[stack addObject:
-			    [OFNumber numberWithIntMax: atom.decimalValue]];
+			    [OFNumber numberWithDouble: atom.doubleValue]];
 			break;
 		case TYPE_VARIABLE:
 			if ((var = [variables objectForKey: atom]) == nil)
 				@throw [OFInvalidFormatException exception];
 
 			if ([var isKindOfClass: [OFString class]])
-				var = [OFNumber numberWithIntMax:
-				    [var decimalValue]];
+				var = [OFNumber numberWithDouble:
+				    [var doubleValue]];
 
 			[stack addObject: var];
 			break;
@@ -203,8 +207,8 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				    compare: second] != OF_ORDERED_ASCENDING];
 				break;
 			case TYPE_ADD:
-				var = [OFNumber numberWithIntMax:
-				    [first intMaxValue] + [second intMaxValue]];
+				var = [OFNumber numberWithDouble:
+				    [first doubleValue] + [second doubleValue]];
 				break;
 			case TYPE_MODULO:
 				var = [OFNumber numberWithIntMax:
@@ -228,11 +232,25 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 
 			break;
 		case TYPE_NOT:
+		case TYPE_IS_REAL:
 			stackSize = stack.count;
-			first = [OFNumber numberWithBool:
-			    ![stack.lastObject boolValue]];
+			first = stack.lastObject;
+
+			switch (type) {
+			case TYPE_NOT:
+				var = [OFNumber numberWithBool:
+				    ![first boolValue]];
+				break;
+			case TYPE_IS_REAL:
+				var = [OFNumber numberWithBool:
+				    [first doubleValue] != [first intMaxValue]];
+				break;
+			default:
+				OF_ENSURE(0);
+			}
+
 			[stack replaceObjectAtIndex: stackSize - 1
-					 withObject: first];
+					 withObject: var];
 			break;
 		}
 	}
