@@ -79,7 +79,12 @@
     "size_gib": "%[num] GiB",
     "size_mib": "%[num] MiB",
     "size_kib": "%[num] KiB",
-    "size_bytes": "%[num] Bytes",
+    "size_bytes": [
+        [
+            {"num == 1": "1 Byte"},
+            {"": "%[num] Bytes"}
+        ]
+    ],
     "size_unknown": "unbekannt",
     "info_name_unaligned": "Name: %[name]",
     "info_name": "Name:  %[name]",
@@ -90,5 +95,10 @@
         "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]"
     ],
     "eta_days": "%[num] t ",
-    "progress_bytes": "%[num] Bytes"
+    "progress_bytes": [
+        [
+            {"num == 1": "1 Byte"},
+            {"": "%[num] Bytes"}
+        ]
+    ]
 }

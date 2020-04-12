@@ -115,6 +115,7 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 	    componentsSeparatedByString: @" "
 				options: OF_STRING_SKIP_EMPTY]) {
 		unsigned precedence;
+		of_unichar_t c;
 
 		if ([token isEqual: @"("]) {
 			[operators addObject: @"("];
@@ -162,8 +163,7 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 			continue;
 		}
 
-		of_unichar_t c = [token characterAtIndex: 0];
-
+		c = [token characterAtIndex: 0];
 		if ((c < '0' || c > '9') && c != '-')
 			if ((token = [variables objectForKey: token]) == nil)
 				@throw [OFInvalidFormatException exception];
