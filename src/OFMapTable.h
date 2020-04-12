@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A struct describing the functions to be used by the map table.
  */
-typedef struct {
+struct of_map_table_functions_t {
 	/*! The function to retain keys / objects */
 	void *_Nullable (*_Nullable retain)(void *_Nullable object);
 	/*! The function to release keys / objects */
@@ -37,7 +37,8 @@ typedef struct {
 	/*! The function to compare keys / objects */
 	bool (*_Nullable equal)(void *_Nullable object1,
 	    void *_Nullable object2);
-} of_map_table_functions_t;
+};
+typedef struct of_map_table_functions_t of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
 /*!

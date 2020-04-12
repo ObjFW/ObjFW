@@ -91,12 +91,13 @@ typedef enum {
  *
  * @brief A range.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_range_t {
 	/*! The start of the range */
 	size_t location;
 	/*! The length of the range */
 	size_t length;
-} of_range_t;
+};
+typedef struct of_range_t of_range_t;
 
 /*!
  * @brief Creates a new of_range_t.
@@ -142,12 +143,13 @@ typedef double of_time_interval_t;
  *
  * @brief A point.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_point_t {
 	/*! The x coordinate of the point */
 	float x;
 	/*! The y coordinate of the point */
 	float y;
-} of_point_t;
+};
+typedef struct of_point_t of_point_t;
 
 /*!
  * @brief Creates a new of_point_t.
@@ -188,12 +190,13 @@ of_point_equal(of_point_t point1, of_point_t point2)
  *
  * @brief A dimension.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_dimension_t {
 	/*! The width of the dimension */
 	float width;
 	/*! The height of the dimension */
 	float height;
-} of_dimension_t;
+};
+typedef struct of_dimension_t of_dimension_t;
 
 /*!
  * @brief Creates a new of_dimension_t.
@@ -234,12 +237,13 @@ of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
  *
  * @brief A rectangle.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_rectangle_t {
 	/*! The point from where the rectangle originates */
 	of_point_t origin;
 	/*! The size of the rectangle */
 	of_dimension_t size;
-} of_rectangle_t;
+};
+typedef struct of_rectangle_t of_rectangle_t;
 
 /*!
  * @brief Creates a new of_rectangle_t.
