@@ -142,7 +142,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
 extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
 
 /*!
- * @brief The owner of the file as an @ref OFString.
+ * @brief The owner of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileOwner.
@@ -150,7 +150,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
 extern const of_file_attribute_key_t of_file_attribute_key_owner;
 
 /*!
- * @brief The group of the file as an @ref OFString.
+ * @brief The group of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileGroup.
@@ -190,7 +190,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
 extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
 
 /*!
- * @brief The destination of a symbolic link as an @ref OFString.
+ * @brief The destination of a symbolic link as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileSymbolicLinkDestination.

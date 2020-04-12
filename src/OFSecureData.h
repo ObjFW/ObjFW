@@ -27,8 +27,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @warning Non-swappable memory might be unavailable, in which case this falls
  *	    back to swappable memory, but still wipes the data when it gets
- *	    deallocated. Check the @ref swappable property to see whether a
- *	    particular OFSecureData was allocated in swappable memory.
+ *	    deallocated. Check the @ref allowsSwappableMemory property to see
+ *	    whether a particular OFSecureData might be allocated in swappable
+ *	    memory.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData

@@ -72,6 +72,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 /*!
  * @brief Creates a new, autoreleased OFDNSResponse.
  *
+ * @param domainName The domain name the response is for
  * @param answerRecords The answer records of the response
  * @param authorityRecords The authority records of the response
  * @param additionalRecords The additional records of the response
@@ -86,6 +87,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 /*!
  * @brief Initializes an already allocated OFDNSResponse.
  *
+ * @param domainName The domain name the response is for
  * @param answerRecords The answer records of the response
  * @param authorityRecords The authority records of the response
  * @param additionalRecords The additional records of the response

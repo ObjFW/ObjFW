@@ -55,7 +55,7 @@ typedef struct {
 	bool *_Nullable isSpecifiedPtr;
 
 	/*!
-	 * An optional pointer to an @ref OFString * that is set to the
+	 * An optional pointer to an `OFString *` that is set to the
 	 * argument specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
