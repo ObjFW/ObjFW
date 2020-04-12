@@ -23,6 +23,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFNumber.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -85,39 +86,192 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 #endif
 
-static OFString *
-evaluateDictionary(OFDictionary *dictionary, OFDictionary *variables)
+static bool
+evaluateCondition(OFString *condition, OFDictionary *variables)
 {
-	OFEnumerator *keyEnumerator = [dictionary keyEnumerator];
-	OFEnumerator *objectEnumerator = [dictionary objectEnumerator];
-	OFString *key;
-	id object;
+	OFMutableArray *stack;
 
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		OFString *var, *expected;
-		size_t pos;
+	if (condition.length == 0)
+		return true;
 
-		if (![key isKindOfClass: [OFString class]] ||
-		    ![object isKindOfClass: [OFString class]])
-			@throw [OFInvalidFormatException exception];
+	stack = [OFMutableArray array];
+	for (OFString *atom in [condition
+	    componentsSeparatedByString: @" "
+				options: OF_STRING_SKIP_EMPTY]) {
+		enum {
+			TYPE_LITERAL,
+			TYPE_VARIABLE,
+			TYPE_EQUAL,
+			TYPE_NOT_EQUAL,
+			TYPE_LESS,
+			TYPE_LESS_EQUAL,
+			TYPE_GREATER,
+			TYPE_GREATER_EQUAL,
+			TYPE_ADD,
+			TYPE_MODULO,
+			TYPE_AND,
+			TYPE_OR,
+			TYPE_NOT
+		} type;
+		id var, first, second;
+		size_t stackSize;
 
-		if (key.length == 0)
-			continue;
+		if ([atom isEqual: @"=="]) {
+			type = TYPE_EQUAL;
+		} else if ([atom isEqual: @"!="]) {
+			type = TYPE_NOT_EQUAL;
+		} else if ([atom isEqual: @"<"]) {
+			type = TYPE_LESS;
+		} else if ([atom isEqual: @"<="]) {
+			type = TYPE_LESS_EQUAL;
+		} else if ([atom isEqual: @">"]) {
+			type = TYPE_GREATER;
+		} else if ([atom isEqual: @">="]) {
+			type = TYPE_GREATER_EQUAL;
+		} else if ([atom isEqual: @"+"]) {
+			type = TYPE_ADD;
+		} else if ([atom isEqual: @"%"]) {
+			type = TYPE_MODULO;
+		} else if ([atom isEqual: @"&&"]) {
+			type = TYPE_AND;
+		} else if ([atom isEqual: @"||"]) {
+			type = TYPE_OR;
+		} else if ([atom isEqual: @"!"]) {
+			type = TYPE_NOT;
+		} else {
+			of_unichar_t firstCharacter =
+			    [atom characterAtIndex: 0];
 
-		pos = [key rangeOfString: @"="].location;
-		if (pos == OF_NOT_FOUND)
-			@throw [OFInvalidFormatException exception];
+			if (firstCharacter >= '0' && firstCharacter <= '9')
+				type = TYPE_LITERAL;
+			else
+				type = TYPE_VARIABLE;
+		}
 
-		var = [key substringWithRange: of_range(0, pos)];
-		expected = [key substringWithRange:
-		    of_range(pos + 1, key.length - pos - 1)];
+		switch (type) {
+		case TYPE_LITERAL:
+			[stack addObject:
+			    [OFNumber numberWithIntMax: atom.decimalValue]];
+			break;
+		case TYPE_VARIABLE:
+			if ((var = [variables objectForKey: atom]) == nil)
+				@throw [OFInvalidFormatException exception];
 
-		if ([[variables objectForKey: var] isEqual: expected])
-			return object;
+			if ([var isKindOfClass: [OFString class]])
+				var = [OFNumber numberWithIntMax:
+				    [var decimalValue]];
+
+			[stack addObject: var];
+			break;
+		case TYPE_EQUAL:
+		case TYPE_NOT_EQUAL:
+		case TYPE_LESS:
+		case TYPE_LESS_EQUAL:
+		case TYPE_GREATER:
+		case TYPE_GREATER_EQUAL:
+		case TYPE_ADD:
+		case TYPE_MODULO:
+		case TYPE_AND:
+		case TYPE_OR:
+			stackSize = stack.count;
+			first = [stack objectAtIndex: stackSize - 2];
+			second = [stack objectAtIndex: stackSize - 1];
+
+			switch (type) {
+			case TYPE_EQUAL:
+				var = [OFNumber numberWithBool:
+				    [first isEqual: second]];
+				break;
+			case TYPE_NOT_EQUAL:
+				var = [OFNumber numberWithBool:
+				    ![first isEqual: second]];
+				break;
+			case TYPE_LESS:
+				var = [OFNumber numberWithBool: [first
+				    compare: second] == OF_ORDERED_ASCENDING];
+				break;
+			case TYPE_LESS_EQUAL:
+				var = [OFNumber numberWithBool: [first
+				    compare: second] != OF_ORDERED_DESCENDING];
+				break;
+			case TYPE_GREATER:
+				var = [OFNumber numberWithBool: [first
+				    compare: second] == OF_ORDERED_DESCENDING];
+				break;
+			case TYPE_GREATER_EQUAL:
+				var = [OFNumber numberWithBool: [first
+				    compare: second] != OF_ORDERED_ASCENDING];
+				break;
+			case TYPE_ADD:
+				var = [OFNumber numberWithIntMax:
+				    [first intMaxValue] + [second intMaxValue]];
+				break;
+			case TYPE_MODULO:
+				var = [OFNumber numberWithIntMax:
+				    [first intMaxValue] % [second intMaxValue]];
+				break;
+			case TYPE_AND:
+				var = [OFNumber numberWithBool:
+				    [first boolValue] && [second boolValue]];
+				break;
+			case TYPE_OR:
+				var = [OFNumber numberWithBool:
+				    [first boolValue] || [second boolValue]];
+				break;
+			default:
+				OF_ENSURE(0);
+			}
+
+			[stack replaceObjectAtIndex: stackSize - 2
+					 withObject: var];
+			[stack removeLastObject];
+
+			break;
+		case TYPE_NOT:
+			stackSize = stack.count;
+			first = [OFNumber numberWithBool:
+			    ![stack.lastObject boolValue]];
+			[stack replaceObjectAtIndex: stackSize - 1
+					 withObject: first];
+			break;
+		}
 	}
 
-	return [dictionary objectForKey: @""];
+	if (stack.count != 1)
+		@throw [OFInvalidFormatException exception];
+
+	return [stack.firstObject boolValue];
+}
+
+static OFString *
+evaluateConditionals(OFArray *conditions, OFDictionary *variables)
+{
+	for (OFDictionary *dictionary in conditions) {
+		OFString *condition, *value;
+		bool found = false;
+
+		for (OFString *key in dictionary) {
+			if (found)
+				@throw [OFInvalidFormatException exception];
+
+			condition = key;
+			value = [dictionary objectForKey: key];
+
+			if (![condition isKindOfClass: [OFString class]] ||
+			    ![value isKindOfClass: [OFString class]])
+				@throw [OFInvalidFormatException exception];
+
+			found = true;
+		}
+		if (!found)
+			@throw [OFInvalidFormatException exception];
+
+		if (evaluateCondition(condition, variables))
+			return value;
+	}
+
+	/* Need to have a fallback as the last one. */
+	@throw [OFInvalidFormatException exception];
 }
 
 static OFString *
@@ -128,9 +282,9 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	for (id object in array) {
 		if ([object isKindOfClass: [OFString class]])
 			[string appendString: object];
-		else if ([object isKindOfClass: [OFDictionary class]])
+		else if ([object isKindOfClass: [OFArray class]])
 			[string appendString:
-			    evaluateDictionary(object, variables)];
+			    evaluateConditionals(object, variables)];
 		else
 			@throw [OFInvalidFormatException exception];
 	}
@@ -379,7 +533,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	variables = [OFMutableDictionary dictionary];
 	while ((name = va_arg(arguments, OFConstantString *)) != nil)
-		[variables setObject: [va_arg(arguments, id) description]
+		[variables setObject: va_arg(arguments, id)
 			      forKey: name];
 
 	for (OFDictionary *strings in _localizedStrings) {
@@ -431,7 +585,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 				OFString *value = [variables objectForKey: var];
 
 				if (value != nil)
-					[ret appendString: value];
+					[ret appendString: value.description];
 
 				last = i + 1;
 				state = 0;
