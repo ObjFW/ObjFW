@@ -38,6 +38,7 @@
 #endif
 
 static OFLocale *currentLocale = nil;
+static OFDictionary *operatorPrecedences = nil;
 
 #ifndef OF_AMIGAOS
 static void
@@ -89,170 +90,163 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 static bool
 evaluateCondition(OFString *condition, OFDictionary *variables)
 {
-	OFMutableArray *stack;
+	OFMutableArray *tokens, *operators, *stack;
 
+	/* Empty condition is the fallback that's always true */
 	if (condition.length == 0)
 		return true;
 
-	stack = [OFMutableArray array];
-	for (OFString *atom in [condition
+	/*
+	 * Dirty hack to allow not needing spaces after "!" or "(" and spaces
+	 * before ")".
+	 * TODO: Replace with a proper tokenizer.
+	 */
+	condition = [condition stringByReplacingOccurrencesOfString: @"!"
+							 withString: @"! "];
+	condition = [condition stringByReplacingOccurrencesOfString: @"("
+							 withString: @"( "];
+	condition = [condition stringByReplacingOccurrencesOfString: @")"
+							 withString: @" )"];
+
+	/* Substitute variables and convert to RPN first */
+	tokens = [OFMutableArray array];
+	operators = [OFMutableArray array];
+	for (OFString *token in [condition
 	    componentsSeparatedByString: @" "
 				options: OF_STRING_SKIP_EMPTY]) {
-		enum {
-			TYPE_LITERAL,
-			TYPE_VARIABLE,
-			TYPE_EQUAL,
-			TYPE_NOT_EQUAL,
-			TYPE_LESS,
-			TYPE_LESS_EQUAL,
-			TYPE_GREATER,
-			TYPE_GREATER_EQUAL,
-			TYPE_ADD,
-			TYPE_MODULO,
-			TYPE_AND,
-			TYPE_OR,
-			TYPE_NOT,
-			TYPE_IS_REAL
-		} type;
+		unsigned precedence;
+
+		if ([token isEqual: @"("]) {
+			[operators addObject: @"("];
+			continue;
+		}
+
+		if ([token isEqual: @")"]) {
+			for (;;) {
+				OFString *operator = operators.lastObject;
+				if (operator == nil)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				if ([operator isEqual: @"("]) {
+					[operators removeLastObject];
+					break;
+				}
+
+				[tokens addObject: operator];
+				[operators removeLastObject];
+			}
+			continue;
+		}
+
+		precedence = [[operatorPrecedences objectForKey: token]
+		    unsignedIntValue];
+		if (precedence > 0) {
+			for (;;) {
+				OFNumber *operator = operators.lastObject;
+				unsigned otherPrecedence;
+
+				if (operator == nil || [operator isEqual: @"("])
+					break;
+
+				otherPrecedence = [[operatorPrecedences
+				    objectForKey: operator] unsignedIntValue];
+				if (otherPrecedence >= precedence)
+					break;
+
+				[tokens addObject: operator];
+				[operators removeLastObject];
+			}
+
+			[operators addObject: token];
+			continue;
+		}
+
+		of_unichar_t c = [token characterAtIndex: 0];
+
+		if ((c < '0' || c > '9') && c != '-')
+			if ((token = [variables objectForKey: token]) == nil)
+				@throw [OFInvalidFormatException exception];
+
+		[tokens addObject:
+		    [OFNumber numberWithDouble: token.doubleValue]];
+	}
+	for (size_t i = operators.count; i > 0; i--) {
+		OFString *operator = [operators objectAtIndex: i - 1];
+
+		if ([operator isEqual: @"("])
+			@throw [OFInvalidFormatException exception];
+
+		[tokens addObject: operator];
+	}
+
+	/* Evaluate RPN */
+	stack = [OFMutableArray array];
+	for (id token in tokens) {
+		unsigned precedence = [[operatorPrecedences
+		    objectForKey: token] unsignedIntValue];
 		id var, first, second;
 		size_t stackSize;
 
-		if ([atom isEqual: @"=="]) {
-			type = TYPE_EQUAL;
-		} else if ([atom isEqual: @"!="]) {
-			type = TYPE_NOT_EQUAL;
-		} else if ([atom isEqual: @"<"]) {
-			type = TYPE_LESS;
-		} else if ([atom isEqual: @"<="]) {
-			type = TYPE_LESS_EQUAL;
-		} else if ([atom isEqual: @">"]) {
-			type = TYPE_GREATER;
-		} else if ([atom isEqual: @">="]) {
-			type = TYPE_GREATER_EQUAL;
-		} else if ([atom isEqual: @"+"]) {
-			type = TYPE_ADD;
-		} else if ([atom isEqual: @"%"]) {
-			type = TYPE_MODULO;
-		} else if ([atom isEqual: @"&&"]) {
-			type = TYPE_AND;
-		} else if ([atom isEqual: @"||"]) {
-			type = TYPE_OR;
-		} else if ([atom isEqual: @"!"]) {
-			type = TYPE_NOT;
-		} else if ([atom isEqual: @"."]) {
-			type = TYPE_IS_REAL;
-		} else {
-			of_unichar_t firstCharacter =
-			    [atom characterAtIndex: 0];
-
-			if ((firstCharacter >= '0' && firstCharacter <= '9') ||
-			    firstCharacter == '-')
-				type = TYPE_LITERAL;
-			else
-				type = TYPE_VARIABLE;
-		}
-
-		switch (type) {
-		case TYPE_LITERAL:
-			[stack addObject:
-			    [OFNumber numberWithDouble: atom.doubleValue]];
-			break;
-		case TYPE_VARIABLE:
-			if ((var = [variables objectForKey: atom]) == nil)
-				@throw [OFInvalidFormatException exception];
-
-			if ([var isKindOfClass: [OFString class]])
-				var = [OFNumber numberWithDouble:
-				    [var doubleValue]];
-
-			[stack addObject: var];
-			break;
-		case TYPE_EQUAL:
-		case TYPE_NOT_EQUAL:
-		case TYPE_LESS:
-		case TYPE_LESS_EQUAL:
-		case TYPE_GREATER:
-		case TYPE_GREATER_EQUAL:
-		case TYPE_ADD:
-		case TYPE_MODULO:
-		case TYPE_AND:
-		case TYPE_OR:
+		/* Only unary operators have precedence 1 */
+		if (precedence > 1) {
 			stackSize = stack.count;
 			first = [stack objectAtIndex: stackSize - 2];
 			second = [stack objectAtIndex: stackSize - 1];
 
-			switch (type) {
-			case TYPE_EQUAL:
+			if ([token isEqual: @"=="])
 				var = [OFNumber numberWithBool:
 				    [first isEqual: second]];
-				break;
-			case TYPE_NOT_EQUAL:
+			else if ([token isEqual: @"!="])
 				var = [OFNumber numberWithBool:
 				    ![first isEqual: second]];
-				break;
-			case TYPE_LESS:
+			else if ([token isEqual: @"<"])
 				var = [OFNumber numberWithBool: [first
 				    compare: second] == OF_ORDERED_ASCENDING];
-				break;
-			case TYPE_LESS_EQUAL:
+			else if ([token isEqual: @"<="])
 				var = [OFNumber numberWithBool: [first
 				    compare: second] != OF_ORDERED_DESCENDING];
-				break;
-			case TYPE_GREATER:
+			else if ([token isEqual: @">"])
 				var = [OFNumber numberWithBool: [first
 				    compare: second] == OF_ORDERED_DESCENDING];
-				break;
-			case TYPE_GREATER_EQUAL:
+			else if ([token isEqual: @">="])
 				var = [OFNumber numberWithBool: [first
 				    compare: second] != OF_ORDERED_ASCENDING];
-				break;
-			case TYPE_ADD:
+			else if ([token isEqual: @"+"])
 				var = [OFNumber numberWithDouble:
 				    [first doubleValue] + [second doubleValue]];
-				break;
-			case TYPE_MODULO:
+			else if ([token isEqual: @"%"])
 				var = [OFNumber numberWithIntMax:
 				    [first intMaxValue] % [second intMaxValue]];
-				break;
-			case TYPE_AND:
+			else if ([token isEqual: @"&&"])
 				var = [OFNumber numberWithBool:
 				    [first boolValue] && [second boolValue]];
-				break;
-			case TYPE_OR:
+			else if ([token isEqual: @"||"])
 				var = [OFNumber numberWithBool:
 				    [first boolValue] || [second boolValue]];
-				break;
-			default:
+			else
 				OF_ENSURE(0);
-			}
 
 			[stack replaceObjectAtIndex: stackSize - 2
 					 withObject: var];
 			[stack removeLastObject];
-
-			break;
-		case TYPE_NOT:
-		case TYPE_IS_REAL:
+		} else if (precedence == 1) {
 			stackSize = stack.count;
 			first = stack.lastObject;
 
-			switch (type) {
-			case TYPE_NOT:
+			if ([token isEqual: @"!"])
 				var = [OFNumber numberWithBool:
 				    ![first boolValue]];
-				break;
-			case TYPE_IS_REAL:
+			else if ([token isEqual: @"is_real"])
 				var = [OFNumber numberWithBool:
 				    [first doubleValue] != [first intMaxValue]];
-				break;
-			default:
+			else
 				OF_ENSURE(0);
-			}
 
 			[stack replaceObjectAtIndex: stackSize - 1
 					 withObject: var];
-			break;
-		}
+		} else
+			[stack addObject: token];
 	}
 
 	if (stack.count != 1)
@@ -315,6 +309,35 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 @implementation OFLocale
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
+
++ (void)initialize
+{
+	OFNumber *one, *two, *three, *four;
+
+	if (self != [OFLocale class])
+		return;
+
+	/* 1 is also used to denote a unary operator. */
+	one = [OFNumber numberWithUnsignedInt: 1];
+	two = [OFNumber numberWithUnsignedInt: 2];
+	three = [OFNumber numberWithUnsignedInt: 3];
+	four = [OFNumber numberWithUnsignedInt: 4];
+
+	operatorPrecedences = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"==", two,
+	    @"!=", two,
+	    @"<", two,
+	    @"<=", two,
+	    @">", two,
+	    @">=", two,
+	    @"+", two,
+	    @"%", two,
+	    @"&&", three,
+	    @"||", four,
+	    @"!", one,
+	    @"is_real", one,
+	    nil];
+}
 
 + (OFLocale *)currentLocale
 {
