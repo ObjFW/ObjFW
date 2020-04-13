@@ -812,7 +812,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				lengthString = [OFString stringWithFormat:
 				    @"%jd", _resumedFrom + _length];
 				lengthString = OF_LOCALIZED(@"size_bytes",
-				    @"%[num] bytes",
+				    [@"["
+				     @"    ["
+				     @"        {'num == 1': '1 byte'},"
+				     @"        {'': '%[num] bytes'}"
+				     @"    ]"
+				     @"]" JSONValue],
 				    @"num", lengthString);
 			}
 		} else

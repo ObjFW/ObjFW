@@ -97,7 +97,7 @@
     "eta_days": "%[num] t ",
     "progress_bytes": [
         [
-            {"num == 1": "1 Byte"},
+            {"num == 1": "1 Byte "},
             {"": "%[num] Bytes"}
         ]
     ]

@@ -546,7 +546,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 #endif
 
 - (OFString *)localizedStringForID: (OFConstantString *)ID
-			  fallback: (OFConstantString *)fallback, ...
+			  fallback: (id)fallback, ...
 {
 	OFString *ret;
 	va_list args;
@@ -561,7 +561,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 }
 
 - (OFString *)localizedStringForID: (OFConstantString *)ID
-			  fallback: (OFConstantString *)fallback
+			  fallback: (id)fallback
 			 arguments: (va_list)arguments
 {
 	OFMutableString *ret = [OFMutableString string];
@@ -592,8 +592,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	}
 
 	if (UTF8String == NULL) {
-		UTF8String = fallback.UTF8String;
-		UTF8StringLength = fallback.UTF8StringLength;
+		if ([fallback isKindOfClass: [OFArray class]])
+			fallback = evaluateArray(fallback, variables);
+
+		UTF8String = [fallback UTF8String];
+		UTF8StringLength = [fallback UTF8StringLength];
 	}
 
 	state = 0;

@@ -183,12 +183,12 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param ID The ID for the localized string
  * @param fallback The fallback to use in case the localized string cannot be
- *		   looked up or is missing
+ *		   looked up or is missing. This can also be an array and use
+ *		   plural scripting, just like with the JSON language files.
  * @return The localized string
  */
 - (OFString *)localizedStringForID: (OFConstantString *)ID
-			  fallback: (OFConstantString *)fallback, ...
-				    OF_SENTINEL;
+			  fallback: (id)fallback, ... OF_SENTINEL;
 
 /*!
  * @brief Returns the localized string for the specified ID, using the fallback
@@ -205,14 +205,15 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param ID The ID for the localized string
  * @param fallback The fallback to use in case the localized string cannot be
- *		   looked up or is missing
+ *		   looked up or is missing. This can also be an array and use
+ *		   plural scripting, just like with the JSON language files.
  * @param arguments A va_list of arguments, consisting of pairs of variable
  *		    names and values to replace in the localized string,
  *		    terminated with `nil`
  * @return The localized string
  */
 - (OFString *)localizedStringForID: (OFConstantString *)ID
-			  fallback: (OFConstantString *)fallback
+			  fallback: (id)fallback
 			 arguments: (va_list)arguments;
 @end
 
