@@ -282,7 +282,13 @@ before_install:
     fi
 
 script:
-  - sed -i 's/-DSTDOUT$/&_SIMPLE/' tests/Makefile
+  # This needs to use ed on macOS, as it has no GNU sed, and sed on Linux, as
+  # some Travis hosts have no ed.
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+            echo -e '%s/-DSTDOUT$/&_SIMPLE/\nwq' | ed -s tests/Makefile;
+    else
+            sed -i 's/-DSTDOUT$/&_SIMPLE/' tests/Makefile;
+    fi
 
   - build() {
             if ! git clean -fxd >/tmp/clean_log 2>&1; then
