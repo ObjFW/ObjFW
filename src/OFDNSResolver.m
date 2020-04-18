@@ -716,6 +716,9 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFUDPSocket *sock;
 	OFString *nameServer;
 
+	[_queries setObject: context
+		     forKey: context->_ID];
+
 	[context->_cancelTimer invalidate];
 	[context->_cancelTimer release];
 	context->_cancelTimer = nil;
@@ -821,9 +824,6 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		       ID: ID
 		 settings: _settings
 		 delegate: delegate] autorelease];
-	[_queries setObject: context
-		     forKey: ID];
-
 	[self of_sendQueryForContext: context
 			 runLoopMode: runLoopMode];
 
@@ -946,8 +946,18 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			@throw [OFInvalidServerReplyException exception];
 
 		/* TC */
-		if (buffer[2] & 0x02)
-			@throw [OFTruncatedDataException exception];
+		if (buffer[2] & 0x02) {
+			of_run_loop_mode_t runLoopMode;
+
+			if (context->_settings->_usesTCP)
+				@throw [OFTruncatedDataException exception];
+
+			context->_settings->_usesTCP = true;
+			runLoopMode = [OFRunLoop currentRunLoop].currentMode;
+			[self of_sendQueryForContext: context
+					 runLoopMode: runLoopMode];
+			return false;
+		}
 
 		/* RCODE */
 		switch (buffer[3] & 0x0F) {
