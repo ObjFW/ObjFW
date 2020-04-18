@@ -313,13 +313,30 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    mailExchange: mailExchange
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RECORD_TYPE_TXT) {
-		OFData *textData = [OFData dataWithItems: &buffer[i]
-						   count: dataLength];
+		OFMutableArray *textStrings = [OFMutableArray array];
+
+		while (dataLength > 0) {
+			uint_fast8_t stringLength = buffer[i++];
+			dataLength--;
+
+			if (stringLength > dataLength)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			[textStrings addObject:
+			    [OFData dataWithItems: buffer + i
+					    count: stringLength]];
+
+			i += stringLength;
+			dataLength -= stringLength;
+		}
+
+		[textStrings makeImmutable];
 
 		return [[[OFTXTDNSResourceRecord alloc]
 		    initWithName: name
 			DNSClass: DNSClass
-			textData: textData
+		     textStrings: textStrings
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RECORD_TYPE_RP) {
 		size_t j = i;
