@@ -346,8 +346,6 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 of_socket_address_t
 of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 {
-	/* TODO: Support IPs that are not in the a.b.c.d format? */
-
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
