@@ -31,6 +31,7 @@
 #import "OFNumber.h"
 #import "OFPair.h"
 #import "OFString.h"
+#import "OFTCPSocket.h"
 #import "OFTimer.h"
 #import "OFUDPSocket.h"
 #import "OFUDPSocket+Private.h"
@@ -48,6 +49,7 @@
 #endif
 
 #define BUFFER_LENGTH OF_DNS_RESOLVER_BUFFER_LENGTH
+#define MAX_DNS_RESPONSE_LENGTH 65536
 
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
@@ -59,13 +61,7 @@
 
 #define CNAME_RECURSION 3
 
-/*
- * TODO:
- *
- *  - Fallback to TCP
- */
-
-@interface OFDNSResolver () <OFUDPSocketDelegate>
+@interface OFDNSResolver () <OFUDPSocketDelegate, OFTCPSocketDelegate>
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context;
 @end
 
@@ -80,6 +76,10 @@
 	id <OFDNSResolverQueryDelegate> _delegate;
 	OFData *_queryData;
 	of_socket_address_t _usedNameServer;
+	OFTCPSocket *_TCPSocket;
+	OFMutableData *_TCPQueryData;
+	void *_TCPBuffer;
+	size_t _responseLength;
 	OFTimer *_cancelTimer;
 }
 
@@ -556,6 +556,8 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_settings release];
 	[_delegate release];
 	[_queryData release];
+	[_TCPSocket release];
+	[_TCPQueryData release];
 	[_cancelTimer release];
 
 	[super dealloc];
@@ -587,6 +589,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	@try {
 		_settings = [[OFDNSResolverSettings alloc] init];
 		_queries = [[OFMutableDictionary alloc] init];
+		_TCPQueries = [[OFMutableDictionary alloc] init];
 
 		[_settings reload];
 	} @catch (id e) {
@@ -609,6 +612,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_IPv6Socket release];
 #endif
 	[_queries release];
+	[_TCPQueries release];
 
 	[super dealloc];
 }
@@ -728,6 +732,21 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	nameServer = [context->_settings->_nameServers
 	    objectAtIndex: context->_nameServersIndex];
+
+	if (context->_settings->_usesTCP) {
+		OF_ENSURE(context->_TCPSocket == nil);
+
+		context->_TCPSocket = [[OFTCPSocket alloc] init];
+		[_TCPQueries setObject: context
+				forKey: context->_TCPSocket];
+
+		context->_TCPSocket.delegate = self;
+		[context->_TCPSocket asyncConnectToHost: nameServer
+						   port: 53
+					    runLoopMode: runLoopMode];
+		return;
+	}
+
 	context->_usedNameServer = of_socket_address_parse_ip(nameServer, 53);
 
 	switch (context->_usedNameServer.family) {
@@ -816,6 +835,16 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	of_run_loop_mode_t runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 	OFDNSQueryFailedException *exception;
 
+	if (context->_TCPSocket != nil) {
+		context->_TCPSocket.delegate = nil;
+		[context->_TCPSocket cancelAsyncRequests];
+
+		[_TCPQueries removeObjectForKey: context->_TCPSocket];
+		[context->_TCPSocket release];
+		context->_TCPSocket = nil;
+		context->_responseLength = 0;
+	}
+
 	if (context->_nameServersIndex + 1 <
 	    context->_settings->_nameServers.count) {
 		context->_nameServersIndex++;
@@ -824,8 +853,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		return;
 	}
 
-	if (context->_attempt < context->_settings->_maxAttempts) {
-		context->_attempt++;
+	if (++context->_attempt < context->_settings->_maxAttempts) {
 		context->_nameServersIndex = 0;
 		[self of_sendQueryForContext: context
 				 runLoopMode: runLoopMode];
@@ -860,21 +888,16 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 				   exception: exception];
 }
 
--	  (bool)socket: (OFUDPSocket *)sock
-  didReceiveIntoBuffer: (void *)buffer_
-		length: (size_t)length
-		sender: (const of_socket_address_t *)sender
-	     exception: (id)exception
+- (bool)of_handleResponseBuffer: (unsigned char *)buffer
+			 length: (size_t)length
+			 sender: (const of_socket_address_t *)sender
 {
-	unsigned char *buffer = buffer_;
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
 	OFDNSResponse *response = nil;
+	id exception = nil;
 	OFNumber *ID;
 	OFDNSResolverContext *context;
-
-	if (exception != nil)
-		return true;
 
 	if (length < 2)
 		/* We can't get the ID to get the context. Ignore packet. */
@@ -886,7 +909,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context == nil)
 		return true;
 
-	if (!of_socket_address_equal(sender, &context->_usedNameServer))
+	if (context->_TCPSocket != nil) {
+		if ([_TCPQueries objectForKey: context->_TCPSocket] != context)
+			return true;
+	} else if (!of_socket_address_equal(sender, &context->_usedNameServer))
 		return true;
 
 	[context->_cancelTimer invalidate];
@@ -1011,6 +1037,148 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			     didPerformQuery: context->_query
 				    response: response
 				   exception: exception];
+
+	return false;
+}
+
+-	  (bool)socket: (OFUDPSocket *)sock
+  didReceiveIntoBuffer: (void *)buffer
+		length: (size_t)length
+		sender: (const of_socket_address_t *)sender
+	     exception: (id)exception
+{
+	if (exception != nil)
+		return true;
+
+	return [self of_handleResponseBuffer: buffer
+				      length: length
+				      sender: sender];
+}
+
+-     (void)socket: (OFTCPSocket *)sock
+  didConnectToHost: (OFString *)host
+	      port: (uint16_t)port
+	 exception: (id)exception
+{
+	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
+
+	OF_ENSURE(context != nil);
+
+	if (exception != nil) {
+		/*
+		 * TODO: Handle error immediately instead of waiting for the
+		 *	 timer to try the next nameserver or to retry.
+		 */
+		[_TCPQueries removeObjectForKey: context->_TCPSocket];
+		[context->_TCPSocket release];
+		context->_TCPSocket = nil;
+		context->_responseLength = 0;
+		return;
+	}
+
+	if (context->_TCPQueryData == nil) {
+		size_t queryDataCount = context->_queryData.count;
+		uint16_t tmp;
+
+		if (queryDataCount > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		context->_TCPQueryData = [[OFMutableData alloc]
+		    initWithCapacity: queryDataCount + 2];
+
+		tmp = OF_BSWAP16_IF_LE(queryDataCount);
+		[context->_TCPQueryData addItems: &tmp
+					   count: sizeof(tmp)];
+		[context->_TCPQueryData addItems: context->_queryData.items
+					   count: queryDataCount];
+	}
+
+	[sock asyncWriteData: context->_TCPQueryData];
+}
+
+- (OFData *)stream: (OFStream *)stream
+      didWriteData: (OFData *)data
+      bytesWritten: (size_t)bytesWritten
+	 exception: (id)exception
+{
+	OFTCPSocket *sock = (OFTCPSocket *)stream;
+	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
+
+	OF_ENSURE(context != nil);
+
+	if (exception != nil) {
+		/*
+		 * TODO: Handle error immediately instead of waiting for the
+		 *	 timer to try the next nameserver or to retry.
+		 */
+		[_TCPQueries removeObjectForKey: context->_TCPSocket];
+		[context->_TCPSocket release];
+		context->_TCPSocket = nil;
+		context->_responseLength = 0;
+		return nil;
+	}
+
+	if (context->_TCPBuffer == nil)
+		context->_TCPBuffer =
+		    [context allocMemoryWithSize: MAX_DNS_RESPONSE_LENGTH];
+
+	[sock asyncReadIntoBuffer: context->_TCPBuffer
+		      exactLength: 2];
+	return nil;
+}
+
+-      (bool)stream: (OFStream *)stream
+  didReadIntoBuffer: (void *)buffer
+	     length: (size_t)length
+	  exception: (id)exception
+{
+	OFTCPSocket *sock = (OFTCPSocket *)stream;
+	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
+
+	OF_ENSURE(context != nil);
+
+	if (exception != nil) {
+		/*
+		 * TODO: Handle error immediately instead of waiting for the
+		 *	 timer to try the next nameserver or to retry.
+		 */
+		goto done;
+	}
+
+	if (context->_responseLength == 0) {
+		unsigned char *ucBuffer = buffer;
+
+		OF_ENSURE(length == 2);
+
+		context->_responseLength = (ucBuffer[0] << 8) | ucBuffer[1];
+
+		if (context->_responseLength > MAX_DNS_RESPONSE_LENGTH)
+			@throw [OFOutOfRangeException exception];
+
+		if (context->_responseLength == 0)
+			goto done;
+
+		[sock asyncReadIntoBuffer: context->_TCPBuffer
+			      exactLength: context->_responseLength];
+		return false;
+	}
+
+	if (length != context->_responseLength)
+		/*
+		 * The connection was closed before we received the entire
+		 * response.
+		 */
+		goto done;
+
+	[self of_handleResponseBuffer: buffer
+			       length: length
+			       sender: NULL];
+
+done:
+	[_TCPQueries removeObjectForKey: context->_TCPSocket];
+	[context->_TCPSocket release];
+	context->_TCPSocket = nil;
+	context->_responseLength = 0;
 
 	return false;
 }
