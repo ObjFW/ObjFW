@@ -747,13 +747,31 @@ OF_ROOT_CLASS
 /*!
  * @brief Initializes an already allocated object.
  *
- * Derived classes may override this, but need to do
+ * Derived classes may override this, but need to use the following pattern:
  * @code
- *   self = [super init]
+ * self = [super init];
+ *
+ * @try {
+ *         // Custom initialization code goes here.
+ * } @catch (id e) {
+ *         [self release];
+ *         @throw e;
+ * }
+ *
+ * return self;
  * @endcode
- * before they do any initialization themselves. @ref init may never return
- * `nil`, instead an exception (for example @ref
- * OFInitializationFailedException) should be thrown.
+ *
+ * With ARC enabled, the following pattern needs to be used instead:
+ * @code
+ * self = [super init];
+ *
+ * // Custom initialization code goes here.
+ *
+ * return self;
+ * @endcode
+ *
+ * @ref init may never return `nil`, instead an exception (for example
+ * @ref OFInitializationFailedException) should be thrown.
  *
  * @return An initialized object
  */

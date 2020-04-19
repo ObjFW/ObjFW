@@ -247,7 +247,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
  * this does not necessarily mean that the stream ended, so you still need to
- * check @ref atEndOfStream.
+ * check @ref atEndOfStream. Do not assume that the stream ended just because a
+ * read returned 0 bytes - some streams do internal processing that has a
+ * result of 0 bytes.
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read at most.
@@ -284,7 +286,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
  * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check @ref atEndOfStream.
+ * need to check @ref atEndOfStream. Do not assume that the stream ended just
+ * because a read returned 0 bytes - some streams do internal processing that
+ * has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -305,7 +309,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
  * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check @ref atEndOfStream.
+ * need to check @ref atEndOfStream. Do not assume that the stream ended just
+ * because a read returned 0 bytes - some streams do internal processing that
+ * has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -369,7 +375,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref atEndOfStream.
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -396,7 +404,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref atEndOfStream.
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!

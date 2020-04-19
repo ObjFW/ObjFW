@@ -24,6 +24,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -84,7 +86,13 @@ extern OFStdIOStream *_Nullable of_stdout;
  */
 extern OFStdIOStream *_Nullable of_stderr;
 
-extern void of_log(OFConstantString *, ...);
+/*!
+ * @brief Log the specified printf-style format to @ref of_stderr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID and
+ * allows `%@` as a printf-style formatted to print objects.
+ */
+extern void of_log(OFConstantString *format, ...);
 #ifdef __cplusplus
 }
 #endif
