@@ -34,6 +34,8 @@
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
 #import "OFOutOfRangeException.h"
@@ -480,8 +482,15 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				hasVersion = true;
 			}
 
-			if ([attribute isEqual: @"encoding"])
-				_encoding = of_string_parse_encoding(value);
+			if ([attribute isEqual: @"encoding"]) {
+				@try {
+					_encoding =
+					    of_string_parse_encoding(value);
+				} @catch (OFInvalidArgumentException *e) {
+					@throw [OFInvalidEncodingException
+					    exception];
+				}
+			}
 
 			last = i + 1;
 			PIState = 0;

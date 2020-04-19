@@ -176,7 +176,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
+ * @ref OFInvalidFormatException is thrown.
  *
  * If the number is too big to fit into an `intmax_t`, an
  * @ref OFOutOfRangeException is thrown.
@@ -189,7 +189,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
+ * @ref OFInvalidFormatException is thrown.
  *
  * If the number is too big to fit into an `uintmax_t`, an
  * @ref OFOutOfRangeException is thrown.
@@ -202,7 +202,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
+ * @ref OFInvalidFormatException is thrown.
  *
  * If the number is too big to fit into an `uintmax_t`, an
  * @ref OFOutOfRangeException is thrown.
@@ -213,7 +213,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief The float value of the string as a float.
  *
  * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
+ * @ref OFInvalidFormatException is thrown.
  */
 @property (readonly, nonatomic) float floatValue;
 
@@ -221,7 +221,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief The double value of the string as a double.
  *
  * If the string contains any non-number characters, an
- * OFInvalidEncodingException is thrown.
+ * @ref OFInvalidFormatException is thrown.
  */
 @property (readonly, nonatomic) double doubleValue;
 

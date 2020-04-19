@@ -190,7 +190,7 @@ of_string_parse_encoding(OFString *string)
 	else if ([string isEqual: @"koi8-u"])
 		encoding = OF_STRING_ENCODING_KOI8_U;
 	else
-		@throw [OFInvalidEncodingException exception];
+		@throw [OFInvalidArgumentException exception];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -27,7 +27,6 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
@@ -65,7 +64,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 					*encoding = of_string_parse_encoding(
 					    [OFString stringWithCString: tmp
 							       encoding: enc]);
-			} @catch (OFInvalidEncodingException *e) {
+			} @catch (OFInvalidArgumentException *e) {
 			}
 		}
 
@@ -433,7 +432,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 				_encoding = of_string_parse_encoding(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
-			} @catch (OFInvalidEncodingException *e) {
+			} @catch (OFInvalidArgumentException *e) {
 				_encoding = OF_STRING_ENCODING_ISO_8859_1;
 			}
 		} else

@@ -37,7 +37,6 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
@@ -300,7 +299,7 @@ writingNotSupported(OFString *type)
 	@try {
 		if (encodingString != nil)
 			encoding = of_string_parse_encoding(encodingString);
-	} @catch (OFInvalidEncodingException *e) {
+	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"invalid_encoding",
 		    @"%[prog]: Invalid encoding: %[encoding]",

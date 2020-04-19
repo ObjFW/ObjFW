@@ -23,7 +23,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 
-#import "OFInvalidEncodingException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -218,7 +218,7 @@ encodingForContentType(OFString *contentType)
 
 	@try {
 		ret = of_string_parse_encoding(charset);
-	} @catch (OFInvalidEncodingException *e) {
+	} @catch (OFInvalidArgumentException *e) {
 		ret = OF_STRING_ENCODING_AUTODETECT;
 	}
 
