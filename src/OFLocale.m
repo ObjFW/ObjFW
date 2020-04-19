@@ -455,17 +455,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		if ((locale = OpenLocale(NULL)) != NULL) {
 			@try {
-				union {
-					uint32_t u32;
-					char c[4];
-				} territory;
+				uint32_t territory;
 				size_t length;
 
-				territory.u32 =
+				territory =
 				    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
-					if (territory.c[length] == 0)
+					if (((char *)territory)[length] == 0)
 						break;
 
 				_territory = [[OFString alloc]

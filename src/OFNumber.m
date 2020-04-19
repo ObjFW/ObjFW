@@ -558,27 +558,15 @@
 			_type = OF_NUMBER_TYPE_INTMAX;
 			_value.intMax = element.decimalValue;
 		} else if ([typeString isEqual: @"float"]) {
-			union {
-				float f;
-				uint32_t u;
-			} f;
-
-			f.u = OF_BSWAP32_IF_LE(
-			    (uint32_t)element.hexadecimalValue);
-
 			_type = OF_NUMBER_TYPE_FLOAT;
-			_value.float_ = OF_BSWAP_FLOAT_IF_LE(f.f);
+			_value.float_ = OF_BSWAP_FLOAT_IF_LE(
+			    OF_INT_TO_FLOAT_RAW(OF_BSWAP32_IF_LE(
+			    (uint32_t)element.hexadecimalValue)));
 		} else if ([typeString isEqual: @"double"]) {
-			union {
-				double d;
-				uint64_t u;
-			} d;
-
-			d.u = OF_BSWAP64_IF_LE(
-			    (uint64_t)element.hexadecimalValue);
-
 			_type = OF_NUMBER_TYPE_DOUBLE;
-			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(d.d);
+			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(
+			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
+			    (uint64_t)element.hexadecimalValue)));
 		} else
 			@throw [OFInvalidArgumentException exception];
 
@@ -1075,18 +1063,15 @@
 	OF_HASH_INIT(hash);
 
 	if (type & OF_NUMBER_TYPE_FLOAT) {
-		union {
-			double d;
-			uint8_t b[sizeof(double)];
-		} d;
+		double d;
 
 		if (isnan(self.doubleValue))
 			return 0;
 
-		d.d = OF_BSWAP_DOUBLE_IF_BE(self.doubleValue);
+		d = OF_BSWAP_DOUBLE_IF_BE(self.doubleValue);
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OF_HASH_ADD(hash, d.b[i]);
+			OF_HASH_ADD(hash, ((char *)&d)[i]);
 	} else if (type & OF_NUMBER_TYPE_SIGNED) {
 		intmax_t v = self.intMaxValue * -1;
 
@@ -1218,38 +1203,25 @@
 	case OF_NUMBER_TYPE_SSIZE:
 	case OF_NUMBER_TYPE_INTMAX:
 	case OF_NUMBER_TYPE_PTRDIFF:
-	case OF_NUMBER_TYPE_INTPTR:;
+	case OF_NUMBER_TYPE_INTPTR:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"signed"];
 		break;
-	case OF_NUMBER_TYPE_FLOAT:;
-		union {
-			float f;
-			uint32_t u;
-		} f;
-
-		f.f = OF_BSWAP_FLOAT_IF_LE(_value.float_);
-
+	case OF_NUMBER_TYPE_FLOAT:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
-		element.stringValue =
-		    [OFString stringWithFormat: @"%08" PRIx32,
-						OF_BSWAP32_IF_LE(f.u)];
+		element.stringValue = [OFString stringWithFormat: @"%08" PRIx32,
+		    OF_BSWAP32_IF_LE(OF_FLOAT_TO_INT_RAW(OF_BSWAP_FLOAT_IF_LE(
+		    _value.float_)))];
 
 		break;
-	case OF_NUMBER_TYPE_DOUBLE:;
-		union {
-			double d;
-			uint64_t u;
-		} d;
-
-		d.d = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
-
+	case OF_NUMBER_TYPE_DOUBLE:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
-		element.stringValue =
-		    [OFString stringWithFormat: @"%016" PRIx64,
-						OF_BSWAP64_IF_LE(d.u)];
+		element.stringValue = [OFString
+		    stringWithFormat: @"%016" PRIx64,
+		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+		    _value.double_)))];
 
 		break;
 	default:

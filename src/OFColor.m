@@ -86,28 +86,25 @@
 - (uint32_t)hash
 {
 	uint32_t hash;
-	union {
-		float f;
-		unsigned char b[sizeof(float)];
-	} f;
+	float tmp;
 
 	OF_HASH_INIT(hash);
 
-	f.f = OF_BSWAP_FLOAT_IF_LE(_red);
+	tmp = OF_BSWAP_FLOAT_IF_LE(_red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, f.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
-	f.f = OF_BSWAP_FLOAT_IF_LE(_green);
+	tmp = OF_BSWAP_FLOAT_IF_LE(_green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, f.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
-	f.f = OF_BSWAP_FLOAT_IF_LE(_blue);
+	tmp = OF_BSWAP_FLOAT_IF_LE(_blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, f.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
-	f.f = OF_BSWAP_FLOAT_IF_LE(_alpha);
+	tmp = OF_BSWAP_FLOAT_IF_LE(_alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, f.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
 	OF_HASH_FINALIZE(hash);
 

@@ -340,18 +340,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		union {
-			double d;
-			uint64_t u;
-		} d;
 
 		if (![element.name isEqual: self.className] ||
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		d.u = (uint64_t)element.hexadecimalValue;
-		d.u = OF_BSWAP64_IF_LE(d.u);
-		_seconds = OF_BSWAP_DOUBLE_IF_LE(d.d);
+		_seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
+		    OF_BSWAP64_IF_LE(element.hexadecimalValue)));
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -383,17 +378,14 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (uint32_t)hash
 {
 	uint32_t hash;
-	union {
-		double d;
-		uint8_t b[sizeof(double)];
-	} d;
-
-	d.d = OF_BSWAP_DOUBLE_IF_BE(_seconds);
+	double tmp;
 
 	OF_HASH_INIT(hash);
 
+	tmp = OF_BSWAP_DOUBLE_IF_BE(_seconds);
+
 	for (size_t i = 0; i < sizeof(double); i++)
-		OF_HASH_ADD(hash, d.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -431,17 +423,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	union {
-		double d;
-		uint64_t u;
-	} d;
 
 	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
 
-	d.d = OF_BSWAP_DOUBLE_IF_LE(_seconds);
-	element.stringValue =
-	    [OFString stringWithFormat: @"%016" PRIx64, OF_BSWAP64_IF_LE(d.u)];
+	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
+	    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+	    _seconds)))];
 
 	[element retain];
 

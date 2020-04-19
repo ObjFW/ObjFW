@@ -100,10 +100,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		if (_mode == OF_TAR_ARCHIVE_MODE_APPEND) {
-			union {
-				char c[1024];
-				uint32_t u32[1024 / sizeof(uint32_t)];
-			} buffer;
+			uint32_t buffer[1024 / sizeof(uint32_t)];
 			bool empty = true;
 
 			if (![_stream isKindOfClass: [OFSeekableStream class]])
@@ -111,11 +108,11 @@
 
 			[(OFSeekableStream *)_stream seekToOffset: -1024
 							   whence: SEEK_END];
-			[_stream readIntoBuffer: buffer.c
+			[_stream readIntoBuffer: buffer
 				    exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
-				if (buffer.u32[i] != 0)
+				if (buffer[i] != 0)
 					empty = false;
 
 			if (!empty)
@@ -168,10 +165,7 @@
 - (OFTarArchiveEntry *)nextEntry
 {
 	OFTarArchiveEntry *entry;
-	union {
-		unsigned char c[512];
-		uint32_t u32[512 / sizeof(uint32_t)];
-	} buffer;
+	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
@@ -189,26 +183,26 @@
 	if (_stream.atEndOfStream)
 		return nil;
 
-	[_stream readIntoBuffer: buffer.c
+	[_stream readIntoBuffer: buffer
 		    exactLength: 512];
 
 	for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
-		if (buffer.u32[i] != 0)
+		if (buffer[i] != 0)
 			empty = false;
 
 	if (empty) {
-		[_stream readIntoBuffer: buffer.c
+		[_stream readIntoBuffer: buffer
 			    exactLength: 512];
 
 		for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
-			if (buffer.u32[i] != 0)
+			if (buffer[i] != 0)
 				@throw [OFInvalidFormatException exception];
 
 		return nil;
 	}
 
 	entry = [[[OFTarArchiveEntry alloc]
-	    of_initWithHeader: buffer.c
+	    of_initWithHeader: (unsigned char *)buffer
 		     encoding: _encoding] autorelease];
 
 	_lastReturnedStream = [[OFTarArchiveFileReadStream alloc]
