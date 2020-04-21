@@ -466,7 +466,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 						break;
 
 				_territory = [[OFString alloc]
-				    initWithCString: territory.c
+				    initWithCString: territory
 					   encoding: _encoding
 					     length: length];
 			} @finally {

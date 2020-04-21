@@ -562,10 +562,10 @@ OF_FLOAT_TO_INT_RAW(float f)
 }
 
 static OF_INLINE float
-OF_INT_TO_FLOAT_RAW(uint32_t u32)
+OF_INT_TO_FLOAT_RAW(uint32_t uInt32)
 {
 	float ret;
-	memcpy(&ret, &u32, 4);
+	memcpy(&ret, &uInt32, 4);
 	return ret;
 }
 
@@ -578,10 +578,10 @@ OF_DOUBLE_TO_INT_RAW(double d)
 }
 
 static OF_INLINE double
-OF_INT_TO_DOUBLE_RAW(uint64_t u64)
+OF_INT_TO_DOUBLE_RAW(uint64_t uInt64)
 {
 	double ret;
-	memcpy(&ret, &u64, 8);
+	memcpy(&ret, &uInt64, 8);
 	return ret;
 }
 
