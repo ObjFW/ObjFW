@@ -169,19 +169,17 @@
 }
 
 - (OFData *)dataForValue: (OFString *)value
-	      subkeyPath: (OFString *)subkeyPath
-		   flags: (DWORD)flags
 		    type: (LPDWORD)type
 {
 	void *pool = objc_autoreleasePoolPush();
-	char stackBuffer[256], *buffer = stackBuffer;
+	BYTE stackBuffer[256], *buffer = stackBuffer;
 	DWORD length = sizeof(stackBuffer);
 	OFMutableData *ret = nil;
 	LSTATUS status;
 
 	for (;;) {
-		status = RegGetValueW(_hKey, subkeyPath.UTF16String,
-		    value.UTF16String, flags, type, buffer, &length);
+		status = RegQueryValueExW(_hKey, value.UTF16String, NULL, type,
+		    buffer, &length);
 
 		switch (status) {
 		case ERROR_SUCCESS:
@@ -215,8 +213,6 @@
 			@throw [OFGetWindowsRegistryValueFailedException
 			    exceptionWithRegistryKey: self
 					       value: value
-					  subkeyPath: subkeyPath
-					       flags: flags
 					      status: status];
 		}
 	}
@@ -243,23 +239,16 @@
 }
 
 - (OFString *)stringForValue: (OFString *)value
-		  subkeyPath: (OFString *)subkeyPath
 {
 	return [self stringForValue: value
-			 subkeyPath: subkeyPath
-			      flags: RRF_RT_REG_SZ
 			       type: NULL];
 }
 
 - (OFString *)stringForValue: (OFString *)value
-		  subkeyPath: (OFString *)subkeyPath
-		       flags: (DWORD)flags
 			type: (LPDWORD)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data = [self dataForValue: value
-			       subkeyPath: subkeyPath
-				    flags: flags
 				     type: type];
 	const of_char16_t *UTF16String;
 	size_t length;

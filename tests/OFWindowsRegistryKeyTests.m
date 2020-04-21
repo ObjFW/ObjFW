@@ -29,7 +29,6 @@ static OFString *module = @"OFWindowsRegistryKey";
 				       count: 6];
 	OFWindowsRegistryKey *softwareKey, *ObjFWKey;
 	DWORD type;
-	OFString *string;
 
 	TEST(@"+[OFWindowsRegistryKey classesRootKey]",
 	    [OFWindowsRegistryKey classesRootKey])
@@ -64,10 +63,8 @@ static OFString *module = @"OFWindowsRegistryKey";
 			   type: REG_BINARY]))
 
 	TEST(@"-[dataForValue:subkeyPath:flags:type:]",
-	    [[softwareKey dataForValue: @"data"
-			    subkeyPath: @"ObjFW"
-				 flags: RRF_RT_REG_BINARY
-				  type: &type] isEqual: data] &&
+	    [[ObjFWKey dataForValue: @"data"
+			       type: &type] isEqual: data] &&
 	    type == REG_BINARY)
 
 	TEST(@"-[setString:forValue:type:]",
@@ -78,17 +75,10 @@ static OFString *module = @"OFWindowsRegistryKey";
 			     type: REG_EXPAND_SZ]))
 
 	TEST(@"-[stringForValue:subkeyPath:]",
-	    [[softwareKey stringForValue: @"string"
-			      subkeyPath: @"ObjFW"] isEqual: @"foobar"] &&
-	    [[softwareKey stringForValue: @"expand"
-			      subkeyPath: @"ObjFW"
-				   flags: RRF_RT_REG_EXPAND_SZ | RRF_NOEXPAND
-				    type: &type] isEqual: @"%PATH%;foo"] &&
-	    type == REG_EXPAND_SZ &&
-	    (string = [ObjFWKey stringForValue: @"expand"
-				    subkeyPath: nil]) &&
-	    ![string isEqual: @"%PATH%;foo"] &&
-	    [string hasSuffix: @";foo"])
+	    [[ObjFWKey stringForValue: @"string"] isEqual: @"foobar"] &&
+	    [[ObjFWKey stringForValue: @"expand"
+				 type: &type] isEqual: @"%PATH%;foo"] &&
+	    type == REG_EXPAND_SZ)
 
 	TEST(@"-[deleteValue:]", R([ObjFWKey deleteValue: @"data"]))
 

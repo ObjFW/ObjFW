@@ -2708,6 +2708,21 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
+#ifdef OF_WINDOWS
+- (OFString *)stringByExpandingWindowsEnvironmentStrings
+{
+	wchar_t buffer[512];
+	size_t length;
+
+	if ((length = ExpandEnvironmentStringsW(self.UTF16String, buffer,
+	    sizeof(buffer))) == 0)
+		return self;
+
+	return [OFString stringWithUTF16String: buffer
+					length: length - 1];
+}
+#endif
+
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {

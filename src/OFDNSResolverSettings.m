@@ -485,11 +485,13 @@ domainFromHostname(void)
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
-	path = [[OFWindowsRegistryKey localMachineKey]
-	    stringForValue: @"DataBasePath"
-		subkeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-			    @"Tcpip\\Parameters"];
-	path = [path stringByAppendingPathComponent: @"hosts"];
+	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
+		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				     @"Tcpip\\Parameters"
+	    securityAndAccessRights: KEY_QUERY_VALUE];
+	path = [[[key stringForValue: @"DataBasePath"]
+	    stringByAppendingPathComponent: @"hosts"]
+	    stringByExpandingWindowsEnvironmentStrings];
 
 	if (path != nil)
 		[self parseHosts: path];

@@ -675,6 +675,15 @@ struct {
 }
 #endif
 
+#ifdef OF_WINDOWS
+- (OFString *)stringByExpandingWindowsEnvironmentStrings
+{
+	[self finishInitialization];
+
+	return self.stringByExpandingWindowsEnvironmentStrings;
+}
+#endif
+
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {

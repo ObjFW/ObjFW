@@ -288,6 +288,14 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OFString *decomposedStringWithCompatibilityMapping;
 # endif
 
+# ifdef OF_WINDOWS
+/*!
+ * @brief The string with the Windows Environment Strings expanded.
+ */
+@property (readonly, nonatomic)
+    OFString *stringByExpandingWindowsEnvironmentStrings;
+# endif
+
 /*!
  * @brief Creates a new OFString.
  *
