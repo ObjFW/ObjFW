@@ -26,6 +26,7 @@
 #import "OFDeleteWindowsRegistryKeyFailedException.h"
 #import "OFDeleteWindowsRegistryValueFailedException.h"
 #import "OFGetWindowsRegistryValueFailedException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -144,7 +145,7 @@
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
-		disposition: (LPDWORD)disposition
+		disposition: (DWORD *)disposition
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -169,7 +170,7 @@
 }
 
 - (OFData *)dataForValue: (OFString *)value
-		    type: (LPDWORD)type
+		    type: (DWORD *)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	BYTE stackBuffer[256], *buffer = stackBuffer;
@@ -245,17 +246,21 @@
 }
 
 - (OFString *)stringForValue: (OFString *)value
-			type: (LPDWORD)type
+			type: (DWORD *)typeOut
 {
 	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
 	OFData *data = [self dataForValue: value
-				     type: type];
+				     type: &type];
 	const of_char16_t *UTF16String;
 	size_t length;
 	OFString *ret;
 
 	if (data == nil)
 		return nil;
+
+	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_LINK)
+		@throw [OFInvalidEncodingException exception];
 
 	UTF16String = data.items;
 	length = data.count;
@@ -278,6 +283,9 @@
 
 	ret = [[OFString alloc] initWithUTF16String: UTF16String
 					     length: length];
+
+	if (typeOut != NULL)
+		*typeOut = type;
 
 	objc_autoreleasePoolPop(pool);
 
