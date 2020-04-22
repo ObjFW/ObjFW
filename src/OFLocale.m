@@ -462,11 +462,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 				    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
-					if (((char *)territory)[length] == 0)
+					if (((char *)&territory)[length] == 0)
 						break;
 
 				_territory = [[OFString alloc]
-				    initWithCString: territory
+				    initWithCString: (char *)&territory
 					   encoding: _encoding
 					     length: length];
 			} @finally {
