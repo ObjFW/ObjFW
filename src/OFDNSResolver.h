@@ -32,9 +32,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDNSResolverSettings;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFIPStreamSocket;
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
-@class OFTCPSocket;
 @class OFUDPSocket;
 
 /*!
@@ -132,8 +132,8 @@ OF_SUBCLASSING_RESTRICTED
 	char _buffer[OF_DNS_RESOLVER_BUFFER_LENGTH];
 	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverContext *)
 	    *_queries;
-	OFMutableDictionary OF_GENERIC(OFTCPSocket *, OFDNSResolverContext *)
-	    *_TCPQueries;
+	OFMutableDictionary OF_GENERIC(OFIPStreamSocket *,
+	    OFDNSResolverContext *) *_TCPQueries;
 }
 
 /*!

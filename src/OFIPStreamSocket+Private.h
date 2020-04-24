@@ -15,11 +15,11 @@
  * file.
  */
 
-#import "OFTCPSocket.h"
+#import "OFIPStreamSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFTCPSocket ()
+@interface OFIPStreamSocket ()
 #ifndef OF_WII
 @property (readonly, nonatomic) int of_socketError;
 #endif
