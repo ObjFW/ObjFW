@@ -131,6 +131,9 @@ extern char **environ;
 		const char *path;
 		char **argv;
 
+		_pid = -1;
+		_readPipe[0] = _writePipe[1] = -1;
+
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];

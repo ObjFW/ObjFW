@@ -119,6 +119,9 @@
 		of_char16_t *argumentsCopy;
 		size_t length;
 
+		_process = INVALID_HANDLE_VALUE;
+		_readPipe[0] = _writePipe[1] = NULL;
+
 		sa.nLength = sizeof(sa);
 		sa.bInheritHandle = TRUE;
 		sa.lpSecurityDescriptor = NULL;
