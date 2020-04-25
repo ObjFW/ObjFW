@@ -21,7 +21,8 @@
 #import "OFString.h"
 
 @implementation OFBindFailedException
-@synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
+@synthesize host = _host, port = _port, packetType = _packetType;
+@synthesize socket = _socket, errNo = _errNo;
 
 + (instancetype)exception
 {
@@ -35,6 +36,17 @@
 {
 	return [[[self alloc] initWithHost: host
 				      port: port
+				    socket: socket
+				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithPort: (uint16_t)port
+		       packetType: (uint8_t)packetType
+			   socket: (id)socket
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPort: port
+				packetType: packetType
 				    socket: socket
 				     errNo: errNo] autorelease];
 }
@@ -64,6 +76,26 @@
 	return self;
 }
 
+- (instancetype)initWithPort: (uint16_t)port
+		  packetType: (uint8_t)packetType
+		      socket: (id)socket
+		       errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_port = port;
+		_packetType = packetType;
+		_socket = [socket retain];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
 	[_host release];
@@ -74,9 +106,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Binding to port %" @PRIu16 @" on host %@ failed in socket of "
-	    @"type %@: %@",
-	    _port, _host, [_socket class], of_strerror(_errNo)];
+	if (_host != nil)
+		return [OFString stringWithFormat:
+		    @"Binding to port %" @PRIu16 @" on host %@ failed in "
+		    @"socket of type %@: %@",
+		    _port, _host, [_socket class], of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Binding to port %" @PRIx16 @" for packet type %" @PRIx8
+		    @" failed in socket of type %@: %@",
+		    _port, _packetType, [_socket class], of_strerror(_errNo)];
 }
 @end

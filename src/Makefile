@@ -145,6 +145,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       ${OFIPXSOCKET_M}			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\

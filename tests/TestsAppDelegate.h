@@ -142,6 +142,10 @@ enum {
 - (void)INIFileTests;
 @end
 
+@interface TestsAppDelegate (OFIPXSocketTests)
+- (void)IPXSocketTests;
+@end
+
 @interface TestsAppDelegate (OFInvocationTests)
 - (void)invocationTests;
 @end

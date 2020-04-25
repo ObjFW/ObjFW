@@ -508,12 +508,37 @@ of_socket_address_parse_ip(OFString *IP, uint16_t port)
 	}
 }
 
+of_socket_address_t
+of_socket_address_ipx(uint32_t network, const unsigned char node[IPX_NODE_LEN],
+    uint16_t port)
+{
+	of_socket_address_t ret;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	ret.length = sizeof(ret.sockaddr.ipx);
+
+#ifdef AF_IPX
+	ret.sockaddr.ipx.sipx_family = AF_IPX;
+#else
+	ret.sockaddr.ipx.sipx_family = AF_UNSPEC;
+#endif
+	network = OF_BSWAP32_IF_LE(network);
+	memcpy(&ret.sockaddr.ipx.sipx_network, &network,
+	    sizeof(ret.sockaddr.ipx.sipx_network));
+	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
+	ret.sockaddr.ipx.sipx_port = OF_BSWAP16_IF_LE(port);
+
+	return ret;
+}
+
 bool
 of_socket_address_equal(const of_socket_address_t *address1,
     const of_socket_address_t *address2)
 {
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
+	const struct sockaddr_ipx *addrIPX1, *addrIPX2;
 
 	if (address1->family != address2->family)
 		return false;
@@ -551,6 +576,24 @@ of_socket_address_equal(const of_socket_address_t *address1,
 		if (memcmp(addrIn6_1->sin6_addr.s6_addr,
 		    addrIn6_2->sin6_addr.s6_addr,
 		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
+			return false;
+
+		break;
+	case OF_SOCKET_ADDRESS_FAMILY_IPX:
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_ipx) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_ipx))
+			@throw [OFInvalidArgumentException exception];
+
+		addrIPX1 = &address1->sockaddr.ipx;
+		addrIPX2 = &address2->sockaddr.ipx;
+
+		if (addrIPX1->sipx_port != addrIPX2->sipx_port)
+			return false;
+		if (memcmp(&addrIPX1->sipx_network, &addrIPX2->sipx_network,
+		    4) != 0)
+			return false;
+		if (memcmp(addrIPX1->sipx_node, addrIPX2->sipx_node,
+		    IPX_NODE_LEN) != 0)
 			return false;
 
 		break;
@@ -598,6 +641,26 @@ of_socket_address_hash(const of_socket_address_t *address)
 		    i < sizeof(address->sockaddr.in6.sin6_addr.s6_addr); i++)
 			OF_HASH_ADD(hash,
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
+
+		break;
+	case OF_SOCKET_ADDRESS_FAMILY_IPX:;
+		unsigned char network[
+		    sizeof(address->sockaddr.ipx.sipx_network)];
+
+		if (address->length < (socklen_t)sizeof(struct sockaddr_ipx))
+			@throw [OFInvalidArgumentException exception];
+
+		OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_port >> 8);
+		OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_port);
+
+		memcpy(network, &address->sockaddr.ipx.sipx_network,
+		    sizeof(network));
+
+		for (size_t i = 0; i < sizeof(network); i++)
+			OF_HASH_ADD(hash, network[i]);
+
+		for (size_t i = 0; i < IPX_NODE_LEN; i++)
+			OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_node[i]);
 
 		break;
 	default:
@@ -732,7 +795,22 @@ of_socket_address_get_port(const of_socket_address_t *address)
 		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
 	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
 		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
+	case OF_SOCKET_ADDRESS_FAMILY_IPX:
+		return OF_BSWAP16_IF_LE(address->sockaddr.ipx.sipx_port);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
+}
+
+void
+of_socket_address_ipx_get(const of_socket_address_t *address, uint32_t *network,
+    unsigned char node[IPX_NODE_LEN], uint16_t *port)
+{
+	if (address->family != OF_SOCKET_ADDRESS_FAMILY_IPX)
+		@throw [OFInvalidArgumentException exception];
+
+	memcpy(network, &address->sockaddr.ipx.sipx_network, sizeof(*network));
+	*network = OF_BSWAP32_IF_LE(*network);
+	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
+	*port = OF_BSWAP16_IF_LE(address->sockaddr.ipx.sipx_port);
 }

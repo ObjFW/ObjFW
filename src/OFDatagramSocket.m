@@ -169,6 +169,11 @@
 		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
 		break;
 #endif
+#ifdef OF_HAVE_IPX
+	case AF_IPX:
+		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		break;
+#endif
 	default:
 		sender->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
 		break;

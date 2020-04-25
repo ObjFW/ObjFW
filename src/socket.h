@@ -34,12 +34,18 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
+#ifdef OF_HAVE_NETIPX_IPX_H
+# include <netipx/ipx.h>
+#endif
 
 #include "platform.h"
 
 #ifdef OF_WINDOWS
 # include <windows.h>
 # include <ws2tcpip.h>
+# ifdef OF_HAVE_IPX
+#  include <wsipx.h>
+# endif
 #endif
 
 /*! @file */
@@ -89,6 +95,8 @@ typedef enum {
 	OF_SOCKET_ADDRESS_FAMILY_IPV4,
 	/** IPv6 */
 	OF_SOCKET_ADDRESS_FAMILY_IPV6,
+	/** IPX */
+	OF_SOCKET_ADDRESS_FAMILY_IPX,
 	/** Any address family */
 	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
 } of_socket_address_family_t;
@@ -103,6 +111,24 @@ struct sockaddr_in6 {
 	} sin6_addr;
 	uint32_t sin6_scope_id;
 };
+#endif
+
+#ifndef OF_HAVE_IPX
+# define IPX_NODE_LEN 6
+struct sockaddr_ipx {
+	sa_family_t sipx_family;
+	uint32_t sipx_network;
+	unsigned char sipx_node[IPX_NODE_LEN];
+	uint16_t sipx_port;
+	uint8_t sipx_type;
+};
+#endif
+#ifdef OF_WINDOWS
+# define IPX_NODE_LEN 6
+# define sipx_family sa_family
+# define sipx_network sa_netnum
+# define sipx_node sa_nodenum
+# define sipx_port sa_socket
 #endif
 
 /*!
@@ -123,6 +149,7 @@ struct OF_BOXABLE of_socket_address_t {
 		struct sockaddr sockaddr;
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
+		struct sockaddr_ipx ipx;
 	} sockaddr;
 	socklen_t length;
 };
@@ -151,7 +178,6 @@ extern of_socket_address_t of_socket_address_parse_ip(
 extern of_socket_address_t of_socket_address_parse_ipv4(
     OFString *IP, uint16_t port);
 
-#ifdef OF_HAVE_IPV6
 /*!
  * @brief Parses the specified IPv6 and port into an of_socket_address_t.
  *
@@ -161,7 +187,16 @@ extern of_socket_address_t of_socket_address_parse_ipv4(
  */
 extern of_socket_address_t of_socket_address_parse_ipv6(
     OFString *IP, uint16_t port);
-#endif
+
+/*!
+ * @brief Creates an IPX address for the specified network, node and port.
+ *
+ * @param network The IPX network
+ * @param node The node in the IPX network
+ * @param port The IPX port (sometimes called socket number) on the node
+ */
+extern of_socket_address_t of_socket_address_ipx(uint32_t network,
+    const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
 
 /*!
  * @brief Compares two of_socket_address_t for equality.
@@ -213,6 +248,18 @@ extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
  */
 extern uint16_t of_socket_address_get_port(
     const of_socket_address_t *_Nonnull address);
+
+/*!
+ * @brief Gets the IPX network, node and port from an IPX address.
+ *
+ * @param address The address on which to get the IPX network, node and port
+ * @param network The IPX network
+ * @param node A buffer to store the node
+ * @param port The IPX port (sometimes called socket number) on the node
+ */
+extern void of_socket_address_ipx_get(
+    const of_socket_address_t *_Nonnull address, uint32_t *_Nonnull network,
+    unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t *_Nonnull port);
 
 extern bool of_socket_init(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)

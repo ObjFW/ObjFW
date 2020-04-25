@@ -1051,7 +1051,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	return false;
 }
 
--	  (bool)socket: (OFUDPSocket *)sock
+-	  (bool)socket: (OFDatagramSocket *)sock
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
 		sender: (const of_socket_address_t *)sender

@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
+@class OFData;
 @class OFDatagramSocket;
 
 #ifdef OF_HAVE_BLOCKS
@@ -84,7 +85,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	     exception: (nullable id)exception;
 
 /*!
- * @brief This which is called when a packet has been sent.
+ * @brief This method is called when a packet has been sent.
  *
  * @param socket The datagram socket which sent a packet
  * @param data The data which was sent

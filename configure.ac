@@ -1330,6 +1330,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADER(netipx/ipx.h, [
+		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
+			[Whether we have netipx/ipx.h])
+	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
@@ -1378,6 +1382,79 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		# include <windows.h>
 		# include <ws2tcpip.h>
 		#endif
+	])
+
+	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
+		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [], [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_NETIPX_IPX_H
+			# include <netipx/ipx.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <wsipx.h>
+			#endif
+		])
+	], [
+		#ifdef _WIN32
+		typedef int BOOL;
+		#endif
+
+		#ifdef OF_HAVE_NETIPX_IPX_H
+		# include <netipx/ipx.h>
+		#endif
+
+		#ifdef _WIN32
+		# ifdef __MINGW32__
+		#  include <_mingw.h>
+		#  ifdef __MINGW64_VERSION_MAJOR
+		#   include <winsock2.h>
+		#  endif
+		# endif
+		# include <windows.h>
+		# include <wsipx.h>
+		#endif
+	])
+	AS_IF([test x"$ac_cv_member_struct_sockaddr_ipx_sipx_network" = x"yes" \
+	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes"], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_SOCKET_H
+			# include <sys/socket.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <wsipx.h>
+			#endif
+
+			#ifdef AF_IPX
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
+			AC_SUBST(OFIPXSOCKET_M, OFIPXSocket.m)
+			AC_SUBST(OFIPXSOCKETTESTS_M, OFIPXSocketTests.m)
+		])
 	])
 
 	AC_CHECK_FUNCS(paccept accept4, break)

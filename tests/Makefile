@@ -18,6 +18,7 @@ SRCS = ForwardingTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
+       ${OFIPXSOCKETTESTS_M}		\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\

@@ -22,24 +22,22 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /*!
- * @protocol OFUDPSocketDelegate OFUDPSocket.h ObjFW/OFUDPSocket.h
+ * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/OFIPXSocket.h
  *
- * @brief A delegate for OFUDPSocket.
+ * @brief A delegate for OFIPXSocket.
  */
-@protocol OFUDPSocketDelegate <OFDatagramSocketDelegate>
+@protocol OFIPXSocketDelegate <OFDatagramSocketDelegate>
 @end
 
 /*!
- * @class OFUDPSocket OFUDPSocket.h ObjFW/OFUDPSocket.h
+ * @class OFIPXSocket OFIPXSocket.h ObjFW/OFIPXSocket.h
  *
- * @brief A class which provides methods to create and use UDP sockets.
+ * @brief A class which provides methods to create and use IPX sockets.
  *
- * Addresses are of type @ref of_socket_address_t. You can use the current
- * thread's @ref OFDNSResolver to create an address for a host / port pair and
- * @ref of_socket_address_ip_string to get the IP string / port pair for an
- * address. If you want to compare two addresses, you can use @ref
- * of_socket_address_equal and you can use @ref of_socket_address_hash to get a
- * hash to use in e.g. @ref OFMapTable.
+ * Addresses are of type @ref of_socket_address_t. You can use
+ * @ref of_socket_address_ipx to create an address or
+ * @ref of_socket_address_ipx_get to get the IPX network, node and port
+ * (somtimes also called socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
@@ -48,10 +46,10 @@ OF_ASSUME_NONNULL_BEGIN
  *	    than one thread at the same time is not thread-safe, even if copy
  *	    was called to create one "instance" for every thread!
  */
-@interface OFUDPSocket: OFDatagramSocket
+@interface OFIPXSocket: OFDatagramSocket
 {
-#ifdef OF_WII
-	uint16_t _port;
+#ifndef OF_WINDOWS
+	uint8_t _packetType;
 #endif
 	OF_RESERVE_IVARS(4)
 }
@@ -63,19 +61,19 @@ OF_ASSUME_NONNULL_BEGIN
  *	 still outstanding.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    id <OFUDPSocketDelegate> delegate;
+    id <OFIPXSocketDelegate> delegate;
 
 /*!
- * @brief Binds the socket to the specified host and port.
+ * @brief Binds the socket to the specified network, node and port with the
+ *	  specified packet type.
  *
- * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for
- *	       IPv6 to bind to all.
- * @param port The port to bind to. If the port is 0, an unused port will be
- *	       chosen, which can be obtained using the return value.
- * @return The port the socket was bound to
+ * @param port The port (sometimes called socket number) to bind to. 0 means to
+ *	       pick one and return it.
+ * @param packetType The packet type to use on the socket
+ * @return The address on which this socket can be reached
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (of_socket_address_t)bindToPort: (uint16_t)port
+		       packetType: (uint8_t)packetType;
 @end
 
 OF_ASSUME_NONNULL_END

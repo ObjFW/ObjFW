@@ -415,6 +415,9 @@ main(int argc, char *argv[])
 	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
+# ifdef OF_HAVE_IPX
+	[self IPXSocketTests];
+# endif
 	[self kernelEventObserverTests];
 #endif
 #ifdef OF_HAVE_THREADS
