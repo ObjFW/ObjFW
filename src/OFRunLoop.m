@@ -162,22 +162,22 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoopUDPReceiveQueueItem: OFRunLoopQueueItem
+@interface OFRunLoopDatagramReceiveQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_udp_socket_async_receive_block_t _block;
+	of_datagram_socket_async_receive_block_t _block;
 # endif
 	void *_buffer;
 	size_t _length;
 }
 @end
 
-@interface OFRunLoopUDPSendQueueItem: OFRunLoopQueueItem
+@interface OFRunLoopDatagramSendQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_udp_socket_async_send_data_block_t _block;
+	of_datagram_socket_async_send_data_block_t _block;
 # endif
 	OFData *_data;
 	of_socket_address_t _receiver;
@@ -772,7 +772,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoopUDPReceiveQueueItem
+@implementation OFRunLoopDatagramReceiveQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -817,7 +817,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoopUDPSendQueueItem
+@implementation OFRunLoopDatagramSendQueueItem
 - (bool)handleObject: (id)object
 {
 	id exception = nil;
@@ -1082,17 +1082,16 @@ static OFRunLoop *mainRunLoop = nil;
 	QUEUE_ITEM
 }
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
-				buffer: (void *)buffer
-				length: (size_t)length
-				  mode: (of_run_loop_mode_t)mode
++ (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)sock
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-				 block: (of_udp_socket_async_receive_block_t)
-					    block
+     block: (of_datagram_socket_async_receive_block_t)block
 # endif
-			      delegate: (id <OFUDPSocketDelegate>)delegate
+  delegate: (id <OFDatagramSocketDelegate>)delegate
 {
-	NEW_READ(OFRunLoopUDPReceiveQueueItem, sock, mode)
+	NEW_READ(OFRunLoopDatagramReceiveQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -1104,17 +1103,16 @@ static OFRunLoop *mainRunLoop = nil;
 	QUEUE_ITEM
 }
 
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
-			       data: (OFData *)data
-			   receiver: (const of_socket_address_t *)receiver
-			       mode: (of_run_loop_mode_t)mode
++ (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
+      data: (OFData *)data
+  receiver: (const of_socket_address_t *)receiver
+      mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			      block: (of_udp_socket_async_send_data_block_t)
-					 block
+     block: (of_datagram_socket_async_send_data_block_t)block
 # endif
-			   delegate: (id <OFUDPSocketDelegate>)delegate
+  delegate: (id <OFDatagramSocketDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoopUDPSendQueueItem, sock, mode)
+	NEW_WRITE(OFRunLoopDatagramSendQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS

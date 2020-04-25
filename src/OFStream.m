@@ -75,19 +75,19 @@
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFStream class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
 	self = [super init];
 
-	_blocking = true;
+	@try {
+		if (self.class == [OFStream class]) {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		}
+
+		_blocking = true;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

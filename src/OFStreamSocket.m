@@ -50,6 +50,25 @@
 	return [[[self alloc] init] autorelease];
 }
 
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		if (self.class == [OFStreamSocket class]) {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		}
+
+		_socket = INVALID_SOCKET;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (bool)lowlevelIsAtEndOfStream
 {
 	if (_socket == INVALID_SOCKET)

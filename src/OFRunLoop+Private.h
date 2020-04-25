@@ -19,7 +19,7 @@
 #import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFTCPSocket.h"
-# import "OFUDPSocket.h"
+# import "OFDatagramSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -97,28 +97,22 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 			     delegate: (nullable id <OFTCPSocketDelegate>)
 					   delegate;
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
-				buffer: (void *)buffer
-				length: (size_t)length
-				  mode: (of_run_loop_mode_t)mode
++ (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-				 block: (nullable
-					    of_udp_socket_async_receive_block_t)
-					    block
+     block: (nullable of_datagram_socket_async_receive_block_t)block
 # endif
-			      delegate: (nullable id <OFUDPSocketDelegate>)
-					    delegate;
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
-			       data: (OFData *)data
-			   receiver: (const of_socket_address_t *)receiver
-			       mode: (of_run_loop_mode_t)mode
+  delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
++ (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
+      data: (OFData *)data
+  receiver: (const of_socket_address_t *)receiver
+      mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			      block: (nullable
-					 of_udp_socket_async_send_data_block_t)
-					 block
+     block: (nullable of_datagram_socket_async_send_data_block_t)block
 # endif
-			   delegate: (nullable id <OFUDPSocketDelegate>)
-					 delegate;
+  delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode;
 #endif
