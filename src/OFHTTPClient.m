@@ -626,7 +626,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 }
 
--     (void)socket: (OFIPStreamSocket *)sock
+-     (void)socket: (OFTCPSocket *)sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
 	 exception: (id)exception
@@ -641,7 +641,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:)])
 		[_client->_delegate client: _client
-			   didCreateSocket: (OFTCPSocket *)sock
+			   didCreateSocket: sock
 				   request: _request];
 
 	[self performSelector: @selector(handleSocket:)

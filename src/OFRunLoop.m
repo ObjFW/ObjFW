@@ -27,8 +27,8 @@
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
-# import "OFIPStreamSocket.h"
-# import "OFIPStreamSocket+Private.h"
+# import "OFTCPSocket.h"
+# import "OFTCPSocket+Private.h"
 #endif
 #import "OFThread.h"
 #ifdef OF_HAVE_THREADS
@@ -157,7 +157,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_ip_stream_socket_async_accept_block_t _block;
+	of_tcp_socket_async_accept_block_t _block;
 # endif
 }
 @end
@@ -735,7 +735,7 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoopAcceptQueueItem
 - (bool)handleObject: (id)object
 {
-	OFIPStreamSocket *acceptedSocket;
+	OFTCPSocket *acceptedSocket;
 	id exception = nil;
 
 	@try {
@@ -1052,9 +1052,10 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-+ (void)of_addAsyncConnectForIPStreamSocket: (OFIPStreamSocket *)stream
-      mode: (of_run_loop_mode_t)mode
-  delegate: (id <OFIPStreamSocketDelegate_Private>)delegate
++ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
+				  mode: (of_run_loop_mode_t)mode
+			      delegate: (id <OFTCPSocketDelegate_Private>)
+					    delegate
 {
 	NEW_WRITE(OFRunLoopConnectQueueItem, stream, mode)
 
@@ -1064,12 +1065,12 @@ static OFRunLoop *mainRunLoop = nil;
 }
 # endif
 
-+ (void)of_addAsyncAcceptForIPStreamSocket: (OFIPStreamSocket *)stream
-      mode: (of_run_loop_mode_t)mode
++ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
+				 mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_ip_stream_socket_async_accept_block_t)block
+				block: (of_tcp_socket_async_accept_block_t)block
 # endif
-  delegate: (id <OFIPStreamSocketDelegate>)delegate
+			     delegate: (id <OFTCPSocketDelegate>)delegate
 {
 	NEW_READ(OFRunLoopAcceptQueueItem, stream, mode)
 

@@ -1065,7 +1065,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 				      sender: sender];
 }
 
--     (void)socket: (OFIPStreamSocket *)sock
+-     (void)socket: (OFTCPSocket *)sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
 	 exception: (id)exception

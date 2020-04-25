@@ -18,15 +18,15 @@
 #import "OFRunLoop.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFIPStreamSocket.h"
+# import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
-@protocol OFIPStreamSocketDelegate_Private <OFObject>
-- (void)of_socketDidConnect: (OFIPStreamSocket *)socket
+@protocol OFTCPSocketDelegate_Private <OFObject>
+- (void)of_socketDidConnect: (OFTCPSocket *)socket
 		  exception: (nullable id)exception;
 @end
 #endif
@@ -83,16 +83,20 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-+ (void)of_addAsyncConnectForIPStreamSocket: (OFIPStreamSocket *)socket
-      mode: (of_run_loop_mode_t)mode
-  delegate: (id <OFIPStreamSocketDelegate_Private>) delegate;
++ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
+				  mode: (of_run_loop_mode_t)mode
+			      delegate: (id <OFTCPSocketDelegate_Private>)
+					    delegate;
 # endif
-+ (void)of_addAsyncAcceptForIPStreamSocket: (OFIPStreamSocket *)socket
-      mode: (of_run_loop_mode_t)mode
++ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
+				 mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable of_ip_stream_socket_async_accept_block_t)block
+				block: (nullable
+					   of_tcp_socket_async_accept_block_t)
+					   block
 # endif
-  delegate: (nullable id <OFIPStreamSocketDelegate>)delegate;
+			     delegate: (nullable id <OFTCPSocketDelegate>)
+					   delegate;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length

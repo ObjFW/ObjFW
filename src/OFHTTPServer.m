@@ -986,8 +986,8 @@ normalizedKey(OFString *key)
 	[acceptedSocket asyncReadLine];
 }
 
--    (bool)socket: (OFIPStreamSocket *)sock
-  didAcceptSocket: (OFIPStreamSocket *)acceptedSocket
+-    (bool)socket: (OFTCPSocket *)sock
+  didAcceptSocket: (OFTCPSocket *)acceptedSocket
 	exception: (id)exception
 {
 	if (exception != nil) {
@@ -1013,7 +1013,7 @@ normalizedKey(OFString *key)
 			waitUntilDone: false];
 	} else
 #endif
-		[self of_handleAcceptedSocket: (OFTCPSocket *)acceptedSocket];
+		[self of_handleAcceptedSocket: acceptedSocket];
 
 	return true;
 }

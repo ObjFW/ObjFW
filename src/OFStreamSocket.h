@@ -35,9 +35,9 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief Returns a new, autoreleased OFStreamSocket.
+ * @brief Returns a new, autoreleased OFTCPSocket.
  *
- * @return A new, autoreleased OFStreamSocket
+ * @return A new, autoreleased OFTCPSocket
  */
 + (instancetype)socket;
 @end
