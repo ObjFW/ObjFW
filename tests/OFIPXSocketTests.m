@@ -38,12 +38,23 @@ static OFString *module = @"OFIPXSocket";
 		    R(address1 = [sock bindToPort: 0
 				       packetType: 0]))
 	} @catch (OFBindFailedException *e) {
-		if (e.errNo != EAFNOSUPPORT)
+		switch (e.errNo) {
+		case EAFNOSUPPORT:
+			[self outputString: @"[OFIPXSocket] "
+					    @"-[bindToPort:packetType:]: "
+					    @"IPX unsupported, skipping tests\n"
+				   inColor: GREEN];
+			break;
+		case EADDRNOTAVAIL:
+			[self outputString: @"[OFIPXSocket] "
+					    @"-[bindToPort:packetType:]: "
+					    @"IPX not configured, skipping "
+					    @"tests\n"
+				   inColor: GREEN];
+			break;
+		default:
 			@throw e;
-
-		[self outputString: @"[OFIPXSocket] -[bindToPort:packetType:]: "
-				    @"IPX unsupported, skipping tests\n"
-			   inColor: GREEN];
+		}
 
 		objc_autoreleasePoolPop(pool);
 		return;
