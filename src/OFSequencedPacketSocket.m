@@ -25,6 +25,7 @@
 #endif
 
 #import "OFSequencedPacketSocket.h"
+#import "OFSequencedPacketSocket+Private.h"
 #import "OFData.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
@@ -87,6 +88,20 @@
 
 	[super dealloc];
 }
+
+#ifndef OF_WII
+- (int)of_socketError
+{
+	int errNo;
+	socklen_t len = sizeof(errNo);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
+	    &len) != 0)
+		return of_socket_errno();
+
+	return errNo;
+}
+#endif
 
 - (id)copy
 {
@@ -418,11 +433,6 @@
 		@throw [OFOutOfRangeException exception];
 
 	return &_remoteAddress;
-}
-
-- (bool)isListening
-{
-	return _listening;
 }
 
 - (void)cancelAsyncRequests

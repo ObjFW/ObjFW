@@ -59,13 +59,13 @@
 
 @interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
 {
-	OFTCPSocket *_socket;
+	OFStreamSocket *_socket;
 	OFHTTPServer *_server;
 	OFHTTPRequest *_request;
 	bool _chunked, _headersSent;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request;
 @end
@@ -73,7 +73,7 @@
 @interface OFHTTPServerConnection: OFObject <OFTCPSocketDelegate>
 {
 @public
-	OFTCPSocket *_socket;
+	OFStreamSocket *_socket;
 	OFHTTPServer *_server;
 	OFTimer *_timer;
 	enum {
@@ -90,7 +90,7 @@
 	OFStream *_requestBody;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
@@ -100,13 +100,13 @@
 
 @interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
 {
-	OFTCPSocket *_socket;
+	OFStreamSocket *_socket;
 	bool _chunked;
 	intmax_t _toRead;
 	bool _atEndOfStream, _setAtEndOfStream;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength;
 @end
@@ -148,7 +148,7 @@ normalizedKey(OFString *key)
 }
 
 @implementation OFHTTPServerResponse
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request
 {
@@ -283,7 +283,7 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServerConnection
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 {
 	self = [super init];
@@ -579,7 +579,7 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServerRequestBodyStream
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength
 {
@@ -976,7 +976,7 @@ normalizedKey(OFString *key)
 #endif
 }
 
-- (void)of_handleAcceptedSocket: (OFTCPSocket *)acceptedSocket
+- (void)of_handleAcceptedSocket: (OFStreamSocket *)acceptedSocket
 {
 	OFHTTPServerConnection *connection = [[[OFHTTPServerConnection alloc]
 	    initWithSocket: acceptedSocket
@@ -986,8 +986,8 @@ normalizedKey(OFString *key)
 	[acceptedSocket asyncReadLine];
 }
 
--    (bool)socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)acceptedSocket
+-    (bool)socket: (OFStreamSocket *)sock
+  didAcceptSocket: (OFStreamSocket *)acceptedSocket
 	exception: (id)exception
 {
 	if (exception != nil) {

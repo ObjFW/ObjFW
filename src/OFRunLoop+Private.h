@@ -20,14 +20,14 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
-# import "OFTCPSocket.h"
+# import "OFStreamSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
-@protocol OFTCPSocketDelegate_Private <OFObject>
-- (void)of_socketDidConnect: (OFTCPSocket *)socket
+@protocol OFRunLoopConnectDelegate <OFObject>
+- (void)of_socketDidConnect: (id)socket
 		  exception: (nullable id)exception;
 @end
 #endif
@@ -84,10 +84,9 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-+ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
-				  mode: (of_run_loop_mode_t)mode
-			      delegate: (id <OFTCPSocketDelegate_Private>)
-					    delegate;
++ (void)of_addAsyncConnectForSocket: (id)socket
+			       mode: (of_run_loop_mode_t)mode
+			   delegate: (id <OFRunLoopConnectDelegate>)delegate;
 # endif
 + (void)of_addAsyncAcceptForSocket: (id)socket
 			      mode: (of_run_loop_mode_t)mode

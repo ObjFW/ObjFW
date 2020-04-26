@@ -29,8 +29,9 @@
 # import "OFKernelEventObserver.h"
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
-# import "OFTCPSocket.h"
-# import "OFTCPSocket+Private.h"
+# import "OFSequencedPacketSocket+Private.h"
+# import "OFStreamSocket.h"
+# import "OFStreamSocket+Private.h"
 #endif
 #import "OFThread.h"
 #ifdef OF_HAVE_THREADS
@@ -769,8 +770,8 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		if ([object isKindOfClass: [OFTCPSocket class]])
-			return ((of_tcp_socket_async_accept_block_t)
+		if ([object isKindOfClass: [OFStreamSocket class]])
+			return ((of_stream_socket_async_accept_block_t)
 			    _block)(object, acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
@@ -1184,12 +1185,11 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-+ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
-				  mode: (of_run_loop_mode_t)mode
-			      delegate: (id <OFTCPSocketDelegate_Private>)
-					    delegate
++ (void)of_addAsyncConnectForSocket: (id)sock
+			       mode: (of_run_loop_mode_t)mode
+			   delegate: (id <OFRunLoopConnectDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoopConnectQueueItem, stream, mode)
+	NEW_WRITE(OFRunLoopConnectQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 

@@ -31,7 +31,6 @@
 #endif
 
 #import "OFTCPSocket.h"
-#import "OFTCPSocket+Private.h"
 #import "OFDate.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
@@ -41,14 +40,11 @@
 #import "OFThread.h"
 #import "OFTimer.h"
 
-#import "OFAcceptFailedException.h"
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFGetOptionFailedException.h"
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFListenFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
@@ -66,8 +62,16 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
+@interface OFTCPSocket ()
+- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo;
+- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo;
+- (void)of_closeSocket;
+@end
+
 @interface OFTCPSocketAsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
-    OFTCPSocketDelegate_Private, OFDNSResolverHostDelegate>
+    OFRunLoopConnectDelegate, OFDNSResolverHostDelegate>
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
@@ -220,7 +224,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 }
 
-- (void)of_socketDidConnect: (OFTCPSocket *)sock
+- (void)of_socketDidConnect: (id)sock
 		  exception: (id)exception
 {
 	if (exception != nil) {
@@ -311,9 +315,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 					  errNo: &errNo]) {
 #if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
 		if (errNo == EINPROGRESS) {
-			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
-							     mode: runLoopMode
-							 delegate: self];
+			[OFRunLoop of_addAsyncConnectForSocket: _socket
+							  mode: runLoopMode
+						      delegate: self];
 			return;
 		} else {
 #endif
@@ -714,20 +718,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_socket = INVALID_SOCKET;
 }
 
-#ifndef OF_WII
-- (int)of_socketError
-{
-	int errNo;
-	socklen_t len = sizeof(errNo);
-
-	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
-	    &len) != 0)
-		return of_socket_errno();
-
-	return errNo;
-}
-#endif
-
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port
 {
@@ -953,136 +943,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 }
 
-- (void)listen
-{
-	[self listenWithBacklog: SOMAXCONN];
-}
-
-- (void)listenWithBacklog: (int)backlog
-{
-	if (_socket == INVALID_SOCKET)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (listen(_socket, backlog) == -1)
-		@throw [OFListenFailedException
-		    exceptionWithSocket: self
-				backlog: backlog
-				  errNo: of_socket_errno()];
-
-	_listening = true;
-}
-
-- (instancetype)accept
-{
-	OFTCPSocket *client = [[[[self class] alloc] init] autorelease];
-#if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
-# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-	int flags;
-# endif
-#endif
-
-	client->_remoteAddress.length =
-	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
-
-#if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
-	if ((client->_socket = paccept(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
-	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
-	    INVALID_SOCKET)
-		@throw [OFAcceptFailedException
-		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
-#elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
-	if ((client->_socket = accept4(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
-	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException
-		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
-#else
-	if ((client->_socket = accept(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
-	    &client->_remoteAddress.length)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException
-		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
-
-# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
-		fcntl(client->_socket, F_SETFD, flags | FD_CLOEXEC);
-# endif
-#endif
-
-	assert(client->_remoteAddress.length <=
-	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
-
-	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
-	case AF_INET:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-		break;
-#ifdef OF_HAVE_IPV6
-	case AF_INET6:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
-		break;
-#endif
-	default:
-		client->_remoteAddress.family =
-		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
-		break;
-	}
-
-	return client;
-}
-
-- (void)asyncAccept
-{
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
-}
-
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-{
-	[OFRunLoop of_addAsyncAcceptForSocket: self
-					 mode: runLoopMode
-					block: NULL
-				     delegate: _delegate];
-}
-
-#ifdef OF_HAVE_BLOCKS
-- (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block
-{
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
-				   block: block];
-}
-
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			     block: (of_tcp_socket_async_accept_block_t)block
-{
-	[OFRunLoop of_addAsyncAcceptForSocket: self
-					 mode: runLoopMode
-					block: block
-				     delegate: nil];
-}
-#endif
-
-- (const of_socket_address_t *)remoteAddress
-{
-	if (_socket == INVALID_SOCKET)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (_remoteAddress.length == 0)
-		@throw [OFInvalidArgumentException exception];
-
-	if (_remoteAddress.length > (socklen_t)sizeof(_remoteAddress.sockaddr))
-		@throw [OFOutOfRangeException exception];
-
-	return &_remoteAddress;
-}
-
-- (bool)isListening
-{
-	return _listening;
-}
-
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 - (void)setKeepAliveEnabled: (bool)enabled
 {
@@ -1111,7 +971,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 #ifndef OF_WII
-- (void)setTCPNoDelayEnabled: (bool)enabled
+- (void)setNoDelayEnabled: (bool)enabled
 {
 	int v = enabled;
 
@@ -1122,7 +982,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  errNo: of_socket_errno()];
 }
 
-- (bool)isTCPNoDelayEnabled
+- (bool)isNoDelayEnabled
 {
 	int v;
 	socklen_t len = sizeof(v);
@@ -1139,10 +999,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)close
 {
-	_listening = false;
-
-	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
-
 #ifdef OF_WII
 	_port = 0;
 #endif

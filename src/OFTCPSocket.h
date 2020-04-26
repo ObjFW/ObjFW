@@ -37,19 +37,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
     id _Nullable exception);
-
-/*!
- * @brief A block which is called when the socket accepted a connection.
- *
- * @param socket The socket which accepted the connection
- * @param acceptedSocket The socket which has been accepted
- * @param exception An exception which occurred while accepting the socket or
- *		    `nil` on success
- * @return A bool whether the same block should be used for the next incoming
- *	   connection
- */
-typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
-    OFTCPSocket *acceptedSocket, id _Nullable exception);
 #endif
 
 /*!
@@ -57,7 +44,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * A delegate for OFTCPSocket.
  */
-@protocol OFTCPSocketDelegate <OFStreamDelegate>
+@protocol OFTCPSocketDelegate <OFStreamSocketDelegate>
 @optional
 /*!
  * @brief A method which is called when a socket connected.
@@ -72,19 +59,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
 	 exception: (nullable id)exception;
-
-/*!
- * @brief A method which is called when a socket accepted a connection.
- *
- * @param socket The socket which accepted the connection
- * @param acceptedSocket The socket which has been accepted
- * @param exception An exception that occurred while accepting, or nil on
- *		    success
- * @return A bool whether to accept the next incoming connection
- */
--    (bool)socket: (OFTCPSocket *)socket
-  didAcceptSocket: (OFTCPSocket *)acceptedSocket
-	exception: (nullable id)exception;
 @end
 
 /*!
@@ -97,8 +71,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  */
 @interface OFTCPSocket: OFStreamSocket
 {
-	bool _listening;
-	of_socket_address_t _remoteAddress;
 	OFString *_Nullable _SOCKS5Host;
 	uint16_t _SOCKS5Port;
 #ifdef OF_WII
@@ -111,18 +83,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 @property (class, nullable, copy, nonatomic) OFString *SOCKS5Host;
 @property (class, nonatomic) uint16_t SOCKS5Port;
 #endif
-
-/*!
- * @brief Whether the socket is a listening socket.
- */
-@property (readonly, nonatomic, getter=isListening) bool listening;
-
-/*!
- * @brief The remote address.
- *
- * @note This only works for accepted sockets!
- */
-@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /*!
@@ -139,7 +99,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * @warning This is not available on the Wii!
  */
-@property (nonatomic, getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;
+@property (nonatomic, getter=isNoDelayEnabled) bool noDelayEnabled;
 #endif
 
 /*!
@@ -256,59 +216,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  */
 - (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port;
-
-/*!
- * @brief Listen on the socket.
- *
- * @param backlog Maximum length for the queue of pending connections.
- */
-- (void)listenWithBacklog: (int)backlog;
-
-/*!
- * @brief Listen on the socket.
- */
-- (void)listen;
-
-/*!
- * @brief Accept an incoming connection.
- *
- * @return An autoreleased OFTCPSocket for the accepted connection.
- */
-- (instancetype)accept;
-
-/*!
- * @brief Asynchronously accept an incoming connection.
- */
-- (void)asyncAccept;
-
-/*!
- * @brief Asynchronously accept an incoming connection.
- *
- * @param runLoopMode The run loop mode in which to perform the async accept
- */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
-
-#ifdef OF_HAVE_BLOCKS
-/*!
- * @brief Asynchronously accept an incoming connection.
- *
- * @param block The block to execute when a new connection has been accepted.
- *		Returns whether the next incoming connection should be accepted
- *		by the specified block as well.
- */
-- (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block;
-
-/*!
- * @brief Asynchronously accept an incoming connection.
- *
- * @param runLoopMode The run loop mode in which to perform the async accept
- * @param block The block to execute when a new connection has been accepted.
- *		Returns whether the next incoming connection should be accepted
- *		by the specified block as well.
- */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			     block: (of_tcp_socket_async_accept_block_t)block;
-#endif
 @end
 
 #ifdef __cplusplus

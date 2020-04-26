@@ -15,20 +15,14 @@
  * file.
  */
 
-#import "OFTCPSocket.h"
+#import "OFSequencedPacketSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFTCPSocket ()
+@interface OFSequencedPacketSocket ()
 #ifndef OF_WII
 @property (readonly, nonatomic) int of_socketError;
 #endif
-
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
-			    errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
-			    errNo: (int *)errNo;
-- (void)of_closeSocket;
 @end
 
 OF_ASSUME_NONNULL_END
