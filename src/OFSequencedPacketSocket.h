@@ -32,34 +32,28 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief A block which is called when a packet has been received.
  *
- * @param socket The sequenced packet socket which received a packet
- * @param buffer The buffer the packet has been written to
  * @param length The length of the packet
  * @param exception An exception which occurred while receiving or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
-typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(
-    OFSequencedPacketSocket *_Nonnull socket, void *_Nonnull buffer,
-    size_t length, id _Nullable exception);
+typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(size_t length,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when a packet has been sent.
  *
- * @param socket The sequenced packet socket which sent a packet
  * @param data The data which was sent
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_sequenced_packet_socket_async_send_data_block_t)(
-    OFSequencedPacketSocket *_Nonnull socket, OFData *_Nonnull data,
-    id _Nullable exception);
+    OFData *_Nonnull data, id _Nullable exception);
 
 /*!
  * @brief A block which is called when the socket accepted a connection.
  *
- * @param socket The socket which accepted the connection
  * @param acceptedSocket The socket which has been accepted
  * @param exception An exception which occurred while accepting the socket or
  *		    `nil` on success
@@ -67,8 +61,7 @@ typedef OFData *_Nullable (^of_sequenced_packet_socket_async_send_data_block_t)(
  *	   connection
  */
 typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
-    OFSequencedPacketSocket *socket, OFSequencedPacketSocket *acceptedSocket,
-    id _Nullable exception);
+    OFSequencedPacketSocket *acceptedSocket, id _Nullable exception);
 #endif
 
 /*!

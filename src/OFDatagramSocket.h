@@ -32,8 +32,6 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief A block which is called when a packet has been received.
  *
- * @param socket The datagram socket which received a packet
- * @param buffer The buffer the packet has been written to
  * @param length The length of the packet
  * @param sender The address of the sender of the packet
  * @param exception An exception which occurred while receiving or `nil` on
@@ -41,13 +39,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^of_datagram_socket_async_receive_block_t)(
-    OFDatagramSocket *_Nonnull socket, void *_Nonnull buffer, size_t length,
-    const of_socket_address_t *_Nonnull sender, id _Nullable exception);
+    size_t length, const of_socket_address_t *_Nonnull sender,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when a packet has been sent.
  *
- * @param socket The datagram socket which sent a packet
  * @param data The data which was sent
  * @param receiver The receiver for the packet
  * @param exception An exception which occurred while reading or `nil` on
@@ -55,8 +52,8 @@ typedef bool (^of_datagram_socket_async_receive_block_t)(
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
-    OFDatagramSocket *_Nonnull socket, OFData *_Nonnull data,
-    const of_socket_address_t *_Nonnull receiver, id _Nullable exception);
+    OFData *_Nonnull data, const of_socket_address_t *_Nonnull receiver,
+    id _Nullable exception);
 #endif
 
 /*!

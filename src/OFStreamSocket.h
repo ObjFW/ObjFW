@@ -29,14 +29,13 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief A block which is called when the socket accepted a connection.
  *
- * @param socket The socket which accepted the connection
  * @param acceptedSocket The socket which has been accepted
  * @param exception An exception which occurred while accepting the socket or
  *		    `nil` on success
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
-typedef bool (^of_stream_socket_async_accept_block_t)(OFStreamSocket *socket,
+typedef bool (^of_stream_socket_async_accept_block_t)(
     OFStreamSocket *acceptedSocket, id _Nullable exception);
 #endif
 

@@ -31,12 +31,10 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief A block which is called when the socket connected.
  *
- * @param socket The socket which connected
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
-    id _Nullable exception);
+typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
 /*!

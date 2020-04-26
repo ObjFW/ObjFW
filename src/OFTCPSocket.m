@@ -208,7 +208,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		_block(_socket, _exception);
+		_block(_exception);
 	else {
 #endif
 		_socket.delegate = _delegate;

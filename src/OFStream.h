@@ -43,29 +43,26 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A block which is called when data was read asynchronously from a
  *	  stream.
  *
- * @param stream The stream on which data was read
- * @param buffer A buffer with the data that has been read
  * @param length The length of the data that has been read
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(OFStream *_Nonnull stream,
-    void *_Nonnull buffer, size_t length, id _Nullable exception);
+typedef bool (^of_stream_async_read_block_t)(size_t length,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read asynchronously from a
  *	  stream.
  *
- * @param stream The stream on which a line was read
  * @param line The line which has been read or `nil` when the end of stream
  *	       occurred
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OFStream *_Nonnull stream,
-    OFString *_Nullable line, id _Nullable exception);
+typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when data was written asynchronously to a
@@ -80,8 +77,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *_Nonnull stream,
  * @return The data to repeat the write with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OFStream *_Nonnull stream, OFData *_Nonnull data,
-    size_t bytesWritten, id _Nullable exception);
+    OFData *_Nonnull data, size_t bytesWritten, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a string was written asynchronously to a
@@ -91,14 +87,12 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
- * @param encoding The encoding in which the string was written
  * @param exception An exception which occurred while writing or `nil` on
  *		    success
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
-    OFStream *_Nonnull stream, OFString *_Nonnull string,
-    of_string_encoding_t encoding, size_t bytesWritten, id _Nullable exception);
+    OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
 #endif
 
 /*!

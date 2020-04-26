@@ -442,7 +442,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, _buffer, length, exception);
+		return _block(length, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -490,7 +490,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		if (!_block(object, _buffer, _readLength, exception))
+		if (!_block(_readLength, exception))
 			return false;
 
 		_readLength = 0;
@@ -542,7 +542,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, line, exception);
+		return _block(line, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -592,7 +592,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(object, _data, _writtenLength, exception);
+		newData = _block(_data, _writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -664,8 +664,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newString = _block(object, _string, _encoding, _writtenLength,
-		    exception);
+		newString = _block(_string, _writtenLength, exception);
 
 		if (newString == nil)
 			return false;
@@ -772,12 +771,12 @@ static OFRunLoop *mainRunLoop = nil;
 	if (_block != NULL) {
 		if ([object isKindOfClass: [OFStreamSocket class]])
 			return ((of_stream_socket_async_accept_block_t)
-			    _block)(object, acceptedSocket, exception);
+			    _block)(acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
 			return
 			    ((of_sequenced_packet_socket_async_accept_block_t)
-			    _block)(object, acceptedSocket, exception);
+			    _block)(acceptedSocket, exception);
 		else
 			OF_ENSURE(0);
 	} else {
@@ -822,7 +821,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, _buffer, length, &address, exception);
+		return _block(length, &address, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector: @selector(
@@ -865,7 +864,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(object, _data, &_receiver, exception);
+		newData = _block(_data, &_receiver, exception);
 
 		if (newData == nil)
 			return false;
@@ -926,7 +925,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, _buffer, length, exception);
+		return _block(length, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector: @selector(
@@ -967,7 +966,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(object, _data, exception);
+		newData = _block(_data, exception);
 
 		if (newData == nil)
 			return false;
