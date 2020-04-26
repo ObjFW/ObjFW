@@ -245,16 +245,24 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
             case "$TRAVIS_CPU_ARCH" in
                     amd64 | s390x)
-                            gobjc_pkg="gobjc-multilib";
+                            pkgs="gobjc-multilib";
                             ;;
                     *)
-                            gobjc_pkg="gobjc";
+                            pkgs="gobjc";
                             ;;
             esac;
 
-            if ! sudo apt-get -qq install -y $gobjc_pkg >/tmp/apt_log 2>&1; then
+            if grep precise /etc/lsb-release >/dev/null; then
+                    pkgs="$pkgs ipx";
+            fi;
+
+            if ! sudo apt-get -qq install -y $pkgs >/tmp/apt_log 2>&1; then
                     cat /tmp/apt_log;
                     exit 1;
+            fi;
+
+            if grep precise /etc/lsb-release >/dev/null; then
+                    sudo ipx_internal_net add 1234 123456;
             fi;
     fi
 
