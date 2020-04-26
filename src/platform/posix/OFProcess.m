@@ -377,4 +377,17 @@ extern char **environ;
 
 	[super close];
 }
+
+- (int)waitForTermination
+{
+	if (_readPipe[0] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_pid != -1) {
+		waitpid(_pid, &_status, 0);
+		_pid = -1;
+	}
+
+	return WEXITSTATUS(_status);
+}
 @end

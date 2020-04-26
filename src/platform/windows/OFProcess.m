@@ -348,4 +348,26 @@
 
 	[super close];
 }
+
+- (int)waitForTermination
+{
+	if (_readPipe[0] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_process != INVALID_HANDLE_VALUE) {
+		DWORD exitCode;
+
+		WaitForSingleObject(_process, INFINITE);
+
+		if (GetExitCodeProcess(_process, &exitCode))
+			_status = exitCode;
+		else
+			_status = GetLastError();
+
+		CloseHandle(_process);
+		_process = INVALID_HANDLE_VALUE;
+	}
+
+	return _status;
+}
 @end
