@@ -131,7 +131,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
- *	 still outstanding.
+ *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFDatagramSocketDelegate> delegate;

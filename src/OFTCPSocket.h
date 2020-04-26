@@ -156,7 +156,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
- *	 still outstanding.
+ *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFTCPSocketDelegate> delegate;

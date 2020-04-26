@@ -61,8 +61,10 @@
 	_blocking = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+	/* {} needed to avoid warning with Clang 10 if next #if is false. */
+	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1) {
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+	}
 #endif
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)

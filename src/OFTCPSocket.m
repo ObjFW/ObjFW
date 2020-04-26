@@ -1041,12 +1041,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
 {
-	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
-					    mode: runLoopMode
-# ifdef OF_HAVE_BLOCKS
-					   block: NULL
-# endif
-					delegate: _delegate];
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: NULL
+				     delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -1059,10 +1057,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
 			     block: (of_tcp_socket_async_accept_block_t)block
 {
-	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
-					    mode: runLoopMode
-					   block: block
-					delegate: nil];
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: block
+				     delegate: nil];
 }
 #endif
 

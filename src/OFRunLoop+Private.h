@@ -18,8 +18,9 @@
 #import "OFRunLoop.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFTCPSocket.h"
 # import "OFDatagramSocket.h"
+# import "OFSequencedPacketSocket.h"
+# import "OFTCPSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -88,15 +89,10 @@ OF_ASSUME_NONNULL_BEGIN
 			      delegate: (id <OFTCPSocketDelegate_Private>)
 					    delegate;
 # endif
-+ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
-				 mode: (of_run_loop_mode_t)mode
-# ifdef OF_HAVE_BLOCKS
-				block: (nullable
-					   of_tcp_socket_async_accept_block_t)
-					   block
-# endif
-			     delegate: (nullable id <OFTCPSocketDelegate>)
-					   delegate;
++ (void)of_addAsyncAcceptForSocket: (id)socket
+			      mode: (of_run_loop_mode_t)mode
+			     block: (nullable id)block
+			  delegate: (nullable id)delegate;
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
     buffer: (void *)buffer
     length: (size_t)length
@@ -113,6 +109,23 @@ OF_ASSUME_NONNULL_BEGIN
      block: (nullable of_datagram_socket_async_send_data_block_t)block
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
++ (void)of_addAsyncReceiveForSequencedPacketSocket:
+					       (OFSequencedPacketSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_sequenced_packet_socket_async_receive_block_t)block
+# endif
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>) delegate;
++ (void)of_addAsyncSendForSequencedPacketSocket:
+					       (OFSequencedPacketSocket *)socket
+      data: (OFData *)data
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_sequenced_packet_socket_async_send_data_block_t)block
+# endif
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode;
 #endif

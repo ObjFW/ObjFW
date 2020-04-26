@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
- *	 still outstanding.
+ *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFUDPSocketDelegate> delegate;

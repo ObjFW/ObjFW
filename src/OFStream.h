@@ -235,7 +235,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @brief The delegate for asynchronous operations on the stream.
  *
  * @note The delegate is retained for as long as asynchronous operations are
- *	 still outstanding.
+ *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFStreamDelegate> delegate;

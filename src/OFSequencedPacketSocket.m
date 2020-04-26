@@ -17,18 +17,22 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
 
-#import "OFDatagramSocket.h"
+#import "OFSequencedPacketSocket.h"
 #import "OFData.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 
+#import "OFAcceptFailedException.h"
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFListenFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -38,12 +42,12 @@
 #import "socket.h"
 #import "socket_helpers.h"
 
-@implementation OFDatagramSocket
-@synthesize delegate = _delegate;
+@implementation OFSequencedPacketSocket
+@synthesize listening = _listening, delegate = _delegate;
 
 + (void)initialize
 {
-	if (self != [OFDatagramSocket class])
+	if (self != [OFSequencedPacketSocket class])
 		return;
 
 	if (!of_socket_init())
@@ -61,7 +65,7 @@
 	self = [super init];
 
 	@try {
-		if (self.class == [OFDatagramSocket class]) {
+		if (self.class == [OFSequencedPacketSocket class]) {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
 		}
@@ -129,18 +133,14 @@
 
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_socket_address_t *)sender
 {
 	ssize_t ret;
 
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	sender->length = (socklen_t)sizeof(sender->sockaddr);
-
 #ifndef OF_WINDOWS
-	if ((ret = recvfrom(_socket, buffer, length, 0,
-	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
+	if ((ret = recv(_socket, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -149,32 +149,12 @@
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
-	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
+	if ((ret = recv(_socket, buffer, (int)length, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: of_socket_errno()];
 #endif
-
-	switch (sender->sockaddr.sockaddr.sa_family) {
-	case AF_INET:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-		break;
-#ifdef OF_HAVE_IPV6
-	case AF_INET6:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
-		break;
-#endif
-#ifdef OF_HAVE_IPX
-	case AF_IPX:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPX;
-		break;
-#endif
-	default:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
-		break;
-	}
 
 	return ret;
 }
@@ -191,20 +171,22 @@
 			length: (size_t)length
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
-	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
-						buffer: buffer
-						length: length
-						  mode: runLoopMode
+	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
+						       buffer: buffer
+						       length: length
+							 mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-						 block: NULL
+							block: NULL
 # endif
-					      delegate: _delegate];
+						     delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length
-			 block: (of_datagram_socket_async_receive_block_t)block
+- (void)
+    asyncReceiveIntoBuffer: (void *)buffer
+		    length: (size_t)length
+		     block: (of_sequenced_packet_socket_async_receive_block_t)
+				block
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
@@ -212,23 +194,24 @@
 			       block: block];
 }
 
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			 block: (of_datagram_socket_async_receive_block_t)block
+- (void)
+    asyncReceiveIntoBuffer: (void *)buffer
+		    length: (size_t)length
+	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+		     block: (of_sequenced_packet_socket_async_receive_block_t)
+				block
 {
-	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
-						buffer: buffer
-						length: length
-						  mode: runLoopMode
-						 block: block
-					      delegate: nil];
+	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
+						       buffer: buffer
+						       length: length
+							 mode: runLoopMode
+							block: block
+						     delegate: nil];
 }
 #endif
 
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -239,9 +222,7 @@
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
-	    (struct sockaddr *)&receiver->sockaddr.sockaddr,
-	    receiver->length)) < 0)
+	if ((bytesWritten = send(_socket, (void *)buffer, length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -253,8 +234,7 @@
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = sendto(_socket, buffer, (int)length, 0,
-	    &receiver->sockaddr.sockaddr, receiver->length)) < 0)
+	if ((bytesWritten = send(_socket, buffer, (int)length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -270,51 +250,180 @@
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
 {
 	[self asyncSendData: data
-		   receiver: receiver
 		runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
-	[OFRunLoop of_addAsyncSendForDatagramSocket: self
-					       data: data
-					   receiver: receiver
-					       mode: runLoopMode
+	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
+						      data: data
+						      mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					      block: NULL
+						     block: NULL
 # endif
-					   delegate: _delegate];
+						  delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-		block: (of_datagram_socket_async_send_data_block_t)block
+		block: (of_sequenced_packet_socket_async_send_data_block_t)block
 {
 	[self asyncSendData: data
-		   receiver: receiver
 		runLoopMode: of_run_loop_mode_default
 		      block: block];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_datagram_socket_async_send_data_block_t)block
+		block: (of_sequenced_packet_socket_async_send_data_block_t)block
 {
-	[OFRunLoop of_addAsyncSendForDatagramSocket: self
-					       data: data
-					   receiver: receiver
-					       mode: runLoopMode
-					      block: block
-					   delegate: nil];
+	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
+						      data: data
+						      mode: runLoopMode
+						     block: block
+						  delegate: nil];
 }
 #endif
+
+- (void)listen
+{
+	[self listenWithBacklog: SOMAXCONN];
+}
+
+- (void)listenWithBacklog: (int)backlog
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (listen(_socket, backlog) == -1)
+		@throw [OFListenFailedException
+		    exceptionWithSocket: self
+				backlog: backlog
+				  errNo: of_socket_errno()];
+
+	_listening = true;
+}
+
+- (instancetype)accept
+{
+	OFSequencedPacketSocket *client =
+	    [[[[self class] alloc] init] autorelease];
+#if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
+# endif
+#endif
+
+	client->_remoteAddress.length =
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
+
+#if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = paccept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
+	    INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+#elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = accept4(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+#else
+	if ((client->_socket = accept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
+		fcntl(client->_socket, F_SETFD, flags | FD_CLOEXEC);
+# endif
+#endif
+
+	assert(client->_remoteAddress.length <=
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
+
+	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
+	case AF_INET:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		break;
+#ifdef OF_HAVE_IPV6
+	case AF_INET6:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		break;
+#endif
+#ifdef OF_HAVE_IPX
+	case AF_IPX:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		break;
+#endif
+	default:
+		client->_remoteAddress.family =
+		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		break;
+	}
+
+	return client;
+}
+
+- (void)asyncAccept
+{
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+{
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: NULL
+				     delegate: _delegate];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncAcceptWithBlock: (of_sequenced_packet_socket_async_accept_block_t)
+				  block
+{
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
+				   block: block];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+    block: (of_sequenced_packet_socket_async_accept_block_t)block
+{
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: block
+				     delegate: nil];
+}
+#endif
+
+- (const of_socket_address_t *)remoteAddress
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_remoteAddress.length == 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (_remoteAddress.length > (socklen_t)sizeof(_remoteAddress.sockaddr))
+		@throw [OFOutOfRangeException exception];
+
+	return &_remoteAddress;
+}
+
+- (bool)isListening
+{
+	return _listening;
+}
 
 - (void)cancelAsyncRequests
 {
@@ -356,6 +465,9 @@
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
+
+	_listening = false;
+	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;

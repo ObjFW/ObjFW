@@ -92,10 +92,10 @@
 			requestedLength: length
 				  errNo: of_socket_errno()];
 #else
-	if (length > UINT_MAX)
+	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = recv(_socket, buffer, (unsigned int)length, 0)) < 0)
+	if ((ret = recv(_socket, buffer, (int)length, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
