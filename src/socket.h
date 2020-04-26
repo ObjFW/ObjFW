@@ -250,16 +250,42 @@ extern uint16_t of_socket_address_get_port(
     const of_socket_address_t *_Nonnull address);
 
 /*!
- * @brief Gets the IPX network, node and port from an IPX address.
+ * @brief Sets the IPX network of the specified of_socket_address_t.
  *
- * @param address The address on which to get the IPX network, node and port
- * @param network The IPX network
- * @param node A buffer to store the node
- * @param port The IPX port (sometimes called socket number) on the node
+ * @param address The address on which to set the IPX network
+ * @param network The IPX network to set on the address
  */
-extern void of_socket_address_ipx_get(
-    const of_socket_address_t *_Nonnull address, uint32_t *_Nonnull network,
-    unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t *_Nonnull port);
+extern void of_socket_address_set_ipx_network(
+    of_socket_address_t *_Nonnull address, uint32_t network);
+
+/*!
+ * @brief Returns the IPX network of the specified of_socket_address_t.
+ *
+ * @param address The address on which to get the IPX network
+ * @return The IPX network of the address
+ */
+extern uint32_t of_socket_address_get_ipx_network(
+    const of_socket_address_t *_Nonnull address);
+
+/*!
+ * @brief Sets the IPX node of the specified of_socket_address_t.
+ *
+ * @param address The address on which to set the IPX node
+ * @param node The IPX node to set on the address
+ */
+extern void of_socket_address_set_ipx_node(
+    of_socket_address_t *_Nonnull address,
+    const unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/*!
+ * @brief Gets the IPX node of the specified of_socket_address_t.
+ *
+ * @param address The address on which to get the IPX node
+ * @param node A byte array to store the IPX node of the address
+ */
+extern void of_socket_address_get_ipx_node(
+    const of_socket_address_t *_Nonnull address,
+    unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 extern bool of_socket_init(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
