@@ -31,23 +31,23 @@
 
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
-			   socket: (id)socket
+			   socket: (id)sock
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithHost: host
 				      port: port
-				    socket: socket
+				    socket: sock
 				     errNo: errNo] autorelease];
 }
 
 + (instancetype)exceptionWithPort: (uint16_t)port
 		       packetType: (uint8_t)packetType
-			   socket: (id)socket
+			   socket: (id)sock
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPort: port
 				packetType: packetType
-				    socket: socket
+				    socket: sock
 				     errNo: errNo] autorelease];
 }
 
@@ -58,7 +58,7 @@
 
 - (instancetype)initWithHost: (OFString *)host
 			port: (uint16_t)port
-		      socket: (id)socket
+		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
@@ -66,7 +66,7 @@
 	@try {
 		_host = [host copy];
 		_port = port;
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -78,7 +78,7 @@
 
 - (instancetype)initWithPort: (uint16_t)port
 		  packetType: (uint8_t)packetType
-		      socket: (id)socket
+		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
@@ -86,7 +86,7 @@
 	@try {
 		_port = port;
 		_packetType = packetType;
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
