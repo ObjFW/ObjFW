@@ -192,7 +192,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 {
 	bool _blocking;
 	id _Nullable _delegate;
-#if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
+#ifndef OF_SEEKABLE_STREAM_M
 @private
 #endif
 	char *_Nullable _readBuffer, *_Nullable _readBufferMemory;

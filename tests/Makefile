@@ -18,7 +18,6 @@ SRCS = ForwardingTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
-       ${OFIPXSOCKETTESTS_M}		\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
@@ -60,7 +59,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OFHTTPCLIENTTESTS_M}		\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
+	       ${OFIPXSOCKETTESTS_M}		\
 	       OFKernelEventObserverTests.m	\
+	       ${OFSPXSOCKETTESTS_M}		\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       SocketTests.m

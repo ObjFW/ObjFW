@@ -15,7 +15,6 @@
  * file.
  */
 
-#define OF_TCP_SOCKET_M
 #define __NO_EXT_QNX
 
 #include "config.h"
@@ -103,15 +102,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			  port: (uint16_t)port
 		    SOCKS5Host: (OFString *)SOCKS5Host
 		    SOCKS5Port: (uint16_t)SOCKS5Port
-		      delegate: (id <OFTCPSocketDelegate>)delegate;
+		      delegate: (id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			  host: (OFString *)host
-			  port: (uint16_t)port
-		    SOCKS5Host: (OFString *)SOCKS5Host
-		    SOCKS5Port: (uint16_t)SOCKS5Port
-			 block: (of_tcp_socket_async_connect_block_t)block;
+			 block: (of_tcp_socket_async_connect_block_t)block
 #endif
+;
 - (void)didConnect;
 - (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 - (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
@@ -133,6 +128,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    SOCKS5Host: (OFString *)SOCKS5Host
 		    SOCKS5Port: (uint16_t)SOCKS5Port
 		      delegate: (id <OFTCPSocketDelegate>)delegate
+#ifdef OF_HAVE_BLOCKS
+			 block: (of_tcp_socket_async_connect_block_t)block
+#endif
 {
 	self = [super init];
 
@@ -143,6 +141,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_SOCKS5Host = [SOCKS5Host copy];
 		_SOCKS5Port = SOCKS5Port;
 		_delegate = [delegate retain];
+#ifdef OF_HAVE_BLOCKS
+		_block = [block copy];
+#endif
 
 		_socket.delegate = self;
 	} @catch (id e) {
@@ -152,32 +153,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	return self;
 }
-
-#ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			  host: (OFString *)host
-			  port: (uint16_t)port
-		    SOCKS5Host: (OFString *)SOCKS5Host
-		    SOCKS5Port: (uint16_t)SOCKS5Port
-			 block: (of_tcp_socket_async_connect_block_t)block
-{
-	self = [super init];
-
-	@try {
-		_socket = [sock retain];
-		_host = [host copy];
-		_port = port;
-		_SOCKS5Host = [SOCKS5Host copy];
-		_SOCKS5Port = SOCKS5Port;
-		_block = [block copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#endif
 
 - (void)dealloc
 {
@@ -266,6 +241,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[self sendSOCKS5Request];
 	else
 		[self didConnect];
+}
+
+- (id)of_connectionFailedExceptionForErrNo: (int)errNo
+{
+	return [OFConnectionFailedException exceptionWithHost: _host
+							 port: _port
+						       socket: _socket
+							errNo: errNo];
 }
 
 - (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
@@ -703,7 +686,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (connect(_socket, (struct sockaddr *)&address->sockaddr.sockaddr,
+	if (connect(_socket, &address->sockaddr.sockaddr,
 	    address->length) != 0) {
 		*errNo = of_socket_errno();
 		return false;
@@ -768,8 +751,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    port: port
 		      SOCKS5Host: _SOCKS5Host
 		      SOCKS5Port: _SOCKS5Port
-			delegate: _delegate] autorelease]
-	    startWithRunLoopMode: runLoopMode];
+			delegate: _delegate
+#ifdef OF_HAVE_BLOCKS
+			   block: NULL
+#endif
+	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -798,6 +784,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    port: port
 		      SOCKS5Host: _SOCKS5Host
 		      SOCKS5Port: _SOCKS5Port
+			delegate: nil
 			   block: block] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 

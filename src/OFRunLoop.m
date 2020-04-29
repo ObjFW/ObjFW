@@ -44,9 +44,6 @@
 #import "OFDate.h"
 
 #import "OFObserveFailedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFConnectionFailedException.h"
-#endif
 
 of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
 static OFRunLoop *mainRunLoop = nil;
@@ -720,11 +717,8 @@ static OFRunLoop *mainRunLoop = nil;
 	int errNo;
 
 	if ((errNo = [object of_socketError]) != 0)
-		exception = [OFConnectionFailedException
-		    exceptionWithHost: nil
-				 port: 0
-			       socket: object
-				errNo: errNo];
+		exception =
+		    [_delegate of_connectionFailedExceptionForErrNo: errNo];
 
 	if ([_delegate respondsToSelector:
 	    @selector(of_socketDidConnect:exception:)]) {

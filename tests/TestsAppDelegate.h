@@ -230,6 +230,10 @@ enum {
 - (void)SHA512HashTests;
 @end
 
+@interface TestsAppDelegate (OFSPXSocketTests)
+- (void)SPXSocketTests;
+@end
+
 @interface TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests;
 @end

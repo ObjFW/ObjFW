@@ -417,6 +417,7 @@ main(int argc, char *argv[])
 	[self UDPSocketTests];
 # ifdef OF_HAVE_IPX
 	[self IPXSocketTests];
+	[self SPXSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif

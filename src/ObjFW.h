@@ -80,6 +80,7 @@
 # import "OFDNSResolver.h"
 # ifdef OF_HAVE_IPX
 #  import "OFIPXSocket.h"
+#  import "OFSPXSocket.h"
 # endif
 #endif
 #ifdef OF_HAVE_SOCKETS

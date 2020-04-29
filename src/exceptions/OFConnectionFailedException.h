@@ -21,6 +21,8 @@
 # error No sockets available!
 #endif
 
+#import "socket.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
@@ -34,6 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
 	id _socket;
 	OFString *_host;
 	uint16_t _port;
+	unsigned char _node[IPX_NODE_LEN];
+	uint32_t _network;
 	int _errNo;
 }
 
@@ -51,6 +55,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The port on the host to which the connection failed.
  */
 @property (readonly, nonatomic) uint16_t port;
+
+/*!
+ * @brief The IPX node to which the connection failed.
+ */
+@property (readonly, nonatomic) unsigned char *node;
+
+/*!
+ * @brief The IPX network of the node to which the connection failed.
+ */
+@property (readonly, nonatomic) uint32_t network;
 
 /*!
  * @brief The errno of the error that occurred.
@@ -73,6 +87,22 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
+/*!
+ * @brief Creates a new, autoreleased connection failed exception.
+ *
+ * @param node The node to which the connection failed
+ * @param network The IPX network of the node to which the connection failed
+ * @param port The port on the node to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased connection failed exception
+ */
++ (instancetype)exceptionWithNode: (unsigned char [_Nullable IPX_NODE_LEN])node
+			  network: (uint32_t)network
+			     port: (uint16_t)port
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
@@ -87,7 +117,23 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithHost: (nullable OFString *)host
 			port: (uint16_t)port
 		      socket: (id)socket
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+		       errNo: (int)errNo;
+
+/*!
+ * @brief Initializes an already allocated connection failed exception.
+ *
+ * @param node The node to which the connection failed
+ * @param network The IPX network of the node to which the connection failed
+ * @param port The port on the node to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return An initialized connection failed exception
+ */
+- (instancetype)initWithNode: (unsigned char [_Nullable IPX_NODE_LEN])node
+		     network: (uint32_t)network
+			port: (uint16_t)port
+		      socket: (id)socket
+		       errNo: (int)errNo;
 @end
 
 OF_ASSUME_NONNULL_END

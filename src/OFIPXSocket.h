@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFIPXSocketDelegate> delegate;
 
 /*!
- * @brief Binds the socket to the specified network, node and port with the
+ * @brief Bind the socket to the specified network, node and port with the
  *	  specified packet type.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to

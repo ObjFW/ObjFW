@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFRunLoopConnectDelegate <OFObject>
 - (void)of_socketDidConnect: (id)socket
 		  exception: (nullable id)exception;
+- (id)of_connectionFailedExceptionForErrNo: (int)errNo;
 @end
 #endif
 
