@@ -31,25 +31,25 @@
 
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
-			   socket: (id)socket
+			   socket: (id)sock
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithHost: host
 				      port: port
-				    socket: socket
+				    socket: sock
 				     errNo: errNo] autorelease];
 }
 
 + (instancetype)exceptionWithNode: (unsigned char [IPX_NODE_LEN])node
 			  network: (uint32_t)network
 			     port: (uint16_t)port
-			   socket: (id)socket
+			   socket: (id)sock
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithNode: node
 				   network: network
 				      port: port
-				    socket: socket
+				    socket: sock
 				     errNo: errNo] autorelease];
 }
 
@@ -60,7 +60,7 @@
 
 - (instancetype)initWithHost: (OFString *)host
 			port: (uint16_t)port
-		      socket: (id)socket
+		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
@@ -68,7 +68,7 @@
 	@try {
 		_host = [host copy];
 		_port = port;
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -81,7 +81,7 @@
 - (instancetype)initWithNode: (unsigned char [IPX_NODE_LEN])node
 		     network: (uint32_t)network
 			port: (uint16_t)port
-		      socket: (id)socket
+		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
@@ -90,7 +90,7 @@
 		memcpy(_node, node, IPX_NODE_LEN);
 		_network = network;
 		_port = port;
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];

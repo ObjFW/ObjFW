@@ -686,7 +686,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (connect(_socket, &address->sockaddr.sockaddr,
+	/* Cast needed for AmigaOS, where the argument is declared non-const */
+	if (connect(_socket, (struct sockaddr *)&address->sockaddr.sockaddr,
 	    address->length) != 0) {
 		*errNo = of_socket_errno();
 		return false;
