@@ -48,6 +48,11 @@ static OFString *module = @"OFSPXSocket";
 					    @"IPX unsupported, skipping tests\n"
 				   inColor: GREEN];
 			break;
+		case ESOCKTNOSUPPORT:
+			[self outputString: @"[OFSPXSocket] -[bindToPort:]: "
+					    @"SPX unsupported, skipping tests\n"
+				   inColor: GREEN];
+			break;
 		case EADDRNOTAVAIL:
 			[self outputString: @"[OFSPXSocket] -[bindToPort:]: "
 					    @"IPX not configured, skipping "
