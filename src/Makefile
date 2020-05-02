@@ -67,7 +67,7 @@ SRCS = OFASN1BitString.m		\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
        OFPair.m				\
-       ${OFPROCESS_M}			\
+       ${OF_PROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSandbox.m			\
@@ -145,8 +145,8 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
-	       ${OFIPXSOCKET_M}			\
-	       ${OFSPXSOCKET_M}			\
+	       ${OF_IPX_SOCKET_M}		\
+	       ${OF_SPX_SOCKET_M}		\
 	       OFSequencedPacketSocket.m	\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
@@ -217,10 +217,10 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
-		${OFEPOLLKERNELEVENTOBSERVER_M}		\
-		${OFKQUEUEKERNELEVENTOBSERVER_M}	\
-		${OFPOLLKERNELEVENTOBSERVER_M}		\
-		${OFSELECTKERNELEVENTOBSERVER_M}
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}
 
 OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\
 	     ${EXCEPTIONS_EXCEPTIONS_A} \

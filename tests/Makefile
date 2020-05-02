@@ -13,7 +13,7 @@ SRCS = ForwardingTests.m		\
        OFASN1DERRepresentationTests.m	\
        OFASN1DERValueTests.m		\
        OFArrayTests.m			\
-       ${OFBLOCKTESTS_M}		\
+       ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
@@ -56,12 +56,12 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA512HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
-	       ${OFHTTPCLIENTTESTS_M}		\
+	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
-	       ${OFIPXSOCKETTESTS_M}		\
+	       ${OF_IPX_SOCKET_TESTS_M}		\
 	       OFKernelEventObserverTests.m	\
-	       ${OFSPXSOCKETTESTS_M}		\
+	       ${OF_SPX_SOCKET_TESTS_M}		\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       SocketTests.m

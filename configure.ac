@@ -1452,10 +1452,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
-			AC_SUBST(OFIPXSOCKET_M, OFIPXSocket.m)
-			AC_SUBST(OFIPXSOCKETTESTS_M, OFIPXSocketTests.m)
-			AC_SUBST(OFSPXSOCKET_M, OFSPXSocket.m)
-			AC_SUBST(OFSPXSOCKETTESTS_M, OFSPXSocketTests.m)
+			AC_SUBST(OF_IPX_SOCKET_M, OFIPXSocket.m)
+			AC_SUBST(OF_IPX_SOCKET_TESTS_M, OFIPXSocketTests.m)
+			AC_SUBST(OF_SPX_SOCKET_M, OFSPXSocket.m)
+			AC_SUBST(OF_SPX_SOCKET_TESTS_M, OFSPXSocketTests.m)
 		])
 	])
 
@@ -1463,26 +1463,26 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AC_CHECK_FUNCS(kqueue1 kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
-		AC_SUBST(OFKQUEUEKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_KQUEUE_KERNEL_EVENT_OBSERVER_M,
 			"OFKqueueKernelEventObserver.m")
 		break
 	])
 	AC_CHECK_FUNCS(epoll_create1 epoll_create, [
 		AC_DEFINE(HAVE_EPOLL, 1, [Whether we have epoll])
-		AC_SUBST(OFEPOLLKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_EPOLL_KERNEL_EVENT_OBSERVER_M,
 			"OFEpollKernelEventObserver.m")
 		break
 	])
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OFPOLLKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 			"OFPollKernelEventObserver.m")
 	], [
 		AC_CHECK_HEADERS(poll.h)
 		AC_CHECK_FUNC(poll, [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-			AC_SUBST(OFPOLLKERNELEVENTOBSERVER_M,
+			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
 		])
 	])
@@ -1491,7 +1491,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		amigaos* | mingw* | morphos*)
 			AC_DEFINE(HAVE_SELECT, 1,
 				[Whether we have select() or similar])
-			AC_SUBST(OFSELECTKERNELEVENTOBSERVER_M,
+			AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
 				"OFSelectKernelEventObserver.m")
 			;;
 		*)
@@ -1499,14 +1499,14 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_CHECK_FUNC(select, [
 				AC_DEFINE(HAVE_SELECT, 1,
 					[Whether we have select() or similar])
-				AC_SUBST(OFSELECTKERNELEVENTOBSERVER_M,
+				AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
 					"OFSelectKernelEventObserver.m")
 			])
 			;;
 	esac
 
 	AS_IF([test x"$enable_threads" != x"no"], [
-		AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
+		AC_SUBST(OF_HTTP_CLIENT_TESTS_M, "OFHTTPClientTests.m")
 	])
 
 	AC_SUBST(OFDNS, "ofdns")
@@ -1573,7 +1573,7 @@ case "$host" in
 		;;
 esac
 AS_IF([test x"$have_processes" = x"yes"], [
-	AC_SUBST(OFPROCESS_M, "OFProcess.m")
+	AC_SUBST(OF_PROCESS_M, "OFProcess.m")
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
@@ -1613,7 +1613,7 @@ AC_TRY_COMPILE([], [
 	foo = ^ (int bar) { return 0; }
 ], [
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fblocks"
-	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
+	AC_SUBST(OF_BLOCK_TESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
