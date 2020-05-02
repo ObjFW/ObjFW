@@ -128,10 +128,10 @@ MO_FILES = ${LOCALES:.po=.mo}
 
 all:
 	${MAKE} pre-all
-	${MAKE} subdirs
+	${MAKE} -s subdirs
 	${MAKE} depend
 	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
-	${MAKE} subdirs-after
+	${MAKE} -s subdirs-after
 	${MAKE} post-all
 
 pre-all post-all:
