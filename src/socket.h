@@ -191,12 +191,13 @@ extern of_socket_address_t of_socket_address_parse_ipv6(
 /*!
  * @brief Creates an IPX address for the specified network, node and port.
  *
- * @param network The IPX network
  * @param node The node in the IPX network
+ * @param network The IPX network
  * @param port The IPX port (sometimes called socket number) on the node
  */
-extern of_socket_address_t of_socket_address_ipx(uint32_t network,
-    const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
+extern of_socket_address_t of_socket_address_ipx(
+    const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
+    uint16_t port);
 
 /*!
  * @brief Compares two of_socket_address_t for equality.

@@ -26,6 +26,7 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
+#import "OFNotOpenException.h"
 
 #import "socket.h"
 #import "socket_helpers.h"
@@ -35,6 +36,14 @@
 #endif
 
 #define SPX_PACKET_TYPE 5
+
+@interface OFSPXSocket ()
+- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+			   errNo: (int *)errNo;
+- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo;
+- (void)of_closeSocket;
+@end
 
 @interface OFSPXSocketAsyncConnectDelegate: OFObject <OFRunLoopConnectDelegate>
 {
@@ -97,25 +106,34 @@
 
 - (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
 {
+	of_socket_address_t address =
+	    of_socket_address_ipx(_node, _network, _port);
 	id exception = nil;
+	int errNo;
+
+	if (![_socket of_createSocketForAddress: &address
+					  errNo: &errNo]) {
+		exception = [self of_connectionFailedExceptionForErrNo: errNo];
+		goto inform_delegate;
+	}
 
 	_socket.blocking = false;
 
-	@try {
-		[_socket connectToNode: _node
-			       network: _network
-				  port: _port];
-	} @catch (OFConnectionFailedException *e) {
-		if (e.errNo == EINPROGRESS) {
+	if (![_socket of_connectSocketToAddress: &address
+					  errNo: &errNo]) {
+		if (errNo == EINPROGRESS) {
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
 						      delegate: self];
 			return;
 		}
 
-		exception = e;
+		[_socket of_closeSocket];
+
+		exception = [self of_connectionFailedExceptionForErrNo: errNo];
 	}
 
+inform_delegate:
 	[self performSelector: @selector(of_socketDidConnect:exception:)
 		   withObject: _socket
 		   withObject: exception
@@ -160,34 +178,71 @@
 @implementation OFSPXSocket
 @dynamic delegate;
 
-- (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-	      network: (uint32_t)network
-		 port: (uint16_t)port
+- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+			   errNo: (int *)errNo
 {
-	of_socket_address_t address =
-	    of_socket_address_ipx(network, node, port);
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
-	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET)
-		@throw [OFConnectionFailedException
-		    exceptionWithNode: node
-			      network: network
-				 port: port
-			       socket: self
-				errNo: of_socket_errno()];
+	if (_socket != INVALID_SOCKET)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
+	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
+	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET) {
+		*errNo = of_socket_errno();
+		return false;
+	}
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (connect(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+	return true;
+}
 
-		closesocket(_socket);
+- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (connect(_socket, &address->sockaddr.sockaddr,
+	    address->length) != 0) {
+		*errNo = of_socket_errno();
+		return false;
+	}
+
+	return true;
+}
+
+- (void)of_closeSocket
+{
+	closesocket(_socket);
+	_socket = INVALID_SOCKET;
+}
+
+- (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
+	      network: (uint32_t)network
+		 port: (uint16_t)port
+{
+	of_socket_address_t address =
+	    of_socket_address_ipx(node, network, port);
+	int errNo;
+
+	if (![self of_createSocketForAddress: &address
+				       errNo: &errNo])
+		@throw [OFConnectionFailedException
+		    exceptionWithNode: node
+			      network: network
+				 port: port
+			       socket: self
+				errNo: errNo];
+
+	if (![self of_connectSocketToAddress: &address
+				       errNo: &errNo]) {
+		[self of_closeSocket];
 
 		@throw [OFConnectionFailedException
 		    exceptionWithNode: node
@@ -272,7 +327,7 @@
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(0, zeroNode, port);
+	address = of_socket_address_ipx(zeroNode, 0, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET)
@@ -292,10 +347,8 @@
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
 		int errNo = of_socket_errno();
 
-		if (errNo != EINPROGRESS) {
-			closesocket(_socket);
-			_socket = INVALID_SOCKET;
-		}
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: SPX_PACKET_TYPE

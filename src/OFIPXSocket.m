@@ -47,7 +47,7 @@
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(0, zeroNode, port);
+	address = of_socket_address_ipx(zeroNode, 0, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;

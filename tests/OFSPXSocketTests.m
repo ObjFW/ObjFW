@@ -23,6 +23,53 @@
 
 static OFString *module = @"OFSPXSocket";
 
+@interface SPXSocketDelegate: OFObject <OFSPXSocketDelegate>
+{
+@public
+	OFSequencedPacketSocket *_expectedServerSocket;
+	OFSPXSocket *_expectedClientSocket;
+	unsigned char _expectedNode[IPX_NODE_LEN];
+	uint32_t _expectedNetwork;
+	uint16_t _expectedPort;
+	bool _accepted;
+	bool _connected;
+}
+@end
+
+@implementation SPXSocketDelegate
+-    (bool)socket: (OFSequencedPacketSocket *)sock
+  didAcceptSocket: (OFSequencedPacketSocket *)accepted
+	exception: (id)exception
+{
+	OF_ENSURE(!_accepted);
+
+	_accepted = (sock == _expectedServerSocket && accepted != nil &&
+	    exception == nil);
+
+	if (_accepted && _connected)
+		[[OFRunLoop mainRunLoop] stop];
+
+	return false;
+}
+
+-     (void)socket: (OFSPXSocket *)sock
+  didConnectToNode: (unsigned char [IPX_NODE_LEN])node
+	   network: (uint32_t)network
+	      port: (uint16_t)port
+	 exception: (id)exception
+{
+	OF_ENSURE(!_connected);
+
+	_connected = (sock == _expectedClientSocket &&
+	    memcmp(node, _expectedNode, IPX_NODE_LEN) == 0 &&
+	    network == _expectedNetwork && port == _expectedPort &&
+	    exception == nil);
+
+	if (_accepted && _connected)
+		[[OFRunLoop mainRunLoop] stop];
+}
+@end
+
 @implementation TestsAppDelegate (OFSPXSocketTests)
 - (void)SPXSocketTests
 {
@@ -34,6 +81,7 @@ static OFString *module = @"OFSPXSocket";
 	uint32_t network;
 	uint16_t port;
 	char buffer[5];
+	SPXSocketDelegate *delegate;
 
 	TEST(@"+[socket]", (sockClient = [OFSPXSocket socket]) &&
 	    (sockServer = [OFSPXSocket socket]))
@@ -94,6 +142,36 @@ static OFString *module = @"OFSPXSocket";
 	    R(of_socket_address_get_ipx_node(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0 &&
 	    of_socket_address_get_ipx_network(address2) == network)
+
+	delegate = [[[SPXSocketDelegate alloc] init] autorelease];
+
+	sockServer = [OFSPXSocket socket];
+	delegate->_expectedServerSocket = sockServer;
+	sockServer.delegate = delegate;
+
+	sockClient = [OFSPXSocket socket];
+	delegate->_expectedClientSocket = sockClient;
+	sockClient.delegate = delegate;
+
+	address1 = [sockServer bindToPort: 0];
+	[sockServer listen];
+	[sockServer asyncAccept];
+
+	of_socket_address_get_ipx_node(&address1, node);
+	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
+	delegate->_expectedNetwork = network =
+	    of_socket_address_get_ipx_network(&address1);
+	delegate->_expectedPort = port = of_socket_address_get_port(&address1);
+
+	[sockClient asyncConnectToNode: node
+			       network: network
+				  port: port];
+
+	[[OFRunLoop mainRunLoop] runUntilDate:
+	    [OFDate dateWithTimeIntervalSinceNow: 2]];
+
+	TEST(@"-[asyncAccept] & -[asyncConnectToNode:network:port:]",
+	    delegate->_accepted && delegate->_connected)
 
 	objc_autoreleasePoolPop(pool);
 }

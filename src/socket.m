@@ -509,7 +509,7 @@ of_socket_address_parse_ip(OFString *IP, uint16_t port)
 }
 
 of_socket_address_t
-of_socket_address_ipx(uint32_t network, const unsigned char node[IPX_NODE_LEN],
+of_socket_address_ipx(const unsigned char node[IPX_NODE_LEN], uint32_t network,
     uint16_t port)
 {
 	of_socket_address_t ret;
@@ -523,10 +523,10 @@ of_socket_address_ipx(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 #else
 	ret.sockaddr.ipx.sipx_family = AF_UNSPEC;
 #endif
+	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 	network = OF_BSWAP32_IF_LE(network);
 	memcpy(&ret.sockaddr.ipx.sipx_network, &network,
 	    sizeof(ret.sockaddr.ipx.sipx_network));
-	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 	ret.sockaddr.ipx.sipx_port = OF_BSWAP16_IF_LE(port);
 
 	return ret;
