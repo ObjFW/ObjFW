@@ -234,6 +234,10 @@ enum {
 - (void)SPXSocketTests;
 @end
 
+@interface TestsAppDelegate (OFSPXStreamSocketTests)
+- (void)SPXStreamSocketTests;
+@end
+
 @interface TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests;
 @end

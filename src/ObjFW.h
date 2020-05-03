@@ -81,6 +81,7 @@
 # ifdef OF_HAVE_IPX
 #  import "OFIPXSocket.h"
 #  import "OFSPXSocket.h"
+#  import "OFSPXStreamSocket.h"
 # endif
 #endif
 #ifdef OF_HAVE_SOCKETS

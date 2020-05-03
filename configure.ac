@@ -1452,10 +1452,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
-			AC_SUBST(OF_IPX_SOCKET_M, OFIPXSocket.m)
-			AC_SUBST(OF_IPX_SOCKET_TESTS_M, OFIPXSocketTests.m)
-			AC_SUBST(OF_SPX_SOCKET_M, OFSPXSocket.m)
-			AC_SUBST(OF_SPX_SOCKET_TESTS_M, OFSPXSocketTests.m)
+			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
 		])
 	])
 

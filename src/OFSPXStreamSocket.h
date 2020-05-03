@@ -15,7 +15,7 @@
  * file.
  */
 
-#import "OFSequencedPacketSocket.h"
+#import "OFStreamSocket.h"
 #import "OFRunLoop.h"
 
 #import "socket.h"
@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
-@class OFSPXSocket;
+@class OFSPXStreamSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
@@ -34,15 +34,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
+typedef void (^of_spx_stream_socket_async_connect_block_t)(
+    id _Nullable exception);
 #endif
 
 /*!
- * @protocol OFSPXSocketDelegate OFSPXSocket.h ObjFW/OFSPXSocket.h
+ * @protocol OFSPXStreamSocketDelegate OFSPXStreamSocket.h \
+ *	     ObjFW/OFSPXStreamSocket.h
  *
- * A delegate for OFSPXSocket.
+ * A delegate for OFSPXStreamSocket.
  */
-@protocol OFSPXSocketDelegate <OFSequencedPacketSocketDelegate>
+@protocol OFSPXStreamSocketDelegate <OFStreamSocketDelegate>
 @optional
 /*!
  * @brief A method which is called when a socket connected.
@@ -54,7 +56,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
  * @param exception An exception that occurred while connecting, or nil on
  *		    success
  */
--     (void)socket: (OFSPXSocket *)socket
+-     (void)socket: (OFSPXStreamSocket *)socket
   didConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 	   network: (uint32_t)network
 	      port: (uint16_t)port
@@ -62,17 +64,17 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 @end
 
 /*!
- * @class OFSPXSocket OFSPXSocket.h ObjFW/OFSPXSocket.h
+ * @class OFSPXStreamSocket OFSPXStreamSocket.h ObjFW/OFSPXStreamSocket.h
  *
- * @brief A class which provides methods to create and use SPX sockets.
+ * @brief A class which provides methods to create and use SPX stream sockets.
  *
- * @note If you want to use SPX in streaming mode instead of in message mode,
- *	 use @ref OFSPXStreamSocket instead.
+ * @note If you want to use SPX in message mode instead of in streaming mode,
+ *	 use @ref OFSPXSocket instead.
  *
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
  */
-@interface OFSPXSocket: OFSequencedPacketSocket
+@interface OFSPXStreamSocket: OFStreamSocket
 {
 	OF_RESERVE_IVARS(4)
 }
@@ -84,10 +86,10 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
  *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    id <OFSPXSocketDelegate> delegate;
+    id <OFSPXStreamSocketDelegate> delegate;
 
 /*!
- * @brief Connect the OFSPXSocket to the specified destination.
+ * @brief Connect the OFSPXStreamSocket to the specified destination.
  *
  * @param node The node to connect to
  * @param network The network on which the node to connect to is
@@ -99,7 +101,8 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		 port: (uint16_t)port;
 
 /*!
- * @brief Asynchronously connect the OFSPXSocket to the specified destination.
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
  *
  * @param node The node to connect to
  * @param network The network on which the node to connect to is
@@ -111,7 +114,8 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		      port: (uint16_t)port;
 
 /*!
- * @brief Asynchronously connect the OFSPXSocket to the specified destination.
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
  *
  * @param node The node to connect to
  * @param network The network on which the node to connect to is
@@ -126,7 +130,8 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 
 #ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asynchronously connect the OFSPXSocket to the specified destination.
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
  *
  * @param node The node to connect to
  * @param network The network on which the node to connect to is
@@ -137,10 +142,11 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-		     block: (of_spx_socket_async_connect_block_t)block;
+		     block: (of_spx_stream_socket_async_connect_block_t)block;
 
 /*!
- * @brief Asynchronously connect the OFSPXSocket to the specified destination.
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
  *
  * @param node The node to connect to
  * @param network The network on which the node to connect to is
@@ -153,7 +159,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		   network: (uint32_t)network
 		      port: (uint16_t)port
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_spx_socket_async_connect_block_t)block;
+		     block: (of_spx_stream_socket_async_connect_block_t)block;
 #endif
 
 /*!

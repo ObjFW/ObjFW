@@ -418,6 +418,7 @@ main(int argc, char *argv[])
 # ifdef OF_HAVE_IPX
 	[self IPXSocketTests];
 	[self SPXSocketTests];
+	[self SPXStreamSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif
