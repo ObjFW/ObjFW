@@ -56,3 +56,5 @@ utils/ofhash/ofhash
 utils/ofhash/ofhash.exe
 utils/ofhttp/ofhttp
 utils/ofhttp/ofhttp.exe
+utils/ofsock/ofsock
+utils/ofsock/ofsock.exe
