@@ -28,10 +28,12 @@
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 
+#import "OFGetOptionFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -124,6 +126,39 @@
 	_blocking = enable;
 #else
 	OF_UNRECOGNIZED_SELECTOR
+#endif
+}
+
+- (void)setBroadcastAllowed: (bool)allowed
+{
+	int v = allowed;
+
+	if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST,
+	    (char *)&v, (socklen_t)sizeof(v)) != 0)
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: of_socket_errno()];
+
+#ifdef OF_WII
+	_broadcastAllowed = allowed;
+#endif
+}
+
+- (bool)isBroadcastAllowed
+{
+#ifndef OF_WII
+	int v;
+	socklen_t len = sizeof(v);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_BROADCAST,
+	    (char *)&v, &len) != 0 || len != sizeof(v))
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: of_socket_errno()];
+
+	return v;
+#else
+	return _broadcastAllowed;
 #endif
 }
 

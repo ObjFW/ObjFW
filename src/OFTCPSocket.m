@@ -951,7 +951,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (getsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
-		    exceptionWithStream: self
+		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
 	return v;
@@ -978,7 +978,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (getsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
-		    exceptionWithStream: self
+		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
 	return v;
