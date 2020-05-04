@@ -127,12 +127,12 @@ MO_FILES = ${LOCALES:.po=.mo}
 .PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
-	${MAKE} pre-all
+	${MAKE} -s pre-all
 	${MAKE} -s subdirs
-	${MAKE} depend
-	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
+	${MAKE} -s depend
+	${MAKE} -s ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
 	${MAKE} -s subdirs-after
-	${MAKE} post-all
+	${MAKE} -s post-all
 
 pre-all post-all:
 
@@ -142,7 +142,7 @@ subdirs-after: ${SUBDIRS_AFTER}
 ${SUBDIRS} ${SUBDIRS_AFTER}:
 	for i in $@; do \
 		${DIR_ENTER}; \
-		${MAKE} || exit $$?; \
+		${MAKE} -s || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -191,7 +191,7 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	out="$@"; \
-	if rm -fr $$out && ${MKDIR_P} $$out && ${MAKE} COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Headers copy-headers-into-framework && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 module.modulemap $$out/Modules/module.modulemap; fi && ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
+	if rm -fr $$out && ${MKDIR_P} $$out && ${MAKE} -s COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Headers copy-headers-into-framework && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 module.modulemap $$out/Modules/module.modulemap; fi && ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; false; \
@@ -202,7 +202,7 @@ copy-headers-into-framework:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		cd $$i || exit 1; \
-		${MAKE} copy-headers-into-framework || exit $$?; \
+		${MAKE} -s copy-headers-into-framework || exit $$?; \
 		cd .. || exit 1; \
 	done
 
@@ -613,7 +613,7 @@ install: all install-extra
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} install || exit $$?; \
+		${MAKE} -s install || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -726,7 +726,7 @@ uninstall: uninstall-extra
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} uninstall || exit $$?; \
+		${MAKE} -s uninstall || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -841,7 +841,7 @@ clean:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} clean || exit $$?; \
+		${MAKE} -s clean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -862,7 +862,7 @@ distclean: clean
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} distclean || exit $$?; \
+		${MAKE} -s distclean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -882,7 +882,7 @@ print-hierarchy:
 		test x"$$i" = x"" && continue; \
 		echo ${PRINT_HIERARCHY_PREFIX}$$i; \
 		cd $$i || exit $$?; \
-		${MAKE} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
+		${MAKE} -s PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
 		cd .. || exit $$?; \
 	done
 
