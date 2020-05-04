@@ -14,6 +14,7 @@ Table of Contents
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-as-a-framework)
      * [Using the macOS or iOS framework in Xcode](#using-the-macos-or-ios-framework-in-xcode)
+     * [Broken Xcode versions](#broken-xcode-versions)
    * [Windows](#windows)
      * [Getting MSYS2](#getting-msys2)
      * [Updating MSYS2](#updating-msys2)
@@ -73,6 +74,29 @@ macOS and iOS
   your project and add the following flags to `Other C Flags`:
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
+
+### Broken Xcode versions
+
+  Some versions of Xcode shipped with a version of Clang that ignores
+  `-fconstant-string-class=OFConstantString`. This will manifest in an error
+  like this:
+
+    OFAllocFailedException.m:94:10: error: cannot find interface declaration for
+          'NSConstantString'
+            return @"Allocating an object failed!";
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    1 error generated.
+
+  Unfortunately, there is no workaround for this other than to
+  upgrade/downgrade Xcode or to build upstream Clang yourself.
+
+  In particular, Xcode 11 Beta 1 to Beta 3 are known to be affected. While
+  Xcode 11 Beta 4 to Xcode 11.3 work, the bug was unfortunately reintroduced in
+  Xcode 11.4.1 and a fix is not expected before Xcode 11.6.
+
+  You can get older versions of Xcode
+  [here](https://developer.apple.com/download) by clicking on "More" in the
+  top-right corner.
 
 Windows
 -------
