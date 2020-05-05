@@ -157,8 +157,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
 /*!
- * @brief Bind the socket to the specified network, node and port with the
- *	  specified packet type.
+ * @brief Bind the socket to the specified network, node and port.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to
  *	       pick one and return it.

@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _socketAddressesIndex;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (id)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
 		      delegate: (nullable id)delegate
