@@ -218,6 +218,7 @@ SRCS_FILES += OFFileURLHandler.m	\
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
+		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\

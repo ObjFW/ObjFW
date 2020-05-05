@@ -32,22 +32,18 @@
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFString.h"
 #import "OFTCPSocketSOCKS5Connector.h"
 #import "OFThread.h"
-#import "OFTimer.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
-#import "OFConnectionFailedException.h"
 #import "OFGetOptionFailedException.h"
-#import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
-#import "OFOutOfMemoryException.h"
-#import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "socket.h"
@@ -61,40 +57,7 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket ()
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
-			    errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
-			    errNo: (int *)errNo;
-- (void)of_closeSocket;
-@end
-
-@interface OFTCPSocketAsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
-    OFRunLoopConnectDelegate, OFDNSResolverHostDelegate>
-{
-	OFTCPSocket *_socket;
-	OFString *_host;
-	uint16_t _port;
-	id <OFTCPSocketDelegate> _delegate;
-#ifdef OF_HAVE_BLOCKS
-	of_tcp_socket_async_connect_block_t _block;
-#endif
-	id _exception;
-	OFData *_socketAddresses;
-	size_t _socketAddressesIndex;
-}
-
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			  host: (OFString *)host
-			  port: (uint16_t)port
-		      delegate: (id <OFTCPSocketDelegate>)delegate
-#ifdef OF_HAVE_BLOCKS
-			 block: (of_tcp_socket_async_connect_block_t)block
-#endif
-;
-- (void)didConnect;
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+@interface OFTCPSocket () <OFIPSocketAsyncConnecting>
 @end
 
 @interface OFTCPSocketConnectDelegate: OFObject <OFTCPSocketDelegate>
@@ -102,234 +65,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 @public
 	bool _done;
 	id _exception;
-}
-@end
-
-@implementation OFTCPSocketAsyncConnectDelegate
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			  host: (OFString *)host
-			  port: (uint16_t)port
-		      delegate: (id <OFTCPSocketDelegate>)delegate
-#ifdef OF_HAVE_BLOCKS
-			 block: (of_tcp_socket_async_connect_block_t)block
-#endif
-{
-	self = [super init];
-
-	@try {
-		_socket = [sock retain];
-		_host = [host copy];
-		_port = port;
-		_delegate = [delegate retain];
-#ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
-#endif
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[_socket release];
-	[_host release];
-	[_delegate release];
-#ifdef OF_HAVE_BLOCKS
-	[_block release];
-#endif
-	[_exception release];
-	[_socketAddresses release];
-
-	[super dealloc];
-}
-
-- (void)didConnect
-{
-	if (_exception == nil)
-		_socket.blocking = true;
-
-#ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(_exception);
-	else {
-#endif
-		if ([_delegate respondsToSelector:
-		    @selector(socket:didConnectToHost:port:exception:)])
-			[_delegate    socket: _socket
-			    didConnectToHost: _host
-					port: _port
-				   exception: _exception];
-#ifdef OF_HAVE_BLOCKS
-	}
-#endif
-}
-
-- (void)of_socketDidConnect: (id)sock
-		  exception: (id)exception
-{
-	if (exception != nil) {
-		/*
-		 * self might be retained only by the pending async requests,
-		 * which we're about to cancel.
-		 */
-		[[self retain] autorelease];
-
-		[sock cancelAsyncRequests];
-		[sock of_closeSocket];
-
-		if (_socketAddressesIndex >= _socketAddresses.count) {
-			_exception = [exception retain];
-			[self didConnect];
-		} else {
-			/*
-			 * We must not call it before returning, as otherwise
-			 * the new socket would be removed from the queue upon
-			 * return.
-			 */
-			OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
-			SEL selector =
-			    @selector(tryNextAddressWithRunLoopMode:);
-			OFTimer *timer = [OFTimer
-			    timerWithTimeInterval: 0
-					   target: self
-					 selector: selector
-					   object: runLoop.currentMode
-					  repeats: false];
-			[runLoop addTimer: timer
-				  forMode: runLoop.currentMode];
-		}
-
-		return;
-	}
-
-	[self didConnect];
-}
-
-- (id)of_connectionFailedExceptionForErrNo: (int)errNo
-{
-	return [OFConnectionFailedException exceptionWithHost: _host
-							 port: _port
-						       socket: _socket
-							errNo: errNo];
-}
-
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-{
-	of_socket_address_t address = *(const of_socket_address_t *)
-	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
-	int errNo;
-
-	of_socket_address_set_port(&address, _port);
-
-	if (![_socket of_createSocketForAddress: &address
-					  errNo: &errNo]) {
-		if (_socketAddressesIndex >= _socketAddresses.count) {
-			_exception = [[OFConnectionFailedException alloc]
-			    initWithHost: _host
-				    port: _port
-				  socket: _socket
-				   errNo: errNo];
-			[self didConnect];
-			return;
-		}
-
-		[self tryNextAddressWithRunLoopMode: runLoopMode];
-		return;
-	}
-
-#if defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	/*
-	 * On Wii and 3DS, connect() fails if non-blocking is enabled.
-	 *
-	 * Additionally, on Wii, there is no getsockopt(), so it would not be
-	 * possible to get the error (or success) after connecting anyway.
-	 *
-	 * So for now, connecting is blocking on Wii and 3DS.
-	 *
-	 * FIXME: Use a different thread as a work around.
-	 */
-	_socket.blocking = true;
-#else
-	_socket.blocking = false;
-#endif
-
-	if (![_socket of_connectSocketToAddress: &address
-					  errNo: &errNo]) {
-#if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
-		if (errNo == EINPROGRESS) {
-			[OFRunLoop of_addAsyncConnectForSocket: _socket
-							  mode: runLoopMode
-						      delegate: self];
-			return;
-		} else {
-#endif
-			[_socket of_closeSocket];
-
-			if (_socketAddressesIndex >= _socketAddresses.count) {
-				_exception = [[OFConnectionFailedException
-				    alloc] initWithHost: _host
-						   port: _port
-						 socket: _socket
-						  errNo: errNo];
-				[self didConnect];
-				return;
-			}
-
-			[self tryNextAddressWithRunLoopMode: runLoopMode];
-			return;
-#if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
-		}
-#endif
-	}
-
-#if defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	_socket.blocking = false;
-#endif
-
-	[self didConnect];
-}
-
-- (void)resolver: (OFDNSResolver *)resolver
-  didResolveHost: (OFString *)host
-       addresses: (OFData *)addresses
-       exception: (id)exception
-{
-	if (exception != nil) {
-		_exception = [exception retain];
-		[self didConnect];
-		return;
-	}
-
-	_socketAddresses = [addresses copy];
-
-	[self tryNextAddressWithRunLoopMode:
-	    [OFRunLoop currentRunLoop].currentMode];
-}
-
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-{
-	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, _port);
-
-		_socketAddresses = [[OFData alloc]
-		    initWithItems: &address
-			 itemSize: sizeof(address)
-			    count: 1];
-
-		[self tryNextAddressWithRunLoopMode: runLoopMode];
-		return;
-	} @catch (OFInvalidFormatException *e) {
-	}
-
-	[[OFThread DNSResolver]
-	    asyncResolveAddressesForHost: _host
-			   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
-			     runLoopMode: runLoopMode
-				delegate: self];
 }
 @end
 
@@ -491,6 +226,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
+	if (_socket != INVALID_SOCKET)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -506,14 +244,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	} else
 		delegate = _delegate;
 
-	[[[[OFTCPSocketAsyncConnectDelegate alloc]
+	[[[[OFIPSocketAsyncConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
 			delegate: delegate
-#ifdef OF_HAVE_BLOCKS
 			   block: NULL
-#endif
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -538,6 +274,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
+	if (_socket != INVALID_SOCKET)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -549,7 +288,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		port = _SOCKS5Port;
 	}
 
-	[[[[OFTCPSocketAsyncConnectDelegate alloc]
+	[[[[OFIPSocketAsyncConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
