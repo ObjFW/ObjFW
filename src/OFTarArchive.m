@@ -498,15 +498,15 @@
 	remainder = 512 - _entry.size % 512;
 
 	if (remainder != 512) {
-		bool wasWriteBuffered = _stream.writeBuffered;
+		bool didBufferWrites = _stream.buffersWrites;
 
-		[_stream setWriteBuffered: true];
+		_stream.buffersWrites = true;
 
 		while (remainder--)
 			[_stream writeInt8: 0];
 
 		[_stream flushWriteBuffer];
-		_stream.writeBuffered = wasWriteBuffered;
+		_stream.buffersWrites = didBufferWrites;
 	}
 
 	[_stream release];

@@ -117,7 +117,7 @@
 		goto inform_delegate;
 	}
 
-	_socket.blocking = false;
+	_socket.canBlock = false;
 
 	if (![_socket of_connectSocketToAddress: &address
 					  errNo: &errNo]) {
@@ -146,7 +146,7 @@ inform_delegate:
 	id <OFSPXSocketDelegate> delegate = ((OFSPXSocket *)sock).delegate;
 
 	if (exception == nil)
-		((OFSPXSocket *)sock).blocking = true;
+		((OFSPXSocket *)sock).canBlock = true;
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
@@ -337,7 +337,7 @@ inform_delegate:
 			       socket: self
 				errNo: of_socket_errno()];
 
-	_blocking = true;
+	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)

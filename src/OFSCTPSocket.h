@@ -74,9 +74,10 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 }
 
 /*!
- * @brief Whether SCTP_NODELAY is enabled for the connection
+ * @brief Whether sending packets can be delayed. Setting this to NO sets
+ *        SCTP_NODELAY on the socket.
  */
-@property (nonatomic, getter=isNoDelayEnabled) bool noDelayEnabled;
+@property (nonatomic) bool canDelaySendingPackets;
 
 /*!
  * @brief The delegate for asynchronous operations on the socket.

@@ -130,18 +130,18 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
     OFReadyForReadingObserving, OFReadyForWritingObserving>
 {
 	of_socket_t _socket;
-	bool _blocking, _listening;
+	bool _canBlock, _listening;
 	of_socket_address_t _remoteAddress;
 	id _Nullable _delegate;
 	OF_RESERVE_IVARS(4)
 }
 
 /*!
- * @brief Whether the socket is in blocking mode.
+ * @brief Whether the socket can block.
  *
- * By default, a socket is in blocking mode.
+ * By default, a socket can block.
  */
-@property (nonatomic, getter=isBlocking) bool blocking;
+@property (nonatomic) bool canBlock;
 
 /*!
  * @brief Whether the socket is a listening socket.

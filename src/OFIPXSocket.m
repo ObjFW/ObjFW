@@ -63,7 +63,7 @@
 			       socket: self
 				errNo: of_socket_errno()];
 
-	_blocking = true;
+	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)

@@ -558,7 +558,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	if (_insecure)
-		_HTTPClient.insecureRedirectsAllowed = true;
+		_HTTPClient.allowsInsecureRedirects = true;
 
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
@@ -569,8 +569,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	  request: (OFHTTPRequest *)request
 {
 	if (_insecure && [sock respondsToSelector:
-	    @selector(setCertificateVerificationEnabled:)])
-		((id <OFTLSSocket>)sock).certificateVerificationEnabled = false;
+	    @selector(setVerifiesCertificates:)])
+		((id <OFTLSSocket>)sock).verifiesCertificates = false;
 }
 
 -     (void)client: (OFHTTPClient *)client

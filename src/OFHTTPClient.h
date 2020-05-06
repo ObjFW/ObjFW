@@ -147,7 +147,7 @@ OF_SUBCLASSING_RESTRICTED
 @public
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
-	bool _insecureRedirectsAllowed, _inProgress;
+	bool _allowsInsecureRedirects, _inProgress;
 	OFTCPSocket *_Nullable _socket;
 	OFURL *_Nullable _lastURL;
 	bool _lastWasHEAD;
@@ -161,9 +161,9 @@ OF_SUBCLASSING_RESTRICTED
     OFObject <OFHTTPClientDelegate> *delegate;
 
 /*!
- * @brief Whether redirects from HTTPS to HTTP will be allowed.
+ * @brief Whether the HTTP client allows redirects from HTTPS to HTTP.
  */
-@property (nonatomic) bool insecureRedirectsAllowed;
+@property (nonatomic) bool allowsInsecureRedirects;
 
 /*!
  * @brief Creates a new OFHTTPClient.

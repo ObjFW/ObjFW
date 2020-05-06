@@ -84,20 +84,21 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /*!
- * @brief Whether keep alives are enabled for the connection.
+ * @brief Whether the socket sends keep alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  */
-@property (nonatomic, getter=isKeepAliveEnabled) bool keepAliveEnabled;
+@property (nonatomic) bool sendsKeepAlives;
 #endif
 
 #ifndef OF_WII
 /*!
- * @brief Whether TCP_NODELAY is enabled for the connection
+ * @brief Whether sending segments can be delayed. Setting this to NO sets
+ *        TCP_NODELAY on the socket.
  *
  * @warning This is not available on the Wii!
  */
-@property (nonatomic, getter=isNoDelayEnabled) bool noDelayEnabled;
+@property (nonatomic) bool canDelaySendingSegments;
 #endif
 
 /*!

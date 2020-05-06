@@ -162,12 +162,12 @@
 }
 
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
-- (void)setBlocking: (bool)enable
+- (void)setCanBlock: (bool)canBlock
 {
 # ifdef OF_WINDOWS
-	u_long v = enable;
+	u_long v = canBlock;
 # else
-	char v = enable;
+	char v = canBlock;
 # endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
@@ -175,7 +175,7 @@
 		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
-	_blocking = enable;
+	_canBlock = canBlock;
 }
 #endif
 

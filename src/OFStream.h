@@ -190,7 +190,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 @interface OFStream: OFObject <OFCopying>
 {
-	bool _blocking;
+	bool _canBlock;
 	id _Nullable _delegate;
 #ifndef OF_SEEKABLE_STREAM_M
 @private
@@ -198,7 +198,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 	char *_Nullable _readBuffer, *_Nullable _readBufferMemory;
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
-	bool _writeBuffered, _waitingForDelimiter;
+	bool _buffersWrites, _waitingForDelimiter;
 	OF_RESERVE_IVARS(4)
 }
 
@@ -210,7 +210,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /*!
  * @brief Whether writes are buffered.
  */
-@property (nonatomic, nonatomic, getter=isWriteBuffered) bool writeBuffered;
+@property (nonatomic, nonatomic) bool buffersWrites;
 
 /*!
  * @brief Whether data is present in the internal read buffer.
@@ -218,12 +218,12 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 @property (readonly, nonatomic) bool hasDataInReadBuffer;
 
 /*!
- * @brief Whether the stream is in blocking mode.
+ * @brief Whether the stream can block.
  *
- * By default, a stream is in blocking mode.
+ * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  */
-@property (nonatomic, getter=isBlocking) bool blocking;
+@property (nonatomic) bool canBlock;
 
 /*!
  * @brief The delegate for asynchronous operations on the stream.

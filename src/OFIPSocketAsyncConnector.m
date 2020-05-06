@@ -69,7 +69,7 @@
 - (void)didConnect
 {
 	if (_exception == nil)
-		[_socket setBlocking: true];
+		[_socket setCanBlock: true];
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
@@ -180,9 +180,9 @@
 	 *
 	 * FIXME: Use a different thread as a work around.
 	 */
-	[_socket setBlocking: true];
+	[_socket setCanBlock: true];
 #else
-	[_socket setBlocking: false];
+	[_socket setCanBlock: false];
 #endif
 
 	if (![_socket of_connectSocketToAddress: &address
@@ -215,7 +215,7 @@
 	}
 
 #if defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	[_socket setBlocking: false];
+	[_socket setCanBlock: false];
 #endif
 
 	[self didConnect];

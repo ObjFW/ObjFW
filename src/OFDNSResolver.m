@@ -762,7 +762,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			_IPv6Socket.blocking = false;
+			_IPv6Socket.canBlock = false;
 			_IPv6Socket.delegate = self;
 		}
 
@@ -777,7 +777,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			_IPv4Socket.blocking = false;
+			_IPv4Socket.canBlock = false;
 			_IPv4Socket.delegate = self;
 		}
 

@@ -75,9 +75,6 @@
 
 - (void)didConnect
 {
-	if (_exception == nil)
-		_socket.blocking = true;
-
 	_socket.delegate = _delegate;
 
 #ifdef OF_HAVE_BLOCKS

@@ -353,7 +353,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		    OF_ORDERED_SAME)
 			follow = false;
 
-		if (!_client->_insecureRedirectsAllowed &&
+		if (!_client->_allowsInsecureRedirects &&
 		    [URL.scheme caseInsensitiveCompare: @"https"] ==
 		    OF_ORDERED_SAME &&
 		    [newURLScheme caseInsensitiveCompare: @"http"] ==
@@ -1200,7 +1200,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 @implementation OFHTTPClient
 @synthesize delegate = _delegate;
-@synthesize insecureRedirectsAllowed = _insecureRedirectsAllowed;
+@synthesize allowsInsecureRedirects = _allowsInsecureRedirects;
 
 + (instancetype)client
 {

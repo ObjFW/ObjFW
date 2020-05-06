@@ -332,7 +332,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			       socket: self
 				errNo: of_socket_errno()];
 
-	_blocking = true;
+	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -438,9 +438,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-- (void)setKeepAliveEnabled: (bool)enabled
+- (void)setSendsKeepAlives: (bool)sendsKeepAlives
 {
-	int v = enabled;
+	int v = sendsKeepAlives;
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
@@ -449,7 +449,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  errNo: of_socket_errno()];
 }
 
-- (bool)isKeepAliveEnabled
+- (bool)sendsKeepAlives
 {
 	int v;
 	socklen_t len = sizeof(v);
@@ -465,9 +465,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 #ifndef OF_WII
-- (void)setNoDelayEnabled: (bool)enabled
+- (void)setCanDelaySendingSegments: (bool)canDelaySendingSegments
 {
-	int v = enabled;
+	int v = !canDelaySendingSegments;
 
 	if (setsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
@@ -476,7 +476,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  errNo: of_socket_errno()];
 }
 
-- (bool)isNoDelayEnabled
+- (bool)canDelaySendingSegments
 {
 	int v;
 	socklen_t len = sizeof(v);
@@ -487,7 +487,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
-	return v;
+	return !v;
 }
 #endif
 

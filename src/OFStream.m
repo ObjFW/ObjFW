@@ -63,6 +63,7 @@
 #define MIN_READ_SIZE 512
 
 @implementation OFStream
+@synthesize buffersWrites = _buffersWrites;
 @synthesize of_waitingForDelimiter = _waitingForDelimiter, delegate = _delegate;
 
 #if defined(SIGPIPE) && defined(SIG_IGN)
@@ -83,7 +84,7 @@
 			abort();
 		}
 
-		_blocking = true;
+		_canBlock = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1128,16 +1129,6 @@
 				 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (bool)isWriteBuffered
-{
-	return _writeBuffered;
-}
-
-- (void)setWriteBuffered: (bool)enable
-{
-	_writeBuffered = enable;
-}
-
 - (void)flushWriteBuffer
 {
 	if (_writeBuffer == NULL)
@@ -1154,11 +1145,11 @@
 - (size_t)writeBuffer: (const void *)buffer
 	       length: (size_t)length
 {
-	if (!_writeBuffered) {
+	if (!_buffersWrites) {
 		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
 							 length: length];
 
-		if (_blocking && bytesWritten < length)
+		if (_canBlock && bytesWritten < length)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
@@ -1800,12 +1791,12 @@
 	return (_readBufferLength > 0);
 }
 
-- (bool)isBlocking
+- (bool)canBlock
 {
-	return _blocking;
+	return _canBlock;
 }
 
-- (void)setBlocking: (bool)enable
+- (void)setCanBlock: (bool)canBlock
 {
 #if defined(HAVE_FCNTL) && !defined(OF_AMIGAOS)
 	bool readImplemented = false, writeImplemented = false;
@@ -1823,7 +1814,7 @@
 			    exceptionWithObject: self
 					  errNo: errno];
 
-		if (enable)
+		if (canBlock)
 			readFlags &= ~O_NONBLOCK;
 		else
 			readFlags |= O_NONBLOCK;
@@ -1849,7 +1840,7 @@
 			    exceptionWithObject: self
 					  errNo: errno];
 
-		if (enable)
+		if (canBlock)
 			writeFlags &= ~O_NONBLOCK;
 		else
 			writeFlags |= O_NONBLOCK;
@@ -1866,7 +1857,7 @@
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	_blocking = enable;
+	_canBlock = canBlock;
 #else
 	OF_UNRECOGNIZED_SELECTOR
 #endif
@@ -1916,7 +1907,7 @@
 	[self freeMemory: _writeBuffer];
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
-	_writeBuffered = false;
+	_buffersWrites = false;
 
 	_waitingForDelimiter = false;
 }

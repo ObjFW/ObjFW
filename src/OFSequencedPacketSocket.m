@@ -72,7 +72,7 @@
 		}
 
 		_socket = INVALID_SOCKET;
-		_blocking = true;
+		_canBlock = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -108,12 +108,12 @@
 	return [self retain];
 }
 
-- (bool)isBlocking
+- (bool)canBlock
 {
-	return _blocking;
+	return _canBlock;
 }
 
-- (void)setBlocking: (bool)enable
+- (void)setCanBlock: (bool)canBlock
 {
 #if defined(HAVE_FCNTL)
 	int flags = fcntl(_socket, F_GETFL, 0);
@@ -122,7 +122,7 @@
 		@throw [OFSetOptionFailedException exceptionWithObject: self
 								 errNo: errno];
 
-	if (enable)
+	if (canBlock)
 		flags &= ~O_NONBLOCK;
 	else
 		flags |= O_NONBLOCK;
@@ -131,16 +131,16 @@
 		@throw [OFSetOptionFailedException exceptionWithObject: self
 								 errNo: errno];
 
-	_blocking = enable;
+	_canBlock = canBlock;
 #elif defined(OF_WINDOWS)
-	u_long v = enable;
+	u_long v = canBlock;
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
-	_blocking = enable;
+	_canBlock = canBlock;
 #else
 	OF_UNRECOGNIZED_SELECTOR
 #endif

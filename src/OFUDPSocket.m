@@ -58,7 +58,7 @@
 				errNo: of_socket_errno()];
 	}
 
-	_blocking = true;
+	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	/* {} needed to avoid warning with Clang 10 if next #if is false. */

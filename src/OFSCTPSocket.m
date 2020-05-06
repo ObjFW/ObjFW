@@ -245,7 +245,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 			       socket: self
 				errNo: of_socket_errno()];
 
-	_blocking = true;
+	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -305,9 +305,9 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	}
 }
 
-- (void)setNoDelayEnabled: (bool)enabled
+- (void)setCanDelaySendingPackets: (bool)canDelaySendingPackets
 {
-	int v = enabled;
+	int v = !canDelaySendingPackets;
 
 	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_NODELAY,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
@@ -316,7 +316,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 				  errNo: of_socket_errno()];
 }
 
-- (bool)isNoDelayEnabled
+- (bool)canDelaySendingPackets
 {
 	int v;
 	socklen_t len = sizeof(v);
@@ -327,6 +327,6 @@ static const of_run_loop_mode_t connectRunLoopMode =
 		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
-	return v;
+	return !v;
 }
 @end

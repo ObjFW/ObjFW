@@ -112,25 +112,25 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
     OFReadyForWritingObserving>
 {
 	of_socket_t _socket;
-	bool _blocking;
+	bool _canBlock;
 #ifdef OF_WII
-	bool _broadcastAllowed;
+	bool _canSendToBroadcastAddresses;
 #endif
 	id <OFDatagramSocketDelegate> _Nullable _delegate;
 	OF_RESERVE_IVARS(4)
 }
 
 /*!
- * @brief Whether the socket is in blocking mode.
+ * @brief Whether the socket can block.
  *
- * By default, a socket is in blocking mode.
+ * By default, a socket can block.
  */
-@property (nonatomic, getter=isBlocking) bool blocking;
+@property (nonatomic) bool canBlock;
 
 /*!
- * @brief Whether the socket is allowed to send to broadcast addresses.
+ * @brief Whether the socket can send to broadcast addresses.
  */
-@property (nonatomic, getter=isBroadcastAllowed) bool broadcastAllowed;
+@property (nonatomic) bool canSendToBroadcastAddresses;
 
 /*!
  * @brief The delegate for asynchronous operations on the socket.
