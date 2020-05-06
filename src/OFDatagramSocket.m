@@ -140,7 +140,7 @@
 				  errNo: of_socket_errno()];
 
 #ifdef OF_WII
-	_canSendToBroadcastAddresses = allowed;
+	_canSendToBroadcastAddresses = canSendToBroadcastAddresses;
 #endif
 }
 
