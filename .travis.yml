@@ -252,6 +252,8 @@ before_install:
                             ;;
             esac;
 
+            pkgs="$pkgs libsctp-dev";
+
             if grep precise /etc/lsb-release >/dev/null; then
                     pkgs="$pkgs ipx";
             fi;

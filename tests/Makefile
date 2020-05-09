@@ -40,7 +40,6 @@ SRCS = ForwardingTests.m		\
        ScryptTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_IPX}			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
@@ -59,6 +58,7 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
+SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
@@ -66,7 +66,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFKernelEventObserverTests.m	\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       SocketTests.m
+	       SocketTests.m			\
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 

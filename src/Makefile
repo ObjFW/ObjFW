@@ -124,7 +124,6 @@ SRCS = OFASN1BitString.m		\
        scrypt.m				\
        ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_IPX}			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
@@ -138,6 +137,7 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
+SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
@@ -149,12 +149,13 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
-	       ${OF_SCTP_SOCKET_M}		\
 	       OFSequencedPacketSocket.m	\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       socket.m
+	       socket.m				\
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\

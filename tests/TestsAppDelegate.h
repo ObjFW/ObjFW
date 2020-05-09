@@ -202,14 +202,6 @@ enum {
 - (void)scryptTests;
 @end
 
-@interface TestsAppDelegate (OFSerializationTests)
-- (void)serializationTests;
-@end
-
-@interface TestsAppDelegate (OFSetTests)
-- (void)setTests;
-@end
-
 @interface TestsAppDelegate (OFSHA1HashTests)
 - (void)SHA1HashTests;
 @end
@@ -230,12 +222,24 @@ enum {
 - (void)SHA512HashTests;
 @end
 
+@interface TestsAppDelegate (OFSCTPSocketTests)
+- (void)SCTPSocketTests;
+@end
+
 @interface TestsAppDelegate (OFSPXSocketTests)
 - (void)SPXSocketTests;
 @end
 
 @interface TestsAppDelegate (OFSPXStreamSocketTests)
 - (void)SPXStreamSocketTests;
+@end
+
+@interface TestsAppDelegate (OFSerializationTests)
+- (void)serializationTests;
+@end
+
+@interface TestsAppDelegate (OFSetTests)
+- (void)setTests;
 @end
 
 @interface TestsAppDelegate (OFSystemInfoTests)

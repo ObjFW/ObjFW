@@ -1333,7 +1333,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
 		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
 			[Whether we have netinet/sctp.h])
-		AC_SUBST(OF_SCTP_SOCKET_M, OFSCTPSocket.m)
+		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 	AC_CHECK_HEADER(netipx/ipx.h, [
