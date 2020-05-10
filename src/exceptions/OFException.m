@@ -90,7 +90,7 @@ of_strerror(int errNo)
 	if (errNo == 0)
 		return @"Unknown error";
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 	/*
 	 * These were translated from WSAE* errors to errno and thus Win32's
 	 * strerror_r() does not know about them.
