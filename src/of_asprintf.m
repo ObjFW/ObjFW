@@ -99,17 +99,43 @@ OF_CONSTRUCTOR()
 static int
 vasprintf(char **string, const char *format, va_list arguments)
 {
-	int length;
+	int expectedLength, length;
 	va_list argumentsCopy;
 
 	va_copy(argumentsCopy, arguments);
 
-	if ((length = vsnprintf(NULL, 0, format, argumentsCopy)) < 0)
-		return length;
-	if ((*string = malloc((size_t)length + 1)) == NULL)
+	expectedLength = vsnprintf(NULL, 0, format, argumentsCopy);
+	if (expectedLength == -1)
+		/*
+		 * We have no way to know how large it is. Let's try 64 KB and
+		 * hope.
+		 */
+		expectedLength = 65535;
+
+	if ((*string = malloc((size_t)expectedLength + 1)) == NULL)
 		return -1;
 
-	return vsnprintf(*string, (size_t)length + 1, format, arguments);
+	length = vsnprintf(*string, (size_t)expectedLength + 1,
+	    format, arguments);
+
+	if (length == -1 || length > expectedLength) {
+		free(*string);
+		*string = NULL;
+		return -1;
+	}
+
+	/*
+	 * In case we could not determine the size, resize to the actual size
+	 * needed, but ignore any failure to do so.
+	 */
+	if (length < expectedLength) {
+		char *resized;
+
+		if ((resized = realloc(*string, length + 1)) != NULL)
+			*string = resized;
+	}
+
+	return length;
 }
 
 static int
@@ -551,6 +577,9 @@ formatConversionSpecifierState(struct context *ctx)
 		}
 
 #ifndef HAVE_ASPRINTF_L
+		if (tmpLen == -1)
+			return false;
+
 		/*
 		 * If there's no asprintf_l, we have no other choice than to
 		 * use this ugly hack to replace the locale's decimal point

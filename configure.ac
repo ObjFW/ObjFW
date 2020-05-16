@@ -40,7 +40,6 @@ case "$host" in
 		enable_threads="no"
 		enable_sockets="no"
 		enable_files="no"
-		ac_cv_snprintf_useful_ret="yes"
 		;;
 	m68k-*-amigaos*)
 		AS_IF([test x"$OBJCFLAGS" = x""], [
@@ -54,7 +53,6 @@ case "$host" in
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
 		supports_amiga_lib="yes"
-		ac_cv_snprintf_useful_ret="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
 			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
@@ -830,10 +828,14 @@ AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
-		*-psp-*)
-			dnl asprintf is broken on the PSP, but snprintf works.
+		*-*-mingw*)
+			dnl asprintf from MinGW is broken on older Windows
+			dnl versions
 			have_asprintf="no"
-			ac_cv_snprintf_useful_ret="yes"
+			;;
+		*-psp-*)
+			dnl asprintf is broken on the PSP
+			have_asprintf="no"
 			;;
 		*)
 			have_asprintf="yes"
@@ -843,29 +845,7 @@ AC_CHECK_FUNC(asprintf, [
 	esac
 ], [
 	have_asprintf="no"
-
-	AC_MSG_CHECKING(whether snprintf returns something useful)
-	AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
-		AC_TRY_RUN([
-			#include <stdio.h>
-
-			int
-			main()
-			{
-				return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
-			}
-		], [
-			ac_cv_snprintf_useful_ret="yes"
-		], [
-			ac_cv_snprintf_useful_ret="no"
-		], [
-			ac_cv_snprintf_useful_ret="no"
-		])
-	])
-	AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 ])
-test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
-	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
 AC_ARG_ENABLE(unicode-tables,
 	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
