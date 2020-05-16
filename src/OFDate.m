@@ -52,7 +52,7 @@ static OFMutex *mutex;
 #endif
 
 #ifdef OF_WINDOWS
-static WINAPI __time64_t (*func__mktime64)(struct tm *);
+static __time64_t (*func__mktime64)(struct tm *);
 #endif
 
 #ifdef HAVE_GMTIME_R
@@ -206,7 +206,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 #ifdef OF_WINDOWS
 	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
-		func__mktime64 = (WINAPI __time64_t (*)(struct tm *))
+		func__mktime64 = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
 #endif
 }
