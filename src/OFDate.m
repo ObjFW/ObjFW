@@ -51,6 +51,10 @@
 static OFMutex *mutex;
 #endif
 
+#ifdef OF_WINDOWS
+static WINAPI __time64_t (*func__mktime64)(struct tm *);
+#endif
+
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
 	time_t seconds = (time_t)_seconds;				\
@@ -186,14 +190,26 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 }
 
 @implementation OFDate
-#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
-    defined(OF_HAVE_THREADS)
 + (void)initialize
 {
-	if (self == [OFDate class])
-		mutex = [[OFMutex alloc] init];
-}
+#ifdef OF_WINDOWS
+	HMODULE module;
 #endif
+
+	if (self != [OFDate class])
+		return;
+
+#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
+    defined(OF_HAVE_THREADS)
+	mutex = [[OFMutex alloc] init];
+#endif
+
+#ifdef OF_WINDOWS
+	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+		func__mktime64 = (WINAPI __time64_t (*)(struct tm *))
+		    GetProcAddress(module, "_mktime64");
+#endif
+}
 
 + (instancetype)date
 {
@@ -317,12 +333,18 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 			@throw [OFInvalidFormatException exception];
 
 		if (tz == INT16_MAX) {
-#ifndef OF_WINDOWS
-			if ((_seconds = mktime(&tm)) == -1)
-				@throw [OFInvalidFormatException exception];
-#else
-			if ((_seconds = _mktime64(&tm)) == -1)
-				@throw [OFInvalidFormatException exception];
+#ifdef OF_WINDOWS
+			if (func__mktime64 != NULL) {
+				if ((_seconds = func__mktime64(&tm)) == -1)
+					@throw [OFInvalidFormatException
+					    exception];
+			} else {
+#endif
+				if ((_seconds = mktime(&tm)) == -1)
+					@throw [OFInvalidFormatException
+					    exception];
+#ifdef OF_WINDOWS
+			}
 #endif
 		} else
 			_seconds = tmAndTzToTime(&tm, &tz);
