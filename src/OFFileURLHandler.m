@@ -109,6 +109,8 @@ static OFMutex *readdirMutex;
 
 #ifdef OF_WINDOWS
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
+static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
+    LPSECURITY_ATTRIBUTES);
 #endif
 
 #ifdef OF_WINDOWS
@@ -498,10 +500,15 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = LoadLibrary("kernel32.dll")) != NULL)
+	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
 		func_CreateSymbolicLinkW =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
 		    GetProcAddress(module, "CreateSymbolicLinkW");
+		func_CreateHardLinkW =
+		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR,
+		    LPSECURITY_ATTRIBUTES))
+		    GetProcAddress(module, "CreateHardLinkW");
+	}
 #endif
 
 	/*
@@ -1166,7 +1173,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    destinationURL: destination
 				     errNo: errno];
 # else
-	if (!CreateHardLinkW(destinationPath.UTF16String,
+	if (func_CreateHardLinkW == NULL)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	if (!func_CreateHardLinkW(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
 		@throw [OFLinkFailedException
 		    exceptionWithSourceURL: source
