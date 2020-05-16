@@ -306,8 +306,9 @@ formatLengthModifierState(struct context *ctx)
 		break;
 	case 'z':
 #if defined(OF_WINDOWS)
-		if (!appendSubformat(ctx, "I", 1))
-			return false;
+		if (sizeof(size_t) == 8)
+			if (!appendSubformat(ctx, "I64", 3))
+				return false;
 #elif defined(_NEWLIB_VERSION)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
@@ -321,8 +322,9 @@ formatLengthModifierState(struct context *ctx)
 		break;
 	case 't':
 #if defined(OF_WINDOWS)
-		if (!appendSubformat(ctx, "I", 1))
-			return false;
+		if (sizeof(ptrdiff_t) == 8)
+			if (!appendSubformat(ctx, "I64", 3))
+				return false;
 #elif defined(_NEWLIB_VERSION)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
