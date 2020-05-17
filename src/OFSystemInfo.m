@@ -665,6 +665,13 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 }
 #endif
 
+#ifdef OF_WINDOWS
++ (bool)isWindowsNT
+{
+	return !(GetVersion() & 0x80000000);
+}
+#endif
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
