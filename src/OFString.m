@@ -41,6 +41,7 @@
 #endif
 #import "OFLocale.h"
 #import "OFStream.h"
+#import "OFSystemInfo.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
 #import "OFUTF8String.h"
@@ -2711,15 +2712,30 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
-	wchar_t buffer[512];
-	size_t length;
+	if ([OFSystemInfo isWindowsNT]) {
+		wchar_t buffer[512];
+		size_t length;
 
-	if ((length = ExpandEnvironmentStringsW(self.UTF16String, buffer,
-	    sizeof(buffer))) == 0)
-		return self;
+		if ((length = ExpandEnvironmentStringsW(self.UTF16String,
+		    buffer, sizeof(buffer))) == 0)
+			return self;
 
-	return [OFString stringWithUTF16String: buffer
-					length: length - 1];
+		return [OFString stringWithUTF16String: buffer
+						length: length - 1];
+	} else {
+		of_string_encoding_t encoding = [OFLocale encoding];
+		char buffer[512];
+		size_t length;
+
+		if ((length = ExpandEnvironmentStringsA(
+		    [self cStringWithEncoding: encoding], buffer,
+		    sizeof(buffer))) == 0)
+			return self;
+
+		return [OFString stringWithCString: buffer
+					  encoding: encoding
+					    length: length - 1];
+	}
 }
 #endif
 

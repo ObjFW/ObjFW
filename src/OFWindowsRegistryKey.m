@@ -19,6 +19,8 @@
 
 #import "OFWindowsRegistryKey.h"
 #import "OFData.h"
+#import "OFLocale.h"
+#import "OFSystemInfo.h"
 
 #include <windows.h>
 
@@ -108,8 +110,15 @@
 	LSTATUS status;
 	HKEY subKey;
 
-	if ((status = RegOpenKeyExW(_hKey, path.UTF16String, options,
-	    securityAndAccessRights, &subKey)) != ERROR_SUCCESS) {
+	if ([OFSystemInfo isWindowsNT])
+		status = RegOpenKeyExW(_hKey, path.UTF16String, options,
+		    securityAndAccessRights, &subKey);
+	else
+		status = RegOpenKeyExA(_hKey,
+		    [path cStringWithEncoding: [OFLocale encoding]], options,
+		    securityAndAccessRights, &subKey);
+
+	if (status != ERROR_SUCCESS) {
 		if (status == ERROR_FILE_NOT_FOUND) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
@@ -151,9 +160,17 @@
 	LSTATUS status;
 	HKEY subKey;
 
-	if ((status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
-	    NULL, options, securityAndAccessRights, securityAttributes,
-	    &subKey, NULL)) != ERROR_SUCCESS)
+	if ([OFSystemInfo isWindowsNT])
+		status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
+		    NULL, options, securityAndAccessRights, securityAttributes,
+		    &subKey, NULL);
+	else
+		status = RegCreateKeyExA(_hKey,
+		    [path cStringWithEncoding: [OFLocale encoding]], 0, NULL,
+		    options, securityAndAccessRights, securityAttributes,
+		    &subKey, NULL);
+
+	if (status != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
@@ -176,11 +193,17 @@
 	BYTE stackBuffer[256], *buffer = stackBuffer;
 	DWORD length = sizeof(stackBuffer);
 	OFMutableData *ret = nil;
+	bool winNT = [OFSystemInfo isWindowsNT];
 	LSTATUS status;
 
 	for (;;) {
-		status = RegQueryValueExW(_hKey, value.UTF16String, NULL, type,
-		    buffer, &length);
+		if (winNT)
+			status = RegQueryValueExW(_hKey, value.UTF16String,
+			    NULL, type, buffer, &length);
+		else
+			status = RegQueryValueExA(_hKey,
+			    [value cStringWithEncoding: [OFLocale encoding]],
+			    NULL, type, buffer, &length);
 
 		switch (status) {
 		case ERROR_SUCCESS:
@@ -229,8 +252,15 @@
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((status = RegSetValueExW(_hKey, value.UTF16String, 0, type,
-	    data.items, (DWORD)length)) != ERROR_SUCCESS)
+	if ([OFSystemInfo isWindowsNT])
+		status = RegSetValueExW(_hKey, value.UTF16String, 0, type,
+		    data.items, (DWORD)length);
+	else
+		status = RegSetValueExA(_hKey,
+		    [value cStringWithEncoding: [OFLocale encoding]], 0, type,
+		    data.items, (DWORD)length);
+
+	if (status != ERROR_SUCCESS)
 		@throw [OFSetWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
 				       value: value
@@ -252,8 +282,6 @@
 	DWORD type;
 	OFData *data = [self dataForValue: value
 				     type: &type];
-	const of_char16_t *UTF16String;
-	size_t length;
 	OFString *ret;
 
 	if (data == nil)
@@ -262,27 +290,50 @@
 	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_LINK)
 		@throw [OFInvalidEncodingException exception];
 
-	UTF16String = data.items;
-	length = data.count;
-
-	if (data.itemSize != 1 || length % 2 == 1)
+	if (data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
-	length /= 2;
+	if ([OFSystemInfo isWindowsNT]) {
+		const of_char16_t *UTF16String = data.items;
+		size_t length = data.count;
 
-	/*
-	 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data after it
-	 * that should be ignored.
-	 */
-	for (size_t i = 0; i < length; i++) {
-		if (UTF16String[i] == 0) {
-			length = i;
-			break;
+		if (length % 2 == 1)
+			@throw [OFInvalidFormatException exception];
+
+		length /= 2;
+
+		/*
+		 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data
+		 * after it that should be ignored.
+		 */
+		for (size_t i = 0; i < length; i++) {
+			if (UTF16String[i] == 0) {
+				length = i;
+				break;
+			}
 		}
-	}
 
-	ret = [[OFString alloc] initWithUTF16String: UTF16String
-					     length: length];
+		ret = [[OFString alloc] initWithUTF16String: UTF16String
+						     length: length];
+	} else {
+		const char *cString = data.items;
+		size_t length = data.count;
+
+		/*
+		 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data
+		 * after it that should be ignored.
+		 */
+		for (size_t i = 0; i < length; i++) {
+			if (cString[i] == 0) {
+				length = i;
+				break;
+			}
+		}
+
+		ret = [[OFString alloc] initWithCString: cString
+					       encoding: [OFLocale encoding]
+						 length: length];
+	}
 
 	if (typeOut != NULL)
 		*typeOut = type;
@@ -307,9 +358,19 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
-	data = [OFData dataWithItems: string.UTF16String
-			    itemSize: sizeof(of_char16_t)
-			       count: string.UTF16StringLength + 1];
+	if ([OFSystemInfo isWindowsNT])
+		data = [OFData dataWithItems: string.UTF16String
+				    itemSize: sizeof(of_char16_t)
+				       count: string.UTF16StringLength + 1];
+	else {
+		of_string_encoding_t encoding = [OFLocale encoding];
+		const char *cString = [string cStringWithEncoding: encoding];
+		size_t length = [string cStringLengthWithEncoding: encoding];
+
+		data = [OFData dataWithItems: cString
+				       count: length + 1];
+	}
+
 	[self setData: data
 	     forValue: value
 		 type: type];
@@ -322,8 +383,13 @@
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
 
-	if ((status = RegDeleteValueW(_hKey, value.UTF16String)) !=
-	    ERROR_SUCCESS)
+	if ([OFSystemInfo isWindowsNT])
+		status = RegDeleteValueW(_hKey, value.UTF16String);
+	else
+		status = RegDeleteValueA(_hKey,
+		    [value cStringWithEncoding: [OFLocale encoding]]);
+
+	if (status != ERROR_SUCCESS)
 		@throw [OFDeleteWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
 				       value: value
@@ -337,8 +403,13 @@
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
 
-	if ((status = RegDeleteKeyW(_hKey, subkeyPath.UTF16String)) !=
-	    ERROR_SUCCESS)
+	if ([OFSystemInfo isWindowsNT])
+		status = RegDeleteKeyW(_hKey, subkeyPath.UTF16String);
+	else
+		status = RegDeleteKeyA(_hKey,
+		    [subkeyPath cStringWithEncoding: [OFLocale encoding]]);
+
+	if (status != ERROR_SUCCESS)
 		@throw [OFDeleteWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 				  subkeyPath: subkeyPath
