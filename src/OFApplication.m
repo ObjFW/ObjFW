@@ -39,6 +39,7 @@
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 #import "OFThread+Private.h"
 #import "OFThread.h"
 
@@ -112,14 +113,15 @@ of_application_main(int *argc, char **argv[],
 
 	app = [[OFApplication alloc] of_init];
 
-	[app of_setArgumentCount: argc
-	       andArgumentValues: argv];
-
 #ifdef OF_WINDOWS
-	__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-	[app of_setArgumentCount: wargc
-	   andWideArgumentValues: wargv];
+	if ([OFSystemInfo isWindowsNT]) {
+		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
+		[app of_setArgumentCount: wargc
+		   andWideArgumentValues: wargv];
+	} else
 #endif
+		[app of_setArgumentCount: argc
+		       andArgumentValues: argv];
 
 	app.delegate = delegate;
 
@@ -224,47 +226,97 @@ SIGNAL_HANDLER(SIGUSR2)
 		atexit(atexitHandler);
 
 #if defined(OF_WINDOWS)
-		of_char16_t *env, *env0;
-		env = env0 = GetEnvironmentStringsW();
+		if ([OFSystemInfo isWindowsNT]) {
+			of_char16_t *env, *env0;
+			env = env0 = GetEnvironmentStringsW();
 
-		while (*env != 0) {
-			void *pool = objc_autoreleasePoolPush();
-			OFString *tmp, *key, *value;
-			size_t length, pos;
+			while (*env != 0) {
+				void *pool = objc_autoreleasePoolPush();
+				OFString *tmp, *key, *value;
+				size_t length, pos;
 
-			length = of_string_utf16_length(env);
-			tmp = [OFString stringWithUTF16String: env
-						       length: length];
-			env += length + 1;
+				length = of_string_utf16_length(env);
+				tmp = [OFString stringWithUTF16String: env
+							       length: length];
+				env += length + 1;
 
-			/*
-			 * cmd.exe seems to add some special variables which
-			 * start with a "=", even though variable names are not
-			 * allowed to contain a "=".
-			 */
-			if ([tmp hasPrefix: @"="]) {
+				/*
+				 * cmd.exe seems to add some special variables
+				 * which start with a "=", even though variable
+				 * names are not allowed to contain a "=".
+				 */
+				if ([tmp hasPrefix: @"="]) {
+					objc_autoreleasePoolPop(pool);
+					continue;
+				}
+
+				pos = [tmp rangeOfString: @"="].location;
+				if (pos == OF_NOT_FOUND) {
+					fprintf(stderr,
+					    "Warning: Invalid environment "
+					    "variable: %s\n", tmp.UTF8String);
+					continue;
+				}
+
+				key = [tmp substringWithRange:
+				    of_range(0, pos)];
+				value = [tmp substringWithRange:
+				    of_range(pos + 1, tmp.length - pos - 1)];
+
+				[_environment setObject: value
+						 forKey: key];
+
 				objc_autoreleasePoolPop(pool);
-				continue;
 			}
 
-			pos = [tmp rangeOfString: @"="].location;
-			if (pos == OF_NOT_FOUND) {
-				fprintf(stderr, "Warning: Invalid environment "
-				    "variable: %s\n", [tmp UTF8String]);
-				continue;
+			FreeEnvironmentStringsW(env0);
+		} else {
+			char *env, *env0;
+			env = env0 = GetEnvironmentStringsA();
+
+			while (*env != 0) {
+				void *pool = objc_autoreleasePoolPush();
+				OFString *tmp, *key, *value;
+				size_t length, pos;
+
+				length = strlen(env);
+				tmp = [OFString
+				    stringWithCString: env
+					     encoding: [OFLocale encoding]
+					       length: length];
+				env += length + 1;
+
+				/*
+				 * cmd.exe seems to add some special variables
+				 * which start with a "=", even though variable
+				 * names are not allowed to contain a "=".
+				 */
+				if ([tmp hasPrefix: @"="]) {
+					objc_autoreleasePoolPop(pool);
+					continue;
+				}
+
+				pos = [tmp rangeOfString: @"="].location;
+				if (pos == OF_NOT_FOUND) {
+					fprintf(stderr,
+					    "Warning: Invalid environment "
+					    "variable: %s\n", tmp.UTF8String);
+					continue;
+				}
+
+				key = [tmp substringWithRange:
+				    of_range(0, pos)];
+				value = [tmp substringWithRange:
+				    of_range(pos + 1, tmp.length - pos - 1)];
+
+				[_environment setObject: value
+						 forKey: key];
+
+				objc_autoreleasePoolPop(pool);
 			}
 
-			key = [tmp substringWithRange: of_range(0, pos)];
-			value = [tmp substringWithRange:
-			    of_range(pos + 1, tmp.length - pos - 1)];
-
-			[_environment setObject: value
-					 forKey: key];
-
-			objc_autoreleasePoolPop(pool);
+			FreeEnvironmentStringsA(env0);
 		}
-
-		FreeEnvironmentStringsW(env0);
 #elif defined(OF_AMIGAOS)
 		void *pool = objc_autoreleasePoolPush();
 		OFFileManager *fileManager = [OFFileManager defaultManager];
@@ -438,7 +490,6 @@ SIGNAL_HANDLER(SIGUSR2)
 - (void)of_setArgumentCount: (int *)argc
 	  andArgumentValues: (char ***)argv
 {
-#ifndef OF_WINDOWS
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
 	of_string_encoding_t encoding;
@@ -448,12 +499,11 @@ SIGNAL_HANDLER(SIGUSR2)
 
 	encoding = [OFLocale encoding];
 
-# ifndef OF_NINTENDO_DS
+#ifndef OF_NINTENDO_DS
 	if (*argc > 0) {
-# else
-	if (__system_argv->argvMagic == ARGV_MAGIC &&
-	    __system_argv->argc > 0) {
-# endif
+#else
+	if (__system_argv->argvMagic == ARGV_MAGIC && __system_argv->argc > 0) {
+#endif
 		_programName = [[OFString alloc] initWithCString: (*argv)[0]
 							encoding: encoding];
 		arguments = [[OFMutableArray alloc] init];
@@ -468,10 +518,6 @@ SIGNAL_HANDLER(SIGUSR2)
 	}
 
 	objc_autoreleasePoolPop(pool);
-#else
-	_argc = argc;
-	_argv = argv;
-#endif
 }
 
 #ifdef OF_WINDOWS
