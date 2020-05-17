@@ -51,6 +51,7 @@
 #import "OFData.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -138,17 +139,17 @@ codepageToEncoding(UINT codepage)
 		OFMutableData *rest = nil;
 		size_t i = 0;
 
-		if (!ReadConsoleW(_handle, UTF16, (DWORD)length, &UTF16Len,
-		    NULL)) {
-			of_string_encoding_t encoding;
-			OFString *string;
-			size_t stringLen;
-
-			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!ReadConsoleW(_handle, UTF16, (DWORD)length,
+			    &UTF16Len, NULL))
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: length * 2
 						  errNo: EIO];
+		} else {
+			of_string_encoding_t encoding;
+			OFString *string;
+			size_t stringLen;
 
 			if (!ReadConsoleA(_handle, (char *)UTF16, (DWORD)length,
 			    &UTF16Len, NULL))
@@ -315,25 +316,22 @@ codepageToEncoding(UINT codepage)
 			}
 		}
 
-		if (!WriteConsoleW(_handle, UTF16, UTF16Len, &bytesWritten,
-		    NULL)) {
-			void *pool;
-			OFString *string;
-			of_string_encoding_t encoding;
-			size_t nativeLen;
-
-			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!WriteConsoleW(_handle, UTF16, UTF16Len,
+			    &bytesWritten, NULL))
 				@throw [OFWriteFailedException
 				    exceptionWithObject: self
 					requestedLength: UTF16Len * 2
 					   bytesWritten: bytesWritten * 2
 						  errNo: EIO];
-
-			pool = objc_autoreleasePoolPush();
-			string = [OFString stringWithUTF16String: UTF16
-							  length: UTF16Len];
-			encoding = codepageToEncoding(GetConsoleOutputCP());
-			nativeLen = [string
+		} else {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *string = [OFString
+			    stringWithUTF16String: UTF16
+					   length: UTF16Len];
+			of_string_encoding_t encoding =
+			    codepageToEncoding(GetConsoleOutputCP());
+			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];
 
 			if (nativeLen > UINT32_MAX)
@@ -403,25 +401,21 @@ codepageToEncoding(UINT codepage)
 		if (j > UINT32_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		if (!WriteConsoleW(_handle, tmp, (DWORD)j, &bytesWritten,
-		    NULL)) {
-			void *pool;
-			OFString *string;
-			of_string_encoding_t encoding;
-			size_t nativeLen;
-
-			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!WriteConsoleW(_handle, tmp, (DWORD)j,
+			    &bytesWritten, NULL))
 				@throw [OFWriteFailedException
 				    exceptionWithObject: self
 					requestedLength: j * 2
 					   bytesWritten: bytesWritten * 2
 						  errNo: EIO];
-
-			pool = objc_autoreleasePoolPush();
-			string = [OFString stringWithUTF16String: tmp
-							  length: j];
-			encoding = codepageToEncoding(GetConsoleOutputCP());
-			nativeLen = [string
+		} else {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *string = [OFString stringWithUTF16String: tmp
+								    length: j];
+			of_string_encoding_t encoding =
+			    codepageToEncoding(GetConsoleOutputCP());
+			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];
 
 			if (nativeLen > UINT32_MAX)
