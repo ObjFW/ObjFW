@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <string.h>
 
 #import "TestsAppDelegate.h"
@@ -34,9 +35,25 @@ static OFString *module = @"OFSCTPSocket";
 	TEST(@"+[socket]", (server = [OFSCTPSocket socket]) &&
 	    (client = [OFSCTPSocket socket]))
 
-	TEST(@"-[bindToHost:port:]",
-	    (port = [server bindToHost: @"127.0.0.1"
-				  port: 0]))
+	@try {
+		TEST(@"-[bindToHost:port:]",
+		    (port = [server bindToHost: @"127.0.0.1"
+					  port: 0]))
+	} @catch (OFBindFailedException *e) {
+		switch (e.errNo) {
+		case EPROTONOSUPPORT:
+			[self outputString: @"[OFSCTPSocket] "
+					    @"-[bindToHost:port:]: SCTP "
+					    @"unsupported, skipping tests\n"
+				   inColor: GREEN];
+			break;
+		default:
+			@throw e;
+		}
+
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
 
 	TEST(@"-[listen]", R([server listen]))
 
