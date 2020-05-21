@@ -84,9 +84,46 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setBackgroundColor: (OFColor *)color;
 
 /*!
- * @brief Resets forward and background color.
+ * @brief Resets all attributes (color, bold, etc.). Does nothing if there is
+ *	  no underlying terminal.
  */
-- (void)resetColor;
+- (void)reset;
+
+/*!
+ * @brief Clears the entire underlying terminal. Does nothing if there is no
+ *	  underlying terminal.
+ */
+- (void)clear;
+
+/*!
+ * @brief Erases the entire current line on the underlying terminal. Does
+ *	  nothing if there is no underlying terminal.
+ */
+- (void)eraseLine;
+
+/*!
+ * @brief Moves the cursor to the specified column in the current row. Does
+ *	  nothing if there is no underlying terminal.
+ *
+ * @param column The column in the current row to move the cursor to
+ */
+- (void)setCursorColumn: (unsigned int)column;
+
+/*!
+ * @brief Moves the cursor to the specified absolute position. Does nothing if
+ *	  there is no underlying terminal.
+ *
+ * @param position The position to move the cursor to
+ */
+- (void)setCursorPosition: (of_point_t)position;
+
+/*!
+ * @brief Moves the cursor to the specified relative position. Does nothing if
+ *	  there is no underlying terminal.
+ *
+ * @param position The position to move the cursor to
+ */
+- (void)setRelativeCursorPosition: (of_point_t)position;
 @end
 
 #ifdef __cplusplus

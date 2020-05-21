@@ -443,13 +443,72 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)resetColor
+- (void)reset
 {
 #ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
 	[self writeString: @"\033[0m"];
+#endif
+}
+
+- (void)clear
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[2J"];
+#endif
+}
+
+- (void)eraseLine
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[2K"];
+#endif
+}
+
+- (void)setCursorColumn: (unsigned int)column
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	[self writeFormat: @"\033[%uG", column + 1];
+#endif
+}
+
+- (void)setCursorPosition: (of_point_t)position
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	[self writeFormat: @"\033[%u;%uH",
+			   (unsigned)position.y + 1, (unsigned)position.x + 1];
+#endif
+}
+
+- (void)setRelativeCursorPosition: (of_point_t)position
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	if (position.x > 0)
+		[self writeFormat: @"\033[%uC", (unsigned)position.x];
+	else if (position.x < 0)
+		[self writeFormat: @"\033[%uD", (unsigned)-position.x];
+
+	if (position.y > 0)
+		[self writeFormat: @"\033[%uB", (unsigned)position.y];
+	else if (position.y < 0)
+		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
 #endif
 }
 @end
