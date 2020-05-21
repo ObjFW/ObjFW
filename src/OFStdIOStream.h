@@ -26,6 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
+@class OFColor;
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -64,6 +66,27 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) int rows;
 
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Sets the foreground color on the underlying terminal. Does nothing if
+ *	  there is no underlying terminal or colors are unsupported.
+ *
+ * @param color The foreground color to set
+ */
+- (void)setForegroundColor: (OFColor *)color;
+
+/*!
+ * @brief Sets the background color on the underlying terminal. Does nothing if
+ *	  there is no underlying terminal or colors are unsupported.
+ *
+ * @param color The background color to set
+ */
+- (void)setBackgroundColor: (OFColor *)color;
+
+/*!
+ * @brief Resets forward and background color.
+ */
+- (void)resetColor;
 @end
 
 #ifdef __cplusplus

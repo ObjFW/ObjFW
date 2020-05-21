@@ -30,6 +30,7 @@
 
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
+#import "OFColor.h"
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
@@ -95,6 +96,47 @@ of_log(OFConstantString *format, ...)
 
 	objc_autoreleasePoolPop(pool);
 }
+
+#ifdef HAVE_ISATTY
+static int
+colorToANSI(OFColor *color)
+{
+	if ([color isEqual: [OFColor black]])
+		return 30;
+	if ([color isEqual: [OFColor maroon]])
+		return 31;
+	if ([color isEqual: [OFColor green]])
+		return 32;
+	if ([color isEqual: [OFColor olive]])
+		return 33;
+	if ([color isEqual: [OFColor navy]])
+		return 34;
+	if ([color isEqual: [OFColor purple]])
+		return 35;
+	if ([color isEqual: [OFColor teal]])
+		return 36;
+	if ([color isEqual: [OFColor silver]])
+		return 37;
+	if ([color isEqual: [OFColor grey]])
+		return 90;
+	if ([color isEqual: [OFColor red]])
+		return 91;
+	if ([color isEqual: [OFColor lime]])
+		return 92;
+	if ([color isEqual: [OFColor yellow]])
+		return 93;
+	if ([color isEqual: [OFColor blue]])
+		return 94;
+	if ([color isEqual: [OFColor fuchsia]])
+		return 95;
+	if ([color isEqual: [OFColor aqua]])
+		return 96;
+	if ([color isEqual: [OFColor white]])
+		return 97;
+
+	return -1;
+}
+#endif
 
 @implementation OFStdIOStream
 #ifndef OF_WINDOWS
@@ -368,6 +410,46 @@ of_log(OFConstantString *format, ...)
 	return ws.ws_row;
 #else
 	return -1;
+#endif
+}
+
+- (void)setForegroundColor: (OFColor *)color
+{
+#ifdef HAVE_ISATTY
+	int code;
+
+	if (!isatty(_fd))
+		return;
+
+	if ((code = colorToANSI(color)) == -1)
+		return;
+
+	[self writeFormat: @"\033[%um", code];
+#endif
+}
+
+- (void)setBackgroundColor: (OFColor *)color
+{
+#ifdef HAVE_ISATTY
+	int code;
+
+	if (!isatty(_fd))
+		return;
+
+	if ((code = colorToANSI(color)) == -1)
+		return;
+
+	[self writeFormat: @"\033[%um", code + 10];
+#endif
+}
+
+- (void)resetColor
+{
+#ifdef HAVE_ISATTY
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[0m"];
 #endif
 }
 @end

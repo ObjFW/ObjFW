@@ -1562,6 +1562,7 @@ AS_IF([test x"$have_processes" = x"yes"], [
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])
+AC_CHECK_FUNCS(isatty)
 
 AC_CHECK_FUNC(pledge, [
 	AC_DEFINE(OF_HAVE_PLEDGE, 1, [Whether we have pledge()])
