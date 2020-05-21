@@ -25,15 +25,15 @@
 
 @implementation OFColor
 #define PREDEFINED_COLOR(name, r, g, b)					\
-	static OFColor *name = nil;					\
+	static OFColor *name##Color = nil;				\
 									\
 	static void							\
 	initPredefinedColor_##name(void)				\
 	{								\
-		name = [[OFColor alloc] initWithRed: r			\
-					      green: g			\
-					       blue: b			\
-					      alpha: 1];		\
+		name##Color = [[OFColor alloc] initWithRed: r		\
+						     green: g		\
+						      blue: b		\
+						     alpha: 1];		\
 	}								\
 									\
 	+ (OFColor *)name						\
@@ -41,7 +41,7 @@
 		static of_once_t onceControl = OF_ONCE_INIT;		\
 		of_once(&onceControl, initPredefinedColor_##name);	\
 									\
-		return name;						\
+		return name##Color;					\
 	}
 
 PREDEFINED_COLOR(black,   0.00, 0.00, 0.00)
