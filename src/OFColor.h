@@ -30,6 +30,25 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(4)
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) OFColor *black;
+@property (class, readonly, nonatomic) OFColor *silver;
+@property (class, readonly, nonatomic) OFColor *grey;
+@property (class, readonly, nonatomic) OFColor *white;
+@property (class, readonly, nonatomic) OFColor *maroon;
+@property (class, readonly, nonatomic) OFColor *red;
+@property (class, readonly, nonatomic) OFColor *purple;
+@property (class, readonly, nonatomic) OFColor *fuchsia;
+@property (class, readonly, nonatomic) OFColor *green;
+@property (class, readonly, nonatomic) OFColor *lime;
+@property (class, readonly, nonatomic) OFColor *olive;
+@property (class, readonly, nonatomic) OFColor *yellow;
+@property (class, readonly, nonatomic) OFColor *navy;
+@property (class, readonly, nonatomic) OFColor *blue;
+@property (class, readonly, nonatomic) OFColor *teal;
+@property (class, readonly, nonatomic) OFColor *aqua;
+#endif
+
 /*!
  * @brief Creates a new color with the specified red, green, blue and alpha
  *	  value.
@@ -44,6 +63,150 @@ OF_ASSUME_NONNULL_BEGIN
 		       green: (float)green
 			blue: (float)blue
 		       alpha: (float)alpha;
+
+/*!
+ * @brief Returns the HTML color `black`.
+ *
+ * The RGBA value is (0, 0, 0, 1).
+ *
+ * @return The HTML color `black`
+ */
++ (OFColor *)black;
+
+/*!
+ * @brief Returns the HTML color `silver`.
+ *
+ * The RGBA value is (0.75, 0.75, 0.75, 1).
+ *
+ * @return The HTML color `silver`
+ */
++ (OFColor *)silver;
+
+/*!
+ * @brief Returns the HTML color `grey`.
+ *
+ * The RGBA value is (0.5, 0.5, 0.5, 1).
+ *
+ * @return The HTML color `grey`
+ */
++ (OFColor *)grey;
+
+/*!
+ * @brief Returns the HTML color `white`.
+ *
+ * The RGBA value is (1, 1, 1, 1).
+ *
+ * @return The HTML color `white`
+ */
++ (OFColor *)white;
+
+/*!
+ * @brief Returns the HTML color `maroon`.
+ *
+ * The RGBA value is (0.5, 0, 0, 1).
+ *
+ * @return The HTML color `maroon`
+ */
++ (OFColor *)maroon;
+
+/*!
+ * @brief Returns the HTML color `red`.
+ *
+ * The RGBA value is (1, 0, 0, 1).
+ *
+ * @return The HTML color `red`
+ */
++ (OFColor *)red;
+
+/*!
+ * @brief Returns the HTML color `purple`.
+ *
+ * The RGBA value is (0.5, 0, 0.5, 1).
+ *
+ * @return The HTML color `purple`
+ */
++ (OFColor *)purple;
+
+/*!
+ * @brief Returns the HTML color `fuchsia`.
+ *
+ * The RGBA value is (1, 0, 1, 1).
+ *
+ * @return The HTML color `fuchsia`
+ */
++ (OFColor *)fuchsia;
+
+/*!
+ * @brief Returns the HTML color `green`.
+ *
+ * The RGBA value is (0, 0.5, 0, 1).
+ *
+ * @return The HTML color `green`
+ */
++ (OFColor *)green;
+
+/*!
+ * @brief Returns the HTML color `lime`.
+ *
+ * The RGBA value is (0, 1, 0, 1).
+ *
+ * @return The HTML color `lime`
+ */
++ (OFColor *)lime;
+
+/*!
+ * @brief Returns the HTML color `olive`.
+ *
+ * The RGBA value is (0.5, 0.5, 0, 1).
+ *
+ * @return The HTML color `olive`
+ */
++ (OFColor *)olive;
+
+/*!
+ * @brief Returns the HTML color `yellow`.
+ *
+ * The RGBA value is (1, 1, 0, 1).
+ *
+ * @return The HTML color `yellow`
+ */
++ (OFColor *)yellow;
+
+/*!
+ * @brief Returns the HTML color `navy`.
+ *
+ * The RGBA value is (0, 0, 0.5, 1).
+ *
+ * @return The HTML color `navy`
+ */
++ (OFColor *)navy;
+
+/*!
+ * @brief Returns the HTML color `blue`.
+ *
+ * The RGBA value is (0, 0, 1, 1).
+ *
+ * @return The HTML color `blue`
+ */
++ (OFColor *)blue;
+
+/*!
+ * @brief Returns the HTML color `teal`.
+ *
+ * The RGBA value is (0, 0.5, 0.5, 1).
+ *
+ * @return The HTML color `teal`
+ */
++ (OFColor *)teal;
+
+/*!
+ * @brief Returns the HTML color `aqua`.
+ *
+ * The RGBA value is (0, 1, 1, 1).
+ *
+ * @return The HTML color `aqua`
+ */
++ (OFColor *)aqua;
 
 /*!
  * @brief Initializes an already allocated color with the specified red, green,
