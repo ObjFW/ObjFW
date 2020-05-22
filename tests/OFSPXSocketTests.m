@@ -92,20 +92,22 @@ static OFString *module = @"OFSPXSocket";
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
-			[self outputString: @"[OFSPXSocket] -[bindToPort:]: "
-					    @"IPX unsupported, skipping tests\n"
-				   inColor: GREEN];
+			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout writeLine:
+			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
-			[self outputString: @"[OFSPXSocket] -[bindToPort:]: "
-					    @"SPX unsupported, skipping tests\n"
-				   inColor: GREEN];
+			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout writeLine:
+			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
-			[self outputString: @"[OFSPXSocket] -[bindToPort:]: "
-					    @"IPX not configured, skipping "
-					    @"tests\n"
-				   inColor: GREEN];
+			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout writeLine:
+			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"IPX not configured, skipping tests"];
 			break;
 		default:
 			@throw e;

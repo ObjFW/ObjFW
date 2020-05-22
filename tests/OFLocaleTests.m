@@ -19,21 +19,24 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFLocale";
-
 @implementation TestsAppDelegate (OFLocaleTests)
 - (void)localeTests
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	PRINT(GREEN, @"Language: %@", [OFLocale language]);
+	of_stdout.foregroundColor = [OFColor lime];
 
-	PRINT(GREEN, @"Territory: %@", [OFLocale territory]);
+	[of_stdout writeFormat: @"[OFLocale]: Language: %@\n",
+	    [OFLocale language]];
 
-	PRINT(GREEN, @"Encoding: %@",
-	    of_string_name_of_encoding([OFLocale encoding]));
+	[of_stdout writeFormat: @"[OFLocale]: Territory: %@\n",
+	    [OFLocale territory]];
 
-	PRINT(GREEN, @"Decimal point: %@", [OFLocale decimalPoint]);
+	[of_stdout writeFormat: @"[OFLocale]: Encoding: %@\n",
+	    of_string_name_of_encoding([OFLocale encoding])];
+
+	[of_stdout writeFormat: @"[OFLocale]: Decimal point: %@\n",
+	    [OFLocale decimalPoint]];
 
 	objc_autoreleasePoolPop(pool);
 }

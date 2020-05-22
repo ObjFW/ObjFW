@@ -42,10 +42,10 @@ static OFString *module = @"OFSCTPSocket";
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
-			[self outputString: @"[OFSCTPSocket] "
-					    @"-[bindToHost:port:]: SCTP "
-					    @"unsupported, skipping tests\n"
-				   inColor: GREEN];
+			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout writeLine:
+			    @"[OFSCTPSocket] -[bindToHost:port:]: "
+			    @"SCTP unsupported, skipping tests"];
 			break;
 		default:
 			@throw e;

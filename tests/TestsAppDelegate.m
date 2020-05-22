@@ -155,13 +155,14 @@ main(int argc, char *argv[])
 		    @"\nBacktrace:\n  %@\n\n",
 		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
-		[delegate outputString: string
-			       inColor: RED];
-		[delegate outputString: backtrace
-			       inColor: RED];
+		of_stdout.foregroundColor = [OFColor red];
+		[of_stdout writeString: string];
+		[of_stdout writeString: backtrace];
+
 # if defined(OF_WII)
-		[delegate outputString: @"Press home button to exit!\n"
-			       inColor: NO_COLOR];
+		[of_stdout reset];
+		[of_stdout writeString: @"Press home button to exit!"];
+
 		for (;;) {
 			WPAD_ScanPads();
 
@@ -173,8 +174,9 @@ main(int argc, char *argv[])
 # elif defined(OF_PSP)
 		sceKernelSleepThreadCB();
 # elif defined(OF_NINTENDO_DS)
-		[delegate outputString: @"Press start button to exit!"
-			       inColor: NO_COLOR];
+		[of_stdout reset];
+		[of_stdout writeString: @"Press start button to exit!"];
+
 		for (;;) {
 			swiWaitForVBlank();
 			scanKeys();
@@ -182,8 +184,9 @@ main(int argc, char *argv[])
 				[OFApplication terminateWithStatus: 1];
 		}
 # elif defined(OF_NINTENDO_3DS)
-		[delegate outputString: @"Press start button to exit!"
-			       inColor: NO_COLOR];
+		[of_stdout reset];
+		[of_stdout writeString: @"Press start button to exit!"];
+
 		for (;;) {
 			hidScanInput();
 
@@ -203,90 +206,27 @@ main(int argc, char *argv[])
 }
 
 @implementation TestsAppDelegate
-- (void)outputString: (OFString *)str
-	     inColor: (int)color
-{
-#if defined(OF_PSP)
-	char space = ' ';
-	int y = pspDebugScreenGetY();
-
-	pspDebugScreenSetXY(0, y);
-	for (uint8_t i = 0; i < 68; i++)
-		pspDebugScreenPrintData(&space, 1);
-
-	switch (color) {
-	case NO_COLOR:
-		pspDebugScreenSetTextColor(0xFFFFFF);
-		break;
-	case RED:
-		pspDebugScreenSetTextColor(0x0000FF);
-		break;
-	case GREEN:
-		pspDebugScreenSetTextColor(0x00FF00);
-		break;
-	case YELLOW:
-		pspDebugScreenSetTextColor(0x00FFFF);
-		break;
-	}
-
-	pspDebugScreenSetXY(0, y);
-	pspDebugScreenPrintData(str.UTF8String, str.UTF8StringLength);
-#elif defined(STDOUT)
-	switch (color) {
-	case NO_COLOR:
-		[of_stdout writeString: @"\r\033[K"];
-# if defined(OF_WII) || defined(OF_NINTENDO_DS)
-		[of_stdout writeString: @"\033[37m"];
-# endif
-		break;
-	case RED:
-		[of_stdout writeString: @"\r\033[K\033[31;1m"];
-		break;
-	case GREEN:
-		[of_stdout writeString: @"\r\033[K\033[32;1m"];
-		break;
-	case YELLOW:
-		[of_stdout writeString: @"\r\033[K\033[33;1m"];
-		break;
-	}
-
-	[of_stdout writeString: str];
-	[of_stdout writeString: @"\033[m"];
-#elif defined(STDOUT_SIMPLE)
-	[of_stdout writeString: str];
-#else
-# error No output method!
-#endif
-}
-
 - (void)outputTesting: (OFString *)test
 	     inModule: (OFString *)module
 {
-	void *pool = objc_autoreleasePoolPush();
 #ifndef STDOUT_SIMPLE
-	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
-							module, test]
-		   inColor: YELLOW];
+	of_stdout.foregroundColor = [OFColor yellow];
+	[of_stdout writeFormat: @"[%@] %@: testing...", module, test];
 #else
-	[self outputString: [OFString stringWithFormat: @"[%@] %@: ",
-							module, test]
-		   inColor: YELLOW];
+	[of_stdout writeFormat: @"[%@] %@: ", module, test];
 #endif
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)outputSuccess: (OFString *)test
 	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
-	void *pool = objc_autoreleasePoolPush();
-	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
-							module, test]
-		   inColor: GREEN];
-	objc_autoreleasePoolPop(pool);
+	of_stdout.cursorColumn = 0;
+	of_stdout.foregroundColor = [OFColor lime];
+	[of_stdout eraseLine];
+	[of_stdout writeFormat: @"[%@] %@: ok\n", module, test];
 #else
-	[self outputString: @"ok\n"
-		   inColor: GREEN];
+	[of_stdout writeLine: @"ok"];
 #endif
 }
 
@@ -294,15 +234,15 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
-	void *pool = objc_autoreleasePoolPush();
-	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
-							module, test]
-		   inColor: RED];
-	objc_autoreleasePoolPop(pool);
+	of_stdout.cursorColumn = 0;
+	of_stdout.foregroundColor = [OFColor red];
+	[of_stdout eraseLine];
+	[of_stdout writeFormat: @"[%@] %@: failed\n", module, test];
 
 # ifdef OF_WII
-	[self outputString: @"Press A to continue!\n"
-		   inColor: NO_COLOR];
+	[of_stdout reset];
+	[of_stdout writeLine: @"Press A to continue!"];
+
 	for (;;) {
 		WPAD_ScanPads();
 
@@ -313,8 +253,9 @@ main(int argc, char *argv[])
 	}
 # endif
 # ifdef OF_PSP
-	[self outputString: @"Press X to continue!\n"
-		   inColor: NO_COLOR];
+	[of_stdout reset];
+	[of_stdout writeLine: @"Press X to continue!"];
+
 	for (;;) {
 		SceCtrlData pad;
 
@@ -329,8 +270,9 @@ main(int argc, char *argv[])
 	}
 # endif
 # ifdef OF_NINTENDO_DS
-	[self outputString: @"Press A to continue!"
-		   inColor: NO_COLOR];
+	[of_stdout reset];
+	[of_stdout writeString: @"Press A to continue!"];
+
 	for (;;) {
 		swiWaitForVBlank();
 		scanKeys();
@@ -339,8 +281,9 @@ main(int argc, char *argv[])
 	}
 # endif
 # ifdef OF_NINTENDO_3DS
-	[self outputString: @"Press A to continue!"
-		   inColor: NO_COLOR];
+	[of_stdout reset];
+	[of_stdout writeString: @"Press A to continue!"];
+
 	for (;;) {
 		hidScanInput();
 
@@ -350,9 +293,12 @@ main(int argc, char *argv[])
 		gspWaitForVBlank();
 	}
 # endif
+
+	of_stdout.cursorColumn = 0;
+	[of_stdout reset];
+	[of_stdout eraseLine];
 #else
-	[self outputString: @"failed\n"
-		   inColor: RED];
+	[of_stdout writeLine: @"failed"];
 #endif
 }
 
@@ -459,14 +405,14 @@ main(int argc, char *argv[])
 	[self systemInfoTests];
 	[self localeTests];
 
+	[of_stdout reset];
+
 #if defined(OF_IOS)
-	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
-							_fails]
-		   inColor: NO_COLOR];
+	[of_stdout writeFormat: @"%d tests failed!", _fails];
 	[OFApplication terminateWithStatus: _fails];
 #elif defined(OF_WII)
-	[self outputString: @"Press home button to exit!\n"
-		   inColor: NO_COLOR];
+	[of_stdout writeString: @"Press home button to exit!"];
+
 	for (;;) {
 		WPAD_ScanPads();
 
@@ -476,13 +422,12 @@ main(int argc, char *argv[])
 		VIDEO_WaitVSync();
 	}
 #elif defined(OF_PSP)
-	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
-							_fails]
-		   inColor: NO_COLOR];
+	[of_stdout writeFormat: @"%d tests failed!", _fails];
+
 	sceKernelSleepThreadCB();
 #elif defined(OF_NINTENDO_DS)
-	[self outputString: @"Press start button to exit!"
-		   inColor: NO_COLOR];
+	[of_stdout writeString: @"Press start button to exit!"];
+
 	for (;;) {
 		swiWaitForVBlank();
 		scanKeys();
@@ -490,8 +435,8 @@ main(int argc, char *argv[])
 			[OFApplication terminateWithStatus: _fails];
 	}
 #elif defined(OF_NINTENDO_3DS)
-	[self outputString: @"Press start button to exit!"
-		   inColor: NO_COLOR];
+	[of_stdout writeString: @"Press start button to exit!"];
+
 	for (;;) {
 		hidScanInput();
 

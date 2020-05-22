@@ -19,8 +19,6 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSystemInfo";
-
 @implementation TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests
 {
@@ -29,23 +27,29 @@ static OFString *module = @"OFSystemInfo";
 	OFString *userConfigPath, *userDataPath;
 #endif
 
-	PRINT(GREEN, @"Page size: %zd", [OFSystemInfo pageSize]);
+	of_stdout.foregroundColor = [OFColor lime];
 
-	PRINT(GREEN, @"Number of CPUs: %zd", [OFSystemInfo numberOfCPUs]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Page size: %zd\n",
+	    [OFSystemInfo pageSize]];
 
-	PRINT(GREEN, @"ObjFW version: %@", [OFSystemInfo ObjFWVersion]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Number of CPUs: %zd\n",
+	    [OFSystemInfo numberOfCPUs]];
 
-	PRINT(GREEN, @"ObjFW version major: %u",
-	    [OFSystemInfo ObjFWVersionMajor]);
+	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version: %@\n",
+	    [OFSystemInfo ObjFWVersion]];
 
-	PRINT(GREEN, @"ObjFW version minor: %u",
-	    [OFSystemInfo ObjFWVersionMinor]);
+	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version major: %u\n",
+	    [OFSystemInfo ObjFWVersionMajor]];
 
-	PRINT(GREEN, @"Operating system name: %@",
-	    [OFSystemInfo operatingSystemName]);
+	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version minor: %u\n",
+	    [OFSystemInfo ObjFWVersionMinor]];
 
-	PRINT(GREEN, @"Operating system version: %@",
-	    [OFSystemInfo operatingSystemVersion]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Operating system name: %@\n",
+	    [OFSystemInfo operatingSystemName]];
+
+	[of_stdout writeFormat:
+	    @"[OFSystemInfo] Operating system version: %@\n",
+	    [OFSystemInfo operatingSystemVersion]];
 
 #ifdef OF_HAVE_FILES
 	@try {
@@ -53,47 +57,62 @@ static OFString *module = @"OFSystemInfo";
 	} @catch (OFNotImplementedException *e) {
 		userConfigPath = @"Not implemented";
 	}
-	PRINT(GREEN, @"User config path: %@", userConfigPath);
+	[of_stdout writeFormat: @"[OFSystemInfo] User config path: %@\n",
+	    userConfigPath];
 
 	@try {
 		userDataPath = [OFSystemInfo userDataPath];
 	} @catch (OFNotImplementedException *e) {
 		userDataPath = @"Not implemented";
 	}
-	PRINT(GREEN, @"User data path: %@", userDataPath);
+	[of_stdout writeFormat: @"[OFSystemInfo] User data path: %@\n",
+	    userDataPath];
 #endif
 
-	PRINT(GREEN, @"CPU vendor: %@", [OFSystemInfo CPUVendor]);
+	[of_stdout writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
+	    [OFSystemInfo CPUVendor]];
 
-	PRINT(GREEN, @"CPU model: %@", [OFSystemInfo CPUModel]);
+	[of_stdout writeFormat: @"[OFSystemInfo] CPU model: %@\n",
+	    [OFSystemInfo CPUModel]];
 
 #if defined(OF_X86_64) || defined(OF_X86)
-	PRINT(GREEN, @"Supports MMX: %d", [OFSystemInfo supportsMMX]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
+	    [OFSystemInfo supportsMMX]];
 
-	PRINT(GREEN, @"Supports SSE: %d", [OFSystemInfo supportsSSE]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE: %d\n",
+	    [OFSystemInfo supportsSSE]];
 
-	PRINT(GREEN, @"Supports SSE2: %d", [OFSystemInfo supportsSSE2]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE2: %d\n",
+	    [OFSystemInfo supportsSSE2]];
 
-	PRINT(GREEN, @"Supports SSE3: %d", [OFSystemInfo supportsSSE3]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE3: %d\n",
+	    [OFSystemInfo supportsSSE3]];
 
-	PRINT(GREEN, @"Supports SSSE3: %d", [OFSystemInfo supportsSSSE3]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSSE3: %d\n",
+	    [OFSystemInfo supportsSSSE3]];
 
-	PRINT(GREEN, @"Supports SSE4.1: %d", [OFSystemInfo supportsSSE41]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE4.1: %d\n",
+	    [OFSystemInfo supportsSSE41]];
 
-	PRINT(GREEN, @"Supports SSE4.2: %d", [OFSystemInfo supportsSSE42]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE4.2: %d\n",
+	    [OFSystemInfo supportsSSE42]];
 
-	PRINT(GREEN, @"Supports AVX: %d", [OFSystemInfo supportsAVX]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports AVX: %d\n",
+	    [OFSystemInfo supportsAVX]];
 
-	PRINT(GREEN, @"Supports AVX2: %d", [OFSystemInfo supportsAVX2]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports AVX2: %d\n",
+	    [OFSystemInfo supportsAVX2]];
 
-	PRINT(GREEN, @"Supports AES-NI: %d", [OFSystemInfo supportsAESNI]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports AES-NI: %d\n",
+	    [OFSystemInfo supportsAESNI]];
 
-	PRINT(GREEN, @"Supports SHA extensions: %d",
-	    [OFSystemInfo supportsSHAExtensions]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
+	    [OFSystemInfo supportsSHAExtensions]];
 #endif
 
 #ifdef OF_POWERPC
-	PRINT(GREEN, @"Supports AltiVec: %d", [OFSystemInfo supportsAltiVec]);
+	[of_stdout writeFormat: @"[OFSystemInfo] Supports AltiVec: %d\n",
+	    [OFSystemInfo supportsAltiVec]];
 #endif
 
 	objc_autoreleasePoolPop(pool);
