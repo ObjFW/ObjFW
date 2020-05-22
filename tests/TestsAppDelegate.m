@@ -147,8 +147,6 @@ main(int argc, char *argv[])
 		return of_application_main(&argc, &argv,
 		    [[TestsAppDelegate alloc] init]);
 	} @catch (id e) {
-		TestsAppDelegate *delegate =
-		    [OFApplication sharedApplication].delegate;
 		OFString *string = [OFString stringWithFormat:
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
 		OFString *backtrace = [OFString stringWithFormat:

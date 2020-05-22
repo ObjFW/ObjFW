@@ -97,7 +97,7 @@ of_log(OFConstantString *format, ...)
 	objc_autoreleasePoolPop(pool);
 }
 
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 static int
 colorToANSI(OFColor *color)
 {
@@ -415,7 +415,7 @@ colorToANSI(OFColor *color)
 
 - (void)setForegroundColor: (OFColor *)color
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	int code;
 
 	if (!isatty(_fd))
@@ -430,7 +430,7 @@ colorToANSI(OFColor *color)
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	int code;
 
 	if (!isatty(_fd))
@@ -445,7 +445,7 @@ colorToANSI(OFColor *color)
 
 - (void)reset
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
@@ -455,7 +455,7 @@ colorToANSI(OFColor *color)
 
 - (void)clear
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
@@ -465,7 +465,7 @@ colorToANSI(OFColor *color)
 
 - (void)eraseLine
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
@@ -475,7 +475,7 @@ colorToANSI(OFColor *color)
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
@@ -485,7 +485,7 @@ colorToANSI(OFColor *color)
 
 - (void)setCursorPosition: (of_point_t)position
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
@@ -496,7 +496,7 @@ colorToANSI(OFColor *color)
 
 - (void)setRelativeCursorPosition: (of_point_t)position
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;
 
