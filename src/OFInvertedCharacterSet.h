@@ -25,8 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 	bool (*_characterIsMember)(id, SEL, of_unichar_t);
 }
 
-- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
-    OF_METHOD_FAMILY(init);
+- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
 @end
 
 OF_ASSUME_NONNULL_END
