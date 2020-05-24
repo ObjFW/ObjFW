@@ -21,12 +21,6 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS) || \
-    defined(OF_IOS))
-# undef STDOUT
-# define STDOUT_SIMPLE
-#endif
-
 #ifdef OF_IOS
 # include <CoreFoundation/CoreFoundation.h>
 #endif

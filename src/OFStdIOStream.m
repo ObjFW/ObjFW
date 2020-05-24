@@ -38,6 +38,7 @@
 #endif
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -485,6 +486,9 @@ colorToANSI(OFColor *color)
 
 - (void)setCursorPosition: (of_point_t)position
 {
+	if (position.x < 0 || position.y < 0)
+		@throw [OFInvalidArgumentException exception];
+
 #if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
 	if (!isatty(_fd))
 		return;

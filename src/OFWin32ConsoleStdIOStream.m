@@ -48,6 +48,7 @@
 #include <io.h>
 
 #import "OFWin32ConsoleStdIOStream.h"
+#import "OFColor.h"
 #import "OFData.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
@@ -105,6 +106,7 @@ codepageToEncoding(UINT codepage)
 
 	@try {
 		DWORD mode;
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
 
 		_handle = (HANDLE)_get_osfhandle(fd);
 		if (_handle == INVALID_HANDLE_VALUE)
@@ -113,6 +115,9 @@ codepageToEncoding(UINT codepage)
 		/* Not a console: Treat it as a regular OFStdIOStream */
 		if (!GetConsoleMode(_handle, &mode))
 			object_setClass(self, [OFStdIOStream class]);
+
+		if (GetConsoleScreenBufferInfo(_handle, &csbi))
+			_attributes = csbi.wAttributes;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -449,5 +454,158 @@ codepageToEncoding(UINT codepage)
 	 * return length.
 	 */
 	return length;
+}
+
+- (int)columns
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return -1;
+
+	return csbi.dwSize.X;
+}
+
+- (int)rows
+{
+	/*
+	 * The buffer size returned is almost always larger than the window
+	 * size, so this is useless.
+	 */
+	return -1;
+}
+
+- (void)setForegroundColor: (OFColor *)color
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	float red, green, blue;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
+	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+
+	[color getRed: &red
+		green: &green
+		 blue: &blue
+		alpha: NULL];
+
+	if (red >= 0.25)
+		csbi.wAttributes |= FOREGROUND_RED;
+	if (green >= 0.25)
+		csbi.wAttributes |= FOREGROUND_GREEN;
+	if (blue >= 0.25)
+		csbi.wAttributes |= FOREGROUND_BLUE;
+
+	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+		csbi.wAttributes |= FOREGROUND_INTENSITY;
+
+	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+}
+
+- (void)setBackgroundColor: (OFColor *)color
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	float red, green, blue;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
+	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+
+	[color getRed: &red
+		green: &green
+		 blue: &blue
+		alpha: NULL];
+
+	if (red >= 0.25)
+		csbi.wAttributes |= BACKGROUND_RED;
+	if (green >= 0.25)
+		csbi.wAttributes |= BACKGROUND_GREEN;
+	if (blue >= 0.25)
+		csbi.wAttributes |= BACKGROUND_BLUE;
+
+	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+		csbi.wAttributes |= BACKGROUND_INTENSITY;
+
+	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+}
+
+- (void)reset
+{
+	SetConsoleTextAttribute(_handle, _attributes);
+}
+
+- (void)clear
+{
+	static COORD zero = { 0, 0 };
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD bytesWritten;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	if (!FillConsoleOutputCharacter(_handle, ' ',
+	    csbi.dwSize.X * csbi.dwSize.Y, zero, &bytesWritten))
+		return;
+
+	if (!FillConsoleOutputAttribute(_handle, csbi.wAttributes,
+	    csbi.dwSize.X * csbi.dwSize.Y, zero, &bytesWritten))
+		return;
+
+	SetConsoleCursorPosition(_handle, zero);
+}
+
+- (void)eraseLine
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD bytesWritten;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X = 0;
+
+	if (!FillConsoleOutputCharacter(_handle, ' ', csbi.dwSize.X,
+		csbi.dwCursorPosition, &bytesWritten))
+		return;
+
+	FillConsoleOutputAttribute(_handle, csbi.wAttributes, csbi.dwSize.X,
+	    csbi.dwCursorPosition, &bytesWritten);
+}
+
+- (void)setCursorColumn: (unsigned int)column
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X = column;
+
+	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
+}
+
+- (void)setCursorPosition: (of_point_t)position
+{
+	if (position.x < 0 || position.y < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	SetConsoleCursorPosition(_handle, (COORD){ position.x, position.y });
+}
+
+- (void)setRelativeCursorPosition: (of_point_t)position
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X += position.x;
+	csbi.dwCursorPosition.Y += position.y;
+
+	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
 }
 @end
