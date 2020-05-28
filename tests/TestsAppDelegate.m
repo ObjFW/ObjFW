@@ -47,7 +47,10 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
 #ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
 # include <3ds.h>
+# undef id
 #endif
 
 #ifdef OF_PSP
