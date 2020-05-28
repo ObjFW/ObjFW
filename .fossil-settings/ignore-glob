@@ -11,9 +11,9 @@
 *.orig
 *.so
 *.so.*
+*/.deps
 .deps
-.fslckout
-_FOSSIL_
+.git
 aclocal.m4
 autom4te.cache
 boot.dol
