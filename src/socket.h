@@ -34,9 +34,6 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
-#ifdef OF_HAVE_NETINET_SCTP_H
-# include <netinet/sctp.h>
-#endif
 #ifdef OF_HAVE_NETIPX_IPX_H
 # include <netipx/ipx.h>
 #endif

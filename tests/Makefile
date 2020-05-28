@@ -56,7 +56,6 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
@@ -65,8 +64,7 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       SocketTests.m			\
-	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
