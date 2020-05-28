@@ -36,8 +36,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Addresses are of type @ref of_socket_address_t. You can use
  * @ref of_socket_address_ipx to create an address or
- * @ref of_socket_address_ipx_get to get the IPX network, node and port
- * (somtimes also called socket number).
+ * @ref of_socket_address_get_ipx_network to get the IPX network,
+ * @ref of_socket_address_get_ipx_node to get the IPX node and
+ * @ref of_socket_address_get_port to get the port (sometimes also called
+ * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
