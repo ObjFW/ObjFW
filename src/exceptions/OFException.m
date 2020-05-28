@@ -27,9 +27,10 @@
 #endif
 
 #import "OFException.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFLocale.h"
+#import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
@@ -90,7 +91,7 @@ of_strerror(int errNo)
 	if (errNo == 0)
 		return @"Unknown error";
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 	/*
 	 * These were translated from WSAE* errors to errno and thus Win32's
 	 * strerror_r() does not know about them.
@@ -171,7 +172,7 @@ of_strerror(int errNo)
 	}
 #endif
 
-#if defined(HAVE_STRERROR_R) && defined(_GNU_SOURCE)
+#if defined(STRERROR_R_RETURNS_CHARP)
 	/* glibc uses a different strerror_r when _GNU_SOURCE is defined */
 	char *string;
 
@@ -211,19 +212,39 @@ of_strerror(int errNo)
 OFString *
 of_windows_status_to_string(LSTATUS status)
 {
+	OFString *string = nil;
 	void *buffer;
-	OFString *string;
 
-	if (FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-	    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS |
-	    FORMAT_MESSAGE_MAX_WIDTH_MASK, NULL, status, 0, (LPWSTR)&buffer, 0,
-	    NULL) != 0) {
-		@try {
-			string = [OFString stringWithUTF16String: buffer];
-		} @finally {
-			LocalFree(buffer);
+	if ([OFSystemInfo isWindowsNT]) {
+		if (FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
+		    FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		    FORMAT_MESSAGE_IGNORE_INSERTS |
+		    FORMAT_MESSAGE_MAX_WIDTH_MASK, NULL, status, 0,
+		    (LPWSTR)&buffer, 0, NULL) != 0) {
+			@try {
+				string = [OFString
+				    stringWithUTF16String: buffer];
+			} @finally {
+				LocalFree(buffer);
+			}
 		}
-	} else
+	} else {
+		if (FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM |
+		    FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		    FORMAT_MESSAGE_IGNORE_INSERTS |
+		    FORMAT_MESSAGE_MAX_WIDTH_MASK, NULL, status, 0,
+		    (LPSTR)&buffer, 0, NULL) != 0) {
+			@try {
+				string = [OFString
+				    stringWithCString: buffer
+					     encoding: [OFLocale encoding]];
+			} @finally {
+				LocalFree(buffer);
+			}
+		}
+	}
+
+	if (string == nil)
 		string = [OFString stringWithFormat: @"Status code %u", status];
 
 	return string;

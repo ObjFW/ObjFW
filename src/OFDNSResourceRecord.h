@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
+@class OFArray OF_GENERIC(ObjectType);
 @class OFData;
 
 /*!
@@ -590,13 +591,13 @@ OF_SUBCLASSING_RESTRICTED
 OF_SUBCLASSING_RESTRICTED
 @interface OFTXTDNSResourceRecord: OFDNSResourceRecord
 {
-	OFData *_textData;
+	OFArray OF_GENERIC(OFData *) *_textStrings;
 }
 
 /*!
  * @brief The text of the resource record.
  */
-@property (readonly, nonatomic) OFData *textData;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFData *) *textStrings;
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
@@ -609,13 +610,13 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name for the resource record
  * @param DNSClass The class code for the resource record
- * @param textData The data for the resource record
+ * @param textStrings An array of text strings for the resource record
  * @param TTL The time to live for the resource record
  * @return An initialized OFTXTDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		    textData: (OFData *)textData
+		 textStrings: (OFArray OF_GENERIC(OFData *) *)textStrings
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 

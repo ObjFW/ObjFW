@@ -35,30 +35,57 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "once.h"
+
+@interface OFURLAllowedCharacterSetBase: OFCharacterSet
+@end
+
+@interface OFURLAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@end
+
+@interface OFURLSchemeAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@end
+
+@interface OFURLPathAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@end
+
+@interface OFURLQueryOrFragmentAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@end
+
 static OFCharacterSet *URLAllowedCharacterSet = nil;
 static OFCharacterSet *URLSchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
-@interface OFURLAllowedCharacterSetBase: OFCharacterSet
-- (instancetype)of_init OF_METHOD_FAMILY(init);
-@end
+static of_once_t URLAllowedCharacterSetOnce = OF_ONCE_INIT;
+static of_once_t URLQueryOrFragmentAllowedCharacterSetOnce = OF_ONCE_INIT;
 
-@interface OFURLAllowedCharacterSet: OFURLAllowedCharacterSetBase
-+ (OFCharacterSet *)URLAllowedCharacterSet;
-@end
+static void
+initURLAllowedCharacterSet(void)
+{
+	URLAllowedCharacterSet = [[OFURLAllowedCharacterSet alloc] init];
+}
 
-@interface OFURLSchemeAllowedCharacterSet: OFURLAllowedCharacterSetBase
-+ (OFCharacterSet *)URLSchemeAllowedCharacterSet;
-@end
+static void
+initURLSchemeAllowedCharacterSet(void)
+{
+	URLSchemeAllowedCharacterSet =
+	    [[OFURLSchemeAllowedCharacterSet alloc] init];
+}
 
-@interface OFURLPathAllowedCharacterSet: OFURLAllowedCharacterSetBase
-+ (OFCharacterSet *)URLPathAllowedCharacterSet;
-@end
+static void
+initURLPathAllowedCharacterSet(void)
+{
+	URLPathAllowedCharacterSet =
+	    [[OFURLPathAllowedCharacterSet alloc] init];
+}
 
-@interface OFURLQueryOrFragmentAllowedCharacterSet: OFURLAllowedCharacterSetBase
-+ (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
-@end
+static void
+initURLQueryOrFragmentAllowedCharacterSet(void)
+{
+	URLQueryOrFragmentAllowedCharacterSet =
+	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] init];
+}
 
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
@@ -66,8 +93,7 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 	bool (*_characterIsMember)(id, SEL, of_unichar_t);
 }
 
-- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
-    OF_METHOD_FAMILY(init);
+- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
 @end
 
 bool
@@ -92,16 +118,6 @@ of_url_is_ipv6_host(OFString *host)
 }
 
 @implementation OFURLAllowedCharacterSetBase
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_init
-{
-	return [super init];
-}
-
 - (instancetype)autorelease
 {
 	return self;
@@ -123,19 +139,6 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURLAllowedCharacterSet class])
-		return;
-
-	URLAllowedCharacterSet = [[OFURLAllowedCharacterSet alloc] of_init];
-}
-
-+ (OFCharacterSet *)URLAllowedCharacterSet
-{
-	return URLAllowedCharacterSet;
-}
-
 - (bool)characterIsMember: (of_unichar_t)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
@@ -165,20 +168,6 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLSchemeAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURLSchemeAllowedCharacterSet class])
-		return;
-
-	URLSchemeAllowedCharacterSet =
-	    [[OFURLSchemeAllowedCharacterSet alloc] of_init];
-}
-
-+ (OFCharacterSet *)URLSchemeAllowedCharacterSet
-{
-	return URLSchemeAllowedCharacterSet;
-}
-
 - (bool)characterIsMember: (of_unichar_t)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
@@ -196,20 +185,6 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLPathAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURLPathAllowedCharacterSet class])
-		return;
-
-	URLPathAllowedCharacterSet =
-	    [[OFURLPathAllowedCharacterSet alloc] of_init];
-}
-
-+ (OFCharacterSet *)URLPathAllowedCharacterSet
-{
-	return URLPathAllowedCharacterSet;
-}
-
 - (bool)characterIsMember: (of_unichar_t)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
@@ -242,20 +217,6 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLQueryOrFragmentAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURLQueryOrFragmentAllowedCharacterSet class])
-		return;
-
-	URLQueryOrFragmentAllowedCharacterSet =
-	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] of_init];
-}
-
-+ (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet
-{
-	return URLQueryOrFragmentAllowedCharacterSet;
-}
-
 - (bool)characterIsMember: (of_unichar_t)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
@@ -289,18 +250,19 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFInvertedCharacterSetWithoutPercent
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
+- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet
 {
 	self = [super init];
 
-	_characterSet = [characterSet retain];
-	_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
-	    [_characterSet methodForSelector: @selector(characterIsMember:)];
+	@try {
+		_characterSet = [characterSet retain];
+		_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+		    [_characterSet methodForSelector:
+		    @selector(characterIsMember:)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -325,7 +287,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	void *pool = objc_autoreleasePoolPush();
 
 	characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
-	    of_initWithCharacterSet: characterSet] autorelease];
+	    initWithCharacterSet: characterSet] autorelease];
 
 	if ([string indexOfCharacterFromSet: characterSet] != OF_NOT_FOUND)
 		@throw [OFInvalidFormatException exception];
@@ -336,39 +298,55 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 @implementation OFCharacterSet (URLCharacterSets)
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
 {
-	return [OFURLSchemeAllowedCharacterSet URLSchemeAllowedCharacterSet];
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initURLSchemeAllowedCharacterSet);
+
+	return URLSchemeAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLHostAllowedCharacterSet
 {
-	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
+	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+
+	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLUserAllowedCharacterSet
 {
-	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
+	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+
+	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPasswordAllowedCharacterSet
 {
-	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
+	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+
+	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
 {
-	return [OFURLPathAllowedCharacterSet URLPathAllowedCharacterSet];
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initURLPathAllowedCharacterSet);
+
+	return URLPathAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLQueryAllowedCharacterSet
 {
-	return [OFURLQueryOrFragmentAllowedCharacterSet
-	    URLQueryOrFragmentAllowedCharacterSet];
+	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	    initURLQueryOrFragmentAllowedCharacterSet);
+
+	return URLQueryOrFragmentAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet
 {
-	return [OFURLQueryOrFragmentAllowedCharacterSet
-	    URLQueryOrFragmentAllowedCharacterSet];
+	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	    initURLQueryOrFragmentAllowedCharacterSet);
+
+	return URLQueryOrFragmentAllowedCharacterSet;
 }
 @end
 

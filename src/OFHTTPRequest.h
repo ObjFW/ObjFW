@@ -57,12 +57,14 @@ typedef enum {
  *
  * @brief The HTTP version of the HTTP request.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_http_request_protocol_version_t {
 	/*! The major of the HTTP version */
 	uint8_t major;
 	/*! The minor of the HTTP version */
 	uint8_t minor;
-} of_http_request_protocol_version_t;
+};
+typedef struct of_http_request_protocol_version_t
+    of_http_request_protocol_version_t;
 
 /*!
  * @class OFHTTPRequest OFHTTPRequest.h ObjFW/OFHTTPRequest.h
@@ -156,7 +158,7 @@ extern const char *_Nullable of_http_request_method_to_string(
  * @return The request method for the specified string
  */
 extern of_http_request_method_t of_http_request_method_from_string(
-    const char *string);
+    OFString *string);
 #ifdef __cplusplus
 }
 #endif

@@ -24,6 +24,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
+@class OFColor;
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -50,6 +54,11 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /*!
+ * @brief Whether there is an underlying terminal.
+ */
+@property (readonly, nonatomic) bool hasTerminal;
+
+/*!
  * @brief The number of columns, or -1 if there is no underlying terminal or
  *	  the number of columns could not be queried.
  */
@@ -62,6 +71,64 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) int rows;
 
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Sets the foreground color on the underlying terminal. Does nothing if
+ *	  there is no underlying terminal or colors are unsupported.
+ *
+ * @param color The foreground color to set
+ */
+- (void)setForegroundColor: (OFColor *)color;
+
+/*!
+ * @brief Sets the background color on the underlying terminal. Does nothing if
+ *	  there is no underlying terminal or colors are unsupported.
+ *
+ * @param color The background color to set
+ */
+- (void)setBackgroundColor: (OFColor *)color;
+
+/*!
+ * @brief Resets all attributes (color, bold, etc.). Does nothing if there is
+ *	  no underlying terminal.
+ */
+- (void)reset;
+
+/*!
+ * @brief Clears the entire underlying terminal. Does nothing if there is no
+ *	  underlying terminal.
+ */
+- (void)clear;
+
+/*!
+ * @brief Erases the entire current line on the underlying terminal. Does
+ *	  nothing if there is no underlying terminal.
+ */
+- (void)eraseLine;
+
+/*!
+ * @brief Moves the cursor to the specified column in the current row. Does
+ *	  nothing if there is no underlying terminal.
+ *
+ * @param column The column in the current row to move the cursor to
+ */
+- (void)setCursorColumn: (unsigned int)column;
+
+/*!
+ * @brief Moves the cursor to the specified absolute position. Does nothing if
+ *	  there is no underlying terminal.
+ *
+ * @param position The position to move the cursor to
+ */
+- (void)setCursorPosition: (of_point_t)position;
+
+/*!
+ * @brief Moves the cursor to the specified relative position. Does nothing if
+ *	  there is no underlying terminal.
+ *
+ * @param position The position to move the cursor to
+ */
+- (void)setRelativeCursorPosition: (of_point_t)position;
 @end
 
 #ifdef __cplusplus
@@ -84,7 +151,13 @@ extern OFStdIOStream *_Nullable of_stdout;
  */
 extern OFStdIOStream *_Nullable of_stderr;
 
-extern void of_log(OFConstantString *, ...);
+/*!
+ * @brief Log the specified printf-style format to @ref of_stderr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID and
+ * allows `%@` as a printf-style formatted to print objects.
+ */
+extern void of_log(OFConstantString *format, ...);
 #ifdef __cplusplus
 }
 #endif

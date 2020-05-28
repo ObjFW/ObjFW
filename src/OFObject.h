@@ -15,6 +15,9 @@
  * file.
  */
 
+#ifndef OBJFW_OF_OBJECT_H
+#define OBJFW_OF_OBJECT_H
+
 #include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
@@ -29,8 +32,8 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#import "macros.h"
-#import "block.h"
+#include "macros.h"
+#include "block.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -88,12 +91,13 @@ typedef enum {
  *
  * @brief A range.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_range_t {
 	/*! The start of the range */
 	size_t location;
 	/*! The length of the range */
 	size_t length;
-} of_range_t;
+};
+typedef struct of_range_t of_range_t;
 
 /*!
  * @brief Creates a new of_range_t.
@@ -139,12 +143,13 @@ typedef double of_time_interval_t;
  *
  * @brief A point.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_point_t {
 	/*! The x coordinate of the point */
 	float x;
 	/*! The y coordinate of the point */
 	float y;
-} of_point_t;
+};
+typedef struct of_point_t of_point_t;
 
 /*!
  * @brief Creates a new of_point_t.
@@ -185,12 +190,13 @@ of_point_equal(of_point_t point1, of_point_t point2)
  *
  * @brief A dimension.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_dimension_t {
 	/*! The width of the dimension */
 	float width;
 	/*! The height of the dimension */
 	float height;
-} of_dimension_t;
+};
+typedef struct of_dimension_t of_dimension_t;
 
 /*!
  * @brief Creates a new of_dimension_t.
@@ -231,12 +237,13 @@ of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
  *
  * @brief A rectangle.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_rectangle_t {
 	/*! The point from where the rectangle originates */
 	of_point_t origin;
 	/*! The size of the rectangle */
 	of_dimension_t size;
-} of_rectangle_t;
+};
+typedef struct of_rectangle_t of_rectangle_t;
 
 /*!
  * @brief Creates a new of_rectangle_t.
@@ -277,6 +284,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 	return true;
 }
 
+#ifdef __OBJC__
 @class OFMethodSignature;
 @class OFString;
 @class OFThread;
@@ -290,11 +298,11 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 /*!
  * @brief The class of the object.
  */
-#ifndef __cplusplus
+# ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
-#else
+# else
 @property (readonly, nonatomic, getter=class) Class class_;
-#endif
+# endif
 
 /*!
  * @brief The superclass of the object.
@@ -492,33 +500,35 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)retainWeakReference;
 @end
+#endif
 
 /*!
  * @class OFObject OFObject.h ObjFW/OFObject.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
+#ifdef __OBJC__
 OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @private
-#ifndef __clang_analyzer__
+# ifndef __clang_analyzer__
 	Class _isa;
-#else
+# else
 	Class _isa __attribute__((__unused__));
-#endif
+# endif
 }
 
-#ifdef OF_HAVE_CLASS_PROPERTIES
-# ifndef __cplusplus
+# ifdef OF_HAVE_CLASS_PROPERTIES
+#  ifndef __cplusplus
 @property (class, readonly, nonatomic) Class class;
-# else
+#  else
 @property (class, readonly, nonatomic, getter=class) Class class_;
-# endif
+#  endif
 @property (class, readonly, nonatomic) OFString *className;
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
-#endif
+# endif
 
 /*!
  * @brief The name of the object's class.
@@ -737,13 +747,31 @@ OF_ROOT_CLASS
 /*!
  * @brief Initializes an already allocated object.
  *
- * Derived classes may override this, but need to do
+ * Derived classes may override this, but need to use the following pattern:
  * @code
- *   self = [super init]
+ * self = [super init];
+ *
+ * @try {
+ *         // Custom initialization code goes here.
+ * } @catch (id e) {
+ *         [self release];
+ *         @throw e;
+ * }
+ *
+ * return self;
  * @endcode
- * before they do any initialization themselves. @ref init may never return
- * `nil`, instead an exception (for example @ref
- * OFInitializationFailedException) should be thrown.
+ *
+ * With ARC enabled, the following pattern needs to be used instead:
+ * @code
+ * self = [super init];
+ *
+ * // Custom initialization code goes here.
+ *
+ * return self;
+ * @endcode
+ *
+ * @ref init may never return `nil`, instead an exception (for example
+ * @ref OFInitializationFailedException) should be thrown.
  *
  * @return An initialized object
  */
@@ -937,7 +965,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object4
 	     afterDelay: (of_time_interval_t)delay;
 
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 /*!
  * @brief Performs the specified selector on the specified thread.
  *
@@ -1195,7 +1223,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
 	     afterDelay: (of_time_interval_t)delay;
-#endif
+# endif
 
 /*!
  * @brief This method is called when @ref resolveClassMethod: or
@@ -1220,7 +1248,11 @@ OF_ROOT_CLASS
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
+#else
+typedef void OFObject;
+#endif
 
+#ifdef __OBJC__
 /*!
  * @protocol OFCopying OFObject.h ObjFW/OFObject.h
  *
@@ -1272,6 +1304,7 @@ OF_ROOT_CLASS
  */
 - (of_comparison_result_t)compare: (id <OFComparing>)object;
 @end
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1290,5 +1323,9 @@ extern uint32_t of_hash_seed;
 
 OF_ASSUME_NONNULL_END
 
-#import "OFObject+KeyValueCoding.h"
-#import "OFObject+Serialization.h"
+#ifdef __OBJC__
+# import "OFObject+KeyValueCoding.h"
+# import "OFObject+Serialization.h"
+#endif
+
+#endif

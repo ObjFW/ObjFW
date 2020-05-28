@@ -19,24 +19,22 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFStream;
-
 /*!
  * @class OFGetOptionFailedException \
  *	  OFGetOptionFailedException.h ObjFW/OFGetOptionFailedException.h
  *
- * @brief An exception indicating that getting an option for a stream failed.
+ * @brief An exception indicating that getting an option for an object failed.
  */
 @interface OFGetOptionFailedException: OFException
 {
-	OFStream *_stream;
+	id _object;
 	int _errNo;
 }
 
 /*!
- * @brief The stream for which the option could not be retrieved.
+ * @brief The object for which the option could not be retrieved.
  */
-@property (readonly, nonatomic) OFStream *stream;
+@property (readonly, nonatomic) id object;
 
 /*!
  * @brief The errno of the error that occurred.
@@ -48,11 +46,11 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased get option failed exception.
  *
- * @param stream The stream for which the option could not be gotten
+ * @param object The object for which the option could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased get option failed exception
  */
-+ (instancetype)exceptionWithStream: (OFStream *)stream
++ (instancetype)exceptionWithObject: (id)object
 			      errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -60,11 +58,11 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Initializes an already allocated get option failed exception.
  *
- * @param stream The stream for which the option could not be gotten
+ * @param object The object for which the option could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return An initialized get option failed exception
  */
-- (instancetype)initWithStream: (OFStream *)stream
+- (instancetype)initWithObject: (id)object
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 

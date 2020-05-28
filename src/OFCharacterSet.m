@@ -22,18 +22,25 @@
 #import "OFInvertedCharacterSet.h"
 #import "OFRangeCharacterSet.h"
 
+#import "once.h"
+
+@interface OFPlaceholderCharacterSet: OFCharacterSet
+@end
+
+@interface OFWhitespaceCharacterSet: OFCharacterSet
+@end
+
 static struct {
 	Class isa;
 } placeholder;
 
 static OFCharacterSet *whitespaceCharacterSet = nil;
 
-@interface OFPlaceholderCharacterSet: OFCharacterSet
-@end
-
-@interface OFWhitespaceCharacterSet: OFCharacterSet
-- (instancetype)of_init;
-@end
+static void
+initWhitespaceCharacterSet(void)
+{
+	whitespaceCharacterSet = [[OFWhitespaceCharacterSet alloc] init];
+}
 
 @implementation OFPlaceholderCharacterSet
 - (instancetype)init
@@ -102,7 +109,10 @@ static OFCharacterSet *whitespaceCharacterSet = nil;
 
 + (OFCharacterSet *)whitespaceCharacterSet
 {
-	return [OFWhitespaceCharacterSet whitespaceCharacterSet];
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initWhitespaceCharacterSet);
+
+	return whitespaceCharacterSet;
 }
 
 - (instancetype)init
@@ -139,34 +149,11 @@ static OFCharacterSet *whitespaceCharacterSet = nil;
 - (OFCharacterSet *)invertedSet
 {
 	return [[[OFInvertedCharacterSet alloc]
-	    of_initWithCharacterSet: self] autorelease];
+	    initWithCharacterSet: self] autorelease];
 }
 @end
 
 @implementation OFWhitespaceCharacterSet
-+ (void)initialize
-{
-	if (self != [OFWhitespaceCharacterSet class])
-		return;
-
-	whitespaceCharacterSet = [[OFWhitespaceCharacterSet alloc] of_init];
-}
-
-+ (OFCharacterSet *)whitespaceCharacterSet
-{
-	return whitespaceCharacterSet;
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_init
-{
-	return [super init];
-}
-
 - (instancetype)autorelease
 {
 	return self;

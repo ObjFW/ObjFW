@@ -15,7 +15,10 @@
  * file.
  */
 
-#import "macros.h"
+#ifndef OBJFW_BLOCK_H
+#define OBJFW_BLOCK_H
+
+#include "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -70,3 +73,5 @@ extern __declspec(dllexport) void _Block_object_dispose(const void *,
 #endif
 
 OF_ASSUME_NONNULL_END
+
+#endif

@@ -121,12 +121,24 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_compressed_size",
-			    @"Compressed: %[size] bytes",
+			    [@"["
+			     @"    'Compressed: ',"
+			     @"    ["
+			     @"        {'size == 1': '1 byte'},"
+			     @"        {'': '%[size] bytes'}"
+			     @"    ]"
+			     @"]" JSONValue],
 			    @"size", compressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_uncompressed_size",
-			    @"Uncompressed: %[size] bytes",
+			    [@"["
+			     @"    'Uncompressed: ',"
+			     @"    ["
+			     @"        {'size == 1': '1 byte'},"
+			     @"        {'': '%[size] bytes'}"
+			     @"    ]"
+			     @"]" JSONValue],
 			    @"size", uncompressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(

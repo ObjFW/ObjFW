@@ -4,28 +4,80 @@ matrix:
   include:
     # Linux
     - os: linux
-      compiler: gcc
-      dist: bionic
-      sudo: required
-    - os: linux
       compiler: clang
-      dist: bionic
+      dist: precise
       sudo: required
+
     - os: linux
       compiler: gcc
-      dist: xenial
+      dist: precise
       sudo: required
+
+    - os: linux
+      arch: arm64
+      compiler: clang
+      dist: precise
+      sudo: required
+
+    - os: linux
+      arch: arm64
+      compiler: gcc
+      dist: precise
+      sudo: required
+
+    - os: linux
+      arch: ppc64le
+      compiler: clang
+      dist: precise
+      sudo: required
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      dist: precise
+      sudo: required
+
+    # Clang seems to have broken exceptions on s390x
+    #- os: linux
+    #  arch: s390x
+    #  compiler: clang
+    #  dist: precise
+    #  sudo: required
+
+    - os: linux
+      arch: s390x
+      compiler: gcc
+      dist: precise
+      sudo: required
+
     - os: linux
       compiler: clang
-      dist: xenial
+      dist: trusty
       sudo: required
+
     - os: linux
       compiler: gcc
       dist: trusty
       sudo: required
+
     - os: linux
       compiler: clang
-      dist: trusty
+      dist: xenial
+      sudo: required
+
+    - os: linux
+      compiler: gcc
+      dist: xenial
+      sudo: required
+
+    - os: linux
+      compiler: clang
+      dist: bionic
+      sudo: required
+
+    - os: linux
+      compiler: gcc
+      dist: bionic
       sudo: required
 
     # macOS
@@ -191,14 +243,28 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
-            if ! sudo apt-get -qq update >/tmp/apt_log 2>&1; then
+            case "$TRAVIS_CPU_ARCH" in
+                    amd64 | s390x)
+                            pkgs="gobjc-multilib";
+                            ;;
+                    *)
+                            pkgs="gobjc";
+                            ;;
+            esac;
+
+            pkgs="$pkgs libsctp-dev";
+
+            if grep precise /etc/lsb-release >/dev/null; then
+                    pkgs="$pkgs ipx";
+            fi;
+
+            if ! sudo apt-get -qq install -y $pkgs >/tmp/apt_log 2>&1; then
                     cat /tmp/apt_log;
                     exit 1;
             fi;
-            if ! sudo apt-get -qq install -y gobjc-multilib >/tmp/apt_log 2>&1;
-            then
-                    cat /tmp/apt_log;
-                    exit 1;
+
+            if grep precise /etc/lsb-release >/dev/null; then
+                    sudo ipx_internal_net add 1234 123456;
             fi;
     fi
 
@@ -226,7 +292,13 @@ before_install:
     fi
 
 script:
-  - echo -e '%s/-DSTDOUT$/&_SIMPLE/\nwq' | ed -s tests/Makefile
+  # This needs to use ed on macOS, as it has no GNU sed, and sed on Linux, as
+  # some Travis hosts have no ed.
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+            echo -e '%s/-DSTDOUT$/&_SIMPLE/\nwq' | ed -s tests/Makefile;
+    else
+            sed -i 's/-DSTDOUT$/&_SIMPLE/' tests/Makefile;
+    fi
 
   - build() {
             if ! git clean -fxd >/tmp/clean_log 2>&1; then
@@ -254,22 +326,37 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
             build_32_64() {
                     build OBJC="$CC" $@;
-                    build OBJC="$CC -m32" --host=i686-pc-linux-gnu $@;
+
+                    case "$TRAVIS_CPU_ARCH" in
+                            amd64)
+                                    build OBJC="$CC -m32"
+                                          --host=i686-pc-linux-gnu $@;
+                                    ;;
+                            s390x)
+                                    build OBJC="$CC -m31"
+                                          --host=s390-pc-linux-gnu $@;
+                                    ;;
+                    esac
             };
 
             build_32_64;
             build_32_64 --enable-seluid24;
-            build_32_64 --disable-threads;
-            build_32_64 --disable-threads --disable-sockets;
-            build_32_64 --disable-threads --disable-files;
-            build_32_64 --disable-threads --disable-sockets --disable-files;
-            build_32_64 --disable-sockets;
-            build_32_64 --disable-sockets --disable-files;
-            build_32_64 --disable-files;
-            build_32_64 --disable-shared;
-            build_32_64 --disable-shared --enable-seluid24;
             build_32_64 --disable-compiler-tls;
-            build_32_64 --disable-compiler-tls --disable-threads;
+
+            true The following are not CPU-dependent, so only run them on amd64;
+            if [ "$TRAVIS_CPU_ARCH" = "amd64" ]; then
+                    build_32_64 --disable-threads;
+                    build_32_64 --disable-threads --disable-sockets;
+                    build_32_64 --disable-threads --disable-files;
+                    build_32_64 --disable-threads --disable-sockets
+                                --disable-files;
+                    build_32_64 --disable-sockets;
+                    build_32_64 --disable-sockets --disable-files;
+                    build_32_64 --disable-files;
+                    build_32_64 --disable-shared;
+                    build_32_64 --disable-shared --enable-seluid24;
+                    build_32_64 --disable-compiler-tls --disable-threads;
+            fi;
     fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" -a -z "$config" ]; then

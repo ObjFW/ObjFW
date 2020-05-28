@@ -37,7 +37,6 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
@@ -151,7 +150,7 @@ writingNotSupported(OFString *type)
 @implementation OFArc
 - (void)applicationDidFinishLaunching
 {
-	OFString *outputDir = nil, *encodingString = nil, *type = nil;
+	OFString *outputDir, *encodingString, *type;
 	const of_options_parser_option_t options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
 		{ 'c', @"create", 0, NULL, NULL },
@@ -168,9 +167,9 @@ writingNotSupported(OFString *type)
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
 	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
+	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
 
@@ -293,13 +292,14 @@ writingNotSupported(OFString *type)
 			}
 
 			[OFApplication terminateWithStatus: 1];
+			break;
 		}
 	}
 
 	@try {
 		if (encodingString != nil)
 			encoding = of_string_parse_encoding(encodingString);
-	} @catch (OFInvalidEncodingException *e) {
+	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"invalid_encoding",
 		    @"%[prog]: Invalid encoding: %[encoding]",
@@ -673,7 +673,8 @@ error:
 			[of_stdout writeLine: OF_LOCALIZED(@"skipping_file",
 			    @"Skipping %[file]...",
 			    @"file", fileName)];
-			return false;
+
+		return false;
 	}
 
 	if (_outputLevel >= 0)

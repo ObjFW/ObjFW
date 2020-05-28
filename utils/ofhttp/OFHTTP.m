@@ -37,6 +37,7 @@
 
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
@@ -91,6 +92,8 @@ help(OFStream *stream, bool full, int status)
 		    @"Options:\n    "
 		    @"-b  --body           "
 		    @"  Specify the file to send as body\n    "
+		    @"                     "
+		    @"  (- for standard input)\n    "
 		    @"-c  --continue       "
 		    @"  Continue download of existing file\n    "
 		    @"-f  --force          "
@@ -319,16 +322,32 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 - (void)setBody: (OFString *)path
 {
-	uintmax_t bodySize;
+	OFString *contentLength = nil;
 
 	[_body release];
-	_body = [[OFFile alloc] initWithPath: path
-					mode: @"r"];
+	_body = nil;
 
-	bodySize = [[OFFileManager defaultManager] attributesOfItemAtPath: path]
-	    .fileSize;
-	[_clientHeaders setObject: [OFString stringWithFormat: @"%ju", bodySize]
-			   forKey: @"Content-Length"];
+	if ([path isEqual: @"-"])
+		_body = [of_stdin copy];
+	else {
+		_body = [[OFFile alloc] initWithPath: path
+						mode: @"r"];
+
+		@try {
+			uintmax_t fileSize = [[OFFileManager defaultManager]
+			    attributesOfItemAtPath: path].fileSize;
+
+			contentLength =
+			    [OFString stringWithFormat: @"%ju", fileSize];
+			[_clientHeaders setObject: contentLength
+					   forKey: @"Content-Length"];
+		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		}
+	}
+
+	if (contentLength == nil)
+		[_clientHeaders setObject: @"chunked"
+				   forKey: @"Transfer-Encoding"];
 }
 
 - (void)setMethod: (OFString *)method
@@ -337,19 +356,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	method = method.uppercaseString;
 
-	if ([method isEqual: @"GET"])
-		_method = OF_HTTP_REQUEST_METHOD_GET;
-	else if ([method isEqual: @"HEAD"])
-		_method = OF_HTTP_REQUEST_METHOD_HEAD;
-	else if ([method isEqual: @"POST"])
-		_method = OF_HTTP_REQUEST_METHOD_POST;
-	else if ([method isEqual: @"PUT"])
-		_method = OF_HTTP_REQUEST_METHOD_PUT;
-	else if ([method isEqual: @"DELETE"])
-		_method = OF_HTTP_REQUEST_METHOD_DELETE;
-	else if ([method isEqual: @"TRACE"])
-		_method = OF_HTTP_REQUEST_METHOD_TRACE;
-	else {
+	@try {
+		_method = of_http_request_method_from_string(method);
+	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_method",
 		    @"%[prog]: Invalid request method %[method]!",
 		    @"prog", [OFApplication programName],
@@ -549,7 +558,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	if (_insecure)
-		_HTTPClient.insecureRedirectsAllowed = true;
+		_HTTPClient.allowsInsecureRedirects = true;
 
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
@@ -560,8 +569,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	  request: (OFHTTPRequest *)request
 {
 	if (_insecure && [sock respondsToSelector:
-	    @selector(setCertificateVerificationEnabled:)])
-		((id <OFTLSSocket>)sock).certificateVerificationEnabled = false;
+	    @selector(setVerifiesCertificates:)])
+		((id <OFTLSSocket>)sock).verifiesCertificates = false;
 }
 
 -     (void)client: (OFHTTPClient *)client
@@ -682,10 +691,15 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"error", error,
 		    @"exception", e)];
 	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
+		short statusCode = [[e response] statusCode];
+		OFString *codeString = [OFString stringWithFormat: @"%d %@",
+		    statusCode, of_http_status_code_to_string(statusCode)];
 		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
-		    @"%[prog]: Failed to download <%[url]>!",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  HTTP status code: %[code]",
 		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string)];
+		    @"url", request.URL.string,
+		    @"code", codeString)];
 	} else
 		@throw e;
 
@@ -713,7 +727,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"download_failed_exception",
-		    @"%[prog]: Failed to download <%[url]>: %[exception]",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  %[exception]",
 		    @"prog", [OFApplication programName],
 		    @"url", URL,
 		    @"exception", exception)];
@@ -797,7 +812,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				lengthString = [OFString stringWithFormat:
 				    @"%jd", _resumedFrom + _length];
 				lengthString = OF_LOCALIZED(@"size_bytes",
-				    @"%[num] bytes",
+				    [@"["
+				     @"    ["
+				     @"        {'num == 1': '1 byte'},"
+				     @"        {'': '%[num] bytes'}"
+				     @"    ]"
+				     @"]" JSONValue],
 				    @"num", lengthString);
 			}
 		} else
@@ -847,6 +867,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
 {
+	if (_method == OF_HTTP_REQUEST_METHOD_HEAD)
+		goto next;
+
 	if (_detectFileNameRequest) {
 		_currentFileName = [fileNameFromContentDisposition(
 		    [response.headers objectForKey: @"Content-Disposition"])

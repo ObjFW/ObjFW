@@ -60,6 +60,7 @@ OF_CONSTRUCTOR()
 			if (minPrio == -1 || maxPrio == -1)
 				minPrio = maxPrio = 0;
 		}
+#endif
 
 		if (pthread_attr_getschedparam(&pattr, &param) != 0)
 			normalPrio = param.sched_priority;
@@ -67,7 +68,6 @@ OF_CONSTRUCTOR()
 			minPrio = maxPrio = 0;
 
 		pthread_attr_destroy(&pattr);
-#endif
 	}
 }
 

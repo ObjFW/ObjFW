@@ -65,7 +65,8 @@
 	if (![cookie.path hasPrefix: @"/"])
 		cookie.path = @"/";
 
-	if (cookie.secure && ![URL.scheme isEqual: @"https"]) {
+	if (cookie.secure &&
+	    [URL.scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -125,7 +126,8 @@
 		if (expires != nil && expires.timeIntervalSinceNow <= 0)
 			continue;
 
-		if (cookie.secure && ![URL.scheme isEqual: @"https"])
+		if (cookie.secure && [URL.scheme caseInsensitiveCompare:
+		    @"https"] != OF_ORDERED_SAME)
 			continue;
 
 		pool = objc_autoreleasePoolPush();

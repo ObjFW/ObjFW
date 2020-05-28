@@ -21,10 +21,12 @@
 #include <string.h>
 
 #import "OFProcess.h"
-#import "OFString.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
 #import "OFData.h"
+#import "OFDictionary.h"
+#import "OFLocale.h"
+#import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
@@ -35,7 +37,8 @@
 #include <windows.h>
 
 @interface OFProcess ()
-- (of_char16_t *)of_environmentForDictionary: (OFDictionary *)dictionary;
+- (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
+- (char *)of_environmentForDictionary: (OFDictionary *)environment;
 @end
 
 @implementation OFProcess
@@ -113,11 +116,11 @@
 	@try {
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
-		STARTUPINFOW si;
 		void *pool;
 		OFMutableString *argumentsString;
-		of_char16_t *argumentsCopy;
-		size_t length;
+
+		_process = INVALID_HANDLE_VALUE;
+		_readPipe[0] = _writePipe[1] = NULL;
 
 		sa.nLength = sizeof(sa);
 		sa.bInheritHandle = TRUE;
@@ -128,8 +131,9 @@
 			    exceptionWithClass: self.class];
 
 		if (!SetHandleInformation(_readPipe[0], HANDLE_FLAG_INHERIT, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: self.class];
 
 		if (!CreatePipe(&_writePipe[0], &_writePipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
@@ -137,17 +141,11 @@
 
 		if (!SetHandleInformation(_writePipe[1],
 		    HANDLE_FLAG_INHERIT, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: self.class];
 
 		memset(&pi, 0, sizeof(pi));
-		memset(&si, 0, sizeof(si));
-
-		si.cb = sizeof(si);
-		si.hStdInput = _writePipe[0];
-		si.hStdOutput = _readPipe[1];
-		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-		si.dwFlags |= STARTF_USESTDHANDLES;
 
 		pool = objc_autoreleasePoolPush();
 
@@ -184,21 +182,53 @@
 				[argumentsString appendString: @"\""];
 		}
 
-		length = argumentsString.UTF16StringLength;
-		argumentsCopy = [self allocMemoryWithSize: sizeof(of_char16_t)
-						    count: length + 1];
-		memcpy(argumentsCopy, argumentsString.UTF16String,
-		    (argumentsString.UTF16StringLength + 1) * 2);
-		@try {
-			if (!CreateProcessW(program.UTF16String,
-			    argumentsCopy, NULL, NULL, TRUE,
-			    CREATE_UNICODE_ENVIRONMENT,
+		if ([OFSystemInfo isWindowsNT]) {
+			size_t length;
+			of_char16_t *argumentsCopy;
+			STARTUPINFOW si;
+
+			memset(&si, 0, sizeof(si));
+			si.cb = sizeof(si);
+			si.hStdInput = _writePipe[0];
+			si.hStdOutput = _readPipe[1];
+			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+			si.dwFlags |= STARTF_USESTDHANDLES;
+
+			length = argumentsString.UTF16StringLength;
+			argumentsCopy = [self
+			    allocMemoryWithSize: sizeof(of_char16_t)
+					  count: length + 1];
+			memcpy(argumentsCopy, argumentsString.UTF16String,
+			    (length + 1) * 2);
+			@try {
+				if (!CreateProcessW(program.UTF16String,
+				    argumentsCopy, NULL, NULL, TRUE,
+				    CREATE_UNICODE_ENVIRONMENT,
+				    [self of_wideEnvironmentForDictionary:
+				    environment], NULL, &si, &pi))
+					@throw [OFInitializationFailedException
+					    exceptionWithClass: self.class];
+			} @finally {
+				[self freeMemory: argumentsCopy];
+			}
+		} else {
+			of_string_encoding_t encoding = [OFLocale encoding];
+			STARTUPINFO si;
+
+			memset(&si, 0, sizeof(si));
+			si.cb = sizeof(si);
+			si.hStdInput = _writePipe[0];
+			si.hStdOutput = _readPipe[1];
+			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+			si.dwFlags |= STARTF_USESTDHANDLES;
+
+			if (!CreateProcessA([program cStringWithEncoding:
+			    encoding], (char *)[argumentsString
+			    cStringWithEncoding: encoding], NULL, NULL, TRUE, 0,
 			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
-		} @finally {
-			[self freeMemory: argumentsCopy];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -224,7 +254,7 @@
 	[super dealloc];
 }
 
-- (of_char16_t *)of_environmentForDictionary: (OFDictionary *)environment
+- (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)environment
 {
 	OFMutableData *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -251,6 +281,37 @@
 			count: 1];
 	}
 	[env addItems: zero
+		count: 2];
+
+	return env.mutableItems;
+}
+
+- (char *)of_environmentForDictionary: (OFDictionary *)environment
+{
+	of_string_encoding_t encoding = [OFLocale encoding];
+	OFMutableData *env;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
+	OFString *key, *object;
+
+	if (environment == nil)
+		return NULL;
+
+	env = [OFMutableData data];
+
+	keyEnumerator = [environment keyEnumerator];
+	objectEnumerator = [environment objectEnumerator];
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		[env addItems: [key cStringWithEncoding: encoding]
+			count: [key cStringLengthWithEncoding: encoding]];
+		[env addItems: "="
+			count: 1];
+		[env addItems: [object cStringWithEncoding: encoding]
+			count: [object cStringLengthWithEncoding: encoding]];
+		[env addItems: ""
+			count: 1];
+	}
+	[env addItems: "\0"
 		count: 2];
 
 	return env.mutableItems;
@@ -344,5 +405,27 @@
 	_readPipe[0] = NULL;
 
 	[super close];
+}
+
+- (int)waitForTermination
+{
+	if (_readPipe[0] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_process != INVALID_HANDLE_VALUE) {
+		DWORD exitCode;
+
+		WaitForSingleObject(_process, INFINITE);
+
+		if (GetExitCodeProcess(_process, &exitCode))
+			_status = exitCode;
+		else
+			_status = GetLastError();
+
+		CloseHandle(_process);
+		_process = INVALID_HANDLE_VALUE;
+	}
+
+	return _status;
 }
 @end

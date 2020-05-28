@@ -164,12 +164,24 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 {
 # if defined(OF_WINDOWS)
 	OFString *ret;
-	wchar_t *buffer = _wgetcwd(NULL, 0);
 
-	@try {
-		ret = [OFString stringWithUTF16String: buffer];
-	} @finally {
-		free(buffer);
+	if ([OFSystemInfo isWindowsNT]) {
+		wchar_t *buffer = _wgetcwd(NULL, 0);
+
+		@try {
+			ret = [OFString stringWithUTF16String: buffer];
+		} @finally {
+			free(buffer);
+		}
+	} else {
+		char *buffer = _getcwd(NULL, 0);
+
+		@try {
+			ret = [OFString stringWithCString: buffer
+						 encoding: [OFLocale encoding]];
+		} @finally {
+			free(buffer);
+		}
 	}
 
 	return ret;
@@ -482,12 +494,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-# if defined(OF_WINDOWS)
-	if (_wchdir(path.UTF16String) != 0)
-		@throw [OFChangeCurrentDirectoryPathFailedException
-		    exceptionWithPath: path
-				errNo: errno];
-# elif defined(OF_AMIGAOS)
+# ifdef OF_AMIGAOS
 	BPTR lock, oldLock;
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
@@ -521,7 +528,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	dirChanged = true;
 # else
-	if (chdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
+	int status;
+
+#  ifdef OF_WINDOWS
+	if ([OFSystemInfo isWindowsNT])
+		status = _wchdir(path.UTF16String);
+	else
+#  endif
+		status = chdir(
+		    [path cStringWithEncoding: [OFLocale encoding]]);
+
+	if (status != 0)
 		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path
 				errNo: errno];

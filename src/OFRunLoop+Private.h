@@ -18,16 +18,18 @@
 #import "OFRunLoop.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFTCPSocket.h"
-# import "OFUDPSocket.h"
+# import "OFDatagramSocket.h"
+# import "OFSequencedPacketSocket.h"
+# import "OFStreamSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
-@protocol OFTCPSocketDelegate_Private <OFObject>
-- (void)of_socketDidConnect: (OFTCPSocket *)socket
+@protocol OFRunLoopConnectDelegate <OFObject>
+- (void)of_socketDidConnect: (id)socket
 		  exception: (nullable id)exception;
+- (id)of_connectionFailedExceptionForErrNo: (int)errNo;
 @end
 #endif
 
@@ -83,42 +85,47 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-+ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
-				  mode: (of_run_loop_mode_t)mode
-			      delegate: (id <OFTCPSocketDelegate_Private>)
-					    delegate;
-# endif
-+ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
-				 mode: (of_run_loop_mode_t)mode
-# ifdef OF_HAVE_BLOCKS
-				block: (nullable
-					   of_tcp_socket_async_accept_block_t)
-					   block
-# endif
-			     delegate: (nullable id <OFTCPSocketDelegate>)
-					   delegate;
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
-				buffer: (void *)buffer
-				length: (size_t)length
-				  mode: (of_run_loop_mode_t)mode
-# ifdef OF_HAVE_BLOCKS
-				 block: (nullable
-					    of_udp_socket_async_receive_block_t)
-					    block
-# endif
-			      delegate: (nullable id <OFUDPSocketDelegate>)
-					    delegate;
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
-			       data: (OFData *)data
-			   receiver: (const of_socket_address_t *)receiver
++ (void)of_addAsyncConnectForSocket: (id)socket
 			       mode: (of_run_loop_mode_t)mode
-# ifdef OF_HAVE_BLOCKS
-			      block: (nullable
-					 of_udp_socket_async_send_data_block_t)
-					 block
+			   delegate: (id <OFRunLoopConnectDelegate>)delegate;
 # endif
-			   delegate: (nullable id <OFUDPSocketDelegate>)
-					 delegate;
++ (void)of_addAsyncAcceptForSocket: (id)socket
+			      mode: (of_run_loop_mode_t)mode
+			     block: (nullable id)block
+			  delegate: (nullable id)delegate;
++ (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_datagram_socket_async_receive_block_t)block
+# endif
+  delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
++ (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
+      data: (OFData *)data
+  receiver: (const of_socket_address_t *)receiver
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_datagram_socket_async_send_data_block_t)block
+# endif
+  delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
++ (void)of_addAsyncReceiveForSequencedPacketSocket:
+					       (OFSequencedPacketSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_sequenced_packet_socket_async_receive_block_t)block
+# endif
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>) delegate;
++ (void)of_addAsyncSendForSequencedPacketSocket:
+					       (OFSequencedPacketSocket *)socket
+      data: (OFData *)data
+      mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable of_sequenced_packet_socket_async_send_data_block_t)block
+# endif
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode;
 #endif

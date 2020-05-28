@@ -39,7 +39,6 @@ case "$host" in
 		enable_threads="no"
 		enable_sockets="no"
 		enable_files="no"
-		ac_cv_snprintf_useful_ret="yes"
 		;;
 	m68k-*-amigaos*)
 		AS_IF([test x"$OBJCFLAGS" = x""], [
@@ -53,7 +52,6 @@ case "$host" in
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
 		supports_amiga_lib="yes"
-		ac_cv_snprintf_useful_ret="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
 			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
@@ -424,8 +422,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	egrep_cpp_yes
 	#endif
 ], [
-	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
 	AC_MSG_RESULT(yes)
+	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	gnu_source="yes"
 ], [
 	AC_MSG_RESULT(no)
 ])
@@ -819,17 +818,19 @@ case "$host_cpu" in
 		;;
 esac
 
-AC_CHECK_FUNCS(strerror_r)
-
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
-		*-psp-*)
-			dnl asprintf is broken on the PSP, but snprintf works.
+		*-*-mingw*)
+			dnl asprintf from MinGW is broken on older Windows
+			dnl versions
 			have_asprintf="no"
-			ac_cv_snprintf_useful_ret="yes"
+			;;
+		*-psp-*)
+			dnl asprintf is broken on the PSP
+			have_asprintf="no"
 			;;
 		*)
 			have_asprintf="yes"
@@ -839,29 +840,7 @@ AC_CHECK_FUNC(asprintf, [
 	esac
 ], [
 	have_asprintf="no"
-
-	AC_MSG_CHECKING(whether snprintf returns something useful)
-	AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [
-		AC_TRY_RUN([
-			#include <stdio.h>
-
-			int
-			main()
-			{
-				return (snprintf(NULL, 0, "asd") == 3 ? 0 : 1);
-			}
-		], [
-			ac_cv_snprintf_useful_ret="yes"
-		], [
-			ac_cv_snprintf_useful_ret="no"
-		], [
-			ac_cv_snprintf_useful_ret="no"
-		])
-	])
-	AC_MSG_RESULT($ac_cv_snprintf_useful_ret)
 ])
-test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
-	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
 AC_ARG_ENABLE(unicode-tables,
 	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
@@ -1230,6 +1209,55 @@ AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
 AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
+AS_IF([test x"$gnu_source" != x"yes" -a \( \
+    x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
+    x"$ac_cv_func_asprintf_l" = x"yes" \)], [
+	AC_MSG_CHECKING(whether *_l functions need _GNU_SOURCE)
+	AC_TRY_COMPILE([
+		#include <stdlib.h>
+		#include <stdio.h>
+
+		#include <locale.h>
+		#ifdef HAVE_XLOCALE_H
+		# include <xlocale.h>
+		#endif
+	], [
+		#ifdef HAVE_STRTOD_L
+		(void)strtod_l;
+		#endif
+		#ifdef HAVE_STRTOF_L
+		(void)strtof_l;
+		#endif
+		#ifdef HAVE_ASPRINTF_L
+		(void)asprintf_l;
+		#endif
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	])
+])
+
+dnl This check needs to happen after the above, as _GNU_SOURCE can change the
+dnl return type.
+AC_CHECK_FUNCS(strerror_r, [
+	AC_MSG_CHECKING(for return type of strerror_r)
+	AC_TRY_COMPILE([
+		#include <stdio.h>
+		#include <string.h>
+	], [
+		switch (strerror_r(0, NULL, 0)) {
+		case 0:;
+		}
+	], [
+		AC_MSG_RESULT(int)
+	], [
+		AC_MSG_RESULT(char *)
+		AC_DEFINE(STRERROR_R_RETURNS_CHARP, 1,
+			[Whether strerror_r returns char *])
+	])
+])
 
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
@@ -1276,7 +1304,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
+	AC_CHECK_HEADER(netinet/sctp.h, [
+		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
+		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
+			[Whether we have netinet/sctp.h])
+		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
+	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADER(netipx/ipx.h, [
+		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
+			[Whether we have netipx/ipx.h])
+	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
@@ -1327,30 +1365,102 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 	])
 
+	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
+		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [], [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_NETIPX_IPX_H
+			# include <netipx/ipx.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <wsipx.h>
+			#endif
+		])
+	], [
+		#ifdef _WIN32
+		typedef int BOOL;
+		#endif
+
+		#ifdef OF_HAVE_NETIPX_IPX_H
+		# include <netipx/ipx.h>
+		#endif
+
+		#ifdef _WIN32
+		# ifdef __MINGW32__
+		#  include <_mingw.h>
+		#  ifdef __MINGW64_VERSION_MAJOR
+		#   include <winsock2.h>
+		#  endif
+		# endif
+		# include <windows.h>
+		# include <wsipx.h>
+		#endif
+	])
+	AS_IF([test x"$ac_cv_member_struct_sockaddr_ipx_sipx_network" = x"yes" \
+	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes"], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_SOCKET_H
+			# include <sys/socket.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <wsipx.h>
+			#endif
+
+			#ifdef AF_IPX
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
+			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
+		])
+	])
+
 	AC_CHECK_FUNCS(paccept accept4, break)
 
 	AC_CHECK_FUNCS(kqueue1 kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
-		AC_SUBST(OFKQUEUEKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_KQUEUE_KERNEL_EVENT_OBSERVER_M,
 			"OFKqueueKernelEventObserver.m")
 		break
 	])
 	AC_CHECK_FUNCS(epoll_create1 epoll_create, [
 		AC_DEFINE(HAVE_EPOLL, 1, [Whether we have epoll])
-		AC_SUBST(OFEPOLLKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_EPOLL_KERNEL_EVENT_OBSERVER_M,
 			"OFEpollKernelEventObserver.m")
 		break
 	])
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OFPOLLKERNELEVENTOBSERVER_M,
+		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 			"OFPollKernelEventObserver.m")
 	], [
 		AC_CHECK_HEADERS(poll.h)
 		AC_CHECK_FUNC(poll, [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-			AC_SUBST(OFPOLLKERNELEVENTOBSERVER_M,
+			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
 		])
 	])
@@ -1359,7 +1469,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		amigaos* | mingw* | morphos*)
 			AC_DEFINE(HAVE_SELECT, 1,
 				[Whether we have select() or similar])
-			AC_SUBST(OFSELECTKERNELEVENTOBSERVER_M,
+			AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
 				"OFSelectKernelEventObserver.m")
 			;;
 		*)
@@ -1367,20 +1477,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_CHECK_FUNC(select, [
 				AC_DEFINE(HAVE_SELECT, 1,
 					[Whether we have select() or similar])
-				AC_SUBST(OFSELECTKERNELEVENTOBSERVER_M,
+				AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
 					"OFSelectKernelEventObserver.m")
 			])
 			;;
 	esac
 
 	AS_IF([test x"$enable_threads" != x"no"], [
-		AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
+		AC_SUBST(OF_HTTP_CLIENT_TESTS_M, "OFHTTPClientTests.m")
 	])
 
 	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
 	])
+	AC_SUBST(OFSOCK, "ofsock")
 ])
 
 AC_DEFUN([CHECK_BUILTIN_BSWAP], [
@@ -1441,11 +1552,12 @@ case "$host" in
 		;;
 esac
 AS_IF([test x"$have_processes" = x"yes"], [
-	AC_SUBST(OFPROCESS_M, "OFProcess.m")
+	AC_SUBST(OF_PROCESS_M, "OFProcess.m")
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])
+AC_CHECK_FUNCS(isatty)
 
 AC_CHECK_FUNC(pledge, [
 	AC_DEFINE(OF_HAVE_PLEDGE, 1, [Whether we have pledge()])
@@ -1481,7 +1593,7 @@ AC_TRY_COMPILE([], [
 	foo = ^ (int bar) { return 0; }
 ], [
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fblocks"
-	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
+	AC_SUBST(OF_BLOCK_TESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)

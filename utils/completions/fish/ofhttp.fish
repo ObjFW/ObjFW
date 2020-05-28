@@ -1,3 +1,4 @@
+complete -c ofhttp -x
 complete -c ofhttp -s b -l body -r -d 'Specify the file to send as body'
 complete -c ofhttp -s c -l continue -d 'Continue download of existing file'
 complete -c ofhttp -s f -l force -d 'Force / overwrite existing file'

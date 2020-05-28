@@ -42,7 +42,10 @@
 #endif
 
 #ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
 # include <3ds.h>
+# undef id
 #endif
 
 #import "socket_helpers.h"
@@ -485,11 +488,13 @@ domainFromHostname(void)
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
-	path = [[OFWindowsRegistryKey localMachineKey]
-	    stringForValue: @"DataBasePath"
-		subkeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-			    @"Tcpip\\Parameters"];
-	path = [path stringByAppendingPathComponent: @"hosts"];
+	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
+		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				     @"Tcpip\\Parameters"
+	    securityAndAccessRights: KEY_QUERY_VALUE];
+	path = [[[key stringForValue: @"DataBasePath"]
+	    stringByAppendingPathComponent: @"hosts"]
+	    stringByExpandingWindowsEnvironmentStrings];
 
 	if (path != nil)
 		[self parseHosts: path];

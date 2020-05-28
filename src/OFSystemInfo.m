@@ -165,24 +165,25 @@ initOperatingSystemVersion(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		wchar_t systemDir[PATH_MAX];
+		of_string_encoding_t encoding = [OFLocale encoding];
+		char systemDir[PATH_MAX];
 		UINT systemDirLen;
 		OFString *systemDirString;
-		const of_char16_t *path;
+		const char *path;
 		void *buffer;
 		DWORD bufferLen;
 
-		systemDirLen = GetSystemDirectoryW(systemDir, PATH_MAX);
+		systemDirLen = GetSystemDirectoryA(systemDir, PATH_MAX);
 		if (systemDirLen == 0)
 			return;
 
-		systemDirString = [OFString
-		    stringWithUTF16String: systemDir
-				   length: systemDirLen];
-		path = [systemDirString stringByAppendingPathComponent:
-		    @"kernel32.dll"].UTF16String;
+		systemDirString = [OFString stringWithCString: systemDir
+						     encoding: encoding
+						       length: systemDirLen];
+		path = [[systemDirString stringByAppendingPathComponent:
+		    @"kernel32.dll"] cStringWithEncoding: encoding];
 
-		if ((bufferLen = GetFileVersionInfoSizeW(path, NULL)) == 0)
+		if ((bufferLen = GetFileVersionInfoSizeA(path, NULL)) == 0)
 			return;
 		if ((buffer = malloc(bufferLen)) == 0)
 			return;
@@ -192,10 +193,10 @@ initOperatingSystemVersion(void)
 			UINT dataLen;
 			VS_FIXEDFILEINFO *info;
 
-			if (!GetFileVersionInfoW(path, 0, bufferLen, buffer))
+			if (!GetFileVersionInfoA(path, 0, bufferLen, buffer))
 				return;
 
-			if (!VerQueryValueW(buffer, L"\\", &data, &dataLen) ||
+			if (!VerQueryValueA(buffer, "\\", &data, &dataLen) ||
 			    dataLen < sizeof(info))
 				return;
 
@@ -662,6 +663,13 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 # endif
 
 	return false;
+}
+#endif
+
+#ifdef OF_WINDOWS
++ (bool)isWindowsNT
+{
+	return !(GetVersion() & 0x80000000);
 }
 #endif
 

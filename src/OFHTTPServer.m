@@ -36,10 +36,12 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -57,13 +59,13 @@
 
 @interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
 {
-	OFTCPSocket *_socket;
+	OFStreamSocket *_socket;
 	OFHTTPServer *_server;
 	OFHTTPRequest *_request;
 	bool _chunked, _headersSent;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request;
 @end
@@ -71,7 +73,7 @@
 @interface OFHTTPServerConnection: OFObject <OFTCPSocketDelegate>
 {
 @public
-	OFTCPSocket *_socket;
+	OFStreamSocket *_socket;
 	OFHTTPServer *_server;
 	OFTimer *_timer;
 	enum {
@@ -88,7 +90,7 @@
 	OFStream *_requestBody;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
@@ -98,12 +100,14 @@
 
 @interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
 {
-	OFTCPSocket *_socket;
-	uintmax_t _toRead;
-	bool _atEndOfStream;
+	OFStreamSocket *_socket;
+	bool _chunked;
+	intmax_t _toRead;
+	bool _atEndOfStream, _setAtEndOfStream;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
+		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength;
 @end
 
@@ -112,95 +116,6 @@
 - (void)stop;
 @end
 #endif
-
-static const char *
-statusCodeToString(short code)
-{
-	switch (code) {
-	case 100:
-		return "Continue";
-	case 101:
-		return "Switching Protocols";
-	case 200:
-		return "OK";
-	case 201:
-		return "Created";
-	case 202:
-		return "Accepted";
-	case 203:
-		return "Non-Authoritative Information";
-	case 204:
-		return "No Content";
-	case 205:
-		return "Reset Content";
-	case 206:
-		return "Partial Content";
-	case 300:
-		return "Multiple Choices";
-	case 301:
-		return "Moved Permanently";
-	case 302:
-		return "Found";
-	case 303:
-		return "See Other";
-	case 304:
-		return "Not Modified";
-	case 305:
-		return "Use Proxy";
-	case 307:
-		return "Temporary Redirect";
-	case 400:
-		return "Bad Request";
-	case 401:
-		return "Unauthorized";
-	case 402:
-		return "Payment Required";
-	case 403:
-		return "Forbidden";
-	case 404:
-		return "Not Found";
-	case 405:
-		return "Method Not Allowed";
-	case 406:
-		return "Not Acceptable";
-	case 407:
-		return "Proxy Authentication Required";
-	case 408:
-		return "Request Timeout";
-	case 409:
-		return "Conflict";
-	case 410:
-		return "Gone";
-	case 411:
-		return "Length Required";
-	case 412:
-		return "Precondition Failed";
-	case 413:
-		return "Request Entity Too Large";
-	case 414:
-		return "Request-URI Too Long";
-	case 415:
-		return "Unsupported Media Type";
-	case 416:
-		return "Requested Range Not Satisfiable";
-	case 417:
-		return "Expectation Failed";
-	case 500:
-		return "Internal Server Error";
-	case 501:
-		return "Not Implemented";
-	case 502:
-		return "Bad Gateway";
-	case 503:
-		return "Service Unavailable";
-	case 504:
-		return "Gateway Timeout";
-	case 505:
-		return "HTTP Version Not Supported";
-	default:
-		return NULL;
-	}
-}
 
 static OF_INLINE OFString *
 normalizedKey(OFString *key)
@@ -233,7 +148,7 @@ normalizedKey(OFString *key)
 }
 
 @implementation OFHTTPServerResponse
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request
 {
@@ -265,9 +180,9 @@ normalizedKey(OFString *key)
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_socket writeFormat: @"HTTP/%@ %d %s\r\n",
+	[_socket writeFormat: @"HTTP/%@ %d %@\r\n",
 			      self.protocolVersionString, _statusCode,
-			      statusCodeToString(_statusCode)];
+			      of_http_status_code_to_string(_statusCode)];
 
 	headers = [[_headers mutableCopy] autorelease];
 
@@ -320,13 +235,12 @@ normalizedKey(OFString *key)
 				     length: length];
 
 	pool = objc_autoreleasePoolPush();
-	[_socket writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
+	[_socket writeString: [OFString stringWithFormat: @"%zX\r\n", length]];
 	objc_autoreleasePoolPop(pool);
 
 	[_socket writeBuffer: buffer
 		      length: length];
-	[_socket writeBuffer: "\r\n"
-		      length: 2];
+	[_socket writeString: @"\r\n"];
 
 	return length;
 }
@@ -341,8 +255,7 @@ normalizedKey(OFString *key)
 			[self of_sendHeaders];
 
 		if (_chunked)
-			[_socket writeBuffer: "0\r\n\r\n"
-				      length: 5];
+			[_socket writeString: @"0\r\n\r\n"];
 	} @catch (OFWriteFailedException *e) {
 		id <OFHTTPServerDelegate> delegate = _server.delegate;
 
@@ -370,7 +283,7 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServerConnection
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
 			server: (OFHTTPServer *)server
 {
 	self = [super init];
@@ -461,8 +374,8 @@ normalizedKey(OFString *key)
 
 	method = [line substringWithRange: of_range(0, pos)];
 	@try {
-		_method = of_http_request_method_from_string(method.UTF8String);
-	} @catch (OFInvalidFormatException *e) {
+		_method = of_http_request_method_from_string(method);
+	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
 
@@ -494,27 +407,33 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		OFString *contentLengthString;
+		bool chunked = [[_headers objectForKey: @"Transfer-Encoding"]
+		    isEqual: @"chunked"];
+		OFString *contentLengthString =
+		    [_headers objectForKey: @"Content-Length"];
+		intmax_t contentLength = 0;
 
-		if ((contentLengthString =
-		    [_headers objectForKey: @"Content-Length"]) != nil) {
-			intmax_t contentLength;
+		if (contentLengthString != nil) {
+			if (chunked || contentLengthString.length == 0)
+				return [self sendErrorAndClose: 400];
 
 			@try {
 				contentLength =
 				    contentLengthString.decimalValue;
-
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}
 
 			if (contentLength < 0)
 				return [self sendErrorAndClose: 400];
+		}
 
+		if (chunked || contentLengthString != nil) {
 			[_requestBody release];
 			_requestBody = nil;
 			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
 			    initWithSocket: _socket
+				   chunked: chunked
 			     contentLength: contentLength];
 
 			[_timer invalidate];
@@ -584,11 +503,12 @@ normalizedKey(OFString *key)
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
 
-	[_socket writeFormat: @"HTTP/1.1 %d %s\r\n"
+	[_socket writeFormat: @"HTTP/1.1 %d %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
-			      statusCode, statusCodeToString(statusCode),
+			      statusCode,
+			      of_http_status_code_to_string(statusCode),
 			      date, _server.name];
 
 	return false;
@@ -659,14 +579,19 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServerRequestBodyStream
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OFStreamSocket *)sock
+		       chunked: (bool)chunked
 		 contentLength: (uintmax_t)contentLength
 {
 	self = [super init];
 
 	@try {
 		_socket = [sock retain];
+		_chunked = chunked;
 		_toRead = contentLength;
+
+		if (_chunked && _toRead > 0)
+			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -691,22 +616,123 @@ normalizedKey(OFString *key)
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
-	size_t ret;
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_toRead == 0) {
-		_atEndOfStream = true;
+	if (_atEndOfStream)
 		return 0;
+
+	if (_socket.atEndOfStream)
+		@throw [OFTruncatedDataException exception];
+
+	/* Content-Length */
+	if (!_chunked) {
+		size_t ret;
+
+		if (length > (uintmax_t)_toRead)
+			length = (size_t)_toRead;
+
+		ret = [_socket readIntoBuffer: buffer
+				       length: length];
+
+		_toRead -= ret;
+
+		if (_toRead == 0)
+			_atEndOfStream = true;
+
+		return ret;
 	}
 
-	if (length > _toRead)
-		length = (size_t)_toRead;
+	/* Chunked */
+	if (_toRead == -2) {
+		char tmp[2];
 
-	ret = [_socket readIntoBuffer: buffer
-			       length: length];
+		switch ([_socket readIntoBuffer: tmp
+					 length: 2]) {
+		case 2:
+			_toRead++;
+			if (tmp[1] != '\n')
+				@throw [OFInvalidFormatException exception];
+		case 1:
+			_toRead++;
+			if (tmp[0] != '\r')
+				@throw [OFInvalidFormatException exception];
+		}
 
-	_toRead -= ret;
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
 
-	return ret;
+		return 0;
+	} else if (_toRead == -1) {
+		char tmp;
+
+		if ([_socket readIntoBuffer: &tmp
+				     length: 1] == 1) {
+			_toRead++;
+			if (tmp != '\n')
+				@throw [OFInvalidFormatException exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead > 0) {
+		if (length > (uintmax_t)_toRead)
+			length = (size_t)_toRead;
+
+		length = [_socket readIntoBuffer: buffer
+					  length: length];
+
+		_toRead -= length;
+
+		if (_toRead == 0)
+			_toRead = -2;
+
+		return length;
+	} else {
+		void *pool = objc_autoreleasePoolPush();
+		OFString *line;
+		of_range_t range;
+
+		@try {
+			line = [_socket tryReadLine];
+		} @catch (OFInvalidEncodingException *e) {
+			@throw [OFInvalidFormatException exception];
+		}
+
+		if (line == nil)
+			return 0;
+
+		range = [line rangeOfString: @";"];
+		if (range.location != OF_NOT_FOUND)
+			line = [line substringWithRange:
+			    of_range(0, range.location)];
+
+		if (line.length < 1) {
+			/*
+			 * We have read the empty string because the socket is
+			 * at end of stream.
+			 */
+			if (_socket.atEndOfStream &&
+			    range.location == OF_NOT_FOUND)
+				@throw [OFTruncatedDataException exception];
+			else
+				@throw [OFInvalidFormatException exception];
+		}
+
+		if ((_toRead = line.hexadecimalValue) < 0)
+			@throw [OFOutOfRangeException exception];
+
+		if (_toRead == 0) {
+			_setAtEndOfStream = true;
+			_toRead = -2;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
+		return 0;
+	}
 }
 
 - (bool)hasDataInReadBuffer
@@ -950,7 +976,7 @@ normalizedKey(OFString *key)
 #endif
 }
 
-- (void)of_handleAcceptedSocket: (OFTCPSocket *)acceptedSocket
+- (void)of_handleAcceptedSocket: (OFStreamSocket *)acceptedSocket
 {
 	OFHTTPServerConnection *connection = [[[OFHTTPServerConnection alloc]
 	    initWithSocket: acceptedSocket
@@ -960,8 +986,8 @@ normalizedKey(OFString *key)
 	[acceptedSocket asyncReadLine];
 }
 
--    (bool)socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)acceptedSocket
+-    (bool)socket: (OFStreamSocket *)sock
+  didAcceptSocket: (OFStreamSocket *)acceptedSocket
 	exception: (id)exception
 {
 	if (exception != nil) {

@@ -76,6 +76,7 @@
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFTCPSocket *_socket;
+	bool _chunked;
 	uintmax_t _toWrite;
 	bool _atEndOfStream;
 }
@@ -87,8 +88,9 @@
 @interface OFHTTPClientResponse: OFHTTPResponse <OFReadyForReadingObserving>
 {
 	OFTCPSocket *_socket;
-	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
-	uintmax_t _toRead;
+	bool _hasContentLength, _chunked, _keepAlive;
+	bool _atEndOfStream, _setAtEndOfStream;
+	intmax_t _toRead;
 }
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
@@ -118,6 +120,7 @@ constructRequestString(OFHTTPRequest *request)
 	OFString *user = URL.user, *password = URL.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	bool hasContentLength, chunked;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
@@ -185,7 +188,11 @@ constructRequestString(OFHTTPRequest *request)
 		[headers setObject: @"keep-alive"
 			    forKey: @"Connection"];
 
-	if ([headers objectForKey: @"Content-Length"] != nil &&
+	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
+	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	if ((hasContentLength || chunked) &&
 	    [headers objectForKey: @"Content-Type"] == nil)
 		[headers setObject: @"application/x-www-form-"
 				    @"urlencoded; charset=UTF-8"
@@ -308,8 +315,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
 	if ([_version isEqual: @"1.1"]) {
 		if (connectionHeader != nil)
-			keepAlive = ([connectionHeader caseInsensitiveCompare:
-			    @"close"] != OF_ORDERED_SAME);
+			keepAlive = [connectionHeader isEqual: @"close"];
 		else
 			keepAlive = true;
 	} else {
@@ -330,27 +336,38 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_client->_lastResponse = [response retain];
 	}
 
-	/* FIXME: Case-insensitive check of redirect's scheme */
 	if (_redirects > 0 && (_status == 301 || _status == 302 ||
 	    _status == 303 || _status == 307) &&
-	    (location = [_serverHeaders objectForKey: @"Location"]) != nil &&
-	    (_client->_insecureRedirectsAllowed ||
-	    [URL.scheme isEqual: @"http"] ||
-	    [location hasPrefix: @"https://"])) {
+	    (location = [_serverHeaders objectForKey: @"Location"]) != nil) {
+		bool follow = true;
 		OFURL *newURL;
-		bool follow;
+		OFString *newURLScheme;
 
 		newURL = [OFURL URLWithString: location
 				relativeToURL: URL];
+		newURLScheme = newURL.scheme;
 
-		if ([_client->_delegate respondsToSelector: @selector(client:
-		    shouldFollowRedirect:statusCode:request:response:)])
+		if ([newURLScheme caseInsensitiveCompare: @"http"] !=
+		    OF_ORDERED_SAME &&
+		    [newURLScheme caseInsensitiveCompare: @"https"] !=
+		    OF_ORDERED_SAME)
+			follow = false;
+
+		if (!_client->_allowsInsecureRedirects &&
+		    [URL.scheme caseInsensitiveCompare: @"https"] ==
+		    OF_ORDERED_SAME &&
+		    [newURLScheme caseInsensitiveCompare: @"http"] ==
+		    OF_ORDERED_SAME)
+			follow = false;
+
+		if (follow && [_client->_delegate respondsToSelector: @selector(
+		    client:shouldFollowRedirect:statusCode:request:response:)])
 			follow = [_client->_delegate client: _client
 				       shouldFollowRedirect: newURL
 						 statusCode: _status
 						    request: _request
 						   response: response];
-		else
+		else if (follow)
 			follow = defaultShouldFollow(_request.method, _status);
 
 		if (follow) {
@@ -550,6 +567,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	bytesWritten: (size_t)bytesWritten
 	   exception: (id)exception
 {
+	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	bool chunked;
+
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
 		    ([exception errNo] == ECONNRESET ||
@@ -565,7 +585,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	_firstLine = true;
 
-	if ([_request.headers objectForKey: @"Content-Length"] != nil) {
+	headers = _request.headers;
+	chunked = [[headers objectForKey: @"Transfer-Encoding"]
+	    isEqual: @"chunked"];
+
+	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
 		stream.delegate = nil;
 
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
@@ -670,7 +694,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		[_client close];
 
-		if ([URL.scheme isEqual: @"https"]) {
+		if ([URL.scheme caseInsensitiveCompare: @"https"] ==
+		    OF_ORDERED_SAME) {
 			if (of_tls_socket_class == Nil)
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
@@ -704,24 +729,28 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 		intmax_t contentLength;
-		OFString *contentLengthString;
+		OFString *transferEncoding, *contentLengthString;
 
 		_handler = [handler retain];
 		_socket = [sock retain];
 
 		headers = _handler->_request.headers;
 
+		transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
+		_chunked = [transferEncoding isEqual: @"chunked"];
+
 		contentLengthString = [headers objectForKey: @"Content-Length"];
-		if (contentLengthString == nil)
-			@throw [OFInvalidArgumentException exception];
+		if (contentLengthString != nil) {
+			if (_chunked || contentLengthString.length == 0)
+				@throw [OFInvalidArgumentException
+				    exception];
 
-		contentLength = contentLengthString.decimalValue;
-		if (contentLength < 0)
-			@throw [OFOutOfRangeException exception];
+			contentLength = contentLengthString.decimalValue;
+			if (contentLength < 0)
+				@throw [OFOutOfRangeException exception];
 
-		_toWrite = contentLength;
-
-		if ([headers objectForKey: @"Transfer-Encoding"] != nil)
+			_toWrite = contentLength;
+		} else if (!_chunked)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
@@ -750,6 +779,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	/*
+	 * We must not send a chunk of size 0, as that would end the body. We
+	 * always ignore writing 0 bytes to still allow writing 0 bytes after
+	 * the end of stream.
+	 */
+	if (length == 0)
+		return 0;
+
 	if (_atEndOfStream)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
@@ -757,19 +794,25 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			   bytesWritten: 0
 				  errNo: 0];
 
-	if (length > _toWrite)
+	if (_chunked)
+		[_socket writeFormat: @"%zX\r\n", length];
+	else if (length > _toWrite)
 		length = (size_t)_toWrite;
 
 	ret = [_socket writeBuffer: buffer
 			    length: length];
+	if (_chunked)
+		[_socket writeString: @"\r\n"];
 
 	if (ret > length)
 		@throw [OFOutOfRangeException exception];
 
-	_toWrite -= ret;
+	if (!_chunked) {
+		_toWrite -= ret;
 
-	if (_toWrite == 0)
-		_atEndOfStream = true;
+		if (_toWrite == 0)
+			_atEndOfStream = true;
+	}
 
 	if (requestedLength > length)
 		@throw [OFWriteFailedException
@@ -791,7 +834,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_toWrite > 0)
+	if (_chunked)
+		[_socket writeString: @"0\r\n\r\n"];
+	else if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
 	_socket.delegate = _handler;
@@ -840,16 +885,17 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
+		if (_chunked || contentLength.length == 0)
+			@throw [OFInvalidServerReplyException exception];
+
 		_hasContentLength = true;
 
 		@try {
-			intmax_t toRead = contentLength.decimalValue;
+			_toRead = contentLength.decimalValue;
 
-			if (toRead < 0)
+			if (_toRead < 0)
 				@throw [OFInvalidServerReplyException
 				    exception];
-
-			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -876,7 +922,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (!_chunked) {
 		size_t ret;
 
-		if (length > _toRead)
+		if (length > (uintmax_t)_toRead)
 			length = (size_t)_toRead;
 
 		ret = [_socket readIntoBuffer: buffer
@@ -894,8 +940,44 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 
 	/* Chunked */
-	if (_toRead > 0) {
-		if (length > _toRead)
+	if (_toRead == -2) {
+		char tmp[2];
+
+		switch ([_socket readIntoBuffer: tmp
+					 length: 2]) {
+		case 2:
+			_toRead++;
+			if (tmp[1] != '\n')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		case 1:
+			_toRead++;
+			if (tmp[0] != '\r')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead == -1) {
+		char tmp;
+
+		if ([_socket readIntoBuffer: &tmp
+				     length: 1] == 1) {
+			_toRead++;
+			if (tmp != '\n')
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
+
+		if (_setAtEndOfStream && _toRead == 0)
+			_atEndOfStream = true;
+
+		return 0;
+	} else if (_toRead > 0) {
+		if (length > (uintmax_t)_toRead)
 			length = (size_t)_toRead;
 
 		length = [_socket readIntoBuffer: buffer
@@ -904,9 +986,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_toRead -= length;
 
 		if (_toRead == 0)
-			if ([_socket readLine].length > 0)
-				@throw [OFInvalidServerReplyException
-				    exception];
+			_toRead = -2;
 
 		return length;
 	} else {
@@ -915,42 +995,42 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		of_range_t range;
 
 		@try {
-			line = [_socket readLine];
+			line = [_socket tryReadLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
+
+		if (line == nil)
+			return 0;
 
 		range = [line rangeOfString: @";"];
 		if (range.location != OF_NOT_FOUND)
 			line = [line substringWithRange:
 			    of_range(0, range.location)];
 
+		if (line.length < 1) {
+			/*
+			 * We have read the empty string because the socket is
+			 * at end of stream.
+			 */
+			if (_socket.atEndOfStream &&
+			    range.location == OF_NOT_FOUND)
+				@throw [OFTruncatedDataException exception];
+			else
+				@throw [OFInvalidServerReplyException
+				    exception];
+		}
+
 		@try {
-			intmax_t toRead = line.hexadecimalValue;
-
-			if (toRead < 0)
+			if ((_toRead = line.hexadecimalValue) < 0)
 				@throw [OFOutOfRangeException exception];
-
-			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
 
 		if (_toRead == 0) {
-			_atEndOfStream = true;
-
-			if (_keepAlive) {
-				@try {
-					line = [_socket readLine];
-				} @catch (OFInvalidEncodingException *e) {
-					@throw [OFInvalidServerReplyException
-					    exception];
-				}
-
-				if (line.length > 0)
-					@throw [OFInvalidServerReplyException
-					    exception];
-			}
+			_setAtEndOfStream = true;
+			_toRead = -2;
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -1120,7 +1200,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 @implementation OFHTTPClient
 @synthesize delegate = _delegate;
-@synthesize insecureRedirectsAllowed = _insecureRedirectsAllowed;
+@synthesize allowsInsecureRedirects = _allowsInsecureRedirects;
 
 + (instancetype)client
 {
@@ -1170,7 +1250,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	OFURL *URL = request.URL;
 	OFString *scheme = URL.scheme;
 
-	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
+	if ([scheme caseInsensitiveCompare: @"http"] != OF_ORDERED_SAME &&
+	    [scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	if (_inProgress)

@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFGetWindowsRegistryValueFailedException: OFException
 {
 	OFWindowsRegistryKey *_registryKey;
-	OFString *_Nullable _value, *_Nullable _subkeyPath;
+	OFString *_Nullable _value;
 	DWORD _flags;
 	LSTATUS _status;
 }
@@ -48,16 +48,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
 /*!
- * @brief The subkey path at which getting the value failed.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *subkeyPath;
-
-/*!
- * @brief The flags with which getting the value failed.
- */
-@property (readonly, nonatomic) DWORD flags;
-
-/*!
  * @brief The status returned by RegGetValueEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
@@ -69,15 +59,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
  * @param value The value which could not be retrieved
- * @param subkeyPath The subkey path at which getting the value failed
- * @param flags The flags with which getting the value failed
  * @param status The status returned by RegGetValueEx()
  * @return A new, autoreleased get Windows registry value failed exception
  */
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 				   value: (nullable OFString *)value
-			      subkeyPath: (nullable OFString *)subkeyPath
-				   flags: (DWORD)flags
 				  status: (LSTATUS)status;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -89,15 +75,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
  * @param value The value which could not be retrieved
- * @param subkeyPath The subkey path at which getting the value failed
- * @param flags The flags with which getting the value failed
  * @param status The status returned by RegGetValueEx()
  * @return An initialized get Windows registry value failed exception
  */
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			      value: (nullable OFString *)value
-			 subkeyPath: (nullable OFString *)subkeyPath
-			      flags: (DWORD)flags
 			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
 @end
 

@@ -15,20 +15,41 @@
  * file.
  */
 
-#import "OFTCPSocket.h"
+#import "OFDNSResolver.h"
+#import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFTCPSocket ()
-#ifndef OF_WII
-@property (readonly, nonatomic) int of_socketError;
-#endif
-
+@protocol OFIPSocketAsyncConnecting
 - (bool)of_createSocketForAddress: (const of_socket_address_t *)address
 			    errNo: (int *)errNo;
 - (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
 			    errNo: (int *)errNo;
 - (void)of_closeSocket;
+@end
+
+@interface OFIPSocketAsyncConnector: OFObject <OFRunLoopConnectDelegate,
+    OFDNSResolverHostDelegate>
+{
+	id _socket;
+	OFString *_host;
+	uint16_t _port;
+	id _Nullable _delegate;
+	id _Nullable _block;
+	id _Nullable _exception;
+	OFData *_Nullable _socketAddresses;
+	size_t _socketAddressesIndex;
+}
+
+- (instancetype)initWithSocket: (id)sock
+			  host: (OFString *)host
+			  port: (uint16_t)port
+		      delegate: (nullable id)delegate
+			 block: (nullable id)block;
+- (void)didConnect;
+- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 @end
 
 OF_ASSUME_NONNULL_END

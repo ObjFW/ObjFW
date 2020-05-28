@@ -81,12 +81,11 @@ OF_ASSUME_NONNULL_BEGIN
     const char *privateKeyPassphrase;
 
 /*!
- * @brief Whether certificate verification is enabled.
+ * @brief Whether certificates are verified.
  *
  * The default is enabled.
  */
-@property (nonatomic, getter=isCertificateVerificationEnabled)
-    bool certificateVerificationEnabled;
+@property (nonatomic) bool verifiesCertificates;
 
 /*!
  * @brief Initializes the TLS socket with the specified TCP socket as its

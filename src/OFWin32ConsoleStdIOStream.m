@@ -48,9 +48,11 @@
 #include <io.h>
 
 #import "OFWin32ConsoleStdIOStream.h"
+#import "OFColor.h"
 #import "OFData.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -59,6 +61,25 @@
 #import "OFWriteFailedException.h"
 
 #include <windows.h>
+
+static of_string_encoding_t
+codepageToEncoding(UINT codepage)
+{
+	switch (codepage) {
+	case 437:
+		return OF_STRING_ENCODING_CODEPAGE_437;
+	case 850:
+		return OF_STRING_ENCODING_CODEPAGE_850;
+	case 858:
+		return OF_STRING_ENCODING_CODEPAGE_858;
+	case 1251:
+		return OF_STRING_ENCODING_WINDOWS_1251;
+	case 1252:
+		return OF_STRING_ENCODING_WINDOWS_1252;
+	default:
+		@throw [OFInvalidEncodingException exception];
+	}
+}
 
 @implementation OFWin32ConsoleStdIOStream
 + (void)load
@@ -85,6 +106,7 @@
 
 	@try {
 		DWORD mode;
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
 
 		_handle = (HANDLE)_get_osfhandle(fd);
 		if (_handle == INVALID_HANDLE_VALUE)
@@ -93,6 +115,9 @@
 		/* Not a console: Treat it as a regular OFStdIOStream */
 		if (!GetConsoleMode(_handle, &mode))
 			object_setClass(self, [OFStdIOStream class]);
+
+		if (GetConsoleScreenBufferInfo(_handle, &csbi))
+			_attributes = csbi.wAttributes;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -109,7 +134,7 @@
 	of_char16_t *UTF16;
 	size_t j = 0;
 
-	if (length > sizeof(UINT32_MAX))
+	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	UTF16 = [self allocMemoryWithSize: sizeof(of_char16_t)
@@ -119,12 +144,37 @@
 		OFMutableData *rest = nil;
 		size_t i = 0;
 
-		if (!ReadConsoleW(_handle, UTF16, (DWORD)length, &UTF16Len,
-		    NULL))
-			@throw [OFReadFailedException
-			    exceptionWithObject: self
-				requestedLength: length * 2
-					  errNo: EIO];
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!ReadConsoleW(_handle, UTF16, (DWORD)length,
+			    &UTF16Len, NULL))
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: length * 2
+						  errNo: EIO];
+		} else {
+			of_string_encoding_t encoding;
+			OFString *string;
+			size_t stringLen;
+
+			if (!ReadConsoleA(_handle, (char *)UTF16, (DWORD)length,
+			    &UTF16Len, NULL))
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: length
+						  errNo: EIO];
+
+			encoding = codepageToEncoding(GetConsoleCP());
+			string = [OFString stringWithCString: (char *)UTF16
+						    encoding: encoding
+						      length: UTF16Len];
+			stringLen = string.UTF16StringLength;
+
+			if (stringLen > length)
+				@throw [OFOutOfRangeException exception];
+
+			UTF16Len = (DWORD)stringLen;
+			memcpy(UTF16, string.UTF16String, stringLen);
+		}
 
 		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
 			of_unichar_t c =
@@ -271,13 +321,38 @@
 			}
 		}
 
-		if (!WriteConsoleW(_handle, UTF16, UTF16Len, &bytesWritten,
-		    NULL))
-			@throw [OFWriteFailedException
-			    exceptionWithObject: self
-				requestedLength: UTF16Len * 2
-				   bytesWritten: 0
-					  errNo: EIO];
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!WriteConsoleW(_handle, UTF16, UTF16Len,
+			    &bytesWritten, NULL))
+				@throw [OFWriteFailedException
+				    exceptionWithObject: self
+					requestedLength: UTF16Len * 2
+					   bytesWritten: bytesWritten * 2
+						  errNo: EIO];
+		} else {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *string = [OFString
+			    stringWithUTF16String: UTF16
+					   length: UTF16Len];
+			of_string_encoding_t encoding =
+			    codepageToEncoding(GetConsoleOutputCP());
+			size_t nativeLen = [string
+			    cStringLengthWithEncoding: encoding];
+
+			if (nativeLen > UINT32_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			if (!WriteConsoleA(_handle,
+			    [string cStringWithEncoding: encoding],
+			    (DWORD)nativeLen, &bytesWritten, NULL))
+				@throw [OFWriteFailedException
+				    exceptionWithObject: self
+					requestedLength: nativeLen
+					   bytesWritten: bytesWritten
+						  errNo: EIO];
+
+			objc_autoreleasePoolPop(pool);
+		}
 
 		if (bytesWritten != UTF16Len)
 			@throw [OFWriteFailedException
@@ -331,12 +406,37 @@
 		if (j > UINT32_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		if (!WriteConsoleW(_handle, tmp, (DWORD)j, &bytesWritten, NULL))
-			@throw [OFWriteFailedException
-			    exceptionWithObject: self
-				requestedLength: j * 2
-				   bytesWritten: 0
-					  errNo: EIO];
+		if ([OFSystemInfo isWindowsNT]) {
+			if (!WriteConsoleW(_handle, tmp, (DWORD)j,
+			    &bytesWritten, NULL))
+				@throw [OFWriteFailedException
+				    exceptionWithObject: self
+					requestedLength: j * 2
+					   bytesWritten: bytesWritten * 2
+						  errNo: EIO];
+		} else {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *string = [OFString stringWithUTF16String: tmp
+								    length: j];
+			of_string_encoding_t encoding =
+			    codepageToEncoding(GetConsoleOutputCP());
+			size_t nativeLen = [string
+			    cStringLengthWithEncoding: encoding];
+
+			if (nativeLen > UINT32_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			if (!WriteConsoleA(_handle,
+			    [string cStringWithEncoding: encoding],
+			    (DWORD)nativeLen, &bytesWritten, NULL))
+				@throw [OFWriteFailedException
+				    exceptionWithObject: self
+					requestedLength: nativeLen
+					   bytesWritten: bytesWritten
+						  errNo: EIO];
+
+			objc_autoreleasePoolPop(pool);
+		}
 
 		if (bytesWritten != j)
 			@throw [OFWriteFailedException
@@ -354,5 +454,167 @@
 	 * return length.
 	 */
 	return length;
+}
+
+- (bool)hasTerminal
+{
+	/*
+	 * We can never get here if there is no terminal, as the initializer
+	 * changes the class to OFStdIOStream in that case.
+	 */
+	return true;
+}
+
+- (int)columns
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return -1;
+
+	return csbi.dwSize.X;
+}
+
+- (int)rows
+{
+	/*
+	 * The buffer size returned is almost always larger than the window
+	 * size, so this is useless.
+	 */
+	return -1;
+}
+
+- (void)setForegroundColor: (OFColor *)color
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	float red, green, blue;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
+	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+
+	[color getRed: &red
+		green: &green
+		 blue: &blue
+		alpha: NULL];
+
+	if (red >= 0.25)
+		csbi.wAttributes |= FOREGROUND_RED;
+	if (green >= 0.25)
+		csbi.wAttributes |= FOREGROUND_GREEN;
+	if (blue >= 0.25)
+		csbi.wAttributes |= FOREGROUND_BLUE;
+
+	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+		csbi.wAttributes |= FOREGROUND_INTENSITY;
+
+	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+}
+
+- (void)setBackgroundColor: (OFColor *)color
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	float red, green, blue;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
+	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+
+	[color getRed: &red
+		green: &green
+		 blue: &blue
+		alpha: NULL];
+
+	if (red >= 0.25)
+		csbi.wAttributes |= BACKGROUND_RED;
+	if (green >= 0.25)
+		csbi.wAttributes |= BACKGROUND_GREEN;
+	if (blue >= 0.25)
+		csbi.wAttributes |= BACKGROUND_BLUE;
+
+	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+		csbi.wAttributes |= BACKGROUND_INTENSITY;
+
+	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+}
+
+- (void)reset
+{
+	SetConsoleTextAttribute(_handle, _attributes);
+}
+
+- (void)clear
+{
+	static COORD zero = { 0, 0 };
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD bytesWritten;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	if (!FillConsoleOutputCharacter(_handle, ' ',
+	    csbi.dwSize.X * csbi.dwSize.Y, zero, &bytesWritten))
+		return;
+
+	if (!FillConsoleOutputAttribute(_handle, csbi.wAttributes,
+	    csbi.dwSize.X * csbi.dwSize.Y, zero, &bytesWritten))
+		return;
+
+	SetConsoleCursorPosition(_handle, zero);
+}
+
+- (void)eraseLine
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD bytesWritten;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X = 0;
+
+	if (!FillConsoleOutputCharacter(_handle, ' ', csbi.dwSize.X,
+		csbi.dwCursorPosition, &bytesWritten))
+		return;
+
+	FillConsoleOutputAttribute(_handle, csbi.wAttributes, csbi.dwSize.X,
+	    csbi.dwCursorPosition, &bytesWritten);
+}
+
+- (void)setCursorColumn: (unsigned int)column
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X = column;
+
+	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
+}
+
+- (void)setCursorPosition: (of_point_t)position
+{
+	if (position.x < 0 || position.y < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	SetConsoleCursorPosition(_handle, (COORD){ position.x, position.y });
+}
+
+- (void)setRelativeCursorPosition: (of_point_t)position
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
+		return;
+
+	csbi.dwCursorPosition.X += position.x;
+	csbi.dwCursorPosition.Y += position.y;
+
+	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
 }
 @end

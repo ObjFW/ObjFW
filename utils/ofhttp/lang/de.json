@@ -3,6 +3,7 @@
     "full_usage": [
         "Optionen:\n",
         "    -b  --body             Angegebene Datei als Body übergeben\n",
+        "                           (- für Standard-Eingabe)\n",
         "    -c  --continue         Download von existierender Datei ",
         "fortsetzen\n",
         "    -f  --force            Existierende Datei überschreiben\n",
@@ -63,9 +64,13 @@
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  %[error]: %[exception]"
     ],
-    "download_failed": "%[prog]: Fehler beim Download von <%[url]>!",
+    "download_failed": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  HTTP Status-Code: %[code]"
+    ],
     "download_failed_exception": [
-        "%[prog]: Fehler beim Download von <%[url]>: %[exception]"
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  %[exception]"
     ],
     "download_done": "Fertig!",
     "invalid_url": "%[prog]: Ungültige URL: <%[url]>!",
@@ -74,7 +79,12 @@
     "size_gib": "%[num] GiB",
     "size_mib": "%[num] MiB",
     "size_kib": "%[num] KiB",
-    "size_bytes": "%[num] Bytes",
+    "size_bytes": [
+        [
+            {"num == 1": "1 Byte"},
+            {"": "%[num] Bytes"}
+        ]
+    ],
     "size_unknown": "unbekannt",
     "info_name_unaligned": "Name: %[name]",
     "info_name": "Name:  %[name]",
@@ -85,5 +95,10 @@
         "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]"
     ],
     "eta_days": "%[num] t ",
-    "progress_bytes": "%[num] Bytes"
+    "progress_bytes": [
+        [
+            {"num == 1": "1 Byte "},
+            {"": "%[num] Bytes"}
+        ]
+    ]
 }

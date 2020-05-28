@@ -280,31 +280,24 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */
-		union {
-			unsigned char u8[4];
-			float f;
-		} f;
+		float f;
 
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		memcpy(&f.u8, buffer + 1, 4);
+		memcpy(&f, buffer + 1, 4);
 
-		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f.f)];
+		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f)];
 		return 5;
 	case 0xCB:; /* float 64 */
-		union {
-			unsigned char u8[8];
-			double d;
-		} d;
+		double d;
 
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		memcpy(&d.u8, buffer + 1, 8);
+		memcpy(&d, buffer + 1, 8);
 
-		*object = [OFNumber numberWithDouble:
-		    OF_BSWAP_DOUBLE_IF_LE(d.d)];
+		*object = [OFNumber numberWithDouble: OF_BSWAP_DOUBLE_IF_LE(d)];
 		return 9;
 	/* nil */
 	case 0xC0:

@@ -110,7 +110,13 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_size",
-			    @"Size: %[size] bytes",
+			    [@"["
+			     @"    'Size: ',"
+			     @"    ["
+			     @"        {'size == 1': '1 byte'},"
+			     @"        {'': '%[size] bytes'}"
+			     @"    ]"
+			     @"]" JSONValue],
 			    @"size", size)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_mode",

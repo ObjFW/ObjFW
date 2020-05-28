@@ -34,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 		uint32_t state[4];
 		uint64_t bits;
 		union of_md5_hash_buffer {
-			uint8_t bytes[64];
+			unsigned char bytes[64];
 			uint32_t words[16];
 		} buffer;
 		size_t bufferLength;

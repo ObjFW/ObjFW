@@ -78,6 +78,14 @@
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
+# ifdef OF_HAVE_IPX
+#  import "OFIPXSocket.h"
+#  import "OFSPXSocket.h"
+#  import "OFSPXStreamSocket.h"
+# endif
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
 #endif
 #ifdef OF_HAVE_SOCKETS
 # ifdef OF_HAVE_THREADS

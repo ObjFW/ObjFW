@@ -21,6 +21,8 @@
 # error No sockets available!
 #endif
 
+#import "socket.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
@@ -32,8 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFBindFailedException: OFException
 {
 	id _socket;
+	/* IP */
 	OFString *_host;
 	uint16_t _port;
+	/* IPX */
+	uint8_t _packetType;
 	int _errNo;
 }
 
@@ -46,6 +51,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The port on which binding failed.
  */
 @property (readonly, nonatomic) uint16_t port;
+
+/*!
+ * @brief The IPX packet type for which binding failed.
+ */
+@property (readonly, nonatomic) uint8_t packetType;
 
 /*!
  * @brief The socket which could not be bound.
@@ -73,6 +83,20 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
+/*!
+ * @brief Creates a new, autoreleased bind failed exception.
+ *
+ * @param port The IPX port to which binding failed
+ * @param packetType The IPX packet type for which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased bind failed exception
+ */
++ (instancetype)exceptionWithPort: (uint16_t)port
+		       packetType: (uint8_t)packetType
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
@@ -87,7 +111,21 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithHost: (OFString *)host
 			port: (uint16_t)port
 		      socket: (id)socket
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+		       errNo: (int)errNo;
+
+/*!
+ * @brief Initializes an already allocated bind failed exception.
+ *
+ * @param port The IPX port to which binding failed
+ * @param packetType The IPX packet type for which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return An initialized bind failed exception
+ */
+- (instancetype)initWithPort: (uint16_t)port
+		  packetType: (uint8_t)packetType
+		      socket: (id)socket
+		       errNo: (int)errNo;
 @end
 
 OF_ASSUME_NONNULL_END

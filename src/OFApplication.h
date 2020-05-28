@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
@@ -28,6 +30,30 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSandbox;
 @class OFString;
 
+/*!
+ * @brief Specify the class to be used as the application delegate.
+ *
+ * An instance of this class will be created and act as the application
+ * delegate.
+ *
+ * For example, it can be used like this:
+ *
+ * @code
+ * // In MyAppDelegate.h:
+ * @interface MyAppDelegate: OFObject <OFApplicationDelegate>
+ * @end
+ *
+ * // In MyAppDelegate.m:
+ * OF_APPLICATION_DELEGATE(MyAppDelegate)
+ *
+ * @implementation MyAppDelegate
+ * - (void)applicationDidFinishLaunching
+ * {
+ *         [OFApplication terminate];
+ * }
+ * @end
+ * @endcode
+ */
 #define OF_APPLICATION_DELEGATE(class_)					\
 	int								\
 	main(int argc, char *argv[])					\

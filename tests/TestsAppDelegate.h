@@ -54,30 +54,14 @@
 		}					\
 	}
 #define R(...) (__VA_ARGS__, 1)
-#define PRINT(color, fmt, ...)					\
-	{							\
-		OFString *msg = [OFString stringWithFormat:	\
-		    @"[%@] " fmt @"\n", module, __VA_ARGS__];	\
-		[self outputString: msg				\
-			   inColor: color];			\
-	}
 
 @class OFString;
-
-enum {
-	NO_COLOR,
-	RED,
-	GREEN,
-	YELLOW
-};
 
 @interface TestsAppDelegate: OFObject <OFApplicationDelegate>
 {
 	int _fails;
 }
 
-- (void)outputString: (OFString *)str
-	     inColor: (int)color;
 - (void)outputTesting: (OFString *)test
 	     inModule: (OFString *)module;
 - (void)outputSuccess: (OFString *)test
@@ -132,6 +116,10 @@ enum {
 
 @interface TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests;
+@end
+
+@interface TestsAppDelegate (OFIPXSocketTests)
+- (void)IPXSocketTests;
 @end
 
 @interface TestsAppDelegate (OFInvocationTests)
@@ -190,14 +178,6 @@ enum {
 - (void)scryptTests;
 @end
 
-@interface TestsAppDelegate (OFSerializationTests)
-- (void)serializationTests;
-@end
-
-@interface TestsAppDelegate (OFSetTests)
-- (void)setTests;
-@end
-
 @interface TestsAppDelegate (OFSHA1HashTests)
 - (void)SHA1HashTests;
 @end
@@ -216,6 +196,26 @@ enum {
 
 @interface TestsAppDelegate (OFSHA512HashTests)
 - (void)SHA512HashTests;
+@end
+
+@interface TestsAppDelegate (OFSCTPSocketTests)
+- (void)SCTPSocketTests;
+@end
+
+@interface TestsAppDelegate (OFSPXSocketTests)
+- (void)SPXSocketTests;
+@end
+
+@interface TestsAppDelegate (OFSPXStreamSocketTests)
+- (void)SPXStreamSocketTests;
+@end
+
+@interface TestsAppDelegate (OFSerializationTests)
+- (void)serializationTests;
+@end
+
+@interface TestsAppDelegate (OFSetTests)
+- (void)setTests;
 @end
 
 @interface TestsAppDelegate (OFSystemInfoTests)

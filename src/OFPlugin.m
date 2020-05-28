@@ -25,8 +25,9 @@
 #endif
 
 #import "OFPlugin.h"
-#import "OFString.h"
 #import "OFLocale.h"
+#import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLoadPluginFailedException.h"
@@ -42,7 +43,11 @@ of_dlopen(OFString *path, int flags)
 	if (path == nil)
 		return GetModuleHandle(NULL);
 
-	return LoadLibraryW(path.UTF16String);
+	if ([OFSystemInfo isWindowsNT])
+		return LoadLibraryW(path.UTF16String);
+	else
+		return LoadLibraryA(
+		    [path cStringWithEncoding: [OFLocale encoding]]);
 #endif
 }
 

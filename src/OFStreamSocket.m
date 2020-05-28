@@ -19,12 +19,19 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <errno.h>
 #include <string.h>
 
 #import "OFStreamSocket.h"
+#import "OFStreamSocket+Private.h"
+#import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 
+#import "OFAcceptFailedException.h"
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFListenFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
@@ -35,6 +42,9 @@
 #import "socket_helpers.h"
 
 @implementation OFStreamSocket
+@dynamic delegate;
+@synthesize listening = _listening;
+
 + (void)initialize
 {
 	if (self != [OFStreamSocket class])
@@ -48,6 +58,33 @@
 + (instancetype)socket
 {
 	return [[[self alloc] init] autorelease];
+}
+
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		if (self.class == [OFStreamSocket class]) {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		}
+
+		_socket = INVALID_SOCKET;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	if (_socket != INVALID_SOCKET)
+		[self close];
+
+	[super dealloc];
 }
 
 - (bool)lowlevelIsAtEndOfStream
@@ -73,10 +110,10 @@
 			requestedLength: length
 				  errNo: of_socket_errno()];
 #else
-	if (length > UINT_MAX)
+	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = recv(_socket, buffer, (unsigned int)length, 0)) < 0)
+	if ((ret = recv(_socket, buffer, (int)length, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -125,12 +162,12 @@
 }
 
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
-- (void)setBlocking: (bool)enable
+- (void)setCanBlock: (bool)canBlock
 {
 # ifdef OF_WINDOWS
-	u_long v = enable;
+	u_long v = canBlock;
 # else
-	char v = enable;
+	char v = canBlock;
 # endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
@@ -138,7 +175,7 @@
 		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 
-	_blocking = enable;
+	_canBlock = canBlock;
 }
 #endif
 
@@ -172,10 +209,157 @@
 #endif
 }
 
+#ifndef OF_WII
+- (int)of_socketError
+{
+	int errNo;
+	socklen_t len = sizeof(errNo);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
+	    &len) != 0)
+		return of_socket_errno();
+
+	return errNo;
+}
+#endif
+
+- (void)listen
+{
+	[self listenWithBacklog: SOMAXCONN];
+}
+
+- (void)listenWithBacklog: (int)backlog
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (listen(_socket, backlog) == -1)
+		@throw [OFListenFailedException
+		    exceptionWithSocket: self
+				backlog: backlog
+				  errNo: of_socket_errno()];
+
+	_listening = true;
+}
+
+- (instancetype)accept
+{
+	OFStreamSocket *client = [[[[self class] alloc] init] autorelease];
+#if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
+# endif
+#endif
+
+	client->_remoteAddress.length =
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
+
+#if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = paccept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
+	    INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+#elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = accept4(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+#else
+	if ((client->_socket = accept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
+
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
+		fcntl(client->_socket, F_SETFD, flags | FD_CLOEXEC);
+# endif
+#endif
+
+	assert(client->_remoteAddress.length <=
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
+
+	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
+	case AF_INET:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		break;
+#ifdef OF_HAVE_IPV6
+	case AF_INET6:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		break;
+#endif
+#ifdef OF_HAVE_IPX
+	case AF_IPX:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		break;
+#endif
+	default:
+		client->_remoteAddress.family =
+		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		break;
+	}
+
+	return client;
+}
+
+- (void)asyncAccept
+{
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+{
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: NULL
+				     delegate: _delegate];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncAcceptWithBlock: (of_stream_socket_async_accept_block_t)block
+{
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
+				   block: block];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+			     block: (of_stream_socket_async_accept_block_t)block
+{
+	[OFRunLoop of_addAsyncAcceptForSocket: self
+					 mode: runLoopMode
+					block: block
+				     delegate: nil];
+}
+#endif
+
+- (const of_socket_address_t *)remoteAddress
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_remoteAddress.length == 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (_remoteAddress.length > (socklen_t)sizeof(_remoteAddress.sockaddr))
+		@throw [OFOutOfRangeException exception];
+
+	return &_remoteAddress;
+}
+
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
+
+	_listening = false;
+	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
@@ -183,13 +367,5 @@
 	_atEndOfStream = false;
 
 	[super close];
-}
-
-- (void)dealloc
-{
-	if (_socket != INVALID_SOCKET)
-		[self close];
-
-	[super dealloc];
 }
 @end

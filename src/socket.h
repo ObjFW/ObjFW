@@ -34,12 +34,21 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
+#ifdef OF_HAVE_NETINET_SCTP_H
+# include <netinet/sctp.h>
+#endif
+#ifdef OF_HAVE_NETIPX_IPX_H
+# include <netipx/ipx.h>
+#endif
 
 #include "platform.h"
 
 #ifdef OF_WINDOWS
 # include <windows.h>
 # include <ws2tcpip.h>
+# ifdef OF_HAVE_IPX
+#  include <wsipx.h>
+# endif
 #endif
 
 /*! @file */
@@ -89,6 +98,8 @@ typedef enum {
 	OF_SOCKET_ADDRESS_FAMILY_IPV4,
 	/** IPv6 */
 	OF_SOCKET_ADDRESS_FAMILY_IPV6,
+	/** IPX */
+	OF_SOCKET_ADDRESS_FAMILY_IPX,
 	/** Any address family */
 	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
 } of_socket_address_family_t;
@@ -105,12 +116,30 @@ struct sockaddr_in6 {
 };
 #endif
 
+#ifndef OF_HAVE_IPX
+# define IPX_NODE_LEN 6
+struct sockaddr_ipx {
+	sa_family_t sipx_family;
+	uint32_t sipx_network;
+	unsigned char sipx_node[IPX_NODE_LEN];
+	uint16_t sipx_port;
+	uint8_t sipx_type;
+};
+#endif
+#ifdef OF_WINDOWS
+# define IPX_NODE_LEN 6
+# define sipx_family sa_family
+# define sipx_network sa_netnum
+# define sipx_node sa_nodenum
+# define sipx_port sa_socket
+#endif
+
 /*!
  * @struct of_socket_address_t socket.h ObjFW/socket.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-typedef struct OF_BOXABLE {
+struct OF_BOXABLE of_socket_address_t {
 	/*
 	 * Even though struct sockaddr contains the family, we need to use our
 	 * own family, as we need to support storing an IPv6 address on systems
@@ -123,9 +152,11 @@ typedef struct OF_BOXABLE {
 		struct sockaddr sockaddr;
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
+		struct sockaddr_ipx ipx;
 	} sockaddr;
 	socklen_t length;
-} of_socket_address_t;
+};
+typedef struct of_socket_address_t of_socket_address_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -150,7 +181,6 @@ extern of_socket_address_t of_socket_address_parse_ip(
 extern of_socket_address_t of_socket_address_parse_ipv4(
     OFString *IP, uint16_t port);
 
-#ifdef OF_HAVE_IPV6
 /*!
  * @brief Parses the specified IPv6 and port into an of_socket_address_t.
  *
@@ -160,7 +190,17 @@ extern of_socket_address_t of_socket_address_parse_ipv4(
  */
 extern of_socket_address_t of_socket_address_parse_ipv6(
     OFString *IP, uint16_t port);
-#endif
+
+/*!
+ * @brief Creates an IPX address for the specified network, node and port.
+ *
+ * @param node The node in the IPX network
+ * @param network The IPX network
+ * @param port The IPX port (sometimes called socket number) on the node
+ */
+extern of_socket_address_t of_socket_address_ipx(
+    const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
+    uint16_t port);
 
 /*!
  * @brief Compares two of_socket_address_t for equality.
@@ -212,6 +252,44 @@ extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
  */
 extern uint16_t of_socket_address_get_port(
     const of_socket_address_t *_Nonnull address);
+
+/*!
+ * @brief Sets the IPX network of the specified of_socket_address_t.
+ *
+ * @param address The address on which to set the IPX network
+ * @param network The IPX network to set on the address
+ */
+extern void of_socket_address_set_ipx_network(
+    of_socket_address_t *_Nonnull address, uint32_t network);
+
+/*!
+ * @brief Returns the IPX network of the specified of_socket_address_t.
+ *
+ * @param address The address on which to get the IPX network
+ * @return The IPX network of the address
+ */
+extern uint32_t of_socket_address_get_ipx_network(
+    const of_socket_address_t *_Nonnull address);
+
+/*!
+ * @brief Sets the IPX node of the specified of_socket_address_t.
+ *
+ * @param address The address on which to set the IPX node
+ * @param node The IPX node to set on the address
+ */
+extern void of_socket_address_set_ipx_node(
+    of_socket_address_t *_Nonnull address,
+    const unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/*!
+ * @brief Gets the IPX node of the specified of_socket_address_t.
+ *
+ * @param address The address on which to get the IPX node
+ * @param node A byte array to store the IPX node of the address
+ */
+extern void of_socket_address_get_ipx_node(
+    const of_socket_address_t *_Nonnull address,
+    unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 extern bool of_socket_init(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)

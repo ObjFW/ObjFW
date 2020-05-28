@@ -43,29 +43,26 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A block which is called when data was read asynchronously from a
  *	  stream.
  *
- * @param stream The stream on which data was read
- * @param buffer A buffer with the data that has been read
  * @param length The length of the data that has been read
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(OFStream *_Nonnull stream,
-    void *_Nonnull buffer, size_t length, id _Nullable exception);
+typedef bool (^of_stream_async_read_block_t)(size_t length,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read asynchronously from a
  *	  stream.
  *
- * @param stream The stream on which a line was read
  * @param line The line which has been read or `nil` when the end of stream
  *	       occurred
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OFStream *_Nonnull stream,
-    OFString *_Nullable line, id _Nullable exception);
+typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when data was written asynchronously to a
@@ -80,8 +77,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *_Nonnull stream,
  * @return The data to repeat the write with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OFStream *_Nonnull stream, OFData *_Nonnull data,
-    size_t bytesWritten, id _Nullable exception);
+    OFData *_Nonnull data, size_t bytesWritten, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a string was written asynchronously to a
@@ -91,14 +87,12 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
- * @param encoding The encoding in which the string was written
  * @param exception An exception which occurred while writing or `nil` on
  *		    success
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
-    OFStream *_Nonnull stream, OFString *_Nonnull string,
-    of_string_encoding_t encoding, size_t bytesWritten, id _Nullable exception);
+    OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
 #endif
 
 /*!
@@ -196,15 +190,15 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 @interface OFStream: OFObject <OFCopying>
 {
-	bool _blocking;
+	bool _canBlock;
 	id _Nullable _delegate;
-#if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
+#ifndef OF_SEEKABLE_STREAM_M
 @private
 #endif
 	char *_Nullable _readBuffer, *_Nullable _readBufferMemory;
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
-	bool _writeBuffered, _waitingForDelimiter;
+	bool _buffersWrites, _waitingForDelimiter;
 	OF_RESERVE_IVARS(4)
 }
 
@@ -216,7 +210,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /*!
  * @brief Whether writes are buffered.
  */
-@property (nonatomic, nonatomic, getter=isWriteBuffered) bool writeBuffered;
+@property (nonatomic, nonatomic) bool buffersWrites;
 
 /*!
  * @brief Whether data is present in the internal read buffer.
@@ -224,18 +218,18 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 @property (readonly, nonatomic) bool hasDataInReadBuffer;
 
 /*!
- * @brief Whether the stream is in blocking mode.
+ * @brief Whether the stream can block.
  *
- * By default, a stream is in blocking mode.
+ * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  */
-@property (nonatomic, getter=isBlocking) bool blocking;
+@property (nonatomic) bool canBlock;
 
 /*!
  * @brief The delegate for asynchronous operations on the stream.
  *
  * @note The delegate is retained for as long as asynchronous operations are
- *	 still outstanding.
+ *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFStreamDelegate> delegate;
@@ -247,7 +241,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
  * this does not necessarily mean that the stream ended, so you still need to
- * check @ref atEndOfStream.
+ * check @ref atEndOfStream. Do not assume that the stream ended just because a
+ * read returned 0 bytes - some streams do internal processing that has a
+ * result of 0 bytes.
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read at most.
@@ -284,7 +280,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
  * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check @ref atEndOfStream.
+ * need to check @ref atEndOfStream. Do not assume that the stream ended just
+ * because a read returned 0 bytes - some streams do internal processing that
+ * has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -305,7 +303,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
  * bytes - this does not necessarily mean that the stream ended, so you still
- * need to check @ref atEndOfStream.
+ * need to check @ref atEndOfStream. Do not assume that the stream ended just
+ * because a read returned 0 bytes - some streams do internal processing that
+ * has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -369,7 +369,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref atEndOfStream.
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -396,7 +398,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref atEndOfStream.
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!

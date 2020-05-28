@@ -20,19 +20,14 @@
 #import "OFGetWindowsRegistryValueFailedException.h"
 
 @implementation OFGetWindowsRegistryValueFailedException
-@synthesize registryKey = _registryKey, value = _value;
-@synthesize subkeyPath = _subkeyPath, flags = _flags, status = _status;
+@synthesize registryKey = _registryKey, value = _value, status = _status;
 
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 				   value: (OFString *)value
-			      subkeyPath: (OFString *)subkeyPath
-				   flags: (DWORD)flags
 				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
 					    value: value
-				       subkeyPath: subkeyPath
-					    flags: flags
 					   status: status] autorelease];
 }
 
@@ -43,8 +38,6 @@
 
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			      value: (OFString *)value
-			 subkeyPath: (OFString *)subkeyPath
-			      flags: (DWORD)flags
 			     status: (LSTATUS)status
 {
 	self = [super init];
@@ -52,8 +45,6 @@
 	@try {
 		_registryKey = [registryKey retain];
 		_value = [value copy];
-		_subkeyPath = [subkeyPath copy];
-		_flags = flags;
 		_status = status;
 	} @catch (id e) {
 		[self release];
@@ -67,7 +58,6 @@
 {
 	[_registryKey release];
 	[_value release];
-	[_subkeyPath release];
 
 	[super dealloc];
 }
@@ -75,7 +65,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to get value %@ at subkey path %@: %@",
-	    _value, _subkeyPath, of_windows_status_to_string(_status)];
+	    @"Failed to get value %@: %@",
+	    _value, of_windows_status_to_string(_status)];
 }
 @end

@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFDNSResourceRecord.h"
+#import "OFArray.h"
 #import "OFData.h"
 
 #import "OFInvalidArgumentException.h"
@@ -80,7 +81,7 @@ of_dns_class_t of_dns_class_parse(OFString *string)
 		DNSClass = OF_DNS_CLASS_IN;
 	else {
 		@try {
-			DNSClass = (of_dns_class_t)[string decimalValue];
+			DNSClass = (of_dns_class_t)string.decimalValue;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidArgumentException exception];
 		}
@@ -120,10 +121,12 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 		recordType = OF_DNS_RECORD_TYPE_AAAA;
 	else if ([string isEqual: @"SRV"])
 		recordType = OF_DNS_RECORD_TYPE_SRV;
+	else if ([string isEqual: @"ALL"])
+		recordType = OF_DNS_RECORD_TYPE_ALL;
 	else {
 		@try {
 			recordType =
-			    (of_dns_record_type_t)[string decimalValue];
+			    (of_dns_record_type_t)string.decimalValue;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidArgumentException exception];
 		}
@@ -1250,7 +1253,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 @end
 
 @implementation OFTXTDNSResourceRecord
-@synthesize textData = _textData;
+@synthesize textStrings = _textStrings;
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
@@ -1262,7 +1265,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		    textData: (OFData *)textData
+		 textStrings: (OFArray OF_GENERIC(OFData *) *)textStrings
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
@@ -1271,7 +1274,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 			       TTL: TTL];
 
 	@try {
-		_textData = [textData copy];
+		_textStrings = [textStrings copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1282,7 +1285,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 
 - (void)dealloc
 {
-	[_textData release];
+	[_textStrings release];
 
 	[super dealloc];
 }
@@ -1308,8 +1311,8 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	if (record->_recordType != _recordType)
 		return false;
 
-	if (record->_textData != _textData &&
-	    ![record->_textData isEqual: _textData])
+	if (record->_textStrings != _textStrings &&
+	    ![record->_textStrings isEqual: _textStrings])
 		return false;
 
 	return true;
@@ -1326,7 +1329,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _textData.hash);
+	OF_HASH_ADD_HASH(hash, _textStrings.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1335,14 +1338,51 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableString *text = [OFMutableString string];
+	bool first = true;
+	OFString *ret;
+
+	for (OFData *string in _textStrings) {
+		const unsigned char *stringItems = string.items;
+		size_t stringCount = string.count;
+
+		if (first) {
+			first = false;
+			[text appendString: @"\""];
+		} else
+			[text appendString: @" \""];
+
+		for (size_t i = 0; i < stringCount; i++) {
+			if (stringItems[i] == '\\')
+				[text appendString: @"\\\\"];
+			else if (stringItems[i] == '"')
+				[text appendString: @"\\\""];
+			else if (stringItems[i] < 0x20)
+				[text appendFormat: @"\\x%02X", stringItems[i]];
+			else if (stringItems[i] < 0x7F)
+				[text appendFormat: @"%c", stringItems[i]];
+			else
+				[text appendFormat: @"\\x%02X", stringItems[i]];
+		}
+
+		[text appendString: @"\""];
+	}
+
+	ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tName = %@\n"
 	    @"\tClass = %@\n"
-	    @"\tText Data = %@\n"
+	    @"\tText strings = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name, of_dns_class_to_string(_DNSClass), _textData,
+	    self.className, _name, of_dns_class_to_string(_DNSClass), text,
 	    _TTL];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 @end

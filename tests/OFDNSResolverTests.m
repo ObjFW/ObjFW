@@ -28,6 +28,8 @@ static OFString *module = @"OFDNSResolverTests";
 	OFDNSResolver *resolver = [OFDNSResolver resolver];
 	OFMutableString *staticHosts = [OFMutableString string];
 
+	of_stdout.foregroundColor = [OFColor lime];
+
 	for (OFString *host in resolver.staticHosts) {
 		OFString *IPs;
 
@@ -39,27 +41,34 @@ static OFString *module = @"OFDNSResolverTests";
 
 		[staticHosts appendFormat: @"%@=(%@)", host, IPs];
 	}
-	PRINT(GREEN, @"Static hosts: %@", staticHosts);
+	[of_stdout writeFormat: @"[OFDNSResolver] Static hosts: %@\n",
+	    staticHosts];
 
-	PRINT(GREEN, @"Name servers: %@",
-	    [resolver.nameServers componentsJoinedByString: @", "]);
+	[of_stdout writeFormat: @"[OFDNSResolver] Name servers: %@\n",
+	    [resolver.nameServers componentsJoinedByString: @", "]];
 
-	PRINT(GREEN, @"Local domain: %@", resolver.localDomain);
+	[of_stdout writeFormat: @"[OFDNSResolver] Local domain: %@\n",
+	    resolver.localDomain];
 
-	PRINT(GREEN, @"Search domains: %@",
-	    [resolver.searchDomains componentsJoinedByString: @", "]);
+	[of_stdout writeFormat: @"[OFDNSResolver] Search domains: %@\n",
+	    [resolver.searchDomains componentsJoinedByString: @", "]];
 
-	PRINT(GREEN, @"Timeout: %lf", resolver.timeout);
+	[of_stdout writeFormat: @"[OFDNSResolver] Timeout: %lf\n",
+	    resolver.timeout];
 
-	PRINT(GREEN, @"Max attempts: %u", resolver.maxAttempts);
+	[of_stdout writeFormat: @"[OFDNSResolver] Max attempts: %u\n",
+	    resolver.maxAttempts];
 
-	PRINT(GREEN, @"Min number of dots in absolute name: %u",
-	    resolver.minNumberOfDotsInAbsoluteName);
+	[of_stdout writeFormat:
+	    @"[OFDNSResolver] Min number of dots in absolute name: %u\n",
+	    resolver.minNumberOfDotsInAbsoluteName];
 
-	PRINT(GREEN, @"Uses TCP: %u", resolver.usesTCP);
+	[of_stdout writeFormat: @"[OFDNSResolver] Uses TCP: %u\n",
+	    module, resolver.usesTCP];
 
-	PRINT(GREEN, @"Config reload interval: %lf",
-	    resolver.configReloadInterval);
+	[of_stdout writeFormat:
+	    @"[OFDNSResolver] Config reload interval: %lf\n",
+	    resolver.configReloadInterval];
 
 	objc_autoreleasePoolPop(pool);
 }

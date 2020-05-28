@@ -58,6 +58,9 @@ OF_SUBCLASSING_RESTRICTED
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
 # endif
+# ifdef OF_WINDOWS
+@property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
+# endif
 #endif
 
 /*!
@@ -285,6 +288,17 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU and OS support AltiVec
  */
 + (bool)supportsAltiVec;
+#endif
+
+#ifdef OF_WINDOWS
+/*!
+ * @brief Returns whether the application is running on Windows NT.
+ *
+ * @note This method is only available on Windows.
+ *
+ * @return Whether the application is running on Windows NT
+ */
++ (bool)isWindowsNT;
 #endif
 
 + (instancetype)alloc OF_UNAVAILABLE;

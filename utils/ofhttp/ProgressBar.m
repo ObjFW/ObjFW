@@ -204,7 +204,12 @@
 		OFString *num = [OFString stringWithFormat:
 		    @"%jd", _resumedFrom + _received];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_bytes",
-		    @"%[num] bytes",
+		    [@"["
+		     @"    ["
+		     @"        {'num == 1': '1 byte '},"
+		     @"        {'': '%[num] bytes'}"
+		     @"    ]"
+		     @"]" JSONValue],
 		    @"num", num)];
 	}
 

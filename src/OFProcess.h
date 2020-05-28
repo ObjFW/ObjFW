@@ -197,6 +197,13 @@ OF_SUBCLASSING_RESTRICTED
  * closed.
  */
 - (void)closeForWriting;
+
+/*!
+ * @brief Waits for the process to terminate and returns the exit status.
+ *
+ * If the process has already exited, this returns the exit status immediately.
+ */
+- (int)waitForTermination;
 @end
 
 OF_ASSUME_NONNULL_END

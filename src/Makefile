@@ -55,7 +55,7 @@ SRCS = OFApplication.m			\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
        OFPair.m				\
-       ${OFPROCESS_M}			\
+       ${OF_PROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSandbox.m			\
@@ -121,21 +121,29 @@ SRCS_FILES = OFFile.m			\
 	     OFINIFile.m		\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
+SRCS_IPX = OFIPXSocket.m	\
+	   OFSPXSocket.m	\
+	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
+SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
+	       OFDatagramSocket.m		\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       OFSequencedPacketSocket.m	\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       socket.m
+	       socket.m				\
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
@@ -198,11 +206,13 @@ SRCS_FILES += OFFileURLHandler.m	\
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
+		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
-		${OFEPOLLKERNELEVENTOBSERVER_M}		\
-		${OFKQUEUEKERNELEVENTOBSERVER_M}	\
-		${OFPOLLKERNELEVENTOBSERVER_M}		\
-		${OFSELECTKERNELEVENTOBSERVER_M}
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
+		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
+		OFTCPSocketSOCKS5Connector.m
 
 OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\
 	     ${EXCEPTIONS_EXCEPTIONS_A} \

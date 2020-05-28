@@ -30,6 +30,7 @@
 
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
+#import "OFColor.h"
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
@@ -37,6 +38,7 @@
 #endif
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -95,6 +97,47 @@ of_log(OFConstantString *format, ...)
 
 	objc_autoreleasePoolPop(pool);
 }
+
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+static int
+colorToANSI(OFColor *color)
+{
+	if ([color isEqual: [OFColor black]])
+		return 30;
+	if ([color isEqual: [OFColor maroon]])
+		return 31;
+	if ([color isEqual: [OFColor green]])
+		return 32;
+	if ([color isEqual: [OFColor olive]])
+		return 33;
+	if ([color isEqual: [OFColor navy]])
+		return 34;
+	if ([color isEqual: [OFColor purple]])
+		return 35;
+	if ([color isEqual: [OFColor teal]])
+		return 36;
+	if ([color isEqual: [OFColor silver]])
+		return 37;
+	if ([color isEqual: [OFColor grey]])
+		return 90;
+	if ([color isEqual: [OFColor red]])
+		return 91;
+	if ([color isEqual: [OFColor lime]])
+		return 92;
+	if ([color isEqual: [OFColor yellow]])
+		return 93;
+	if ([color isEqual: [OFColor blue]])
+		return 94;
+	if ([color isEqual: [OFColor fuchsia]])
+		return 95;
+	if ([color isEqual: [OFColor aqua]])
+		return 96;
+	if ([color isEqual: [OFColor white]])
+		return 97;
+
+	return -1;
+}
+#endif
 
 @implementation OFStdIOStream
 #ifndef OF_WINDOWS
@@ -343,6 +386,15 @@ of_log(OFConstantString *format, ...)
 	return OF_RETAIN_COUNT_MAX;
 }
 
+- (bool)hasTerminal
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	return isatty(_fd);
+#else
+	return false;
+#endif
+}
+
 - (int)columns
 {
 #if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)
@@ -368,6 +420,108 @@ of_log(OFConstantString *format, ...)
 	return ws.ws_row;
 #else
 	return -1;
+#endif
+}
+
+- (void)setForegroundColor: (OFColor *)color
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	int code;
+
+	if (!isatty(_fd))
+		return;
+
+	if ((code = colorToANSI(color)) == -1)
+		return;
+
+	[self writeFormat: @"\033[%um", code];
+#endif
+}
+
+- (void)setBackgroundColor: (OFColor *)color
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	int code;
+
+	if (!isatty(_fd))
+		return;
+
+	if ((code = colorToANSI(color)) == -1)
+		return;
+
+	[self writeFormat: @"\033[%um", code + 10];
+#endif
+}
+
+- (void)reset
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[0m"];
+#endif
+}
+
+- (void)clear
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[2J"];
+#endif
+}
+
+- (void)eraseLine
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	[self writeString: @"\033[2K"];
+#endif
+}
+
+- (void)setCursorColumn: (unsigned int)column
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	[self writeFormat: @"\033[%uG", column + 1];
+#endif
+}
+
+- (void)setCursorPosition: (of_point_t)position
+{
+	if (position.x < 0 || position.y < 0)
+		@throw [OFInvalidArgumentException exception];
+
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	[self writeFormat: @"\033[%u;%uH",
+			   (unsigned)position.y + 1, (unsigned)position.x + 1];
+#endif
+}
+
+- (void)setRelativeCursorPosition: (of_point_t)position
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	if (!isatty(_fd))
+		return;
+
+	if (position.x > 0)
+		[self writeFormat: @"\033[%uC", (unsigned)position.x];
+	else if (position.x < 0)
+		[self writeFormat: @"\033[%uD", (unsigned)-position.x];
+
+	if (position.y > 0)
+		[self writeFormat: @"\033[%uB", (unsigned)position.y];
+	else if (position.y < 0)
+		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
 #endif
 }
 @end

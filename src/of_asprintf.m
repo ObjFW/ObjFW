@@ -99,17 +99,43 @@ OF_CONSTRUCTOR()
 static int
 vasprintf(char **string, const char *format, va_list arguments)
 {
-	int length;
+	int expectedLength, length;
 	va_list argumentsCopy;
 
 	va_copy(argumentsCopy, arguments);
 
-	if ((length = vsnprintf(NULL, 0, format, argumentsCopy)) < 0)
-		return length;
-	if ((*string = malloc((size_t)length + 1)) == NULL)
+	expectedLength = vsnprintf(NULL, 0, format, argumentsCopy);
+	if (expectedLength == -1)
+		/*
+		 * We have no way to know how large it is. Let's try 64 KB and
+		 * hope.
+		 */
+		expectedLength = 65535;
+
+	if ((*string = malloc((size_t)expectedLength + 1)) == NULL)
 		return -1;
 
-	return vsnprintf(*string, (size_t)length + 1, format, arguments);
+	length = vsnprintf(*string, (size_t)expectedLength + 1,
+	    format, arguments);
+
+	if (length == -1 || length > expectedLength) {
+		free(*string);
+		*string = NULL;
+		return -1;
+	}
+
+	/*
+	 * In case we could not determine the size, resize to the actual size
+	 * needed, but ignore any failure to do so.
+	 */
+	if (length < expectedLength) {
+		char *resized;
+
+		if ((resized = realloc(*string, length + 1)) != NULL)
+			*string = resized;
+	}
+
+	return length;
 }
 
 static int
@@ -280,8 +306,9 @@ formatLengthModifierState(struct context *ctx)
 		break;
 	case 'z':
 #if defined(OF_WINDOWS)
-		if (!appendSubformat(ctx, "I", 1))
-			return false;
+		if (sizeof(size_t) == 8)
+			if (!appendSubformat(ctx, "I64", 3))
+				return false;
 #elif defined(_NEWLIB_VERSION)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
@@ -295,8 +322,9 @@ formatLengthModifierState(struct context *ctx)
 		break;
 	case 't':
 #if defined(OF_WINDOWS)
-		if (!appendSubformat(ctx, "I", 1))
-			return false;
+		if (sizeof(ptrdiff_t) == 8)
+			if (!appendSubformat(ctx, "I64", 3))
+				return false;
 #elif defined(_NEWLIB_VERSION)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
@@ -354,6 +382,9 @@ formatConversionSpecifierState(struct context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
+#ifndef HAVE_ASPRINTF_L
+	OFString *point;
+#endif
 
 	if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 		return false;
@@ -548,12 +579,17 @@ formatConversionSpecifierState(struct context *ctx)
 		}
 
 #ifndef HAVE_ASPRINTF_L
+		if (tmpLen == -1)
+			return false;
+
 		/*
 		 * If there's no asprintf_l, we have no other choice than to
 		 * use this ugly hack to replace the locale's decimal point
 		 * back to ".".
 		 */
-		if (!ctx->useLocale) {
+		point = [OFLocale decimalPoint];
+
+		if (!ctx->useLocale && point != nil && ![point isEqual: @"."]) {
 			void *pool = objc_autoreleasePoolPush();
 			char *tmp2;
 
@@ -561,13 +597,12 @@ formatConversionSpecifierState(struct context *ctx)
 				OFMutableString *tmpStr = [OFMutableString
 				    stringWithUTF8String: tmp
 						  length: tmpLen];
-				OFString *point = [OFLocale decimalPoint];
-				if (point != nil)
-					[tmpStr
-					    replaceOccurrencesOfString: point
-							    withString: @"."];
+				[tmpStr replaceOccurrencesOfString: point
+							withString: @"."];
+
 				if (tmpStr.UTF8StringLength > INT_MAX)
 					return false;
+
 				tmpLen = (int)tmpStr.UTF8StringLength;
 				tmp2 = malloc(tmpLen);
 				memcpy(tmp2, tmpStr.UTF8String, tmpLen);

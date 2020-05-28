@@ -1,6 +1,7 @@
 DATA = objfw-compile.fish	\
        objfw-config.fish	\
        ofarc.fish		\
+       ofdns.fish		\
        ofhash.fish		\
        ofhttp.fish
 

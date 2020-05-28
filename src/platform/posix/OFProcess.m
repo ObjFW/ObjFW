@@ -131,6 +131,9 @@ extern char **environ;
 		const char *path;
 		char **argv;
 
+		_pid = -1;
+		_readPipe[0] = _writePipe[1] = -1;
+
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -373,5 +376,18 @@ extern char **environ;
 	_readPipe[0] = -1;
 
 	[super close];
+}
+
+- (int)waitForTermination
+{
+	if (_readPipe[0] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_pid != -1) {
+		waitpid(_pid, &_status, 0);
+		_pid = -1;
+	}
+
+	return WEXITSTATUS(_status);
 }
 @end

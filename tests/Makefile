@@ -11,7 +11,7 @@ PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
-       ${OFBLOCKTESTS_M}		\
+       ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
@@ -52,15 +52,21 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA256HashTests.m	\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
+SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
-	       ${OFHTTPCLIENTTESTS_M}		\
+	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       SocketTests.m
+	       SocketTests.m			\
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -75,10 +81,10 @@ post-all: ${RUN_TESTS}
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
-	rm -f libobjfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
+	rm -f objfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
-	rm -f libobjfwrt.dll libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f objfwrt.dll libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
 	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
@@ -88,8 +94,8 @@ run:
 		${LN_S} ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
 		    libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../src/libobjfw.dll; then \
-		${LN_S} ../src/libobjfw.dll libobjfw.dll; \
+	if test -f ../src/objfw.dll; then \
+		${LN_S} ../src/objfw.dll objfw.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
 		${LN_S} ../src/libobjfw.dylib \
@@ -103,8 +109,8 @@ run:
 	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
 		${LN_S} ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../src/runtime/libobjfwrt.dll; then \
-		${LN_S} ../src/runtime/libobjfwrt.dll libobjfwrt.dll; \
+	if test -f ../src/runtime/objfwrt.dll; then \
+		${LN_S} ../src/runtime/objfwrt.dll objfwrt.dll; \
 	fi
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
@@ -121,10 +127,10 @@ run:
 	ASAN_OPTIONS=allocator_may_return_null=1 \
 	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
-	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll; \
+	rm -f objfw.so.${OBJFW_LIB_MAJOR_MINOR} objfw.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
-	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.dll; \
+	rm -f objfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 

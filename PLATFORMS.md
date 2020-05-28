@@ -80,8 +80,8 @@ Linux
 -----
 
   * Architectures: Alpha, ARMv6, ARM64, Itanium, m68k, MIPS (O32), RISC-V 64,
-		   PowerPC, SH4, x86, x86_64
-  * Compilers: Clang 3.0-7.0, GCC 4.6-8.2
+		   PowerPC, S390x, SH4, x86, x86_64
+  * Compilers: Clang 3.0-9.0, GCC 4.6-8.2
   * Runtimes: ObjFW
 
 

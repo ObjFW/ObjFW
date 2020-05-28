@@ -132,22 +132,18 @@ OF_SUBCLASSING_RESTRICTED
 	 createSubkeyAtPath: (OFString *)path
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (nullable LPSECURITY_ATTRIBUTES)securityAttributes
-		disposition: (nullable LPDWORD)disposition;
+	 securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
+		disposition: (nullable DWORD *)disposition;
 
 /*!
  * @brief Returns the data for the specified value at the specified path.
  *
  * @param value The name of the value to return
- * @param subkeyPath The path of the key from which to retrieve the value
- * @param flags Extra flags for `RegGetValue()`. Usually 0.
  * @param type A pointer to store the type of the value, or NULL
  * @return The data for the specified value
  */
 - (nullable OFData *)dataForValue: (nullable OFString *)value
-		       subkeyPath: (nullable OFString *)subkeyPath
-			    flags: (DWORD)flags
-			     type: (nullable LPDWORD)type;
+			     type: (nullable DWORD *)type;
 
 /*!
  * @brief Sets the data for the specified value.
@@ -164,25 +160,19 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the string for the specified value at the specified path.
  *
  * @param value The name of the value to return
- * @param subkeyPath The path of the key from which to retrieve the value
  * @return The string for the specified value
  */
-- (nullable OFString *)stringForValue: (nullable OFString *)value
-			   subkeyPath: (nullable OFString *)subkeyPath;
+- (nullable OFString *)stringForValue: (nullable OFString *)value;
 
 /*!
  * @brief Returns the string for the specified value at the specified path.
  *
  * @param value The name of the value to return
- * @param subkeyPath The path of the key from which to retrieve the value
- * @param flags Extra flags for `RegGetValue()`. Usually 0.
  * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
  */
 - (nullable OFString *)stringForValue: (nullable OFString *)value
-			   subkeyPath: (nullable OFString *)subkeyPath
-				flags: (DWORD)flags
-				 type: (nullable LPDWORD)type;
+				 type: (nullable DWORD *)type;
 
 /*!
  * @brief Sets the string for the specified value.

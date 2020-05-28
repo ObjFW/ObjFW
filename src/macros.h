@@ -15,6 +15,9 @@
  * file.
  */
 
+#ifndef OBJFW_MACROS_H
+#define OBJFW_MACROS_H
+
 #include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
@@ -37,15 +40,15 @@
 
 #ifdef OF_OBJFW_RUNTIME
 # ifdef OF_COMPILING_OBJFW
-#  import "ObjFWRT.h"
+#  include "ObjFWRT.h"
 # else
-#  import <ObjFWRT/ObjFWRT.h>
+#  include <ObjFWRT/ObjFWRT.h>
 # endif
 #endif
 #ifdef OF_APPLE_RUNTIME
-# import <objc/objc.h>
-# import <objc/runtime.h>
-# import <objc/message.h>
+# include <objc/objc.h>
+# include <objc/runtime.h>
+# include <objc/message.h>
 #endif
 
 #if defined(__GNUC__)
@@ -550,32 +553,48 @@ OF_BSWAP64_NONCONST(uint64_t i)
 # define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
 #endif
 
+static OF_INLINE uint32_t
+OF_FLOAT_TO_INT_RAW(float f)
+{
+	uint32_t ret;
+	memcpy(&ret, &f, 4);
+	return ret;
+}
+
+static OF_INLINE float
+OF_INT_TO_FLOAT_RAW(uint32_t uInt32)
+{
+	float ret;
+	memcpy(&ret, &uInt32, 4);
+	return ret;
+}
+
+static OF_INLINE uint64_t
+OF_DOUBLE_TO_INT_RAW(double d)
+{
+	uint64_t ret;
+	memcpy(&ret, &d, 8);
+	return ret;
+}
+
+static OF_INLINE double
+OF_INT_TO_DOUBLE_RAW(uint64_t uInt64)
+{
+	double ret;
+	memcpy(&ret, &uInt64, 8);
+	return ret;
+}
+
 static OF_INLINE float OF_CONST_FUNC
 OF_BSWAP_FLOAT(float f)
 {
-	union {
-		float f;
-		uint32_t i;
-	} u;
-
-	u.f = f;
-	u.i = OF_BSWAP32(u.i);
-
-	return u.f;
+	return OF_INT_TO_FLOAT_RAW(OF_BSWAP32(OF_FLOAT_TO_INT_RAW(f)));
 }
 
 static OF_INLINE double OF_CONST_FUNC
 OF_BSWAP_DOUBLE(double d)
 {
-	union {
-		double d;
-		uint64_t i;
-	} u;
-
-	u.d = d;
-	u.i = OF_BSWAP64(u.i);
-
-	return u.d;
+	return OF_INT_TO_DOUBLE_RAW(OF_BSWAP64(OF_DOUBLE_TO_INT_RAW(d)));
 }
 
 #ifdef OF_BIG_ENDIAN
@@ -888,3 +907,5 @@ of_random(void) {
 	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
 #endif
 }
+
+#endif

@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 		uint64_t state[8];
 		uint64_t bits[2];
 		union of_sha384_or_512_hash_buffer {
-			uint8_t bytes[128];
+			unsigned char bytes[128];
 			uint64_t words[80];
 		} buffer;
 		size_t bufferLength;

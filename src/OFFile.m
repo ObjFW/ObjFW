@@ -32,6 +32,7 @@
 #import "OFFile.h"
 #import "OFLocale.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 #import "OFURL.h"
 
 #import "OFInitializationFailedException.h"
@@ -220,16 +221,23 @@ parseMode(const char *mode, bool *append)
 
 		flags |= O_BINARY | O_CLOEXEC;
 
-# if defined(OF_WINDOWS)
-		if ((handle = _wopen(path.UTF16String, flags,
-		    _S_IREAD | _S_IWRITE)) == -1)
-# elif defined(HAVE_OPEN64)
-		if ((handle = open64([path cStringWithEncoding:
-		    [OFLocale encoding]], flags, 0666)) == -1)
-# else
-		if ((handle = open([path cStringWithEncoding:
-		    [OFLocale encoding]], flags, 0666)) == -1)
+# ifdef OF_WINDOWS
+		if ([OFSystemInfo isWindowsNT])
+			handle = _wopen(path.UTF16String, flags,
+			    _S_IREAD | _S_IWRITE);
+		else
 # endif
+# ifdef HAVE_OPEN64
+			handle = open64(
+			    [path cStringWithEncoding: [OFLocale encoding]],
+			    flags, 0666);
+# else
+			handle = open(
+			    [path cStringWithEncoding: [OFLocale encoding]],
+			    flags, 0666);
+# endif
+
+		if (handle == -1)
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: mode

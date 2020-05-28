@@ -90,11 +90,14 @@
 # if defined(__mc68010__) || defined(OF_M68020)
 #  define OF_M68010
 # endif
-# if defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
-#  define OF_RISC_V_64
-# elif defined(__riscv)
-#  define OF_RISC_V
-# endif
+#elif defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
+# define OF_RISC_V_64
+#elif defined(__riscv)
+# define OF_RISC_V
+#elif defined(__s390x__)
+# define OF_S390X
+#elif defined(__s390__)
+# define OF_S390
 #endif
 
 #if defined(__APPLE__)

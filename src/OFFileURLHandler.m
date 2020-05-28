@@ -42,6 +42,7 @@
 #import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFSystemInfo.h"
 #import "OFURL.h"
 
 #ifdef OF_HAVE_THREADS
@@ -109,6 +110,8 @@ static OFMutex *readdirMutex;
 
 #ifdef OF_WINDOWS
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
+static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
+    LPSECURITY_ATTRIBUTES);
 #endif
 
 #ifdef OF_WINDOWS
@@ -148,9 +151,17 @@ of_stat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
 	WIN32_FILE_ATTRIBUTE_DATA data;
+	bool success;
 
-	if (!GetFileAttributesExW(path.UTF16String, GetFileExInfoStandard,
-	    &data)) {
+	if ([OFSystemInfo isWindowsNT])
+		success = GetFileAttributesExW(path.UTF16String,
+		    GetFileExInfoStandard, &data);
+	else
+		success = GetFileAttributesExA(
+		    [path cStringWithEncoding: [OFLocale encoding]],
+		    GetFileExInfoStandard, &data);
+
+	if (!success) {
 		setErrno();
 		return -1;
 	}
@@ -161,6 +172,10 @@ of_stat(OFString *path, of_stat_t *buffer)
 	if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		buffer->st_mode = S_IFDIR;
 	else if (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+		/*
+		 * No need to use A functions in this branch: This is only
+		 * available on NTFS (and hence Windows NT) anyway.
+		 */
 		WIN32_FIND_DATAW findData;
 		HANDLE findHandle;
 
@@ -498,10 +513,15 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = LoadLibrary("kernel32.dll")) != NULL)
+	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
 		func_CreateSymbolicLinkW =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
 		    GetProcAddress(module, "CreateSymbolicLinkW");
+		func_CreateHardLinkW =
+		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR,
+		    LPSECURITY_ATTRIBUTES))
+		    GetProcAddress(module, "CreateHardLinkW");
+	}
 #endif
 
 	/*
@@ -585,12 +605,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	uint16_t mode = permissions.uInt16Value & 0777;
 	OFString *path = URL.fileSystemRepresentation;
+	int status;
 
-# ifndef OF_WINDOWS
-	if (chmod([path cStringWithEncoding: [OFLocale encoding]], mode) != 0)
-# else
-	if (_wchmod(path.UTF16String, mode) != 0)
+# ifdef OF_WINDOWS
+	if ([OFSystemInfo isWindowsNT])
+		status = _wchmod(path.UTF16String, mode);
+	else
 # endif
+		status = chmod(
+		    [path cStringWithEncoding: [OFLocale encoding]], mode);
+
+	if (status != 0)
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithURL: URL
 			  attributes: attributes
@@ -773,7 +798,15 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	path = URL.fileSystemRepresentation;
 
 #if defined(OF_WINDOWS)
-	if (_wmkdir(path.UTF16String) != 0)
+	int status;
+
+	if ([OFSystemInfo isWindowsNT])
+		status = _wmkdir(path.UTF16String);
+	else
+		status = _mkdir(
+		    [path cStringWithEncoding: [OFLocale encoding]]);
+
+	if (status != 0)
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
 			       errNo: errno];
@@ -839,45 +872,94 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 #if defined(OF_WINDOWS)
 	HANDLE handle;
-	WIN32_FIND_DATAW fd;
 
 	path = [path stringByAppendingString: @"\\*"];
 
-	if ((handle = FindFirstFileW(path.UTF16String,
-	    &fd)) == INVALID_HANDLE_VALUE) {
-		int errNo = 0;
+	if ([OFSystemInfo isWindowsNT]) {
+		WIN32_FIND_DATAW fd;
 
-		if (GetLastError() == ERROR_FILE_NOT_FOUND)
-			errNo = ENOENT;
+		if ((handle = FindFirstFileW(path.UTF16String,
+		    &fd)) == INVALID_HANDLE_VALUE) {
+			int errNo = 0;
 
-		@throw [OFOpenItemFailedException exceptionWithURL: URL
-							      mode: nil
-							     errNo: errNo];
-	}
+			if (GetLastError() == ERROR_FILE_NOT_FOUND)
+				errNo = ENOENT;
 
-	@try {
-		do {
-			OFString *file;
+			@throw [OFOpenItemFailedException
+			    exceptionWithURL: URL
+					mode: nil
+				       errNo: errNo];
+		}
 
-			if (!wcscmp(fd.cFileName, L".") ||
-			    !wcscmp(fd.cFileName, L".."))
-				continue;
+		@try {
+			do {
+				OFString *file;
 
-			file = [[OFString alloc]
-			    initWithUTF16String: fd.cFileName];
-			@try {
-				[files addObject: file];
-			} @finally {
-				[file release];
-			}
-		} while (FindNextFileW(handle, &fd));
+				if (wcscmp(fd.cFileName, L".") == 0 ||
+				    wcscmp(fd.cFileName, L"..") == 0)
+					continue;
 
-		if (GetLastError() != ERROR_NO_MORE_FILES)
-			@throw [OFReadFailedException exceptionWithObject: self
-							  requestedLength: 0
-								    errNo: EIO];
-	} @finally {
-		FindClose(handle);
+				file = [[OFString alloc]
+				    initWithUTF16String: fd.cFileName];
+				@try {
+					[files addObject: file];
+				} @finally {
+					[file release];
+				}
+			} while (FindNextFileW(handle, &fd));
+
+			if (GetLastError() != ERROR_NO_MORE_FILES)
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: 0
+						  errNo: EIO];
+		} @finally {
+			FindClose(handle);
+		}
+	} else {
+		of_string_encoding_t encoding = [OFLocale encoding];
+		WIN32_FIND_DATA fd;
+
+		if ((handle = FindFirstFileA(
+		    [path cStringWithEncoding: encoding], &fd)) ==
+		    INVALID_HANDLE_VALUE) {
+			int errNo = 0;
+
+			if (GetLastError() == ERROR_FILE_NOT_FOUND)
+				errNo = ENOENT;
+
+			@throw [OFOpenItemFailedException
+			    exceptionWithURL: URL
+					mode: nil
+				       errNo: errNo];
+		}
+
+		@try {
+			do {
+				OFString *file;
+
+				if (strcmp(fd.cFileName, ".") == 0 ||
+				    strcmp(fd.cFileName, "..") == 0)
+					continue;
+
+				file = [[OFString alloc]
+				    initWithCString: fd.cFileName
+					   encoding: encoding];
+				@try {
+					[files addObject: file];
+				} @finally {
+					[file release];
+				}
+			} while (FindNextFileA(handle, &fd));
+
+			if (GetLastError() != ERROR_NO_MORE_FILES)
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: 0
+						  errNo: EIO];
+		} @finally {
+			FindClose(handle);
+		}
 	}
 #elif defined(OF_AMIGAOS)
 	of_string_encoding_t encoding = [OFLocale encoding];
@@ -1087,21 +1169,32 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		}
 
 #ifndef OF_AMIGAOS
-# ifndef OF_WINDOWS
-		if (rmdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
-# else
-		if (_wrmdir(path.UTF16String) != 0)
+		int status;
+
+# ifdef OF_WINDOWS
+		if ([OFSystemInfo isWindowsNT])
+			status = _wrmdir(path.UTF16String);
+		else
 # endif
+			status = rmdir(
+			    [path cStringWithEncoding: [OFLocale encoding]]);
+
+		if (status != 0)
 			@throw [OFRemoveItemFailedException
 				exceptionWithURL: URL
 					   errNo: errno];
 	} else {
-# ifndef OF_WINDOWS
-		if (unlink([path cStringWithEncoding:
-		    [OFLocale encoding]]) != 0)
-# else
-		if (_wunlink(path.UTF16String) != 0)
+		int status;
+
+# ifdef OF_WINDOWS
+		if ([OFSystemInfo isWindowsNT])
+			status = _wunlink(path.UTF16String);
+		else
 # endif
+			status = unlink(
+			    [path cStringWithEncoding: [OFLocale encoding]]);
+
+		if (status != 0)
 			@throw [OFRemoveItemFailedException
 			    exceptionWithURL: URL
 				       errNo: errno];
@@ -1166,7 +1259,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    destinationURL: destination
 				     errNo: errno];
 # else
-	if (!CreateHardLinkW(destinationPath.UTF16String,
+	if (func_CreateHardLinkW == NULL)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	if (!func_CreateHardLinkW(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
 		@throw [OFLinkFailedException
 		    exceptionWithSourceURL: source
@@ -1235,14 +1332,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	pool = objc_autoreleasePoolPush();
 
-#if defined(OF_WINDOWS)
-	if (_wrename(source.fileSystemRepresentation.UTF16String,
-	    destination.fileSystemRepresentation.UTF16String) != 0)
-		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
-				     errNo: errno];
-#elif defined(OF_AMIGAOS)
+#ifdef OF_AMIGAOS
 	of_string_encoding_t encoding = [OFLocale encoding];
 
 	if (!Rename([source.fileSystemRepresentation
@@ -1279,12 +1369,25 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				     errNo: errNo];
 	}
 #else
-	of_string_encoding_t encoding = [OFLocale encoding];
+	int status;
 
-	if (rename([source.fileSystemRepresentation
-	    cStringWithEncoding: encoding],
-	    [destination.fileSystemRepresentation
-	    cStringWithEncoding: encoding]) != 0)
+# ifdef OF_WINDOWS
+	if ([OFSystemInfo isWindowsNT])
+		status = _wrename(source.fileSystemRepresentation.UTF16String,
+		    destination.fileSystemRepresentation.UTF16String);
+	else {
+# endif
+		of_string_encoding_t encoding = [OFLocale encoding];
+
+		status = rename([source.fileSystemRepresentation
+		    cStringWithEncoding: encoding],
+		    [destination.fileSystemRepresentation
+		    cStringWithEncoding: encoding]);
+# ifdef OF_WINDOWS
+	}
+# endif
+
+	if (status != 0)
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination

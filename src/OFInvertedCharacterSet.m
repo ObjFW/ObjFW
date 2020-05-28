@@ -28,13 +28,19 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
+- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet
 {
 	self = [super init];
 
-	_characterSet = [characterSet retain];
-	_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
-	    [_characterSet methodForSelector: @selector(characterIsMember:)];
+	@try {
+		_characterSet = [characterSet retain];
+		_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+		    [_characterSet methodForSelector:
+		    @selector(characterIsMember:)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

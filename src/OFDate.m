@@ -51,6 +51,10 @@
 static OFMutex *mutex;
 #endif
 
+#ifdef OF_WINDOWS
+static __time64_t (*func__mktime64)(struct tm *);
+#endif
+
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
 	time_t seconds = (time_t)_seconds;				\
@@ -186,14 +190,26 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 }
 
 @implementation OFDate
-#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
-    defined(OF_HAVE_THREADS)
 + (void)initialize
 {
-	if (self == [OFDate class])
-		mutex = [[OFMutex alloc] init];
-}
+#ifdef OF_WINDOWS
+	HMODULE module;
 #endif
+
+	if (self != [OFDate class])
+		return;
+
+#if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
+    defined(OF_HAVE_THREADS)
+	mutex = [[OFMutex alloc] init];
+#endif
+
+#ifdef OF_WINDOWS
+	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+		func__mktime64 = (__time64_t (*)(struct tm *))
+		    GetProcAddress(module, "_mktime64");
+#endif
+}
 
 + (instancetype)date
 {
@@ -317,12 +333,18 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 			@throw [OFInvalidFormatException exception];
 
 		if (tz == INT16_MAX) {
-#ifndef OF_WINDOWS
-			if ((_seconds = mktime(&tm)) == -1)
-				@throw [OFInvalidFormatException exception];
-#else
-			if ((_seconds = _mktime64(&tm)) == -1)
-				@throw [OFInvalidFormatException exception];
+#ifdef OF_WINDOWS
+			if (func__mktime64 != NULL) {
+				if ((_seconds = func__mktime64(&tm)) == -1)
+					@throw [OFInvalidFormatException
+					    exception];
+			} else {
+#endif
+				if ((_seconds = mktime(&tm)) == -1)
+					@throw [OFInvalidFormatException
+					    exception];
+#ifdef OF_WINDOWS
+			}
 #endif
 		} else
 			_seconds = tmAndTzToTime(&tm, &tz);
@@ -340,18 +362,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		union {
-			double d;
-			uint64_t u;
-		} d;
 
 		if (![element.name isEqual: self.className] ||
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		d.u = (uint64_t)element.hexadecimalValue;
-		d.u = OF_BSWAP64_IF_LE(d.u);
-		_seconds = OF_BSWAP_DOUBLE_IF_LE(d.d);
+		_seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
+		    OF_BSWAP64_IF_LE(element.hexadecimalValue)));
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -383,17 +400,14 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (uint32_t)hash
 {
 	uint32_t hash;
-	union {
-		double d;
-		uint8_t b[sizeof(double)];
-	} d;
-
-	d.d = OF_BSWAP_DOUBLE_IF_BE(_seconds);
+	double tmp;
 
 	OF_HASH_INIT(hash);
 
+	tmp = OF_BSWAP_DOUBLE_IF_BE(_seconds);
+
 	for (size_t i = 0; i < sizeof(double); i++)
-		OF_HASH_ADD(hash, d.b[i]);
+		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -431,17 +445,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	union {
-		double d;
-		uint64_t u;
-	} d;
 
 	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
 
-	d.d = OF_BSWAP_DOUBLE_IF_LE(_seconds);
-	element.stringValue =
-	    [OFString stringWithFormat: @"%016" PRIx64, OF_BSWAP64_IF_LE(d.u)];
+	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
+	    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+	    _seconds)))];
 
 	[element retain];
 
