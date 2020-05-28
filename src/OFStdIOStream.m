@@ -386,6 +386,15 @@ colorToANSI(OFColor *color)
 	return OF_RETAIN_COUNT_MAX;
 }
 
+- (bool)hasTerminal
+{
+#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+	return isatty(_fd);
+#else
+	return false;
+#endif
+}
+
 - (int)columns
 {
 #if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)

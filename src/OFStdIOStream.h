@@ -54,6 +54,11 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /*!
+ * @brief Whether there is an underlying terminal.
+ */
+@property (readonly, nonatomic) bool hasTerminal;
+
+/*!
  * @brief The number of columns, or -1 if there is no underlying terminal or
  *	  the number of columns could not be queried.
  */

@@ -456,6 +456,15 @@ codepageToEncoding(UINT codepage)
 	return length;
 }
 
+- (bool)hasTerminal
+{
+	/*
+	 * We can never get here if there is no terminal, as the initializer
+	 * changes the class to OFStdIOStream in that case.
+	 */
+	return true;
+}
+
 - (int)columns
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
