@@ -201,97 +201,94 @@ main(int argc, char *argv[])
 - (void)outputTesting: (OFString *)test
 	     inModule: (OFString *)module
 {
-#ifndef STDOUT_SIMPLE
-	of_stdout.foregroundColor = [OFColor yellow];
-	[of_stdout writeFormat: @"[%@] %@: testing...", module, test];
-#else
-	[of_stdout writeFormat: @"[%@] %@: ", module, test];
-#endif
+	if (of_stdout.hasTerminal) {
+		of_stdout.foregroundColor = [OFColor yellow];
+		[of_stdout writeFormat: @"[%@] %@: testing...", module, test];
+	} else
+		[of_stdout writeFormat: @"[%@] %@: ", module, test];
 }
 
 - (void)outputSuccess: (OFString *)test
 	     inModule: (OFString *)module
 {
-#ifndef STDOUT_SIMPLE
-	of_stdout.cursorColumn = 0;
-	of_stdout.foregroundColor = [OFColor lime];
-	[of_stdout eraseLine];
-	[of_stdout writeFormat: @"[%@] %@: ok\n", module, test];
-#else
-	[of_stdout writeLine: @"ok"];
-#endif
+	if (of_stdout.hasTerminal) {
+		of_stdout.cursorColumn = 0;
+		of_stdout.foregroundColor = [OFColor lime];
+		[of_stdout eraseLine];
+		[of_stdout writeFormat: @"[%@] %@: ok\n", module, test];
+	} else
+		[of_stdout writeLine: @"ok"];
 }
 
 - (void)outputFailure: (OFString *)test
 	     inModule: (OFString *)module
 {
-#ifndef STDOUT_SIMPLE
-	of_stdout.cursorColumn = 0;
-	of_stdout.foregroundColor = [OFColor red];
-	[of_stdout eraseLine];
-	[of_stdout writeFormat: @"[%@] %@: failed\n", module, test];
+	if (of_stdout.hasTerminal) {
+		of_stdout.cursorColumn = 0;
+		of_stdout.foregroundColor = [OFColor red];
+		[of_stdout eraseLine];
+		[of_stdout writeFormat: @"[%@] %@: failed\n", module, test];
 
-# ifdef OF_WII
-	[of_stdout reset];
-	[of_stdout writeLine: @"Press A to continue!"];
+#ifdef OF_WII
+		[of_stdout reset];
+		[of_stdout writeLine: @"Press A to continue!"];
 
-	for (;;) {
-		WPAD_ScanPads();
+		for (;;) {
+			WPAD_ScanPads();
 
-		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
-			return;
+			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+				return;
 
-		VIDEO_WaitVSync();
-	}
-# endif
-# ifdef OF_PSP
-	[of_stdout reset];
-	[of_stdout writeLine: @"Press X to continue!"];
+			VIDEO_WaitVSync();
+		}
+#endif
+#ifdef OF_PSP
+		[of_stdout reset];
+		[of_stdout writeLine: @"Press X to continue!"];
 
-	for (;;) {
-		SceCtrlData pad;
+		for (;;) {
+			SceCtrlData pad;
 
-		sceCtrlReadBufferPositive(&pad, 1);
-		if (pad.Buttons & PSP_CTRL_CROSS) {
-			for (;;) {
-				sceCtrlReadBufferPositive(&pad, 1);
-				if (!(pad.Buttons & PSP_CTRL_CROSS))
-				    return;
+			sceCtrlReadBufferPositive(&pad, 1);
+			if (pad.Buttons & PSP_CTRL_CROSS) {
+				for (;;) {
+					sceCtrlReadBufferPositive(&pad, 1);
+					if (!(pad.Buttons & PSP_CTRL_CROSS))
+						return;
+				}
 			}
 		}
-	}
-# endif
-# ifdef OF_NINTENDO_DS
-	[of_stdout reset];
-	[of_stdout writeString: @"Press A to continue!"];
-
-	for (;;) {
-		swiWaitForVBlank();
-		scanKeys();
-		if (keysDown() & KEY_A)
-			break;
-	}
-# endif
-# ifdef OF_NINTENDO_3DS
-	[of_stdout reset];
-	[of_stdout writeString: @"Press A to continue!"];
-
-	for (;;) {
-		hidScanInput();
-
-		if (hidKeysDown() & KEY_A)
-			break;
-
-		gspWaitForVBlank();
-	}
-# endif
-
-	of_stdout.cursorColumn = 0;
-	[of_stdout reset];
-	[of_stdout eraseLine];
-#else
-	[of_stdout writeLine: @"failed"];
 #endif
+#ifdef OF_NINTENDO_DS
+		[of_stdout reset];
+		[of_stdout writeString: @"Press A to continue!"];
+
+		for (;;) {
+			swiWaitForVBlank();
+			scanKeys();
+			if (keysDown() & KEY_A)
+				break;
+		}
+#endif
+#ifdef OF_NINTENDO_3DS
+		[of_stdout reset];
+		[of_stdout writeString: @"Press A to continue!"];
+
+		for (;;) {
+			hidScanInput();
+
+			if (hidKeysDown() & KEY_A)
+				break;
+
+			gspWaitForVBlank();
+		}
+#endif
+
+		of_stdout.cursorColumn = 0;
+		[of_stdout reset];
+		[of_stdout eraseLine];
+	} else
+		[of_stdout writeLine: @"failed"];
 }
 
 - (void)applicationDidFinishLaunching
