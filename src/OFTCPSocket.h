@@ -18,8 +18,6 @@
 #import "OFStreamSocket.h"
 #import "OFRunLoop.h"
 
-#import "socket.h"
-
 OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
