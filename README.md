@@ -29,6 +29,7 @@ other place, you are most likely using a mirror.
    * [Amiga](#amiga)
  * [Writing your first application with ObjFW](#first-app)
  * [Bugs and feature requests](#bugs)
+ * [Support and community](#support)
  * [Commercial use](#commercial-use)
 
 
@@ -283,6 +284,19 @@ other place, you are most likely using a mirror.
 
   If you find any bugs or have feature requests, feel free to send a mail to
   js@nil.im!
+
+
+<h1 id="support">Support and community</h1>
+
+  If you have any questions about ObjFW or would like to talk to other ObjFW
+  users, the following venues are available:
+
+   * The [forum](https://objfw.nil.im/forum)
+   * A [Matrix](https://matrix.to/#/%23objfw:nil.im) room
+   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`),
+     bridged to the Matrix room above
+
+  Please don't hesitate to join any or all of those!
 
 
 <h1 id="commercial-use">Commercial use</h1>
