@@ -66,14 +66,16 @@
 /*!
  * @brief An Objective-C boolean representing true.
  *
- * @deprecated Use the standard C99 bool and true instead!
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 true instead!
  */
 #define YES true
 
 /*!
  * @brief An Objective-C boolean representing false.
  *
- * @deprecated Use the standard C99 bool and false instead!
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 false instead!
  */
 #define NO false
 
@@ -127,7 +129,8 @@ typedef const struct objc_property *objc_property_t;
 /*!
  * @brief An Objective-C boolean. Either @ref YES or @ref NO.
  *
- * @deprecated Use the standard C99 bool instead!
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 bool instead!
  */
 typedef bool BOOL;
 #endif
