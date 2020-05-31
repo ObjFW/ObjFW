@@ -37,8 +37,8 @@ See https://objfw.nil.im/ for more information.
     $ make
     $ make install
 
-  In case you checked out ObjFW from the Git repository, you need to run the
-  following command first:
+  In case you checked out ObjFW from the Fossil or Git repository, you need to
+  run the following command first:
 
     $ ./autogen.sh
 
@@ -150,7 +150,7 @@ See https://objfw.nil.im/ for more information.
 
   Finally, install a few more things needed to build ObjFW:
 
-    $ pacman -S autoconf automake git make
+    $ pacman -S autoconf automake fossil make
 
 <h3 id="steps-windows">Getting, building and installing ObjFW</h3>
 
@@ -158,7 +158,9 @@ See https://objfw.nil.im/ for more information.
   to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
   or Win64 Shell shortcut instead!) and check out ObjFW:
 
-    $ git clone https://git.nil.im/objfw.git
+    $ fossil clone https://objfw.nil.im objfw.fossil
+    $ mkdir objfw && cd objfw
+    $ fossil open ../objfw.fossil
 
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:
