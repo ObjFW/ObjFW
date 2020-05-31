@@ -1,12 +1,13 @@
 PROJECT_NAME = "ObjFW"
 OUTPUT_DIRECTORY = docs/
-INPUT = src src/exceptions
+INPUT = src src/exceptions src/runtime
 FILE_PATTERNS = *.h *.m
 HTML_OUTPUT = .
 GENERATE_LATEX = NO
 HIDE_UNDOC_CLASSES = YES
 HIDE_UNDOC_MEMBERS = YES
-PREDEFINED = DOXYGEN				\
+PREDEFINED = __OBJC__				\
+	     DOXYGEN				\
 	     OF_BOXABLE				\
 	     OF_CONSUMED			\
 	     OF_DESIGNATED_INITIALIZER		\

@@ -53,31 +53,121 @@
 # define __unsafe_unretained
 #endif
 
+/*!
+ * @brief A value representing no class.
+ */
 #define Nil (Class _Null_unspecified)0
-#define nil (id _Null_unspecified)0
-#define YES true
-#define NO  false
 
+/*!
+ * @brief A value representing no object.
+ */
+#define nil (id _Null_unspecified)0
+
+/*!
+ * @brief An Objective-C boolean representing true.
+ *
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 true instead!
+ */
+#define YES true
+
+/*!
+ * @brief An Objective-C boolean representing false.
+ *
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 false instead!
+ */
+#define NO false
+
+/*! @file */
+
+/*!
+ * @brief A pointer to a class.
+ */
 typedef struct objc_class *Class;
+
+/*!
+ * @brief A pointer to any object.
+ */
 typedef struct objc_object *id;
+
+/*!
+ * @brief A selector.
+ *
+ * A selector is the name of a method including the colons and an optional type
+ * encoding.
+ */
 typedef const struct objc_selector *SEL;
+
+/*!
+ * @brief A method.
+ *
+ * A method consists of a selector with a type encoding and an implementation.
+ */
 typedef const struct objc_method *Method;
-#ifdef __OBJC__
+
+/*!
+ * @brief A protocol.
+ */
+#if defined(__OBJC__) && !defined(DOXYGEN)
 @class Protocol;
 #else
 typedef const struct objc_protocol *Protocol;
 #endif
+
+/*!
+ * @brief An instance variable.
+ */
 typedef const struct objc_ivar *Ivar;
+
+/*!
+ * @brief A property.
+ */
 typedef const struct objc_property *objc_property_t;
+
 #if !defined(__wii__) && !defined(__amigaos__)
+/*!
+ * @brief An Objective-C boolean. Either @ref YES or @ref NO.
+ *
+ * @note This is a legacy from before C had a boolean type. Prefer the standard
+ *	 C99 bool instead!
+ */
 typedef bool BOOL;
 #endif
-typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
-typedef void (*objc_uncaught_exception_handler_t)(id _Nullable);
-typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull);
 
+/*!
+ * @brief A method implemenation.
+ *
+ * @param object The messaged object
+ * @param selector The selector sent
+ */
+typedef id _Nullable (*IMP)(id _Nonnull object, SEL _Nonnull selector, ...);
+
+/*!
+ * @brief A handler for uncaught exceptions.
+ *
+ * @param exception The exception which was not caught.
+ */
+typedef void (*objc_uncaught_exception_handler_t)(id _Nullable exception);
+
+/*!
+ * @brief A handler for mutation during enumeration.
+ *
+ * @param object The object that was mutated during enumeration
+ */
+typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull object);
+
+/*!
+ * @brief A struct representing a call to super.
+ */
 struct objc_super {
+	/*!
+	 * @brief The object on which to perform the super call.
+	 */
 	id __unsafe_unretained _Nullable self;
+	/*!
+	 * @brief The class from which to take the method.
+	 */
 #ifdef __cplusplus
 	Class _Nonnull class_;
 #else
