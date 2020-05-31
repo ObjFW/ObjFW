@@ -12,6 +12,7 @@ other place, you are most likely using a mirror.
 
  * [What is ObjFW?](#what)
  * [License](#license)
+ * [Releases](#releases)
  * [Installation](#installation)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
@@ -85,6 +86,12 @@ other place, you are most likely using a mirror.
 
   You can pick under which of those three licenses you want to use ObjFW. If
   none of them work for you, contact me and we can find a solution.
+
+
+<h1 id="releases">Releases</h1>
+
+  Releases of ObjFW, as well as changelogs and the accompanying documentation
+  can be found [here](https://objfw.nil.im/wiki?name=Releases).
 
 
 <h1 id="installation">Installation</h1>
