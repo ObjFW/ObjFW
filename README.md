@@ -11,6 +11,7 @@ other place, you are most likely using a mirror.
 <h1 id="table-of-contents">Table of Contents</h1>
 
  * [What is ObjFW?](#what)
+ * [License](#license)
  * [Installation](#installation)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
@@ -67,6 +68,22 @@ other place, you are most likely using a mirror.
   ObjFW also comes with its own lightweight and extremely fast Objective-C
   runtime, which in real world use cases was found to be significantly faster
   than both GNU's and Apple's runtime.
+
+
+<h1 id="license">License</h1>
+
+  ObjFW is released under three licenses:
+
+   * [QPL](LICENSE.QPL)
+   * [GPLv2](LICENSE.GPLv2)
+   * [GPLv3](LICENSE.GPLv3)
+
+  The QPL allows you to use ObjFW in any open source project. Because the GPL
+  does not allow using code under any other license, ObjFW is also available
+  under the GPLv2 and GPLv3 to allow GPL-licensed projects to use ObjFW.
+
+  You can pick under which of those three licenses you want to use ObjFW. If
+  none of them work for you, contact me and we can find a solution.
 
 
 <h1 id="installation">Installation</h1>
