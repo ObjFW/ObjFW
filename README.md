@@ -282,8 +282,11 @@ other place, you are most likely using a mirror.
 
 <h1 id="bugs">Bugs and feature requests</h1>
 
-  If you find any bugs or have feature requests, feel free to send a mail to
-  js@nil.im!
+  If you find any bugs or have feature requests, please
+  [file a new bug](https://objfw.nil.im/tktnew) in the
+  [bug tracker](https://objfw.nil.im/reportlist).
+
+  Alternatively, feel free to send a mail to js@nil.im!
 
 
 <h1 id="support">Support and community</h1>
