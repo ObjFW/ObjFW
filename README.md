@@ -1,14 +1,6 @@
-ObjFW is a portable, lightweight framework for the Objective C language. It
-enables you to write an application in Objective C that will run on any
-platform supported by ObjFW without having to worry about differences between
-operating systems or various frameworks that you would otherwise need if you
-want to be portable.
-
-See https://objfw.nil.im/ for more information.
-
-
 <h1 id="table-of-contents">Table of Contents</h1>
 
+ * [What is ObjFW?](#what)
  * [Installation](#installation)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
@@ -27,6 +19,44 @@ See https://objfw.nil.im/ for more information.
  * [Writing your first application with ObjFW](#first-app)
  * [Bugs and feature requests](#bugs)
  * [Commercial use](#commercial-use)
+
+
+<h1 id="what">What is ObjFW?</h1>
+
+  ObjFW is a portable, lightweight framework for the Objective-C language. It
+  enables you to write an application in Objective-C that will run on any
+  [platform](PLATFORMS.md) supported by ObjFW without having to worry about
+  differences between operating systems or various frameworks you would
+  otherwise need if you want to be portable.
+
+  It supports all modern Objective-C features when using Clang, but is also
+  compatible with GCC ≥ 4.6 to allow maximum portability.
+
+  ObjFW is intentionally incompatible with Foundation. This has two reasons:
+
+   * GNUstep already provides a reimplementation of Foundation, which is only
+     compatible to a certain degree. This means that a developer still needs to
+     care about differences between frameworks if they want to be portable. The
+     idea behind ObjFW is that a developer does not need to concern themselves
+     with portablility and making sure their code works with multiple
+     frameworks: Instead, if it works it ObjFW on one platform, they can
+     reasonably expect it to also work with ObjFW on another platform. ObjFW
+     behaving differently on different operating systems (unless inevitable
+     because it is a platform-specific part, like the Windows Registry) is
+     considered a bug and will be fixed.
+   * Foundation predates a lot of modern Objective-C concepts. The most
+     prominent one is exceptions, which are only used in Foundation as a
+     replacement for `abort()`. This results in cumbersome error handling,
+     especially in initializers, which in Foundation only return `nil` on error
+     with no indication of what went wrong. It also means that the return of
+     every `init` call needs to be checked against `nil`. But in the wild,
+     nobody actually checks *each and every* return from `init` against `nil`,
+     leading to bugs. ObjFW fixes this by making exceptions a first class
+     citizen.
+
+  ObjFW also comes with its own lightweight and extremely fast Objective-C
+  runtime, which in real world use cases was found to be significantly faster
+  than both GNU's and Apple's runtime.
 
 
 <h1 id="installation">Installation</h1>
