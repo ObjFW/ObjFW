@@ -1,3 +1,13 @@
+There are three ways you are probably reading this right now:
+
+ * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil
+ * On [GitHub](https://github.com/ObjFW/ObjFW)
+ * Via an editor or pager, by opening `README.md` from a checkout or tarball
+
+ObjFW is developed using Fossil, so if you are reading this on GitHub or any
+other place, you are most likely using a mirror.
+
+
 <h1 id="table-of-contents">Table of Contents</h1>
 
  * [What is ObjFW?](#what)
