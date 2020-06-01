@@ -608,33 +608,34 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return ret;
 }
 
-- (void)of_setModificationDate: (OFDate *)date
-		   ofItemAtURL: (OFURL *)URL
-		    attributes: (of_file_attributes_t)attributes
+- (void)of_setLastAccessDate: (OFDate *)lastAccessDate
+	 andModificationDate: (OFDate *)modificationDate
+		 ofItemAtURL: (OFURL *)URL
+		attributeKey: (of_file_attribute_key_t)attributeKey
+		  attributes: (of_file_attributes_t)attributes
 {
-	of_time_interval_t timeInterval = date.timeIntervalSince1970;
 	OFString *path = URL.fileSystemRepresentation;
+
 #ifdef OF_WINDOWS
 	if (func__wutime64 != NULL) {
 		struct __utimbuf64 times = {
-			(__time64_t)timeInterval,
-			(__time64_t)timeInterval
+			.actime =
+			    (__time64_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (__time64_t)modificationDate.timeIntervalSince1970
 		};
 
-		if (func__wutime64([path UTF16String], &times) != 0) {
-			of_file_attribute_key_t failedAttribute =
-			    of_file_attribute_key_modification_date;
-
+		if (func__wutime64([path UTF16String], &times) != 0)
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithURL: URL
 				  attributes: attributes
-			     failedAttribute: failedAttribute
+			     failedAttribute: attributeKey
 				       errNo: errno];
-		}
 	} else {
 		struct _utimbuf times = {
-			(time_t)timeInterval,
-			(time_t)timeInterval
+			.actime = (time_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (time_t)modificationDate.timeIntervalSince1970
 		};
 		int status;
 
@@ -645,32 +646,36 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    [path cStringWithEncoding: [OFLocale encoding]],
 			    &times);
 
-		if (status != 0) {
-			of_file_attribute_key_t failedAttribute =
-			    of_file_attribute_key_modification_date;
-
+		if (status != 0)
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithURL: URL
 				  attributes: attributes
-			     failedAttribute: failedAttribute
+			     failedAttribute: attributeKey
 				       errNo: errno];
-		}
 	}
 #else
+	of_time_interval_t lastAccessTime =
+	    lastAccessDate.timeIntervalSince1970;
+	of_time_interval_t modificationTime =
+	    modificationDate.timeIntervalSince1970;
 	struct timeval times[2] = {
 		{
-			.tv_sec = (time_t)timeInterval,
+			.tv_sec = (time_t)lastAccessTime,
 			.tv_usec =
-			    (int)((timeInterval - times[0].tv_sec) * 1000)
+			    (int)((lastAccessTime - times[0].tv_sec) * 1000)
 		},
-		times[0]
+		{
+			.tv_sec = (time_t)modificationTime,
+			.tv_usec =
+			    (int)((modificationTime - times[1].tv_sec) * 1000)
+		},
 	};
 
 	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithURL: URL
 			  attributes: attributes
-		     failedAttribute: of_file_attribute_key_modification_date
+		     failedAttribute: attributeKey
 			       errNo: errno];
 #endif
 }
@@ -776,6 +781,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFEnumerator *objectEnumerator;
 	of_file_attribute_key_t key;
 	id object;
+	OFDate *lastAccessDate, *modificationDate;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -788,10 +794,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: of_file_attribute_key_modification_date])
-			[self of_setModificationDate: object
-					 ofItemAtURL: URL
-					  attributes: attributes];
+		if ([key isEqual: of_file_attribute_key_modification_date] ||
+		    [key isEqual: of_file_attribute_key_last_access_date])
+			continue;
 		else if ([key isEqual: of_file_attribute_key_posix_permissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtURL: URL
@@ -812,6 +817,31 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];
+	}
+
+	lastAccessDate = [attributes
+	    objectForKey: of_file_attribute_key_last_access_date];
+	modificationDate = [attributes
+	    objectForKey: of_file_attribute_key_modification_date];
+
+	if (lastAccessDate != nil || modificationDate != nil) {
+		of_file_attribute_key_t attributeKey;
+
+		if (modificationDate != nil)
+			attributeKey = of_file_attribute_key_modification_date;
+		else
+			attributeKey = of_file_attribute_key_last_access_date;
+
+		if (lastAccessDate == nil)
+			lastAccessDate = modificationDate;
+		if (modificationDate == nil)
+			modificationDate = lastAccessDate;
+
+		[self of_setLastAccessDate: lastAccessDate
+		       andModificationDate: modificationDate
+			       ofItemAtURL: URL
+			      attributeKey: attributeKey
+				attributes: attributes];
 	}
 
 	objc_autoreleasePoolPop(pool);
