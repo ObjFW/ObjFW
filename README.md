@@ -243,9 +243,9 @@ other place, you are most likely using a mirror.
     $ pacman -S mingw-w64-x86_64-clang mingw-w64-x86_64-gcc-objc
 
   There is nothing wrong with installing them both, as MSYS2 has created two
-  entries in your start menu: `MinGW-w64 Win32 Shell` and `MinGW-w64 Win64
-  Shell`. So if you want to build for 32 or 64 bit, you just start the correct
-  shell.
+  entries in your start menu: `MinGW-w64 Win32 Shell` and
+  `MinGW-w64 Win64 Shell`. So if you want to build for 32 or 64 bit, you just
+  start the correct shell.
 
   Finally, install a few more things needed to build ObjFW:
 
