@@ -30,6 +30,7 @@ other place, you are most likely using a mirror.
      * [Wii](#wii)
    * [Amiga](#amiga)
  * [Writing your first application with ObjFW](#first-app)
+ * [Documentation](#documentation)
  * [Bugs and feature requests](#bugs)
  * [Support and community](#support)
  * [Commercial use](#commercial-use)
@@ -318,6 +319,19 @@ other place, you are most likely using a mirror.
   `objfw-compile` is a tool that allows building applications and libraries
   using ObjFW without needing a full-blown build system. If you want to use
   your own build system, you can get the necessary flags from `objfw-config`.
+
+
+<h1 id="documentation">Documentation</h1>
+
+  You can find the documentation for released versions of ObjFW
+  [here](https://objfw.nil.im/docs/).
+
+  In order to build the documentation yourself (necessary to have documentation
+  for trunk / master), you need to have [Doxygen](https://www.doxygen.nl)
+  installed. Once installed, you can build the documentation from the root
+  directory of the repository:
+
+    $ doxygen >/dev/null
 
 
 <h1 id="bugs">Bugs and feature requests</h1>
