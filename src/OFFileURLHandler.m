@@ -24,10 +24,14 @@
 #endif
 #include "unistd_wrapper.h"
 
+#import "platform.h"
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 #include <sys/time.h>
+#ifdef OF_WINDOWS
+# include <utime.h>
+#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -605,6 +609,19 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 {
 	of_time_interval_t timeInterval = date.timeIntervalSince1970;
 	OFString *path = URL.fileSystemRepresentation;
+#ifdef OF_WINDOWS
+	struct __utimbuf64 times = {
+		(__time64_t)timeInterval,
+		(__time64_t)timeInterval
+	};
+
+	if (_wutime64([path UTF16String], &times) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: of_file_attribute_key_modification_date
+			       errNo: errno];
+#else
 	struct timeval times[2] = {
 		{
 			.tv_sec = (time_t)timeInterval,
@@ -620,6 +637,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			  attributes: attributes
 		     failedAttribute: of_file_attribute_key_modification_date
 			       errNo: errno];
+#endif
 }
 
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
