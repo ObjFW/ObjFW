@@ -114,6 +114,7 @@ static OFMutex *readdirMutex;
 #endif
 
 #ifdef OF_WINDOWS
+static int (*func__wutime64)(const wchar_t *, struct __utimbuf64 *);
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
@@ -518,6 +519,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 
 #ifdef OF_WINDOWS
+	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+		func__wutime64 = (int (*)(const wchar_t *,
+		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
+
 	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
 		func_CreateSymbolicLinkW =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
@@ -610,17 +615,39 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	of_time_interval_t timeInterval = date.timeIntervalSince1970;
 	OFString *path = URL.fileSystemRepresentation;
 #ifdef OF_WINDOWS
-	struct __utimbuf64 times = {
-		(__time64_t)timeInterval,
-		(__time64_t)timeInterval
-	};
+	if (func__wutime64 != NULL) {
+		struct __utimbuf64 times = {
+			(__time64_t)timeInterval,
+			(__time64_t)timeInterval
+		};
 
-	if (_wutime64([path UTF16String], &times) != 0)
-		@throw [OFSetItemAttributesFailedException
-		    exceptionWithURL: URL
-			  attributes: attributes
-		     failedAttribute: of_file_attribute_key_modification_date
-			       errNo: errno];
+		if (func__wutime64([path UTF16String], &times) != 0) {
+			of_file_attribute_key_t failedAttribute =
+			    of_file_attribute_key_modification_date;
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: failedAttribute
+				       errNo: errno];
+		}
+	} else {
+		struct _utimbuf times = {
+			(time_t)timeInterval,
+			(time_t)timeInterval
+		};
+
+		if (_wutime([path UTF16String], &times) != 0) {
+			of_file_attribute_key_t failedAttribute =
+			    of_file_attribute_key_modification_date;
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: failedAttribute
+				       errNo: errno];
+		}
+	}
 #else
 	struct timeval times[2] = {
 		{
