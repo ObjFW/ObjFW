@@ -27,6 +27,7 @@
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
+#include <sys/time.h>
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -598,6 +599,29 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return ret;
 }
 
+- (void)of_setModificationDate: (OFDate *)date
+		   ofItemAtURL: (OFURL *)URL
+		    attributes: (of_file_attributes_t)attributes
+{
+	of_time_interval_t timeInterval = date.timeIntervalSince1970;
+	OFString *path = URL.fileSystemRepresentation;
+	struct timeval times[2] = {
+		{
+			.tv_sec = (time_t)timeInterval,
+			.tv_usec =
+			    (int)((timeInterval - times[0].tv_sec) * 1000)
+		},
+		times[0]
+	};
+
+	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: of_file_attribute_key_modification_date
+			       errNo: errno];
+}
+
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
 		   ofItemAtURL: (OFURL *)URL
 		    attributes: (of_file_attributes_t)attributes
@@ -711,7 +735,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: of_file_attribute_key_posix_permissions])
+		if ([key isEqual: of_file_attribute_key_modification_date])
+			[self of_setModificationDate: object
+					 ofItemAtURL: URL
+					  attributes: attributes];
+		else if ([key isEqual: of_file_attribute_key_posix_permissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtURL: URL
 					  attributes: attributes];
