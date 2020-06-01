@@ -611,10 +611,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (void)of_setLastAccessDate: (OFDate *)lastAccessDate
 	 andModificationDate: (OFDate *)modificationDate
 		 ofItemAtURL: (OFURL *)URL
-		attributeKey: (of_file_attribute_key_t)attributeKey
 		  attributes: (of_file_attributes_t)attributes
 {
 	OFString *path = URL.fileSystemRepresentation;
+	of_file_attribute_key_t attributeKey = (modificationDate != nil
+	    ? of_file_attribute_key_modification_date
+	    : of_file_attribute_key_last_access_date);
+
+	if (lastAccessDate == nil)
+		lastAccessDate = modificationDate;
+	if (modificationDate == nil)
+		modificationDate = lastAccessDate;
 
 #ifdef OF_WINDOWS
 	if (func__wutime64 != NULL) {
@@ -824,25 +831,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	modificationDate = [attributes
 	    objectForKey: of_file_attribute_key_modification_date];
 
-	if (lastAccessDate != nil || modificationDate != nil) {
-		of_file_attribute_key_t attributeKey;
-
-		if (modificationDate != nil)
-			attributeKey = of_file_attribute_key_modification_date;
-		else
-			attributeKey = of_file_attribute_key_last_access_date;
-
-		if (lastAccessDate == nil)
-			lastAccessDate = modificationDate;
-		if (modificationDate == nil)
-			modificationDate = lastAccessDate;
-
+	if (lastAccessDate != nil || modificationDate != nil)
 		[self of_setLastAccessDate: lastAccessDate
 		       andModificationDate: modificationDate
 			       ofItemAtURL: URL
-			      attributeKey: attributeKey
 				attributes: attributes];
-	}
 
 	objc_autoreleasePoolPop(pool);
 }
