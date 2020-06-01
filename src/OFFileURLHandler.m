@@ -636,8 +636,16 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			(time_t)timeInterval,
 			(time_t)timeInterval
 		};
+		int status;
 
-		if (_wutime([path UTF16String], &times) != 0) {
+		if ([OFSystemInfo isWindowsNT])
+			status = _wutime([path UTF16String], &times);
+		else
+			status = _utime(
+			    [path cStringWithEncoding: [OFLocale encoding]],
+			    &times);
+
+		if (status != 0) {
 			of_file_attribute_key_t failedAttribute =
 			    of_file_attribute_key_modification_date;
 
