@@ -13,6 +13,7 @@ other place, you are most likely using a mirror.
  * [What is ObjFW?](#what)
  * [License](#license)
  * [Releases](#releases)
+ * [Cloning the repository](#cloning)
  * [Installation](#installation)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
@@ -92,6 +93,38 @@ other place, you are most likely using a mirror.
 
   Releases of ObjFW, as well as changelogs and the accompanying documentation
   can be found [here](https://objfw.nil.im/wiki?name=Releases).
+
+
+<h1 id="cloning">Cloning the repository</h1>
+
+  ObjFW is developed in a [Fossil](https://fossil-scm.org) repository, with
+  automatic incremental exports to Git. This means you can either clone the
+  Fossil repository or the Git repository - it does not make a huge difference.
+  The main advantage of cloning the Fossil repository over cloning the Git
+  repository is that you also get all the tickets, wiki pages, etc.
+
+<h2 id="cloning-fossil">Fossil</h2>
+
+  Clone the Fossil repository like this:
+
+    $ fossil clone https://objfw.nil.im objfw.fossil
+    $ mkdir objfw && cd objfw
+    $ fossil open ../objfw.fossil
+
+  You can then use Fossil's web interface to browse the timeline, tickets,
+  wiki pages, etc.:
+
+    $ fossil ui
+
+  It's also possible to open the same local repository multiple times, so that
+  you have multiple working directories all backed by the same local
+  repository.
+
+<h2 id="cloning-git">Git</h2>
+
+  To clone the Git repository, use the following:
+
+    $ git clone https://github.com/ObjFW/ObjFW
 
 
 <h1 id="installation">Installation</h1>
