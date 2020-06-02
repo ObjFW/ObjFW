@@ -24,8 +24,13 @@
 #endif
 #include "unistd_wrapper.h"
 
+#import "platform.h"
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
+#endif
+#include <sys/time.h>
+#ifdef OF_WINDOWS
+# include <utime.h>
 #endif
 
 #ifdef HAVE_PWD_H
@@ -109,6 +114,7 @@ static OFMutex *readdirMutex;
 #endif
 
 #ifdef OF_WINDOWS
+static int (*func__wutime64)(const wchar_t *, struct __utimbuf64 *);
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
@@ -513,6 +519,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 
 #ifdef OF_WINDOWS
+	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+		func__wutime64 = (int (*)(const wchar_t *,
+		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
+
 	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
 		func_CreateSymbolicLinkW =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
@@ -596,6 +606,85 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
+}
+
+- (void)of_setLastAccessDate: (OFDate *)lastAccessDate
+	 andModificationDate: (OFDate *)modificationDate
+		 ofItemAtURL: (OFURL *)URL
+		  attributes: (of_file_attributes_t)attributes
+{
+	OFString *path = URL.fileSystemRepresentation;
+	of_file_attribute_key_t attributeKey = (modificationDate != nil
+	    ? of_file_attribute_key_modification_date
+	    : of_file_attribute_key_last_access_date);
+
+	if (lastAccessDate == nil)
+		lastAccessDate = modificationDate;
+	if (modificationDate == nil)
+		modificationDate = lastAccessDate;
+
+#ifdef OF_WINDOWS
+	if (func__wutime64 != NULL) {
+		struct __utimbuf64 times = {
+			.actime =
+			    (__time64_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (__time64_t)modificationDate.timeIntervalSince1970
+		};
+
+		if (func__wutime64([path UTF16String], &times) != 0)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: errno];
+	} else {
+		struct _utimbuf times = {
+			.actime = (time_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (time_t)modificationDate.timeIntervalSince1970
+		};
+		int status;
+
+		if ([OFSystemInfo isWindowsNT])
+			status = _wutime([path UTF16String], &times);
+		else
+			status = _utime(
+			    [path cStringWithEncoding: [OFLocale encoding]],
+			    &times);
+
+		if (status != 0)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: errno];
+	}
+#else
+	of_time_interval_t lastAccessTime =
+	    lastAccessDate.timeIntervalSince1970;
+	of_time_interval_t modificationTime =
+	    modificationDate.timeIntervalSince1970;
+	struct timeval times[2] = {
+		{
+			.tv_sec = (time_t)lastAccessTime,
+			.tv_usec =
+			    (int)((lastAccessTime - times[0].tv_sec) * 1000)
+		},
+		{
+			.tv_sec = (time_t)modificationTime,
+			.tv_usec =
+			    (int)((modificationTime - times[1].tv_sec) * 1000)
+		},
+	};
+
+	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errno];
+#endif
 }
 
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
@@ -699,6 +788,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFEnumerator *objectEnumerator;
 	of_file_attribute_key_t key;
 	id object;
+	OFDate *lastAccessDate, *modificationDate;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -711,7 +801,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: of_file_attribute_key_posix_permissions])
+		if ([key isEqual: of_file_attribute_key_modification_date] ||
+		    [key isEqual: of_file_attribute_key_last_access_date])
+			continue;
+		else if ([key isEqual: of_file_attribute_key_posix_permissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtURL: URL
 					  attributes: attributes];
@@ -732,6 +825,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    exceptionWithSelector: _cmd
 					   object: self];
 	}
+
+	lastAccessDate = [attributes
+	    objectForKey: of_file_attribute_key_last_access_date];
+	modificationDate = [attributes
+	    objectForKey: of_file_attribute_key_modification_date];
+
+	if (lastAccessDate != nil || modificationDate != nil)
+		[self of_setLastAccessDate: lastAccessDate
+		       andModificationDate: modificationDate
+			       ofItemAtURL: URL
+				attributes: attributes];
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -44,6 +44,22 @@ setPermissions(OFString *destination, OFString *source)
 #endif
 }
 
+static void
+setModificationDate(OFString *path, OFGZIPStream *stream)
+{
+	OFDate *modificationDate = stream.modificationDate;
+	of_file_attributes_t attributes;
+
+	if (modificationDate == nil)
+		return;
+
+	attributes = [OFDictionary
+	    dictionaryWithObject: modificationDate
+			  forKey: of_file_attribute_key_modification_date];
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
+}
+
 @implementation GZIPArchive
 + (void)initialize
 {
@@ -130,6 +146,9 @@ setPermissions(OFString *destination, OFString *source)
 			return;
 		}
 	}
+
+	[output close];
+	setModificationDate(fileName, _stream);
 
 	if (app->_outputLevel >= 0) {
 		[of_stdout writeString: @"\r"];

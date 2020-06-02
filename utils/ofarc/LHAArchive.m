@@ -56,6 +56,30 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 #endif
 }
 
+static void
+setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
+{
+	OFDate *modificationDate = entry.modificationDate;
+	of_file_attributes_t attributes;
+
+	if (modificationDate == nil) {
+		/*
+		 * Fall back to the original date if we have no modification
+		 * date, as the modification date is a UNIX extension.
+		 */
+		modificationDate = entry.date;
+
+		if (modificationDate == nil)
+			return;
+	}
+
+	attributes = [OFDictionary
+	    dictionaryWithObject: modificationDate
+			  forKey: of_file_attribute_key_modification_date];
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
+}
+
 @implementation LHAArchive
 + (void)initialize
 {
@@ -285,6 +309,7 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
+			setModificationDate(outFileName, entry);
 
 			if (app->_outputLevel >= 0) {
 				[of_stdout writeString: @"\r"];
@@ -340,6 +365,9 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 				    @"percent", percentString)];
 			}
 		}
+
+		[output close];
+		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
 			[of_stdout writeString: @"\r"];
