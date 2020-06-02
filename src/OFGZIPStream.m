@@ -30,6 +30,9 @@
 #import "OFTruncatedDataException.h"
 
 @implementation OFGZIPStream
+@synthesize operatingSystemMadeOn = _operatingSystemMadeOn;
+@synthesize modificationDate = _modificationDate;
+
 + (instancetype)streamWithStream: (OFStream *)stream
 			    mode: (OFString *)mode
 {
@@ -54,6 +57,8 @@
 					   object: nil];
 
 		_stream = [stream retain];
+		_operatingSystemMadeOn =
+		    OF_GZIP_STREAM_OPERATING_SYSTEM_UNKNOWN;
 		_CRC32 = ~0;
 	} @catch (id e) {
 		[self release];
@@ -142,12 +147,12 @@
 			_extraFlags = byte;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_OS:
+		case OF_GZIP_STREAM_OPERATING_SYSTEM:
 			if ([_stream readIntoBuffer: &byte
 					     length: 1] < 1)
 				return 0;
 
-			_OS = byte;
+			_operatingSystemMadeOn = byte;
 			_state++;
 			break;
 		case OF_GZIP_STREAM_EXTRA_LENGTH:
