@@ -55,6 +55,7 @@ case "$host" in
 		supports_amiga_lib="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(OBJFW_AMIGA_LIB, objfw68k.library)
 			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
 			AC_SUBST(SFD_FILE, amigaos3.sfd)
@@ -90,6 +91,7 @@ case "$host" in
 			check_pedantic="no"	# Breaks generated inlines
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
+				AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
 				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 				t="-mresident32 -ffreestanding -noixemul"
@@ -380,6 +382,10 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
 ])
 
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(LINKLIB, linklib)
+])
+
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
 AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
@@ -533,7 +539,6 @@ case "$objc_runtime" in
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
 			AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
-			AC_SUBST(LINKLIB, linklib)
 			tmp="../src/runtime/linklib/libobjfwrt.library.a"
 			AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
 			AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
