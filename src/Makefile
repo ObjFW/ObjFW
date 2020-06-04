@@ -239,10 +239,21 @@ LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
 		 ${ENCODINGS_ENCODINGS_LIB_A}	\
 		 ${FORWARDING_FORWARDING_LIB_A}	\
 		 ${INVOCATION_INVOCATION_LIB_A}
+AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+		       ${EXCEPTIONS_EXCEPTIONS_A}	\
+		       ${ENCODINGS_ENCODINGS_A}		\
+		       ${FORWARDING_FORWARDING_A}	\
+		       ${INVOCATION_INVOCATION_A}	\
+		       amiga-end.amigalib.o
 
 include ../buildsys.mk
 
-CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
+CPPFLAGS += -I. -I.. -Iexceptions -Iruntime		\
+	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
+	    -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}	\
+	    -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}
+AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
