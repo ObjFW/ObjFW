@@ -3,7 +3,7 @@ dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
 dnl               2018, 2020
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
-dnl https://git.nil.im/buildsys.git
+dnl https://fossil.nil.im/buildsys
 dnl
 dnl Permission to use, copy, modify, and/or distribute this software for any
 dnl purpose with or without fee is hereby granted, provided that the above
