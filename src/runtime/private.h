@@ -225,7 +225,8 @@ struct objc_libc {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
+	int (*_Nonnull vfprintf)(FILE *_Nonnull restrict,
+	    const char *_Nonnull restrict, va_list);
 	int (*_Nonnull fflush)(FILE *_Nonnull);
 	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS

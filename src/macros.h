@@ -318,6 +318,8 @@
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 # endif
+# undef stderr
+extern FILE *stderr;
 #endif
 
 #ifdef __GNUC__

@@ -153,8 +153,7 @@ const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct objc_libc libc;
-FILE *stdout;
-FILE *stderr;
+FILE *stdout, *stderr;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -407,6 +406,9 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
 
 	if (version > 1)
 		return false;
+
+	if (base->initialized)
+		return true;
 
 	memcpy(&libc, libc_, sizeof(libc));
 	stdout = stdout_;

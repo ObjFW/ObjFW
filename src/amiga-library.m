@@ -17,12 +17,13 @@
 
 #include "config.h"
 
-#import "OFObject.h"
-
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
 #include <proto/exec.h>
+
+#import "amiga-library.h"
+#import "macros.h"
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
@@ -61,10 +62,14 @@ extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
 
+extern bool glue_of_init(void);
+
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
+struct of_libc libc;
+FILE *stderr;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -293,6 +298,121 @@ lib_null(void)
 	return NULL;
 }
 
+bool
+of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_)
+{
+#ifdef OF_AMIGAOS_M68K
+	OF_M68K_ARG(struct ObjFWBase *, base, a6)
+#else
+	register struct ObjFWBase *r12 __asm__("r12");
+	struct ObjFWBase *base = r12;
+#endif
+	uintptr_t *iter, *iter0;
+
+	if (version > 1)
+		return false;
+
+	if (base->initialized)
+		return true;
+
+	memcpy(&libc, libc_, sizeof(libc));
+	stderr = stderr_;
+
+#ifdef OF_AMIGAOS_M68K
+	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
+		return false;
+
+	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		    (&_EH_FRAME_OBJECTS__)[i]);
+
+	iter0 = &__CTOR_LIST__[1];
+#elif defined(OF_MORPHOS)
+	__asm__ (
+	    "lis	%0, ctors+4@ha\n\t"
+	    "la		%0, ctors+4@l(%0)\n\t"
+	    : "=r"(iter0)
+	);
+#endif
+
+	for (iter = iter0; *iter != 0; iter++);
+
+	while (iter > iter0) {
+		void (*ctor)(void) = (void (*)(void))*--iter;
+		ctor();
+	}
+
+	base->initialized = true;
+
+	return true;
+}
+
+void *
+malloc(size_t size)
+{
+	return libc.malloc(size);
+}
+
+void *
+calloc(size_t count, size_t size)
+{
+	return libc.calloc(count, size);
+}
+
+void *
+realloc(void *ptr, size_t size)
+{
+	return libc.realloc(ptr, size);
+}
+
+void
+free(void *ptr)
+{
+	libc.free(ptr);
+}
+
+int
+fprintf(FILE *restrict stream, const char *restrict fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = libc.vfprintf(stream, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
+    va_list args)
+{
+	return libc.vsnprintf(str, size, fmt, args);
+}
+
+void
+exit(int status)
+{
+	libc.exit(status);
+
+	OF_UNREACHABLE
+}
+
+void
+abort(void)
+{
+	libc.abort();
+
+	OF_UNREACHABLE
+}
+
+char *
+setlocale(int category, const char *locale)
+{
+	return libc.setlocale(category, locale);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
@@ -308,6 +428,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
+	(CONST_APTR)glue_of_init,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
 #endif
