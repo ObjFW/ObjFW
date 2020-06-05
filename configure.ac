@@ -382,10 +382,6 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
 ])
 
-AS_IF([test x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(LINKLIB, linklib)
-])
-
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
 AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
@@ -422,6 +418,10 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS -lobjfw \${RUNTIME_LIBS}"
 	])
 	AC_SUBST(TESTPLUGIN_LIBS)
+])
+
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(LINKLIB, linklib)
 ])
 
 AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
