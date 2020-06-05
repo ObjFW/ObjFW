@@ -29,9 +29,10 @@ struct of_libc {
 	    const char *_Nonnull restrict, va_list);
 	void (*_Nonnull exit)(int);
 	void (*_Nonnull abort)(void);
-	char *(*_Nonnull setlocale)(int, const char *_Nullable);
+	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
-	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
+	void *_Nullable (*_Nonnull __deregister_frame_info)(
+	    const void *_Nonnull);
 };
 #endif
