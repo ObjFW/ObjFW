@@ -240,11 +240,11 @@ LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
 		 ${FORWARDING_FORWARDING_LIB_A}	\
 		 ${INVOCATION_INVOCATION_LIB_A}
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
-		       ${EXCEPTIONS_EXCEPTIONS_A}	\
-		       ${ENCODINGS_ENCODINGS_A}		\
-		       ${FORWARDING_FORWARDING_A}	\
-		       ${INVOCATION_INVOCATION_A}	\
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o			\
+		       ${EXCEPTIONS_EXCEPTIONS_AMIGALIB_A}	\
+		       ${ENCODINGS_ENCODINGS_AMIGALIB_A}	\
+		       ${FORWARDING_FORWARDING_AMIGALIB_A}	\
+		       ${INVOCATION_INVOCATION_AMIGALIB_A}	\
 		       amiga-end.amigalib.o
 
 include ../buildsys.mk

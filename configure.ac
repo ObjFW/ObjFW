@@ -403,6 +403,21 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
 ])
 
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
+	AC_SUBST(EXCEPTIONS_EXCEPTIONS_AMIGALIB_A,
+		"exceptions/exceptions.amigalib.a")
+	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
+	AC_SUBST(FORWARDING_FORWARDING_AMIGALIB_A,
+		"forwarding/forwarding.amigalib.a")
+	AC_SUBST(INVOCATION_AMIGALIB_A, "invocation.amigalib.a")
+	AC_SUBST(INVOCATION_INVOCATION_AMIGALIB_A,
+		"invocation/invocation.amigalib.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
+	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_AMIGALIB_A,
+		"lookup-asm/lookup-asm.amigalib.a")
+])
+
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
@@ -894,6 +909,11 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 	AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 		AC_SUBST(ENCODINGS_A, "encodings.a")
 		AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
+	])
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(ENCODINGS_AMIGALIB_A, "encodings.amigalib.a")
+		AC_SUBST(ENCODINGS_ENCODINGS_AMIGALIB_A,
+			"encodings/encodings.amigalib.a")
 	])
 ])
 
