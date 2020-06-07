@@ -72,6 +72,8 @@ struct of_libc {
 	    const char *_Nonnull restrict, va_list);
 	void (*_Nonnull exit)(int);
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
+	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
+	    void *_Null_unspecified), void *_Null_unspecified);
 };
 
 extern bool of_init(unsigned int version, struct of_libc *libc, FILE **sF);

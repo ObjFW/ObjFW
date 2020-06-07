@@ -108,11 +108,21 @@ ctor(void)
 
 	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
 	    OBJFWRT_LIB_MINOR)) == NULL) {
+		/*
+		 * The linklib is used by objfw(68k).library as well, so we
+		 * can't have the compiler optimize this to another function,
+		 * hence the use of an unnecessary format specifier.
+		 */
 		fprintf(stderr, "Failed to open %s!\n", OBJFWRT_AMIGA_LIB);
 		abort();
 	}
 
 	if (!glue_objc_init(1, &libc, __sF)) {
+		/*
+		 * The linklib is used by objfw(68k).library as well, so we
+		 * can't have the compiler optimize this to another function,
+		 * hence the use of an unnecessary format specifier.
+		 */
 		fprintf(stderr, "Failed to initialize %s!\n",
 		    OBJFWRT_AMIGA_LIB);
 		abort();

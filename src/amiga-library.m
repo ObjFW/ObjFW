@@ -540,6 +540,12 @@ setlocale(int category, const char *locale)
 	return libc.setlocale(category, locale);
 }
 
+int
+_Unwind_Backtrace(int (*callback)(void *, void *), void *data)
+{
+	return libc._Unwind_Backtrace(callback, data);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
