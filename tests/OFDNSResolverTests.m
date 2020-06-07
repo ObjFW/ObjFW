@@ -19,8 +19,6 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFDNSResolverTests";
-
 @implementation TestsAppDelegate (OFDNSResolverTests)
 - (void)DNSResolverTests
 {
@@ -64,7 +62,7 @@ static OFString *module = @"OFDNSResolverTests";
 	    resolver.minNumberOfDotsInAbsoluteName];
 
 	[of_stdout writeFormat: @"[OFDNSResolver] Uses TCP: %u\n",
-	    module, resolver.usesTCP];
+	    resolver.usesTCP];
 
 	[of_stdout writeFormat:
 	    @"[OFDNSResolver] Config reload interval: %lf\n",
