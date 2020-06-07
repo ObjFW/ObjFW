@@ -27,6 +27,7 @@
 	type name = reg_##name;
 # endif
 
+typedef void (*of_sig_t)(int);
 struct of_libc {
 	/*
 	 * Needed by the runtime. Some of them are also used by ObjFW, but we
@@ -70,10 +71,16 @@ struct of_libc {
 	/* Needed only by ObjFW. */
 	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
 	    const char *_Nonnull restrict, va_list);
+# ifdef OF_AMIGAOS_M68K
+	/* strtod() uses sscanf() internally */
+	int (*_Nonnull vsscanf)(const char *_Nonnull restrict,
+	    const char *_Nonnull restrict, va_list);
+# endif
 	void (*_Nonnull exit)(int);
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
 	    void *_Null_unspecified), void *_Null_unspecified);
+	of_sig_t _Nullable (*_Nonnull signal)(int, of_sig_t _Nullable);
 };
 
 extern bool of_init(unsigned int version, struct of_libc *libc, FILE **sF);

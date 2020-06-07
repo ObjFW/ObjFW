@@ -526,6 +526,21 @@ vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
 	return libc.vsnprintf(str, size, fmt, args);
 }
 
+#ifdef OF_AMIGAOS_M68K
+int
+sscanf(const char *restrict str, const char *restrict fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = libc.vsscanf(str, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+#endif
+
 void
 exit(int status)
 {
@@ -544,6 +559,12 @@ int
 _Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 {
 	return libc._Unwind_Backtrace(callback, data);
+}
+
+of_sig_t
+signal(int sig, of_sig_t func)
+{
+	return libc.signal(sig, func);
 }
 
 #pragma GCC diagnostic push
