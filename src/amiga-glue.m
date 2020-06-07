@@ -44,7 +44,7 @@ glue_of_init PPC_PARAMS(unsigned int version, struct of_libc *libc,
     FILE *stderr_)
 {
 	M68K_ARG(unsigned int, version, d0)
-	M68K_ARG(struct objc_libc *, libc, a0)
+	M68K_ARG(struct of_libc *, libc, a0)
 	M68K_ARG(FILE *, stderr_, a1)
 
 	return of_init(version, libc, stderr_);

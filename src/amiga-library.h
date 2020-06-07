@@ -35,4 +35,6 @@ struct of_libc {
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
 };
+
+extern bool of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_);
 #endif
