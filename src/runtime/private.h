@@ -249,15 +249,17 @@ struct objc_libc {
 # else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
+# if defined(__amigaos__) && !defined(__MORPHOS__)
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
+# endif
 };
 #endif
 
 #ifdef OBJC_COMPILING_AMIGA_LIBRARY
-# if defined(__MORPHOS__)
+# ifdef __MORPHOS__
 #  include <ppcinline/macros.h>
 #  define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
 # else

@@ -60,6 +60,8 @@ struct ObjFWBase {
 extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
+extern void __register_frame_info(const void *, void *);
+extern void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
@@ -289,7 +291,7 @@ lib_close(void)
 #ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				libc.__deregister_frame_info(
+				__deregister_frame_info(
 				    (&_EH_FRAME_BEGINS__)[i]);
 #endif
 
@@ -340,7 +342,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 		return false;
 
 	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		__register_frame_info((&_EH_FRAME_BEGINS__)[i],
 		    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
@@ -399,6 +401,12 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 	va_end(args);
 
 	return ret;
+}
+
+int
+vfprintf(FILE *restrict stream, const char *restrict fmt, va_list args)
+{
+	return libc.vfprintf(stream, fmt, args);
 }
 
 int
@@ -494,6 +502,20 @@ void
 _Unwind_Resume(void *ex)
 {
 	libc._Unwind_Resume(ex);
+}
+#endif
+
+#ifdef OF_AMIGAOS_M68K
+void
+__register_frame_info(const void *begin, void *object)
+{
+	libc.__register_frame_info(begin, object);
+}
+
+void
+*__deregister_frame_info(const void *begin)
+{
+	return libc.__deregister_frame_info(begin);
 }
 #endif
 

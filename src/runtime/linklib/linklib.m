@@ -57,8 +57,10 @@ extern void _Unwind_SjLj_Resume(void *);
 #else
 extern void _Unwind_Resume(void *);
 #endif
+#ifdef OF_AMIGAOS_M68K
 extern void __register_frame_info(const void *, void *);
 extern void *__deregister_frame_info(const void *);
+#endif
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
@@ -95,8 +97,10 @@ ctor(void)
 #else
 		._Unwind_Resume = _Unwind_Resume,
 #endif
+#ifdef OF_AMIGAOS_M68K
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
+#endif
 	};
 
 	if (initialized)
@@ -104,12 +108,13 @@ ctor(void)
 
 	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
 	    OBJFWRT_LIB_MINOR)) == NULL) {
-		fputs("Failed to open " OBJFWRT_AMIGA_LIB "!\n", stderr);
+		fprintf(stderr, "Failed to open %s!\n", OBJFWRT_AMIGA_LIB);
 		abort();
 	}
 
 	if (!glue_objc_init(1, &libc, __sF)) {
-		fputs("Failed to initialize " OBJFWRT_AMIGA_LIB "!\n", stderr);
+		fprintf(stderr, "Failed to initialize %s!\n",
+		    OBJFWRT_AMIGA_LIB);
 		abort();
 	}
 

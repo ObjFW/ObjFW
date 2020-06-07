@@ -18,7 +18,7 @@
 #import "macros.h"
 
 #if defined(OF_COMPILING_AMIGA_LIBRARY) || defined(OF_COMPILING_AMIGA_LINKLIB)
-# if defined(__MORPHOS__)
+# ifdef OF_MORPHOS
 #  include <ppcinline/macros.h>
 #  define OF_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
 # else
@@ -60,10 +60,12 @@ struct of_libc {
 # else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
+# ifdef OF_AMIGAOS_M68K
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
+# endif
 
 	/* Needed only by ObjFW. */
 	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
