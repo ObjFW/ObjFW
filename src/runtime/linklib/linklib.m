@@ -18,8 +18,9 @@
 #include "config.h"
 
 #import "ObjFWRT.h"
-#import "private.h"
+#import "amiga-library.h"
 #import "macros.h"
+#import "private.h"
 
 #include <proto/exec.h>
 

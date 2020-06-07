@@ -549,6 +549,12 @@ exit(int status)
 	OF_UNREACHABLE
 }
 
+of_sig_t
+signal(int sig, of_sig_t func)
+{
+	return libc.signal(sig, func);
+}
+
 char *
 setlocale(int category, const char *locale)
 {
@@ -559,12 +565,6 @@ int
 _Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 {
 	return libc._Unwind_Backtrace(callback, data);
-}
-
-of_sig_t
-signal(int sig, of_sig_t func)
-{
-	return libc.signal(sig, func);
 }
 
 #pragma GCC diagnostic push

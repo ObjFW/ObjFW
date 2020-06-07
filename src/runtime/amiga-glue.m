@@ -18,8 +18,9 @@
 #include "config.h"
 
 #import "ObjFWRT.h"
-#import "private.h"
+#import "amiga-library.h"
 #import "macros.h"
+#import "private.h"
 
 #ifdef OF_AMIGAOS_M68K
 # define PPC_PARAMS(...) (void)
@@ -28,8 +29,6 @@
 # define PPC_PARAMS(...) (__VA_ARGS__)
 # define M68K_ARG(...)
 #endif
-
-extern bool objc_init(unsigned int, struct objc_libc *, FILE **);
 
 #ifdef OF_MORPHOS
 /* All __saveds functions in this file need to use the SysV ABI */

@@ -19,20 +19,14 @@
 
 #ifdef OF_MORPHOS
 # include <ppcinline/macros.h>
-# define OF_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
+# define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
 #else
-# define OF_M68K_ARG(type, name, reg)		\
+# define OBJC_M68K_ARG(type, name, reg)	\
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 #endif
 
-typedef void (*of_sig_t)(int);
-
-struct of_libc {
-	/*
-	 * Needed by the runtime. Some of them are also used by ObjFW, but we
-	 * need all of them to pass them along to the runtime.
-	 */
+struct objc_libc {
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
@@ -67,20 +61,6 @@ struct of_libc {
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
 #endif
-
-	/* Needed only by ObjFW. */
-	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
-	    const char *_Nonnull restrict, va_list);
-#ifdef OF_AMIGAOS_M68K
-	/* strtod() uses sscanf() internally */
-	int (*_Nonnull vsscanf)(const char *_Nonnull restrict,
-	    const char *_Nonnull restrict, va_list);
-#endif
-	void (*_Nonnull exit)(int);
-	of_sig_t _Nullable (*_Nonnull signal)(int, of_sig_t _Nullable);
-	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
-	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
-	    void *_Null_unspecified), void *_Null_unspecified);
 };
 
-extern bool of_init(unsigned int version, struct of_libc *libc, FILE **sF);
+extern bool objc_init(unsigned int, struct objc_libc *, FILE **);
