@@ -40,12 +40,11 @@ __asm__ (
 #endif
 
 bool __saveds
-glue_of_init PPC_PARAMS(unsigned int version, struct of_libc *libc,
-    FILE *stderr_)
+glue_of_init PPC_PARAMS(unsigned int version, struct of_libc *libc, FILE **sF)
 {
 	M68K_ARG(unsigned int, version, d0)
 	M68K_ARG(struct of_libc *, libc, a0)
-	M68K_ARG(FILE *, stderr_, a1)
+	M68K_ARG(FILE **, sF, a1)
 
-	return of_init(version, libc, stderr_);
+	return of_init(version, libc, sF);
 }

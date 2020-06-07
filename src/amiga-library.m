@@ -77,7 +77,7 @@ const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct of_libc libc;
-FILE *stderr;
+FILE **__sF;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -316,7 +316,7 @@ lib_null(void)
 }
 
 bool
-of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_)
+of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 {
 #ifdef OF_AMIGAOS_M68K
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
@@ -333,7 +333,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_)
 		return true;
 
 	memcpy(&libc, libc_, sizeof(libc));
-	stderr = stderr_;
+	__sF = sF;
 
 #ifdef OF_AMIGAOS_M68K
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)

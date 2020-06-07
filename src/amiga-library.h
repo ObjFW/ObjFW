@@ -18,6 +18,15 @@
 #import "macros.h"
 
 #if defined(OF_COMPILING_AMIGA_LIBRARY) || defined(OF_COMPILING_AMIGA_LINKLIB)
+# if defined(__MORPHOS__)
+#  include <ppcinline/macros.h>
+#  define OF_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
+# else
+#  define OF_M68K_ARG(type, name, reg)		\
+	register type reg_##name __asm__(#reg);	\
+	type name = reg_##name;
+# endif
+
 struct of_libc {
 	/*
 	 * Needed by the runtime. Some of them are also used by ObjFW, but we
@@ -63,5 +72,5 @@ struct of_libc {
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 };
 
-extern bool of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_);
+extern bool of_init(unsigned int version, struct of_libc *libc, FILE **sF);
 #endif

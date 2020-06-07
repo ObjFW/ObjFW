@@ -108,7 +108,7 @@ ctor(void)
 		abort();
 	}
 
-	if (!glue_objc_init(1, &libc, stdout, stderr)) {
+	if (!glue_objc_init(1, &libc, __sF)) {
 		fputs("Failed to initialize " OBJFWRT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}

@@ -309,19 +309,6 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
-#ifdef OF_COMPILING_AMIGA_LIBRARY
-# if defined(__MORPHOS__)
-#  include <ppcinline/macros.h>
-#  define OF_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
-# else
-#  define OF_M68K_ARG(type, name, reg)		\
-	register type reg_##name __asm__(#reg);	\
-	type name = reg_##name;
-# endif
-# undef stderr
-extern FILE *stderr;
-#endif
-
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM
