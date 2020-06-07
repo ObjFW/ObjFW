@@ -64,6 +64,14 @@ extern void *_EH_FRAME_OBJECTS__;
 
 extern bool glue_of_init(void);
 
+#ifdef OF_AMIGAOS_M68K
+void
+__init_eh(void)
+{
+	/* Taken care of by of_init() */
+}
+#endif
+
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
@@ -276,7 +284,16 @@ lib_close(void)
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
 
 	if (base->parent != NULL) {
-		struct ObjFWBase *parent = base->parent;
+		struct ObjFWBase *parent;
+
+#ifdef OF_AMIGAOS_M68K
+		if (base->initialized)
+			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+				libc.__deregister_frame_info(
+				    (&_EH_FRAME_BEGINS__)[i]);
+#endif
+
+		parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
@@ -385,6 +402,102 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 }
 
 int
+fflush(FILE *restrict stream)
+{
+	return libc.fflush(stream);
+}
+
+void
+abort(void)
+{
+	libc.abort();
+
+	OF_UNREACHABLE
+}
+
+#ifdef HAVE_SJLJ_EXCEPTIONS
+int
+_Unwind_SjLj_RaiseException(void *ex)
+{
+	return libc._Unwind_SjLj_RaiseException(ex);
+}
+#else
+int
+_Unwind_RaiseException(void *ex)
+{
+	return libc._Unwind_RaiseException(ex);
+}
+#endif
+
+void
+_Unwind_DeleteException(void *ex)
+{
+	libc._Unwind_DeleteException(ex);
+}
+
+void *
+_Unwind_GetLanguageSpecificData(void *ctx)
+{
+	return libc._Unwind_GetLanguageSpecificData(ctx);
+}
+
+uintptr_t
+_Unwind_GetRegionStart(void *ctx)
+{
+	return libc._Unwind_GetRegionStart(ctx);
+}
+
+uintptr_t
+_Unwind_GetDataRelBase(void *ctx)
+{
+	return libc._Unwind_GetDataRelBase(ctx);
+}
+
+uintptr_t
+_Unwind_GetTextRelBase(void *ctx)
+{
+	return libc._Unwind_GetTextRelBase(ctx);
+}
+
+uintptr_t
+_Unwind_GetIP(void *ctx)
+{
+	return libc._Unwind_GetIP(ctx);
+}
+
+uintptr_t
+_Unwind_GetGR(void *ctx, int gr)
+{
+	return libc._Unwind_GetGR(ctx, gr);
+}
+
+void
+_Unwind_SetIP(void *ctx, uintptr_t ip)
+{
+	libc._Unwind_SetIP(ctx, ip);
+}
+
+void
+_Unwind_SetGR(void *ctx, int gr, uintptr_t value)
+{
+	libc._Unwind_SetGR(ctx, gr, value);
+}
+
+#ifdef HAVE_SJLJ_EXCEPTIONS
+void
+_Unwind_SjLj_Resume(void *ex)
+{
+	libc._Unwind_SjLj_Resume(ex);
+}
+#else
+void
+_Unwind_Resume(void *ex)
+{
+	libc._Unwind_Resume(ex);
+}
+#endif
+
+int
 vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
     va_list args)
 {
@@ -395,14 +508,6 @@ void
 exit(int status)
 {
 	libc.exit(status);
-
-	OF_UNREACHABLE
-}
-
-void
-abort(void)
-{
-	libc.abort();
 
 	OF_UNREACHABLE
 }

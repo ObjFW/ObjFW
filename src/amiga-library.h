@@ -19,21 +19,48 @@
 
 #if defined(OF_COMPILING_AMIGA_LIBRARY) || defined(OF_COMPILING_AMIGA_LINKLIB)
 struct of_libc {
+	/*
+	 * Needed by the runtime. Some of them are also used by ObjFW, but we
+	 * need all of them to pass them along to the runtime.
+	 */
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
 	int (*_Nonnull vfprintf)(FILE *_Nonnull restrict,
-	    const char *restrict _Nonnull, va_list);
-	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
 	    const char *_Nonnull restrict, va_list);
-	void (*_Nonnull exit)(int);
+	int (*_Nonnull fflush)(FILE *_Nonnull);
 	void (*_Nonnull abort)(void);
-	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
+# else
+	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
+# endif
+	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
+	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
+	    void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetRegionStart)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetDataRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetTextRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetIP)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
+	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
+	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
+# else
+	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
+# endif
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
+
+	/* Needed only by ObjFW. */
+	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
+	    const char *_Nonnull restrict, va_list);
+	void (*_Nonnull exit)(int);
+	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 };
 
 extern bool of_init(unsigned int version, struct of_libc *libc_, FILE *stderr_);
