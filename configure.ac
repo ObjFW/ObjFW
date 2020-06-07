@@ -604,13 +604,14 @@ case "$objc_runtime" in
 			AC_MSG_ERROR([Exceptions not accepted by compiler!])
 		])
 
-		AC_CHECK_FUNC($raise_exception, [], [
-			AC_CHECK_LIB(c++, $raise_exception, [
-				LIBS="-lc++ -lc++abi -lpthread $LIBS"
-			], [
-				AC_MSG_ERROR([_Unwind_RaiseException missing!])
-			], [-lc++abi -lpthread])
-		])
+		AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc], [
+			dnl c++abi requires pthread on OpenBSD
+			AS_IF([test x"$ac_lib" = x"c++abi"], [
+				LIBS="$LIBS -lpthread"
+			])
+		], [
+			AC_MSG_ERROR([$raise_exception missing!])
+		], [-lpthread])
 
 		AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
 		;;
