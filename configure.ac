@@ -62,10 +62,10 @@ case "$host" in
 			AC_SUBST(SFDC_INLINE_H, inline.h)
 			dnl For 68000, GCC emits calls to helper functions that
 			dnl do not work properly in a library.
-			t="-mcpu=68020 -fbaserel -noixemul"
+			t="-mcpu=68020 -fbaserel32 -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
 			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident -nostartfiles")
+				"$t -resident32 -nostartfiles")
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)
