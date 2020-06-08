@@ -2,7 +2,14 @@ include ../../extra.mk
 
 SUBDIRS = lookup-asm
 SUBDIRS_AFTER = ${LINKLIB}
-CLEAN = amiga-library-functable.inc inline.h
+CLEAN = amiga-end.amigalib.dep		\
+	amiga-end.amigalib.o		\
+	amiga-glue.amigalib.dep		\
+	amiga-glue.amigalib.o		\
+	amiga-library-functable.inc	\
+	amiga-library.amigalib.dep	\
+	amiga-library.amigalib.o	\
+	inline.h
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
 STATIC_LIB = ${OBJFWRT_STATIC_LIB}
