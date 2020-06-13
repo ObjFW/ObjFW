@@ -26,16 +26,16 @@
 
 	of_stdout.foregroundColor = [OFColor lime];
 
-	[of_stdout writeFormat: @"[OFLocale]: Language: %@\n",
+	[of_stdout writeFormat: @"[OFLocale] Language: %@\n",
 	    [OFLocale language]];
 
-	[of_stdout writeFormat: @"[OFLocale]: Territory: %@\n",
+	[of_stdout writeFormat: @"[OFLocale] Territory: %@\n",
 	    [OFLocale territory]];
 
-	[of_stdout writeFormat: @"[OFLocale]: Encoding: %@\n",
+	[of_stdout writeFormat: @"[OFLocale] Encoding: %@\n",
 	    of_string_name_of_encoding([OFLocale encoding])];
 
-	[of_stdout writeFormat: @"[OFLocale]: Decimal point: %@\n",
+	[of_stdout writeFormat: @"[OFLocale] Decimal point: %@\n",
 	    [OFLocale decimalPoint]];
 
 	objc_autoreleasePoolPop(pool);
