@@ -1,3 +1,5 @@
+DISTCLEAN = Info.plist
+
 PLUGIN_NOINST = TestPlugin${PLUGIN_SUFFIX}
 SRCS = TestPlugin.m
 

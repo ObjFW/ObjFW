@@ -168,12 +168,15 @@ bool
 of_thread_join(of_thread_t thread)
 {
 	ObtainSemaphore(&thread->semaphore);
-	@try {
-		if (thread->done) {
-			free(thread);
-			return true;
-		}
 
+	if (thread->done) {
+		ReleaseSemaphore(&thread->semaphore);
+
+		free(thread);
+		return true;
+	}
+
+	@try {
 		if (thread->detached || thread->joinTask != NULL) {
 			errno = EINVAL;
 			return false;

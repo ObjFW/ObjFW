@@ -165,15 +165,29 @@ static OFString *module = @"OFSPXSocket";
 	    of_socket_address_get_ipx_network(&address1);
 	delegate->_expectedPort = port = of_socket_address_get_port(&address1);
 
-	[sockClient asyncConnectToNode: node
-			       network: network
-				  port: port];
+	@try {
+		[sockClient asyncConnectToNode: node
+				       network: network
+					  port: port];
 
-	[[OFRunLoop mainRunLoop] runUntilDate:
-	    [OFDate dateWithTimeIntervalSinceNow: 2]];
+		[[OFRunLoop mainRunLoop] runUntilDate:
+		    [OFDate dateWithTimeIntervalSinceNow: 2]];
 
-	TEST(@"-[asyncAccept] & -[asyncConnectToNode:network:port:]",
-	    delegate->_accepted && delegate->_connected)
+		TEST(@"-[asyncAccept] & -[asyncConnectToNode:network:port:]",
+		    delegate->_accepted && delegate->_connected)
+	} @catch (OFObserveFailedException *e) {
+		switch (e.errNo) {
+		case ENOTSOCK:
+			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout writeLine:
+			    @"[OFSPXSocket] -[asyncAccept] & "
+			    @"-[asyncConnectToNode:network:port:]: select() "
+			    @"not supported for SPX, skipping test"];
+			break;
+		default:
+			@throw e;
+		}
+	}
 
 	objc_autoreleasePoolPop(pool);
 }

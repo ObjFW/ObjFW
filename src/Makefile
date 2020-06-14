@@ -9,7 +9,7 @@ CLEAN = amiga-end.amigalib.dep		\
 	amiga-library-functable.inc	\
 	amiga-library.amigalib.dep	\
 	amiga-library.amigalib.o
-DISTCLEAN = objfw-defs.h
+DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
