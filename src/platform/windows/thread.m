@@ -50,8 +50,25 @@ bool
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
+	DWORD priority = THREAD_PRIORITY_NORMAL;
 	struct thread_context *context;
 	DWORD threadID;
+
+	if (attr != NULL && attr->priority != 0) {
+		if (attr->priority < -1 || attr->priority > 1) {
+			errno = EINVAL;
+			return false;
+		}
+
+		if (attr->priority < 0)
+			priority = THREAD_PRIORITY_LOWEST +
+			    (1.0 + attr->priority) *
+			    (THREAD_PRIORITY_NORMAL - THREAD_PRIORITY_LOWEST);
+		else
+			priority = THREAD_PRIORITY_NORMAL +
+			    attr->priority *
+			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
+	}
 
 	if ((context = malloc(sizeof(*context))) == NULL) {
 		errno = ENOMEM;
@@ -83,25 +100,8 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		return false;
 	}
 
-	if (attr != NULL && attr->priority != 0) {
-		DWORD priority;
-
-		if (attr->priority < -1 || attr->priority > 1) {
-			errno = EINVAL;
-			return false;
-		}
-
-		if (attr->priority < 0)
-			priority = THREAD_PRIORITY_LOWEST +
-			    (1.0 + attr->priority) *
-			    (THREAD_PRIORITY_NORMAL - THREAD_PRIORITY_LOWEST);
-		else
-			priority = THREAD_PRIORITY_NORMAL +
-			    attr->priority *
-			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
-
+	if (attr != NULL && attr->priority != 0)
 		OF_ENSURE(!SetThreadPriority(*thread, priority));
-	}
 
 	return true;
 }
