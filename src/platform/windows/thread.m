@@ -37,8 +37,9 @@ bool
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
+	DWORD threadID;
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
-	    (LPTHREAD_START_ROUTINE)function, (void *)object, 0, NULL);
+	    (LPTHREAD_START_ROUTINE)function, (void *)object, 0, &threadID);
 
 	if (thread == NULL) {
 		switch (GetLastError()) {
