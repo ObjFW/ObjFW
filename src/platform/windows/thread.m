@@ -24,6 +24,19 @@
 
 #include <windows.h>
 
+struct thread_context {
+	void (*function)(id);
+	id object;
+};
+
+static WINAPI void
+functionWrapper(struct thread_context *context)
+{
+	context->function(context->object);
+
+	free(context);
+}
+
 bool
 of_thread_attr_init(of_thread_attr_t *attr)
 {
@@ -37,21 +50,37 @@ bool
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
+	struct thread_context *context;
 	DWORD threadID;
+
+	if ((context = malloc(sizeof(*context))) == NULL) {
+		errno = ENOMEM;
+		return false;
+	}
+
+	context->function = function;
+	context->object = object;
+
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
-	    (LPTHREAD_START_ROUTINE)function, (void *)object, 0, &threadID);
+	    (LPTHREAD_START_ROUTINE)functionWrapper, context, 0, &threadID);
 
 	if (thread == NULL) {
+		int errNo;
+
 		switch (GetLastError()) {
 		case ERROR_NOT_ENOUGH_MEMORY:
-			errno = ENOMEM;
-			return false;
+			errNo = ENOMEM;
+			break;
 		case ERROR_ACCESS_DENIED:
-			errno = EACCES;
-			return false;
+			errNo = EACCES;
+			break;
 		default:
 			OF_ENSURE(0);
 		}
+
+		free(context);
+		errno = errNo;
+		return false;
 	}
 
 	if (attr != NULL && attr->priority != 0) {
