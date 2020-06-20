@@ -69,7 +69,7 @@ struct of_libc {
 #endif
 
 	/* Needed only by ObjFW. */
-	int (*_Nonnull vsnprintf)(const char *_Nonnull restrict, size_t,
+	int (*_Nonnull vsnprintf)(char *_Nonnull restrict, size_t,
 	    const char *_Nonnull restrict, va_list);
 #ifdef OF_AMIGAOS_M68K
 	/* strtod() uses sscanf() internally */

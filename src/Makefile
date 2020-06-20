@@ -1,14 +1,15 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions ${ENCODINGS} forwarding invocation
-SUBDIRS_AFTER = ${BRIDGE}
+SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE}
 CLEAN = amiga-end.amigalib.dep		\
 	amiga-end.amigalib.o		\
 	amiga-glue.amigalib.dep		\
 	amiga-glue.amigalib.o		\
 	amiga-library-functable.inc	\
 	amiga-library.amigalib.dep	\
-	amiga-library.amigalib.o
+	amiga-library.amigalib.o	\
+	inline.h
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
