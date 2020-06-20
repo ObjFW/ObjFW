@@ -49,7 +49,7 @@ extern "C" {
 /*!
  * @brief The default mode for an OFRunLoop.
  */
-extern of_run_loop_mode_t of_run_loop_mode_default;
+extern const of_run_loop_mode_t of_run_loop_mode_default;
 #ifdef __cplusplus
 }
 #endif
