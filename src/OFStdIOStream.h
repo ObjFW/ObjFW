@@ -152,12 +152,20 @@ extern OFStdIOStream *_Nullable of_stdout;
 extern OFStdIOStream *_Nullable of_stderr;
 
 /*!
- * @brief Log the specified printf-style format to @ref of_stderr.
+ * @brief Logs the specified printf-style format to @ref of_stderr.
  *
  * This prefixes the output with the date, timestamp, process name and PID and
  * allows `%@` as a printf-style formatted to print objects.
  */
 extern void of_log(OFConstantString *format, ...);
+
+/*!
+ * @brief Logs the specified printf-style format to @ref of_stderr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID and
+ * allows `%@` as a printf-style formatted to print objects.
+ */
+extern void of_logv(OFConstantString *format, va_list arguments);
 #ifdef __cplusplus
 }
 #endif

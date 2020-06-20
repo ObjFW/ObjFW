@@ -74,10 +74,19 @@ OF_DESTRUCTOR()
 void
 of_log(OFConstantString *format, ...)
 {
+	va_list arguments;
+
+	va_start(arguments, format);
+	of_logv(format, arguments);
+	va_end(arguments);
+}
+
+void
+of_logv(OFConstantString *format, va_list arguments)
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *date;
 	OFString *dateString, *me, *msg;
-	va_list arguments;
 
 	date = [OFDate date];
 	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
@@ -87,10 +96,8 @@ of_log(OFConstantString *format, ...)
 	me = [OFApplication programName];
 #endif
 
-	va_start(arguments, format);
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
-	va_end(arguments);
 
 	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 				date.microsecond / 1000, me, getpid(), msg];
