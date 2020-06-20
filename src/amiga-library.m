@@ -22,8 +22,12 @@
 #include <exec/resident.h>
 #include <proto/exec.h>
 
+#import "OFString.h"
+#import "OFHTTPRequest.h"
+
 #import "amiga-library.h"
 #import "macros.h"
+#import "socket.h"
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
@@ -65,6 +69,31 @@ extern void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
+extern int glue_of_application_main(void);
+extern const char *glue_of_http_request_method_to_string(void);
+extern of_http_request_method_t glue_of_http_request_method_from_string(void);
+extern OFString *glue_of_http_status_code_to_string(void);
+extern size_t glue_of_sizeof_type_encoding(void);
+extern size_t glue_of_alignof_type_encoding(void);
+extern void glue_of_logv(void);
+extern OFString *glue_of_zip_archive_entry_version_to_string(void);
+extern OFString *glue_of_zip_archive_entry_compression_method_to_string(void);
+extern size_t glue_of_zip_archive_entry_extra_field_find(void);
+extern void glue_of_pbkdf2(void);
+extern void glue_of_scrypt(void);
+extern of_socket_address_t glue_of_socket_address_parse_ip(void);
+extern of_socket_address_t glue_of_socket_address_parse_ipv4(void);
+extern of_socket_address_t glue_of_socket_address_parse_ipv6(void);
+extern of_socket_address_t glue_of_socket_address_ipx(void);
+extern bool glue_of_socket_address_equal(void);
+extern uint32_t glue_of_socket_address_hash(void);
+extern OFString *glue_of_socket_address_ip_string(void);
+extern void glue_of_socket_address_set_port(void);
+extern uint16_t glue_of_socket_address_get_port(void);
+extern void glue_of_socket_address_set_ipx_network(void);
+extern uint32_t glue_of_socket_address_get_ipx_network(void);
+extern void glue_of_socket_address_set_ipx_node(void);
+extern void glue_of_socket_address_get_ipx_node(void);
 
 #ifdef OF_AMIGAOS_M68K
 void
@@ -583,6 +612,31 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
 	(CONST_APTR)glue_of_init,
+	(CONST_APTR)glue_of_application_main,
+	(CONST_APTR)glue_of_http_request_method_to_string,
+	(CONST_APTR)glue_of_http_request_method_from_string,
+	(CONST_APTR)glue_of_http_status_code_to_string,
+	(CONST_APTR)glue_of_sizeof_type_encoding,
+	(CONST_APTR)glue_of_alignof_type_encoding,
+	(CONST_APTR)glue_of_logv,
+	(CONST_APTR)glue_of_zip_archive_entry_version_to_string,
+	(CONST_APTR)glue_of_zip_archive_entry_compression_method_to_string,
+	(CONST_APTR)glue_of_zip_archive_entry_extra_field_find,
+	(CONST_APTR)glue_of_pbkdf2,
+	(CONST_APTR)glue_of_scrypt,
+	(CONST_APTR)glue_of_socket_address_parse_ip,
+	(CONST_APTR)glue_of_socket_address_parse_ipv4,
+	(CONST_APTR)glue_of_socket_address_parse_ipv6,
+	(CONST_APTR)glue_of_socket_address_ipx,
+	(CONST_APTR)glue_of_socket_address_equal,
+	(CONST_APTR)glue_of_socket_address_hash,
+	(CONST_APTR)glue_of_socket_address_ip_string,
+	(CONST_APTR)glue_of_socket_address_set_port,
+	(CONST_APTR)glue_of_socket_address_get_port,
+	(CONST_APTR)glue_of_socket_address_set_ipx_network,
+	(CONST_APTR)glue_of_socket_address_get_ipx_network,
+	(CONST_APTR)glue_of_socket_address_set_ipx_node,
+	(CONST_APTR)glue_of_socket_address_get_ipx_node,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
 #endif

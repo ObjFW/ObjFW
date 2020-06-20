@@ -11,7 +11,7 @@ of_http_request_method_t glue_of_http_request_method_from_string(OFString *strin
 OFString *_Nonnull glue_of_http_status_code_to_string(short code)(d0)
 size_t glue_of_sizeof_type_encoding(const char *type)(a0)
 size_t glue_of_alignof_type_encoding(const char *type)(a0)
-void glue_of_logv(OFConstantString *format, va_list args)(a0,a1)
+void glue_of_logv(OFConstantString *format, va_list arguments)(a0,a1)
 OFString *_Nonnull glue_of_zip_archive_entry_version_to_string(uint16_t version)(d0)
 OFString *_Nonnull glue_of_zip_archive_entry_compression_method_to_string(uint16_t compressionMethod)(d0)
 size_t glue_of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag, uint16_t *size)(a0,d0,a1)
