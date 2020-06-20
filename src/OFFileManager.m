@@ -73,39 +73,7 @@
 @interface OFDefaultFileManager: OFFileManager
 @end
 
-const of_file_attribute_key_t of_file_attribute_key_size =
-    @"of_file_attribute_key_size";
-const of_file_attribute_key_t of_file_attribute_key_type =
-    @"of_file_attribute_key_type";
-const of_file_attribute_key_t of_file_attribute_key_posix_permissions =
-    @"of_file_attribute_key_posix_permissions";
-const of_file_attribute_key_t of_file_attribute_key_posix_uid =
-    @"of_file_attribute_key_posix_uid";
-const of_file_attribute_key_t of_file_attribute_key_posix_gid =
-    @"of_file_attribute_key_posix_gid";
-const of_file_attribute_key_t of_file_attribute_key_owner =
-    @"of_file_attribute_key_owner";
-const of_file_attribute_key_t of_file_attribute_key_group =
-    @"of_file_attribute_key_group";
-const of_file_attribute_key_t of_file_attribute_key_last_access_date =
-    @"of_file_attribute_key_last_access_date";
-const of_file_attribute_key_t of_file_attribute_key_modification_date =
-    @"of_file_attribute_key_modification_date";
-const of_file_attribute_key_t of_file_attribute_key_status_change_date =
-    @"of_file_attribute_key_status_change_date";
-const of_file_attribute_key_t of_file_attribute_key_creation_date =
-    @"of_file_attribute_key_creation_date";
-const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
-    @"of_file_attribute_key_symbolic_link_destination";
-
-const of_file_type_t of_file_type_regular = @"of_file_type_regular";
-const of_file_type_t of_file_type_directory = @"of_file_type_directory";
-const of_file_type_t of_file_type_symbolic_link = @"of_file_type_symbolic_link";
-const of_file_type_t of_file_type_fifo = @"of_file_type_fifo";
-const of_file_type_t of_file_type_character_special =
-    @"of_file_type_character_special";
-const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
-const of_file_type_t of_file_type_socket = @"of_file_type_socket";
+#include "OFFileManager_constants.m"
 
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)

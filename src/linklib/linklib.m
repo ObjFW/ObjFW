@@ -24,6 +24,47 @@
 #include <proto/exec.h>
 
 struct ObjFWBase;
+
+#import "inline.h"
+
+#include <locale.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#if defined(OF_AMIGAOS_M68K)
+# include <stabs.h>
+# define SYM(name) __asm__("_" name)
+#elif defined(OF_MORPHOS)
+# include <constructor.h>
+# define SYM(name) __asm__(name)
+#endif
+
+#ifdef HAVE_SJLJ_EXCEPTIONS
+extern int _Unwind_SjLj_RaiseException(void *);
+#else
+extern int _Unwind_RaiseException(void *);
+#endif
+extern void _Unwind_DeleteException(void *);
+extern void *_Unwind_GetLanguageSpecificData(void *);
+extern uintptr_t _Unwind_GetRegionStart(void *);
+extern uintptr_t _Unwind_GetDataRelBase(void *);
+extern uintptr_t _Unwind_GetTextRelBase(void *);
+extern uintptr_t _Unwind_GetIP(void *);
+extern uintptr_t _Unwind_GetGR(void *, int);
+extern void _Unwind_SetIP(void *, uintptr_t);
+extern void _Unwind_SetGR(void *, int, uintptr_t);
+#ifdef HAVE_SJLJ_EXCEPTIONS
+extern void _Unwind_SjLj_Resume(void *);
+#else
+extern void _Unwind_Resume(void *);
+#endif
+#ifdef OF_AMIGAOS_M68K
+extern void __register_frame_info(const void *, void *);
+extern void *__deregister_frame_info(const void *);
+#endif
+extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
+
+struct Library *ObjFWBase;
 void *__objc_class_name_OFASN1BitString;
 void *__objc_class_name_OFASN1Boolean;
 void *__objc_class_name_OFASN1Enumerated;
@@ -221,47 +262,8 @@ void *__objc_class_name_OFThreadJoinFailedException;
 void *__objc_class_name_OFThreadStartFailedException;
 void *__objc_class_name_OFThreadStillRunningException;
 #endif
-
-#import "inline.h"
-
-#include <locale.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#if defined(OF_AMIGAOS_M68K)
-# include <stabs.h>
-# define SYM(name) __asm__("_" name)
-#elif defined(OF_MORPHOS)
-# include <constructor.h>
-# define SYM(name) __asm__(name)
-#endif
-
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern int _Unwind_SjLj_RaiseException(void *);
-#else
-extern int _Unwind_RaiseException(void *);
-#endif
-extern void _Unwind_DeleteException(void *);
-extern void *_Unwind_GetLanguageSpecificData(void *);
-extern uintptr_t _Unwind_GetRegionStart(void *);
-extern uintptr_t _Unwind_GetDataRelBase(void *);
-extern uintptr_t _Unwind_GetTextRelBase(void *);
-extern uintptr_t _Unwind_GetIP(void *);
-extern uintptr_t _Unwind_GetGR(void *, int);
-extern void _Unwind_SetIP(void *, uintptr_t);
-extern void _Unwind_SetGR(void *, int, uintptr_t);
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern void _Unwind_SjLj_Resume(void *);
-#else
-extern void _Unwind_Resume(void *);
-#endif
-#ifdef OF_AMIGAOS_M68K
-extern void __register_frame_info(const void *, void *);
-extern void *__deregister_frame_info(const void *);
-#endif
-extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
-
-struct Library *ObjFWBase;
+#include "OFFileManager_constants.m"
+#include "OFRunLoop_constants.m"
 
 static void __attribute__((__used__))
 ctor(void)

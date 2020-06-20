@@ -45,7 +45,7 @@
 
 #import "OFObserveFailedException.h"
 
-const of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
+#include "OFRunLoop_constants.m"
 static OFRunLoop *mainRunLoop = nil;
 
 @interface OFRunLoopState: OFObject
