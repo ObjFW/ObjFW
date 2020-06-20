@@ -18,6 +18,7 @@
 #include "config.h"
 
 #include <errno.h>
+#include <math.h>
 
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
@@ -152,6 +153,50 @@ setErrno(void)
 }
 #endif
 
+#ifdef OF_AMIGAOS
+static void
+setErrno(void)
+{
+	switch (IoErr()) {
+	case ERROR_DELETE_PROTECTED:
+	case ERROR_READ_PROTECTED:
+	case ERROR_WRITE_PROTECTED:
+		errno = EACCES;
+		break;
+	case ERROR_DISK_NOT_VALIDATED:
+	case ERROR_OBJECT_IN_USE:
+		errno = EBUSY;
+		break;
+	case ERROR_OBJECT_EXISTS:
+		errno = EEXIST;
+		break;
+	case ERROR_DIR_NOT_FOUND:
+	case ERROR_NO_MORE_ENTRIES:
+	case ERROR_OBJECT_NOT_FOUND:
+		errno = ENOENT;
+		break;
+	case ERROR_NO_FREE_STORE:
+		errno = ENOMEM;
+		break;
+	case ERROR_DISK_FULL:
+		errno = ENOSPC;
+		break;
+	case ERROR_DIRECTORY_NOT_EMPTY:
+		errno = ENOTEMPTY;
+		break;
+	case ERROR_DISK_WRITE_PROTECTED:
+		errno = EROFS;
+		break;
+	case ERROR_RENAME_ACROSS_DEVICES:
+		errno = EXDEV;
+		break;
+	default:
+		errno = 0;
+		break;
+	}
+}
+#endif
+
 static int
 of_stat(OFString *path, of_stat_t *buffer)
 {
@@ -231,19 +276,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
 	    SHARED_LOCK)) == 0) {
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errno = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errno = ENOENT;
-			break;
-		default:
-			errno = 0;
-			break;
-		}
-
+		setErrno();
 		return -1;
 	}
 
@@ -623,7 +656,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (modificationDate == nil)
 		modificationDate = lastAccessDate;
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS)
 	if (func__wutime64 != NULL) {
 		struct __utimbuf64 times = {
 			.actime =
@@ -659,6 +692,41 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				  attributes: attributes
 			     failedAttribute: attributeKey
 				       errNo: errno];
+	}
+#elif defined(OF_AMIGAOS)
+	/* AmigaOS does not support access time. */
+	of_time_interval_t modificationTime =
+	    modificationDate.timeIntervalSince1970;
+	struct Locale *locale;
+	struct DateStamp date;
+
+	modificationTime -= 252460800;	/* 1978-01-01 */
+
+	if (modificationTime < 0)
+		@throw [OFOutOfRangeException exception];
+
+	locale = OpenLocale(NULL);
+	/*
+	 * FIXME: This does not take DST into account. But unfortunately, there
+	 *	  is no way to figure out if DST should be in effect for the
+	 *	  timestamp.
+	 */
+	modificationTime -= locale->loc_GMTOffset * 60.0;
+	CloseLocale(locale);
+
+	date.ds_Days = modificationTime / 86400;
+	date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
+	date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
+
+	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
+	    &date) != 0) {
+		setErrno();
+
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errno];
 	}
 #else
 	of_time_interval_t lastAccessTime =
@@ -919,34 +987,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	if ((lock = CreateDir(
 	    [path cStringWithEncoding: [OFLocale encoding]])) == 0) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_NO_FREE_STORE:
-		case ERROR_DISK_FULL:
-			errNo = ENOSPC;
-			break;
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_EXISTS:
-			errNo = EEXIST;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
-			       errNo: errNo];
+			       errNo: errno];
 	}
 
 	UnLock(lock);
@@ -1071,24 +1116,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	if ((lock = Lock([path cStringWithEncoding: encoding],
 	    SHARED_LOCK)) == 0) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
 							      mode: nil
-							     errNo: errNo];
+							     errNo: errno];
 	}
 
 	@try {
@@ -1307,29 +1339,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 #ifdef OF_AMIGAOS
 	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]])) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		case ERROR_DELETE_PROTECTED:
-			errNo = EACCES;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFRemoveItemFailedException exceptionWithURL: URL
-							       errNo: errNo];
+							       errNo: errno];
 	}
 #endif
 
@@ -1443,34 +1456,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	    cStringWithEncoding: encoding],
 	    [destination.fileSystemRepresentation
 	    cStringWithEncoding: encoding])) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_RENAME_ACROSS_DEVICES:
-			errNo = EXDEV;
-			break;
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_EXISTS:
-			errNo = EEXIST;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
-				     errNo: errNo];
+				     errNo: errno];
 	}
 #else
 	int status;

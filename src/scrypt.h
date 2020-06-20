@@ -38,6 +38,22 @@ extern void of_scrypt_block_mix(uint32_t *output, const uint32_t *input,
     size_t blockSize);
 extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
     size_t costFactor, uint32_t *tmp);
+
+/*!
+ * @brief Derives a key from a password and a salt using scrypt.
+ *
+ * @param blockSize The block size to use
+ * @param costFactor The CPU/memory cost factor to use
+ * @param parallelization The parallelization to use
+ * @param salt The salt to derive a key with
+ * @param saltLength The length of the salt
+ * @param password The password to derive a key from
+ * @param passwordLength The length of the password
+ * @param key The buffer to write the key to
+ * @param keyLength The desired length for the derived key (`key` needs to have
+ *		    enough storage)
+ * @param allowsSwappableMemory Whether data may be stored in swappable memory
+ */
 extern void of_scrypt(size_t blockSize, size_t costFactor,
     size_t parallelization, const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength,

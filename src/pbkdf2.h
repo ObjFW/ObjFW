@@ -34,12 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 /*!
- * @brief Derive a key from a password and a salt.
+ * @brief Derives a key from a password and a salt using PBKDF2.
  *
- * @note This will call @ref OFHMAC::reset on the @ref OFHMAC first, making it
- *	 possible to reuse the @ref OFHMAC, but also meaning all previous
- *	 results from the @ref OFHMAC get invalidated if they have not been
- *	 copied.
+ * @note This will call @ref OFHMAC::reset on the `HMAC` first, making it
+ *	 possible to reuse the `HMAC`, but also meaning all previous results
+ *	 from the `HMAC` get invalidated if they have not been copied.
  *
  * @param HMAC The HMAC to use to derive a key
  * @param iterations The number of iterations to perform
@@ -48,7 +47,7 @@ extern "C" {
  * @param password The password to derive a key from
  * @param passwordLength The length of the password
  * @param key The buffer to write the key to
- * @param keyLength The desired length for the derived key (key needs to have
+ * @param keyLength The desired length for the derived key (`key` needs to have
  *		    enough storage)
  * @param allowsSwappableMemory Whether data may be stored in swappable memory
  */
