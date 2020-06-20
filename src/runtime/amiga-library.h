@@ -63,4 +63,5 @@ struct objc_libc {
 #endif
 };
 
-extern bool objc_init(unsigned int, struct objc_libc *, FILE **);
+extern bool objc_init(unsigned int, struct objc_libc *_Nonnull,
+    FILE *_Nonnull *_Nonnull);

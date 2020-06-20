@@ -29,6 +29,7 @@ extra.mk
 generators/gen_tables
 src/Info.plist
 src/bridge/Info.plist
+src/inline.h
 src/objfw-defs.h
 src/runtime/amiga-library-functable.inc
 src/runtime/inline.h

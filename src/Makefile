@@ -256,6 +256,11 @@ AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o			\
 
 include ../buildsys.mk
 
+${OBJFW_AMIGA_LIB}: inline.h
+
+${SFDC_INLINE_H}: ${SFD_FILE}
+	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<; \
+
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime		\
 	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
 	    -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}	\
