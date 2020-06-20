@@ -162,3 +162,184 @@ DESTRUCTOR_P(ObjFW, 4000)
 }
 #endif
 
+int
+of_application_main(int *argc, char ***argv,
+    id <OFApplicationDelegate> delegate)
+{
+	return glue_of_application_main(argc, argv, delegate);
+}
+
+const char *
+of_http_request_method_to_string(of_http_request_method_t method)
+{
+	return glue_of_http_request_method_to_string(method);
+}
+
+of_http_request_method_t
+of_http_request_method_from_string(OFString *string)
+{
+	return glue_of_http_request_method_from_string(string);
+}
+
+OFString *
+of_http_status_code_to_string(short code)
+{
+	return glue_of_http_status_code_to_string(code);
+}
+
+size_t
+of_sizeof_type_encoding(const char *type)
+{
+	return glue_of_sizeof_type_encoding(type);
+}
+
+size_t
+of_alignof_type_encoding(const char *type)
+{
+	return glue_of_alignof_type_encoding(type);
+}
+
+void
+of_logv(OFConstantString *format, va_list arguments)
+{
+	glue_of_logv(format, arguments);
+}
+
+OFString *
+of_zip_archive_entry_version_to_string(uint16_t version)
+{
+	return glue_of_zip_archive_entry_version_to_string(version);
+}
+
+OFString *
+of_zip_archive_entry_compression_method_to_string(uint16_t compressionMethod)
+{
+	return glue_of_zip_archive_entry_compression_method_to_string(
+	    compressionMethod);
+}
+
+size_t
+of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
+    uint16_t *size)
+{
+	return glue_of_zip_archive_entry_extra_field_find(
+	    extraField, tag, size);
+}
+
+void
+of_pbkdf2(OFHMAC *HMAC, size_t iterations, const unsigned char *salt,
+    size_t saltLength, const char *password, size_t passwordLength,
+    unsigned char *key, size_t keyLength, bool allowsSwappableMemory)
+{
+	glue_of_pbkdf2(HMAC, iterations, salt, saltLength,
+	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+}
+
+void
+of_scrypt(size_t blockSize, size_t costFactor, size_t parallelization,
+    const unsigned char *salt, size_t saltLength, const char *password,
+    size_t passwordLength, unsigned char *key, size_t keyLength,
+    bool allowsSwappableMemory)
+{
+	glue_of_scrypt(blockSize, costFactor, parallelization, salt, saltLength,
+	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+}
+
+of_socket_address_t
+of_socket_address_parse_ip(OFString *IP, uint16_t port)
+{
+	of_socket_address_t address;
+
+	glue_of_socket_address_parse_ip(&address, IP, port);
+
+	return address;
+}
+
+of_socket_address_t
+of_socket_address_parse_ipv4(OFString *IP, uint16_t port)
+{
+	of_socket_address_t address;
+
+	glue_of_socket_address_parse_ipv4(&address, IP, port);
+
+	return address;
+}
+
+of_socket_address_t
+of_socket_address_parse_ipv6(OFString *IP, uint16_t port)
+{
+	of_socket_address_t address;
+
+	glue_of_socket_address_parse_ipv6(&address, IP, port);
+
+	return address;
+}
+
+of_socket_address_t
+of_socket_address_ipx(const unsigned char *node, uint32_t network,
+    uint16_t port)
+{
+	of_socket_address_t address;
+
+	glue_of_socket_address_ipx(&address, node, network, port);
+
+	return address;
+}
+
+bool
+of_socket_address_equal(const of_socket_address_t *address1,
+    const of_socket_address_t *address2)
+{
+	return glue_of_socket_address_equal(address1, address2);
+}
+
+uint32_t
+of_socket_address_hash(const of_socket_address_t *address)
+{
+	return glue_of_socket_address_hash(address);
+}
+
+OFString *
+of_socket_address_ip_string(const of_socket_address_t *address, uint16_t *port)
+{
+	return glue_of_socket_address_ip_string(address, port);
+}
+
+void
+of_socket_address_set_port(of_socket_address_t *address, uint16_t port)
+{
+	glue_of_socket_address_set_port(address, port);
+}
+
+uint16_t
+of_socket_address_get_port(const of_socket_address_t *address)
+{
+	return glue_of_socket_address_get_port(address);
+}
+
+void
+of_socket_address_set_ipx_network(of_socket_address_t *address,
+    uint32_t network)
+{
+	glue_of_socket_address_set_ipx_network(address, network);
+}
+
+uint32_t
+of_socket_address_get_ipx_network(const of_socket_address_t *address)
+{
+	return glue_of_socket_address_get_ipx_network(address);
+}
+
+void
+of_socket_address_set_ipx_node(of_socket_address_t *address,
+    const unsigned char *node)
+{
+	glue_of_socket_address_set_ipx_node(address, node);
+}
+
+void
+of_socket_address_get_ipx_node(const of_socket_address_t *address,
+    unsigned char *node)
+{
+	glue_of_socket_address_get_ipx_node(address, node);
+}

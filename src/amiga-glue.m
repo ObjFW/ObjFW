@@ -190,42 +190,49 @@ glue_of_scrypt PPC_PARAMS(size_t blockSize, size_t costFactor,
 	    password, passwordLength, key, keyLength, allowsSwappableMemory);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ip PPC_PARAMS(OFString *IP, uint16_t port)
+void __saveds
+glue_of_socket_address_parse_ip PPC_PARAMS(of_socket_address_t *address,
+    OFString *IP, uint16_t port)
 {
-	M68K_ARG(OFString *, IP, a0)
+	M68K_ARG(of_socket_address_t *, address, a0)
+	M68K_ARG(OFString *, IP, a1)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ip(IP, port);
+	*address = of_socket_address_parse_ip(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ipv4 PPC_PARAMS(OFString *IP, uint16_t port)
+void __saveds
+glue_of_socket_address_parse_ipv4 PPC_PARAMS(of_socket_address_t *address,
+    OFString *IP, uint16_t port)
 {
-	M68K_ARG(OFString *, IP, a0)
+	M68K_ARG(of_socket_address_t *, address, a0)
+	M68K_ARG(OFString *, IP, a1)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ipv4(IP, port);
+	*address = of_socket_address_parse_ipv4(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ipv6 PPC_PARAMS(OFString *IP, uint16_t port)
+void __saveds
+glue_of_socket_address_parse_ipv6 PPC_PARAMS(of_socket_address_t *address,
+    OFString *IP, uint16_t port)
 {
-	M68K_ARG(OFString *, IP, a0)
+	M68K_ARG(of_socket_address_t *, address, a0)
+	M68K_ARG(OFString *, IP, a1)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ipv6(IP, port);
+	*address = of_socket_address_parse_ipv6(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_ipx PPC_PARAMS(const unsigned char *node,
-    uint32_t network, uint16_t port)
+void __saveds
+glue_of_socket_address_ipx PPC_PARAMS(of_socket_address_t *address,
+    const unsigned char *node, uint32_t network, uint16_t port)
 {
-	M68K_ARG(const unsigned char *, node, a0)
+	M68K_ARG(of_socket_address_t *, address, a0)
+	M68K_ARG(const unsigned char *, node, a1)
 	M68K_ARG(uint32_t, network, d0)
 	M68K_ARG(uint16_t, port, d1)
 
-	return of_socket_address_ipx(node, network, port);
+	*address = of_socket_address_ipx(node, network, port);
 }
 
 bool __saveds
