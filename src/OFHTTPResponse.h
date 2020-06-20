@@ -74,6 +74,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*!
+ * @brief Returns a description string for the specified HTTP status code.
+ *
+ * @param code The HTTP status code to return a description string for
+ * @return A description string for the specified HTTP status code
+ */
 extern OFString *_Nonnull of_http_status_code_to_string(short code);
 #ifdef __cplusplus
 }
