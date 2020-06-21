@@ -30,6 +30,36 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFHMAC;
 
+/*!
+ * @brief The parameters for @ref of_scrypt.
+ */
+typedef struct of_scrypt_parameters_t {
+	/*! @brief The block size to use. */
+	size_t blockSize;
+	/*! @brief The CPU/memory cost factor to use. */
+	size_t costFactor;
+	/*! @brief The parallelization to use. */
+	size_t parallelization;
+	/*! @brief The salt to derive a key with. */
+	const unsigned char *salt;
+	/*! @brief The length of the salt. */
+	size_t saltLength;
+	/*! @brief The password to derive a key from. */
+	const char *password;
+	/*! @brief The length of the password. */
+	size_t passwordLength;
+	/*! @brief The buffer to write the key to. */
+	unsigned char *key;
+	/*!
+	 * @brief The desired length for the derived key.
+	 *
+	 * @ref key needs to have enough storage.
+	 */
+	size_t keyLength;
+	/*! @brief Whether data may be stored in swappable memory. */
+	bool allowsSwappableMemory;
+} of_scrypt_parameters_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,22 +72,9 @@ extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
 /*!
  * @brief Derives a key from a password and a salt using scrypt.
  *
- * @param blockSize The block size to use
- * @param costFactor The CPU/memory cost factor to use
- * @param parallelization The parallelization to use
- * @param salt The salt to derive a key with
- * @param saltLength The length of the salt
- * @param password The password to derive a key from
- * @param passwordLength The length of the password
- * @param key The buffer to write the key to
- * @param keyLength The desired length for the derived key (`key` needs to have
- *		    enough storage)
- * @param allowsSwappableMemory Whether data may be stored in swappable memory
+ * @param param The parameters to use
  */
-extern void of_scrypt(size_t blockSize, size_t costFactor,
-    size_t parallelization, const unsigned char *salt, size_t saltLength,
-    const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength, bool allowsSwappableMemory);
+extern void of_scrypt(of_scrypt_parameters_t param);
 #ifdef __cplusplus
 }
 #endif

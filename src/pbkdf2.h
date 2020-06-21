@@ -51,7 +51,7 @@ typedef struct of_pbkdf2_parameters_t {
 	/*!
 	 * @brief The desired length for the derived key.
 	 *
-	 * @ref key needs to have enough storage).
+	 * @ref key needs to have enough storage.
 	 */
 	size_t keyLength;
 	/*! @brief Whether data may be stored in swappable memory. */

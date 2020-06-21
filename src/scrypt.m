@@ -85,8 +85,8 @@ of_scrypt_block_mix(uint32_t *output, const uint32_t *input, size_t blockSize)
 
 	/* Check defined here and executed in of_scrypt() */
 #define OVERFLOW_CHECK_1					\
-	if (blockSize > SIZE_MAX / 2 ||				\
-	    2 * blockSize - 1 > SIZE_MAX / 16)			\
+	if (param.blockSize > SIZE_MAX / 2 ||			\
+	    2 * param.blockSize - 1 > SIZE_MAX / 16)		\
 		@throw [OFOutOfRangeException exception];
 
 	memcpy(tmp, input + (2 * blockSize - 1) * 16, 64);
@@ -112,8 +112,8 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
     uint32_t *tmp)
 {
 	/* Check defined here and executed in of_scrypt() */
-#define OVERFLOW_CHECK_2					\
-	if (blockSize > SIZE_MAX / 128 / costFactor)		\
+#define OVERFLOW_CHECK_2						\
+	if (param.blockSize > SIZE_MAX / 128 / param.costFactor)	\
 		@throw [OFOutOfRangeException exception];
 
 	uint32_t *tmp2 = tmp + 32 * blockSize;
@@ -139,16 +139,15 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 	}
 }
 
-void of_scrypt(size_t blockSize, size_t costFactor,
-    size_t parallelization, const unsigned char *salt, size_t saltLength,
-    const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength, bool allowsSwappableMemory)
+void
+of_scrypt(of_scrypt_parameters_t param)
 {
 	OFSecureData *tmp = nil, *buffer = nil;
 	OFHMAC *HMAC = nil;
 
-	if (blockSize == 0 || costFactor <= 1 ||
-	    (costFactor & (costFactor - 1)) != 0 || parallelization == 0)
+	if (param.blockSize == 0 || param.costFactor <= 1 ||
+	    (param.costFactor & (param.costFactor - 1)) != 0 ||
+	    param.parallelization == 0)
 		@throw [OFInvalidArgumentException exception];
 
 	/*
@@ -162,55 +161,57 @@ void of_scrypt(size_t blockSize, size_t costFactor,
 	@try {
 		uint32_t *tmpItems, *bufferItems;
 
-		if (costFactor > SIZE_MAX - 1 ||
-		    (costFactor + 1) > SIZE_MAX / 128)
+		if (param.costFactor > SIZE_MAX - 1 ||
+		    (param.costFactor + 1) > SIZE_MAX / 128)
 			@throw [OFOutOfRangeException exception];
 
 		tmp = [[OFSecureData alloc]
-			 initWithItemSize: blockSize
-				    count: (costFactor + 1) * 128
-		    allowsSwappableMemory: allowsSwappableMemory];
+			 initWithItemSize: param.blockSize
+				    count: (param.costFactor + 1) * 128
+		    allowsSwappableMemory: param.allowsSwappableMemory];
 		tmpItems = tmp.mutableItems;
 
-		if (parallelization > SIZE_MAX / 128)
+		if (param.parallelization > SIZE_MAX / 128)
 			@throw [OFOutOfRangeException exception];
 
 		buffer = [[OFSecureData alloc]
-			 initWithItemSize: blockSize
-				    count: parallelization * 128
-		    allowsSwappableMemory: allowsSwappableMemory];
+			 initWithItemSize: param.blockSize
+				    count: param.parallelization * 128
+		    allowsSwappableMemory: param.allowsSwappableMemory];
 		bufferItems = buffer.mutableItems;
 
 		HMAC = [[OFHMAC alloc]
 			initWithHashClass: [OFSHA256Hash class]
-		    allowsSwappableMemory: allowsSwappableMemory];
+		    allowsSwappableMemory: param.allowsSwappableMemory];
 
 		of_pbkdf2((of_pbkdf2_parameters_t){
-			.HMAC = HMAC,
-			.iterations = 1,
-			.salt = salt,
-			.saltLength = saltLength,
-			.password = password,
-			.passwordLength = passwordLength,
-			.key = (unsigned char *)bufferItems,
-			.keyLength = parallelization * 128 * blockSize,
-			.allowsSwappableMemory = allowsSwappableMemory
+			.HMAC                  = HMAC,
+			.iterations            = 1,
+			.salt                  = param.salt,
+			.saltLength            = param.saltLength,
+			.password              = param.password,
+			.passwordLength        = param.passwordLength,
+			.key                   = (unsigned char *)bufferItems,
+			.keyLength             = param.parallelization * 128 *
+			                         param.blockSize,
+			.allowsSwappableMemory = param.allowsSwappableMemory
 		});
 
-		for (size_t i = 0; i < parallelization; i++)
-			of_scrypt_romix(bufferItems + i * 32 * blockSize,
-			    blockSize, costFactor, tmpItems);
+		for (size_t i = 0; i < param.parallelization; i++)
+			of_scrypt_romix(bufferItems + i * 32 * param.blockSize,
+			    param.blockSize, param.costFactor, tmpItems);
 
 		of_pbkdf2((of_pbkdf2_parameters_t){
-			.HMAC = HMAC,
-			.iterations = 1,
-			.salt = (unsigned char *)bufferItems,
-			.saltLength = parallelization * 128 * blockSize,
-			.password = password,
-			.passwordLength = passwordLength,
-			.key = key,
-			.keyLength = keyLength,
-			.allowsSwappableMemory = allowsSwappableMemory
+			.HMAC                  = HMAC,
+			.iterations            = 1,
+			.salt                  = (unsigned char *)bufferItems,
+			.saltLength            = param.parallelization * 128 *
+			                         param.blockSize,
+			.password              = param.password,
+			.passwordLength        = param.passwordLength,
+			.key                   = param.key,
+			.keyLength             = param.keyLength,
+			.allowsSwappableMemory = param.allowsSwappableMemory
 		});
 	} @finally {
 		[tmp release];
