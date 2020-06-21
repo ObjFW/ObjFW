@@ -398,6 +398,24 @@ of_alignof_type_encoding(const char *type)
 	return glue_of_alignof_type_encoding(type);
 }
 
+OFStdIOStream **
+of_stdin_ref(void)
+{
+	return glue_of_stdin_ref();
+}
+
+OFStdIOStream **
+of_stdout_ref(void)
+{
+	return glue_of_stdout_ref();
+}
+
+OFStdIOStream **
+of_stderr_ref(void)
+{
+	return glue_of_stderr_ref();
+}
+
 void
 of_logv(OFConstantString *format, va_list arguments)
 {

@@ -111,6 +111,24 @@ glue_of_alignof_type_encoding PPC_PARAMS(const char *type)
 	return of_alignof_type_encoding(type);
 }
 
+OFStdIOStream **__saveds
+glue_of_stdin_ref(void)
+{
+	return of_stdin_ref();
+}
+
+OFStdIOStream **__saveds
+glue_of_stdout_ref(void)
+{
+	return of_stdout_ref();
+}
+
+OFStdIOStream **__saveds
+glue_of_stderr_ref(void)
+{
+	return of_stderr_ref();
+}
+
 void __saveds
 glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments)
 {

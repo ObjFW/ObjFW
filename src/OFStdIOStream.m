@@ -58,9 +58,35 @@ _reference_to_OFWin32ConsoleStdIOStream(void)
 }
 #endif
 
+#ifdef OF_AMIGAOS
+# undef of_stdin
+# undef of_stdout
+# undef of_stderr
+#endif
+
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
+
+#ifdef OF_AMIGAOS
+OFStdIOStream **
+of_stdin_ref(void)
+{
+	return &of_stdin;
+}
+
+OFStdIOStream **
+of_stdout_ref(void)
+{
+	return &of_stdout;
+}
+
+OFStdIOStream **
+of_stderr_ref(void)
+{
+	return &of_stderr;
+}
+#endif
 
 #ifdef OF_AMIGAOS
 OF_DESTRUCTOR()

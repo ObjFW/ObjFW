@@ -136,6 +136,7 @@ extern "C" {
 #endif
 /*! @file */
 
+#ifndef OF_AMIGAOS
 /*!
  * @brief The standard input as an OFStream.
  */
@@ -150,6 +151,14 @@ extern OFStdIOStream *_Nullable of_stdout;
  * @brief The standard error as an OFStream.
  */
 extern OFStdIOStream *_Nullable of_stderr;
+#else
+extern OFStdIOStream *_Nonnull *_Nullable of_stdin_ref(void);
+extern OFStdIOStream *_Nonnull *_Nullable of_stdout_ref(void);
+extern OFStdIOStream *_Nonnull *_Nullable of_stderr_ref(void);
+# define of_stdin (*of_stdin_ref())
+# define of_stdout (*of_stdout_ref())
+# define of_stderr (*of_stderr_ref())
+#endif
 
 /*!
  * @brief Logs the specified printf-style format to @ref of_stderr.

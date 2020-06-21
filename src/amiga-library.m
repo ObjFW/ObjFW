@@ -22,8 +22,9 @@
 #include <exec/resident.h>
 #include <proto/exec.h>
 
-#import "OFString.h"
 #import "OFHTTPRequest.h"
+#import "OFStdIOStream.h"
+#import "OFString.h"
 
 #import "amiga-library.h"
 #import "macros.h"
@@ -75,6 +76,9 @@ extern of_http_request_method_t glue_of_http_request_method_from_string(void);
 extern OFString *glue_of_http_status_code_to_string(void);
 extern size_t glue_of_sizeof_type_encoding(void);
 extern size_t glue_of_alignof_type_encoding(void);
+extern OFStdIOStream **glue_of_stdin_ref(void);
+extern OFStdIOStream **glue_of_stdout_ref(void);
+extern OFStdIOStream **glue_of_stderr_ref(void);
 extern void glue_of_logv(void);
 extern OFString *glue_of_zip_archive_entry_version_to_string(void);
 extern OFString *glue_of_zip_archive_entry_compression_method_to_string(void);
@@ -618,6 +622,9 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_of_http_status_code_to_string,
 	(CONST_APTR)glue_of_sizeof_type_encoding,
 	(CONST_APTR)glue_of_alignof_type_encoding,
+	(CONST_APTR)glue_of_stdin_ref,
+	(CONST_APTR)glue_of_stdout_ref,
+	(CONST_APTR)glue_of_stderr_ref,
 	(CONST_APTR)glue_of_logv,
 	(CONST_APTR)glue_of_zip_archive_entry_version_to_string,
 	(CONST_APTR)glue_of_zip_archive_entry_compression_method_to_string,
