@@ -494,12 +494,9 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 }
 
 void
-of_pbkdf2(OFHMAC *HMAC, size_t iterations, const unsigned char *salt,
-    size_t saltLength, const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength, bool allowsSwappableMemory)
+of_pbkdf2(of_pbkdf2_parameters_t param)
 {
-	glue_of_pbkdf2(HMAC, iterations, salt, saltLength,
-	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+	glue_of_pbkdf2(&param);
 }
 
 void
@@ -522,13 +519,9 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 }
 
 void
-of_scrypt(size_t blockSize, size_t costFactor, size_t parallelization,
-    const unsigned char *salt, size_t saltLength, const char *password,
-    size_t passwordLength, unsigned char *key, size_t keyLength,
-    bool allowsSwappableMemory)
+of_scrypt(of_scrypt_parameters_t param)
 {
-	glue_of_scrypt(blockSize, costFactor, parallelization, salt, saltLength,
-	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+	glue_of_scrypt(&param);
 }
 
 const char *

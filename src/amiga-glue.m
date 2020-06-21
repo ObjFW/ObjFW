@@ -229,23 +229,11 @@ glue_of_zip_archive_entry_extra_field_find PPC_PARAMS(OFData *extraField,
 }
 
 void __saveds
-glue_of_pbkdf2 PPC_PARAMS(OFHMAC *HMAC, size_t iterations,
-    const unsigned char *salt, size_t saltLength, const char *password,
-    size_t passwordLength, unsigned char *key, size_t keyLength,
-    bool allowsSwappableMemory)
+glue_of_pbkdf2 PPC_PARAMS(const of_pbkdf2_parameters_t *param)
 {
-	M68K_ARG(OFHMAC *, HMAC, a0)
-	M68K_ARG(size_t, iterations, d0)
-	M68K_ARG(const unsigned char *, salt, a1)
-	M68K_ARG(size_t, saltLength, d1)
-	M68K_ARG(const char *, password, a2)
-	M68K_ARG(size_t, passwordLength, d2)
-	M68K_ARG(unsigned char *, key, a3)
-	M68K_ARG(size_t, keyLength, d3)
-	M68K_ARG(bool, allowsSwappableMemory, d4)
+	M68K_ARG(const of_pbkdf2_parameters_t *, param, a0)
 
-	of_pbkdf2(HMAC, iterations, salt, saltLength, password, passwordLength,
-	    key, keyLength, allowsSwappableMemory);
+	of_pbkdf2(*param);
 }
 
 void __saveds
@@ -280,24 +268,11 @@ glue_of_scrypt_romix PPC_PARAMS(uint32_t *buffer, size_t blockSize,
 }
 
 void __saveds
-glue_of_scrypt PPC_PARAMS(size_t blockSize, size_t costFactor,
-    size_t parallelization, const unsigned char *salt, size_t saltLength,
-    const char *password, size_t passwordLength, unsigned char *key,
-    size_t keyLength, bool allowsSwappableMemory)
+glue_of_scrypt PPC_PARAMS(const of_scrypt_parameters_t *param)
 {
-	M68K_ARG(size_t, blockSize, d0)
-	M68K_ARG(size_t, costFactor, d1)
-	M68K_ARG(size_t, parallelization, d2)
-	M68K_ARG(const unsigned char *, salt, a0)
-	M68K_ARG(size_t, saltLength, d3)
-	M68K_ARG(const char *, password, a1)
-	M68K_ARG(size_t, passwordLength, d4)
-	M68K_ARG(unsigned char *, key, a2)
-	M68K_ARG(size_t, keyLength, d5)
-	M68K_ARG(bool, allowsSwappableMemory, d6)
+	M68K_ARG(const of_scrypt_parameters_t *, param, a0)
 
-	of_scrypt(blockSize, costFactor, parallelization, salt, saltLength,
-	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+	of_scrypt(*param);
 }
 
 const char *__saveds
