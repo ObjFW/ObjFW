@@ -754,8 +754,9 @@ objc_exception_throw(id object)
 	    ? emergencyExceptionCleanup : cleanup);
 	e->object = object;
 
-	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
-	    uncaughtExceptionHandler != NULL)
+	_Unwind_RaiseException(&e->exception);
+
+	if (uncaughtExceptionHandler != NULL)
 		uncaughtExceptionHandler(object);
 
 	OBJC_ERROR("_Unwind_RaiseException() returned!")

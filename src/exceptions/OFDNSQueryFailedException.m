@@ -44,6 +44,8 @@ of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
 		    @"query.";
 	case OF_DNS_RESOLVER_ERROR_SERVER_REFUSED:
 		return @"The server refused the query.";
+	case OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER:
+		return @"There was no name server to query.";
 	default:
 		return @"Unknown error.";
 	}

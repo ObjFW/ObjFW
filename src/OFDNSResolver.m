@@ -819,6 +819,17 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (query.domainName.UTF8StringLength > 253)
 		@throw [OFOutOfRangeException exception];
 
+	if (_settings->_nameServers.count == 0) {
+		id exception = [OFDNSQueryFailedException
+		    exceptionWithQuery: query
+				 error: OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER];
+		[delegate  resolver: self
+		    didPerformQuery: query
+			   response: nil
+			  exception: exception];
+		return;
+	}
+
 	context = [[[OFDNSResolverContext alloc]
 	    initWithQuery: query
 		       ID: ID
@@ -880,12 +891,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	    exceptionWithQuery: context->_query
 			 error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
-	if ([context->_delegate respondsToSelector:
-	    @selector(resolver:didPerformQuery:response:exception:)])
-		[context->_delegate resolver: self
-			     didPerformQuery: context->_query
-				    response: nil
-				   exception: exception];
+	[context->_delegate resolver: self
+		     didPerformQuery: context->_query
+			    response: nil
+			   exception: exception];
 }
 
 - (bool)of_handleResponseBuffer: (unsigned char *)buffer
@@ -1041,12 +1050,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (exception != nil)
 		response = nil;
 
-	if ([context->_delegate respondsToSelector:
-	    @selector(resolver:didPerformQuery:response:exception:)])
-		[context->_delegate resolver: self
-			     didPerformQuery: context->_query
-				    response: response
-				   exception: exception];
+	[context->_delegate resolver: self
+		     didPerformQuery: context->_query
+			    response: response
+			   exception: exception];
 
 	return false;
 }
@@ -1275,12 +1282,10 @@ done:
 		    exceptionWithQuery: context->_query
 				 error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
-		if ([context->_delegate respondsToSelector:
-		    @selector(resolver:didPerformQuery:response:exception:)])
-			[context->_delegate resolver: self
-				     didPerformQuery: context->_query
-					    response: nil
-					   exception: exception];
+		[context->_delegate resolver: self
+			     didPerformQuery: context->_query
+				    response: nil
+				   exception: exception];
 	}
 
 	[_queries removeAllObjects];

@@ -65,7 +65,9 @@ typedef enum of_dns_resolver_error_t {
 	/*! The server does not have support for the requested query */
 	OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED,
 	/*! The server refused the query */
-	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED
+	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED,
+	/*! There was no name server to query */
+	OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER
 } of_dns_resolver_error_t;
 
 /*!
