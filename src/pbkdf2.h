@@ -30,6 +30,34 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFHMAC;
 
+/*!
+ * @brief The parameters for @ref of_pbkdf2.
+ */
+typedef struct of_pbkdf2_parameters_t {
+	/*! @brief The HMAC to use to derive a key. */
+	OFHMAC *HMAC;
+	/*! @brief The number of iterations to perform. */
+	size_t iterations;
+	/*! @brief The salt to derive a key with. */
+	const unsigned char *salt;
+	/*! @brief The length of the salt. */
+	size_t saltLength;
+	/*! @brief The password to derive a key from. */
+	const char *password;
+	/*! @brief The length of the password. */
+	size_t passwordLength;
+	/*! @brief The buffer to write the key to. */
+	unsigned char *key;
+	/*!
+	 * @brief The desired length for the derived key.
+	 *
+	 * @ref key needs to have enough storage).
+	 */
+	size_t keyLength;
+	/*! @brief Whether data may be stored in swappable memory. */
+	bool allowsSwappableMemory;
+} of_pbkdf2_parameters_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,21 +68,9 @@ extern "C" {
  *	 possible to reuse the `HMAC`, but also meaning all previous results
  *	 from the `HMAC` get invalidated if they have not been copied.
  *
- * @param HMAC The HMAC to use to derive a key
- * @param iterations The number of iterations to perform
- * @param salt The salt to derive a key with
- * @param saltLength The length of the salt
- * @param password The password to derive a key from
- * @param passwordLength The length of the password
- * @param key The buffer to write the key to
- * @param keyLength The desired length for the derived key (`key` needs to have
- *		    enough storage)
- * @param allowsSwappableMemory Whether data may be stored in swappable memory
+ * @param param The parameters to use
  */
-extern void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
-    const unsigned char *salt, size_t saltLength,
-    const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength, bool allowsSwappableMemory);
+extern void of_pbkdf2(of_pbkdf2_parameters_t param);
 #ifdef __cplusplus
 }
 #endif

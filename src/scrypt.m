@@ -185,17 +185,33 @@ void of_scrypt(size_t blockSize, size_t costFactor,
 			initWithHashClass: [OFSHA256Hash class]
 		    allowsSwappableMemory: allowsSwappableMemory];
 
-		of_pbkdf2(HMAC, 1, salt, saltLength, password, passwordLength,
-		    (unsigned char *)bufferItems,
-		    parallelization * 128 * blockSize, allowsSwappableMemory);
+		of_pbkdf2((of_pbkdf2_parameters_t){
+			.HMAC = HMAC,
+			.iterations = 1,
+			.salt = salt,
+			.saltLength = saltLength,
+			.password = password,
+			.passwordLength = passwordLength,
+			.key = (unsigned char *)bufferItems,
+			.keyLength = parallelization * 128 * blockSize,
+			.allowsSwappableMemory = allowsSwappableMemory
+		});
 
 		for (size_t i = 0; i < parallelization; i++)
 			of_scrypt_romix(bufferItems + i * 32 * blockSize,
 			    blockSize, costFactor, tmpItems);
 
-		of_pbkdf2(HMAC, 1, (unsigned char *)bufferItems,
-		    parallelization * 128 * blockSize, password, passwordLength,
-		    key, keyLength, allowsSwappableMemory);
+		of_pbkdf2((of_pbkdf2_parameters_t){
+			.HMAC = HMAC,
+			.iterations = 1,
+			.salt = (unsigned char *)bufferItems,
+			.saltLength = parallelization * 128 * blockSize,
+			.password = password,
+			.passwordLength = passwordLength,
+			.key = key,
+			.keyLength = keyLength,
+			.allowsSwappableMemory = allowsSwappableMemory
+		});
 	} @finally {
 		[tmp release];
 		[buffer release];
