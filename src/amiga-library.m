@@ -76,15 +76,26 @@ extern of_http_request_method_t glue_of_http_request_method_from_string(void);
 extern OFString *glue_of_http_status_code_to_string(void);
 extern size_t glue_of_sizeof_type_encoding(void);
 extern size_t glue_of_alignof_type_encoding(void);
+extern uint32_t *glue_of_hash_seed_ref(void);
 extern OFStdIOStream **glue_of_stdin_ref(void);
 extern OFStdIOStream **glue_of_stdout_ref(void);
 extern OFStdIOStream **glue_of_stderr_ref(void);
 extern void glue_of_logv(void);
+extern of_string_encoding_t glue_of_string_parse_encoding(void);
+extern OFString *glue_of_string_name_of_encoding(void);
+extern size_t glue_of_string_utf8_encode(void);
+extern ssize_t glue_of_string_utf8_decode(void);
+extern size_t glue_of_string_utf16_length(void);
+extern size_t glue_of_string_utf32_length(void);
 extern OFString *glue_of_zip_archive_entry_version_to_string(void);
 extern OFString *glue_of_zip_archive_entry_compression_method_to_string(void);
 extern size_t glue_of_zip_archive_entry_extra_field_find(void);
 extern void glue_of_pbkdf2(void);
+extern void glue_of_salsa20_8_core(void);
+extern void glue_of_scrypt_block_mix(void);
+extern void glue_of_scrypt_romix(void);
 extern void glue_of_scrypt(void);
+extern const char *glue_of_strptime(void);
 extern of_socket_address_t glue_of_socket_address_parse_ip(void);
 extern of_socket_address_t glue_of_socket_address_parse_ipv4(void);
 extern of_socket_address_t glue_of_socket_address_parse_ipv6(void);
@@ -622,15 +633,26 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_of_http_status_code_to_string,
 	(CONST_APTR)glue_of_sizeof_type_encoding,
 	(CONST_APTR)glue_of_alignof_type_encoding,
+	(CONST_APTR)of_hash_seed_ref,
 	(CONST_APTR)glue_of_stdin_ref,
 	(CONST_APTR)glue_of_stdout_ref,
 	(CONST_APTR)glue_of_stderr_ref,
 	(CONST_APTR)glue_of_logv,
+	(CONST_APTR)glue_of_string_parse_encoding,
+	(CONST_APTR)glue_of_string_name_of_encoding,
+	(CONST_APTR)glue_of_string_utf8_encode,
+	(CONST_APTR)glue_of_string_utf8_decode,
+	(CONST_APTR)glue_of_string_utf16_length,
+	(CONST_APTR)glue_of_string_utf32_length,
 	(CONST_APTR)glue_of_zip_archive_entry_version_to_string,
 	(CONST_APTR)glue_of_zip_archive_entry_compression_method_to_string,
 	(CONST_APTR)glue_of_zip_archive_entry_extra_field_find,
 	(CONST_APTR)glue_of_pbkdf2,
+	(CONST_APTR)glue_of_salsa20_8_core,
+	(CONST_APTR)glue_of_scrypt_block_mix,
+	(CONST_APTR)glue_of_scrypt_romix,
 	(CONST_APTR)glue_of_scrypt,
+	(CONST_APTR)glue_of_strptime,
 	(CONST_APTR)glue_of_socket_address_parse_ip,
 	(CONST_APTR)glue_of_socket_address_parse_ipv4,
 	(CONST_APTR)glue_of_socket_address_parse_ipv6,

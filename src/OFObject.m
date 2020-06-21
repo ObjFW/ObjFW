@@ -102,7 +102,19 @@ static struct {
 	Class isa;
 } allocFailedException;
 
+#ifdef OF_AMIGAOS
+# undef of_hash_seed
+#endif
+
 uint32_t of_hash_seed;
+
+#ifdef OF_AMIGAOS
+uint32_t *
+of_hash_seed_ref(void)
+{
+	return &of_hash_seed;
+}
+#endif
 
 static const char *
 typeEncodingForSelector(Class class, SEL selector)

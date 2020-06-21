@@ -264,6 +264,14 @@ void *__objc_class_name_OFThreadStillRunningException;
 #endif
 #include "OFFileManager_constants.m"
 #include "OFRunLoop_constants.m"
+/* The following __objc_class_name_* are only required for the tests. */
+void *__objc_class_name_OFBitSetCharacterSet;
+void *__objc_class_name_OFMapTableSet;
+void *__objc_class_name_OFMutableMapTableSet;
+void *__objc_class_name_OFMutableUTF8String;
+void *__objc_class_name_OFRangeCharacterSet;
+void *__objc_class_name_OFSelectKernelEventObserver;
+void *__objc_class_name_OFUTF8String;
 
 static void __attribute__((__used__))
 ctor(void)
@@ -398,6 +406,12 @@ of_alignof_type_encoding(const char *type)
 	return glue_of_alignof_type_encoding(type);
 }
 
+uint32_t *
+of_hash_seed_ref(void)
+{
+	return glue_of_hash_seed_ref();
+}
+
 OFStdIOStream **
 of_stdin_ref(void)
 {
@@ -420,6 +434,42 @@ void
 of_logv(OFConstantString *format, va_list arguments)
 {
 	glue_of_logv(format, arguments);
+}
+
+of_string_encoding_t
+of_string_parse_encoding(OFString *string)
+{
+	return glue_of_string_parse_encoding(string);
+}
+
+OFString *
+of_string_name_of_encoding(of_string_encoding_t encoding)
+{
+	return glue_of_string_name_of_encoding(encoding);
+}
+
+size_t
+of_string_utf8_encode(of_unichar_t c, char *UTF8)
+{
+	return glue_of_string_utf8_encode(c, UTF8);
+}
+
+ssize_t
+of_string_utf8_decode(const char *UTF8, size_t len, of_unichar_t *c)
+{
+	return glue_of_string_utf8_decode(UTF8, len, c);
+}
+
+size_t
+of_string_utf16_length(const of_char16_t *string)
+{
+	return glue_of_string_utf16_length(string);
+}
+
+size_t
+of_string_utf32_length(const of_char32_t *string)
+{
+	return glue_of_string_utf32_length(string);
 }
 
 OFString *
@@ -453,6 +503,25 @@ of_pbkdf2(OFHMAC *HMAC, size_t iterations, const unsigned char *salt,
 }
 
 void
+of_salsa20_8_core(uint32_t *buffer)
+{
+	glue_of_salsa20_8_core(buffer);
+}
+
+void
+of_scrypt_block_mix(uint32_t *output, const uint32_t *input, size_t blockSize)
+{
+	glue_of_scrypt_block_mix(output, input, blockSize);
+}
+
+void
+of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
+    uint32_t *tmp)
+{
+	glue_of_scrypt_romix(buffer, blockSize, costFactor, tmp);
+}
+
+void
 of_scrypt(size_t blockSize, size_t costFactor, size_t parallelization,
     const unsigned char *salt, size_t saltLength, const char *password,
     size_t passwordLength, unsigned char *key, size_t keyLength,
@@ -460,6 +529,12 @@ of_scrypt(size_t blockSize, size_t costFactor, size_t parallelization,
 {
 	glue_of_scrypt(blockSize, costFactor, parallelization, salt, saltLength,
 	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+}
+
+const char *
+of_strptime(const char *buf, const char *fmt, struct tm *tm, int16_t *tz)
+{
+	return glue_of_strptime(buf, fmt, tm, tz);
 }
 
 of_socket_address_t

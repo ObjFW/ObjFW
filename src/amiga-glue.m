@@ -21,10 +21,13 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFMethodSignature.h"
+#import "OFObject.h"
 #import "OFStdIOStream.h"
+#import "OFString.h"
 #import "OFZIPArchiveEntry.h"
 
 #import "amiga-library.h"
+#import "of_strptime.h"
 #import "pbkdf2.h"
 #import "platform.h"
 #import "scrypt.h"
@@ -111,6 +114,12 @@ glue_of_alignof_type_encoding PPC_PARAMS(const char *type)
 	return of_alignof_type_encoding(type);
 }
 
+uint32_t *__saveds
+glue_of_hash_seed_ref(void)
+{
+	return of_hash_seed_ref();
+}
+
 OFStdIOStream **__saveds
 glue_of_stdin_ref(void)
 {
@@ -136,6 +145,58 @@ glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments)
 	M68K_ARG(va_list, arguments, a1)
 
 	of_logv(format, arguments);
+}
+
+of_string_encoding_t __saveds
+glue_of_string_parse_encoding PPC_PARAMS(OFString *string)
+{
+	M68K_ARG(OFString *, string, a0)
+
+	return of_string_parse_encoding(string);
+}
+
+OFString *__saveds
+glue_of_string_name_of_encoding PPC_PARAMS(of_string_encoding_t encoding)
+{
+	M68K_ARG(of_string_encoding_t, encoding, d0)
+
+	return of_string_name_of_encoding(encoding);
+}
+
+size_t __saveds
+glue_of_string_utf8_encode PPC_PARAMS(of_unichar_t c, char *UTF8)
+{
+	M68K_ARG(of_unichar_t, c, d0)
+	M68K_ARG(char *, UTF8, a0)
+
+	return of_string_utf8_encode(c, UTF8);
+}
+
+ssize_t __saveds
+glue_of_string_utf8_decode PPC_PARAMS(const char *UTF8, size_t len,
+    of_unichar_t *c)
+{
+	M68K_ARG(const char *, UTF8, a0)
+	M68K_ARG(size_t, len, d0)
+	M68K_ARG(of_unichar_t *, c, a1)
+
+	return of_string_utf8_decode(UTF8, len, c);
+}
+
+size_t __saveds
+glue_of_string_utf16_length PPC_PARAMS(const of_char16_t *string)
+{
+	M68K_ARG(const of_char16_t *, string, a0)
+
+	return of_string_utf16_length(string);
+}
+
+size_t __saveds
+glue_of_string_utf32_length PPC_PARAMS(const of_char32_t *string)
+{
+	M68K_ARG(const of_char32_t *, string, a0)
+
+	return of_string_utf32_length(string);
 }
 
 OFString *__saveds
@@ -188,6 +249,37 @@ glue_of_pbkdf2 PPC_PARAMS(OFHMAC *HMAC, size_t iterations,
 }
 
 void __saveds
+glue_of_salsa20_8_core PPC_PARAMS(uint32_t *buffer)
+{
+	M68K_ARG(uint32_t *, buffer, a0)
+
+	of_salsa20_8_core(buffer);
+}
+
+void __saveds
+glue_of_scrypt_block_mix PPC_PARAMS(uint32_t *output, const uint32_t *input,
+    size_t blockSize)
+{
+	M68K_ARG(uint32_t *, output, a0)
+	M68K_ARG(const uint32_t *, input, a1)
+	M68K_ARG(size_t, blockSize, d0)
+
+	of_scrypt_block_mix(output, input, blockSize);
+}
+
+void __saveds
+glue_of_scrypt_romix PPC_PARAMS(uint32_t *buffer, size_t blockSize,
+    size_t costFactor, uint32_t *tmp)
+{
+	M68K_ARG(uint32_t *, buffer, a0)
+	M68K_ARG(size_t, blockSize, d0)
+	M68K_ARG(size_t, costFactor, d1)
+	M68K_ARG(uint32_t *, tmp, a1)
+
+	of_scrypt_romix(buffer, blockSize, costFactor, tmp);
+}
+
+void __saveds
 glue_of_scrypt PPC_PARAMS(size_t blockSize, size_t costFactor,
     size_t parallelization, const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength, unsigned char *key,
@@ -206,6 +298,18 @@ glue_of_scrypt PPC_PARAMS(size_t blockSize, size_t costFactor,
 
 	of_scrypt(blockSize, costFactor, parallelization, salt, saltLength,
 	    password, passwordLength, key, keyLength, allowsSwappableMemory);
+}
+
+const char *__saveds
+glue_of_strptime PPC_PARAMS(const char *buf, const char *fmt, struct tm *tm,
+    int16_t *tz)
+{
+	M68K_ARG(const char *, buf, a0)
+	M68K_ARG(const char *, fmt, a1)
+	M68K_ARG(struct tm *, tm, a2)
+	M68K_ARG(int16_t *, tz, a3)
+
+	return of_strptime(buf, fmt, tm, tz);
 }
 
 void __saveds
