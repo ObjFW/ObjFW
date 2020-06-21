@@ -431,6 +431,16 @@ of_stderr_ref(void)
 }
 
 void
+of_log(OFConstantString *format, ...)
+{
+	va_list arguments;
+
+	va_start(arguments, format);
+	glue_of_logv(format, arguments);
+	va_end(arguments);
+}
+
+void
 of_logv(OFConstantString *format, va_list arguments)
 {
 	glue_of_logv(format, arguments);
