@@ -65,8 +65,8 @@ struct ObjFWBase {
 extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
-extern void __register_frame_info(const void *, void *);
-extern void *__deregister_frame_info(const void *);
+void __register_frame_info(const void *, void *);
+void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
@@ -666,6 +666,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_of_socket_address_get_ipx_network,
 	(CONST_APTR)glue_of_socket_address_set_ipx_node,
 	(CONST_APTR)glue_of_socket_address_get_ipx_node,
+	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
 #endif
