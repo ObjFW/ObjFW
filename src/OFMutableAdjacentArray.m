@@ -328,7 +328,7 @@
 		return 0;
 
 	state->state = (unsigned long)count;
-	state->itemsPtr = _array.items;
+	state->itemsPtr = (id *)_array.items;
 	state->mutationsPtr = &_mutations;
 
 	return (int)count;
