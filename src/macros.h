@@ -309,6 +309,17 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
+#if __has_attribute(__objc_direct__)
+# define OF_DIRECT __attribute__((__objc_direct__))
+#else
+# define OF_DIRECT
+#endif
+#if __has_attribute(__objc_direct_members__)
+# define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
+#else
+# define OF_DIRECT_MEMBERS
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM
