@@ -52,6 +52,7 @@
  *  - Encrypted files cannot be read.
  */
 
+OF_DIRECT_MEMBERS
 @interface OFZIPArchive ()
 - (void)of_readZIPInfo;
 - (void)of_readEntries;
@@ -59,6 +60,7 @@
 - (void)of_writeCentralDirectory;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFZIPArchiveLocalFileHeader: OFObject
 {
 @public
@@ -74,6 +76,7 @@
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileReadStream: OFStream
 {
 	OFStream *_stream, *_decompressedStream;
@@ -87,6 +90,7 @@
 			    entry: (OFZIPArchiveEntry *)entry;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileWriteStream: OFStream
 {
 	OFStream *_stream;

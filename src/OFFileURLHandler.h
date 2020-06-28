@@ -20,7 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFFileURLHandler: OFURLHandler
-+ (bool)of_directoryExistsAtPath: (OFString *)path;
++ (bool)of_directoryExistsAtPath: (OFString *)path OF_DIRECT;
 @end
 
 OF_ASSUME_NONNULL_END

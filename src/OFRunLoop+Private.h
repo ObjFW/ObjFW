@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 #endif
 
+OF_DIRECT_MEMBERS
 @interface OFRunLoop ()
 + (void)of_setMainRunLoop: (OFRunLoop *)runLoop;
 #ifdef OF_HAVE_SOCKETS

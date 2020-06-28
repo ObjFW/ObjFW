@@ -24,8 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
     uint16_t of_lastModifiedFileTime, of_lastModifiedFileDate;
 @property (readonly, nonatomic) int64_t of_localFileHeaderOffset;
 
-- (instancetype)of_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
-- (uint64_t)of_writeToStream: (OFStream *)stream;
+- (instancetype)of_initWithStream: (OFStream *)stream
+    OF_METHOD_FAMILY(init) OF_DIRECT;
+- (uint64_t)of_writeToStream: (OFStream *)stream OF_DIRECT;
 @end
 
 @interface OFMutableZIPArchiveEntry ()

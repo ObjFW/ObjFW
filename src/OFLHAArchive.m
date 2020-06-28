@@ -38,6 +38,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
+OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFStream *_stream, *_decompressedStream;
@@ -52,6 +53,7 @@
 - (void)of_skip;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFMutableLHAArchiveEntry *_entry;

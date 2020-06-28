@@ -56,7 +56,7 @@
 
 - (void)of_getCategory: (OFString **)category
 		andKey: (OFString **)key
-	       forPath: (OFString *)path
+	       forPath: (OFString *)path OF_DIRECT
 {
 	size_t pos = [path rangeOfString: @"."
 				 options: OF_STRING_SEARCH_BACKWARDS].location;

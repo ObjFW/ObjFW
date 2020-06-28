@@ -48,6 +48,7 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 @interface OFDictionaryPlaceholder: OFDictionary
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFDictionaryObjectEnumerator: OFEnumerator
 {
 	OFDictionary *_dictionary;
@@ -57,6 +58,7 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFURLQueryPartAllowedCharacterSet: OFCharacterSet
 + (OFCharacterSet *)URLQueryPartAllowedCharacterSet;
 @end
@@ -224,7 +226,8 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 
 + (instancetype)dictionaryWithDictionary: (OFDictionary *)dictionary
 {
-	return [[[self alloc] initWithDictionary: dictionary] autorelease];
+	return [[(OFDictionary *)[self alloc]
+	    initWithDictionary: dictionary] autorelease];
 }
 
 + (instancetype)dictionaryWithObject: (id)object

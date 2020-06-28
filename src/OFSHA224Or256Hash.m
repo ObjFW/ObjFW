@@ -28,6 +28,7 @@
 
 #define BLOCK_SIZE 64
 
+OF_DIRECT_MEMBERS
 @interface OFSHA224Or256Hash ()
 - (void)of_resetState;
 @end

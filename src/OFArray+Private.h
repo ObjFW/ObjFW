@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFArrayEnumerator: OFEnumerator
 {
 	OFArray	*_array;

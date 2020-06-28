@@ -65,6 +65,7 @@
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFDNSResolverContext: OFObject
 {
 @public

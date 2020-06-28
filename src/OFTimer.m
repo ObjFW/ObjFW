@@ -329,7 +329,8 @@
 			     object: (id)object3
 			     object: (id)object4
 			  arguments: (uint8_t)arguments
-			    repeats: (bool)repeats OF_METHOD_FAMILY(init)
+			    repeats: (bool)repeats
+    OF_METHOD_FAMILY(init) OF_DIRECT
 {
 	self = [super init];
 

@@ -53,6 +53,7 @@
 
 #define REDIRECTS_DEFAULT 10
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate>
 {
 @public
@@ -72,6 +73,7 @@
 - (void)closeAndReconnect;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestBodyStream: OFStream <OFReadyForWritingObserving>
 {
 	OFHTTPClientRequestHandler *_handler;
@@ -85,6 +87,7 @@
 			 socket: (OFTCPSocket *)sock;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPClientResponse: OFHTTPResponse <OFReadyForReadingObserving>
 {
 	OFTCPSocket *_socket;
@@ -98,6 +101,7 @@
 - (instancetype)initWithSocket: (OFTCPSocket *)sock;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPClientSyncPerformer: OFObject <OFHTTPClientDelegate>
 {
 	OFHTTPClient *_client;

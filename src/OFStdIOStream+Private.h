@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFStdIOStream ()
 #ifndef OF_AMIGAOS
 - (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);

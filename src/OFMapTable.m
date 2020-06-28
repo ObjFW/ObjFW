@@ -61,12 +61,14 @@ defaultEqual(void *object1, void *object2)
 	return (object1 == object2);
 }
 
+OF_DIRECT_MEMBERS
 @interface OFMapTable ()
 - (void)of_setObject: (void *)object
 	      forKey: (void *)key
 		hash: (uint32_t)hash;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFMapTableEnumerator ()
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct of_map_table_bucket **)buckets
@@ -293,7 +295,7 @@ defaultEqual(void *object1, void *object2)
 	return NULL;
 }
 
-- (void)of_resizeForCount: (uint32_t)count
+- (void)of_resizeForCount: (uint32_t)count OF_DIRECT
 {
 	uint32_t fullness, capacity;
 	struct of_map_table_bucket **buckets;

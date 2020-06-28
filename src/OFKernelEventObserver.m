@@ -221,7 +221,7 @@ enum {
 
 		if ([object isKindOfClass: [OFStream class]] &&
 		    [object hasDataInReadBuffer] &&
-		    ![object of_isWaitingForDelimiter]) {
+		    ![(OFStream *)object of_isWaitingForDelimiter]) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: object];

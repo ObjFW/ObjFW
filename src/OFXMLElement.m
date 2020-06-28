@@ -428,7 +428,7 @@ static Class CDATAClass = Nil;
 - (OFString *)of_XMLStringWithParent: (OFXMLElement *)parent
 			  namespaces: (OFDictionary *)allNamespaces
 			 indentation: (unsigned int)indentation
-			       level: (unsigned int)level
+			       level: (unsigned int)level OF_DIRECT
 {
 	void *pool;
 	char *cString;

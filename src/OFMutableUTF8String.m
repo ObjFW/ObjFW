@@ -73,7 +73,7 @@
 - (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
 		     wordMiddleTable: (const of_unichar_t *const[])middleTable
 		  wordStartTableSize: (size_t)startTableSize
-		 wordMiddleTableSize: (size_t)middleTableSize
+		 wordMiddleTableSize: (size_t)middleTableSize OF_DIRECT
 {
 	of_unichar_t *unicodeString;
 	size_t unicodeLen, newCStringLength;

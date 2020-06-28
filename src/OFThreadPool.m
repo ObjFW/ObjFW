@@ -26,6 +26,7 @@
 #import "OFCondition.h"
 #import "OFSystemInfo.h"
 
+OF_DIRECT_MEMBERS
 @interface OFThreadPoolJob: OFObject
 {
 	id _target;
@@ -103,6 +104,7 @@
 }
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFThreadPoolThread: OFThread
 {
 	OFList *_queue;
@@ -119,7 +121,8 @@
 @implementation OFThreadPoolThread
 + (instancetype)threadWithThreadPool: (OFThreadPool *)threadPool
 {
-	return [[[self alloc] initWithThreadPool: threadPool] autorelease];
+	return [[(OFThreadPoolThread *)[self alloc]
+	    initWithThreadPool: threadPool] autorelease];
 }
 
 - (instancetype)initWithThreadPool: (OFThreadPool *)threadPool
@@ -297,7 +300,7 @@
 	[super dealloc];
 }
 
-- (void)of_dispatchJob: (OFThreadPoolJob *)job
+- (void)of_dispatchJob: (OFThreadPoolJob *)job OF_DIRECT
 {
 	[_countCondition lock];
 	_count++;
