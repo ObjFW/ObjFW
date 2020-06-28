@@ -84,14 +84,13 @@ static struct {
 static locale_t cLocale;
 #endif
 
-OF_DIRECT_MEMBERS
 @interface OFString ()
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
-		  lossy: (bool)lossy;
+		  lossy: (bool)lossy OF_DIRECT;
 - (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
-				 lossy: (bool)lossy;
+				 lossy: (bool)lossy OF_DIRECT;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
