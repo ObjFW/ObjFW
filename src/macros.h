@@ -309,12 +309,12 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
-#if __has_attribute(__objc_direct__)
+#if __has_attribute(__objc_direct__) && defined(OF_APPLE_RUNTIME)
 # define OF_DIRECT __attribute__((__objc_direct__))
 #else
 # define OF_DIRECT
 #endif
-#if __has_attribute(__objc_direct_members__)
+#if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
 # define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
 #else
 # define OF_DIRECT_MEMBERS
