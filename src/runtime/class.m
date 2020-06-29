@@ -846,6 +846,9 @@ object_getClass(id object_)
 	if (object_ == nil)
 		return Nil;
 
+	if (object_isTaggedPointer(object_))
+		return object_getTaggedPointerClass(object_);
+
 	object = (struct objc_object *)object_;
 
 	return object->isa;
