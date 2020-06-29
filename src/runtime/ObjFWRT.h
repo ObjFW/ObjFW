@@ -244,6 +244,11 @@ extern void *_Nullable objc_destructInstance(id _Nullable object);
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+extern int_fast8_t objc_registerTaggedPointerClass(Class _Nonnull class);
+extern Class _Nullable object_getTaggedPointerClass(id _Nonnull object);
+extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
+extern id _Nullable objc_createTaggedPointer(uint_fast8_t class,
+    uintptr_t value);
 
 /*
  * Used by the compiler, but can also be called manually.

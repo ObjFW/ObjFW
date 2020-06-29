@@ -30,6 +30,7 @@ SRCS = arc.m			\
        sparsearray.m		\
        static-instances.m	\
        synchronized.m		\
+       tagged-pointer.m		\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
 	       ../mutex.m	\

@@ -707,3 +707,9 @@ objc_hashtable_free(struct objc_hashtable *table)
 {
 	glue_objc_hashtable_free(table);
 }
+
+extern int_fast8_t objc_registerTaggedPointerClass(Class _Nonnull class);
+extern Class _Nullable object_getTaggedPointerClass(id _Nonnull object);
+extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
+extern id _Nullable objc_createTaggedPointer(uint_fast8_t class,
+    uintptr_t value);
