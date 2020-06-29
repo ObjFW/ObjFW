@@ -32,6 +32,9 @@
 	test	rdi, rdi
 	jz	short ret_nil
 
+	bt	edi, 0
+	jc	short .Ltagged_pointer_\name
+
 	mov	r8, [rdi]
 	mov	r8, [r8+64]
 
@@ -51,6 +54,16 @@
 	jz	short \not_found@PLT
 
 	ret
+
+.Ltagged_pointer_\name:
+	movzx	r8, dil
+	shr	r8, 1
+
+	mov	rax, [rip+objc_tagged_pointer_classes@GOTPCREL]
+	mov	r8, [rax+r8*8]
+	mov	r8, [r8+64]
+
+	jmp	short .Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm

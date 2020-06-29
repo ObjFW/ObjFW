@@ -21,7 +21,7 @@
 
 #define NUM_TAGGED_POINTER_CLASSES 0x7F
 
-static Class taggedPointerClasses[NUM_TAGGED_POINTER_CLASSES];
+Class objc_tagged_pointer_classes[NUM_TAGGED_POINTER_CLASSES];
 static uint_fast8_t taggedPointerClassesCount;
 
 int_fast8_t
@@ -37,7 +37,7 @@ objc_registerTaggedPointerClass(Class class)
 	}
 
 	i = taggedPointerClassesCount++;
-	taggedPointerClasses[i] = class;
+	objc_tagged_pointer_classes[i] = class;
 
 	objc_global_mutex_unlock();
 
@@ -55,7 +55,7 @@ object_getTaggedPointerClass(id object)
 	if (pointer >= NUM_TAGGED_POINTER_CLASSES)
 		return Nil;
 
-	return taggedPointerClasses[pointer];
+	return objc_tagged_pointer_classes[pointer];
 }
 
 uintptr_t
