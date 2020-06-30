@@ -50,10 +50,7 @@
 	ret
 
 0:
-	call	get_eip
-1:
-	addl	$\not_found-1b, %eax
-	jmp	*%eax
+	jmp	\not_found
 .endm
 
 .macro generate_lookup_super name lookup
@@ -75,15 +72,9 @@ generate_lookup_super _objc_msg_lookup_super _objc_msg_lookup
 generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
 ret_nil:
-	call	get_eip
-0:
-	addl	$nil_method-0b, %eax
+	movl	$nil_method, %eax
 	ret
 
 nil_method:
 	xorl	%eax, %eax
-	ret
-
-get_eip:
-	movl	(%esp), %eax
 	ret
