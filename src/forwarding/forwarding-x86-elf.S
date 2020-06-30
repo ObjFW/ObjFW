@@ -33,7 +33,6 @@ of_forward:
 	sub	esp, 20
 
 	call	get_eip
-0:
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
 	mov	eax, [ebp+8]
@@ -46,7 +45,7 @@ of_forward:
 	call	class_respondsToSelector@PLT
 
 	test	eax, eax
-	jz	short 1f
+	jz	short 0f
 
 	mov	eax, [ebp+8]
 	mov	[esp], eax
@@ -63,9 +62,9 @@ of_forward:
 	call	eax
 
 	test	eax, eax
-	jz	short 1f
+	jz	short 0f
 	cmp	eax, [ebp+8]
-	je	short 1f
+	je	short 0f
 
 	mov	[ebp+8], eax
 	mov	[esp], eax
@@ -79,8 +78,8 @@ of_forward:
 
 	jmp	eax
 
-1:
-	mov	eax, [ebx+of_method_not_found@GOT]
+0:
+	lea	eax, [ebx+of_method_not_found@GOTOFF]
 
 	add	esp, 20
 	pop	ebx
@@ -110,7 +109,7 @@ of_forward_stret:
 	call	class_respondsToSelector@PLT
 
 	test	eax, eax
-	jz	short 1f
+	jz	short 0f
 
 	mov	eax, [ebp+12]
 	mov	[esp], eax
@@ -127,9 +126,9 @@ of_forward_stret:
 	call	eax
 
 	test	eax, eax
-	jz	short 1f
+	jz	short 0f
 	cmp	eax, [ebp+12]
-	je	short 1f
+	je	short 0f
 
 	mov	[ebp+12], eax
 	mov	[esp], eax
@@ -143,8 +142,8 @@ of_forward_stret:
 
 	jmp	eax
 
-1:
-	mov	eax, [ebx+of_method_not_found_stret@GOT]
+0:
+	lea	eax, [ebx+of_method_not_found_stret@GOTOFF]
 
 	add	esp, 20
 	pop	ebx
