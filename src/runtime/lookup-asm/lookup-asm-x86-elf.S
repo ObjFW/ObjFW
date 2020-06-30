@@ -58,9 +58,8 @@
 
 0:
 	call	get_eip
-1:
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
-	mov	eax, [eax+\not_found@GOT]
+	lea	eax, [eax+\not_found@GOTOFF]
 	jmp	eax
 
 .Ltagged_pointer_\name:
@@ -101,8 +100,8 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
 	call	get_eip
-0:
-	add	eax, nil_method-0b
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
+	lea	eax, [eax+nil_method@GOTOFF]
 	ret
 
 nil_method:

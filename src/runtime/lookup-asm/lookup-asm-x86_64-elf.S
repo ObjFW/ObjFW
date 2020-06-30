@@ -45,9 +45,9 @@
 #ifdef OF_SELUID24
 	shr	eax, 16
 
-	mov	r8, [r8+rax*8]
+	mov	r8,  [r8+rax*8]
 #endif
-	mov	r8, [r8+rcx*8]
+	mov	r8,  [r8+rcx*8]
 	mov	rax, [r8+rdx*8]
 
 	test	rax, rax
@@ -73,11 +73,11 @@
 	mov	r8, rdi
 	mov	rdi, [rdi]
 	test	rdi, rdi
-	jz	ret_nil
+	jz	short ret_nil
 
 	mov	r8, [r8+8]
 	mov	r8, [r8+64]
-	jmp	.Lmain_\lookup
+	jmp	short .Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm

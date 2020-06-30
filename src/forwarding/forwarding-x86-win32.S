@@ -17,163 +17,140 @@
 
 #include "config.h"
 
+.intel_syntax noprefix
+
 .globl _of_forward
 .globl _of_forward_stret
 
 .section .text
 _of_forward:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	call	get_eip
+	mov	eax, [ebp+8]
+	mov	[esp], eax
+	call	_object_getClass
+
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], eax
+	call	_class_respondsToSelector
+
+	test	eax, eax
+	jz	short 0f
+
+	mov	eax, [ebp+8]
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], eax
+	call	_objc_msg_lookup
+
+	mov	edx, [ebp+8]
+	mov	[esp], edx
+	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], edx
+	mov	edx, [ebp+12]
+	mov	[esp+8], edx
+	call	eax
+
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp+8]
+	je	short 0f
+
+	mov	[ebp+8], eax
+	mov	[esp], eax
+	mov	eax, [ebp+12]
+	mov	[esp+4], eax
+	call	_objc_msg_lookup
+
+	add	esp, 20
+	pop	ebx
+	pop	ebp
+
+	jmp	eax
+
 0:
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	_object_getClass-0b(%ebx), %eax
-	call	*%eax
-
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	leal	_class_respondsToSelector-0b(%ebx), %eax
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-0b(%ebx), %eax
-	call	*%eax
-
-	movl	8(%ebp), %edx
-	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %edx
-	movl	%edx, 4(%esp)
-	movl	12(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-	cmpl	8(%ebp), %eax
-	je	1f
-
-	movl	%eax, 8(%ebp)
-	movl	%eax, (%esp)
-	movl	12(%ebp), %eax
-	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-0b(%ebx), %eax
-	call	*%eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
-
-1:
-	leal	_of_method_not_found-0b(%ebx), %eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
+	jmp	_of_method_not_found
 
 _of_forward_stret:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	call	get_eip
+	mov	eax, [ebp+12]
+	mov	[esp], eax
+	call	_object_getClass
+
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], eax
+	call	_class_respondsToSelector
+
+	test	eax, eax
+	jz	short 0f
+
+	mov	eax, [ebp+12]
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], eax
+	call	_objc_msg_lookup
+
+	mov	edx, [ebp+12]
+	mov	[esp], edx
+	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	[esp+4], edx
+	mov	edx, [ebp+16]
+	mov	[esp+8], edx
+	call	eax
+
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp+12]
+	je	short 0f
+
+	mov	[ebp+12], eax
+	mov	[esp], eax
+	mov	eax, [ebp+16]
+	mov	[esp+4], eax
+	call	_objc_msg_lookup_stret
+
+	add	esp, 20
+	pop	ebx
+	pop	ebp
+
+	jmp	eax
+
 0:
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	_object_getClass-0b(%ebx), %eax
-	call	*%eax
-
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	leal	_class_respondsToSelector-0b(%ebx), %eax
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-0b(%ebx), %eax
-	call	*%eax
-
-	movl	12(%ebp), %edx
-	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_-0b(%ebx), %edx
-	movl	%edx, 4(%esp)
-	movl	16(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-	cmpl	12(%ebp), %eax
-	je	1f
-
-	movl	%eax, 12(%ebp)
-	movl	%eax, (%esp)
-	movl	16(%ebp), %eax
-	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup_stret-0b(%ebx), %eax
-	call	*%eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
-
-1:
-	leal	_of_method_not_found_stret-0b(%ebx), %eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
+	jmp	_of_method_not_found_stret
 
 init:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$4, %esp
+	push	ebx
+	sub	esp, 4
 
-	call	get_eip
-0:
-	leal	module-0b(%ebx), %eax
-	movl	%eax, (%esp)
-	leal	___objc_exec_class-0b(%ebx), %eax
-	call	*%eax
+	mov	eax, offset module
+	mov	[esp], eax
+	call	___objc_exec_class
 
-	addl	$4, %esp
-	popl	%ebx
-	popl	%ebp
-	ret
-
-get_eip:
-	movl	(%esp), %ebx
+	add	esp, 4
+	pop	ebx
+	pop	ebp
 	ret
 
 .section .ctors, "aw"
