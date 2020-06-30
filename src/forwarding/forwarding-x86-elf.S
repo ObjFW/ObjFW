@@ -38,14 +38,12 @@ of_forward:
 
 	mov	eax, [ebp+8]
 	mov	[esp], eax
-	mov	eax, [ebx+object_getClass@GOT]
-	call	eax
+	call	object_getClass@PLT
 
 	mov	[esp], eax
 	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp+4], eax
-	mov	eax, [ebx+class_respondsToSelector@GOT]
-	call	eax
+	call	class_respondsToSelector@PLT
 
 	test	eax, eax
 	jz	short 1f
@@ -54,8 +52,7 @@ of_forward:
 	mov	[esp], eax
 	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp+4], eax
-	mov	eax, [ebx+objc_msg_lookup@GOT]
-	call	eax
+	call	objc_msg_lookup@PLT
 
 	mov	edx, [ebp+8]
 	mov	[esp], edx
@@ -74,8 +71,7 @@ of_forward:
 	mov	[esp], eax
 	mov	eax, [ebp+12]
 	mov	[esp+4], eax
-	mov	eax, [ebx+objc_msg_lookup@GOT]
-	call	eax
+	call	objc_msg_lookup@PLT
 
 	add	esp, 20
 	pop	ebx
@@ -102,19 +98,16 @@ of_forward_stret:
 	sub	esp, 20
 
 	call	get_eip
-0:
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
 	mov	eax, [ebp+12]
 	mov	[esp], eax
-	mov	eax, [ebx+object_getClass@GOT]
-	call	eax
+	call	object_getClass@PLT
 
 	mov	[esp], eax
 	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp+4], eax
-	mov	eax, [ebx+class_respondsToSelector@GOT]
-	call	eax
+	call	class_respondsToSelector@PLT
 
 	test	eax, eax
 	jz	short 1f
@@ -123,8 +116,7 @@ of_forward_stret:
 	mov	[esp], eax
 	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp+4], eax
-	mov	eax, [ebx+objc_msg_lookup@GOT]
-	call	eax
+	call	objc_msg_lookup@PLT
 
 	mov	edx, [ebp+12]
 	mov	[esp], edx
@@ -143,8 +135,7 @@ of_forward_stret:
 	mov	[esp], eax
 	mov	eax, [ebp+16]
 	mov	[esp+4], eax
-	mov	eax, [ebx+objc_msg_lookup_stret@GOT]
-	call	eax
+	call	objc_msg_lookup_stret@PLT
 
 	add	esp, 20
 	pop	ebx
@@ -171,13 +162,11 @@ init:
 	sub	esp, 4
 
 	call	get_eip
-0:
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
 	lea	eax, [ebx+module@GOTOFF]
 	mov	[esp], eax
-	mov	eax, [ebx+__objc_exec_class@GOT]
-	call	eax
+	call	__objc_exec_class@PLT
 
 	add	esp, 4
 	pop	ebx

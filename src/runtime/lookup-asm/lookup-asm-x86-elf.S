@@ -55,7 +55,6 @@
 
 0:
 	call	get_eip
-1:
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
 	mov	eax, [eax+\not_found@GOT]
 	jmp	eax
@@ -85,8 +84,8 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
 	call	get_eip
-0:
-	add	eax, nil_method-0b
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
+	mov	eax, [eax+nil_method@GOT]
 	ret
 
 nil_method:
