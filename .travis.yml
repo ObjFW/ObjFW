@@ -225,19 +225,19 @@ matrix:
 
     # Nintendo 3DS
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=nintendo_3ds
 
     # Nintendo DS
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=nintendo_ds
 
     # Nintendo Wii
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=wii
 
@@ -270,8 +270,10 @@ before_install:
 
   - if [ "$config" = "nintendo_3ds" -o "$config" = "nintendo_ds"
         -o "$config" = "wii" ]; then
-            wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb;
-            sudo dpkg -i devkitpro-pacman.deb;
+            deb=devkitpro-pacman.amd64.deb;
+            wget https://github.com/devkitPro/pacman/releases/download/v1.0.2/$deb;
+            sudo apt install gdebi;
+            sudo gdebi -n $deb;
     fi
 
   - if [ "$config" = "nintendo_3ds" ]; then
