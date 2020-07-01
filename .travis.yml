@@ -270,7 +270,7 @@ before_install:
 
   - if [ "$config" = "nintendo_3ds" -o "$config" = "nintendo_ds"
         -o "$config" = "wii" ]; then
-            deb=devkitpro-pacman_1.0.2.amd64.deb;
+            deb=devkitpro-pacman.amd64.deb;
             wget https://github.com/devkitPro/pacman/releases/download/v1.0.2/$deb;
             sudo dpkg -i $deb;
     fi
