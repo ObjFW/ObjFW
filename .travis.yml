@@ -219,7 +219,7 @@ matrix:
 
     # AmigaOS
     - os: linux
-      dist: bionic
+      dist: trusty
       env:
         - config=amigaos
 
@@ -272,7 +272,8 @@ before_install:
         -o "$config" = "wii" ]; then
             deb=devkitpro-pacman.amd64.deb;
             wget https://github.com/devkitPro/pacman/releases/download/v1.0.2/$deb;
-            sudo dpkg -i $deb;
+            sudo apt install gdebi;
+            sudo gdebi -n $deb;
     fi
 
   - if [ "$config" = "nintendo_3ds" ]; then
