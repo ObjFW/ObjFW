@@ -49,7 +49,7 @@ of_invocation_call:
 	lea	rdx, [rdi+OFFSET_STACK]
 	mov	rcx, [rdi+OFFSET_STACK_SIZE]
 
-	test	rcx, $1
+	test	rcx, 1
 	jnz	short .Lfix_align
 
 .Lfill_stack:
@@ -62,7 +62,7 @@ of_invocation_call:
 
 	jmp	short .Lfill_stack
 
-.stack_filled:
+.Lstack_filled:
 	mov	al, [rdi+OFFSET_NUM_SSE_USED]
 
 	movaps	xmm7, [rdi+OFFSET_SSE_INOUT+112]
@@ -132,7 +132,7 @@ of_invocation_call:
 	fstp	tbyte ptr [rdi+OFFSET_X87_OUT]
 	jmp	short .Lreturn
 
-.pop_complex_long_double:
+.Lpop_complex_long_double:
 	fstp	tbyte ptr [rdi+OFFSET_X87_OUT]
 	fstp	tbyte ptr [rdi+OFFSET_X87_OUT+16]
 	jmp	short .Lreturn
