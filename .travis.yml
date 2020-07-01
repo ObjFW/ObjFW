@@ -219,25 +219,25 @@ matrix:
 
     # AmigaOS
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=amigaos
 
     # Nintendo 3DS
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=nintendo_3ds
 
     # Nintendo DS
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=nintendo_ds
 
     # Nintendo Wii
     - os: linux
-      dist: trusty
+      dist: bionic
       env:
         - config=wii
 
