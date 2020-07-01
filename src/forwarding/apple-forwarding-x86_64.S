@@ -63,7 +63,7 @@ _of_forward:
 	call	_class_respondsToSelector
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rdi, [rbp-0x10]
 	mov	rsi, [rip+sel_forwardingTargetForSelector_]
@@ -71,9 +71,9 @@ _of_forward:
 	call	_objc_msgSend
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp-0x10]
-	je	short 0f
+	je	0f
 
 	mov	rdi, rax
 
@@ -136,7 +136,7 @@ _of_forward_stret:
 	mov	rsi, [rip+sel_forwardingTargetForSelector_]
 	call	_class_respondsToSelector
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rdi, [rbp-0x18]
 	mov	rsi, [rip+sel_forwardingTargetForSelector_]
@@ -144,9 +144,9 @@ _of_forward_stret:
 	call	_objc_msgSend
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp-0x18]
-	je	short 0f
+	je	0f
 
 	mov	rsi, rax
 
