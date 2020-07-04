@@ -69,6 +69,7 @@
 	and	%o0, 0xE, %o2
 	sll	%o2, 2, %o2
 
+#ifdef OF_PIC
 	mov	%o7, %g1
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
 	call	0f
@@ -80,6 +81,10 @@
 	sethi	%hi(objc_tagged_pointer_classes), %o0
 	or	%o0, %lo(objc_tagged_pointer_classes), %o0
 	ldx	[%o3 + %o0], %o0
+#else
+	sethi	%hi(objc_tagged_pointer_classes), %o0
+	or	%o0, %lo(objc_tagged_pointer_classes), %o0
+#endif
 	ldx	[%o0 + %o2], %o2
 	ba	.Lmain_\name
 	 ldx	[%o2 + 64], %o2
