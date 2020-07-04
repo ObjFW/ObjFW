@@ -85,7 +85,7 @@ void *glue_objc_hashtable_get(struct objc_hashtable *, const void *);
 void glue_objc_hashtable_delete(struct objc_hashtable *, const void *);
 void glue_objc_hashtable_free(struct objc_hashtable *);
 /* Public functions again */
-int_fast8_t glue_objc_registerTaggedPointerClass(Class);
+int glue_objc_registerTaggedPointerClass(Class);
 Class _Nullable glue_object_getTaggedPointerClass(id);
 uintptr_t glue_object_getTaggedPointerValue(id);
-id glue_objc_createTaggedPointer(uint_fast8_t, uintptr_t);
+id glue_objc_createTaggedPointer(int, uintptr_t);

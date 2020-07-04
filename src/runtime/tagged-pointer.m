@@ -23,12 +23,12 @@
 #define NUM_TAGGED_POINTER_CLASSES (1 << (TAGGED_POINTER_BITS - 1))
 
 Class objc_tagged_pointer_classes[NUM_TAGGED_POINTER_CLASSES];
-static uint_fast8_t taggedPointerClassesCount;
+static int taggedPointerClassesCount;
 
-int_fast8_t
+int
 objc_registerTaggedPointerClass(Class class)
 {
-	uint_fast8_t i;
+	int i;
 
 	objc_global_mutex_lock();
 
@@ -70,11 +70,11 @@ object_getTaggedPointerValue(id object)
 }
 
 id
-objc_createTaggedPointer(uint_fast8_t class, uintptr_t value)
+objc_createTaggedPointer(int class, uintptr_t value)
 {
 	uintptr_t pointer;
 
-	if (class >= NUM_TAGGED_POINTER_CLASSES)
+	if (class < 0 || class >= NUM_TAGGED_POINTER_CLASSES)
 		return nil;
 
 	if (value > (UINTPTR_MAX >> TAGGED_POINTER_BITS))

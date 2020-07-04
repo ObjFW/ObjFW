@@ -147,7 +147,7 @@ extern void glue_objc_hashtable_set(void);
 extern void *glue_objc_hashtable_get(void);
 extern void glue_objc_hashtable_delete(void);
 extern void glue_objc_hashtable_free(void);
-extern int_fast8_t glue_objc_registerTaggedPointerClass(void);
+extern int glue_objc_registerTaggedPointerClass(void);
 extern Class _Nullable glue_object_getTaggedPointerClass(void);
 extern uintptr_t glue_object_getTaggedPointerValue(void);
 extern id _Nullable glue_objc_createTaggedPointer(void);

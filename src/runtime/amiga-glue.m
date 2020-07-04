@@ -800,7 +800,7 @@ glue_objc_hashtable_free PPC_PARAMS(struct objc_hashtable *table)
 	objc_hashtable_free(table);
 }
 
-int_fast8_t
+int
 glue_objc_registerTaggedPointerClass PPC_PARAMS(Class class)
 {
 	M68K_ARG(Class, class, a0)
@@ -825,9 +825,9 @@ glue_object_getTaggedPointerValue PPC_PARAMS(id object)
 }
 
 id
-glue_objc_createTaggedPointer PPC_PARAMS(uint_fast8_t class, uintptr_t value)
+glue_objc_createTaggedPointer PPC_PARAMS(int class, uintptr_t value)
 {
-	M68K_ARG(uint_fast8_t, class, d0)
+	M68K_ARG(int, class, d0)
 	M68K_ARG(uintptr_t, value, d1)
 
 	return objc_createTaggedPointer(class, value);
