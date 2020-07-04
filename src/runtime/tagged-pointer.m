@@ -19,7 +19,8 @@
 
 #import "private.h"
 
-#define NUM_TAGGED_POINTER_CLASSES 0x7F
+#define TAGGED_POINTER_BITS 4
+#define NUM_TAGGED_POINTER_CLASSES (1 << (TAGGED_POINTER_BITS - 1))
 
 Class objc_tagged_pointer_classes[NUM_TAGGED_POINTER_CLASSES];
 static uint_fast8_t taggedPointerClassesCount;
@@ -49,7 +50,7 @@ object_getTaggedPointerClass(id object)
 {
 	uintptr_t pointer = (uintptr_t)object;
 
-	pointer &= 0x7E;
+	pointer &= (1 << TAGGED_POINTER_BITS) - 1;
 	pointer >>= 1;
 
 	if (pointer >= NUM_TAGGED_POINTER_CLASSES)
@@ -63,8 +64,7 @@ object_getTaggedPointerValue(id object)
 {
 	uintptr_t pointer = (uintptr_t)object;
 
-	pointer &= ~(uintptr_t)0xFF;
-	pointer >>= 8;
+	pointer >>= TAGGED_POINTER_BITS;
 
 	return pointer;
 }
@@ -77,11 +77,11 @@ objc_createTaggedPointer(uint_fast8_t class, uintptr_t value)
 	if (class >= NUM_TAGGED_POINTER_CLASSES)
 		return nil;
 
-	if (value > (UINTPTR_MAX >> 8))
+	if (value > (UINTPTR_MAX >> TAGGED_POINTER_BITS))
 		return nil;
 
 	pointer = (class << 1) | 1;
-	pointer |= (value << 8);
+	pointer |= (value << TAGGED_POINTER_BITS);
 
 	return (id)pointer;
 }

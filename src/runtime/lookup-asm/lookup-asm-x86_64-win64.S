@@ -62,8 +62,9 @@
 	jmp	\not_found
 
 .Ltagged_pointer_\name:
+	and	cl, 0xF
+	shr	cl, 1
 	movzx	r8, cl
-	shr	r8, 1
 
 	mov	rax, offset objc_tagged_pointer_classes
 	mov	r8, [rax+r8*8]

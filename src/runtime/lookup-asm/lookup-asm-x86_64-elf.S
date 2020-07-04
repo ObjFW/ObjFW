@@ -56,8 +56,9 @@
 	ret
 
 .Ltagged_pointer_\name:
+	and	dil, 0xF
+	shr	dil, 1
 	movzx	r8, dil
-	shr	r8, 1
 
 	mov	rax, [rip+objc_tagged_pointer_classes@GOTPCREL]
 	mov	r8, [rax+r8*8]

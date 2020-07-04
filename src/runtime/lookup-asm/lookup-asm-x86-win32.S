@@ -55,8 +55,9 @@
 	ret
 
 .Ltagged_pointer_\name:
+	and	dl, 0xF
+	shr	dl, 1
 	movzx	edx, dl
-	shr	edx, 1
 
 	mov	eax, offset _objc_tagged_pointer_classes
 	mov	edx, [eax+edx*4]

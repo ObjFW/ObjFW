@@ -63,8 +63,9 @@
 	jmp	eax
 
 .Ltagged_pointer_\name:
+	and	dl, 0xF
+	shr	dl, 1
 	movzx	edx, dl
-	shr	edx, 1
 
 	call	get_eip
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
