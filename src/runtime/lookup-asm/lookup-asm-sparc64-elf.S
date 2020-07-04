@@ -88,7 +88,6 @@
 	ldx	[%o0 + %o2], %o2
 	ba	.Lmain_\name
 	 ldx	[%o2 + 64], %o2
-
 .type \name, %function
 .size \name, .-\name
 .endm
