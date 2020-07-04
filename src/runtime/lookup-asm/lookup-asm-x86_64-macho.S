@@ -30,6 +30,9 @@ $0:
 	test	rdi, rdi
 	jz	ret_nil
 
+	bt	edi, 0
+	jc	Ltagged_pointer_$0
+
 	mov	r8, [rdi]
 	mov	r8, [r8+64]
 
@@ -49,6 +52,17 @@ Lmain_$0:
 	jz	$1
 
 	ret
+
+Ltagged_pointer_$0:
+	and	dil, 0xF
+	shr	dil, 1
+	movzx	r8, dil
+
+	mov	rax, [rip+_objc_tagged_pointer_classes]
+	mov	r8, [rax+r8*8]
+	mov	r8, [r8+64]
+
+	jmp	Lmain_$0
 .endmacro
 
 .macro generate_lookup_super
