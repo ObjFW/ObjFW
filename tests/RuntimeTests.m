@@ -98,9 +98,8 @@ static OFString *module = @"Runtime";
 		abort();
 
 	TEST(@"Tagged pointers",
-	    R(cid1 = objc_registerTaggedPointerClass([OFString class])) &&
-	    R(cid2 = objc_registerTaggedPointerClass([OFNumber class])) &&
-	    cid1 != -1 && cid2 != -1 &&
+	    (cid1 = objc_registerTaggedPointerClass([OFString class])) != -1 &&
+	    (cid2 = objc_registerTaggedPointerClass([OFNumber class])) != -1 &&
 	    (object = objc_createTaggedPointer(cid2, (uintptr_t)value)) &&
 	    object_getTaggedPointerClass(object) == [OFNumber class] &&
 	    [object class] == [OFNumber class] &&
