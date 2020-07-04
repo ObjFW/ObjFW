@@ -67,6 +67,11 @@ static OFString *module = @"Runtime";
 	void *pool = objc_autoreleasePoolPush();
 	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
 	OFString *t, *foo;
+#ifdef OF_OBJFW_RUNTIME
+	int cid1, cid2;
+	uintmax_t value;
+	id object;
+#endif
 
 	EXPECT_EXCEPTION(@"Calling a non-existent method via super",
 	    OFNotImplementedException, [rt superTest])
@@ -83,6 +88,26 @@ static OFString *module = @"Runtime";
 
 	rt.bar = t;
 	TEST(@"retain, atomic properties", rt.bar == t && t.retainCount == 3)
+
+#ifdef OF_OBJFW_RUNTIME
+	if (sizeof(uintptr_t) == 8)
+		value = 0xDEADBEEFDEADBEF;
+	else if (sizeof(uintptr_t) == 4)
+		value = 0xDEADBEF;
+	else
+		abort();
+
+	TEST(@"Tagged pointers",
+	    R(cid1 = objc_registerTaggedPointerClass([OFString class])) &&
+	    R(cid2 = objc_registerTaggedPointerClass([OFNumber class])) &&
+	    cid1 != -1 && cid2 != -1 &&
+	    (object = objc_createTaggedPointer(cid2, (uintptr_t)value)) &&
+	    object_getTaggedPointerClass(object) == [OFNumber class] &&
+	    [object class] == [OFNumber class] &&
+	    object_getTaggedPointerValue(object) == value &&
+	    objc_createTaggedPointer(cid2, UINTPTR_MAX >> 4) != nil &&
+	    objc_createTaggedPointer(cid2, (UINTPTR_MAX >> 4) + 1) == nil)
+#endif
 
 	objc_autoreleasePoolPop(pool);
 }
