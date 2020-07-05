@@ -63,15 +63,14 @@
 	jmp	eax
 
 .Ltagged_pointer_\name:
-	and	dl, 0xF
-	shr	dl, 1
+	and	dl, 0xE
 	movzx	edx, dl
 
 	call	get_eip
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
 
 	lea	eax, [eax+objc_tagged_pointer_classes@GOTOFF]
-	mov	edx, [eax+edx*4]
+	mov	edx, [eax+edx*2]
 	mov	edx, [edx+32]
 
 	jmp	short .Lmain_\name

@@ -62,12 +62,11 @@
 	jmp	\not_found
 
 .Ltagged_pointer_\name:
-	and	cl, 0xF
-	shr	cl, 1
+	and	cl, 0xE
 	movzx	r8, cl
 
 	mov	rax, offset objc_tagged_pointer_classes
-	mov	r8, [rax+r8*8]
+	mov	r8, [rax+r8*4]
 	mov	r8, [r8+56]
 
 	jmp	short .Lmain_\name

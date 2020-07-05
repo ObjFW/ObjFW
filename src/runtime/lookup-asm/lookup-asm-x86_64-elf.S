@@ -56,12 +56,11 @@
 	ret
 
 .Ltagged_pointer_\name:
-	and	dil, 0xF
-	shr	dil, 1
+	and	dil, 0xE
 	movzx	r8, dil
 
 	mov	rax, [rip+objc_tagged_pointer_classes@GOTPCREL]
-	mov	r8, [rax+r8*8]
+	mov	r8, [rax+r8*4]
 	mov	r8, [r8+64]
 
 	jmp	short .Lmain_\name

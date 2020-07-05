@@ -54,12 +54,11 @@ Lmain_$0:
 	ret
 
 Ltagged_pointer_$0:
-	and	dil, 0xF
-	shr	dil, 1
+	and	dil, 0xE
 	movzx	r8, dil
 
 	mov	rax, [rip+_objc_tagged_pointer_classes]
-	mov	r8, [rax+r8*8]
+	mov	r8, [rax+r8*4]
 	mov	r8, [r8+64]
 
 	jmp	Lmain_$0
