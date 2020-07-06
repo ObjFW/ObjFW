@@ -29,7 +29,10 @@
 \name:
 	beqz	$a0, 0f
 
-	ld	$t0, 0($a0)
+	andi	$t0, $a0, 1
+	bnez	$t0, .Ltagged_pointer_\name
+
+	ld	$t0, ($a0)
 	ld	$t0, 64($t0)
 
 .Lmain_\name:
@@ -44,7 +47,7 @@
 	lbu	$t1, 2($a1)
 # endif
 	lbu	$t2, 1($a1)
-	lbu	$t3, 0($a1)
+	lbu	$t3, ($a1)
 #endif
 
 #ifdef OF_SELUID24
@@ -55,12 +58,12 @@
 
 #ifdef OF_SELUID24
 	daddu	$t0, $t0, $t1
-	ld	$t0, 0($t0)
+	ld	$t0, ($t0)
 #endif
 	daddu	$t0, $t0, $t2
-	ld	$t0, 0($t0)
+	ld	$t0, ($t0)
 	daddu	$t0, $t0, $t3
-	ld	$t0, 0($t0)
+	ld	$t0, ($t0)
 
 	beqz	$t0, 1f
 
@@ -80,6 +83,20 @@
 	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
 	ld	$t9, %got_disp(\not_found)($t0)
 	jr	$t9
+
+.Ltagged_pointer_\name:
+	and	$t0, $a0, 0xE
+	dsll	$t0, $t0, 2
+
+	lui	$t1, %hi(%neg(%gp_rel(\name)))
+	daddu	$t1, $t1, $t9
+	daddiu	$t1, $t1, %lo(%neg(%gp_rel(\name)))
+	ld	$t1, %got_disp(objc_tagged_pointer_classes)($t1)
+	daddu	$t0, $t1, $t0
+	ld	$t0, ($t0)
+	ld	$t0, 64($t0)
+
+	b	.Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -87,7 +104,7 @@
 .macro generate_lookup_super name lookup
 \name:
 	move	$t0, $a0
-	ld	$a0, 0($a0)
+	ld	$a0, ($a0)
 	beqz	$a0, 0f
 
 	ld	$t0, 8($t0)
