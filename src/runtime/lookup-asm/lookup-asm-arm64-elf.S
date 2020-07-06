@@ -30,7 +30,7 @@
 	cbz	x0, ret_nil
 
 	tst	x0, #1
-	bne	.Ltagged_pointer_\name
+	b.ne	.Ltagged_pointer_\name
 
 	ldr	x2, [x0]
 	ldr	x2, [x2, #64]
