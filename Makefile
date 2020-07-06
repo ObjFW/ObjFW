@@ -12,9 +12,15 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
+.PHONY: docs tarball
+
 utils tests: src
 
-tarball:
+docs:
+	rm -fr docs
+	doxygen >/dev/null
+
+tarball: docs
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz

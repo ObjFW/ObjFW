@@ -18,14 +18,20 @@
 #include "config.h"
 
 #include <errno.h>
+#include <math.h>
 
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #endif
 #include "unistd_wrapper.h"
 
+#import "platform.h"
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
+#endif
+#include <sys/time.h>
+#ifdef OF_WINDOWS
+# include <utime.h>
 #endif
 
 #ifdef HAVE_PWD_H
@@ -109,6 +115,7 @@ static OFMutex *readdirMutex;
 #endif
 
 #ifdef OF_WINDOWS
+static int (*func__wutime64)(const wchar_t *, struct __utimbuf64 *);
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
@@ -143,6 +150,50 @@ setErrno(void)
 	}
 
 	errno = 0;
+}
+#endif
+
+#ifdef OF_AMIGAOS
+static void
+setErrno(void)
+{
+	switch (IoErr()) {
+	case ERROR_DELETE_PROTECTED:
+	case ERROR_READ_PROTECTED:
+	case ERROR_WRITE_PROTECTED:
+		errno = EACCES;
+		break;
+	case ERROR_DISK_NOT_VALIDATED:
+	case ERROR_OBJECT_IN_USE:
+		errno = EBUSY;
+		break;
+	case ERROR_OBJECT_EXISTS:
+		errno = EEXIST;
+		break;
+	case ERROR_DIR_NOT_FOUND:
+	case ERROR_NO_MORE_ENTRIES:
+	case ERROR_OBJECT_NOT_FOUND:
+		errno = ENOENT;
+		break;
+	case ERROR_NO_FREE_STORE:
+		errno = ENOMEM;
+		break;
+	case ERROR_DISK_FULL:
+		errno = ENOSPC;
+		break;
+	case ERROR_DIRECTORY_NOT_EMPTY:
+		errno = ENOTEMPTY;
+		break;
+	case ERROR_DISK_WRITE_PROTECTED:
+		errno = EROFS;
+		break;
+	case ERROR_RENAME_ACROSS_DEVICES:
+		errno = EXDEV;
+		break;
+	default:
+		errno = 0;
+		break;
+	}
 }
 #endif
 
@@ -225,19 +276,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
 	    SHARED_LOCK)) == 0) {
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errno = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errno = ENOENT;
-			break;
-		default:
-			errno = 0;
-			break;
-		}
-
+		setErrno();
 		return -1;
 	}
 
@@ -513,6 +552,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 
 #ifdef OF_WINDOWS
+	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+		func__wutime64 = (int (*)(const wchar_t *,
+		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
+
 	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
 		func_CreateSymbolicLinkW =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
@@ -598,9 +641,123 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return ret;
 }
 
+- (void)of_setLastAccessDate: (OFDate *)lastAccessDate
+	 andModificationDate: (OFDate *)modificationDate
+		 ofItemAtURL: (OFURL *)URL
+		  attributes: (of_file_attributes_t)attributes OF_DIRECT
+{
+	OFString *path = URL.fileSystemRepresentation;
+	of_file_attribute_key_t attributeKey = (modificationDate != nil
+	    ? of_file_attribute_key_modification_date
+	    : of_file_attribute_key_last_access_date);
+
+	if (lastAccessDate == nil)
+		lastAccessDate = modificationDate;
+	if (modificationDate == nil)
+		modificationDate = lastAccessDate;
+
+#if defined(OF_WINDOWS)
+	if (func__wutime64 != NULL) {
+		struct __utimbuf64 times = {
+			.actime =
+			    (__time64_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (__time64_t)modificationDate.timeIntervalSince1970
+		};
+
+		if (func__wutime64([path UTF16String], &times) != 0)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: errno];
+	} else {
+		struct _utimbuf times = {
+			.actime = (time_t)lastAccessDate.timeIntervalSince1970,
+			.modtime =
+			    (time_t)modificationDate.timeIntervalSince1970
+		};
+		int status;
+
+		if ([OFSystemInfo isWindowsNT])
+			status = _wutime([path UTF16String], &times);
+		else
+			status = _utime(
+			    [path cStringWithEncoding: [OFLocale encoding]],
+			    &times);
+
+		if (status != 0)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithURL: URL
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: errno];
+	}
+#elif defined(OF_AMIGAOS)
+	/* AmigaOS does not support access time. */
+	of_time_interval_t modificationTime =
+	    modificationDate.timeIntervalSince1970;
+	struct Locale *locale;
+	struct DateStamp date;
+
+	modificationTime -= 252460800;	/* 1978-01-01 */
+
+	if (modificationTime < 0)
+		@throw [OFOutOfRangeException exception];
+
+	locale = OpenLocale(NULL);
+	/*
+	 * FIXME: This does not take DST into account. But unfortunately, there
+	 *	  is no way to figure out if DST should be in effect for the
+	 *	  timestamp.
+	 */
+	modificationTime -= locale->loc_GMTOffset * 60.0;
+	CloseLocale(locale);
+
+	date.ds_Days = modificationTime / 86400;
+	date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
+	date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
+
+	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
+	    &date) != 0) {
+		setErrno();
+
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errno];
+	}
+#else
+	of_time_interval_t lastAccessTime =
+	    lastAccessDate.timeIntervalSince1970;
+	of_time_interval_t modificationTime =
+	    modificationDate.timeIntervalSince1970;
+	struct timeval times[2] = {
+		{
+			.tv_sec = (time_t)lastAccessTime,
+			.tv_usec =
+			    (int)((lastAccessTime - times[0].tv_sec) * 1000)
+		},
+		{
+			.tv_sec = (time_t)modificationTime,
+			.tv_usec =
+			    (int)((modificationTime - times[1].tv_sec) * 1000)
+		},
+	};
+
+	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithURL: URL
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errno];
+#endif
+}
+
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
 		   ofItemAtURL: (OFURL *)URL
-		    attributes: (of_file_attributes_t)attributes
+		    attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	uint16_t mode = permissions.uInt16Value & 0777;
@@ -630,7 +787,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	   andGroup: (OFString *)group
 	ofItemAtURL: (OFURL *)URL
        attributeKey: (of_file_attribute_key_t)attributeKey
-	 attributes: (of_file_attributes_t)attributes
+	 attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 	OFString *path = URL.fileSystemRepresentation;
@@ -699,6 +856,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFEnumerator *objectEnumerator;
 	of_file_attribute_key_t key;
 	id object;
+	OFDate *lastAccessDate, *modificationDate;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -711,7 +869,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: of_file_attribute_key_posix_permissions])
+		if ([key isEqual: of_file_attribute_key_modification_date] ||
+		    [key isEqual: of_file_attribute_key_last_access_date])
+			continue;
+		else if ([key isEqual: of_file_attribute_key_posix_permissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtURL: URL
 					  attributes: attributes];
@@ -732,6 +893,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    exceptionWithSelector: _cmd
 					   object: self];
 	}
+
+	lastAccessDate = [attributes
+	    objectForKey: of_file_attribute_key_last_access_date];
+	modificationDate = [attributes
+	    objectForKey: of_file_attribute_key_modification_date];
+
+	if (lastAccessDate != nil || modificationDate != nil)
+		[self of_setLastAccessDate: lastAccessDate
+		       andModificationDate: modificationDate
+			       ofItemAtURL: URL
+				attributes: attributes];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -815,34 +987,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	if ((lock = CreateDir(
 	    [path cStringWithEncoding: [OFLocale encoding]])) == 0) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_NO_FREE_STORE:
-		case ERROR_DISK_FULL:
-			errNo = ENOSPC;
-			break;
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_EXISTS:
-			errNo = EEXIST;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
-			       errNo: errNo];
+			       errNo: errno];
 	}
 
 	UnLock(lock);
@@ -967,24 +1116,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	if ((lock = Lock([path cStringWithEncoding: encoding],
 	    SHARED_LOCK)) == 0) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
 							      mode: nil
-							     errNo: errNo];
+							     errNo: errno];
 	}
 
 	@try {
@@ -1203,29 +1339,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 #ifdef OF_AMIGAOS
 	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]])) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		case ERROR_DELETE_PROTECTED:
-			errNo = EACCES;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFRemoveItemFailedException exceptionWithURL: URL
-							       errNo: errNo];
+							       errNo: errno];
 	}
 #endif
 
@@ -1339,34 +1456,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	    cStringWithEncoding: encoding],
 	    [destination.fileSystemRepresentation
 	    cStringWithEncoding: encoding])) {
-		int errNo;
-
-		switch (IoErr()) {
-		case ERROR_RENAME_ACROSS_DEVICES:
-			errNo = EXDEV;
-			break;
-		case ERROR_OBJECT_IN_USE:
-		case ERROR_DISK_NOT_VALIDATED:
-			errNo = EBUSY;
-			break;
-		case ERROR_OBJECT_EXISTS:
-			errNo = EEXIST;
-			break;
-		case ERROR_OBJECT_NOT_FOUND:
-			errNo = ENOENT;
-			break;
-		case ERROR_DISK_WRITE_PROTECTED:
-			errNo = EROFS;
-			break;
-		default:
-			errNo = 0;
-			break;
-		}
+		setErrno();
 
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
-				     errNo: errNo];
+				     errNo: errno];
 	}
 #else
 	int status;

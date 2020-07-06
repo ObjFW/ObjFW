@@ -60,10 +60,10 @@ case "$host" in
 			AC_SUBST(SFDC_INLINE_H, inline.h)
 			dnl For 68000, GCC emits calls to helper functions that
 			dnl do not work properly in a library.
-			AC_SUBST(AMIGA_LIB_CFLAGS,
-				"-mcpu=68020 -fbaserel -ffreestanding")
+			t="-mcpu=68020 -fbaserel -noixemul"
+			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
 			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"-mcpu=68020 -fbaserel -resident -nostartfiles")
+				"$t -resident -nostartfiles")
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)
@@ -91,10 +91,10 @@ case "$host" in
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
 				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
 				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
-				t="-mresident32 -ffreestanding"
+				t="-mresident32 -ffreestanding -noixemul"
 				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 				t="-mresident32 -nostartfiles -nodefaultlibs"
-				t="$t -lc"
+				t="$t -noixemul -lc"
 				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 			])
 
@@ -251,6 +251,14 @@ case "$OBJC" in
 				flag="-integrated-as"
 				OBJCFLAGS="$OBJCFLAGS $flag"
 				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+				;;
+			dnl Don't use -no-integrated-as on Darwin. It breaks
+			dnl building for the iOS simulator.
+			i?86-*-darwin* | x86_64-*-darwin*)
+				;;
+			dnl Many older Clang versions don't support jmp short.
+			i?86-*-* | x86_64-*-*)
+				ASFLAGS="$ASFLAGS -no-integrated-as"
 				;;
 			dnl Clang's assembler on Windows is not complete yet
 			dnl and cannot compile all .S files.
@@ -599,13 +607,14 @@ case "$objc_runtime" in
 			AC_MSG_ERROR([Exceptions not accepted by compiler!])
 		])
 
-		AC_CHECK_FUNC($raise_exception, [], [
-			AC_CHECK_LIB(c++, $raise_exception, [
-				LIBS="-lc++ -lc++abi -lpthread $LIBS"
-			], [
-				AC_MSG_ERROR([_Unwind_RaiseException missing!])
-			], [-lc++abi -lpthread])
-		])
+		AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc], [
+			dnl c++abi requires pthread on OpenBSD
+			AS_IF([test x"$ac_lib" = x"c++abi"], [
+				LIBS="$LIBS -lpthread"
+			])
+		], [
+			AC_MSG_ERROR([$raise_exception missing!])
+		], [-lpthread])
 
 		AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
 		;;

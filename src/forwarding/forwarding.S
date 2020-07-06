@@ -47,6 +47,8 @@
 #   include "forwarding-mips-elf.S"
 #  elif defined(OF_SPARC64)
 #   include "forwarding-sparc64-elf.S"
+#  elif defined(OF_SPARC)
+#   include "forwarding-sparc-elf.S"
 #  endif
 # elif defined(OF_MACH_O)
 #  if defined(OF_X86_64)

@@ -19,171 +19,161 @@
 
 #include "platform.h"
 
+.intel_syntax noprefix
+
 .globl of_forward
 .globl of_forward_stret
 
 .section .text
 of_forward:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
 	call	get_eip
+	add	ebx, offset _GLOBAL_OFFSET_TABLE_
+
+	mov	eax, [ebp+8]
+	mov	[esp], eax
+	call	object_getClass@PLT
+
+	mov	[esp], eax
+	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], eax
+	call	class_respondsToSelector@PLT
+
+	test	eax, eax
+	jz	short 0f
+
+	mov	eax, [ebp+8]
+	mov	[esp], eax
+	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], eax
+	call	objc_msg_lookup@PLT
+
+	mov	edx, [ebp+8]
+	mov	[esp], edx
+	lea	edx, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], edx
+	mov	edx, [ebp+12]
+	mov	[esp+8], edx
+	call	eax
+
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp+8]
+	je	short 0f
+
+	mov	[ebp+8], eax
+	mov	[esp], eax
+	mov	eax, [ebp+12]
+	mov	[esp+4], eax
+	call	objc_msg_lookup@PLT
+
+	add	esp, 20
+	pop	ebx
+	pop	ebp
+
+	jmp	eax
+
 0:
-	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
+	lea	eax, [ebx+of_method_not_found@GOTOFF]
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	object_getClass@GOT(%ebx), %eax
-	call	*%eax
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	class_respondsToSelector@GOT(%ebx), %eax
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	objc_msg_lookup@GOT(%ebx), %eax
-	call	*%eax
-
-	movl	8(%ebp), %edx
-	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
-	movl	%edx, 4(%esp)
-	movl	12(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-	cmpl	8(%ebp), %eax
-	je	1f
-
-	movl	%eax, 8(%ebp)
-	movl	%eax, (%esp)
-	movl	12(%ebp), %eax
-	movl	%eax, 4(%esp)
-	movl	objc_msg_lookup@GOT(%ebx), %eax
-	call	*%eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
-
-1:
-	movl	of_method_not_found@GOT(%ebx), %eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
+	jmp	eax
 .type of_forward, %function
 .size of_forward, .-of_forward
 
 of_forward_stret:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
 	call	get_eip
+	add	ebx, offset _GLOBAL_OFFSET_TABLE_
+
+	mov	eax, [ebp+12]
+	mov	[esp], eax
+	call	object_getClass@PLT
+
+	mov	[esp], eax
+	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], eax
+	call	class_respondsToSelector@PLT
+
+	test	eax, eax
+	jz	short 0f
+
+	mov	eax, [ebp+12]
+	mov	[esp], eax
+	lea	eax, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], eax
+	call	objc_msg_lookup@PLT
+
+	mov	edx, [ebp+12]
+	mov	[esp], edx
+	lea	edx, [ebx+sel_forwardingTargetForSelector_@GOTOFF]
+	mov	[esp+4], edx
+	mov	edx, [ebp+16]
+	mov	[esp+8], edx
+	call	eax
+
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp+12]
+	je	short 0f
+
+	mov	[ebp+12], eax
+	mov	[esp], eax
+	mov	eax, [ebp+16]
+	mov	[esp+4], eax
+	call	objc_msg_lookup_stret@PLT
+
+	add	esp, 20
+	pop	ebx
+	pop	ebp
+
+	jmp	eax
+
 0:
-	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
+	lea	eax, [ebx+of_method_not_found_stret@GOTOFF]
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	object_getClass@GOT(%ebx), %eax
-	call	*%eax
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	class_respondsToSelector@GOT(%ebx), %eax
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	objc_msg_lookup@GOT(%ebx), %eax
-	call	*%eax
-
-	movl	12(%ebp), %edx
-	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
-	movl	%edx, 4(%esp)
-	movl	16(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
-
-	testl	%eax, %eax
-	jz	1f
-	cmpl	12(%ebp), %eax
-	je	1f
-
-	movl	%eax, 12(%ebp)
-	movl	%eax, (%esp)
-	movl	16(%ebp), %eax
-	movl	%eax, 4(%esp)
-	movl	objc_msg_lookup_stret@GOT(%ebx), %eax
-	call	*%eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
-
-1:
-	movl	of_method_not_found_stret@GOT(%ebx), %eax
-
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
-
-	jmp	*%eax
+	jmp	eax
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret
 
 init:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$4, %esp
+	push	ebx
+	sub	esp, 4
 
 	call	get_eip
-0:
-	add	$_GLOBAL_OFFSET_TABLE_, %ebx
+	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
-	leal	module@GOTOFF(%ebx), %eax
-	movl	%eax, (%esp)
-	movl	__objc_exec_class@GOT(%ebx), %eax
-	call	*%eax
+	lea	eax, [ebx+module@GOTOFF]
+	mov	[esp], eax
+	call	__objc_exec_class@PLT
 
-	addl	$4, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 4
+	pop	ebx
+	pop	ebp
 	ret
 
 get_eip:
-	movl	(%esp), %ebx
+	mov	ebx, [esp]
 	ret
 
 #ifdef OF_SOLARIS

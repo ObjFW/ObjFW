@@ -215,10 +215,9 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 	if (of_stdout.hasTerminal) {
-		of_stdout.cursorColumn = 0;
 		of_stdout.foregroundColor = [OFColor lime];
 		[of_stdout eraseLine];
-		[of_stdout writeFormat: @"[%@] %@: ok\n", module, test];
+		[of_stdout writeFormat: @"\r[%@] %@: ok\n", module, test];
 	} else
 		[of_stdout writeLine: @"ok"];
 }
@@ -227,10 +226,9 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 	if (of_stdout.hasTerminal) {
-		of_stdout.cursorColumn = 0;
 		of_stdout.foregroundColor = [OFColor red];
 		[of_stdout eraseLine];
-		[of_stdout writeFormat: @"[%@] %@: failed\n", module, test];
+		[of_stdout writeFormat: @"\r[%@] %@: failed\n", module, test];
 
 #ifdef OF_WII
 		[of_stdout reset];
@@ -287,7 +285,7 @@ main(int argc, char *argv[])
 		}
 #endif
 
-		of_stdout.cursorColumn = 0;
+		[of_stdout writeString: @"\r"];
 		[of_stdout reset];
 		[of_stdout eraseLine];
 	} else

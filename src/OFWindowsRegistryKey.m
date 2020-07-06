@@ -34,6 +34,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFSetWindowsRegistryValueFailedException.h"
 
+OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
 - (instancetype)of_initWithHKey: (HKEY)hKey
 			  close: (bool)close;

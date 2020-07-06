@@ -45,6 +45,7 @@
 - (void)of_closeSocket;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFSPXStreamSocketAsyncConnectDelegate: OFObject
     <OFRunLoopConnectDelegate>
 {

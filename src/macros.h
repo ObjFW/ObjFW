@@ -309,6 +309,17 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
+#if __has_attribute(__objc_direct__) && defined(OF_APPLE_RUNTIME)
+# define OF_DIRECT __attribute__((__objc_direct__))
+#else
+# define OF_DIRECT
+#endif
+#if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
+# define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
+#else
+# define OF_DIRECT_MEMBERS
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM
@@ -355,7 +366,7 @@
 # if defined(OF_ELF)
 #  if defined(OF_X86_64) || defined(OF_X86) || \
     defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
-    defined(OF_MIPS) || defined(OF_SPARC64)
+    defined(OF_MIPS) || defined(OF_SPARC64) || defined(OF_SPARC)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET

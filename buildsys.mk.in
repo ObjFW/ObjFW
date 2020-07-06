@@ -3,7 +3,7 @@
 #                2017, 2018, 2020
 #    Jonathan Schleifer <js@nil.im>
 #
-#  https://git.nil.im/buildsys.git
+#  https://fossil.nil.im/buildsys
 #
 #  Permission to use, copy, modify, and/or distribute this software for any
 #  purpose with or without fee is hereby granted, provided that the above
@@ -216,7 +216,7 @@ copy-headers-into-framework:
 
 ${AMIGA_LIB} ${AMIGA_LIB_NOINST}: ${EXT_DEPS} ${AMIGA_LIB_OBJS_START} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${AMIGA_LIB_OBJS_START} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${AMIGA_LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${AMIGA_LIB_OBJS_START} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${AMIGA_LIB_LDFLAGS} ${AMIGA_LIB_LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \

@@ -1,14 +1,19 @@
-ObjFW is a portable, lightweight framework for the Objective C language. It
-enables you to write an application in Objective C that will run on any
-platform supported by ObjFW without having to worry about differences between
-operating systems or various frameworks that you would otherwise need if you
-want to be portable.
+There are three ways you are probably reading this right now:
 
-See https://objfw.nil.im/ for more information.
+ * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil
+ * On [GitHub](https://github.com/ObjFW/ObjFW)
+ * Via an editor or pager, by opening `README.md` from a checkout or tarball
+
+ObjFW is developed using Fossil, so if you are reading this on GitHub or any
+other place, you are most likely using a mirror.
 
 
 <h1 id="table-of-contents">Table of Contents</h1>
 
+ * [What is ObjFW?](#what)
+ * [License](#license)
+ * [Releases](#releases)
+ * [Cloning the repository](#cloning)
  * [Installation](#installation)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
@@ -25,8 +30,102 @@ See https://objfw.nil.im/ for more information.
      * [Wii](#wii)
    * [Amiga](#amiga)
  * [Writing your first application with ObjFW](#first-app)
+ * [Documentation](#documentation)
  * [Bugs and feature requests](#bugs)
+ * [Support and community](#support)
  * [Commercial use](#commercial-use)
+
+
+<h1 id="what">What is ObjFW?</h1>
+
+  ObjFW is a portable, lightweight framework for the Objective-C language. It
+  enables you to write an application in Objective-C that will run on any
+  [platform](PLATFORMS.md) supported by ObjFW without having to worry about
+  differences between operating systems or various frameworks you would
+  otherwise need if you want to be portable.
+
+  It supports all modern Objective-C features when using Clang, but is also
+  compatible with GCC ≥ 4.6 to allow maximum portability.
+
+  ObjFW is intentionally incompatible with Foundation. This has two reasons:
+
+   * GNUstep already provides a reimplementation of Foundation, which is only
+     compatible to a certain degree. This means that a developer still needs to
+     care about differences between frameworks if they want to be portable. The
+     idea behind ObjFW is that a developer does not need to concern themselves
+     with portablility and making sure their code works with multiple
+     frameworks: Instead, if it works it ObjFW on one platform, they can
+     reasonably expect it to also work with ObjFW on another platform. ObjFW
+     behaving differently on different operating systems (unless inevitable
+     because it is a platform-specific part, like the Windows Registry) is
+     considered a bug and will be fixed.
+   * Foundation predates a lot of modern Objective-C concepts. The most
+     prominent one is exceptions, which are only used in Foundation as a
+     replacement for `abort()`. This results in cumbersome error handling,
+     especially in initializers, which in Foundation only return `nil` on error
+     with no indication of what went wrong. It also means that the return of
+     every `init` call needs to be checked against `nil`. But in the wild,
+     nobody actually checks *each and every* return from `init` against `nil`,
+     leading to bugs. ObjFW fixes this by making exceptions a first class
+     citizen.
+
+  ObjFW also comes with its own lightweight and extremely fast Objective-C
+  runtime, which in real world use cases was found to be significantly faster
+  than both GNU's and Apple's runtime.
+
+
+<h1 id="license">License</h1>
+
+  ObjFW is released under three licenses:
+
+   * [QPL](LICENSE.QPL)
+   * [GPLv2](LICENSE.GPLv2)
+   * [GPLv3](LICENSE.GPLv3)
+
+  The QPL allows you to use ObjFW in any open source project. Because the GPL
+  does not allow using code under any other license, ObjFW is also available
+  under the GPLv2 and GPLv3 to allow GPL-licensed projects to use ObjFW.
+
+  You can pick under which of those three licenses you want to use ObjFW. If
+  none of them work for you, contact me and we can find a solution.
+
+
+<h1 id="releases">Releases</h1>
+
+  Releases of ObjFW, as well as changelogs and the accompanying documentation
+  can be found [here](https://objfw.nil.im/wiki?name=Releases).
+
+
+<h1 id="cloning">Cloning the repository</h1>
+
+  ObjFW is developed in a [Fossil](https://fossil-scm.org) repository, with
+  automatic incremental exports to Git. This means you can either clone the
+  Fossil repository or the Git repository - it does not make a huge difference.
+  The main advantage of cloning the Fossil repository over cloning the Git
+  repository is that you also get all the tickets, wiki pages, etc.
+
+<h2 id="cloning-fossil">Fossil</h2>
+
+  Clone the Fossil repository like this:
+
+    $ fossil clone https://objfw.nil.im objfw.fossil
+    $ mkdir objfw && cd objfw
+    $ fossil open ../objfw.fossil
+
+  You can then use Fossil's web interface to browse the timeline, tickets,
+  wiki pages, etc.:
+
+    $ fossil ui
+
+  It's also possible to open the same local repository multiple times, so that
+  you have multiple working directories all backed by the same local
+  repository.
+
+<h2 id="cloning-git">Git</h2>
+
+  To clone the Git repository, use the following:
+
+    $ git clone https://github.com/ObjFW/ObjFW
 
 
 <h1 id="installation">Installation</h1>
@@ -144,9 +243,9 @@ See https://objfw.nil.im/ for more information.
     $ pacman -S mingw-w64-x86_64-clang mingw-w64-x86_64-gcc-objc
 
   There is nothing wrong with installing them both, as MSYS2 has created two
-  entries in your start menu: `MinGW-w64 Win32 Shell` and `MinGW-w64 Win64
-  Shell`. So if you want to build for 32 or 64 bit, you just start the correct
-  shell.
+  entries in your start menu: `MinGW-w64 Win32 Shell` and
+  `MinGW-w64 Win64 Shell`. So if you want to build for 32 or 64 bit, you just
+  start the correct shell.
 
   Finally, install a few more things needed to build ObjFW:
 
@@ -222,10 +321,39 @@ See https://objfw.nil.im/ for more information.
   your own build system, you can get the necessary flags from `objfw-config`.
 
 
+<h1 id="documentation">Documentation</h1>
+
+  You can find the documentation for released versions of ObjFW
+  [here](https://objfw.nil.im/docs/).
+
+  In order to build the documentation yourself (necessary to have documentation
+  for trunk / master), you need to have [Doxygen](https://www.doxygen.nl)
+  installed. Once installed, you can build the documentation from the root
+  directory of the repository:
+
+    $ doxygen >/dev/null
+
+
 <h1 id="bugs">Bugs and feature requests</h1>
 
-  If you find any bugs or have feature requests, feel free to send a mail to
-  js@nil.im!
+  If you find any bugs or have feature requests, please
+  [file a new bug](https://objfw.nil.im/tktnew) in the
+  [bug tracker](https://objfw.nil.im/reportlist).
+
+  Alternatively, feel free to send a mail to js@nil.im!
+
+
+<h1 id="support">Support and community</h1>
+
+  If you have any questions about ObjFW or would like to talk to other ObjFW
+  users, the following venues are available:
+
+   * The [forum](https://objfw.nil.im/forum)
+   * A [Matrix](https://matrix.to/#/%23objfw:nil.im) room
+   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`),
+     bridged to the Matrix room above
+
+  Please don't hesitate to join any or all of those!
 
 
 <h1 id="commercial-use">Commercial use</h1>

@@ -122,7 +122,7 @@ unescapeString(OFString *string)
 @implementation OFINICategory
 @synthesize name = _name;
 
-- (instancetype)of_initWithName: (OFString *)name
+- (instancetype)of_initWithName: (OFString *)name OF_DIRECT
 {
 	self = [super init];
 

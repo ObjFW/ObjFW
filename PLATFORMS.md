@@ -79,9 +79,10 @@ iOS
 Linux
 -----
 
-  * Architectures: Alpha, ARMv6, ARM64, Itanium, m68k, MIPS (O32), RISC-V 64,
-		   PowerPC, S390x, SH4, x86, x86_64
-  * Compilers: Clang 3.0-9.0, GCC 4.6-8.2
+  * Architectures: Alpha, ARMv6, ARMv7, ARM64, Itanium, m68k, MIPS (O32),
+                   MIPS64 (N64), RISC-V 64, PowerPC, S390x, SuperH-4, x86,
+                   x86_64
+  * Compilers: Clang 3.0-10.0, GCC 4.6-10.0
   * Runtimes: ObjFW
 
 
@@ -89,8 +90,8 @@ macOS
 -----
 
   * OS Versions: 10.5, 10.7-10.14, Darling
-  * Architectures: PowerPC, PowerPC 64, x86, x86_64
-  * Compilers: Clang 3.1-7.0, GCC 4.2.1
+  * Architectures: PowerPC, PowerPC64, x86, x86_64
+  * Compilers: Clang 3.1-10.0, GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
 
@@ -107,8 +108,9 @@ MorphOS
 NetBSD
 ------
 
-  * OS Versions: 5.1-7.99
-  * Architectures: ARM, ARM (big endian, BE8 mode), SPARC, SPARC64, x86, x86_64
+  * OS Versions: 5.1-9.0
+  * Architectures: ARM, ARM (big endian, BE8 mode), MIPS (O32), SPARC, SPARC64,
+                   x86, x86_64
   * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3
   * Runtimes: ObjFW
 
@@ -136,7 +138,7 @@ Nintendo DS
 OpenBSD
 -------
 
-  * OS Versions: 5.2-6.5
+  * OS Versions: 5.2-6.7
   * Architectures: MIPS64, PA-RISC, PowerPC, SPARC64, x86_64
   * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
@@ -183,9 +185,12 @@ Wii
 Windows
 -------
 
-  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, Wine (x86 & x64)
+  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10,
+                 Wine (x86 & x64)
   * Architectures: x86, x86_64
-  * Compilers: GCC 6.2.0 from msys2 (x86 and x64), Clang 3.9.0 from msys2 (x86)
+  * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),
+               Clang 3.9.0 from msys2 (x86),
+               Clang 10.0 from msys2 (x86 & x86_64)
   * Runtimes: ObjFW
 
 
@@ -213,6 +218,7 @@ resolveInstanceMethod:, which are always available):
   * ARM64 (ARM64/ELF, Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
   * PowerPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
+  * SPARC (SysV/ELF)
   * SPARC64 (SysV/ELF)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
   * x86_64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)

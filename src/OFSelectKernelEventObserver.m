@@ -228,8 +228,9 @@
 #endif
 
 	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveFailedException
+		    exceptionWithObserver: self
+				    errNo: of_socket_errno()];
 
 #ifdef OF_AMIGAOS
 	if (execSignalMask != 0 &&

@@ -44,9 +44,14 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
+#ifdef OF_IOS
+# undef HAVE_ISATTY
+#endif
+
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef HAVE_ISATTY
 #endif
 
 /* References for static linking */
@@ -98,7 +103,7 @@ of_log(OFConstantString *format, ...)
 	objc_autoreleasePoolPop(pool);
 }
 
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 static int
 colorToANSI(OFColor *color)
 {
@@ -388,7 +393,7 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	return isatty(_fd);
 #else
 	return false;
@@ -425,7 +430,7 @@ colorToANSI(OFColor *color)
 
 - (void)setForegroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	int code;
 
 	if (!isatty(_fd))
@@ -440,7 +445,7 @@ colorToANSI(OFColor *color)
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	int code;
 
 	if (!isatty(_fd))
@@ -455,7 +460,7 @@ colorToANSI(OFColor *color)
 
 - (void)reset
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
@@ -465,7 +470,7 @@ colorToANSI(OFColor *color)
 
 - (void)clear
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
@@ -475,7 +480,7 @@ colorToANSI(OFColor *color)
 
 - (void)eraseLine
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
@@ -485,7 +490,7 @@ colorToANSI(OFColor *color)
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
@@ -498,7 +503,7 @@ colorToANSI(OFColor *color)
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
 
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 
@@ -509,7 +514,7 @@ colorToANSI(OFColor *color)
 
 - (void)setRelativeCursorPosition: (of_point_t)position
 {
-#if defined(HAVE_ISATTY) && !defined(OF_AMIGAOS)
+#ifdef HAVE_ISATTY
 	if (!isatty(_fd))
 		return;
 

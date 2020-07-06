@@ -20,6 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_THREADS
+OF_DIRECT_MEMBERS
 @interface OFThread ()
 + (void)of_createMainThread;
 @end

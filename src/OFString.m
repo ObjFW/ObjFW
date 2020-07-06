@@ -88,9 +88,9 @@ static locale_t cLocale;
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
-		  lossy: (bool)lossy;
+		  lossy: (bool)lossy OF_DIRECT;
 - (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
-				 lossy: (bool)lossy;
+				 lossy: (bool)lossy OF_DIRECT;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
@@ -376,7 +376,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 {
-	id string;
+	OFUTF8String *string;
 	size_t length;
 	void *storage;
 
@@ -391,7 +391,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 			    length: (size_t)UTF8StringLength
 {
-	id string;
+	OFUTF8String *string;
 	void *storage;
 
 	string = of_alloc_object([OFUTF8String class], UTF8StringLength + 1, 1,
@@ -424,7 +424,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		       encoding: (of_string_encoding_t)encoding
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8) {
-		id string;
+		OFUTF8String *string;
 		size_t length;
 		void *storage;
 
@@ -446,7 +446,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			 length: (size_t)cStringLength
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8) {
-		id string;
+		OFUTF8String *string;
 		void *storage;
 
 		string = of_alloc_object([OFUTF8String class],

@@ -72,6 +72,7 @@ extern char **environ;
 # undef asm
 #endif
 
+OF_DIRECT_MEMBERS
 @interface OFApplication ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 - (void)of_setArgumentCount: (int *)argc

@@ -57,6 +57,7 @@
 @interface OFHTTPServer () <OFTCPSocketDelegate>
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
 {
 	OFStreamSocket *_socket;
@@ -70,6 +71,7 @@
 		       request: (OFHTTPRequest *)request;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPServerConnection: OFObject <OFTCPSocketDelegate>
 {
 @public
@@ -98,6 +100,7 @@
 - (void)createResponse;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
 {
 	OFStreamSocket *_socket;
@@ -112,6 +115,7 @@
 @end
 
 #ifdef OF_HAVE_THREADS
+OF_DIRECT_MEMBERS
 @interface OFHTTPServerThread: OFThread
 - (void)stop;
 @end

@@ -57,6 +57,22 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 #endif
 }
 
+static void
+setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
+{
+	OFDate *modificationDate = entry.modificationDate;
+	of_file_attributes_t attributes;
+
+	if (modificationDate == nil)
+		return;
+
+	attributes = [OFDictionary
+	    dictionaryWithObject: modificationDate
+			  forKey: of_file_attribute_key_modification_date];
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
+}
+
 @implementation ZIPArchive
 + (void)initialize
 {
@@ -262,6 +278,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
+			setModificationDate(outFileName, entry);
 
 			if (app->_outputLevel >= 0) {
 				[of_stdout writeString: @"\r"];
@@ -317,6 +334,9 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 				    @"percent", percentString)];
 			}
 		}
+
+		[output close];
+		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
 			[of_stdout writeString: @"\r"];
