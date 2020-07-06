@@ -31,7 +31,7 @@
 int _OFData_CryptoHashing_reference;
 
 @implementation OFData (CryptoHashing)
-- (OFString *)of_cryptoHashWithClass: (Class <OFCryptoHash>)class
+- (OFString *)of_cryptoHashWithClass: (Class <OFCryptoHash>)class OF_DIRECT
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFCryptoHash> hash =

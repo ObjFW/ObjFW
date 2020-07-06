@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
+OF_DIRECT_MEMBERS
 @interface OFINICategory ()
 - (instancetype)of_initWithName: (OFString *)name OF_METHOD_FAMILY(init);
 - (void)of_parseLine: (OFString *)line;

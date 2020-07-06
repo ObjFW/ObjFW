@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFUDPSocket ()
 - (uint16_t)of_bindToAddress: (of_socket_address_t *)address
 		   extraType: (int)extraType;

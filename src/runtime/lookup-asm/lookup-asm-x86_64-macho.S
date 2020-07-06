@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+.intel_syntax noprefix
+
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
@@ -25,25 +27,25 @@
 .section __TEXT, __text, regular, pure_instructions
 .macro generate_lookup
 $0:
-	testq	%rdi, %rdi
+	test	rdi, rdi
 	jz	ret_nil
 
-	movq	(%rdi), %r8
-	movq	64(%r8), %r8
+	mov	r8, [rdi]
+	mov	r8, [r8+64]
 
 Lmain_$0:
-	movq	(%rsi), %rax
-	movzbl	%ah, %ecx
-	movzbl	%al, %edx
+	mov	rax, [rsi]
+	movzx	ecx, ah
+	movzx	edx, al
 #ifdef OF_SELUID24
-	shrl	$$16, %eax
+	shr	eax, 16
 
-	movq	(%r8,%rax,8), %r8
+	mov	r8, [r8+rax*8]
 #endif
-	movq	(%r8,%rcx,8), %r8
-	movq	(%r8,%rdx,8), %rax
+	mov	r8, [r8+rcx*8]
+	mov	rax, [r8+rdx*8]
 
-	testq	%rax, %rax
+	test	rax, rax
 	jz	$1
 
 	ret
@@ -51,13 +53,13 @@ Lmain_$0:
 
 .macro generate_lookup_super
 $0:
-	movq	%rdi, %r8
-	movq	(%rdi), %rdi
-	testq	%rdi, %rdi
+	mov	r8, rdi
+	mov	rdi, [rdi]
+	test	rdi, rdi
 	jz	ret_nil
 
-	movq	8(%r8), %r8
-	movq	64(%r8), %r8
+	mov	r8, [r8+8]
+	mov	r8, [r8+64]
 	jmp	Lmain_$1
 .endmacro
 
@@ -67,9 +69,9 @@ generate_lookup_super _objc_msg_lookup_super, _objc_msg_lookup
 generate_lookup_super _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 
 ret_nil:
-	leaq	nil_method(%rip), %rax
+	lea	rax, [rip+nil_method]
 	ret
 
 nil_method:
-	movq	%rdi, %rax
+	mov	rax, rdi
 	ret

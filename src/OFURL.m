@@ -87,6 +87,7 @@ initURLQueryOrFragmentAllowedCharacterSet(void)
 	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] init];
 }
 
+OF_DIRECT_MEMBERS
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;

@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFUTF8String ()
 - (instancetype)of_initWithUTF8String: (const char *)UTF8String
 			       length: (size_t)UTF8StringLength

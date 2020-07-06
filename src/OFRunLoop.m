@@ -78,6 +78,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFRunLoop ()
 - (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
 			     create: (bool)create;

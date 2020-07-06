@@ -70,6 +70,8 @@
 #endif
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
+# import "OFDatagramSocket.h"
+# import "OFSequencedPacketSocket.h"
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
@@ -263,6 +265,7 @@
 #import "once.h"
 #ifdef OF_HAVE_THREADS
 # import "thread.h"
+# import "tlskey.h"
 # import "mutex.h"
 # import "condition.h"
 # import "OFThreadPool.h"

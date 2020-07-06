@@ -39,7 +39,7 @@
 @dynamic delegate;
 
 - (uint16_t)of_bindToAddress: (of_socket_address_t *)address
-		   extraType: (int)extraType
+		   extraType: (int)extraType OF_DIRECT
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *host;

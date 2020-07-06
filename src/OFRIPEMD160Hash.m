@@ -28,6 +28,7 @@
 #define DIGEST_SIZE 20
 #define BLOCK_SIZE 64
 
+OF_DIRECT_MEMBERS
 @interface OFRIPEMD160Hash ()
 - (void)of_resetState;
 @end

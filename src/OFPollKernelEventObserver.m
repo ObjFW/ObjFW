@@ -71,7 +71,7 @@
 
 - (void)of_addObject: (id)object
       fileDescriptor: (int)fd
-	      events: (short)events
+	      events: (short)events OF_DIRECT
 {
 	struct pollfd *FDs;
 	size_t count;
@@ -110,7 +110,7 @@
 
 - (void)of_removeObject: (id)object
 	 fileDescriptor: (int)fd
-		 events: (short)events
+		 events: (short)events OF_DIRECT
 {
 	struct pollfd *FDs;
 	size_t nFDs;

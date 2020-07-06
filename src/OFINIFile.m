@@ -29,6 +29,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
+OF_DIRECT_MEMBERS
 @interface OFINIFile ()
 - (void)of_parseFile: (OFString *)path
 	    encoding: (of_string_encoding_t)encoding;

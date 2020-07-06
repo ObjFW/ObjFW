@@ -28,6 +28,7 @@
 #define DIGEST_SIZE 16
 #define BLOCK_SIZE 64
 
+OF_DIRECT_MEMBERS
 @interface OFMD5Hash ()
 - (void)of_resetState;
 @end

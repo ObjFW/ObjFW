@@ -34,6 +34,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
+OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFTarArchiveEntry *_entry;
@@ -47,6 +48,7 @@
 - (void)of_skip;
 @end
 
+OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFTarArchiveEntry *_entry;

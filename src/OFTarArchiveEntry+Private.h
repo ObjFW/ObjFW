@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
+OF_DIRECT_MEMBERS
 @interface OFTarArchiveEntry ()
 - (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
 			 encoding: (of_string_encoding_t)encoding

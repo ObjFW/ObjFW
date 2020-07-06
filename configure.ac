@@ -255,6 +255,14 @@ case "$OBJC" in
 				OBJCFLAGS="$OBJCFLAGS $flag"
 				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 				;;
+			dnl Don't use -no-integrated-as on Darwin. It breaks
+			dnl building for the iOS simulator.
+			i?86-*-darwin* | x86_64-*-darwin*)
+				;;
+			dnl Many older Clang versions don't support jmp short.
+			i?86-*-* | x86_64-*-*)
+				ASFLAGS="$ASFLAGS -no-integrated-as"
+				;;
 			dnl Clang's assembler on Windows is not complete yet
 			dnl and cannot compile all .S files.
 			*-*-mingw*)

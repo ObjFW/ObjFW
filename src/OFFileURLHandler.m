@@ -644,7 +644,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (void)of_setLastAccessDate: (OFDate *)lastAccessDate
 	 andModificationDate: (OFDate *)modificationDate
 		 ofItemAtURL: (OFURL *)URL
-		  attributes: (of_file_attributes_t)attributes
+		  attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 	OFString *path = URL.fileSystemRepresentation;
 	of_file_attribute_key_t attributeKey = (modificationDate != nil
@@ -757,7 +757,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
 		   ofItemAtURL: (OFURL *)URL
-		    attributes: (of_file_attributes_t)attributes
+		    attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	uint16_t mode = permissions.uInt16Value & 0777;
@@ -787,7 +787,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	   andGroup: (OFString *)group
 	ofItemAtURL: (OFURL *)URL
        attributeKey: (of_file_attribute_key_t)attributeKey
-	 attributes: (of_file_attributes_t)attributes
+	 attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 	OFString *path = URL.fileSystemRepresentation;

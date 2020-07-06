@@ -92,7 +92,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 - (void)of_addObject: (id)object
       fileDescriptor: (int)fd
-	      events: (int)addEvents
+	      events: (int)addEvents OF_DIRECT
 {
 	struct epoll_event event;
 	intptr_t events;
@@ -115,7 +115,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 - (void)of_removeObject: (id)object
 	 fileDescriptor: (int)fd
-		 events: (int)removeEvents
+		 events: (int)removeEvents OF_DIRECT
 {
 	intptr_t events;
 

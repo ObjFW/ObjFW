@@ -41,32 +41,55 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnboundPrefixException.h"
 
-typedef void (*state_function_t)(id, SEL);
-static SEL selectors[OF_XMLPARSER_NUM_STATES];
-static state_function_t lookupTable[OF_XMLPARSER_NUM_STATES];
-
 @interface OFXMLParser () <OFStringXMLUnescapingDelegate>
-- (void)of_inByteOrderMarkState;
-- (void)of_outsideTagState;
-- (void)of_tagOpenedState;
-- (void)of_inProcessingInstructionsState;
-- (void)of_inTagNameState;
-- (void)of_inCloseTagNameState;
-- (void)of_inTagState;
-- (void)of_inAttributeNameState;
-- (void)of_expectAttributeEqualSignState;
-- (void)of_expectAttributeDelimiterState;
-- (void)of_inAttributeValueState;
-- (void)of_expectTagCloseState;
-- (void)of_expectSpaceOrTagCloseState;
-- (void)of_inExclamationMarkState;
-- (void)of_inCDATAOpeningState;
-- (void)of_inCDATAState;
-- (void)of_inCommentOpeningState;
-- (void)of_inCommentState1;
-- (void)of_inCommentState2;
-- (void)of_inDOCTYPEState;
 @end
+
+static void inByteOrderMarkState(OFXMLParser *);
+static void outsideTagState(OFXMLParser *);
+static void tagOpenedState(OFXMLParser *);
+static void inProcessingInstructionsState(OFXMLParser *);
+static void inTagNameState(OFXMLParser *);
+static void inCloseTagNameState(OFXMLParser *);
+static void inTagState(OFXMLParser *);
+static void inAttributeNameState(OFXMLParser *);
+static void expectAttributeEqualSignState(OFXMLParser *);
+static void expectAttributeDelimiterState(OFXMLParser *);
+static void inAttributeValueState(OFXMLParser *);
+static void expectTagCloseState(OFXMLParser *);
+static void expectSpaceOrTagCloseState(OFXMLParser *);
+static void inExclamationMarkState(OFXMLParser *);
+static void inCDATAOpeningState(OFXMLParser *);
+static void inCDATAState(OFXMLParser *);
+static void inCommentOpeningState(OFXMLParser *);
+static void inCommentState1(OFXMLParser *);
+static void inCommentState2(OFXMLParser *);
+static void inDOCTYPEState(OFXMLParser *);
+typedef void (*state_function_t)(OFXMLParser *);
+static state_function_t lookupTable[] = {
+	[OF_XMLPARSER_IN_BYTE_ORDER_MARK] = inByteOrderMarkState,
+	[OF_XMLPARSER_OUTSIDE_TAG] = outsideTagState,
+	[OF_XMLPARSER_TAG_OPENED] = tagOpenedState,
+	[OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS] =
+	    inProcessingInstructionsState,
+	[OF_XMLPARSER_IN_TAG_NAME] = inTagNameState,
+	[OF_XMLPARSER_IN_CLOSE_TAG_NAME] = inCloseTagNameState,
+	[OF_XMLPARSER_IN_TAG] = inTagState,
+	[OF_XMLPARSER_IN_ATTRIBUTE_NAME] = inAttributeNameState,
+	[OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN] =
+	    expectAttributeEqualSignState,
+	[OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER] =
+	    expectAttributeDelimiterState,
+	[OF_XMLPARSER_IN_ATTRIBUTE_VALUE] = inAttributeValueState,
+	[OF_XMLPARSER_EXPECT_TAG_CLOSE] = expectTagCloseState,
+	[OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE] = expectSpaceOrTagCloseState,
+	[OF_XMLPARSER_IN_EXCLAMATION_MARK] = inExclamationMarkState,
+	[OF_XMLPARSER_IN_CDATA_OPENING] = inCDATAOpeningState,
+	[OF_XMLPARSER_IN_CDATA] = inCDATAState,
+	[OF_XMLPARSER_IN_COMMENT_OPENING] = inCommentOpeningState,
+	[OF_XMLPARSER_IN_COMMENT_1] = inCommentState1,
+	[OF_XMLPARSER_IN_COMMENT_2] = inCommentState2,
+	[OF_XMLPARSER_IN_DOCTYPE] = inDOCTYPEState
+};
 
 static OF_INLINE void
 appendToBuffer(OFMutableData *buffer, const char *string,
@@ -167,42 +190,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 @implementation OFXMLParser
 @synthesize delegate = _delegate, depthLimit = _depthLimit;
 
-+ (void)initialize
-{
-	const SEL selectors_[OF_XMLPARSER_NUM_STATES] = {
-		@selector(of_inByteOrderMarkState),
-		@selector(of_outsideTagState),
-		@selector(of_tagOpenedState),
-		@selector(of_inProcessingInstructionsState),
-		@selector(of_inTagNameState),
-		@selector(of_inCloseTagNameState),
-		@selector(of_inTagState),
-		@selector(of_inAttributeNameState),
-		@selector(of_expectAttributeEqualSignState),
-		@selector(of_expectAttributeDelimiterState),
-		@selector(of_inAttributeValueState),
-		@selector(of_expectTagCloseState),
-		@selector(of_expectSpaceOrTagCloseState),
-		@selector(of_inExclamationMarkState),
-		@selector(of_inCDATAOpeningState),
-		@selector(of_inCDATAState),
-		@selector(of_inCommentOpeningState),
-		@selector(of_inCommentState1),
-		@selector(of_inCommentState2),
-		@selector(of_inDOCTYPEState)
-	};
-	memcpy(selectors, selectors_, sizeof(selectors_));
-
-	for (size_t i = 0; i < OF_XMLPARSER_NUM_STATES; i++) {
-		if (![self instancesRespondToSelector: selectors[i]])
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self];
-
-		lookupTable[i] = (state_function_t)
-		    [self instanceMethodForSelector: selectors[i]];
-	}
-}
-
 + (instancetype)parser
 {
 	return [[[self alloc] init] autorelease];
@@ -263,7 +250,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	for (_i = _last = 0; _i < length; _i++) {
 		size_t j = _i;
 
-		lookupTable[_state](self, selectors[_state]);
+		lookupTable[_state](self);
 
 		/* Ensure we don't count this character twice */
 		if (_i != j)
@@ -319,99 +306,102 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 #endif
 
-/*
- * The following methods handle the different states of the parser. They are
- * looked up in +[initialize] and put in a lookup table to speed things up.
- * One dispatch for every character would be way too slow!
- */
-
-- (void)of_inByteOrderMarkState
+static void
+inByteOrderMarkState(OFXMLParser *self)
 {
-	if (_data[_i] != "\xEF\xBB\xBF"[_level]) {
-		if (_level == 0) {
-			_state = OF_XMLPARSER_OUTSIDE_TAG;
-			_i--;
+	if (self->_data[self->_i] != "\xEF\xBB\xBF"[self->_level]) {
+		if (self->_level == 0) {
+			self->_state = OF_XMLPARSER_OUTSIDE_TAG;
+			self->_i--;
 			return;
 		}
 
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 	}
 
-	if (_level++ == 2)
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
+	if (self->_level++ == 2)
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 
-	_last = _i + 1;
+	self->_last = self->_i + 1;
 }
 
 /* Not in a tag */
-- (void)of_outsideTagState
+static void
+outsideTagState(OFXMLParser *self)
 {
 	size_t length;
 
-	if ((_finishedParsing || _previous.count < 1) && _data[_i] != ' ' &&
-	    _data[_i] != '\t' && _data[_i] != '\n' && _data[_i] != '\r' &&
-	    _data[_i] != '<')
+	if ((self->_finishedParsing || self->_previous.count < 1) &&
+	    self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r' &&
+	    self->_data[self->_i] != '<')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	if (_data[_i] != '<')
+	if (self->_data[self->_i] != '<')
 		return;
 
-	if ((length = _i - _last) > 0)
-		appendToBuffer(_buffer, _data + _last, _encoding, length);
+	if ((length = self->_i - self->_last) > 0)
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, length);
 
-	if (_buffer.count > 0) {
+	if (self->_buffer.count > 0) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *characters = transformString(self, _buffer, 0, true);
+		OFString *characters = transformString(self, self->_buffer, 0,
+		    true);
 
-		if ([_delegate respondsToSelector:
+		if ([self->_delegate respondsToSelector:
 		    @selector(parser:foundCharacters:)])
-			[_delegate parser: self
-			  foundCharacters: characters];
+			[self->_delegate parser: self
+				foundCharacters: characters];
 
 		objc_autoreleasePoolPop(pool);
 	}
 
-	[_buffer removeAllItems];
+	[self->_buffer removeAllItems];
 
-	_last = _i + 1;
-	_state = OF_XMLPARSER_TAG_OPENED;
+	self->_last = self->_i + 1;
+	self->_state = OF_XMLPARSER_TAG_OPENED;
 }
 
 /* Tag was just opened */
-- (void)of_tagOpenedState
+static void
+tagOpenedState(OFXMLParser *self)
 {
-	if (_finishedParsing && _data[_i] != '!' && _data[_i] != '?')
+	if (self->_finishedParsing && self->_data[self->_i] != '!' &&
+	    self->_data[self->_i] != '?')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	switch (_data[_i]) {
+	switch (self->_data[self->_i]) {
 	case '?':
-		_last = _i + 1;
-		_state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
-		_level = 0;
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
+		self->_level = 0;
 		break;
 	case '/':
-		_last = _i + 1;
-		_state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
-		_acceptProlog = false;
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_IN_CLOSE_TAG_NAME;
+		self->_acceptProlog = false;
 		break;
 	case '!':
-		_last = _i + 1;
-		_state = OF_XMLPARSER_IN_EXCLAMATION_MARK;
-		_acceptProlog = false;
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_IN_EXCLAMATION_MARK;
+		self->_acceptProlog = false;
 		break;
 	default:
-		if (_depthLimit > 0 && _previous.count >= _depthLimit)
+		if (self->_depthLimit > 0 &&
+		    self->_previous.count >= self->_depthLimit)
 			@throw [OFOutOfRangeException exception];
 
-		_state = OF_XMLPARSER_IN_TAG_NAME;
-		_acceptProlog = false;
-		_i--;
+		self->_state = OF_XMLPARSER_IN_TAG_NAME;
+		self->_acceptProlog = false;
+		self->_i--;
 		break;
 	}
 }
 
 /* <?xml […]?> */
-- (bool)of_parseXMLProcessingInstructions: (OFString *)pi
+static bool
+parseXMLProcessingInstructions(OFXMLParser *self, OFString *pi)
 {
 	const char *cString;
 	size_t length, last;
@@ -421,10 +411,10 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	char piDelimiter = 0;
 	bool hasVersion = false;
 
-	if (!_acceptProlog)
+	if (!self->_acceptProlog)
 		return false;
 
-	_acceptProlog = false;
+	self->_acceptProlog = false;
 
 	pi = [pi substringWithRange: of_range(3, pi.length - 3)];
 	pi = pi.stringByDeletingEnclosingWhitespaces;
@@ -451,7 +441,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 			attribute = [OFString
 			    stringWithCString: cString + last
-				     encoding: _encoding
+				     encoding: self->_encoding
 				       length: i - last];
 			last = i + 1;
 			PIState = 2;
@@ -472,7 +462,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 			value = [OFMutableString
 			    stringWithCString: cString + last
-				     encoding: _encoding
+				     encoding: self->_encoding
 				       length: i - last];
 
 			if ([attribute isEqual: @"version"]) {
@@ -484,7 +474,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 			if ([attribute isEqual: @"encoding"]) {
 				@try {
-					_encoding =
+					self->_encoding =
 					    of_string_parse_encoding(value);
 				} @catch (OFInvalidArgumentException *e) {
 					@throw [OFInvalidEncodingException
@@ -506,528 +496,564 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside processing instructions */
-- (void)of_inProcessingInstructionsState
+static void
+inProcessingInstructionsState(OFXMLParser *self)
 {
-	if (_data[_i] == '?')
-		_level = 1;
-	else if (_level == 1 && _data[_i] == '>') {
+	if (self->_data[self->_i] == '?')
+		self->_level = 1;
+	else if (self->_level == 1 && self->_data[self->_i] == '>') {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *PI;
 
-		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-		PI = transformString(self, _buffer, 1, false);
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, self->_i - self->_last);
+		PI = transformString(self, self->_buffer, 1, false);
 
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
 		    [PI hasPrefix: @"xml\n"])
-			if (![self of_parseXMLProcessingInstructions: PI])
+			if (!parseXMLProcessingInstructions(self, PI))
 				@throw [OFMalformedXMLException
 				    exceptionWithParser: self];
 
-		if ([_delegate respondsToSelector:
+		if ([self->_delegate respondsToSelector:
 		    @selector(parser:foundProcessingInstructions:)])
-			[_delegate		 parser: self
+			[self->_delegate	 parser: self
 			    foundProcessingInstructions: PI];
 
 		objc_autoreleasePoolPop(pool);
 
-		[_buffer removeAllItems];
+		[self->_buffer removeAllItems];
 
-		_last = _i + 1;
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else
-		_level = 0;
+		self->_level = 0;
 }
 
 /* Inside a tag, no name yet */
-- (void)of_inTagNameState
+static void
+inTagNameState(OFXMLParser *self)
 {
 	void *pool;
 	const char *bufferCString, *tmp;
 	size_t length, bufferLength;
 	OFString *bufferString;
 
-	if (_data[_i] != ' ' && _data[_i] != '\t' && _data[_i] != '\n' &&
-	    _data[_i] != '\r' && _data[_i] != '>' && _data[_i] != '/')
+	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r' &&
+	    self->_data[self->_i] != '>'  && self->_data[self->_i] != '/')
 		return;
 
-	if ((length = _i - _last) > 0)
-		appendToBuffer(_buffer, _data + _last, _encoding, length);
+	if ((length = self->_i - self->_last) > 0)
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferCString = _buffer.items;
-	bufferLength = _buffer.count;
+	bufferCString = self->_buffer.items;
+	bufferLength = self->_buffer.count;
 	bufferString = [OFString stringWithUTF8String: bufferCString
 					       length: bufferLength];
 
 	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
-		_name = [[OFString alloc]
+		self->_name = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
 				length: bufferLength -
 					(tmp - bufferCString) - 1];
-		_prefix = [[OFString alloc]
+		self->_prefix = [[OFString alloc]
 		    initWithUTF8String: bufferCString
 				length: tmp - bufferCString];
 	} else {
-		_name = [bufferString copy];
-		_prefix = nil;
+		self->_name = [bufferString copy];
+		self->_prefix = nil;
 	}
 
-	if (_data[_i] == '>' || _data[_i] == '/') {
+	if (self->_data[self->_i] == '>' || self->_data[self->_i] == '/') {
 		OFString *namespace;
 
-		namespace = namespaceForPrefix(_prefix, _namespaces);
+		namespace = namespaceForPrefix(self->_prefix,
+		    self->_namespaces);
 
-		if (_prefix != nil && namespace == nil)
+		if (self->_prefix != nil && namespace == nil)
 			@throw [OFUnboundPrefixException
-			    exceptionWithPrefix: _prefix
+			    exceptionWithPrefix: self->_prefix
 					 parser: self];
 
-		if ([_delegate respondsToSelector: @selector(parser:
+		if ([self->_delegate respondsToSelector: @selector(parser:
 		    didStartElement:prefix:namespace:attributes:)])
-			[_delegate parser: self
-			  didStartElement: _name
-				   prefix: _prefix
-				namespace: namespace
-			       attributes: nil];
+			[self->_delegate parser: self
+				didStartElement: self->_name
+					 prefix: self->_prefix
+				      namespace: namespace
+				     attributes: nil];
 
-		if (_data[_i] == '/') {
-			if ([_delegate respondsToSelector:
+		if (self->_data[self->_i] == '/') {
+			if ([self->_delegate respondsToSelector:
 			    @selector(parser:didEndElement:prefix:namespace:)])
-				[_delegate parser: self
-				    didEndElement: _name
-					   prefix: _prefix
-					namespace: namespace];
+				[self->_delegate parser: self
+					  didEndElement: self->_name
+						 prefix: self->_prefix
+					      namespace: namespace];
 
-			if (_previous.count == 0)
-				_finishedParsing = true;
+			if (self->_previous.count == 0)
+				self->_finishedParsing = true;
 		} else
-			[_previous addObject: bufferString];
+			[self->_previous addObject: bufferString];
 
-		[_name release];
-		[_prefix release];
-		_name = _prefix = nil;
+		[self->_name release];
+		[self->_prefix release];
+		self->_name = self->_prefix = nil;
 
-		_state = (_data[_i] == '/'
+		self->_state = (self->_data[self->_i] == '/'
 		    ? OF_XMLPARSER_EXPECT_TAG_CLOSE
 		    : OF_XMLPARSER_OUTSIDE_TAG);
 	} else
-		_state = OF_XMLPARSER_IN_TAG;
+		self->_state = OF_XMLPARSER_IN_TAG;
 
-	if (_data[_i] != '/')
-		[_namespaces addObject: [OFMutableDictionary dictionary]];
+	if (self->_data[self->_i] != '/')
+		[self->_namespaces addObject: [OFMutableDictionary dictionary]];
 
 	objc_autoreleasePoolPop(pool);
 
-	[_buffer removeAllItems];
-	_last = _i + 1;
+	[self->_buffer removeAllItems];
+	self->_last = self->_i + 1;
 }
 
 /* Inside a close tag, no name yet */
-- (void)of_inCloseTagNameState
+static void
+inCloseTagNameState(OFXMLParser *self)
 {
 	void *pool;
 	const char *bufferCString, *tmp;
 	size_t length, bufferLength;
 	OFString *bufferString, *namespace;
 
-	if (_data[_i] != ' ' && _data[_i] != '\t' && _data[_i] != '\n' &&
-	    _data[_i] != '\r' && _data[_i] != '>')
+	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r' &&
+	    self->_data[self->_i] != '>')
 		return;
 
-	if ((length = _i - _last) > 0)
-		appendToBuffer(_buffer, _data + _last, _encoding, length);
+	if ((length = self->_i - self->_last) > 0)
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferCString = _buffer.items;
-	bufferLength = _buffer.count;
+	bufferCString = self->_buffer.items;
+	bufferLength = self->_buffer.count;
 	bufferString = [OFString stringWithUTF8String: bufferCString
 					       length: bufferLength];
 
 	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
-		_name = [[OFString alloc]
+		self->_name = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
 				length: bufferLength -
 					(tmp - bufferCString) - 1];
-		_prefix = [[OFString alloc]
+		self->_prefix = [[OFString alloc]
 		    initWithUTF8String: bufferCString
 				length: tmp - bufferCString];
 	} else {
-		_name = [bufferString copy];
-		_prefix = nil;
+		self->_name = [bufferString copy];
+		self->_prefix = nil;
 	}
 
-	if (![_previous.lastObject isEqual: bufferString])
+	if (![self->_previous.lastObject isEqual: bufferString])
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	[_previous removeLastObject];
+	[self->_previous removeLastObject];
 
-	[_buffer removeAllItems];
+	[self->_buffer removeAllItems];
 
-	namespace = namespaceForPrefix(_prefix, _namespaces);
-	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
-							      parser: self];
+	namespace = namespaceForPrefix(self->_prefix, self->_namespaces);
+	if (self->_prefix != nil && namespace == nil)
+		@throw [OFUnboundPrefixException
+		    exceptionWithPrefix: self->_prefix
+				 parser: self];
 
-	if ([_delegate respondsToSelector:
+	if ([self->_delegate respondsToSelector:
 	    @selector(parser:didEndElement:prefix:namespace:)])
-		[_delegate parser: self
-		    didEndElement: _name
-			   prefix: _prefix
-			namespace: namespace];
+		[self->_delegate parser: self
+			  didEndElement: self->_name
+				 prefix: self->_prefix
+			      namespace: namespace];
 
 	objc_autoreleasePoolPop(pool);
 
-	[_namespaces removeLastObject];
-	[_name release];
-	[_prefix release];
-	_name = _prefix = nil;
+	[self->_namespaces removeLastObject];
+	[self->_name release];
+	[self->_prefix release];
+	self->_name = self->_prefix = nil;
 
-	_last = _i + 1;
-	_state = (_data[_i] == '>'
+	self->_last = self->_i + 1;
+	self->_state = (self->_data[self->_i] == '>'
 	    ? OF_XMLPARSER_OUTSIDE_TAG
 	    : OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE);
 
-	if (_previous.count == 0)
-		_finishedParsing = true;
+	if (self->_previous.count == 0)
+		self->_finishedParsing = true;
 }
 
 /* Inside a tag, name found */
-- (void)of_inTagState
+static void
+inTagState(OFXMLParser *self)
 {
 	void *pool;
 	OFString *namespace;
 	OFXMLAttribute *const *attributesObjects;
 	size_t attributesCount;
 
-	if (_data[_i] != '>' && _data[_i] != '/') {
-		if (_data[_i] != ' ' && _data[_i] != '\t' &&
-		    _data[_i] != '\n' && _data[_i] != '\r') {
-			_last = _i;
-			_state = OF_XMLPARSER_IN_ATTRIBUTE_NAME;
-			_i--;
+	if (self->_data[self->_i] != '>' && self->_data[self->_i] != '/') {
+		if (self->_data[self->_i] != ' ' &&
+		    self->_data[self->_i] != '\t' &&
+		    self->_data[self->_i] != '\n' &&
+		    self->_data[self->_i] != '\r') {
+			self->_last = self->_i;
+			self->_state = OF_XMLPARSER_IN_ATTRIBUTE_NAME;
+			self->_i--;
 		}
 
 		return;
 	}
 
-	attributesObjects = _attributes.objects;
-	attributesCount = _attributes.count;
+	attributesObjects = self->_attributes.objects;
+	attributesCount = self->_attributes.count;
 
-	namespace = namespaceForPrefix(_prefix, _namespaces);
+	namespace = namespaceForPrefix(self->_prefix, self->_namespaces);
 
-	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
-							      parser: self];
+	if (self->_prefix != nil && namespace == nil)
+		@throw [OFUnboundPrefixException
+		    exceptionWithPrefix: self->_prefix
+				 parser: self];
 
 	for (size_t j = 0; j < attributesCount; j++)
-		resolveAttributeNamespace(attributesObjects[j], _namespaces,
-		    self);
+		resolveAttributeNamespace(attributesObjects[j],
+		    self->_namespaces, self);
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([_delegate respondsToSelector:
+	if ([self->_delegate respondsToSelector:
 	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
-		[_delegate parser: self
-		  didStartElement: _name
-			   prefix: _prefix
-			namespace: namespace
-		       attributes: _attributes];
+		[self->_delegate parser: self
+			didStartElement: self->_name
+				 prefix: self->_prefix
+			      namespace: namespace
+			     attributes: self->_attributes];
 
-	if (_data[_i] == '/') {
-		if ([_delegate respondsToSelector:
+	if (self->_data[self->_i] == '/') {
+		if ([self->_delegate respondsToSelector:
 		    @selector(parser:didEndElement:prefix:namespace:)])
-			[_delegate parser: self
-			    didEndElement: _name
-				   prefix: _prefix
-				namespace: namespace];
+			[self->_delegate parser: self
+				  didEndElement: self->_name
+					 prefix: self->_prefix
+				      namespace: namespace];
 
-		if (_previous.count == 0)
-			_finishedParsing = true;
+		if (self->_previous.count == 0)
+			self->_finishedParsing = true;
 
-		[_namespaces removeLastObject];
-	} else if (_prefix != nil) {
-		OFString *str = [OFString stringWithFormat: @"%@:%@",
-							    _prefix, _name];
-		[_previous addObject: str];
+		[self->_namespaces removeLastObject];
+	} else if (self->_prefix != nil) {
+		OFString *str = [OFString stringWithFormat:
+		    @"%@:%@", self->_prefix, self->_name];
+		[self->_previous addObject: str];
 	} else
-		[_previous addObject: _name];
+		[self->_previous addObject: self->_name];
 
 	objc_autoreleasePoolPop(pool);
 
-	[_name release];
-	[_prefix release];
-	[_attributes removeAllObjects];
-	_name = _prefix = nil;
+	[self->_name release];
+	[self->_prefix release];
+	[self->_attributes removeAllObjects];
+	self->_name = self->_prefix = nil;
 
-	_last = _i + 1;
-	_state = (_data[_i] == '/'
+	self->_last = self->_i + 1;
+	self->_state = (self->_data[self->_i] == '/'
 	    ? OF_XMLPARSER_EXPECT_TAG_CLOSE
 	    : OF_XMLPARSER_OUTSIDE_TAG);
 }
 
 /* Looking for attribute name */
-- (void)of_inAttributeNameState
+static void
+inAttributeNameState(OFXMLParser *self)
 {
 	void *pool;
 	OFString *bufferString;
 	const char *bufferCString, *tmp;
 	size_t length, bufferLength;
 
-	if (_data[_i] != '=' && _data[_i] != ' ' && _data[_i] != '\t' &&
-	    _data[_i] != '\n' && _data[_i] != '\r')
+	if (self->_data[self->_i] != '='  && self->_data[self->_i] != ' '  &&
+	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
+	    self->_data[self->_i] != '\r')
 		return;
 
-	if ((length = _i - _last) > 0)
-		appendToBuffer(_buffer, _data + _last, _encoding, length);
+	if ((length = self->_i - self->_last) > 0)
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, length);
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferString = [OFString stringWithUTF8String: _buffer.items
-					       length: _buffer.count];
+	bufferString = [OFString stringWithUTF8String: self->_buffer.items
+					       length: self->_buffer.count];
 
 	bufferCString = bufferString.UTF8String;
 	bufferLength = bufferString.UTF8StringLength;
 
 	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
-		_attributeName = [[OFString alloc]
+		self->_attributeName = [[OFString alloc]
 		    initWithUTF8String: tmp + 1
 				length: bufferLength -
 					(tmp - bufferCString) - 1];
-		_attributePrefix = [[OFString alloc]
+		self->_attributePrefix = [[OFString alloc]
 		    initWithUTF8String: bufferCString
 				length: tmp - bufferCString];
 	} else {
-		_attributeName = [bufferString copy];
-		_attributePrefix = nil;
+		self->_attributeName = [bufferString copy];
+		self->_attributePrefix = nil;
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	[_buffer removeAllItems];
+	[self->_buffer removeAllItems];
 
-	_last = _i + 1;
-	_state = (_data[_i] == '='
+	self->_last = self->_i + 1;
+	self->_state = (self->_data[self->_i] == '='
 	    ? OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER
 	    : OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN);
 }
 
 /* Expecting equal sign of an attribute */
-- (void)of_expectAttributeEqualSignState
+static void
+expectAttributeEqualSignState(OFXMLParser *self)
 {
-	if (_data[_i] == '=') {
-		_last = _i + 1;
-		_state = OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER;
+	if (self->_data[self->_i] == '=') {
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER;
 		return;
 	}
 
-	if (_data[_i] != ' ' && _data[_i] != '\t' && _data[_i] != '\n' &&
-	    _data[_i] != '\r')
+	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 
 /* Expecting name/value delimiter of an attribute */
-- (void)of_expectAttributeDelimiterState
+static void
+expectAttributeDelimiterState(OFXMLParser *self)
 {
-	_last = _i + 1;
+	self->_last = self->_i + 1;
 
-	if (_data[_i] == ' ' || _data[_i] == '\t' || _data[_i] == '\n' ||
-	    _data[_i] == '\r')
+	if (self->_data[self->_i] == ' '  || self->_data[self->_i] == '\t' ||
+	    self->_data[self->_i] == '\n' || self->_data[self->_i] == '\r')
 		return;
 
-	if (_data[_i] != '\'' && _data[_i] != '"')
+	if (self->_data[self->_i] != '\'' && self->_data[self->_i] != '"')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	_delimiter = _data[_i];
-	_state = OF_XMLPARSER_IN_ATTRIBUTE_VALUE;
+	self->_delimiter = self->_data[self->_i];
+	self->_state = OF_XMLPARSER_IN_ATTRIBUTE_VALUE;
 }
 
 /* Looking for attribute value */
-- (void)of_inAttributeValueState
+static void
+inAttributeValueState(OFXMLParser *self)
 {
 	void *pool;
 	OFString *attributeValue;
 	size_t length;
 	OFXMLAttribute *attribute;
 
-	if (_data[_i] != _delimiter)
+	if (self->_data[self->_i] != self->_delimiter)
 		return;
 
-	if ((length = _i - _last) > 0)
-		appendToBuffer(_buffer, _data + _last, _encoding, length);
+	if ((length = self->_i - self->_last) > 0)
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, length);
 
 	pool = objc_autoreleasePoolPush();
-	attributeValue = transformString(self, _buffer, 0, true);
+	attributeValue = transformString(self, self->_buffer, 0, true);
 
-	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
-		[_namespaces.lastObject setObject: attributeValue
-					   forKey: @""];
-	if ([_attributePrefix isEqual: @"xmlns"])
-		[_namespaces.lastObject setObject: attributeValue
-					   forKey: _attributeName];
+	if (self->_attributePrefix == nil &&
+	    [self->_attributeName isEqual: @"xmlns"])
+		[self->_namespaces.lastObject setObject: attributeValue
+						 forKey: @""];
+	if ([self->_attributePrefix isEqual: @"xmlns"])
+		[self->_namespaces.lastObject setObject: attributeValue
+						 forKey: self->_attributeName];
 
-	attribute = [OFXMLAttribute attributeWithName: _attributeName
-					    namespace: _attributePrefix
+	attribute = [OFXMLAttribute attributeWithName: self->_attributeName
+					    namespace: self->_attributePrefix
 					  stringValue: attributeValue];
-	attribute->_useDoubleQuotes = (_delimiter == '"');
-	[_attributes addObject: attribute];
+	attribute->_useDoubleQuotes = (self->_delimiter == '"');
+	[self->_attributes addObject: attribute];
 
 	objc_autoreleasePoolPop(pool);
 
-	[_buffer removeAllItems];
-	[_attributeName release];
-	[_attributePrefix release];
-	_attributeName = _attributePrefix = nil;
+	[self->_buffer removeAllItems];
+	[self->_attributeName release];
+	[self->_attributePrefix release];
+	self->_attributeName = self->_attributePrefix = nil;
 
-	_last = _i + 1;
-	_state = OF_XMLPARSER_IN_TAG;
+	self->_last = self->_i + 1;
+	self->_state = OF_XMLPARSER_IN_TAG;
 }
 
 /* Expecting closing '>' */
-- (void)of_expectTagCloseState
+static void
+expectTagCloseState(OFXMLParser *self)
 {
-	if (_data[_i] == '>') {
-		_last = _i + 1;
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
+	if (self->_data[self->_i] == '>') {
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 
 /* Expecting closing '>' or space */
-- (void)of_expectSpaceOrTagCloseState
+static void
+expectSpaceOrTagCloseState(OFXMLParser *self)
 {
-	if (_data[_i] == '>') {
-		_last = _i + 1;
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
-	} else if (_data[_i] != ' ' && _data[_i] != '\t' &&
-	    _data[_i] != '\n' && _data[_i] != '\r')
+	if (self->_data[self->_i] == '>') {
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
+	} else if (self->_data[self->_i] != ' ' &&
+	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
+	    self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 
 /* In <! */
-- (void)of_inExclamationMarkState
+static void
+inExclamationMarkState(OFXMLParser *self)
 {
-	if (_finishedParsing && _data[_i] != '-')
+	if (self->_finishedParsing && self->_data[self->_i] != '-')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	if (_data[_i] == '-')
-		_state = OF_XMLPARSER_IN_COMMENT_OPENING;
-	else if (_data[_i] == '[') {
-		_state = OF_XMLPARSER_IN_CDATA_OPENING;
-		_level = 0;
-	} else if (_data[_i] == 'D') {
-		_state = OF_XMLPARSER_IN_DOCTYPE;
-		_level = 0;
+	if (self->_data[self->_i] == '-')
+		self->_state = OF_XMLPARSER_IN_COMMENT_OPENING;
+	else if (self->_data[self->_i] == '[') {
+		self->_state = OF_XMLPARSER_IN_CDATA_OPENING;
+		self->_level = 0;
+	} else if (self->_data[self->_i] == 'D') {
+		self->_state = OF_XMLPARSER_IN_DOCTYPE;
+		self->_level = 0;
 	} else
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	_last = _i + 1;
+	self->_last = self->_i + 1;
 }
 
 /* CDATA */
-- (void)of_inCDATAOpeningState
+static void
+inCDATAOpeningState(OFXMLParser *self)
 {
-	if (_data[_i] != "CDATA["[_level])
+	if (self->_data[self->_i] != "CDATA["[self->_level])
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	if (++_level == 6) {
-		_state = OF_XMLPARSER_IN_CDATA;
-		_level = 0;
+	if (++self->_level == 6) {
+		self->_state = OF_XMLPARSER_IN_CDATA;
+		self->_level = 0;
 	}
 
-	_last = _i + 1;
+	self->_last = self->_i + 1;
 }
 
-- (void)of_inCDATAState
+static void
+inCDATAState(OFXMLParser *self)
 {
-
-	if (_data[_i] == ']')
-		_level++;
-	else if (_data[_i] == '>' && _level >= 2) {
+	if (self->_data[self->_i] == ']')
+		self->_level++;
+	else if (self->_data[self->_i] == '>' && self->_level >= 2) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *CDATA;
 
-		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-		CDATA = transformString(self, _buffer, 2, false);
+		appendToBuffer(self->_buffer, self->_data + self->_last,
+		    self->_encoding, self->_i - self->_last);
+		CDATA = transformString(self, self->_buffer, 2, false);
 
-		if ([_delegate respondsToSelector:
+		if ([self->_delegate respondsToSelector:
 		    @selector(parser:foundCDATA:)])
-			[_delegate parser: self
-			       foundCDATA: CDATA];
+			[self->_delegate parser: self
+				     foundCDATA: CDATA];
 
 		objc_autoreleasePoolPop(pool);
 
-		[_buffer removeAllItems];
+		[self->_buffer removeAllItems];
 
-		_last = _i + 1;
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
+		self->_last = self->_i + 1;
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 	} else
-		_level = 0;
+		self->_level = 0;
 }
 
 /* Comment */
-- (void)of_inCommentOpeningState
+static void
+inCommentOpeningState(OFXMLParser *self)
 {
-	if (_data[_i] != '-')
+	if (self->_data[self->_i] != '-')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	_last = _i + 1;
-	_state = OF_XMLPARSER_IN_COMMENT_1;
-	_level = 0;
+	self->_last = self->_i + 1;
+	self->_state = OF_XMLPARSER_IN_COMMENT_1;
+	self->_level = 0;
 }
 
-- (void)of_inCommentState1
+static void
+inCommentState1(OFXMLParser *self)
 {
-	if (_data[_i] == '-')
-		_level++;
+	if (self->_data[self->_i] == '-')
+		self->_level++;
 	else
-		_level = 0;
+		self->_level = 0;
 
-	if (_level == 2)
-		_state = OF_XMLPARSER_IN_COMMENT_2;
+	if (self->_level == 2)
+		self->_state = OF_XMLPARSER_IN_COMMENT_2;
 }
 
-- (void)of_inCommentState2
+static void
+inCommentState2(OFXMLParser *self)
 {
 	void *pool;
 	OFString *comment;
 
-	if (_data[_i] != '>')
+	if (self->_data[self->_i] != '>')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	pool = objc_autoreleasePoolPush();
 
-	appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-	comment = transformString(self, _buffer, 2, false);
+	appendToBuffer(self->_buffer, self->_data + self->_last,
+	    self->_encoding, self->_i - self->_last);
+	comment = transformString(self, self->_buffer, 2, false);
 
-	if ([_delegate respondsToSelector: @selector(parser:foundComment:)])
-		[_delegate parser: self
-		     foundComment: comment];
+	if ([self->_delegate respondsToSelector:
+	    @selector(parser:foundComment:)])
+		[self->_delegate parser: self
+			   foundComment: comment];
 
 	objc_autoreleasePoolPop(pool);
 
-	[_buffer removeAllItems];
+	[self->_buffer removeAllItems];
 
-	_last = _i + 1;
-	_state = OF_XMLPARSER_OUTSIDE_TAG;
+	self->_last = self->_i + 1;
+	self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 }
 
 /* In <!DOCTYPE ...> */
-- (void)of_inDOCTYPEState
+static void
+inDOCTYPEState(OFXMLParser *self)
 {
-	if ((_level < 6 && _data[_i] != "OCTYPE"[_level]) ||
-	    (_level == 6 && _data[_i] != ' ' && _data[_i] != '\t' &&
-	    _data[_i] != '\n' && _data[_i] != '\r'))
+	if ((self->_level < 6 &&
+	    self->_data[self->_i] != "OCTYPE"[self->_level]) ||
+	    (self->_level == 6 && self->_data[self->_i] != ' ' &&
+	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
+	    self->_data[self->_i] != '\r'))
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
-	_level++;
+	self->_level++;
 
-	if (_level > 6 && _data[_i] == '>')
-		_state = OF_XMLPARSER_OUTSIDE_TAG;
+	if (self->_level > 6 && self->_data[self->_i] == '>')
+		self->_state = OF_XMLPARSER_OUTSIDE_TAG;
 
-	_last = _i + 1;
+	self->_last = self->_i + 1;
 }
 
 - (size_t)lineNumber

@@ -28,6 +28,7 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
+OF_DIRECT_MEMBERS
 @interface OFListEnumerator: OFEnumerator
 {
 	OFList *_list;
