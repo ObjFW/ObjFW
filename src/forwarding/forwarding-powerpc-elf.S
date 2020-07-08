@@ -27,6 +27,13 @@ of_forward:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
+	stw	%r30, 104(%r1)
+
+	bl	0f
+0:
+	mflr	%r30
+	addis	%r30, %r30, .Lbiased_got2-0b@ha
+	addi	%r30, %r30, .Lbiased_got2-0b@l
 
 	/* Save all arguments */
 	stw	%r3, 8(%r1)
@@ -48,24 +55,21 @@ of_forward:
 	stfd	%f7, 88(%r1)
 	stfd	%f8, 96(%r1)
 
-	bl	object_getClass@plt
+	bl	object_getClass+0x8000@plt
 
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
-	bl	class_respondsToSelector@plt
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+	bl	class_respondsToSelector+0x8000@plt
 
 	cmpwi	%r3, 0
 	beq-	0f
 
 	lwz	%r3, 8(%r1)
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
-	bl	objc_msg_lookup@plt
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+	bl	objc_msg_lookup+0x8000@plt
 	mtctr	%r3
 
 	lwz	%r3, 8(%r1)
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	lwz	%r5, 12(%r1)
 	bctrl
 
@@ -78,7 +82,7 @@ of_forward:
 	stw	%r3, 8(%r1)
 
 	lwz	%r4, 12(%r1)
-	bl	objc_msg_lookup@plt
+	bl	objc_msg_lookup+0x8000@plt
 	mtctr	%r3
 
 	/* Restore all arguments */
@@ -101,6 +105,7 @@ of_forward:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
+	lwz	%r30, 104(%r1)
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
@@ -109,12 +114,15 @@ of_forward:
 0:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
+	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
+	mtctr	%r0
 
+	lwz	%r30, 104(%r1)
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
-	b	of_method_not_found@plt
+	bctr
 .type of_forward, @function
 .size of_forward, .-of_forward
 
@@ -122,6 +130,13 @@ of_forward_stret:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
+	stw	%r30, 104(%r1)
+
+	bl	0f
+0:
+	mflr	%r30
+	addis	%r30, %r30, .Lbiased_got2-0b@ha
+	addi	%r30, %r30, .Lbiased_got2-0b@l
 
 	/* Save all arguments */
 	stw	%r3, 8(%r1)
@@ -144,24 +159,21 @@ of_forward_stret:
 	stfd	%f8, 96(%r1)
 
 	mr	%r3, %r4
-	bl	object_getClass@plt
+	bl	object_getClass+0x800@plt
 
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
-	bl	class_respondsToSelector@plt
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+	bl	class_respondsToSelector+0x8000@plt
 
 	cmpwi	%r3, 0
 	beq-	0f
 
 	lwz	%r3, 12(%r1)
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
-	bl	objc_msg_lookup@plt
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+	bl	objc_msg_lookup+0x8000@plt
 	mtctr	%r3
 
 	lwz	%r3, 12(%r1)
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	lwz	%r5, 16(%r1)
 	bctrl
 
@@ -174,7 +186,7 @@ of_forward_stret:
 	stw	%r3, 12(%r1)
 
 	lwz	%r4, 16(%r1)
-	bl	objc_msg_lookup_stret@plt
+	bl	objc_msg_lookup_stret+0x8000@plt
 	mtctr	%r3
 
 	/* Restore all arguments */
@@ -206,19 +218,38 @@ of_forward_stret:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 	lwz	%r5, 16(%r1)
+	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
+	mtctr	%r0
 
+	lwz	%r30, 104(%r1)
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
-	b	of_method_not_found_stret@plt
+	bctr
 .type of_forward_stret, @function
 .size of_forward_stret, .-of_forward_stret
 
 init:
-	lis	%r3, module@ha
-	la	%r3, module@l(%r3)
-	b	__objc_exec_class@plt
+	stwu	%r1, -16(%r1)
+	mflr	%r0
+	stw	%r0, 20(%r1)
+	stw	%r30, 8(%r1)
+
+	bl	0f
+0:
+	mflr	%r30
+	addis	%r30, %r30, .Lbiased_got2-0b@ha
+	addi	%r30, %r30, .Lbiased_got2-0b@l
+
+	lwz	%r3, .Lgot_module-.Lbiased_got2(%r30)
+	bl	__objc_exec_class+0x8000@plt
+
+	lwz	%r30, 8(%r1)
+	lwz	%r0, 20(%r1)
+	addi	%r1, %r1, 16
+	mtlr	%r0
+	blr
 
 .section .ctors, "aw", @progbits
 	.long init
@@ -238,6 +269,17 @@ symtab:
 	.long 0
 module:
 	.long 8, 16, 0, symtab
+
+.section .got2, "aw"
+.Lbiased_got2 = .+0x8000
+.Lgot_module:
+	.long module
+.Lgot_sel_forwardingTargetForSelector_:
+	.long sel_forwardingTargetForSelector_
+.Lgot_of_method_not_found:
+	.long of_method_not_found
+.Lgot_of_method_not_found_stret:
+	.long of_method_not_found_stret
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", @progbits
