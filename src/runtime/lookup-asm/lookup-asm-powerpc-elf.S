@@ -30,6 +30,9 @@
 	cmpwi	%r3, 0
 	beq-	ret_nil
 
+	andi.	%r0, %r3, 1
+	bne-	.Ltagged_pointer_\name
+
 	lwz	%r5, 0(%r3)
 	lwz	%r5, 32(%r5)
 
@@ -54,7 +57,43 @@
 	blr
 
 0:
-	b	\not_found@plt
+	stwu	%r1, -16(%r1)
+	mflr	%r0	
+	stw	%r0, 20(%r1)
+	stw	%r30, 8(%r1)
+
+	bl	0f
+0:
+	mflr	%r30
+	addis	%r30, %r30, .Lbiased_got2-0b@ha
+	addi	%r30, %r30, .Lbiased_got2-0b@l
+
+	lwz	%r0, .Lgot_\not_found-.Lbiased_got2(%r30)
+	mtctr	%r0
+
+	lwz	%r30, 8(%r1)
+	lwz	%r0, 20(%r1)
+	addi	%r1, %r1, 16
+	mtlr	%r0
+
+	bctr
+
+.Ltagged_pointer_\name:
+	mflr	%r7
+	bl	0f
+0:
+	mflr	%r6
+	mtlr	%r7
+	addis	%r6, %r6, .Lbiased_got2-0b@ha
+	addi	%r6, %r6, .Lbiased_got2-0b@l
+
+	rlwinm	%r5, %r3, 1, 0x1C
+
+	lwz	%r6, .Lgot_objc_tagged_pointer_classes-.Lbiased_got2(%r6)
+	lwzx	%r5, %r6, %r5
+	lwz	%r5, 32(%r5)
+
+	b	.Lmain_\name
 .type \name, @function
 .size \name, .-\name
 .endm
@@ -94,6 +133,15 @@ nil_method:
 get_pc:
 	mflr	%r3
 	blr
+
+.section .got2, "aw"
+.Lbiased_got2 = .+0x8000
+.Lgot_objc_method_not_found:
+	.long objc_method_not_found
+.Lgot_objc_method_not_found_stret:
+	.long objc_method_not_found_stret
+.Lgot_objc_tagged_pointer_classes:
+	.long objc_tagged_pointer_classes
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", @progbits
