@@ -223,23 +223,24 @@ matrix:
       env:
         - config=amigaos
 
-    # Nintendo 3DS
-    - os: linux
-      dist: bionic
-      env:
-        - config=nintendo_3ds
-
-    # Nintendo DS
-    - os: linux
-      dist: bionic
-      env:
-        - config=nintendo_ds
-
-    # Nintendo Wii
-    - os: linux
-      dist: bionic
-      env:
-        - config=wii
+    # Disabled as the devkitPro developers deliberately broke Travis.
+    ## Nintendo 3DS
+    #- os: linux
+    #  dist: bionic
+    #  env:
+    #    - config=nintendo_3ds
+    #
+    ## Nintendo DS
+    #- os: linux
+    #  dist: bionic
+    #  env:
+    #    - config=nintendo_ds
+    #
+    ## Nintendo Wii
+    #- os: linux
+    #  dist: bionic
+    #  env:
+    #    - config=wii
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
