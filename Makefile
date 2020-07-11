@@ -25,7 +25,7 @@ tarball: docs
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil-settings/*,.gitignore,.travis.yml' | \
+		--exclude '.cirrus*,.fossil-settings/*,.gitignore,.travis*' | \
 		ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar \
