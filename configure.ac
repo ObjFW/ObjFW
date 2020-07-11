@@ -820,7 +820,7 @@ case "$host_cpu" in
 			#if !defined(__arm64__) && !defined(__aarch64__) && \
 			    !defined(__ARM64_ARCH_8__)
 			__asm__ __volatile__ (
-			    "fstmfdd sp!, {d0-d7}"
+			    "vstmdb	sp!, {d0-d7}"
 			);
 			#endif
 		], [
