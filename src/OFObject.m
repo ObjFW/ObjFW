@@ -104,6 +104,39 @@ static struct {
 
 uint32_t of_hash_seed;
 
+#ifndef HAVE_ARC4RANDOM
+static void
+initRandom(void)
+{
+	struct timeval tv;
+
+# ifdef HAVE_RANDOM
+	gettimeofday(&tv, NULL);
+	srandom((unsigned)(tv.tv_sec ^ tv.tv_usec));
+# else
+	gettimeofday(&tv, NULL);
+	srand((unsigned)(tv.tv_sec ^ tv.tv_usec));
+# endif
+}
+#endif
+
+uint32_t
+of_random(void)
+{
+#ifdef HAVE_ARC4RANDOM
+	return arc4random();
+#else
+	static of_once_t onceControl;
+
+	of_once(&onceControl, initRandom);
+# ifdef HAVE_RANDOM
+	return (((uint32_t)(random()) << 16) | ((uint32_t)(random()) & 0xFFFF));
+# else
+	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
+# endif
+#endif
+}
+
 static const char *
 typeEncodingForSelector(Class class, SEL selector)
 {
