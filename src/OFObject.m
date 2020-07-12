@@ -123,8 +123,14 @@ initRandom(void)
 uint32_t
 of_random(void)
 {
-#ifdef HAVE_ARC4RANDOM
+#if defined(HAVE_ARC4RANDOM)
 	return arc4random();
+#elif defined(HAVE_GETRANDOM)
+	uint32_t buffer;
+
+	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+
+	return buffer;
 #else
 	static of_once_t onceControl;
 

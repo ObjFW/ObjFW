@@ -901,7 +901,7 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 	])
 ])
 
-AC_CHECK_FUNCS(arc4random random, break)
+AC_CHECK_FUNCS(arc4random getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
 	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
