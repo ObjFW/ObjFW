@@ -66,9 +66,6 @@
 	 mov	%g1, %o7
 
 .Ltagged_pointer_\name:
-	and	%o0, 0xE, %o2
-	sll	%o2, 2, %o2
-
 #ifdef OF_PIC
 	mov	%o7, %g1
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
@@ -77,15 +74,25 @@
 0:
 	add	%o7, %o3, %o3
 	mov	%g1, %o7
-
-	sethi	%hi(objc_tagged_pointer_classes), %o0
-	or	%o0, %lo(objc_tagged_pointer_classes), %o0
-	ldx	[%o3 + %o0], %o0
-#else
-	sethi	%hi(objc_tagged_pointer_classes), %o0
-	or	%o0, %lo(objc_tagged_pointer_classes), %o0
 #endif
-	ldx	[%o0 + %o2], %o2
+
+	sethi	%hi(objc_tagged_pointer_secret), %o2
+	or	%o2, %lo(objc_tagged_pointer_secret), %o2
+#ifdef OF_PIC
+	ldx	[%o3 + %o2], %o2
+#endif
+	ldx	[%o2], %o2
+	xor	%o0, %o2, %o0
+	and	%o0, 0xE, %o0
+	sll	%o0, 2, %o0
+
+	sethi	%hi(objc_tagged_pointer_classes), %o2
+	or	%o2, %lo(objc_tagged_pointer_classes), %o2
+#ifdef OF_PIC
+	ldx	[%o3 + %o2], %o2
+#endif
+
+	ldx	[%o2 + %o0], %o2
 	ba	.Lmain_\name
 	 ldx	[%o2 + 64], %o2
 .type \name, %function
