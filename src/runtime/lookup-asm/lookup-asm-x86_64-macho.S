@@ -54,6 +54,8 @@ Lmain_$0:
 	ret
 
 Ltagged_pointer_$0:
+	mov	rax, [rip+objc_tagged_pointer_secret@GOTPCREL]
+	xor	rdi, [rax]
 	and	dil, 0xE
 	movzx	r8, dil
 

@@ -90,6 +90,7 @@ void *_Nullable glue_objc_hashtable_get(struct objc_hashtable *_Nonnull table, c
 void glue_objc_hashtable_delete(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)(a0,a1)
 void glue_objc_hashtable_free(struct objc_hashtable *_Nonnull table)(a0)
 * Public functions again
+void glue_objc_setTaggedPointerSecret(uintptr_t secret)(d0)
 int glue_objc_registerTaggedPointerClass(Class _Nonnull class_)(a0)
 Class _Nullable glue_object_getTaggedPointerClass(id _Nonnull object)(a0)
 uintptr_t glue_object_getTaggedPointerValue(id _Nonnull object)(a0)

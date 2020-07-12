@@ -147,6 +147,7 @@ extern void glue_objc_hashtable_set(void);
 extern void *glue_objc_hashtable_get(void);
 extern void glue_objc_hashtable_delete(void);
 extern void glue_objc_hashtable_free(void);
+extern void glue_objc_setTaggedPointerSecret(void);
 extern int glue_objc_registerTaggedPointerClass(void);
 extern Class _Nullable glue_object_getTaggedPointerClass(void);
 extern uintptr_t glue_object_getTaggedPointerValue(void);
@@ -677,6 +678,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_hashtable_get,
 	(CONST_APTR)glue_objc_hashtable_delete,
 	(CONST_APTR)glue_objc_hashtable_free,
+	(CONST_APTR)glue_objc_setTaggedPointerSecret,
 	(CONST_APTR)glue_objc_registerTaggedPointerClass,
 	(CONST_APTR)glue_object_getTaggedPointerClass,
 	(CONST_APTR)glue_object_getTaggedPointerValue,

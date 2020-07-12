@@ -24,6 +24,13 @@
 
 Class objc_tagged_pointer_classes[NUM_TAGGED_POINTER_CLASSES];
 static int taggedPointerClassesCount;
+uintptr_t objc_tagged_pointer_secret;
+
+void
+objc_setTaggedPointerSecret(uintptr_t secret)
+{
+	objc_tagged_pointer_secret = secret & ~(uintptr_t)1;
+}
 
 int
 objc_registerTaggedPointerClass(Class class)
@@ -48,7 +55,7 @@ objc_registerTaggedPointerClass(Class class)
 Class
 object_getTaggedPointerClass(id object)
 {
-	uintptr_t pointer = (uintptr_t)object;
+	uintptr_t pointer = (uintptr_t)object ^ objc_tagged_pointer_secret;
 
 	pointer &= (1 << TAGGED_POINTER_BITS) - 1;
 	pointer >>= 1;
@@ -62,7 +69,7 @@ object_getTaggedPointerClass(id object)
 uintptr_t
 object_getTaggedPointerValue(id object)
 {
-	uintptr_t pointer = (uintptr_t)object;
+	uintptr_t pointer = (uintptr_t)object ^ objc_tagged_pointer_secret;
 
 	pointer >>= TAGGED_POINTER_BITS;
 
@@ -83,5 +90,5 @@ objc_createTaggedPointer(int class, uintptr_t value)
 	pointer = (class << 1) | 1;
 	pointer |= (value << TAGGED_POINTER_BITS);
 
-	return (id)pointer;
+	return (id)(pointer ^ objc_tagged_pointer_secret);
 }
