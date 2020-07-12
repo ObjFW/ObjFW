@@ -87,7 +87,10 @@
 	addis	%r6, %r6, .Lbiased_got2-0b@ha
 	addi	%r6, %r6, .Lbiased_got2-0b@l
 
-	rlwinm	%r5, %r3, 1, 0x1C
+	lwz	%r5, .Lgot_objc_tagged_pointer_secret-.Lbiased_got2(%r6)
+	lwz	%r5, 0(%r5)
+	xor	%r5, %r3, %r5
+	rlwinm	%r5, %r5, 1, 0x1C
 
 	lwz	%r6, .Lgot_objc_tagged_pointer_classes-.Lbiased_got2(%r6)
 	lwzx	%r5, %r6, %r5
@@ -140,6 +143,8 @@ get_pc:
 	.long objc_method_not_found
 .Lgot_objc_method_not_found_stret:
 	.long objc_method_not_found_stret
+.Lgot_objc_tagged_pointer_secret:
+	.long objc_tagged_pointer_secret
 .Lgot_objc_tagged_pointer_classes:
 	.long objc_tagged_pointer_classes
 
