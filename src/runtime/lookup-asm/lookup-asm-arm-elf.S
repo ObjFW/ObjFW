@@ -64,15 +64,19 @@
 	bx	lr
 
 .Ltagged_pointer_\name:
-	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name
-	ldr	r2, .Lgot$indirect_.Ltagged_pointer_\name+4
-	add	r3, pc, r3
+	ldr	r2, .Lgot$indirect_.Ltagged_pointer_\name
+	add	r2, pc, r2
 
+	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+4
+	ldr	r3, [r2, r3]
+	ldr	r3, [r3]
+	eor	r0, r0, r3
 	and	r0, r0, #0xE
 	lsl	r0, r0, #1
 
-	ldr	r2, [r3, r2]
-	ldr	r2, [r2, r0]
+	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+8
+	ldr	r3, [r2, r3]
+	ldr	r2, [r3, r0]
 	ldr	r2, [r2, #32]
 
 	b	.Lmain_\name
@@ -80,7 +84,8 @@
 .size \name, .-\name
 
 .Lgot$indirect_.Ltagged_pointer_\name:
-	.long	_GLOBAL_OFFSET_TABLE_-(.Ltagged_pointer_\name+16)
+	.long	_GLOBAL_OFFSET_TABLE_-(.Ltagged_pointer_\name+12)
+	.long	objc_tagged_pointer_secret(GOT)
 	.long	objc_tagged_pointer_classes(GOT)
 .endm
 
