@@ -32,8 +32,9 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#include "macros.h"
 #include "block.h"
+#include "macros.h"
+#include "once.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -1317,6 +1318,10 @@ extern id of_alloc_object(Class class_, size_t extraSize,
     size_t extraAlignment, void *_Nullable *_Nullable extra);
 extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
 extern uint32_t of_hash_seed;
+/* These do *NOT* provide cryptographically secure randomness! */
+extern uint16_t of_random16(void);
+extern uint32_t of_random32(void);
+extern uint64_t of_random64(void);
 #ifdef __cplusplus
 }
 #endif

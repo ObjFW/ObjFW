@@ -820,7 +820,7 @@ case "$host_cpu" in
 			#if !defined(__arm64__) && !defined(__aarch64__) && \
 			    !defined(__ARM64_ARCH_8__)
 			__asm__ __volatile__ (
-			    "fstmfdd sp!, {d0-d7}"
+			    "vstmdb	sp!, {d0-d7}"
 			);
 			#endif
 		], [
@@ -901,13 +901,7 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 	])
 ])
 
-AC_CHECK_FUNC(arc4random, [
-	AC_DEFINE(OF_HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
-], [
-	AC_CHECK_FUNC(random, [
-		AC_DEFINE(OF_HAVE_RANDOM, 1, [Whether we have random()])
-	])
-])
+AC_CHECK_FUNCS(arc4random getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
 	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
