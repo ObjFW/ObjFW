@@ -814,7 +814,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	/* Random, unused ID */
 	do {
-		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
+		ID = [OFNumber numberWithUInt16: of_random16()];
 	} while ([_queries objectForKey: ID] != nil);
 
 	if (query.domainName.UTF8StringLength > 253)

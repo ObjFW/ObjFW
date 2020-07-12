@@ -167,7 +167,7 @@ OF_DIRECT_MEMBERS
 						     count: _capacity];
 
 		if (of_hash_seed != 0)
-			_rotate = of_random() & 31;
+			_rotate = of_random16() & 31;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -534,7 +534,7 @@ OF_DIRECT_MEMBERS
 	 * than creating a new hash map.
 	 */
 	if (of_hash_seed != 0)
-		_rotate = of_random() & 31;
+		_rotate = of_random16() & 31;
 }
 
 - (bool)containsObject: (void *)object

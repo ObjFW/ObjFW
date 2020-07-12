@@ -120,8 +120,31 @@ initRandom(void)
 }
 #endif
 
+uint16_t
+of_random16(void)
+{
+#if defined(HAVE_ARC4RANDOM)
+	return arc4random();
+#elif defined(HAVE_GETRANDOM)
+	uint16_t buffer;
+
+	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+
+	return buffer;
+#else
+	static of_once_t onceControl = OF_ONCE_INIT;
+
+	of_once(&onceControl, initRandom);
+# ifdef HAVE_RANDOM
+	return random() & 0xFFFF;
+# else
+	return rand() & 0xFFFF;
+# endif
+#endif
+}
+
 uint32_t
-of_random(void)
+of_random32(void)
 {
 #if defined(HAVE_ARC4RANDOM)
 	return arc4random();
@@ -132,14 +155,27 @@ of_random(void)
 
 	return buffer;
 #else
-	static of_once_t onceControl;
+	return ((uint32_t)of_random16() << 16) | of_random16();
+#endif
+}
 
-	of_once(&onceControl, initRandom);
-# ifdef HAVE_RANDOM
-	return (((uint32_t)(random()) << 16) | ((uint32_t)(random()) & 0xFFFF));
-# else
-	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
-# endif
+uint64_t
+of_random64(void)
+{
+#if defined(HAVE_ARC4RANDOM)
+	uint64_t buffer;
+
+	arc4random_buf(&buffer, sizeof(buffer));
+
+	return buffer;
+#elif defined(HAVE_GETRANDOM)
+	uint64_t buffer;
+
+	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+
+	return buffer;
+#else
+	return ((uint64_t)of_random32() << 32) | of_random32();
 #endif
 }
 
@@ -291,7 +327,7 @@ _references_to_categories_of_OFObject(void)
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 
 	do {
-		of_hash_seed = of_random();
+		of_hash_seed = of_random32();
 	} while (of_hash_seed == 0);
 }
 
