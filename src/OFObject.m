@@ -27,6 +27,10 @@
 # include <dlfcn.h>
 #endif
 
+#ifdef HAVE_GETRANDOM
+# include <sys/random.h>
+#endif
+
 #import "OFObject.h"
 #import "OFArray.h"
 #import "OFLocale.h"
@@ -104,7 +108,7 @@ static struct {
 
 uint32_t of_hash_seed;
 
-#ifndef HAVE_ARC4RANDOM
+#if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
 static void
 initRandom(void)
 {

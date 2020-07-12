@@ -70,9 +70,9 @@
 .Ltagged_pointer_\name:
 #ifdef OF_PIC
 	mov	%o7, %g1
-	sethi	%hi(_GLOBAL_OFFSET_TABLE_-4), %o3
+	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
 	call	0f
-	 or	%o3, %lo(_GLOBAL_OFFSET_TABLE_+4), %o3
+	 or	%o3, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o3
 0:
 	add	%o7, %o3, %o3
 	mov	%g1, %o7
@@ -125,9 +125,9 @@ ret_nil:
 #ifdef OF_PIC
 	mov	%o7, %g1
 
-	sethi	%hi(_GLOBAL_OFFSET_TABLE_-4), %o1
+	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o1
 	call	0f
-	 add	%o1, %lo(_GLOBAL_OFFSET_TABLE_+4), %o1
+	 add	%o1, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o1
 0:
 	add	%o7, %o1, %o1
 
