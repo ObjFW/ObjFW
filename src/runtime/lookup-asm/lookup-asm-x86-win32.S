@@ -55,11 +55,11 @@
 	ret
 
 .Ltagged_pointer_\name:
+	xor	edx, _objc_tagged_pointer_secret
 	and	dl, 0xE
 	movzx	edx, dl
 
-	mov	eax, offset _objc_tagged_pointer_classes
-	mov	edx, [eax+edx*2]
+	mov	edx, [_objc_tagged_pointer_classes+edx*2]
 	mov	edx, [edx+32]
 
 	jmp	short .Lmain_\name
