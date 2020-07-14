@@ -72,27 +72,31 @@
 
 0:
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
-	daddu	$v0, $v0, $t9
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
+	daddu	$v0, $v0, $t9
 	ld	$v0, %got_disp(nil_method)($v0)
 	jr	$ra
 
 1:
 	lui	$t0, %hi(%neg(%gp_rel(\name)))
-	daddu	$t0, $t0, $t9
 	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
+	daddu	$t0, $t0, $t9
 	ld	$t9, %got_disp(\not_found)($t0)
 	jr	$t9
 
 .Ltagged_pointer_\name:
-	and	$t0, $a0, 0xE
-	dsll	$t0, $t0, 2
+	lui	$t0, %hi(%neg(%gp_rel(\name)))
+	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
+	daddu	$t0, $t0, $t9
 
-	lui	$t1, %hi(%neg(%gp_rel(\name)))
-	daddu	$t1, $t1, $t9
-	daddiu	$t1, $t1, %lo(%neg(%gp_rel(\name)))
-	ld	$t1, %got_disp(objc_tagged_pointer_classes)($t1)
-	daddu	$t0, $t1, $t0
+	ld	$t1, %got_disp(objc_tagged_pointer_secret)($t0)
+	ld	$t1, 0($t1)
+	xor	$t1, $a0, $t1
+	and	$t1, $t1, 0xE
+	dsll	$t1, $t1, 2
+
+	ld	$t0, %got_disp(objc_tagged_pointer_classes)($t0)
+	daddu	$t0, $t0, $t1
 	ld	$t0, ($t0)
 	ld	$t0, 64($t0)
 
@@ -115,8 +119,8 @@
 
 0:
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
-	daddu	$v0, $v0, $t9
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
+	daddu	$v0, $v0, $t9
 	ld	$v0, %got_disp(nil_method)($v0)
 	jr	$ra
 .type \name, %function
