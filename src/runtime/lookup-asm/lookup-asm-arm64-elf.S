@@ -51,6 +51,10 @@
 	ret
 
 .Ltagged_pointer_\name:
+	adrp	x2, :got:objc_tagged_pointer_secret
+	ldr	x2, [x2, #:got_lo12:objc_tagged_pointer_secret]
+	ldr	x2, [x2]
+	eor	x0, x0, x2
 	and	x0, x0, #0xE
 	lsl	x0, x0, #2
 
