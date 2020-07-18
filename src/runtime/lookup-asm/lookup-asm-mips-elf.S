@@ -94,9 +94,6 @@
 #endif
 
 .Ltagged_pointer_\name:
-	and	$t0, $a0, 0xE
-	sll	$t0, $t0, 1
-
 #ifdef OF_PIC
 0:
 	lui	$gp, %hi(_gp_disp)
@@ -104,6 +101,16 @@
 	addu	$gp, $gp, $t9
 	addiu	$gp, $gp, 0b-\name
 
+	lw	$t0, %got(objc_tagged_pointer_secret)($gp)
+#else
+	la	$t0, objc_tagged_pointer_secret
+#endif
+	lw	$t0, 0($t0)
+	xor	$t0, $a0, $t0
+	and	$t0, $t0, 0xE
+	sll	$t0, $t0, 1
+
+#ifdef OF_PIC
 	lw	$t1, %got(objc_tagged_pointer_classes)($gp)
 #else
 	la	$t1, objc_tagged_pointer_classes
