@@ -708,6 +708,12 @@ objc_hashtable_free(struct objc_hashtable *table)
 	glue_objc_hashtable_free(table);
 }
 
+void
+objc_setTaggedPointerSecret(uintptr_t secret)
+{
+	glue_objc_setTaggedPointerSecret(secret);
+}
+
 int
 objc_registerTaggedPointerClass(Class class)
 {
