@@ -71,16 +71,16 @@ typedef enum {
 	/*! `signed char` */
 	OF_NUMBER_TYPE_CHAR		= OF_NUMBER_TYPE_UCHAR |
 					      OF_NUMBER_TYPE_SIGNED,
-	/*! `signed short` */
+	/*! `short` */
 	OF_NUMBER_TYPE_SHORT		= OF_NUMBER_TYPE_USHORT |
 					      OF_NUMBER_TYPE_SIGNED,
-	/*! `signed int` */
+	/*! `int` */
 	OF_NUMBER_TYPE_INT		= OF_NUMBER_TYPE_UINT |
 					      OF_NUMBER_TYPE_SIGNED,
-	/*! `signed long` */
+	/*! `long` */
 	OF_NUMBER_TYPE_LONG		= OF_NUMBER_TYPE_ULONG |
 					      OF_NUMBER_TYPE_SIGNED,
-	/*! `signed long long` */
+	/*! `long long` */
 	OF_NUMBER_TYPE_LONGLONG		= OF_NUMBER_TYPE_ULONGLONG |
 					      OF_NUMBER_TYPE_SIGNED,
 	/*! `int8_t` */
@@ -123,34 +123,34 @@ OF_SUBCLASSING_RESTRICTED
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
 	union of_number_value {
-		bool		   bool_;
-		signed char	   sChar;
-		signed short	   sShort;
-		signed int	   sInt;
-		signed long	   sLong;
-		signed long long   sLongLong;
-		unsigned char	   uChar;
-		unsigned short	   uShort;
-		unsigned int	   uInt;
-		unsigned long	   uLong;
+		bool               bool_;
+		signed char        sChar;
+		short              sShort;
+		int                sInt;
+		long               sLong;
+		long long          sLongLong;
+		unsigned char      uChar;
+		unsigned short     uShort;
+		unsigned int       uInt;
+		unsigned long      uLong;
 		unsigned long long uLongLong;
-		int8_t		   int8;
-		int16_t		   int16;
-		int32_t		   int32;
-		int64_t		   int64;
-		uint8_t		   uInt8;
-		uint16_t	   uInt16;
-		uint32_t	   uInt32;
-		uint64_t	   uInt64;
-		size_t		   size;
-		ssize_t		   sSize;
-		intmax_t	   intMax;
-		uintmax_t	   uIntMax;
-		ptrdiff_t	   ptrDiff;
-		intptr_t	   intPtr;
-		uintptr_t	   uIntPtr;
-		float		   float_;
-		double		   double_;
+		int8_t             int8;
+		int16_t            int16;
+		int32_t            int32;
+		int64_t            int64;
+		uint8_t            uInt8;
+		uint16_t           uInt16;
+		uint32_t           uInt32;
+		uint64_t           uInt64;
+		size_t             size;
+		ssize_t            sSize;
+		intmax_t           intMax;
+		uintmax_t          uIntMax;
+		ptrdiff_t          ptrDiff;
+		intptr_t           intPtr;
+		uintptr_t          uIntPtr;
+		float              float_;
+		double             double_;
 	} _value;
 	of_number_type_t _type;
 }
@@ -171,24 +171,24 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) signed char charValue;
 
 /*!
- * @brief The OFNumber as a `signed short`.
+ * @brief The OFNumber as a `short`.
  */
-@property (readonly, nonatomic) signed short shortValue;
+@property (readonly, nonatomic) short shortValue;
 
 /*!
- * @brief The OFNumber as a `signed int`.
+ * @brief The OFNumber as an `int`.
  */
-@property (readonly, nonatomic) signed int intValue;
+@property (readonly, nonatomic) int intValue;
 
 /*!
- * @brief The OFNumber as a `signed long`.
+ * @brief The OFNumber as a `long`.
  */
-@property (readonly, nonatomic) signed long longValue;
+@property (readonly, nonatomic) long longValue;
 
 /*!
- * @brief The OFNumber as a `signed long long`.
+ * @brief The OFNumber as a `long long`.
  */
-@property (readonly, nonatomic) signed long long longLongValue;
+@property (readonly, nonatomic) long long longLongValue;
 
 /*!
  * @brief The OFNumber as an `unsigned char`.
@@ -333,36 +333,36 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)numberWithChar: (signed char)sChar;
 
 /*!
- * @brief Creates a new OFNumber with the specified `signed short`.
+ * @brief Creates a new OFNumber with the specified `short`.
  *
- * @param sShort A `signed short` which the OFNumber should contain
+ * @param sShort A `short` which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithShort: (signed short)sShort;
++ (instancetype)numberWithShort: (short)sShort;
 
 /*!
- * @brief Creates a new OFNumber with the specified `signed int`.
+ * @brief Creates a new OFNumber with the specified `int`.
  *
- * @param sInt A `signed int` which the OFNumber should contain
+ * @param sInt An `int` which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithInt: (signed int)sInt;
++ (instancetype)numberWithInt: (int)sInt;
 
 /*!
- * @brief Creates a new OFNumber with the specified `signed long`.
+ * @brief Creates a new OFNumber with the specified `long`.
  *
- * @param sLong A `signed long` which the OFNumber should contain
+ * @param sLong A `long` which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithLong: (signed long)sLong;
++ (instancetype)numberWithLong: (long)sLong;
 
 /*!
- * @brief Creates a new OFNumber with the specified `signed long long`.
+ * @brief Creates a new OFNumber with the specified `long long`.
  *
- * @param sLongLong A `signed long long` which the OFNumber should contain
+ * @param sLongLong A `long long` which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithLongLong: (signed long long)sLongLong;
++ (instancetype)numberWithLongLong: (long long)sLongLong;
 
 /*!
  * @brief Creates a new OFNumber with the specified `unsigned char`.
@@ -570,40 +570,37 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithChar: (signed char)sChar;
 
 /*!
- * @brief Initializes an already allocated OFNumber with the specified
- *	  `signed short`.
+ * @brief Initializes an already allocated OFNumber with the specified `short`.
  *
- * @param sShort A `signed short` which the OFNumber should contain
+ * @param sShort A `short` which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithShort: (signed short)sShort;
+- (instancetype)initWithShort: (short)sShort;
+
+/*!
+ * @brief Initializes an already allocated OFNumber with the specified `int`.
+ *
+ * @param sInt An `int` which the OFNumber should contain
+ * @return An initialized OFNumber
+ */
+- (instancetype)initWithInt: (int)sInt;
+
+/*!
+ * @brief Initializes an already allocated OFNumber with the specified `long`.
+ *
+ * @param sLong A `long` which the OFNumber should contain
+ * @return An initialized OFNumber
+ */
+- (instancetype)initWithLong: (long)sLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
- *	  `signed int`.
+ *	  `long long`.
  *
- * @param sInt A `signed int` which the OFNumber should contain
+ * @param sLongLong A `long long` which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithInt: (signed int)sInt;
-
-/*!
- * @brief Initializes an already allocated OFNumber with the specified
- *	  `signed long`.
- *
- * @param sLong A `signed long` which the OFNumber should contain
- * @return An initialized OFNumber
- */
-- (instancetype)initWithLong: (signed long)sLong;
-
-/*!
- * @brief Initializes an already allocated OFNumber with the specified
- *	  `signed long long`.
- *
- * @param sLongLong A `signed long long` which the OFNumber should contain
- * @return An initialized OFNumber
- */
-- (instancetype)initWithLongLong: (signed long long)sLongLong;
+- (instancetype)initWithLongLong: (long long)sLongLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
