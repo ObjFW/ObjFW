@@ -261,6 +261,15 @@ static struct {
 	return (id)[[OFNumber of_alloc] initWithUIntMax: uIntMax];
 }
 
+#ifdef __clang__
+/*
+ * This warning should probably not exist at all, as it prevents checking
+ * whether one type fits into another in a portable way.
+ */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#endif
+
 - (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
 {
 	if (ptrDiff >= LLONG_MIN && ptrDiff <= LLONG_MAX)
@@ -289,6 +298,10 @@ static struct {
 
 	return (id)[[OFNumber of_alloc] initWithUIntPtr: uIntPtr];
 }
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithFloat: (float)float_
 {
