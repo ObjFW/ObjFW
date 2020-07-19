@@ -18,7 +18,7 @@
         <OFString>Qu&quot;xbar
 test</OFString>
         <OFNumber type='unsigned'>1234</OFNumber>
-        <OFNumber type='double'>40934a456d5cfaad</OFNumber>
+        <OFNumber type='float'>40934a456d5cfaad</OFNumber>
         <OFMutableString>asd</OFMutableString>
         <OFDate>40934a456d5cfaad</OFDate>
       </OFArray>

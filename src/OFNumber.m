@@ -33,62 +33,12 @@
 
 #define RETURN_AS(t)							\
 	switch (_type) {						\
-	case OF_NUMBER_TYPE_BOOL:					\
-		return (t)_value.bool_;					\
-	case OF_NUMBER_TYPE_CHAR:					\
-		return (t)_value.sChar;					\
-	case OF_NUMBER_TYPE_SHORT:					\
-		return (t)_value.sShort;				\
-	case OF_NUMBER_TYPE_INT:					\
-		return (t)_value.sInt;					\
-	case OF_NUMBER_TYPE_LONG:					\
-		return (t)_value.sLong;					\
-	case OF_NUMBER_TYPE_LONGLONG:					\
-		return (t)_value.sLongLong;				\
-	case OF_NUMBER_TYPE_UCHAR:					\
-		return (t)_value.uChar;					\
-	case OF_NUMBER_TYPE_USHORT:					\
-		return (t)_value.uShort;				\
-	case OF_NUMBER_TYPE_UINT:					\
-		return (t)_value.uInt;					\
-	case OF_NUMBER_TYPE_ULONG:					\
-		return (t)_value.uLong;					\
-	case OF_NUMBER_TYPE_ULONGLONG:					\
-		return (t)_value.uLongLong;				\
-	case OF_NUMBER_TYPE_INT8:					\
-		return (t)_value.int8;					\
-	case OF_NUMBER_TYPE_INT16:					\
-		return (t)_value.int16;					\
-	case OF_NUMBER_TYPE_INT32:					\
-		return (t)_value.int32;					\
-	case OF_NUMBER_TYPE_INT64:					\
-		return (t)_value.int64;					\
-	case OF_NUMBER_TYPE_UINT8:					\
-		return (t)_value.uInt8;					\
-	case OF_NUMBER_TYPE_UINT16:					\
-		return (t)_value.uInt16;				\
-	case OF_NUMBER_TYPE_UINT32:					\
-		return (t)_value.uInt32;				\
-	case OF_NUMBER_TYPE_UINT64:					\
-		return (t)_value.uInt64;				\
-	case OF_NUMBER_TYPE_SIZE:					\
-		return (t)_value.size;					\
-	case OF_NUMBER_TYPE_SSIZE:					\
-		return (t)_value.sSize;					\
-	case OF_NUMBER_TYPE_INTMAX:					\
-		return (t)_value.intMax;				\
-	case OF_NUMBER_TYPE_UINTMAX:					\
-		return (t)_value.uIntMax;				\
-	case OF_NUMBER_TYPE_PTRDIFF:					\
-		return (t)_value.ptrDiff;				\
-	case OF_NUMBER_TYPE_INTPTR:					\
-		return (t)_value.intPtr;				\
-	case OF_NUMBER_TYPE_UINTPTR:					\
-		return (t)_value.uIntPtr;				\
 	case OF_NUMBER_TYPE_FLOAT:					\
 		return (t)_value.float_;				\
-	case OF_NUMBER_TYPE_DOUBLE:					\
-		return (t)_value.double_;				\
+	case OF_NUMBER_TYPE_SIGNED:					\
+		return (t)_value.signed_;				\
+	case OF_NUMBER_TYPE_UNSIGNED:					\
+		return (t)_value.unsigned_;				\
 	default:							\
 		@throw [OFInvalidFormatException exception];		\
 	}
@@ -373,8 +323,6 @@ static struct {
 @end
 
 @implementation OFNumber
-@synthesize type = _type;
-
 + (void)initialize
 {
 	if (self == [OFNumber class])
@@ -543,8 +491,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.bool_ = bool_;
-	_type = OF_NUMBER_TYPE_BOOL;
+	_value.unsigned_ = bool_;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(bool);
 
 	return self;
 }
@@ -553,8 +502,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sChar = sChar;
-	_type = OF_NUMBER_TYPE_CHAR;
+	_value.signed_ = sChar;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(signed char);
 
 	return self;
 }
@@ -563,8 +513,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sShort = sShort;
-	_type = OF_NUMBER_TYPE_SHORT;
+	_value.signed_ = sShort;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(short);
 
 	return self;
 }
@@ -573,8 +524,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sInt = sInt;
-	_type = OF_NUMBER_TYPE_INT;
+	_value.signed_ = sInt;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(int);
 
 	return self;
 }
@@ -583,8 +535,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sLong = sLong;
-	_type = OF_NUMBER_TYPE_LONG;
+	_value.signed_ = sLong;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(long);
 
 	return self;
 }
@@ -593,8 +546,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sLongLong = sLongLong;
-	_type = OF_NUMBER_TYPE_LONGLONG;
+	_value.signed_ = sLongLong;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(long long);
 
 	return self;
 }
@@ -603,8 +557,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uChar = uChar;
-	_type = OF_NUMBER_TYPE_UCHAR;
+	_value.unsigned_ = uChar;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
@@ -613,8 +568,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uShort = uShort;
-	_type = OF_NUMBER_TYPE_USHORT;
+	_value.unsigned_ = uShort;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(unsigned short);
 
 	return self;
 }
@@ -623,8 +579,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uInt = uInt;
-	_type = OF_NUMBER_TYPE_UINT;
+	_value.unsigned_ = uInt;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(unsigned int);
 
 	return self;
 }
@@ -633,8 +590,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uLong = uLong;
-	_type = OF_NUMBER_TYPE_ULONG;
+	_value.unsigned_ = uLong;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
@@ -643,8 +601,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uLongLong = uLongLong;
-	_type = OF_NUMBER_TYPE_ULONGLONG;
+	_value.unsigned_ = uLongLong;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(unsigned long long);
 
 	return self;
 }
@@ -653,8 +612,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.int8 = int8;
-	_type = OF_NUMBER_TYPE_INT8;
+	_value.signed_ = int8;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(int8_t);
 
 	return self;
 }
@@ -663,8 +623,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.int16 = int16;
-	_type = OF_NUMBER_TYPE_INT16;
+	_value.signed_ = int16;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(int16_t);
 
 	return self;
 }
@@ -673,8 +634,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.int32 = int32;
-	_type = OF_NUMBER_TYPE_INT32;
+	_value.signed_ = int32;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(int32_t);
 
 	return self;
 }
@@ -683,8 +645,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.int64 = int64;
-	_type = OF_NUMBER_TYPE_INT64;
+	_value.signed_ = int64;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(int64_t);
 
 	return self;
 }
@@ -693,8 +656,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uInt8 = uInt8;
-	_type = OF_NUMBER_TYPE_UINT8;
+	_value.unsigned_ = uInt8;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uint8_t);
 
 	return self;
 }
@@ -703,8 +667,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uInt16 = uInt16;
-	_type = OF_NUMBER_TYPE_UINT16;
+	_value.unsigned_ = uInt16;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uint16_t);
 
 	return self;
 }
@@ -713,8 +678,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uInt32 = uInt32;
-	_type = OF_NUMBER_TYPE_UINT32;
+	_value.unsigned_ = uInt32;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uint32_t);
 
 	return self;
 }
@@ -723,8 +689,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uInt64 = uInt64;
-	_type = OF_NUMBER_TYPE_UINT64;
+	_value.unsigned_ = uInt64;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uint64_t);
 
 	return self;
 }
@@ -733,8 +700,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.size = size;
-	_type = OF_NUMBER_TYPE_SIZE;
+	_value.unsigned_ = size;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(size_t);
 
 	return self;
 }
@@ -743,8 +711,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.sSize = sSize;
-	_type = OF_NUMBER_TYPE_SSIZE;
+	_value.signed_ = sSize;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(ssize_t);
 
 	return self;
 }
@@ -753,8 +722,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.intMax = intMax;
-	_type = OF_NUMBER_TYPE_INTMAX;
+	_value.signed_ = intMax;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(intmax_t);
 
 	return self;
 }
@@ -763,8 +733,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uIntMax = uIntMax;
-	_type = OF_NUMBER_TYPE_UINTMAX;
+	_value.unsigned_ = uIntMax;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uintmax_t);
 
 	return self;
 }
@@ -773,8 +744,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.ptrDiff = ptrDiff;
-	_type = OF_NUMBER_TYPE_PTRDIFF;
+	_value.signed_ = ptrDiff;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(ptrdiff_t);
 
 	return self;
 }
@@ -783,8 +755,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.intPtr = intPtr;
-	_type = OF_NUMBER_TYPE_INTPTR;
+	_value.signed_ = intPtr;
+	_type = OF_NUMBER_TYPE_SIGNED;
+	_typeEncoding = @encode(intptr_t);
 
 	return self;
 }
@@ -793,8 +766,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.uIntPtr = uIntPtr;
-	_type = OF_NUMBER_TYPE_UINTPTR;
+	_value.unsigned_ = uIntPtr;
+	_type = OF_NUMBER_TYPE_UNSIGNED;
+	_typeEncoding = @encode(uintptr_t);
 
 	return self;
 }
@@ -805,6 +779,7 @@ static struct {
 
 	_value.float_ = float_;
 	_type = OF_NUMBER_TYPE_FLOAT;
+	_typeEncoding = @encode(float);
 
 	return self;
 }
@@ -813,8 +788,9 @@ static struct {
 {
 	self = [super init];
 
-	_value.double_ = double_;
-	_type = OF_NUMBER_TYPE_DOUBLE;
+	_value.float_ = double_;
+	_type = OF_NUMBER_TYPE_FLOAT;
+	_typeEncoding = @encode(double);
 
 	return self;
 }
@@ -833,36 +809,27 @@ static struct {
 
 		typeString = [element attributeForName: @"type"].stringValue;
 
-		if ([typeString isEqual: @"boolean"]) {
-			_type = OF_NUMBER_TYPE_BOOL;
-
-			if ([[element stringValue] isEqual: @"true"])
-				_value.bool_ = true;
-			else if ([[element stringValue] isEqual: @"false"])
-				_value.bool_ = false;
+		if ([typeString isEqual: @"bool"]) {
+			OFString *stringValue = element.stringValue;
+			if ([stringValue isEqual: @"true"])
+				self = [self initWithBool: true];
+			else if ([stringValue isEqual: @"false"])
+				self = [self initWithBool: false];
 			else
 				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"unsigned"]) {
+		} else if ([typeString isEqual: @"float"])
+			self = [self initWithDouble: OF_BSWAP_DOUBLE_IF_LE(
+			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
+			    (uint64_t)element.hexadecimalValue)))];
+		else if ([typeString isEqual: @"signed"])
+			self = [self initWithIntMax: element.doubleValue];
+		else if ([typeString isEqual: @"unsigned"])
 			/*
 			 * FIXME: This will fail if the value is bigger than
 			 *	  INTMAX_MAX!
 			 */
-			_type = OF_NUMBER_TYPE_UINTMAX;
-			_value.uIntMax = element.decimalValue;
-		} else if ([typeString isEqual: @"signed"]) {
-			_type = OF_NUMBER_TYPE_INTMAX;
-			_value.intMax = element.decimalValue;
-		} else if ([typeString isEqual: @"float"]) {
-			_type = OF_NUMBER_TYPE_FLOAT;
-			_value.float_ = OF_BSWAP_FLOAT_IF_LE(
-			    OF_INT_TO_FLOAT_RAW(OF_BSWAP32_IF_LE(
-			    (uint32_t)element.hexadecimalValue)));
-		} else if ([typeString isEqual: @"double"]) {
-			_type = OF_NUMBER_TYPE_DOUBLE;
-			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(
-			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
-			    (uint64_t)element.hexadecimalValue)));
-		} else
+			self = [self initWithUIntMax: element.decimalValue];
+		else
 			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
@@ -876,240 +843,37 @@ static struct {
 
 - (const char *)objCType
 {
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		return @encode(bool);
-	case OF_NUMBER_TYPE_CHAR:
-		return @encode(signed char);
-	case OF_NUMBER_TYPE_SHORT:
-		return @encode(short);
-	case OF_NUMBER_TYPE_INT:
-		return @encode(int);
-	case OF_NUMBER_TYPE_LONG:
-		return @encode(long);
-	case OF_NUMBER_TYPE_LONGLONG:
-		return @encode(long long);
-	case OF_NUMBER_TYPE_UCHAR:
-		return @encode(unsigned char);
-	case OF_NUMBER_TYPE_USHORT:
-		return @encode(unsigned short);
-	case OF_NUMBER_TYPE_UINT:
-		return @encode(unsigned int);
-	case OF_NUMBER_TYPE_ULONG:
-		return @encode(unsigned long);
-	case OF_NUMBER_TYPE_ULONGLONG:
-		return @encode(unsigned long long);
-	case OF_NUMBER_TYPE_INT8:
-		return @encode(int8_t);
-	case OF_NUMBER_TYPE_INT16:
-		return @encode(int16_t);
-	case OF_NUMBER_TYPE_INT32:
-		return @encode(int32_t);
-	case OF_NUMBER_TYPE_INT64:
-		return @encode(int64_t);
-	case OF_NUMBER_TYPE_UINT8:
-		return @encode(uint8_t);
-	case OF_NUMBER_TYPE_UINT16:
-		return @encode(uint16_t);
-	case OF_NUMBER_TYPE_UINT32:
-		return @encode(uint32_t);
-	case OF_NUMBER_TYPE_UINT64:
-		return @encode(uint64_t);
-	case OF_NUMBER_TYPE_SIZE:
-		return @encode(size_t);
-	case OF_NUMBER_TYPE_SSIZE:
-		return @encode(ssize_t);
-	case OF_NUMBER_TYPE_INTMAX:
-		return @encode(intmax_t);
-	case OF_NUMBER_TYPE_UINTMAX:
-		return @encode(uintmax_t);
-	case OF_NUMBER_TYPE_PTRDIFF:
-		return @encode(ptrdiff_t);
-	case OF_NUMBER_TYPE_INTPTR:
-		return @encode(intptr_t);
-	case OF_NUMBER_TYPE_UINTPTR:
-		return @encode(uintptr_t);
-	case OF_NUMBER_TYPE_FLOAT:
-		return @encode(float);
-	case OF_NUMBER_TYPE_DOUBLE:
-		return @encode(double);
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	return _typeEncoding;
 }
 
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		if (size != sizeof(bool))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.bool_, sizeof(bool));
-		break;
-	case OF_NUMBER_TYPE_CHAR:
-		if (size != sizeof(signed char))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sChar, sizeof(signed char));
-		break;
-	case OF_NUMBER_TYPE_SHORT:
-		if (size != sizeof(short))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sShort, sizeof(short));
-		break;
-	case OF_NUMBER_TYPE_INT:
-		if (size != sizeof(int))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sInt, sizeof(int));
-		break;
-	case OF_NUMBER_TYPE_LONG:
-		if (size != sizeof(long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sLong, sizeof(long));
-		break;
-	case OF_NUMBER_TYPE_LONGLONG:
-		if (size != sizeof(long long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sLongLong, sizeof(long long));
-		break;
-	case OF_NUMBER_TYPE_UCHAR:
-		if (size != sizeof(unsigned char))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uChar, sizeof(unsigned char));
-		break;
-	case OF_NUMBER_TYPE_USHORT:
-		if (size != sizeof(unsigned short))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uShort, sizeof(unsigned short));
-		break;
-	case OF_NUMBER_TYPE_UINT:
-		if (size != sizeof(unsigned int))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt, sizeof(unsigned int));
-		break;
-	case OF_NUMBER_TYPE_ULONG:
-		if (size != sizeof(unsigned long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uLong, sizeof(unsigned long));
-		break;
-	case OF_NUMBER_TYPE_ULONGLONG:
-		if (size != sizeof(unsigned long long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uLongLong, sizeof(unsigned long long));
-		break;
-	case OF_NUMBER_TYPE_INT8:
-		if (size != sizeof(int8_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int8, sizeof(int8_t));
-		break;
-	case OF_NUMBER_TYPE_INT16:
-		if (size != sizeof(int16_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int16, sizeof(int16_t));
-		break;
-	case OF_NUMBER_TYPE_INT32:
-		if (size != sizeof(int32_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int32, sizeof(int32_t));
-		break;
-	case OF_NUMBER_TYPE_INT64:
-		if (size != sizeof(int64_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int64, sizeof(int64_t));
-		break;
-	case OF_NUMBER_TYPE_UINT8:
-		if (size != sizeof(uint8_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt8, sizeof(uint8_t));
-		break;
-	case OF_NUMBER_TYPE_UINT16:
-		if (size != sizeof(uint16_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt16, sizeof(uint16_t));
-		break;
-	case OF_NUMBER_TYPE_UINT32:
-		if (size != sizeof(uint32_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt32, sizeof(uint32_t));
-		break;
-	case OF_NUMBER_TYPE_UINT64:
-		if (size != sizeof(uint64_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt64, sizeof(uint64_t));
-		break;
-	case OF_NUMBER_TYPE_SIZE:
-		if (size != sizeof(size_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.size, sizeof(size_t));
-		break;
-	case OF_NUMBER_TYPE_SSIZE:
-		if (size != sizeof(ssize_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sSize, sizeof(ssize_t));
-		break;
-	case OF_NUMBER_TYPE_INTMAX:
-		if (size != sizeof(intmax_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.intMax, sizeof(intmax_t));
-		break;
-	case OF_NUMBER_TYPE_UINTMAX:
-		if (size != sizeof(uintmax_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uIntMax, sizeof(uintmax_t));
-		break;
-	case OF_NUMBER_TYPE_PTRDIFF:
-		if (size != sizeof(ptrdiff_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.ptrDiff, sizeof(ptrdiff_t));
-		break;
-	case OF_NUMBER_TYPE_INTPTR:
-		if (size != sizeof(intptr_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.intPtr, sizeof(intptr_t));
-		break;
-	case OF_NUMBER_TYPE_UINTPTR:
-		if (size != sizeof(uintptr_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uIntPtr, sizeof(uintptr_t));
-		break;
-	case OF_NUMBER_TYPE_FLOAT:
-		if (size != sizeof(float))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.float_, sizeof(float));
-		break;
-	case OF_NUMBER_TYPE_DOUBLE:
-		if (size != sizeof(double))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.double_, sizeof(double));
-		break;
+	switch (*_typeEncoding) {
+#define CASE(enc, type, field)						\
+	case enc: {							\
+		type tmp = (type)_value.field;				\
+									\
+		if (size != sizeof(type))				\
+			@throw [OFOutOfRangeException exception];	\
+									\
+		memcpy(value, &tmp, size);				\
+		break;							\
+	}
+	CASE('B', bool, unsigned_)
+	CASE('c', signed char, signed_)
+	CASE('s', short, signed_)
+	CASE('i', int, signed_)
+	CASE('l', long, signed_)
+	CASE('q', long long, signed_)
+	CASE('C', unsigned char, unsigned_)
+	CASE('S', unsigned short, unsigned_)
+	CASE('I', unsigned int, unsigned_)
+	CASE('L', unsigned long, unsigned_)
+	CASE('Q', unsigned long long, unsigned_)
+	CASE('f', float, float_)
+	CASE('d', double, float_)
+#undef CASE
 	default:
 		@throw [OFInvalidFormatException exception];
 	}
@@ -1267,8 +1031,8 @@ static struct {
 
 	number = object;
 
-	if (_type & OF_NUMBER_TYPE_FLOAT ||
-	    number->_type & OF_NUMBER_TYPE_FLOAT) {
+	if (_type == OF_NUMBER_TYPE_FLOAT ||
+	    number->_type == OF_NUMBER_TYPE_FLOAT) {
 		double value1 = number.doubleValue;
 		double value2 = self.doubleValue;
 
@@ -1280,8 +1044,8 @@ static struct {
 		return (value1 == value2);
 	}
 
-	if (_type & OF_NUMBER_TYPE_SIGNED ||
-	    number->_type & OF_NUMBER_TYPE_SIGNED)
+	if (_type == OF_NUMBER_TYPE_SIGNED ||
+	    number->_type == OF_NUMBER_TYPE_SIGNED)
 		return (number.intMaxValue == self.intMaxValue);
 
 	return (number.uIntMaxValue == self.uIntMaxValue);
@@ -1296,8 +1060,8 @@ static struct {
 
 	number = (OFNumber *)object;
 
-	if (_type & OF_NUMBER_TYPE_FLOAT ||
-	    number->_type & OF_NUMBER_TYPE_FLOAT) {
+	if (_type == OF_NUMBER_TYPE_FLOAT ||
+	    number->_type == OF_NUMBER_TYPE_FLOAT) {
 		double double1 = self.doubleValue;
 		double double2 = number.doubleValue;
 
@@ -1307,8 +1071,8 @@ static struct {
 			return OF_ORDERED_ASCENDING;
 
 		return OF_ORDERED_SAME;
-	} else if (_type & OF_NUMBER_TYPE_SIGNED ||
-	    number->_type & OF_NUMBER_TYPE_SIGNED) {
+	} else if (_type == OF_NUMBER_TYPE_SIGNED ||
+	    number->_type == OF_NUMBER_TYPE_SIGNED) {
 		intmax_t int1 = self.intMaxValue;
 		intmax_t int2 = number.intMaxValue;
 
@@ -1333,31 +1097,12 @@ static struct {
 
 - (uint32_t)hash
 {
-	of_number_type_t type = _type;
+	enum of_number_type type = _type;
 	uint32_t hash;
-
-	/* Do we really need signed to represent this number? */
-	if (type & OF_NUMBER_TYPE_SIGNED && self.intMaxValue >= 0)
-		type &= ~OF_NUMBER_TYPE_SIGNED;
-
-	/* Do we really need floating point to represent this number? */
-	if (type & OF_NUMBER_TYPE_FLOAT) {
-		double v = self.doubleValue;
-
-		if (v < 0) {
-			if (v == self.intMaxValue) {
-				type &= ~OF_NUMBER_TYPE_FLOAT;
-				type |= OF_NUMBER_TYPE_SIGNED;
-			}
-		} else {
-			if (v == self.uIntMaxValue)
-				type &= ~OF_NUMBER_TYPE_FLOAT;
-		}
-	}
 
 	OF_HASH_INIT(hash);
 
-	if (type & OF_NUMBER_TYPE_FLOAT) {
+	if (type == OF_NUMBER_TYPE_FLOAT) {
 		double d;
 
 		if (isnan(self.doubleValue))
@@ -1367,7 +1112,7 @@ static struct {
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, ((char *)&d)[i]);
-	} else if (type & OF_NUMBER_TYPE_SIGNED) {
+	} else if (type == OF_NUMBER_TYPE_SIGNED) {
 		intmax_t v = self.intMaxValue * -1;
 
 		while (v != 0) {
@@ -1376,14 +1121,15 @@ static struct {
 		}
 
 		OF_HASH_ADD(hash, 1);
-	} else {
+	} else if (type == OF_NUMBER_TYPE_UNSIGNED) {
 		uintmax_t v = self.uIntMaxValue;
 
 		while (v != 0) {
 			OF_HASH_ADD(hash, v & 0xFF);
 			v >>= 8;
 		}
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1402,59 +1148,16 @@ static struct {
 
 - (OFString *)stringValue
 {
-	OFMutableString *ret;
+	if (*_typeEncoding == 'B')
+		return (_value.unsigned_ ? @"true" : @"false");
+	if (_type == OF_NUMBER_TYPE_FLOAT)
+		return [OFString stringWithFormat: @"%g", _value.float_];
+	if (_type == OF_NUMBER_TYPE_SIGNED)
+		return [OFString stringWithFormat: @"%jd", _value.signed_];
+	if (_type == OF_NUMBER_TYPE_UNSIGNED)
+		return [OFString stringWithFormat: @"%ju", _value.unsigned_];
 
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		return (_value.bool_ ? @"true" : @"false");
-	case OF_NUMBER_TYPE_UCHAR:
-	case OF_NUMBER_TYPE_USHORT:
-	case OF_NUMBER_TYPE_UINT:
-	case OF_NUMBER_TYPE_ULONG:
-	case OF_NUMBER_TYPE_ULONGLONG:
-	case OF_NUMBER_TYPE_UINT8:
-	case OF_NUMBER_TYPE_UINT16:
-	case OF_NUMBER_TYPE_UINT32:
-	case OF_NUMBER_TYPE_UINT64:
-	case OF_NUMBER_TYPE_SIZE:
-	case OF_NUMBER_TYPE_UINTMAX:
-	case OF_NUMBER_TYPE_UINTPTR:
-		return [OFString stringWithFormat: @"%ju", self.uIntMaxValue];
-	case OF_NUMBER_TYPE_CHAR:
-	case OF_NUMBER_TYPE_SHORT:
-	case OF_NUMBER_TYPE_INT:
-	case OF_NUMBER_TYPE_LONG:
-	case OF_NUMBER_TYPE_LONGLONG:
-	case OF_NUMBER_TYPE_INT8:
-	case OF_NUMBER_TYPE_INT16:
-	case OF_NUMBER_TYPE_INT32:
-	case OF_NUMBER_TYPE_INT64:
-	case OF_NUMBER_TYPE_SSIZE:
-	case OF_NUMBER_TYPE_INTMAX:
-	case OF_NUMBER_TYPE_PTRDIFF:
-	case OF_NUMBER_TYPE_INTPTR:
-		return [OFString stringWithFormat: @"%jd", self.intMaxValue];
-	case OF_NUMBER_TYPE_FLOAT:
-		ret = [OFMutableString stringWithFormat: @"%g", _value.float_];
-
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
-
-		[ret makeImmutable];
-
-		return ret;
-	case OF_NUMBER_TYPE_DOUBLE:
-		ret = [OFMutableString stringWithFormat: @"%g", _value.double_];
-
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
-
-		[ret makeImmutable];
-
-		return ret;
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	@throw [OFInvalidFormatException exception];
 }
 
 - (OFXMLElement *)XMLElementBySerializing
@@ -1466,62 +1169,24 @@ static struct {
 				      namespace: OF_SERIALIZATION_NS
 				    stringValue: self.description];
 
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
+	if (*_typeEncoding == 'B')
 		[element addAttributeWithName: @"type"
-				  stringValue: @"boolean"];
-		break;
-	case OF_NUMBER_TYPE_UCHAR:
-	case OF_NUMBER_TYPE_USHORT:
-	case OF_NUMBER_TYPE_UINT:
-	case OF_NUMBER_TYPE_ULONG:
-	case OF_NUMBER_TYPE_ULONGLONG:
-	case OF_NUMBER_TYPE_UINT8:
-	case OF_NUMBER_TYPE_UINT16:
-	case OF_NUMBER_TYPE_UINT32:
-	case OF_NUMBER_TYPE_UINT64:
-	case OF_NUMBER_TYPE_SIZE:
-	case OF_NUMBER_TYPE_UINTMAX:
-	case OF_NUMBER_TYPE_UINTPTR:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"unsigned"];
-		break;
-	case OF_NUMBER_TYPE_CHAR:
-	case OF_NUMBER_TYPE_SHORT:
-	case OF_NUMBER_TYPE_INT:
-	case OF_NUMBER_TYPE_LONG:
-	case OF_NUMBER_TYPE_LONGLONG:
-	case OF_NUMBER_TYPE_INT8:
-	case OF_NUMBER_TYPE_INT16:
-	case OF_NUMBER_TYPE_INT32:
-	case OF_NUMBER_TYPE_INT64:
-	case OF_NUMBER_TYPE_SSIZE:
-	case OF_NUMBER_TYPE_INTMAX:
-	case OF_NUMBER_TYPE_PTRDIFF:
-	case OF_NUMBER_TYPE_INTPTR:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"signed"];
-		break;
-	case OF_NUMBER_TYPE_FLOAT:
+				  stringValue: @"bool"];
+	else if (_type == OF_NUMBER_TYPE_FLOAT) {
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
-		element.stringValue = [OFString stringWithFormat: @"%08" PRIx32,
-		    OF_BSWAP32_IF_LE(OF_FLOAT_TO_INT_RAW(OF_BSWAP_FLOAT_IF_LE(
-		    _value.float_)))];
-
-		break;
-	case OF_NUMBER_TYPE_DOUBLE:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"double"];
 		element.stringValue = [OFString
 		    stringWithFormat: @"%016" PRIx64,
 		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
-		    _value.double_)))];
-
-		break;
-	default:
+		    _value.float_)))];
+	} else if (_type == OF_NUMBER_TYPE_SIGNED)
+		[element addAttributeWithName: @"type"
+				  stringValue: @"signed"];
+	else if (_type == OF_NUMBER_TYPE_UNSIGNED)
+		[element addAttributeWithName: @"type"
+				  stringValue: @"unsigned"];
+	else
 		@throw [OFInvalidFormatException exception];
-	}
 
 	[element retain];
 
@@ -1547,8 +1212,8 @@ static struct {
 {
 	double doubleValue;
 
-	if (_type == OF_NUMBER_TYPE_BOOL)
-		return (_value.bool_ ? @"true" : @"false");
+	if (*_typeEncoding == 'B')
+		return (_value.unsigned_ ? @"true" : @"false");
 
 	doubleValue = self.doubleValue;
 	if (isinf(doubleValue)) {
@@ -1568,12 +1233,12 @@ static struct {
 {
 	OFMutableData *data;
 
-	if (_type == OF_NUMBER_TYPE_BOOL) {
-		uint8_t type = (_value.bool_ ? 0xC3 : 0xC2);
+	if (*_typeEncoding == 'B') {
+		uint8_t type = (_value.unsigned_ ? 0xC3 : 0xC2);
 
 		data = [OFMutableData dataWithItems: &type
 					      count: 1];
-	} else if (_type == OF_NUMBER_TYPE_FLOAT) {
+	} else if (*_typeEncoding == 'f') {
 		uint8_t type = 0xCA;
 		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
 
@@ -1583,9 +1248,9 @@ static struct {
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type == OF_NUMBER_TYPE_DOUBLE) {
+	} else if (*_typeEncoding == 'd') {
 		uint8_t type = 0xCB;
-		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
+		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.float_);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 9];
@@ -1593,7 +1258,7 @@ static struct {
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type & OF_NUMBER_TYPE_SIGNED) {
+	} else if (_type == OF_NUMBER_TYPE_SIGNED) {
 		intmax_t value = self.intMaxValue;
 
 		if (value >= -32 && value < 0) {
@@ -1642,7 +1307,7 @@ static struct {
 				 count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
-	} else {
+	} else if (_type == OF_NUMBER_TYPE_UNSIGNED) {
 		uintmax_t value = self.uIntMaxValue;
 
 		if (value <= 127) {
@@ -1691,7 +1356,8 @@ static struct {
 				 count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	[data makeImmutable];
 

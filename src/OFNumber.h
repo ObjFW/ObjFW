@@ -38,80 +38,6 @@ OF_ASSUME_NONNULL_BEGIN
 /*! @file */
 
 /*!
- * @brief The C type of a number stored in an OFNumber.
- */
-typedef enum {
-	/*! `bool` */
-	OF_NUMBER_TYPE_BOOL		= 0x01,
-	/*! `unsigned char` */
-	OF_NUMBER_TYPE_UCHAR		= 0x02,
-	/*! `unsigned short` */
-	OF_NUMBER_TYPE_USHORT		= 0x03,
-	/*! `unsigned int` */
-	OF_NUMBER_TYPE_UINT		= 0x04,
-	/*! `unsigned long` */
-	OF_NUMBER_TYPE_ULONG		= 0x05,
-	/*! `unsigned long long` */
-	OF_NUMBER_TYPE_ULONGLONG	= 0x06,
-	/*! `size_t` */
-	OF_NUMBER_TYPE_SIZE		= 0x07,
-	/*! `uint8_t` */
-	OF_NUMBER_TYPE_UINT8		= 0x08,
-	/*! `uint16_t` */
-	OF_NUMBER_TYPE_UINT16		= 0x09,
-	/*! `uint32_t` */
-	OF_NUMBER_TYPE_UINT32		= 0x0A,
-	/*! `uint64_t` */
-	OF_NUMBER_TYPE_UINT64		= 0x0B,
-	/*! `uintptr_t` */
-	OF_NUMBER_TYPE_UINTPTR		= 0x0C,
-	/*! `uintmax_t` */
-	OF_NUMBER_TYPE_UINTMAX		= 0x0D,
-	OF_NUMBER_TYPE_SIGNED		= 0x10,
-	/*! `signed char` */
-	OF_NUMBER_TYPE_CHAR		= OF_NUMBER_TYPE_UCHAR |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `short` */
-	OF_NUMBER_TYPE_SHORT		= OF_NUMBER_TYPE_USHORT |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `int` */
-	OF_NUMBER_TYPE_INT		= OF_NUMBER_TYPE_UINT |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `long` */
-	OF_NUMBER_TYPE_LONG		= OF_NUMBER_TYPE_ULONG |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `long long` */
-	OF_NUMBER_TYPE_LONGLONG		= OF_NUMBER_TYPE_ULONGLONG |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `int8_t` */
-	OF_NUMBER_TYPE_INT8		= OF_NUMBER_TYPE_UINT8 |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `int16_t` */
-	OF_NUMBER_TYPE_INT16		= OF_NUMBER_TYPE_UINT16 |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `int32_t` */
-	OF_NUMBER_TYPE_INT32		= OF_NUMBER_TYPE_UINT32 |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `int64_t` */
-	OF_NUMBER_TYPE_INT64		= OF_NUMBER_TYPE_UINT64 |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `ssize_t` */
-	OF_NUMBER_TYPE_SSIZE		= OF_NUMBER_TYPE_SIZE |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `intmax_t` */
-	OF_NUMBER_TYPE_INTMAX		= OF_NUMBER_TYPE_UINTMAX |
-					      OF_NUMBER_TYPE_SIGNED,
-	/*! `ptrdiff_t` */
-	OF_NUMBER_TYPE_PTRDIFF		= 0x0E | OF_NUMBER_TYPE_SIGNED,
-	/*! `intptr_t` */
-	OF_NUMBER_TYPE_INTPTR		= 0x0F | OF_NUMBER_TYPE_SIGNED,
-	/*! `float` */
-	OF_NUMBER_TYPE_FLOAT		= 0x20,
-	/*! `double` */
-	OF_NUMBER_TYPE_DOUBLE		= 0x40 | OF_NUMBER_TYPE_FLOAT
-} of_number_type_t;
-
-/*!
  * @class OFNumber OFNumber.h ObjFW/OFNumber.h
  *
  * @brief Provides a way to store a number in an object.
@@ -123,42 +49,17 @@ OF_SUBCLASSING_RESTRICTED
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
 	union of_number_value {
-		bool               bool_;
-		signed char        sChar;
-		short              sShort;
-		int                sInt;
-		long               sLong;
-		long long          sLongLong;
-		unsigned char      uChar;
-		unsigned short     uShort;
-		unsigned int       uInt;
-		unsigned long      uLong;
-		unsigned long long uLongLong;
-		int8_t             int8;
-		int16_t            int16;
-		int32_t            int32;
-		int64_t            int64;
-		uint8_t            uInt8;
-		uint16_t           uInt16;
-		uint32_t           uInt32;
-		uint64_t           uInt64;
-		size_t             size;
-		ssize_t            sSize;
-		intmax_t           intMax;
-		uintmax_t          uIntMax;
-		ptrdiff_t          ptrDiff;
-		intptr_t           intPtr;
-		uintptr_t          uIntPtr;
-		float              float_;
-		double             double_;
+		double    float_;
+		intmax_t  signed_;
+		uintmax_t unsigned_;
 	} _value;
-	of_number_type_t _type;
+	enum of_number_type {
+		OF_NUMBER_TYPE_FLOAT = 1,
+		OF_NUMBER_TYPE_SIGNED,
+		OF_NUMBER_TYPE_UNSIGNED
+	} _type;
+	const char *_typeEncoding;
 }
-
-/*!
- * @brief The type of the number.
- */
-@property (readonly, nonatomic) of_number_type_t type;
 
 /*!
  * @brief The OFNumber as a `bool`.
