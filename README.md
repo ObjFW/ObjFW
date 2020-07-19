@@ -188,7 +188,7 @@ other place, you are most likely using a mirror.
 
   In particular, Xcode 11 Beta 1 to Beta 3 are known to be affected. While
   Xcode 11 Beta 4 to Xcode 11.3 work, the bug was unfortunately reintroduced in
-  Xcode 11.4.1 and a fix is not expected before Xcode 11.6.
+  Xcode 11.4.1 and was only fixed in Xcode 12 Beta 1.
 
   You can get older versions of Xcode
   [here](https://developer.apple.com/download) by clicking on "More" in the

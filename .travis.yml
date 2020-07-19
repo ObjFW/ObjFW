@@ -289,8 +289,8 @@ script:
                     cat /tmp/clean_log;
                     exit 1;
             fi;
-            ./autogen.sh;
-            .travis/build.sh "$@";
+            ./autogen.sh || exit 1;
+            .travis/build.sh "$@" || exit 1;
     }
 
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then

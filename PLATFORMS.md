@@ -35,7 +35,7 @@ Bare metal ARM Cortex-M4
 DOS
 ---
 
-  * OS Versions: Windows XP DOS Emulation, DOSBox
+  * OS Versions: Windows XP DOS Emulation, DOSBox, MS-DOS 6.0, FreeDOS 1.2
   * Architectures: x86
   * Compilers: DJGPP GCC 4.7.3 (djdev204)
   * Runtimes: ObjFW
