@@ -31,22 +31,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#define RETURN_AS(t)							\
-	switch (_type) {						\
-	case OF_NUMBER_TYPE_FLOAT:					\
-		return (t)_value.float_;				\
-	case OF_NUMBER_TYPE_SIGNED:					\
-		return (t)_value.signed_;				\
-	case OF_NUMBER_TYPE_UNSIGNED:					\
-		return (t)_value.unsigned_;				\
-	default:							\
-		@throw [OFInvalidFormatException exception];		\
-	}
-
-static struct {
-	Class isa;
-} placeholder;
-
 @interface OFNumber ()
 + (instancetype)of_alloc;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
@@ -56,16 +40,64 @@ static struct {
 @interface OFNumberPlaceholder: OFNumber
 @end
 
+@interface OFNumberSingleton: OFNumber
+@end
+
+static struct {
+	Class isa;
+} placeholder;
+
+static OFNumberSingleton *zeroNumber, *oneNumber, *twoNumber;
+static OFNumberSingleton *trueNumber, *falseNumber;
+
+static void
+initZeroNumber(void)
+{
+	zeroNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 0];
+}
+
+static void
+initOneNumber(void)
+{
+	oneNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 1];
+}
+
+static void
+initTwoNumber(void)
+{
+	twoNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 2];
+}
+
+static void
+initTrueNumber(void)
+{
+	trueNumber = [[OFNumberSingleton alloc] initWithBool: true];
+}
+
+static void
+initFalseNumber(void)
+{
+	falseNumber = [[OFNumberSingleton alloc] initWithBool: false];
+}
+
 @implementation OFNumberPlaceholder
 - (instancetype)initWithBool: (bool)bool_
 {
-	return (id)[[OFNumber of_alloc] initWithBool: bool_];
+	if (bool_) {
+		static of_once_t once;
+		of_once(&once, initTrueNumber);
+		return (id)trueNumber;
+	} else {
+		static of_once_t once;
+		of_once(&once, initFalseNumber);
+		return (id)falseNumber;
+	}
 }
 
 - (instancetype)initWithChar: (signed char)sChar
 {
 	if (sChar >= 0)
-		return (id)[[OFNumber of_alloc] initWithUnsignedChar: sChar];
+		return [self initWithUnsignedChar: sChar];
 
 	return (id)[[OFNumber of_alloc] initWithChar: sChar];
 }
@@ -73,10 +105,9 @@ static struct {
 - (instancetype)initWithShort: (short)sShort
 {
 	if (sShort >= 0)
-		return (id)[[OFNumber of_alloc] initWithUnsignedShort: sShort];
+		return [self initWithUnsignedShort: sShort];
 	if (sShort >= SCHAR_MIN)
-		return (id)[[OFNumber of_alloc]
-		    initWithChar: (signed char)sShort];
+		return [self initWithChar: (signed char)sShort];
 
 	return (id)[[OFNumber of_alloc] initWithShort: sShort];
 }
@@ -84,9 +115,9 @@ static struct {
 - (instancetype)initWithInt: (int)sInt
 {
 	if (sInt >= 0)
-		return (id)[[OFNumber of_alloc] initWithUnsignedInt: sInt];
+		return [self initWithUnsignedInt: sInt];
 	if (sInt >= SHRT_MIN)
-		return (id)[[OFNumber of_alloc] initWithShort: (short)sInt];
+		return [self initWithShort: (short)sInt];
 
 	return (id)[[OFNumber of_alloc] initWithInt: sInt];
 }
@@ -94,9 +125,9 @@ static struct {
 - (instancetype)initWithLong: (long)sLong
 {
 	if (sLong >= 0)
-		return (id)[[OFNumber of_alloc] initWithUnsignedLong: sLong];
+		return [self initWithUnsignedLong: sLong];
 	if (sLong >= INT_MIN)
-		return (id)[[OFNumber of_alloc] initWithShort: (int)sLong];
+		return [self initWithShort: (int)sLong];
 
 	return (id)[[OFNumber of_alloc] initWithLong: sLong];
 }
@@ -104,24 +135,40 @@ static struct {
 - (instancetype)initWithLongLong: (long long)sLongLong
 {
 	if (sLongLong >= 0)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedLongLong: sLongLong];
+		return [self initWithUnsignedLongLong: sLongLong];
 	if (sLongLong >= LONG_MIN)
-		return (id)[[OFNumber of_alloc] initWithLong: (long)sLongLong];
+		return [self initWithLong: (long)sLongLong];
 
 	return (id)[[OFNumber of_alloc] initWithLongLong: sLongLong];
 }
 
 - (instancetype)initWithUnsignedChar: (unsigned char)uChar
 {
+	switch (uChar) {
+	case 0: {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, initZeroNumber);
+		return (id)zeroNumber;
+	}
+	case 1: {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, initOneNumber);
+		return (id)oneNumber;
+	}
+	case 2: {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, initTwoNumber);
+		return (id)twoNumber;
+	}
+	}
+
 	return (id)[[OFNumber of_alloc] initWithUnsignedChar: uChar];
 }
 
 - (instancetype)initWithUnsignedShort: (unsigned short)uShort
 {
 	if (uShort <= UCHAR_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedChar: (unsigned char)uShort];
+		return [self initWithUnsignedChar: (unsigned char)uShort];
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedShort: uShort];
 }
@@ -129,8 +176,7 @@ static struct {
 - (instancetype)initWithUnsignedInt: (unsigned int)uInt
 {
 	if (uInt <= USHRT_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedShort: (unsigned short)uInt];
+		return [self initWithUnsignedShort: (unsigned short)uInt];
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedInt: uInt];
 }
@@ -138,8 +184,7 @@ static struct {
 - (instancetype)initWithUnsignedLong: (unsigned long)uLong
 {
 	if (uLong <= UINT_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedInt: (unsigned int)uLong];
+		return [self initWithUnsignedInt: (unsigned int)uLong];
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLong: uLong];
 }
@@ -147,8 +192,7 @@ static struct {
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
 {
 	if (uLongLong <= ULONG_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedLong: (unsigned long)uLongLong];
+		return [self initWithUnsignedLong: (unsigned long)uLongLong];
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: uLongLong];
 }
@@ -156,7 +200,7 @@ static struct {
 - (instancetype)initWithInt8: (int8_t)int8
 {
 	if (int8 >= 0)
-		return (id)[[OFNumber of_alloc] initWithUInt8: int8];
+		return [self initWithUInt8: int8];
 
 	return (id)[[OFNumber of_alloc] initWithInt8: int8];
 }
@@ -164,9 +208,9 @@ static struct {
 - (instancetype)initWithInt16: (int16_t)int16
 {
 	if (int16 >= 0)
-		return (id)[[OFNumber of_alloc] initWithUInt16: int16];
+		return [self initWithUInt16: int16];
 	if (int16 >= INT8_MIN)
-		return (id)[[OFNumber of_alloc] initWithInt8: (int8_t)int16];
+		return [self initWithInt8: (int8_t)int16];
 
 	return (id)[[OFNumber of_alloc] initWithInt16: int16];
 }
@@ -174,9 +218,9 @@ static struct {
 - (instancetype)initWithInt32: (int32_t)int32
 {
 	if (int32 >= 0)
-		return (id)[[OFNumber of_alloc] initWithUInt32: int32];
+		return [self initWithUInt32: int32];
 	if (int32 >= INT16_MIN)
-		return (id)[[OFNumber of_alloc] initWithInt16: (int16_t)int32];
+		return [self initWithInt16: (int16_t)int32];
 
 	return (id)[[OFNumber of_alloc] initWithInt32: int32];
 }
@@ -184,9 +228,9 @@ static struct {
 - (instancetype)initWithInt64: (int64_t)int64
 {
 	if (int64 >= 0)
-		return (id)[[OFNumber of_alloc] initWithUInt64: int64];
+		return [self initWithUInt64: int64];
 	if (int64 >= INT32_MIN)
-		return (id)[[OFNumber of_alloc] initWithInt32: (int32_t)int64];
+		return [self initWithInt32: (int32_t)int64];
 
 	return (id)[[OFNumber of_alloc] initWithInt64: int64];
 }
@@ -199,7 +243,7 @@ static struct {
 - (instancetype)initWithUInt16: (uint16_t)uInt16
 {
 	if (uInt16 <= UINT8_MAX)
-		return (id)[[OFNumber of_alloc] initWithUInt8: (uint8_t)uInt16];
+		return [self initWithUInt8: (uint8_t)uInt16];
 
 	return (id)[[OFNumber of_alloc] initWithUInt16: uInt16];
 }
@@ -207,8 +251,7 @@ static struct {
 - (instancetype)initWithUInt32: (uint32_t)uInt32
 {
 	if (uInt32 <= UINT16_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUInt16: (uint16_t)uInt32];
+		return [self initWithUInt16: (uint16_t)uInt32];
 
 	return (id)[[OFNumber of_alloc] initWithUInt32: uInt32];
 }
@@ -216,8 +259,7 @@ static struct {
 - (instancetype)initWithUInt64: (uint64_t)uInt64
 {
 	if (uInt64 <= UINT32_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUInt32: (uint32_t)uInt64];
+		return [self initWithUInt32: (uint32_t)uInt64];
 
 	return (id)[[OFNumber of_alloc] initWithUInt64: uInt64];
 }
@@ -225,8 +267,7 @@ static struct {
 - (instancetype)initWithSize: (size_t)size
 {
 	if (size <= ULONG_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedLong: (unsigned long)size];
+		return [self initWithUnsignedLong: (unsigned long)size];
 
 	return (id)[[OFNumber of_alloc] initWithSize: size];
 }
@@ -234,9 +275,9 @@ static struct {
 - (instancetype)initWithSSize: (ssize_t)sSize
 {
 	if (sSize >= 0)
-		return (id)[[OFNumber of_alloc] initWithSize: sSize];
+		return [self initWithSize: sSize];
 	if (sSize <= LONG_MIN)
-		return (id)[[OFNumber of_alloc] initWithLong: (long)sSize];
+		return [self initWithLong: (long)sSize];
 
 	return (id)[[OFNumber of_alloc] initWithSSize: sSize];
 }
@@ -244,10 +285,9 @@ static struct {
 - (instancetype)initWithIntMax: (intmax_t)intMax
 {
 	if (intMax >= 0)
-		return (id)[[OFNumber of_alloc] initWithUIntMax: intMax];
+		return [self initWithUIntMax: intMax];
 	if (intMax <= LLONG_MIN)
-		return (id)[[OFNumber of_alloc]
-		    initWithLongLong: (long long)intMax];
+		return [self initWithLongLong: (long long)intMax];
 
 	return (id)[[OFNumber of_alloc] initWithIntMax: intMax];
 }
@@ -255,8 +295,8 @@ static struct {
 - (instancetype)initWithUIntMax: (uintmax_t)uIntMax
 {
 	if (uIntMax <= ULLONG_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedLongLong: (unsigned long long)uIntMax];
+		return [self initWithUnsignedLongLong:
+		    (unsigned long long)uIntMax];
 
 	return (id)[[OFNumber of_alloc] initWithUIntMax: uIntMax];
 }
@@ -273,8 +313,7 @@ static struct {
 - (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
 {
 	if (ptrDiff >= LLONG_MIN && ptrDiff <= LLONG_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithLongLong: (long long)ptrDiff];
+		return [self initWithLongLong: (long long)ptrDiff];
 
 	return (id)[[OFNumber of_alloc] initWithPtrDiff: ptrDiff];
 }
@@ -282,10 +321,9 @@ static struct {
 - (instancetype)initWithIntPtr: (intptr_t)intPtr
 {
 	if (intPtr >= 0)
-		return (id)[[OFNumber of_alloc] initWithUIntPtr: intPtr];
+		return [self initWithUIntPtr: intPtr];
 	if (intPtr >= LLONG_MIN)
-		return (id)[[OFNumber of_alloc]
-		    initWithLongLong: (long long)intPtr];
+		return [self initWithLongLong: (long long)intPtr];
 
 	return (id)[[OFNumber of_alloc] initWithIntPtr: intPtr];
 }
@@ -293,8 +331,8 @@ static struct {
 - (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
 {
 	if (uIntPtr <= ULLONG_MAX)
-		return (id)[[OFNumber of_alloc]
-		    initWithUnsignedLongLong: (unsigned long long)uIntPtr];
+		return [self initWithUnsignedLongLong:
+		    (unsigned long long)uIntPtr];
 
 	return (id)[[OFNumber of_alloc] initWithUIntPtr: uIntPtr];
 }
@@ -306,11 +344,9 @@ static struct {
 - (instancetype)initWithFloat: (float)float_
 {
 	if (float_ == (uintmax_t)float_)
-		return (id)[[OFNumber of_alloc]
-		    initWithUIntMax: (uintmax_t)float_];
+		return [self initWithUIntMax: (uintmax_t)float_];
 	if (float_ == (intmax_t)float_)
-		return (id)[[OFNumber of_alloc]
-		    initWithIntMax: (intmax_t)float_];
+		return [self initWithIntMax: (intmax_t)float_];
 
 	return (id)[[OFNumber of_alloc] initWithFloat: float_];
 }
@@ -318,13 +354,11 @@ static struct {
 - (instancetype)initWithDouble: (double)double_
 {
 	if (double_ == (uintmax_t)double_)
-		return (id)[[OFNumber of_alloc]
-		    initWithUIntMax: (uintmax_t)double_];
+		return [self initWithUIntMax: (uintmax_t)double_];
 	if (double_ == (intmax_t)double_)
-		return (id)[[OFNumber of_alloc]
-		    initWithIntMax: (intmax_t)double_];
+		return [self initWithIntMax: (intmax_t)double_];
 	if (double_ == (float)double_)
-		return (id)[[OFNumber of_alloc] initWithFloat: (float)double_];
+		return [self initWithFloat: (float)double_];
 
 	return (id)[[OFNumber of_alloc] initWithDouble: double_];
 }
@@ -332,6 +366,27 @@ static struct {
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFNumber of_alloc] initWithSerialization: element];
+}
+@end
+
+@implementation OFNumberSingleton
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
 }
 @end
 
@@ -892,6 +947,17 @@ static struct {
 	}
 }
 
+#define RETURN_AS(t)						\
+	switch (_type) {					\
+	case OF_NUMBER_TYPE_FLOAT:				\
+		return (t)_value.float_;			\
+	case OF_NUMBER_TYPE_SIGNED:				\
+		return (t)_value.signed_;			\
+	case OF_NUMBER_TYPE_UNSIGNED:				\
+		return (t)_value.unsigned_;			\
+	default:						\
+		@throw [OFInvalidFormatException exception];	\
+	}
 - (bool)boolValue
 {
 	RETURN_AS(bool)
@@ -1031,6 +1097,7 @@ static struct {
 {
 	RETURN_AS(double)
 }
+#undef RETURN_AS
 
 - (bool)isEqual: (id)object
 {
