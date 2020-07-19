@@ -15,6 +15,8 @@
  * file.
  */
 
+#define OF_NUMBER_M
+
 #include "config.h"
 
 #include <math.h>
@@ -91,13 +93,187 @@
 		@throw [OFInvalidFormatException exception];		\
 	}
 
+static struct {
+	Class isa;
+} placeholder;
+
 @interface OFNumber ()
++ (instancetype)of_alloc;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
+@interface OFNumberPlaceholder: OFNumber
+@end
+
+@implementation OFNumberPlaceholder
+- (instancetype)initWithBool: (bool)bool_
+{
+	return (id)[[OFNumber of_alloc] initWithBool: bool_];
+}
+
+- (instancetype)initWithChar: (signed char)sChar
+{
+	return (id)[[OFNumber of_alloc] initWithChar: sChar];
+}
+
+- (instancetype)initWithShort: (signed short)sShort
+{
+	return (id)[[OFNumber of_alloc] initWithShort: sShort];
+}
+
+- (instancetype)initWithInt: (signed int)sInt
+{
+	return (id)[[OFNumber of_alloc] initWithInt: sInt];
+}
+
+- (instancetype)initWithLong: (signed long)sLong
+{
+	return (id)[[OFNumber of_alloc] initWithLong: sLong];
+}
+
+- (instancetype)initWithLongLong: (signed long long)sLongLong
+{
+	return (id)[[OFNumber of_alloc] initWithLongLong: sLongLong];
+}
+
+- (instancetype)initWithUnsignedChar: (unsigned char)uChar
+{
+	return (id)[[OFNumber of_alloc] initWithUnsignedChar: uChar];
+}
+
+- (instancetype)initWithUnsignedShort: (unsigned short)uShort
+{
+	return (id)[[OFNumber of_alloc] initWithUnsignedShort: uShort];
+}
+
+- (instancetype)initWithUnsignedInt: (unsigned int)uInt
+{
+	return (id)[[OFNumber of_alloc] initWithUnsignedInt: uInt];
+}
+
+- (instancetype)initWithUnsignedLong: (unsigned long)uLong
+{
+	return (id)[[OFNumber of_alloc] initWithUnsignedLong: uLong];
+}
+
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
+{
+	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: uLongLong];
+}
+
+- (instancetype)initWithInt8: (int8_t)int8
+{
+	return (id)[[OFNumber of_alloc] initWithInt8: int8];
+}
+
+- (instancetype)initWithInt16: (int16_t)int16
+{
+	return (id)[[OFNumber of_alloc] initWithInt16: int16];
+}
+
+- (instancetype)initWithInt32: (int32_t)int32
+{
+	return (id)[[OFNumber of_alloc] initWithInt32: int32];
+}
+
+- (instancetype)initWithInt64: (int64_t)int64
+{
+	return (id)[[OFNumber of_alloc] initWithInt64: int64];
+}
+
+- (instancetype)initWithUInt8: (uint8_t)uInt8
+{
+	return (id)[[OFNumber of_alloc] initWithUInt8: uInt8];
+}
+
+- (instancetype)initWithUInt16: (uint16_t)uInt16
+{
+	return (id)[[OFNumber of_alloc] initWithUInt16: uInt16];
+}
+
+- (instancetype)initWithUInt32: (uint32_t)uInt32
+{
+	return (id)[[OFNumber of_alloc] initWithUInt32: uInt32];
+}
+
+- (instancetype)initWithUInt64: (uint64_t)uInt64
+{
+	return (id)[[OFNumber of_alloc] initWithUInt64: uInt64];
+}
+
+- (instancetype)initWithSize: (size_t)size
+{
+	return (id)[[OFNumber of_alloc] initWithSize: size];
+}
+
+- (instancetype)initWithSSize: (ssize_t)sSize
+{
+	return (id)[[OFNumber of_alloc] initWithSSize: sSize];
+}
+
+- (instancetype)initWithIntMax: (intmax_t)intMax
+{
+	return (id)[[OFNumber of_alloc] initWithIntMax: intMax];
+}
+
+- (instancetype)initWithUIntMax: (uintmax_t)uIntMax
+{
+	return (id)[[OFNumber of_alloc] initWithUIntMax: uIntMax];
+}
+
+- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
+{
+	return (id)[[OFNumber of_alloc] initWithPtrDiff: ptrDiff];
+}
+
+- (instancetype)initWithIntPtr: (intptr_t)intPtr
+{
+	return (id)[[OFNumber of_alloc] initWithIntPtr: intPtr];
+}
+
+- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
+{
+	return (id)[[OFNumber of_alloc] initWithUIntPtr: uIntPtr];
+}
+
+- (instancetype)initWithFloat: (float)float_
+{
+	return (id)[[OFNumber of_alloc] initWithFloat: float_];
+}
+
+- (instancetype)initWithDouble: (double)double_
+{
+	return (id)[[OFNumber of_alloc] initWithDouble: double_];
+}
+
+- (instancetype)initWithSerialization: (OFXMLElement *)element
+{
+	return (id)[[OFNumber of_alloc] initWithSerialization: element];
+}
+@end
+
 @implementation OFNumber
 @synthesize type = _type;
+
++ (void)initialize
+{
+	if (self == [OFNumber class])
+		placeholder.isa = [OFNumberPlaceholder class];
+}
+
++ (instancetype)of_alloc
+{
+	return [super alloc];
+}
+
++ (instancetype)alloc
+{
+	if (self == [OFNumber class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
 
 + (instancetype)numberWithBool: (bool)bool_
 {
