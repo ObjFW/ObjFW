@@ -69,7 +69,9 @@ static struct {
 } placeholder;
 
 static OFDateSingleton *zeroDate, *distantFuture, *distantPast;
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
 static int dateTag;
+#endif
 
 static void
 initZeroDate(void)
