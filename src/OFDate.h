@@ -29,7 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing, accessing and comparing dates.
  */
+#ifndef OF_DATE_M
 OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
     OFMessagePackRepresentation>
 {

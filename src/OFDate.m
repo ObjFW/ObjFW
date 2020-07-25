@@ -15,6 +15,8 @@
  * file.
  */
 
+#define OF_DATE_M
+
 #include "config.h"
 
 #include <limits.h>
@@ -46,6 +48,36 @@
 # define trunc(x) ((int64_t)(x))
 #endif
 
+@interface OFDate ()
++ (instancetype)of_alloc;
+@end
+
+@interface OFDatePlaceholder: OFDate
+@end
+
+@interface OFDateSingleton: OFDate
+@end
+
+static struct {
+	Class isa;
+} placeholder;
+
+static OFDateSingleton *distantFuture, *distantPast;
+
+static void
+initDistantFuture(void)
+{
+	distantFuture = [[OFDateSingleton alloc]
+	    initWithTimeIntervalSince1970: 64060588800.0];
+}
+
+static void
+initDistantPast(void)
+{
+	distantPast = [[OFDateSingleton alloc]
+	    initWithTimeIntervalSince1970: -62167219200.0];
+}
+
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
@@ -57,10 +89,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (gmtime_r(&seconds, &tm) == NULL)				\
@@ -68,10 +101,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 									\
 	return tm.field;
 # define LOCALTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (localtime_r(&seconds, &tm) == NULL)				\
@@ -81,10 +115,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 #else
 # ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -98,10 +133,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 		[mutex unlock];						\
 	}
 #  define LOCALTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -116,10 +152,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 	}
 # else
 #  define GMTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = gmtime(&seconds)) == NULL)				\
@@ -127,10 +164,11 @@ static __time64_t (*func__mktime64)(struct tm *);
 									\
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
-	time_t seconds = (time_t)_seconds;				\
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(_seconds))					\
+	if (seconds != trunc(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = localtime(&seconds)) == NULL)				\
@@ -189,6 +227,63 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return seconds;
 }
 
+@implementation OFDatePlaceholder
+- (instancetype)init
+{
+	return (id)[[OFDate of_alloc] init];
+}
+
+- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+{
+	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
+}
+
+- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
+{
+	return (id)[[OFDate of_alloc] initWithTimeIntervalSinceNow: seconds];
+}
+
+- (instancetype)initWithDateString: (OFString *)string
+			    format: (OFString *)format
+{
+	return (id)[[OFDate of_alloc] initWithDateString: string
+						  format: format];
+}
+
+- (instancetype)initWithLocalDateString: (OFString *)string
+				 format: (OFString *)format
+{
+	return (id)[[OFDate of_alloc] initWithLocalDateString: string
+						       format: format];
+}
+
+- (instancetype)initWithSerialization: (OFXMLElement *)element
+{
+	return (id)[[OFDate of_alloc] initWithSerialization: element];
+}
+@end
+
+@implementation OFDateSingleton
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+@end
+
 @implementation OFDate
 + (void)initialize
 {
@@ -198,6 +293,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	if (self != [OFDate class])
 		return;
+
+	placeholder.isa = [OFDatePlaceholder class];
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
@@ -209,6 +306,19 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		func__mktime64 = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
 #endif
+}
+
++ (instancetype)of_alloc
+{
+	return [super alloc];
+}
+
++ (instancetype)alloc
+{
+	if (self == [OFDate class])
+		return (id)&placeholder;
+
+	return [super alloc];
 }
 
 + (instancetype)date
@@ -244,14 +354,16 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 + (instancetype)distantFuture
 {
-	return [[[self alloc]
-	    initWithTimeIntervalSince1970: 64060588800.0] autorelease];
+	static of_once_t once = OF_ONCE_INIT;
+	of_once(&once, initDistantFuture);
+	return distantFuture;
 }
 
 + (instancetype)distantPast
 {
-	return [[[self alloc]
-	    initWithTimeIntervalSince1970: -62167219200.0] autorelease];
+	static of_once_t once = OF_ONCE_INIT;
+	of_once(&once, initDistantPast);
+	return distantPast;
 }
 
 - (instancetype)init
@@ -391,7 +503,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	otherDate = object;
 
-	if (otherDate->_seconds != _seconds)
+	if (otherDate.timeIntervalSince1970 != self.timeIntervalSince1970)
 		return false;
 
 	return true;
@@ -404,7 +516,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	OF_HASH_INIT(hash);
 
-	tmp = OF_BSWAP_DOUBLE_IF_BE(_seconds);
+	tmp = OF_BSWAP_DOUBLE_IF_BE(self.timeIntervalSince1970);
 
 	for (size_t i = 0; i < sizeof(double); i++)
 		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
@@ -428,9 +540,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	otherDate = (OFDate *)object;
 
-	if (_seconds < otherDate->_seconds)
+	if (self.timeIntervalSince1970 < otherDate.timeIntervalSince1970)
 		return OF_ORDERED_ASCENDING;
-	if (_seconds > otherDate->_seconds)
+	if (self.timeIntervalSince1970 > otherDate.timeIntervalSince1970)
 		return OF_ORDERED_DESCENDING;
 
 	return OF_ORDERED_SAME;
@@ -451,7 +563,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
 	    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
-	    _seconds)))];
+	    self.timeIntervalSince1970)))];
 
 	[element retain];
 
@@ -463,8 +575,10 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (OFData *)messagePackRepresentation
 {
 	void *pool = objc_autoreleasePoolPush();
-	int64_t seconds = (int64_t)_seconds;
-	uint32_t nanoseconds = (_seconds - trunc(_seconds)) * 1000000000;
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	int64_t seconds = (int64_t)timeInterval;
+	uint32_t nanoseconds =
+	    (timeInterval - trunc(timeInterval)) * 1000000000;
 	OFData *ret;
 
 	if (seconds >= 0 && seconds < 0x400000000) {
@@ -517,7 +631,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (uint32_t)microsecond
 {
-	return (uint32_t)((_seconds - trunc(_seconds)) * 1000000);
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+
+	return (uint32_t)((timeInterval - trunc(timeInterval)) * 1000000);
 }
 
 - (uint8_t)second
@@ -598,7 +714,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (OFString *)dateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
-	time_t seconds = (time_t)_seconds;
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
 #ifndef OF_WINDOWS
@@ -607,7 +724,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	wchar_t *buffer;
 #endif
 
-	if (seconds != trunc(_seconds))
+	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_GMTIME_R
@@ -658,7 +775,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (OFString *)localDateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
-	time_t seconds = (time_t)_seconds;
+	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
 #ifndef OF_WINDOWS
@@ -667,7 +785,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	wchar_t *buffer;
 #endif
 
-	if (seconds != trunc(_seconds))
+	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_LOCALTIME_R
@@ -744,7 +862,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate
 {
-	return _seconds - otherDate->_seconds;
+	return self.timeIntervalSince1970 - otherDate.timeIntervalSince1970;
 }
 
 - (of_time_interval_t)timeIntervalSinceNow
@@ -757,11 +875,12 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	seconds = t.tv_sec;
 	seconds += (of_time_interval_t)t.tv_usec / 1000000;
 
-	return _seconds - seconds;
+	return self.timeIntervalSince1970 - seconds;
 }
 
 - (OFDate *)dateByAddingTimeInterval: (of_time_interval_t)seconds
 {
-	return [OFDate dateWithTimeIntervalSince1970: _seconds + seconds];
+	return [OFDate dateWithTimeIntervalSince1970:
+	    self.timeIntervalSince1970 + seconds];
 }
 @end
