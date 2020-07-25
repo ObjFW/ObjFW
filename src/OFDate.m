@@ -52,10 +52,10 @@
 + (instancetype)of_alloc;
 @end
 
-@interface OFDatePlaceholder: OFDate
+@interface OFDateSingleton: OFDate
 @end
 
-@interface OFDateSingleton: OFDate
+@interface OFDatePlaceholder: OFDateSingleton
 @end
 
 static struct {
@@ -76,6 +76,20 @@ initDistantPast(void)
 {
 	distantPast = [[OFDateSingleton alloc]
 	    initWithTimeIntervalSince1970: -62167219200.0];
+}
+
+static of_time_interval_t
+now(void)
+{
+	struct timeval tv;
+	of_time_interval_t seconds;
+
+	OF_ENSURE(gettimeofday(&tv, NULL) == 0);
+
+	seconds = tv.tv_sec;
+	seconds += (of_time_interval_t)tv.tv_usec / 1000000;
+
+	return seconds;
 }
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
@@ -227,42 +241,6 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return seconds;
 }
 
-@implementation OFDatePlaceholder
-- (instancetype)init
-{
-	return (id)[[OFDate of_alloc] init];
-}
-
-- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
-{
-	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
-}
-
-- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
-{
-	return (id)[[OFDate of_alloc] initWithTimeIntervalSinceNow: seconds];
-}
-
-- (instancetype)initWithDateString: (OFString *)string
-			    format: (OFString *)format
-{
-	return (id)[[OFDate of_alloc] initWithDateString: string
-						  format: format];
-}
-
-- (instancetype)initWithLocalDateString: (OFString *)string
-				 format: (OFString *)format
-{
-	return (id)[[OFDate of_alloc] initWithLocalDateString: string
-						       format: format];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFDate of_alloc] initWithSerialization: element];
-}
-@end
-
 @implementation OFDateSingleton
 - (instancetype)autorelease
 {
@@ -282,6 +260,21 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 {
 	return OF_RETAIN_COUNT_MAX;
 }
+@end
+
+@implementation OFDatePlaceholder
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+{
+	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
+}
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 @end
 
 @implementation OFDate
@@ -368,16 +361,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (instancetype)init
 {
-	struct timeval t;
-
-	self = [super init];
-
-	OF_ENSURE(gettimeofday(&t, NULL) == 0);
-
-	_seconds = t.tv_sec;
-	_seconds += (of_time_interval_t)t.tv_usec / 1000000;
-
-	return self;
+	return [self initWithTimeIntervalSince1970: now()];
 }
 
 - (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
@@ -391,104 +375,73 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
 {
-	self = [self init];
-
-	_seconds += seconds;
-
-	return self;
+	return [self initWithTimeIntervalSince1970: now() + seconds];
 }
 
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
-	self = [super init];
+	const char *UTF8String = string.UTF8String;
+	struct tm tm = { .tm_isdst = -1 };
+	int16_t tz = 0;
 
-	@try {
-		const char *UTF8String = string.UTF8String;
-		struct tm tm = { 0 };
-		int16_t tz = 0;
+	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
+	    UTF8String + string.UTF8StringLength)
+		@throw [OFInvalidFormatException exception];
 
-		tm.tm_isdst = -1;
-
-		if (of_strptime(UTF8String, format.UTF8String,
-		    &tm, &tz) != UTF8String + string.UTF8StringLength)
-			@throw [OFInvalidFormatException exception];
-
-		_seconds = tmAndTzToTime(&tm, &tz);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithTimeIntervalSince1970: tmAndTzToTime(&tm, &tz)];
 }
 
 - (instancetype)initWithLocalDateString: (OFString *)string
 				 format: (OFString *)format
 {
-	self = [super init];
+	const char *UTF8String = string.UTF8String;
+	struct tm tm = { .tm_isdst = -1 };
+	/*
+	 * of_strptime() can never set this to INT16_MAX, no matter what is
+	 * passed to it, so this is a safe way to figure out if the date
+	 * contains a time zone.
+	 */
+	int16_t tz = INT16_MAX;
+	of_time_interval_t seconds;
 
-	@try {
-		const char *UTF8String = string.UTF8String;
-		struct tm tm = { 0 };
-		/*
-		 * of_strptime() can never set this to INT16_MAX, no matter
-		 * what is passed to it, so this is a safe way to figure out if
-		 * the date contains a time zone.
-		 */
-		int16_t tz = INT16_MAX;
+	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
+	    UTF8String + string.UTF8StringLength)
+		@throw [OFInvalidFormatException exception];
 
-		tm.tm_isdst = -1;
-
-		if (of_strptime(UTF8String, format.UTF8String,
-		    &tm, &tz) != UTF8String + string.UTF8StringLength)
-			@throw [OFInvalidFormatException exception];
-
-		if (tz == INT16_MAX) {
+	if (tz == INT16_MAX) {
 #ifdef OF_WINDOWS
-			if (func__mktime64 != NULL) {
-				if ((_seconds = func__mktime64(&tm)) == -1)
-					@throw [OFInvalidFormatException
-					    exception];
-			} else {
+		if (func__mktime64 != NULL) {
+			if ((seconds = func__mktime64(&tm)) == -1)
+				@throw [OFInvalidFormatException exception];
+		} else {
 #endif
-				if ((_seconds = mktime(&tm)) == -1)
-					@throw [OFInvalidFormatException
-					    exception];
+			if ((seconds = mktime(&tm)) == -1)
+				@throw [OFInvalidFormatException exception];
 #ifdef OF_WINDOWS
-			}
+		}
 #endif
-		} else
-			_seconds = tmAndTzToTime(&tm, &tz);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	} else
+		seconds = tmAndTzToTime(&tm, &tz);
 
-	return self;
+	return [self initWithTimeIntervalSince1970: seconds];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	self = [super init];
+	void *pool = objc_autoreleasePoolPush();
+	of_time_interval_t seconds;
 
-	@try {
-		void *pool = objc_autoreleasePoolPush();
+	if (![element.name isEqual: @"OFDate"] ||
+	    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		@throw [OFInvalidArgumentException exception];
 
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
-			@throw [OFInvalidArgumentException exception];
+	seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
+	    element.hexadecimalValue)));
 
-		_seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
-		    OF_BSWAP64_IF_LE(element.hexadecimalValue)));
+	objc_autoreleasePoolPop(pool);
 
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithTimeIntervalSince1970: seconds];
 }
 
 - (bool)isEqual: (id)object
