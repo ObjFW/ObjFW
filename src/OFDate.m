@@ -281,6 +281,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
 # pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
 # pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #endif
 - (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
