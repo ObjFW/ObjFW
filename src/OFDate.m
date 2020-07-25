@@ -39,6 +39,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
 #import "of_strptime.h"
@@ -58,11 +59,23 @@
 @interface OFDatePlaceholder: OFDateSingleton
 @end
 
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+@interface OFTaggedPointerDate: OFDateSingleton
+@end
+#endif
+
 static struct {
 	Class isa;
 } placeholder;
 
-static OFDateSingleton *distantFuture, *distantPast;
+static OFDateSingleton *zeroDate, *distantFuture, *distantPast;
+static int dateTag;
+
+static void
+initZeroDate(void)
+{
+	zeroDate = [[OFDateSingleton alloc] initWithTimeIntervalSince1970: 0];
+}
 
 static void
 initDistantFuture(void)
@@ -270,12 +283,50 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 - (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
 {
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+	uint64_t value;
+#endif
+
+	if (seconds == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, initZeroDate);
+		return (id)zeroDate;
+	}
+
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+	value = OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+	    seconds)));
+
+	/* Almost all dates fall into this range. */
+	if (value & (UINT64_C(4) << 60)) {
+		id ret = objc_createTaggedPointer(dateTag,
+		    value & ~(UINT64_C(4) << 60));
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
+
 	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
 }
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
 @end
+
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+@implementation OFTaggedPointerDate
+- (of_time_interval_t)timeIntervalSince1970
+{
+	uint64_t value = (uint64_t)object_getTaggedPointerValue(self);
+
+	value |= UINT64_C(4) << 60;
+
+	return OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
+	    value)));
+}
+@end
+#endif
 
 @implementation OFDate
 + (void)initialize
@@ -298,6 +349,10 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
 		func__mktime64 = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
+#endif
+
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+	dateTag = objc_registerTaggedPointerClass([OFTaggedPointerDate class]);
 #endif
 }
 
@@ -511,7 +566,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: self.className
+	element = [OFXMLElement elementWithName: @"OFDate"
 				      namespace: OF_SERIALIZATION_NS];
 
 	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
@@ -703,7 +758,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
+	if ((buffer = malloc(pageSize)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
 
 	@try {
 #ifndef OF_WINDOWS
@@ -719,7 +776,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	return ret;
@@ -764,7 +821,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
+	if ((buffer = malloc(pageSize)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
 
 	@try {
 #ifndef OF_WINDOWS
@@ -780,7 +839,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	return ret;
