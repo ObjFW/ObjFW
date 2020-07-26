@@ -59,7 +59,7 @@ Ltagged_pointer_$0:
 	and	dil, 0xE
 	movzx	r8, dil
 
-	mov	rax, [rip+_objc_tagged_pointer_classes]
+	mov	rax, [rip+_objc_tagged_pointer_classes@GOTPCREL]
 	mov	r8, [rax+r8*4]
 	mov	r8, [r8+64]
 
