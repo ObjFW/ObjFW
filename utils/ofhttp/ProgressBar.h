@@ -20,6 +20,8 @@
 @class OFDate;
 @class OFTimer;
 
+#define BPS_WINDOW_SIZE 10
+
 @interface ProgressBar: OFObject
 {
 	intmax_t _received, _lastReceived, _length, _resumedFrom;
@@ -28,6 +30,8 @@
 	bool _stopped;
 	float _BPS;
 	double _ETA;
+	float _BPSWindow[BPS_WINDOW_SIZE];
+	size_t _BPSWindowIndex, _BPSWindowLength;
 }
 
 - (instancetype)initWithLength: (intmax_t)length

@@ -256,8 +256,18 @@
 
 - (void)calculateBPSAndETA
 {
-	_BPS = (float)(_received - _lastReceived) /
+	_BPSWindow[_BPSWindowIndex++ % BPS_WINDOW_SIZE] =
+	    (float)(_received - _lastReceived) /
 	    -(float)_lastReceivedDate.timeIntervalSinceNow;
+
+	if (_BPSWindowLength < BPS_WINDOW_SIZE)
+		_BPSWindowLength++;
+
+	_BPS = 0;
+	for (size_t i = 0; i < _BPSWindowLength; i++)
+		_BPS += _BPSWindow[i];
+	_BPS /= _BPSWindowLength;
+
 	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;
