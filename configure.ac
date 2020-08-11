@@ -525,6 +525,7 @@ case "$objc_runtime" in
 		])
 
 		AC_SUBST(RUNTIME, "runtime")
+		AC_CONFIG_FILES(src/runtime/Info.plist)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWRT_SHARED_LIB,

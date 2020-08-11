@@ -7,7 +7,7 @@
 	<key>CFBundleName</key>
 	<string>TestPlugin</string>
 	<key>CFBundleIdentifier</key>
-	<string>zone.heap.objfw.testplugin</string>
+	<string>im.nil.objfw.tests.plugin</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
