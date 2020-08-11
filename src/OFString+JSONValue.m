@@ -528,7 +528,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 static inline OFNumber *
 parseNumber(const char **pointer, const char *stop, size_t *line)
 {
-	bool isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
+	bool isNegative = (*pointer < stop && (*pointer)[0] == '-');
 	bool hasDecimal = false;
 	size_t i;
 	OFString *string;
@@ -557,16 +557,16 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		if (hasDecimal)
 			number = [OFNumber numberWithDouble:
 			    string.doubleValue];
-		else if (isHex)
-			number = [OFNumber numberWithIntMax:
-			    string.hexadecimalValue];
 		else if ([string isEqual: @"Infinity"])
 			number = [OFNumber numberWithDouble: INFINITY];
 		else if ([string isEqual: @"-Infinity"])
 			number = [OFNumber numberWithDouble: -INFINITY];
+		else if (isNegative)
+			number = [OFNumber numberWithLongLong:
+			    [string longLongValueWithBase: 0]];
 		else
-			number = [OFNumber numberWithIntMax:
-			    string.decimalValue];
+			number = [OFNumber numberWithUnsignedLongLong:
+			    [string unsignedLongLongValueWithBase: 0]];
 	} @finally {
 		[string release];
 	}

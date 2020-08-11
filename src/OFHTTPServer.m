@@ -105,13 +105,13 @@ OF_DIRECT_MEMBERS
 {
 	OFStreamSocket *_socket;
 	bool _chunked;
-	intmax_t _toRead;
+	long long _toRead;
 	bool _atEndOfStream, _setAtEndOfStream;
 }
 
 - (instancetype)initWithSocket: (OFStreamSocket *)sock
 		       chunked: (bool)chunked
-		 contentLength: (uintmax_t)contentLength;
+		 contentLength: (unsigned long long)contentLength;
 @end
 
 #ifdef OF_HAVE_THREADS
@@ -415,7 +415,7 @@ normalizedKey(OFString *key)
 		    isEqual: @"chunked"];
 		OFString *contentLengthString =
 		    [_headers objectForKey: @"Content-Length"];
-		intmax_t contentLength = 0;
+		unsigned long long contentLength = 0;
 
 		if (contentLengthString != nil) {
 			if (chunked || contentLengthString.length == 0)
@@ -423,13 +423,10 @@ normalizedKey(OFString *key)
 
 			@try {
 				contentLength =
-				    contentLengthString.decimalValue;
+				    contentLengthString.unsignedLongLongValue;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}
-
-			if (contentLength < 0)
-				return [self sendErrorAndClose: 400];
 		}
 
 		if (chunked || contentLengthString != nil) {
@@ -482,8 +479,9 @@ normalizedKey(OFString *key)
 			@try {
 				of_range_t range =
 				    of_range(pos + 1, value.length - pos - 1);
-				intmax_t portTmp = [value
-				    substringWithRange: range].decimalValue;
+				unsigned long long portTmp =
+				    [value substringWithRange: range]
+				    .unsignedLongLongValue;
 
 				if (portTmp < 1 || portTmp > UINT16_MAX)
 					return [self sendErrorAndClose: 400];
@@ -585,14 +583,17 @@ normalizedKey(OFString *key)
 @implementation OFHTTPServerRequestBodyStream
 - (instancetype)initWithSocket: (OFStreamSocket *)sock
 		       chunked: (bool)chunked
-		 contentLength: (uintmax_t)contentLength
+		 contentLength: (unsigned long long)contentLength
 {
 	self = [super init];
 
 	@try {
+		if (contentLength > LLONG_MAX)
+			@throw [OFOutOfRangeException exception];
+
 		_socket = [sock retain];
 		_chunked = chunked;
-		_toRead = contentLength;
+		_toRead = (long long)contentLength;
 
 		if (_chunked && _toRead > 0)
 			@throw [OFInvalidArgumentException exception];
@@ -633,7 +634,7 @@ normalizedKey(OFString *key)
 	if (!_chunked) {
 		size_t ret;
 
-		if (length > (uintmax_t)_toRead)
+		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
 		ret = [_socket readIntoBuffer: buffer
@@ -682,7 +683,7 @@ normalizedKey(OFString *key)
 
 		return 0;
 	} else if (_toRead > 0) {
-		if (length > (uintmax_t)_toRead)
+		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
 		length = [_socket readIntoBuffer: buffer
@@ -698,6 +699,7 @@ normalizedKey(OFString *key)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *line;
 		of_range_t range;
+		unsigned long long toRead;
 
 		@try {
 			line = [_socket tryReadLine];
@@ -725,8 +727,10 @@ normalizedKey(OFString *key)
 				@throw [OFInvalidFormatException exception];
 		}
 
-		if ((_toRead = line.hexadecimalValue) < 0)
+		toRead = [line unsignedLongLongValueWithBase: 16];
+		if (toRead > LLONG_MAX)
 			@throw [OFOutOfRangeException exception];
+		_toRead = (long long)toRead;
 
 		if (_toRead == 0) {
 			_setAtEndOfStream = true;

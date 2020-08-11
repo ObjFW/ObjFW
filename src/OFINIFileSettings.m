@@ -88,7 +88,7 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	   forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -186,12 +186,12 @@
 	return [ret autorelease];
 }
 
-- (intmax_t)integerForPath: (OFString *)path
-	      defaultValue: (intmax_t)defaultValue
+- (long long)integerForPath: (OFString *)path
+	       defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
-	intmax_t ret;
+	long long ret;
 
 	[self of_getCategory: &category
 		      andKey: &key

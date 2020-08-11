@@ -38,7 +38,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			cookie.expires = date;
 		} else if ([lowercaseName isEqual: @"max-age"]) {
 			OFDate *date = [OFDate dateWithTimeIntervalSinceNow:
-			    value.decimalValue];
+			    value.unsignedLongLongValue];
 			cookie.expires = date;
 		} else if ([lowercaseName isEqual: @"domain"])
 			cookie.domain = value;

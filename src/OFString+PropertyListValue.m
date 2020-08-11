@@ -125,7 +125,23 @@ parseRealElement(OFXMLElement *element)
 static OFNumber *
 parseIntegerElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithIntMax: element.decimalValue];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue;
+	OFNumber *ret;
+
+	stringValue = element.stringValue.stringByDeletingEnclosingWhitespaces;
+
+	if ([stringValue hasPrefix: @"-"])
+		ret = [OFNumber numberWithLongLong: stringValue.longLongValue];
+	else
+		ret = [OFNumber numberWithUnsignedLongLong:
+		    stringValue.unsignedLongLongValue];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 static id

@@ -69,7 +69,7 @@
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
 	OFStream *_output;
-	intmax_t _received, _length, _resumedFrom;
+	unsigned long long _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
 
@@ -376,14 +376,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    rangeOfString: @":"
 			  options: OF_STRING_SEARCH_BACKWARDS].location;
 		OFString *host;
-		intmax_t port;
+		unsigned long long port;
 
 		if (pos == OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringWithRange: of_range(0, pos)];
-		port = [proxy substringWithRange:
-		    of_range(pos + 1, proxy.length - pos - 1)].decimalValue;
+		port = [proxy substringWithRange: of_range(pos + 1,
+		    proxy.length - pos - 1)].unsignedLongLongValue;
 
 		if (port > UINT16_MAX)
 			@throw [OFOutOfRangeException exception];
@@ -785,7 +785,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
 
 		if (lengthString != nil) {
-			_length = lengthString.decimalValue;
+			_length = lengthString.unsignedLongLongValue;
 
 			if (_resumedFrom + _length >= GIBIBYTE) {
 				lengthString = [OFString stringWithFormat:
@@ -1014,10 +1014,10 @@ next:
 			    attributesOfItemAtPath: _currentFileName].fileSize;
 			OFString *range;
 
-			if (size > INTMAX_MAX)
+			if (size > ULLONG_MAX)
 				@throw [OFOutOfRangeException exception];
 
-			_resumedFrom = (intmax_t)size;
+			_resumedFrom = (unsigned long long)size;
 
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];

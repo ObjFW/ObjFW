@@ -46,14 +46,24 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (intmax_t)decimalValue
+- (long long)longLongValue
 {
-	return self.stringValue.decimalValue;
+	return self.stringValue.longLongValue;
 }
 
-- (uintmax_t)hexadecimalValue
+- (long long)longLongValueWithBase: (int)base
 {
-	return self.stringValue.hexadecimalValue;
+	return [self.stringValue longLongValueWithBase: base];
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	return self.stringValue.unsignedLongLongValue;
+}
+
+- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+{
+	return [self.stringValue unsignedLongLongValueWithBase: base];
 }
 
 - (float)floatValue

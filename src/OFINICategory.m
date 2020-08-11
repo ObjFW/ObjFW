@@ -209,20 +209,17 @@ unescapeString(OFString *string)
 	return defaultValue;
 }
 
-- (intmax_t)integerForKey: (OFString *)key
-	     defaultValue: (intmax_t)defaultValue
+- (long long)integerForKey: (OFString *)key
+	      defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *value = [self stringForKey: key
 				defaultValue: nil];
-	intmax_t ret;
+	long long ret;
 
-	if (value != nil) {
-		if ([value hasPrefix: @"0x"] || [value hasPrefix: @"$"])
-			ret = value.hexadecimalValue;
-		else
-			ret = value.decimalValue;
-	} else
+	if (value != nil)
+		ret = [value longLongValueWithBase: 0];
+	else
 		ret = defaultValue;
 
 	objc_autoreleasePoolPop(pool);
@@ -354,12 +351,12 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	    forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%jd", integer]
+	[self setString: [OFString stringWithFormat: @"%lld", integer]
 		 forKey: key];
 
 	objc_autoreleasePoolPop(pool);

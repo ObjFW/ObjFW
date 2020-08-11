@@ -575,25 +575,32 @@ struct {
 	return self.stringByDeletingLastPathComponent;
 }
 
-- (intmax_t)decimalValue
+- (long long)longLongValue
 {
 	[self finishInitialization];
 
-	return self.decimalValue;
+	return self.longLongValue;
 }
 
-- (uintmax_t)hexadecimalValue
+- (long long)longLongValueWithBase: (int)base
 {
 	[self finishInitialization];
 
-	return self.hexadecimalValue;
+	return [self longLongValueWithBase: base];
 }
 
-- (uintmax_t)octalValue
+- (unsigned long long)unsignedLongLongValue
 {
 	[self finishInitialization];
 
-	return self.octalValue;
+	return self.unsignedLongLongValue;
+}
+
+- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+{
+	[self finishInitialization];
+
+	return [self unsignedLongLongValueWithBase: base];
 }
 
 - (float)floatValue

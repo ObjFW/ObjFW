@@ -53,10 +53,11 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
 		buffer[i] = '\0';
 }
 
-static uintmax_t
-octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
+static unsigned long long
+octalValueFromBuffer(const unsigned char *buffer, size_t length,
+    unsigned long long max)
 {
-	uintmax_t value = 0;
+	unsigned long long value = 0;
 
 	if (length == 0)
 		return 0;
@@ -65,8 +66,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		for (size_t i = 1; i < length; i++)
 			value = (value << 8) | buffer[i];
 	} else
-		value = stringFromBuffer(buffer, length,
-		    OF_STRING_ENCODING_ASCII).octalValue;
+		value = [stringFromBuffer(buffer, length,
+		    OF_STRING_ENCODING_ASCII) unsignedLongLongValueWithBase: 8];
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];

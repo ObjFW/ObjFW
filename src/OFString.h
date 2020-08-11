@@ -171,43 +171,30 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) OFString *capitalizedString;
 
 /*!
- * @brief The decimal value of the string as an `intmax_t`.
+ * @brief The decimal value of the string as a `long long`.
  *
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
  * @ref OFInvalidFormatException is thrown.
  *
- * If the number is too big to fit into an `intmax_t`, an
+ * If the number is too big to fit into an `long long`, an
  * @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) intmax_t decimalValue;
+@property (readonly, nonatomic) long long longLongValue;
 
 /*!
- * @brief The hexadecimal value of the string as an `uintmax_t`.
+ * @brief The decimal value of the string as an `unsigned long long`.
  *
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
  * @ref OFInvalidFormatException is thrown.
  *
- * If the number is too big to fit into an `uintmax_t`, an
+ * If the number is too big to fit into an `unsigned long long`, an
  * @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) uintmax_t hexadecimalValue;
-
-/*!
- * @brief The octal value of the string as an `uintmax_t`.
- *
- * Leading and trailing whitespaces are ignored.
- *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
- *
- * If the number is too big to fit into an `uintmax_t`, an
- * @ref OFOutOfRangeException is thrown.
- */
-@property (readonly, nonatomic) uintmax_t octalValue;
+@property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
 /*!
  * @brief The float value of the string as a float.
@@ -1024,6 +1011,45 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The substring as a new autoreleased OFString
  */
 - (OFString *)substringWithRange: (of_range_t)range;
+
+/*!
+ * @brief The value of the string in the specified base as a `long long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidFormatException is thrown.
+ *
+ * If the number is too big to fit into an `long long`, an
+ * @ref OFOutOfRangeException is thrown.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ */
+- (long long)longLongValueWithBase: (int)base;
+
+/*!
+ * @brief The value of the string in the specified base as an
+ *	  `unsigned long long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidFormatException is thrown.
+ *
+ * If the number is too big to fit into an `unsigned long long`, an
+ * @ref OFOutOfRangeException is thrown.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ */
+- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
 
 /*!
  * @brief Creates a new string by appending another string.

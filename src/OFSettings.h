@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param integer The integer to set
  * @param path The path to store the integer at
  */
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	   forPath: (OFString *)path;
 
 /*!
@@ -150,8 +150,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The integer value of the specified path
  */
-- (intmax_t)integerForPath: (OFString *)path
-	      defaultValue: (intmax_t)defaultValue;
+- (long long)integerForPath: (OFString *)path
+	       defaultValue: (long long)defaultValue;
 
 /*!
  * @brief Returns the bool for the specified path, or the default value if the

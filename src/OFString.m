@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h>
@@ -2313,159 +2314,65 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return array;
 }
 
-- (intmax_t)decimalValue
+- (long long)longLongValue
+{
+	return [self longLongValueWithBase: 10];
+}
+
+- (long long)longLongValueWithBase: (int)base
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
-	size_t i = 0, length = self.length;
-	intmax_t value = 0;
-	bool expectWhitespace = false;
+	const char *UTF8String = self.UTF8String;
+	char *endPointer = NULL;
+	long long value;
 
-	while (length > 0 && of_ascii_isspace(*characters)) {
-		characters++;
-		length--;
-	}
+	value = strtoll(UTF8String, &endPointer, base);
 
-	if (length == 0) {
-		objc_autoreleasePoolPop(pool);
-		return 0;
-	}
+	if ((value == LLONG_MIN || value == LLONG_MAX) && errno == ERANGE)
+		@throw [OFOutOfRangeException exception];
 
-	if (characters[0] == '-' || characters[0] == '+')
-		i++;
-
-	for (; i < length; i++) {
-		if (expectWhitespace) {
-			if (of_ascii_isspace(characters[i]))
-				continue;
-
-			@throw [OFInvalidFormatException exception];
-		}
-
-		if (characters[i] >= '0' && characters[i] <= '9') {
-			if (INTMAX_MAX / 10 < value ||
-			    INTMAX_MAX - value * 10 < characters[i] - '0')
-				@throw [OFOutOfRangeException exception];
-
-			value = (value * 10) + (characters[i] - '0');
-		} else if (of_ascii_isspace(characters[i]))
-			expectWhitespace = true;
-		else
-			@throw [OFInvalidFormatException exception];
-	}
-
-	if (characters[0] == '-')
-		value *= -1;
+	/* Check if there are any invalid chars left */
+	if (endPointer != NULL)
+		for (; *endPointer != '\0'; endPointer++)
+			/* Use isspace since strtoll uses the same. */
+			if (!isspace(*endPointer))
+				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
 	return value;
 }
 
-- (uintmax_t)hexadecimalValue
+- (unsigned long long)unsignedLongLongValue
+{
+	return [self unsignedLongLongValueWithBase: 10];
+}
+
+- (unsigned long long)unsignedLongLongValueWithBase: (int)base
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
-	size_t i = 0, length = self.length;
-	uintmax_t value = 0;
-	bool expectWhitespace = false, foundValue = false;
+	const char *UTF8String = self.UTF8String;
+	char *endPointer = NULL;
+	unsigned long long value;
 
-	while (length > 0 && of_ascii_isspace(*characters)) {
-		characters++;
-		length--;
-	}
+	/* Use isspace since strtoull uses the same. */
+	while (isspace(*UTF8String))
+		UTF8String++;
 
-	if (length == 0) {
-		objc_autoreleasePoolPop(pool);
-		return 0;
-	}
-
-	if (length >= 2 && characters[0] == '0' && characters[1] == 'x')
-		i = 2;
-	else if (length >= 1 && (characters[0] == 'x' || characters[0] == '$'))
-		i = 1;
-
-	for (; i < length; i++) {
-		uintmax_t newValue;
-
-		if (expectWhitespace) {
-			if (of_ascii_isspace(characters[i]))
-				continue;
-
-			@throw [OFInvalidFormatException exception];
-		}
-
-		if (characters[i] >= '0' && characters[i] <= '9') {
-			newValue = (value << 4) | (characters[i] - '0');
-			foundValue = true;
-		} else if (characters[i] >= 'A' && characters[i] <= 'F') {
-			newValue = (value << 4) | (characters[i] - 'A' + 10);
-			foundValue = true;
-		} else if (characters[i] >= 'a' && characters[i] <= 'f') {
-			newValue = (value << 4) | (characters[i] - 'a' + 10);
-			foundValue = true;
-		} else if (characters[i] == 'h' ||
-		    of_ascii_isspace(characters[i])) {
-			expectWhitespace = true;
-			continue;
-		} else
-			@throw [OFInvalidFormatException exception];
-
-		if (newValue < value)
-			@throw [OFOutOfRangeException exception];
-
-		value = newValue;
-	}
-
-	if (!foundValue)
+	if (*UTF8String == '-')
 		@throw [OFInvalidFormatException exception];
 
-	objc_autoreleasePoolPop(pool);
+	value = strtoull(UTF8String, &endPointer, base);
 
-	return value;
-}
+	if (value == ULLONG_MAX && errno == ERANGE)
+		@throw [OFOutOfRangeException exception];
 
-- (uintmax_t)octalValue
-{
-	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
-	size_t i = 0, length = self.length;
-	uintmax_t value = 0;
-	bool expectWhitespace = false;
-
-	while (length > 0 && of_ascii_isspace(*characters)) {
-		characters++;
-		length--;
-	}
-
-	if (length == 0) {
-		objc_autoreleasePoolPop(pool);
-		return 0;
-	}
-
-	for (; i < length; i++) {
-		uintmax_t newValue;
-
-		if (expectWhitespace) {
-			if (of_ascii_isspace(characters[i]))
-				continue;
-
-			@throw [OFInvalidFormatException exception];
-		}
-
-		if (characters[i] >= '0' && characters[i] <= '7')
-			newValue = (value << 3) | (characters[i] - '0');
-		else if (of_ascii_isspace(characters[i])) {
-			expectWhitespace = true;
-			continue;
-		} else
-			@throw [OFInvalidFormatException exception];
-
-		if (newValue < value)
-			@throw [OFOutOfRangeException exception];
-
-		value = newValue;
-	}
+	/* Check if there are any invalid chars left */
+	if (endPointer != NULL)
+		for (; *endPointer != '\0'; endPointer++)
+			/* Use isspace since strtoull uses the same. */
+			if (!isspace(*endPointer))
+				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2475,8 +2382,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();
-
-#if defined(OF_AMIGAOS_M68K) || defined(OF_MORPHOS)
 	OFString *stripped = self.stringByDeletingEnclosingWhitespaces;
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
@@ -2485,7 +2390,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
 	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
 		return -INFINITY;
-#endif
 
 #ifdef HAVE_STRTOF_L
 	const char *UTF8String = self.UTF8String;
@@ -2502,19 +2406,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	char *endPointer = NULL;
 	float value;
 
-	while (of_ascii_isspace(*UTF8String))
-		UTF8String++;
-
 #ifdef HAVE_STRTOF_L
 	value = strtof_l(UTF8String, &endPointer, cLocale);
 #else
 	value = strtof(UTF8String, &endPointer);
 #endif
 
+	if (value == HUGE_VALF)
+		@throw [OFOutOfRangeException exception];
+
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
-			if (!of_ascii_isspace(*endPointer))
+			/* Use isspace since strtof uses the same. */
+			if (!isspace(*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2525,8 +2430,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (double)doubleValue
 {
 	void *pool = objc_autoreleasePoolPush();
-
-#if defined(OF_AMIGAOS_M68K) || defined(OF_MORPHOS)
 	OFString *stripped = self.stringByDeletingEnclosingWhitespaces;
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
@@ -2535,7 +2438,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
 	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
 		return -INFINITY;
-#endif
 
 #ifdef HAVE_STRTOD_L
 	const char *UTF8String = self.UTF8String;
@@ -2552,19 +2454,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	char *endPointer = NULL;
 	double value;
 
-	while (of_ascii_isspace(*UTF8String))
-		UTF8String++;
-
 #ifdef HAVE_STRTOD_L
 	value = strtod_l(UTF8String, &endPointer, cLocale);
 #else
 	value = strtod(UTF8String, &endPointer);
 #endif
 
+	if (value == HUGE_VAL)
+		@throw [OFOutOfRangeException exception];
+
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
-			if (!of_ascii_isspace(*endPointer))
+			/* Use isspace since strtod uses the same. */
+			if (!isspace(*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);

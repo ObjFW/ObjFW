@@ -41,14 +41,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) OFString *stringValue;
 
 /*!
- * @brief The contents of the receiver as a decimal value.
+ * @brief The contents of the receiver as a `long long` value.
  */
-@property (readonly, nonatomic) intmax_t decimalValue;
+@property (readonly, nonatomic) long long longLongValue;
 
 /*!
- * @brief The contents of the receiver as a hexadecimal value.
+ * @brief The contents of the receiver as an `unsigned long long` value.
  */
-@property (readonly, nonatomic) uintmax_t hexadecimalValue;
+@property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
 /*!
  * @brief The contents of the receiver as a float value.
@@ -89,6 +89,32 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 				 level: (unsigned int)level;
+
+/*!
+ * @brief The contents of the receiver as a `long long` value in the specified
+ *	  base.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The contents of the receiver as a `long long` value in the specified
+ *	   base
+ */
+- (long long)longLongValueWithBase: (int)base;
+
+/*!
+ * @brief The contents of the receiver as an `unsigned long long` value in the
+ *	  specified base.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The contents of the receiver as an `unsigned long long` value in the
+ * 	   specified base
+ */
+- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
 @end
 
 OF_ASSUME_NONNULL_END

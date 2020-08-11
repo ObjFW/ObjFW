@@ -362,13 +362,19 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		unsigned long long value;
 
 		if (![element.name isEqual: self.className] ||
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
+		value = [element unsignedLongLongValueWithBase: 16];
+
+		if (value > UINT64_MAX)
+			@throw [OFOutOfRangeException exception];
+
 		_seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
-		    OF_BSWAP64_IF_LE(element.hexadecimalValue)));
+		    OF_BSWAP64_IF_LE(value)));
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

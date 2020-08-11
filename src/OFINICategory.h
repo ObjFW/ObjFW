@@ -81,8 +81,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return The integer value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (intmax_t)integerForKey: (OFString *)key
-	     defaultValue: (intmax_t)defaultValue;
+- (long long)integerForKey: (OFString *)key
+	      defaultValue: (long long)defaultValue;
 
 /*!
  * @brief Returns the bool value for the specified key or the specified default
@@ -163,7 +163,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param integer The integer to which the value of the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	    forKey: (OFString *)key;
 
 /*!

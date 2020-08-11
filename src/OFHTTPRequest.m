@@ -214,16 +214,16 @@ of_http_request_method_from_string(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	intmax_t major, minor;
+	unsigned long long major, minor;
 	of_http_request_protocol_version_t protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject decimalValue];
-	minor = [components.lastObject decimalValue];
+	major = [components.firstObject unsignedLongLongValue];
+	minor = [components.lastObject unsignedLongLongValue];
 
-	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
+	if (major > UINT8_MAX || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	protocolVersion.major = (uint8_t)major;

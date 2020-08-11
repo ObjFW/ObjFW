@@ -81,7 +81,8 @@ of_dns_class_t of_dns_class_parse(OFString *string)
 		DNSClass = OF_DNS_CLASS_IN;
 	else {
 		@try {
-			DNSClass = (of_dns_class_t)string.decimalValue;
+			DNSClass = (of_dns_class_t)
+			    [string unsignedLongLongValueWithBase: 0];
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidArgumentException exception];
 		}
@@ -125,8 +126,8 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 		recordType = OF_DNS_RECORD_TYPE_ALL;
 	else {
 		@try {
-			recordType =
-			    (of_dns_record_type_t)string.decimalValue;
+			recordType = (of_dns_record_type_t)
+			    [string unsignedLongLongValueWithBase: 0];
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidArgumentException exception];
 		}

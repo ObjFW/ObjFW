@@ -885,18 +885,20 @@ initFalseNumber(void)
 				self = [self initWithBool: false];
 			else
 				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"float"])
+		} else if ([typeString isEqual: @"float"]) {
+			unsigned long long value =
+			    [element unsignedLongLongValueWithBase: 16];
+
+			if (value > UINT64_MAX)
+				@throw [OFOutOfRangeException exception];
+
 			self = [self initWithDouble: OF_BSWAP_DOUBLE_IF_LE(
-			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
-			    (uint64_t)element.hexadecimalValue)))];
-		else if ([typeString isEqual: @"signed"])
-			self = [self initWithIntMax: element.doubleValue];
+			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(value)))];
+		} else if ([typeString isEqual: @"signed"])
+			self = [self initWithLongLong: element.longLongValue];
 		else if ([typeString isEqual: @"unsigned"])
-			/*
-			 * FIXME: This will fail if the value is bigger than
-			 *	  INTMAX_MAX!
-			 */
-			self = [self initWithUIntMax: element.decimalValue];
+			self = [self initWithUnsignedLongLong:
+			    element.unsignedLongLongValue];
 		else
 			@throw [OFInvalidArgumentException exception];
 
