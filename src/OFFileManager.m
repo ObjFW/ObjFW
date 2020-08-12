@@ -938,10 +938,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 @end
 
 @implementation OFDictionary (FileAttributes)
-- (uintmax_t)fileSize
+- (unsigned long long)fileSize
 {
 	return [attributeForKeyOrException(self, of_file_attribute_key_size)
-	    uIntMaxValue];
+	    unsignedLongLongValue];
 }
 
 - (of_file_type_t)fileType

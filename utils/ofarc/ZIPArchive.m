@@ -421,7 +421,7 @@ outer_loop_end:
 		of_file_attributes_t attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
-		uintmax_t size;
+		unsigned long long size;
 		OFStream *output;
 
 		components = localFileName.pathComponents;
@@ -458,7 +458,7 @@ outer_loop_end:
 		output = [_archive streamForWritingEntry: entry];
 
 		if (!isDirectory) {
-			uintmax_t written = 0;
+			unsigned long long written = 0;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

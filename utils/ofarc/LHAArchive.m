@@ -489,7 +489,8 @@ outer_loop_end:
 		output = [_archive streamForWritingEntry: entry];
 
 		if ([type isEqual: of_file_type_regular]) {
-			uintmax_t written = 0, size = attributes.fileSize;
+			unsigned long long written = 0;
+			unsigned long long size = attributes.fileSize;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

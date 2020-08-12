@@ -215,8 +215,9 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				var = [OFNumber numberWithDouble:
 				    [first doubleValue] + [second doubleValue]];
 			else if ([token isEqual: @"%"])
-				var = [OFNumber numberWithIntMax:
-				    [first intMaxValue] % [second intMaxValue]];
+				var = [OFNumber numberWithLongLong:
+				    [first longLongValue] %
+				    [second longLongValue]];
 			else if ([token isEqual: @"&&"])
 				var = [OFNumber numberWithBool:
 				    [first boolValue] && [second boolValue]];
@@ -238,7 +239,8 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				    ![first boolValue]];
 			else if ([token isEqual: @"is_real"])
 				var = [OFNumber numberWithBool:
-				    [first doubleValue] != [first intMaxValue]];
+				    ([first doubleValue] !=
+				    [first longLongValue])];
 			else
 				OF_ENSURE(0);
 

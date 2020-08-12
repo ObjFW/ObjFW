@@ -26,21 +26,21 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Enumerated: OFObject
 {
-	intmax_t _integerValue;
+	long long _longLongValue;
 }
 
 /*!
  * @brief The integer value.
  */
-@property (readonly, nonatomic) intmax_t integerValue;
+@property (readonly, nonatomic) long long longLongValue;
 
 /*!
  * @brief Creates an ASN.1 Enumerated with the specified integer value.
  *
- * @param integerValue The integer value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @return A new, autoreleased OFASN1Enumerated
  */
-+ (instancetype)enumeratedWithIntegerValue: (intmax_t)integerValue;
++ (instancetype)enumeratedWithLongLong: (long long)value;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -48,11 +48,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
  *	  integer value.
  *
- * @param integerValue The integer value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @return An initialized OFASN1Enumerated
  */
-- (instancetype)initWithIntegerValue: (intmax_t)integerValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLongLong: (long long)value OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified

@@ -56,19 +56,21 @@ static OFString *module = @"OFData+ASN1DERValue";
 	/* Integer */
 	TEST(@"Parsing of integer",
 	    [[[OFData dataWithItems: "\x02\x00"
-			      count: 2] ASN1DERValue] integerValue] == 0 &&
+			      count: 2] ASN1DERValue] longLongValue] == 0 &&
 	    [[[OFData dataWithItems: "\x02\x01\x01"
-			      count: 3] ASN1DERValue] integerValue] == 1 &&
+			      count: 3] ASN1DERValue] longLongValue] == 1 &&
 	    [[[OFData dataWithItems: "\x02\x02\x01\x04"
-			      count: 4] ASN1DERValue] integerValue] == 260 &&
+			      count: 4] ASN1DERValue] longLongValue] == 260 &&
 	    [[[OFData dataWithItems: "\x02\x01\xFF"
-			      count: 3] ASN1DERValue] integerValue] == -1 &&
+			      count: 3] ASN1DERValue] longLongValue] == -1 &&
 	    [[[OFData dataWithItems: "\x02\x03\xFF\x00\x00"
-			      count: 5] ASN1DERValue] integerValue] == -65536 &&
-	    (uintmax_t)[[[OFData dataWithItems: "\x02\x09\x00\xFF\xFF\xFF\xFF"
-						"\xFF\xFF\xFF\xFF"
-					 count: 11] ASN1DERValue]
-	    integerValue] == UINTMAX_MAX)
+			      count: 5] ASN1DERValue] longLongValue] ==
+	    -65536 &&
+	    (unsigned long long)[[[OFData dataWithItems: "\x02\x09\x00\xFF\xFF"
+							 "\xFF\xFF\xFF\xFF\xFF"
+							 "\xFF"
+						  count: 11] ASN1DERValue]
+	    longLongValue] == ULLONG_MAX)
 
 	EXPECT_EXCEPTION(@"Detection of invalid integer #1",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x02\x02\x00\x00"
@@ -178,29 +180,29 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    (array = [[[OFData dataWithItems: "\x06\x01\x27"
 				       count: 3] ASN1DERValue]
 	    subidentifiers]) && array.count == 2 &&
-	    [[array objectAtIndex: 0] uIntMaxValue] == 0 &&
-	    [[array objectAtIndex: 1] uIntMaxValue] == 39 &&
+	    [[array objectAtIndex: 0] unsignedLongLongValue] == 0 &&
+	    [[array objectAtIndex: 1] unsignedLongLongValue] == 39 &&
 	    (array = [[[OFData dataWithItems: "\x06\x01\x4F"
 				       count: 3] ASN1DERValue]
 	    subidentifiers]) && array.count == 2 &&
-	    [[array objectAtIndex: 0] uIntMaxValue] == 1 &&
-	    [[array objectAtIndex: 1] uIntMaxValue] == 39 &&
+	    [[array objectAtIndex: 0] unsignedLongLongValue] == 1 &&
+	    [[array objectAtIndex: 1] unsignedLongLongValue] == 39 &&
 	    (array = [[[OFData dataWithItems: "\x06\x02\x88\x37"
 				       count: 4] ASN1DERValue]
 	    subidentifiers]) && array.count == 2 &&
-	    [[array objectAtIndex: 0] uIntMaxValue] == 2 &&
-	    [[array objectAtIndex: 1] uIntMaxValue] == 999 &&
+	    [[array objectAtIndex: 0] unsignedLongLongValue] == 2 &&
+	    [[array objectAtIndex: 1] unsignedLongLongValue] == 999 &&
 	    (array = [[[OFData dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D"
 					      "\x01\x01\x0B"
 				       count: 11] ASN1DERValue]
 	    subidentifiers]) && array.count == 7 &&
-	    [[array objectAtIndex: 0] uIntMaxValue] == 1 &&
-	    [[array objectAtIndex: 1] uIntMaxValue] == 2 &&
-	    [[array objectAtIndex: 2] uIntMaxValue] == 840 &&
-	    [[array objectAtIndex: 3] uIntMaxValue] == 113549 &&
-	    [[array objectAtIndex: 4] uIntMaxValue] == 1 &&
-	    [[array objectAtIndex: 5] uIntMaxValue] == 1 &&
-	    [[array objectAtIndex: 6] uIntMaxValue] == 11)
+	    [[array objectAtIndex: 0] unsignedLongLongValue] == 1 &&
+	    [[array objectAtIndex: 1] unsignedLongLongValue] == 2 &&
+	    [[array objectAtIndex: 2] unsignedLongLongValue] == 840 &&
+	    [[array objectAtIndex: 3] unsignedLongLongValue] == 113549 &&
+	    [[array objectAtIndex: 4] unsignedLongLongValue] == 1 &&
+	    [[array objectAtIndex: 5] unsignedLongLongValue] == 1 &&
+	    [[array objectAtIndex: 6] unsignedLongLongValue] == 11)
 
 	EXPECT_EXCEPTION(@"Detection of invalid Object Identifier #1",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x06\x01\x81"
@@ -223,19 +225,21 @@ static OFString *module = @"OFData+ASN1DERValue";
 	/* Enumerated */
 	TEST(@"Parsing of enumerated",
 	    [[[OFData dataWithItems: "\x0A\x00"
-			      count: 2] ASN1DERValue] integerValue] == 0 &&
+			      count: 2] ASN1DERValue] longLongValue] == 0 &&
 	    [[[OFData dataWithItems: "\x0A\x01\x01"
-			      count: 3] ASN1DERValue] integerValue] == 1 &&
+			      count: 3] ASN1DERValue] longLongValue] == 1 &&
 	    [[[OFData dataWithItems: "\x0A\x02\x01\x04"
-			      count: 4] ASN1DERValue] integerValue] == 260 &&
+			      count: 4] ASN1DERValue] longLongValue] == 260 &&
 	    [[[OFData dataWithItems: "\x0A\x01\xFF"
-			      count: 3] ASN1DERValue] integerValue] == -1 &&
+			      count: 3] ASN1DERValue] longLongValue] == -1 &&
 	    [[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00"
-			      count: 5] ASN1DERValue] integerValue] == -65536 &&
-	    (uintmax_t)[[[OFData dataWithItems: "\x0A\x09\x00\xFF\xFF\xFF\xFF"
-						"\xFF\xFF\xFF\xFF"
-					 count: 11] ASN1DERValue]
-	    integerValue] == UINTMAX_MAX)
+			      count: 5] ASN1DERValue] longLongValue] ==
+	    -65536 &&
+	    (unsigned long long)[[[OFData dataWithItems: "\x0A\x09\x00\xFF\xFF"
+							 "\xFF\xFF\xFF\xFF\xFF"
+							 "\xFF"
+						  count: 11] ASN1DERValue]
+	    longLongValue] == ULLONG_MAX)
 
 	EXPECT_EXCEPTION(@"Detection of invalid enumerated #1",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x0A\x02\x00\x00"
@@ -307,7 +311,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    (array = [[OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
 				      count: 11] ASN1DERValue]) &&
 	    [array isKindOfClass: [OFArray class]] && array.count == 2 &&
-	    [[array objectAtIndex: 0] integerValue] == 123 &&
+	    [[array objectAtIndex: 0] longLongValue] == 123 &&
 	    [[[array objectAtIndex: 1] stringValue] isEqual: @"Test"])
 
 	EXPECT_EXCEPTION(@"Detection of truncated sequence #1",
@@ -328,7 +332,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 				    count: 11] ASN1DERValue]) &&
 	    [set isKindOfClass: [OFSet class]] && set.count == 2 &&
 	    (enumerator = [set objectEnumerator]) &&
-	    [[enumerator nextObject] integerValue] == 123 &&
+	    [[enumerator nextObject] longLongValue] == 123 &&
 	    [[[enumerator nextObject] stringValue] isEqual: @"Test"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid set",

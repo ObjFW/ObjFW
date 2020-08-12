@@ -24,7 +24,7 @@
 
 @interface ProgressBar: OFObject
 {
-	intmax_t _received, _lastReceived, _length, _resumedFrom;
+	unsigned long long _received, _lastReceived, _length, _resumedFrom;
 	OFDate *_startDate, *_lastReceivedDate;
 	OFTimer *_drawTimer, *_BPSTimer;
 	bool _stopped;
@@ -34,9 +34,9 @@
 	size_t _BPSWindowIndex, _BPSWindowLength;
 }
 
-- (instancetype)initWithLength: (intmax_t)length
-		   resumedFrom: (intmax_t)resumedFrom;
-- (void)setReceived: (intmax_t)received;
+- (instancetype)initWithLength: (unsigned long long)length
+		   resumedFrom: (unsigned long long)resumedFrom;
+- (void)setReceived: (unsigned long long)received;
 - (void)draw;
 - (void)calculateBPSAndETA;
 - (void)stop;

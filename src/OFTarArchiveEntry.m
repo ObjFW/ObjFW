@@ -107,7 +107,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (of_time_interval_t)octalValueFromBuffer(
-		    header + 136, 12, UINTMAX_MAX)];
+		    header + 136, 12, ULLONG_MAX)];
 		_type = header[156];
 
 		targetFileName = stringFromBuffer(header + 157, 100, encoding);

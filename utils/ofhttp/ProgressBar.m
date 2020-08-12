@@ -33,8 +33,8 @@
 #define UPDATE_INTERVAL 0.1
 
 @implementation ProgressBar
-- (instancetype)initWithLength: (intmax_t)length
-		   resumedFrom: (intmax_t)resumedFrom
+- (instancetype)initWithLength: (unsigned long long)length
+		   resumedFrom: (unsigned long long)resumedFrom
 {
 	self = [super init];
 
@@ -78,7 +78,7 @@
 	[super dealloc];
 }
 
-- (void)setReceived: (intmax_t)received
+- (void)setReceived: (unsigned long long)received
 {
 	_received = received;
 }

@@ -334,7 +334,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 						mode: @"r"];
 
 		@try {
-			uintmax_t fileSize = [[OFFileManager defaultManager]
+			unsigned long long fileSize =
+			    [[OFFileManager defaultManager]
 			    attributesOfItemAtPath: path].fileSize;
 
 			contentLength =
@@ -1010,7 +1011,8 @@ next:
 
 	if (_continue) {
 		@try {
-			uintmax_t size = [[OFFileManager defaultManager]
+			unsigned long long size =
+			    [[OFFileManager defaultManager]
 			    attributesOfItemAtPath: _currentFileName].fileSize;
 			OFString *range;
 

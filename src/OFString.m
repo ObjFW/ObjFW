@@ -991,7 +991,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			      encoding: (of_string_encoding_t)encoding
 {
 	char *tmp;
-	uintmax_t fileSize;
+	unsigned long long fileSize;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -1009,7 +1009,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		objc_autoreleasePoolPop(pool);
 
-# if UINTMAX_MAX > SIZE_MAX
+# if ULLONG_MAX > SIZE_MAX
 		if (fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 #endif

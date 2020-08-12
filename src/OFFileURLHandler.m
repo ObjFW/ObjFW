@@ -620,7 +620,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (s.st_size < 0)
 		@throw [OFOutOfRangeException exception];
 
-	[ret setObject: [NSNumber numberWithUIntMax: s.st_size]
+	[ret setObject: [NSNumber numberWithUnsignedLongLong: s.st_size]
 		forKey: of_file_attribute_key_size];
 
 	setTypeAttribute(ret, &s);

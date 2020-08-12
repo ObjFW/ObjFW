@@ -578,7 +578,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uintmax_t fileSize;
+@property (readonly, nonatomic) unsigned long long fileSize;
 
 /*!
  * @brief The @ref of_file_attribute_key_type key from the dictionary.

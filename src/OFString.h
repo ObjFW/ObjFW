@@ -178,7 +178,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * If the string contains any non-number characters, an
  * @ref OFInvalidFormatException is thrown.
  *
- * If the number is too big to fit into an `long long`, an
+ * If the number is too big to fit into a `long long`, an
  * @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) long long longLongValue;
@@ -1020,7 +1020,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * If the string contains any non-number characters, an
  * @ref OFInvalidFormatException is thrown.
  *
- * If the number is too big to fit into an `long long`, an
+ * If the number is too big to fit into a `long long`, an
  * @ref OFOutOfRangeException is thrown.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
