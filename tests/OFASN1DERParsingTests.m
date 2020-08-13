@@ -32,10 +32,11 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Boolean */
 	TEST(@"Parsing of boolean",
-	    ![[OFData dataWithItems: "\x01\x01\x00"
-			      count: 3].objectByParsingASN1DER booleanValue] &&
-	    [[OFData dataWithItems: "\x01\x01\xFF"
-			     count: 3].objectByParsingASN1DER booleanValue])
+	    ![[[OFData dataWithItems: "\x01\x01\x00"
+			       count: 3] objectByParsingASN1DER]
+	    booleanValue] &&
+	    [[[OFData dataWithItems: "\x01\x01\xFF"
+			      count: 3] objectByParsingASN1DER] booleanValue])
 
 	EXPECT_EXCEPTION(@"Detection of invalid boolean #1",
 	    OFInvalidFormatException,
@@ -59,26 +60,26 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Integer */
 	TEST(@"Parsing of integer",
-	    [[OFData dataWithItems: "\x02\x00"
-			    count: 2].objectByParsingASN1DER longLongValue] ==
-	    0 &&
-	    [[OFData dataWithItems: "\x02\x01\x01"
-			    count: 3].objectByParsingASN1DER longLongValue] ==
-	    1 &&
-	    [[OFData dataWithItems: "\x02\x02\x01\x04"
-			    count: 4].objectByParsingASN1DER longLongValue] ==
-	    260 &&
-	    [[OFData dataWithItems: "\x02\x01\xFF"
-			    count: 3].objectByParsingASN1DER longLongValue] ==
-	    -1 &&
-	    [[OFData dataWithItems: "\x02\x03\xFF\x00\x00"
-			    count: 5].objectByParsingASN1DER longLongValue] ==
-	    -65536 &&
-	    (unsigned long long)[[OFData dataWithItems: "\x02\x09\x00\xFF\xFF"
-							"\xFF\xFF\xFF\xFF\xFF"
-							"\xFF"
-						 count: 11]
-	    .objectByParsingASN1DER longLongValue] == ULLONG_MAX)
+	    [[[OFData dataWithItems: "\x02\x00"
+			      count: 2] objectByParsingASN1DER]
+	    longLongValue] == 0 &&
+	    [[[OFData dataWithItems: "\x02\x01\x01"
+			      count: 3] objectByParsingASN1DER]
+	    longLongValue] == 1 &&
+	    [[[OFData dataWithItems: "\x02\x02\x01\x04"
+			      count: 4] objectByParsingASN1DER]
+	    longLongValue] == 260 &&
+	    [[[OFData dataWithItems: "\x02\x01\xFF"
+			      count: 3] objectByParsingASN1DER]
+	    longLongValue] == -1 &&
+	    [[[OFData dataWithItems: "\x02\x03\xFF\x00\x00"
+			      count: 5] objectByParsingASN1DER]
+	    longLongValue] == -65536 &&
+	    (unsigned long long)[[[OFData dataWithItems: "\x02\x09\x00\xFF\xFF"
+							 "\xFF\xFF\xFF\xFF\xFF"
+							 "\xFF"
+						  count: 11]
+	    objectByParsingASN1DER] longLongValue] == ULLONG_MAX)
 
 	EXPECT_EXCEPTION(@"Detection of invalid integer #1",
 	    OFInvalidFormatException,
@@ -108,23 +109,23 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Bit string */
 	TEST(@"Parsing of bit string",
-	    (bitString = [OFData dataWithItems: "\x03\x01\x00"
-					 count: 3].objectByParsingASN1DER) &&
+	    (bitString = [[OFData dataWithItems: "\x03\x01\x00"
+					  count: 3] objectByParsingASN1DER]) &&
 	    [bitString.bitStringValue isEqual: [OFData dataWithItems: ""
-					count: 0]] &&
+							       count: 0]] &&
 	    bitString.bitStringLength == 0 &&
-	    (bitString = [OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
-					 count: 15].objectByParsingASN1DER) &&
+	    (bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
+					  count: 15] objectByParsingASN1DER]) &&
 	    [bitString.bitStringValue
 	    isEqual: [OFData dataWithItems: "Hello World\x80"
 				     count: 12]] &&
 	    bitString.bitStringLength == 95 &&
-	    (bitString = [OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxxx"
-						"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-						"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-						"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-						"xxxxxxxxxxxxxxxxxxxxxxx"
-					 count: 131].objectByParsingASN1DER) &&
+	    (bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					 count: 131] objectByParsingASN1DER]) &&
 	    [bitString.bitStringValue
 	    isEqual: [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -156,15 +157,15 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Octet string */
 	TEST(@"Parsing of octet string",
-	    [[[OFData dataWithItems: "\x04\x0CHello World!"
-			      count: 14].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x04\x0CHello World!"
+			       count: 14] objectByParsingASN1DER]
 	    octetStringValue] isEqual: [OFData dataWithItems: "Hello World!"
 						       count: 12]] &&
-	    [[[OFData dataWithItems: "\x04\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxx"
-			      count: 131].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x04\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxx"
+			       count: 131] objectByParsingASN1DER]
 	    octetStringValue] isEqual:
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -184,8 +185,8 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Null */
 	TEST(@"Parsing of null",
-	    [[OFData dataWithItems: "\x05\x00"
-			     count: 2].objectByParsingASN1DER
+	    [[[OFData dataWithItems: "\x05\x00"
+			      count: 2] objectByParsingASN1DER]
 	    isEqual: [OFNull null]])
 
 	EXPECT_EXCEPTION(@"Detection of invalid null",
@@ -195,24 +196,24 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Object Identifier */
 	TEST(@"Parsing of Object Identifier",
-	    (array = [[OFData dataWithItems: "\x06\x01\x27"
-				      count: 3].objectByParsingASN1DER
+	    (array = [[[OFData dataWithItems: "\x06\x01\x27"
+				       count: 3] objectByParsingASN1DER]
 	    subidentifiers]) && array.count == 2 &&
 	    [[array objectAtIndex: 0] unsignedLongLongValue] == 0 &&
 	    [[array objectAtIndex: 1] unsignedLongLongValue] == 39 &&
-	    (array = [[OFData dataWithItems: "\x06\x01\x4F"
-				      count: 3].objectByParsingASN1DER
+	    (array = [[[OFData dataWithItems: "\x06\x01\x4F"
+				       count: 3] objectByParsingASN1DER]
 	    subidentifiers]) && array.count == 2 &&
 	    [[array objectAtIndex: 0] unsignedLongLongValue] == 1 &&
 	    [[array objectAtIndex: 1] unsignedLongLongValue] == 39 &&
-	    (array = [[OFData dataWithItems: "\x06\x02\x88\x37"
-				      count: 4].objectByParsingASN1DER
+	    (array = [[[OFData dataWithItems: "\x06\x02\x88\x37"
+				       count: 4] objectByParsingASN1DER]
 	    subidentifiers]) && array.count == 2 &&
 	    [[array objectAtIndex: 0] unsignedLongLongValue] == 2 &&
 	    [[array objectAtIndex: 1] unsignedLongLongValue] == 999 &&
-	    (array = [[OFData dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D"
-					     "\x01\x01\x0B"
-				      count: 11].objectByParsingASN1DER
+	    (array = [[[OFData dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D"
+					      "\x01\x01\x0B"
+				       count: 11] objectByParsingASN1DER]
 	    subidentifiers]) && array.count == 7 &&
 	    [[array objectAtIndex: 0] unsignedLongLongValue] == 1 &&
 	    [[array objectAtIndex: 1] unsignedLongLongValue] == 2 &&
@@ -245,26 +246,26 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Enumerated */
 	TEST(@"Parsing of enumerated",
-	    [[OFData dataWithItems: "\x0A\x00"
-			     count: 2].objectByParsingASN1DER longLongValue] ==
+	    [[[OFData dataWithItems: "\x0A\x00"
+			     count: 2] objectByParsingASN1DER] longLongValue] ==
 	    0 &&
-	    [[OFData dataWithItems: "\x0A\x01\x01"
-			     count: 3].objectByParsingASN1DER longLongValue] ==
+	    [[[OFData dataWithItems: "\x0A\x01\x01"
+			     count: 3] objectByParsingASN1DER] longLongValue] ==
 	    1 &&
-	    [[OFData dataWithItems: "\x0A\x02\x01\x04"
-			     count: 4].objectByParsingASN1DER longLongValue] ==
+	    [[[OFData dataWithItems: "\x0A\x02\x01\x04"
+			     count: 4] objectByParsingASN1DER] longLongValue] ==
 	    260 &&
-	    [[OFData dataWithItems: "\x0A\x01\xFF"
-			     count: 3].objectByParsingASN1DER longLongValue] ==
+	    [[[OFData dataWithItems: "\x0A\x01\xFF"
+			     count: 3] objectByParsingASN1DER] longLongValue] ==
 	    -1 &&
-	    [[OFData dataWithItems: "\x0A\x03\xFF\x00\x00"
-			     count: 5].objectByParsingASN1DER longLongValue] ==
+	    [[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00"
+			     count: 5] objectByParsingASN1DER] longLongValue] ==
 	    -65536 &&
-	    (unsigned long long)[[OFData dataWithItems: "\x0A\x09\x00\xFF\xFF"
-							"\xFF\xFF\xFF\xFF\xFF"
-							"\xFF"
-						 count: 11]
-	    .objectByParsingASN1DER longLongValue] == ULLONG_MAX)
+	    (unsigned long long)[[[OFData dataWithItems: "\x0A\x09\x00\xFF\xFF"
+							 "\xFF\xFF\xFF\xFF\xFF"
+							 "\xFF"
+						  count: 11]
+	    objectByParsingASN1DER] longLongValue] == ULLONG_MAX)
 
 	EXPECT_EXCEPTION(@"Detection of invalid enumerated #1",
 	    OFInvalidFormatException,
@@ -294,14 +295,14 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* UTF-8 string */
 	TEST(@"Parsing of UTF-8 string",
-	    [[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			      count: 16].objectByParsingASN1DER UTF8StringValue]
-	    isEqual: @"Hällo Wörld!"] &&
-	    [[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxx"
-			      count: 131].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
+			       count: 16] objectByParsingASN1DER]
+	    UTF8StringValue] isEqual: @"Hällo Wörld!"] &&
+	    [[[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxx"
+			       count: 131] objectByParsingASN1DER]
 	    UTF8StringValue] isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -338,11 +339,11 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Sequence */
 	TEST(@"Parsing of sequence",
-	    (array = [OFData dataWithItems: "\x30\x00"
-				     count: 2].objectByParsingASN1DER) &&
+	    (array = [[OFData dataWithItems: "\x30\x00"
+				      count: 2] objectByParsingASN1DER]) &&
 	    [array isKindOfClass: [OFArray class]] && array.count == 0 &&
-	    (array = [OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
-				     count: 11].objectByParsingASN1DER) &&
+	    (array = [[OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
+				      count: 11] objectByParsingASN1DER]) &&
 	    [array isKindOfClass: [OFArray class]] && array.count == 2 &&
 	    [[array objectAtIndex: 0] longLongValue] == 123 &&
 	    [[[array objectAtIndex: 1] stringValue] isEqual: @"Test"])
@@ -359,11 +360,11 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* Set */
 	TEST(@"Parsing of set",
-	    (set = [OFData dataWithItems: "\x31\x00"
-				   count: 2].objectByParsingASN1DER) &&
+	    (set = [[OFData dataWithItems: "\x31\x00"
+				    count: 2] objectByParsingASN1DER]) &&
 	    [set isKindOfClass: [OFSet class]] && set.count == 0 &&
-	    (set = [OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
-				   count: 11].objectByParsingASN1DER) &&
+	    (set = [[OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
+				    count: 11] objectByParsingASN1DER]) &&
 	    [set isKindOfClass: [OFSet class]] && set.count == 2 &&
 	    (enumerator = [set objectEnumerator]) &&
 	    [[enumerator nextObject] longLongValue] == 123 &&
@@ -386,14 +387,14 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* NumericString */
 	TEST(@"Parsing of NumericString",
-	    [[[OFData dataWithItems: "\x12\x0B" "12345 67890"
-			      count: 13].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x12\x0B" "12345 67890"
+			       count: 13] objectByParsingASN1DER]
 	    numericStringValue] isEqual: @"12345 67890"] &&
-	    [[[OFData dataWithItems: "\x12\x81\x80" "00000000000000000000000000"
-				     "00000000000000000000000000000000000000000"
-				     "00000000000000000000000000000000000000000"
-				     "00000000000000000000"
-			      count: 131].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x12\x81\x80" "0000000000000000000000000"
+				      "0000000000000000000000000000000000000000"
+				      "0000000000000000000000000000000000000000"
+				      "00000000000000000000000"
+			       count: 131] objectByParsingASN1DER]
 	    numericStringValue] isEqual: @"000000000000000000000000000000000000"
 					 @"000000000000000000000000000000000000"
 					 @"000000000000000000000000000000000000"
@@ -417,14 +418,14 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* PrintableString */
 	TEST(@"Parsing of PrintableString",
-	    [[[OFData dataWithItems: "\x13\x0CHello World."
-			      count: 14].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x13\x0CHello World."
+			       count: 14] objectByParsingASN1DER]
 	    printableStringValue] isEqual: @"Hello World."] &&
-	    [[[OFData dataWithItems: "\x13\x81\x80 '()+,-./:=?abcdefghijklmnopq"
-				     "rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '()+,"
-				     "-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHI"
-				     "JKLMNOPQRSTUVWXYZ"
-			      count: 131].objectByParsingASN1DER
+	    [[[[OFData dataWithItems: "\x13\x81\x80 '()+,-./:=?abcdefghijklmnop"
+				      "qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '()"
+				      "+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEF"
+				      "GHIJKLMNOPQRSTUVWXYZ"
+			       count: 131] objectByParsingASN1DER]
 	    printableStringValue] isEqual: @" '()+,-./:=?abcdefghijklmnopqrstuv"
 					   @"wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '()"
 					   @"+,-./:=?abcdefghijklmnopqrstuvwxyz"
@@ -448,17 +449,18 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* IA5String */
 	TEST(@"Parsing of IA5String",
-	    [[[OFData dataWithItems: "\x16\x0CHello World!"
-			      count: 14].objectByParsingASN1DER IA5StringValue]
-	    isEqual: @"Hello World!"] &&
-	    [[[OFData dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				     "xxxxxxxxxxxxxxxxx"
-			      count: 131].objectByParsingASN1DER IA5StringValue]
-	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		     @"xxxxxxxxxxxxxxxx"])
+	    [[[[OFData dataWithItems: "\x16\x0CHello World!"
+			       count: 14] objectByParsingASN1DER]
+	    IA5StringValue] isEqual: @"Hello World!"] &&
+	    [[[[OFData dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxx"
+			       count: 131] objectByParsingASN1DER]
+	    IA5StringValue] isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     @"xxxxxxxx"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid IA5String",
 	    OFInvalidEncodingException,

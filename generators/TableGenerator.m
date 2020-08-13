@@ -267,6 +267,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 				done = false;
 			}
+
+			objc_autoreleasePoolPop(pool);
 		}
 	} while (!done);
 }
