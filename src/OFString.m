@@ -75,6 +75,9 @@
 #ifdef OF_AMIGAOS_M68K
 /* libnix has strtod, but not strtof */
 # define strtof strtod
+/* libnix has strtoimax/strtoumax, but not strtoll/strtoull */
+# define strtoll strtoimax
+# define strtoull strtoumax
 #endif
 
 static struct {
