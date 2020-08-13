@@ -380,7 +380,7 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
-	[self ASN1DERValueTests];
+	[self ASN1DERParsingTests];
 	[self ASN1DERRepresentationTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
