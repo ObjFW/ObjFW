@@ -2335,7 +2335,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			/* Use isspace since strtoll uses the same. */
-			if (!isspace(*endPointer))
+			if (!isspace((unsigned char)*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2356,7 +2356,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	unsigned long long value;
 
 	/* Use isspace since strtoull uses the same. */
-	while (isspace(*UTF8String))
+	while (isspace((unsigned char)*UTF8String))
 		UTF8String++;
 
 	if (*UTF8String == '-')
@@ -2371,7 +2371,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			/* Use isspace since strtoull uses the same. */
-			if (!isspace(*endPointer))
+			if (!isspace((unsigned char)*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2419,7 +2419,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			/* Use isspace since strtof uses the same. */
-			if (!isspace(*endPointer))
+			if (!isspace((unsigned char)*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2467,7 +2467,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
 			/* Use isspace since strtod uses the same. */
-			if (!isspace(*endPointer))
+			if (!isspace((unsigned char)*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
