@@ -130,7 +130,7 @@ void
 _references_to_categories_of_OFString(void)
 {
 	_OFString_CryptoHashing_reference = 1;
-	_OFString_JSONValue_reference = 1;
+	_OFString_JSONParsing_reference = 1;
 #ifdef OF_HAVE_FILES
 	_OFString_PathAdditions_reference = 1;
 #endif

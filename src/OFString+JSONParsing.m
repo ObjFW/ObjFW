@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-#import "OFString+JSONValue.h"
+#import "OFString+JSONParsing.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
@@ -32,7 +32,7 @@
 
 #import "OFInvalidJSONException.h"
 
-int _OFString_JSONValue_reference;
+int _OFString_JSONParsing_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,
     size_t depthLimit);
@@ -641,13 +641,13 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	}
 }
 
-@implementation OFString (JSONValue)
-- (id)JSONValue
+@implementation OFString (JSONParsing)
+- (id)objectByParsingJSON
 {
-	return [self JSONValueWithDepthLimit: 32];
+	return [self objectByParsingJSONWithDepthLimit: 32];
 }
 
-- (id)JSONValueWithDepthLimit: (size_t)depthLimit
+- (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *pointer = self.UTF8String;

@@ -138,24 +138,24 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_compressed_size",
-			    [@"["
-			     @"    'Compressed: ',"
-			     @"    ["
-			     @"        {'size == 1': '1 byte'},"
-			     @"        {'': '%[size] bytes'}"
-			     @"    ]"
-			     @"]" JSONValue],
+			    @"["
+			    @"    'Compressed: ',"
+			    @"    ["
+			    @"        {'size == 1': '1 byte'},"
+			    @"        {'': '%[size] bytes'}"
+			    @"    ]"
+			    @"]".objectByParsingJSON,
 			    @"size", compressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_uncompressed_size",
-			    [@"["
-			     @"    'Uncompressed: ',"
-			     @"    ["
-			     @"        {'size == 1': '1 byte'},"
-			     @"        {'': '%[size] bytes'}"
-			     @"    ]"
-			     @"]" JSONValue],
+			    @"["
+			    @"    'Uncompressed: ',"
+			    @"    ["
+			    @"        {'size == 1': '1 byte'},"
+			    @"        {'': '%[size] bytes'}"
+			    @"    ]"
+			    @"]".objectByParsingJSON,
 			    @"size", uncompressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(

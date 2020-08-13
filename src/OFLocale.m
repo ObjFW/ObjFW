@@ -512,7 +512,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
 	@try {
-		map = [[OFString stringWithContentsOfFile: mapPath] JSONValue];
+		map = [OFString stringWithContentsOfFile: mapPath]
+		    .objectByParsingJSON;
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -537,7 +538,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	    [languageFile stringByAppendingString: @".json"]];
 
 	[_localizedStrings addObject:
-	    [[OFString stringWithContentsOfFile: languageFile] JSONValue]];
+	    [OFString stringWithContentsOfFile: languageFile]
+	    .objectByParsingJSON];
 
 	objc_autoreleasePoolPop(pool);
 }

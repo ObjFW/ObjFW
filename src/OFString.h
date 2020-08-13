@@ -1280,7 +1280,7 @@ OF_ASSUME_NONNULL_END
 #include "OFMutableString.h"
 #ifdef __OBJC__
 # import "OFString+CryptoHashing.h"
-# import "OFString+JSONValue.h"
+# import "OFString+JSONParsing.h"
 # ifdef OF_HAVE_FILES
 #  import "OFString+PathAdditions.h"
 # endif
