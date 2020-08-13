@@ -31,7 +31,7 @@ SRCS = OFASN1BitString.m		\
        OFData.m				\
        OFData+ASN1DERValue.m		\
        OFData+CryptoHashing.m		\
-       OFData+MessagePackValue.m	\
+       OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\

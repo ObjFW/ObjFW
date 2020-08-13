@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#import "OFData+MessagePackValue.h"
+#import "OFData+MessagePackParsing.h"
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -33,7 +33,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 
-int _OFData_MessagePackValue_reference;
+int _OFData_MessagePackParsing_reference;
 
 static size_t parseObject(const unsigned char *buffer, size_t length,
     id *object, size_t depthLimit);
@@ -542,13 +542,13 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 	}
 }
 
-@implementation OFData (MessagePackValue)
-- (id)messagePackValue
+@implementation OFData (MessagePackParsing)
+- (id)objectByParsingMessagePack
 {
-	return [self messagePackValueWithDepthLimit: 32];
+	return [self objectByParsingMessagePackWithDepthLimit: 32];
 }
 
-- (id)messagePackValueWithDepthLimit: (size_t)depthLimit
+- (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t count = self.count;
