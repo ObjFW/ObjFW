@@ -22,18 +22,18 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_PropertyListValue_reference;
+extern int _OFString_PropertyListParsing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (PropertyListValue)
+@interface OFString (PropertyListParsing)
 /*!
  * @brief The string interpreted as a property list and parsed as an object.
  *
  * @note This only supports XML property lists!
  */
-@property (readonly, nonatomic) id propertyListValue;
+@property (readonly, nonatomic) id objectByParsingPropertyList;
 @end
 
 OF_ASSUME_NONNULL_END

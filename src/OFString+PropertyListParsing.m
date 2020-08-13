@@ -17,7 +17,7 @@
 
 #include "config.h"
 
-#import "OFString+PropertyListValue.h"
+#import "OFString+PropertyListParsing.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
@@ -29,7 +29,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFUnsupportedVersionException.h"
 
-int _OFString_PropertyListValue_reference;
+int _OFString_PropertyListParsing_reference;
 
 static id parseElement(OFXMLElement *element);
 
@@ -176,8 +176,8 @@ parseElement(OFXMLElement *element)
 		@throw [OFInvalidFormatException exception];
 }
 
-@implementation OFString (PropertyListValue)
-- (id)propertyListValue
+@implementation OFString (PropertyListParsing)
+- (id)objectByParsingPropertyList
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *rootElement = [OFXMLElement elementWithXMLString: self];

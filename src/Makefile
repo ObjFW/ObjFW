@@ -87,7 +87,7 @@ SRCS = OFASN1BitString.m		\
        OFString.m			\
        OFString+CryptoHashing.m		\
        OFString+JSONParsing.m		\
-       OFString+PropertyListValue.m	\
+       OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
