@@ -2326,6 +2326,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	char *endPointer = NULL;
 	long long value;
 
+	errno = 0;
 	value = strtoll(UTF8String, &endPointer, base);
 
 	if ((value == LLONG_MIN || value == LLONG_MAX) && errno == ERANGE)
@@ -2362,6 +2363,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (*UTF8String == '-')
 		@throw [OFInvalidFormatException exception];
 
+	errno = 0;
 	value = strtoull(UTF8String, &endPointer, base);
 
 	if (value == ULLONG_MAX && errno == ERANGE)
@@ -2406,6 +2408,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	char *endPointer = NULL;
 	float value;
 
+	errno = 0;
 #ifdef HAVE_STRTOF_L
 	value = strtof_l(UTF8String, &endPointer, cLocale);
 #else
@@ -2454,6 +2457,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	char *endPointer = NULL;
 	double value;
 
+	errno = 0;
 #ifdef HAVE_STRTOD_L
 	value = strtod_l(UTF8String, &endPointer, cLocale);
 #else
