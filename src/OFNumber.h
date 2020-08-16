@@ -162,11 +162,6 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) size_t sizeValue;
 
 /*!
- * @brief The OFNumber as an `ssize_t`.
- */
-@property (readonly, nonatomic) ssize_t sSizeValue;
-
-/*!
  * @brief The OFNumber as a `ptrdiff_t`.
  */
 @property (readonly, nonatomic) ptrdiff_t ptrDiffValue;
@@ -366,14 +361,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new autoreleased OFNumber
  */
 + (instancetype)numberWithSize: (size_t)value;
-
-/*!
- * @brief Creates a new OFNumber with the specified `ssize_t`.
- *
- * @param value The `ssize_t` value which the OFNumber should contain
- * @return A new autoreleased OFNumber
- */
-+ (instancetype)numberWithSSize: (ssize_t)value;
 
 /*!
  * @brief Creates a new OFNumber with the specified `ptrdiff_t`.
@@ -600,15 +587,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFNumber
  */
 - (instancetype)initWithSize: (size_t)value;
-
-/*!
- * @brief Initializes an already allocated OFNumber with the specified
- *	  `ssize_t`.
- *
- * @param value The `ssize_t` value which the OFNumber should contain
- * @return An initialized OFNumber
- */
-- (instancetype)initWithSSize: (ssize_t)value;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified

@@ -272,16 +272,6 @@ initFalseNumber(void)
 	return (id)[[OFNumber of_alloc] initWithSize: value];
 }
 
-- (instancetype)initWithSSize: (ssize_t)value
-{
-	if (value >= 0)
-		return [self initWithSize: value];
-	if (value <= LONG_MIN)
-		return [self initWithLong: (long)value];
-
-	return (id)[[OFNumber of_alloc] initWithSSize: value];
-}
-
 #ifdef __clang__
 /*
  * This warning should probably not exist at all, as it prevents checking
@@ -491,11 +481,6 @@ initFalseNumber(void)
 + (instancetype)numberWithSize: (size_t)value
 {
 	return [[[self alloc] initWithSize: value] autorelease];
-}
-
-+ (instancetype)numberWithSSize: (ssize_t)value
-{
-	return [[[self alloc] initWithSSize: value] autorelease];
 }
 
 + (instancetype)numberWithPtrDiff: (ptrdiff_t)value
@@ -744,17 +729,6 @@ initFalseNumber(void)
 	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(size_t);
-
-	return self;
-}
-
-- (instancetype)initWithSSize: (ssize_t)value
-{
-	self = [super init];
-
-	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(ssize_t);
 
 	return self;
 }
@@ -1009,11 +983,6 @@ initFalseNumber(void)
 - (size_t)sizeValue
 {
 	RETURN_AS(size_t)
-}
-
-- (ssize_t)sSizeValue
-{
-	RETURN_AS(ssize_t)
 }
 
 - (ptrdiff_t)ptrDiffValue
