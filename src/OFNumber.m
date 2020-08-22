@@ -47,119 +47,113 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFNumberSingleton *zeroNumber, *oneNumber, *twoNumber;
-static OFNumberSingleton *trueNumber, *falseNumber;
-
-static void
-initZeroNumber(void)
-{
-	zeroNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 0];
-}
-
-static void
-initOneNumber(void)
-{
-	oneNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 1];
-}
-
-static void
-initTwoNumber(void)
-{
-	twoNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 2];
-}
-
-static void
-initTrueNumber(void)
-{
-	trueNumber = [[OFNumberSingleton alloc] initWithBool: true];
-}
-
-static void
-initFalseNumber(void)
-{
-	falseNumber = [[OFNumberSingleton alloc] initWithBool: false];
-}
+#define SINGLETON(var, sel, val)				\
+	static OFNumberSingleton *var;				\
+								\
+	static void						\
+	var##Init(void)						\
+	{							\
+		var = [[OFNumberSingleton alloc] sel val];	\
+	}
+SINGLETON(falseNumber, initWithBool:, false)
+SINGLETON(trueNumber, initWithBool:, true)
+SINGLETON(charZeroNumber, initWithChar:, 0)
+SINGLETON(shortZeroNumber, initWithShort:, 0)
+SINGLETON(intZeroNumber, initWithInt:, 0)
+SINGLETON(longZeroNumber, initWithLong:, 0)
+SINGLETON(longLongZeroNumber, initWithLongLong:, 0)
+SINGLETON(unsignedCharZeroNumber, initWithUnsignedChar:, 0)
+SINGLETON(unsignedShortZeroNumber, initWithUnsignedShort:, 0)
+SINGLETON(unsignedIntZeroNumber, initWithUnsignedInt:, 0)
+SINGLETON(unsignedLongZeroNumber, initWithUnsignedLong:, 0)
+SINGLETON(unsignedLongLongZeroNumber, initWithUnsignedLongLong:, 0)
+SINGLETON(int8ZeroNumber, initWithInt8:, 0)
+SINGLETON(int16ZeroNumber, initWithInt16:, 0)
+SINGLETON(int32ZeroNumber, initWithInt32:, 0)
+SINGLETON(int64ZeroNumber, initWithInt64:, 0)
+SINGLETON(uInt8ZeroNumber, initWithUInt8:, 0)
+SINGLETON(uInt16ZeroNumber, initWithUInt16:, 0)
+SINGLETON(uInt32ZeroNumber, initWithUInt32:, 0)
+SINGLETON(uInt64ZeroNumber, initWithUInt64:, 0)
+SINGLETON(floatZeroNumber, initWithFloat:, 0)
+SINGLETON(doubleZeroNumber, initWithDouble:, 0)
+#undef SINGLETON
 
 @implementation OFNumberPlaceholder
 - (instancetype)initWithBool: (bool)value
 {
 	if (value) {
-		static of_once_t once;
-		of_once(&once, initTrueNumber);
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, trueNumberInit);
 		return (id)trueNumber;
 	} else {
-		static of_once_t once;
-		of_once(&once, initFalseNumber);
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, falseNumberInit);
 		return (id)falseNumber;
 	}
 }
 
 - (instancetype)initWithChar: (signed char)value
 {
-	if (value >= 0)
-		return [self initWithUnsignedChar: value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, charZeroNumberInit);
+		return (id)charZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithChar: value];
 }
 
 - (instancetype)initWithShort: (short)value
 {
-	if (value >= 0)
-		return [self initWithUnsignedShort: value];
-	if (value >= SCHAR_MIN)
-		return [self initWithChar: (signed char)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, shortZeroNumberInit);
+		return (id)shortZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithShort: value];
 }
 
 - (instancetype)initWithInt: (int)value
 {
-	if (value >= 0)
-		return [self initWithUnsignedInt: value];
-	if (value >= SHRT_MIN)
-		return [self initWithShort: (short)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, intZeroNumberInit);
+		return (id)intZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithInt: value];
 }
 
 - (instancetype)initWithLong: (long)value
 {
-	if (value >= 0)
-		return [self initWithUnsignedLong: value];
-	if (value >= INT_MIN)
-		return [self initWithShort: (int)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longZeroNumberInit);
+		return (id)longZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithLong: value];
 }
 
 - (instancetype)initWithLongLong: (long long)value
 {
-	if (value >= 0)
-		return [self initWithUnsignedLongLong: value];
-	if (value >= LONG_MIN)
-		return [self initWithLong: (long)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longLongZeroNumberInit);
+		return (id)longLongZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithLongLong: value];
 }
 
 - (instancetype)initWithUnsignedChar: (unsigned char)value
 {
-	switch (value) {
-	case 0: {
+	if (value == 0) {
 		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initZeroNumber);
-		return (id)zeroNumber;
-	}
-	case 1: {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initOneNumber);
-		return (id)oneNumber;
-	}
-	case 2: {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initTwoNumber);
-		return (id)twoNumber;
-	}
+		of_once(&once, unsignedCharZeroNumberInit);
+		return (id)unsignedCharZeroNumber;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
@@ -167,171 +161,174 @@ initFalseNumber(void)
 
 - (instancetype)initWithUnsignedShort: (unsigned short)value
 {
-	if (value <= UCHAR_MAX)
-		return [self initWithUnsignedChar: (unsigned char)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedShortZeroNumberInit);
+		return (id)unsignedShortZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
 }
 
 - (instancetype)initWithUnsignedInt: (unsigned int)value
 {
-	if (value <= USHRT_MAX)
-		return [self initWithUnsignedShort: (unsigned short)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedIntZeroNumberInit);
+		return (id)unsignedIntZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
 }
 
 - (instancetype)initWithUnsignedLong: (unsigned long)value
 {
-	if (value <= UINT_MAX)
-		return [self initWithUnsignedInt: (unsigned int)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongZeroNumberInit);
+		return (id)unsignedLongZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
 }
 
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
-	if (value <= ULONG_MAX)
-		return [self initWithUnsignedLong: (unsigned long)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongLongZeroNumberInit);
+		return (id)unsignedLongLongZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
 }
 
 - (instancetype)initWithInt8: (int8_t)value
 {
-	if (value >= 0)
-		return [self initWithUInt8: value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, int8ZeroNumberInit);
+		return (id)int8ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithInt8: value];
 }
 
 - (instancetype)initWithInt16: (int16_t)value
 {
-	if (value >= 0)
-		return [self initWithUInt16: value];
-	if (value >= INT8_MIN)
-		return [self initWithInt8: (int8_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, int16ZeroNumberInit);
+		return (id)int16ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithInt16: value];
 }
 
 - (instancetype)initWithInt32: (int32_t)value
 {
-	if (value >= 0)
-		return [self initWithUInt32: value];
-	if (value >= INT16_MIN)
-		return [self initWithInt16: (int16_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, int32ZeroNumberInit);
+		return (id)int32ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithInt32: value];
 }
 
 - (instancetype)initWithInt64: (int64_t)value
 {
-	if (value >= 0)
-		return [self initWithUInt64: value];
-	if (value >= INT32_MIN)
-		return [self initWithInt32: (int32_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, int64ZeroNumberInit);
+		return (id)int64ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithInt64: value];
 }
 
 - (instancetype)initWithUInt8: (uint8_t)value
 {
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, uInt8ZeroNumberInit);
+		return (id)uInt8ZeroNumber;
+	}
+
 	return (id)[[OFNumber of_alloc] initWithUInt8: value];
 }
 
 - (instancetype)initWithUInt16: (uint16_t)value
 {
-	if (value <= UINT8_MAX)
-		return [self initWithUInt8: (uint8_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, uInt16ZeroNumberInit);
+		return (id)uInt16ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUInt16: value];
 }
 
 - (instancetype)initWithUInt32: (uint32_t)value
 {
-	if (value <= UINT16_MAX)
-		return [self initWithUInt16: (uint16_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, uInt32ZeroNumberInit);
+		return (id)uInt32ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUInt32: value];
 }
 
 - (instancetype)initWithUInt64: (uint64_t)value
 {
-	if (value <= UINT32_MAX)
-		return [self initWithUInt32: (uint32_t)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, uInt64ZeroNumberInit);
+		return (id)uInt64ZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithUInt64: value];
 }
 
 - (instancetype)initWithSize: (size_t)value
 {
-	if (value <= ULONG_MAX)
-		return [self initWithUnsignedLong: (unsigned long)value];
-
 	return (id)[[OFNumber of_alloc] initWithSize: value];
 }
 
-#ifdef __clang__
-/*
- * This warning should probably not exist at all, as it prevents checking
- * whether one type fits into another in a portable way.
- */
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
-#endif
-
 - (instancetype)initWithPtrDiff: (ptrdiff_t)value
 {
-	if (value >= LLONG_MIN && value <= LLONG_MAX)
-		return [self initWithLongLong: (long long)value];
-
 	return (id)[[OFNumber of_alloc] initWithPtrDiff: value];
 }
 
 - (instancetype)initWithIntPtr: (intptr_t)value
 {
-	if (value >= 0)
-		return [self initWithUIntPtr: value];
-	if (value >= LLONG_MIN)
-		return [self initWithLongLong: (long long)value];
-
 	return (id)[[OFNumber of_alloc] initWithIntPtr: value];
 }
 
 - (instancetype)initWithUIntPtr: (uintptr_t)value
 {
-	if (value <= ULLONG_MAX)
-		return [self initWithUnsignedLongLong:
-		    (unsigned long long)value];
-
 	return (id)[[OFNumber of_alloc] initWithUIntPtr: value];
 }
 
-#ifdef __clang__
-# pragma clang diagnostic pop
-#endif
-
 - (instancetype)initWithFloat: (float)value
 {
-	if (value == (unsigned long long)value)
-		return [self initWithUnsignedLongLong:
-		    (unsigned long long)value];
-	if (value == (long long)value)
-		return [self initWithLongLong: (long long)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, floatZeroNumberInit);
+		return (id)floatZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithFloat: value];
 }
 
 - (instancetype)initWithDouble: (double)value
 {
-	if (value == (unsigned long long)value)
-		return [self initWithUnsignedLongLong:
-		    (unsigned long long)value];
-	if (value == (long long)value)
-		return [self initWithLongLong: (long long)value];
-	if (value == (float)value)
-		return [self initWithFloat: (float)value];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, doubleZeroNumberInit);
+		return (id)doubleZeroNumber;
+	}
 
 	return (id)[[OFNumber of_alloc] initWithDouble: value];
 }
@@ -1104,16 +1101,8 @@ initFalseNumber(void)
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, ((char *)&d)[i]);
-	} else if (type == OF_NUMBER_TYPE_SIGNED) {
-		long long value = self.longLongValue * -1;
-
-		while (value != 0) {
-			OF_HASH_ADD(hash, value & 0xFF);
-			value >>= 8;
-		}
-
-		OF_HASH_ADD(hash, 1);
-	} else if (type == OF_NUMBER_TYPE_UNSIGNED) {
+	} else if (type == OF_NUMBER_TYPE_SIGNED ||
+	    type == OF_NUMBER_TYPE_UNSIGNED) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		while (value != 0) {
