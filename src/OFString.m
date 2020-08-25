@@ -2415,7 +2415,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	value = strtof(UTF8String, &endPointer);
 #endif
 
-	if (value == HUGE_VALF)
+	if (value == HUGE_VALF && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
 
 	/* Check if there are any invalid chars left */
@@ -2464,7 +2464,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	value = strtod(UTF8String, &endPointer);
 #endif
 
-	if (value == HUGE_VAL)
+	if (value == HUGE_VAL && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
 
 	/* Check if there are any invalid chars left */
