@@ -193,12 +193,12 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 	/* positive fixint */
 	if ((buffer[0] & 0x80) == 0) {
-		*object = [OFNumber numberWithUInt8: buffer[0] & 0x7F];
+		*object = [OFNumber numberWithUnsignedChar: buffer[0] & 0x7F];
 		return 1;
 	}
 	/* negative fixint */
 	if ((buffer[0] & 0xE0) == 0xE0) {
-		*object = [OFNumber numberWithInt8:
+		*object = [OFNumber numberWithChar:
 		    ((int8_t)(buffer[0] & 0x1F)) - 32];
 		return 1;
 	}
@@ -233,50 +233,53 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithUInt8: buffer[1]];
+		*object = [OFNumber numberWithUnsignedChar: buffer[1]];
 		return 2;
 	case 0xCD: /* uint 16 */
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithUInt16: readUInt16(buffer + 1)];
+		*object = [OFNumber numberWithUnsignedShort:
+		    readUInt16(buffer + 1)];
 		return 3;
 	case 0xCE: /* uint 32 */
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithUInt32: readUInt32(buffer + 1)];
+		*object = [OFNumber numberWithUnsignedLong:
+		    readUInt32(buffer + 1)];
 		return 5;
 	case 0xCF: /* uint 64 */
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithUInt64: readUInt64(buffer + 1)];
+		*object = [OFNumber numberWithUnsignedLongLong:
+		    readUInt64(buffer + 1)];
 		return 9;
 	/* Signed integers */
 	case 0xD0: /* int 8 */
 		if (length < 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithInt8: buffer[1]];
+		*object = [OFNumber numberWithChar: buffer[1]];
 		return 2;
 	case 0xD1: /* int 16 */
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithInt16: readUInt16(buffer + 1)];
+		*object = [OFNumber numberWithShort: readUInt16(buffer + 1)];
 		return 3;
 	case 0xD2: /* int 32 */
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithInt32: readUInt32(buffer + 1)];
+		*object = [OFNumber numberWithLong: readUInt32(buffer + 1)];
 		return 5;
 	case 0xD3: /* int 64 */
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithInt64: readUInt64(buffer + 1)];
+		*object = [OFNumber numberWithLongLong: readUInt64(buffer + 1)];
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */

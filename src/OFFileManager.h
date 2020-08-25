@@ -593,21 +593,21 @@ OF_SUBCLASSING_RESTRICTED
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint16_t filePOSIXPermissions;
+@property (readonly, nonatomic) unsigned long filePOSIXPermissions;
 
 /*!
  * @brief The @ref of_file_attribute_key_posix_uid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint32_t filePOSIXUID;
+@property (readonly, nonatomic) unsigned long filePOSIXUID;
 
 /*!
  * @brief The @ref of_file_attribute_key_posix_gid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint32_t filePOSIXGID;
+@property (readonly, nonatomic) unsigned long filePOSIXGID;
 
 /*!
  * @brief The @ref of_file_attribute_key_owner key from the dictionary.

@@ -62,7 +62,7 @@ streamFromString(OFString *string)
 		}
 
 		[sock connectToHost: URL.host
-			       port: URL.port.uInt16Value];
+			       port: URL.port.shortValue];
 
 		return [OFPair pairWithFirstObject: sock
 				      secondObject: sock];

@@ -949,22 +949,22 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	return attributeForKeyOrException(self, of_file_attribute_key_type);
 }
 
-- (uint16_t)filePOSIXPermissions
+- (unsigned long)filePOSIXPermissions
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_permissions) uInt16Value];
+	    of_file_attribute_key_posix_permissions) unsignedLongValue];
 }
 
-- (uint32_t)filePOSIXUID
+- (unsigned long)filePOSIXUID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_uid) uInt32Value];
+	    of_file_attribute_key_posix_uid) unsignedLongValue];
 }
 
-- (uint32_t)filePOSIXGID
+- (unsigned long)filePOSIXGID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_gid) uInt32Value];
+	    of_file_attribute_key_posix_gid) unsignedLongValue];
 }
 
 - (OFString *)fileOwner

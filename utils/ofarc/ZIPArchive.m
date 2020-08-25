@@ -44,11 +44,12 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
 	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
-		uint16_t mode = entry.versionSpecificAttributes >> 16;
+		OFNumber *mode = [OFNumber numberWithUnsignedShort:
+		    (entry.versionSpecificAttributes >> 16) & 0777];
 		of_file_attribute_key_t key =
 		    of_file_attribute_key_posix_permissions;
 		of_file_attributes_t attributes = [OFDictionary
-		    dictionaryWithObject: [OFNumber numberWithUInt16: mode]
+		    dictionaryWithObject: mode
 				  forKey: key];
 
 		[[OFFileManager defaultManager] setAttributes: attributes

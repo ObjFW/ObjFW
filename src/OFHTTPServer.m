@@ -543,7 +543,7 @@ normalizedKey(OFString *key)
 	URL.scheme = @"http";
 	URL.host = _host;
 	if (_port != 80)
-		URL.port = [OFNumber numberWithUInt16: _port];
+		URL.port = [OFNumber numberWithUnsignedShort: _port];
 
 	if ((pos = [_path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
 		OFString *path, *query;

@@ -720,7 +720,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		URLPort = URL.port;
 		if (URLPort != nil)
-			port = URLPort.uInt16Value;
+			port = URLPort.unsignedShortValue;
 
 		sock.delegate = self;
 		[sock asyncConnectToHost: URL.host

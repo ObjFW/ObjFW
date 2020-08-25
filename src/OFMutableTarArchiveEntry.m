@@ -41,22 +41,22 @@
 	[old release];
 }
 
-- (void)setMode: (uint32_t)mode
+- (void)setMode: (unsigned long)mode
 {
 	_mode = mode;
 }
 
-- (void)setUID: (uint32_t)UID
+- (void)setUID: (unsigned long)UID
 {
 	_UID = UID;
 }
 
-- (void)setGID: (uint32_t)GID
+- (void)setGID: (unsigned long)GID
 {
 	_GID = GID;
 }
 
-- (void)setSize: (uint64_t)size
+- (void)setSize: (unsigned long long)size
 {
 	_size = size;
 }
@@ -94,12 +94,12 @@
 	[old release];
 }
 
-- (void)setDeviceMajor: (uint32_t)deviceMajor
+- (void)setDeviceMajor: (unsigned long)deviceMajor
 {
 	_deviceMajor = deviceMajor;
 }
 
-- (void)setDeviceMinor: (uint32_t)deviceMinor
+- (void)setDeviceMinor: (unsigned long)deviceMinor
 {
 	_deviceMinor = deviceMinor;
 }

@@ -31,7 +31,7 @@ static OFString *module = @"OFNumber";
 	    (num = [OFNumber numberWithLongLong: 123456789]))
 
 	TEST(@"-[isEqual:]",
-	    [num isEqual: [OFNumber numberWithUInt32: 123456789]])
+	    [num isEqual: [OFNumber numberWithLong: 123456789]])
 
 	TEST(@"-[hash]", num.hash == 0x82D8BC42)
 

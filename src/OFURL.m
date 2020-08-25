@@ -492,8 +492,8 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 					@throw [OFInvalidFormatException
 					    exception];
 
-				_port = [[OFNumber alloc] initWithUInt16:
-				    (uint16_t)portString.unsignedLongLongValue];
+				_port = [[OFNumber alloc] initWithUnsignedShort:
+				    portString.unsignedLongLongValue];
 			} else if (*UTF8String != '\0')
 				@throw [OFInvalidFormatException exception];
 
@@ -512,8 +512,8 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			if (portString.unsignedLongLongValue > 65535)
 				@throw [OFInvalidFormatException exception];
 
-			_port = [[OFNumber alloc] initWithUInt16:
-			    (uint16_t)portString.unsignedLongLongValue];
+			_port = [[OFNumber alloc] initWithUnsignedShort:
+			    portString.unsignedLongLongValue];
 		} else
 			_URLEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];

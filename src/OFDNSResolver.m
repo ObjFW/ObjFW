@@ -493,7 +493,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* Header */
 
-		tmp = OF_BSWAP16_IF_LE(_ID.uInt16Value);
+		tmp = OF_BSWAP16_IF_LE(_ID.unsignedShortValue);
 		[queryData addItems: &tmp
 			      count: 2];
 
@@ -814,7 +814,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	/* Random, unused ID */
 	do {
-		ID = [OFNumber numberWithUInt16: of_random16()];
+		ID = [OFNumber numberWithUnsignedShort: of_random16()];
 	} while ([_queries objectForKey: ID] != nil);
 
 	if (query.domainName.UTF8StringLength > 253)
@@ -913,7 +913,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		/* We can't get the ID to get the context. Ignore packet. */
 		return true;
 
-	ID = [OFNumber numberWithUInt16: (buffer[0] << 8) | buffer[1]];
+	ID = [OFNumber numberWithUnsignedShort: (buffer[0] << 8) | buffer[1]];
 	context = [[[_queries objectForKey: ID] retain] autorelease];
 
 	if (context == nil)

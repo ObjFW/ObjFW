@@ -35,8 +35,9 @@ static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
 	of_file_attributes_t attributes = [OFDictionary
-	    dictionaryWithObject: [OFNumber numberWithUInt16: entry.mode]
+	    dictionaryWithObject: mode
 			  forKey: of_file_attribute_key_posix_permissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
