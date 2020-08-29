@@ -736,8 +736,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[_progressBar release];
 		_progressBar = nil;
 
-		if (!_quiet)
-			[of_stdout writeString: @"\n  Error!\n"];
+		if (!_quiet) {
+			[of_stdout writeString: @"\n  "];
+			[of_stdout writeLine: OF_LOCALIZED(@"download_error",
+			    @"Error!")];
+		}
 
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
 		[of_stderr writeLine: OF_LOCALIZED(
