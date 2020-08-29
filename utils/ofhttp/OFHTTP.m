@@ -28,6 +28,9 @@
 #import "OFHTTPResponse.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
+#ifdef OF_HAVE_PLUGINS
+# import "OFPlugin.h"
+#endif
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
@@ -274,6 +277,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 @implementation OFHTTP
+#ifdef OF_HAVE_PLUGINS
++ (void)initialize
+{
+	if (self != [OFHTTP class])
+		return;
+
+	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
+	of_dlopen(@"objopenssl", OF_RTLD_LAZY);
+}
+#endif
+
 - (instancetype)init
 {
 	self = [super init];
