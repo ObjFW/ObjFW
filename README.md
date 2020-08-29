@@ -121,12 +121,19 @@ other place, you are most likely using a mirror.
   you have multiple working directories all backed by the same local
   repository.
 
+  In order to verify the signature of the currently checked out checkin, you
+  can use:
+
+    $ fossil artifact current | gpg --verify
+
 <h2 id="cloning-git">Git</h2>
 
   To clone the Git repository, use the following:
 
     $ git clone https://github.com/ObjFW/ObjFW
 
+  Git commits are not signed, so if you want to check the signature of an
+  individual commit, branch head or tag, please use Fossil.
 
 <h1 id="installation">Installation</h1>
 
