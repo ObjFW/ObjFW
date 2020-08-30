@@ -22,12 +22,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_JSONValue_reference;
+extern int _OFString_JSONParsing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (JSONValue)
+@interface OFString (JSONParsing)
 /*!
  * @brief The string interpreted as JSON and parsed as an object.
  *
@@ -43,7 +43,7 @@ extern int _OFString_JSONValue_reference;
  *          want your program to terminate due to a message not understood, but
  *          instead check the returned object using @ref isKindOfClass:.
  */
-@property (readonly, nonatomic) id JSONValue;
+@property (readonly, nonatomic) id objectByParsingJSON;
 
 /*!
  * @brief Creates an object from the JSON value of the string.
@@ -65,7 +65,7 @@ extern int _OFString_JSONValue_reference;
  *
  * @return An object
  */
-- (id)JSONValueWithDepthLimit: (size_t)depthLimit;
+- (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END

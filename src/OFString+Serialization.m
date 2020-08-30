@@ -52,7 +52,7 @@ int _OFString_Serialization_reference;
 	if (version == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (version.decimalValue != 1)
+	if (version.unsignedLongLongValue != 1)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
 

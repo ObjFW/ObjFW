@@ -53,14 +53,14 @@ typedef enum of_tar_archive_entry_type_t {
 @interface OFTarArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
 	OFString *_fileName;
-	uint32_t _mode;
-	uint64_t _size;
-	uint32_t _UID, _GID;
+	unsigned long _mode;
+	unsigned long long _size;
+	unsigned long _UID, _GID;
 	OFDate *_modificationDate;
 	of_tar_archive_entry_type_t _type;
 	OFString *_Nullable _targetFileName;
 	OFString *_Nullable _owner, *_Nullable _group;
-	uint32_t _deviceMajor, _deviceMinor;
+	unsigned long _deviceMajor, _deviceMinor;
 	OF_RESERVE_IVARS(4)
 }
 
@@ -72,22 +72,22 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * @brief The mode of the entry.
  */
-@property (readonly, nonatomic) uint32_t mode;
+@property (readonly, nonatomic) unsigned long mode;
 
 /*!
  * @brief The UID of the owner.
  */
-@property (readonly, nonatomic) uint32_t UID;
+@property (readonly, nonatomic) unsigned long UID;
 
 /*!
  * @brief The GID of the group.
  */
-@property (readonly, nonatomic) uint32_t GID;
+@property (readonly, nonatomic) unsigned long GID;
 
 /*!
  * @brief The size of the file.
  */
-@property (readonly, nonatomic) uint64_t size;
+@property (readonly, nonatomic) unsigned long long size;
 
 /*!
  * @brief The date of the last modification of the file.
@@ -120,12 +120,12 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * @brief The device major (if the file is a device).
  */
-@property (readonly, nonatomic) uint32_t deviceMajor;
+@property (readonly, nonatomic) unsigned long deviceMajor;
 
 /*!
  * @brief The device major (if the file is a device).
  */
-@property (readonly, nonatomic) uint32_t deviceMinor;
+@property (readonly, nonatomic) unsigned long deviceMinor;
 
 /*!
  * @brief Creates a new OFTarArchiveEntry with the specified file name.

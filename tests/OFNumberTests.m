@@ -27,11 +27,11 @@ static OFString *module = @"OFNumber";
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *num;
 
-	TEST(@"+[numberWithIntMax:]",
-	    (num = [OFNumber numberWithIntMax: 123456789]))
+	TEST(@"+[numberWithLongLong:]",
+	    (num = [OFNumber numberWithLongLong: 123456789]))
 
 	TEST(@"-[isEqual:]",
-	    [num isEqual: [OFNumber numberWithUInt32: 123456789]])
+	    [num isEqual: [OFNumber numberWithLong: 123456789]])
 
 	TEST(@"-[hash]", num.hash == 0x82D8BC42)
 

@@ -152,7 +152,7 @@ initOperatingSystemVersion(void)
 	@try {
 		OFDictionary *propertyList = [OFString stringWithContentsOfFile:
 		    @"/System/Library/CoreServices/SystemVersion.plist"]
-		    .propertyListValue;
+		    .objectByParsingPropertyList;
 
 		operatingSystemVersion = [[propertyList
 		    objectForKey: @"ProductVersion"] copy];

@@ -70,7 +70,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	   forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -112,8 +112,8 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (intmax_t)integerForPath: (OFString *)path
-	      defaultValue: (intmax_t)defaultValue
+- (long long)integerForPath: (OFString *)path
+	       defaultValue: (long long)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

@@ -28,6 +28,9 @@
 #import "OFHTTPResponse.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
+#ifdef OF_HAVE_PLUGINS
+# import "OFPlugin.h"
+#endif
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
@@ -69,7 +72,7 @@
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
 	OFStream *_output;
-	intmax_t _received, _length, _resumedFrom;
+	unsigned long long _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
 
@@ -274,6 +277,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 @implementation OFHTTP
+#ifdef OF_HAVE_PLUGINS
++ (void)initialize
+{
+	if (self != [OFHTTP class])
+		return;
+
+	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
+	of_dlopen(@"objopenssl", OF_RTLD_LAZY);
+}
+#endif
+
 - (instancetype)init
 {
 	self = [super init];
@@ -334,7 +348,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 						mode: @"r"];
 
 		@try {
-			uintmax_t fileSize = [[OFFileManager defaultManager]
+			unsigned long long fileSize =
+			    [[OFFileManager defaultManager]
 			    attributesOfItemAtPath: path].fileSize;
 
 			contentLength =
@@ -376,14 +391,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    rangeOfString: @":"
 			  options: OF_STRING_SEARCH_BACKWARDS].location;
 		OFString *host;
-		intmax_t port;
+		unsigned long long port;
 
 		if (pos == OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringWithRange: of_range(0, pos)];
-		port = [proxy substringWithRange:
-		    of_range(pos + 1, proxy.length - pos - 1)].decimalValue;
+		port = [proxy substringWithRange: of_range(pos + 1,
+		    proxy.length - pos - 1)].unsignedLongLongValue;
 
 		if (port > UINT16_MAX)
 			@throw [OFOutOfRangeException exception];
@@ -721,8 +736,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[_progressBar release];
 		_progressBar = nil;
 
-		if (!_quiet)
-			[of_stdout writeString: @"\n  Error!\n"];
+		if (!_quiet) {
+			[of_stdout writeString: @"\n  "];
+			[of_stdout writeLine: OF_LOCALIZED(@"download_error",
+			    @"Error!")];
+		}
 
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
 		[of_stderr writeLine: OF_LOCALIZED(
@@ -785,7 +803,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
 
 		if (lengthString != nil) {
-			_length = lengthString.decimalValue;
+			_length = lengthString.unsignedLongLongValue;
 
 			if (_resumedFrom + _length >= GIBIBYTE) {
 				lengthString = [OFString stringWithFormat:
@@ -812,12 +830,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				lengthString = [OFString stringWithFormat:
 				    @"%jd", _resumedFrom + _length];
 				lengthString = OF_LOCALIZED(@"size_bytes",
-				    [@"["
-				     @"    ["
-				     @"        {'num == 1': '1 byte'},"
-				     @"        {'': '%[num] bytes'}"
-				     @"    ]"
-				     @"]" JSONValue],
+				    @"["
+				    @"    ["
+				    @"        {'num == 1': '1 byte'},"
+				    @"        {'': '%[num] bytes'}"
+				    @"    ]"
+				    @"]".objectByParsingJSON,
 				    @"num", lengthString);
 			}
 		} else
@@ -1010,14 +1028,15 @@ next:
 
 	if (_continue) {
 		@try {
-			uintmax_t size = [[OFFileManager defaultManager]
+			unsigned long long size =
+			    [[OFFileManager defaultManager]
 			    attributesOfItemAtPath: _currentFileName].fileSize;
 			OFString *range;
 
-			if (size > INTMAX_MAX)
+			if (size > ULLONG_MAX)
 				@throw [OFOutOfRangeException exception];
 
-			_resumedFrom = (intmax_t)size;
+			_resumedFrom = (unsigned long long)size;
 
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];

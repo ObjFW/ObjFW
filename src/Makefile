@@ -29,9 +29,9 @@ SRCS = OFASN1BitString.m		\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERValue.m		\
+       OFData+ASN1DERParsing.m		\
        OFData+CryptoHashing.m		\
-       OFData+MessagePackValue.m	\
+       OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
@@ -86,8 +86,8 @@ SRCS = OFASN1BitString.m		\
        OFStream.m			\
        OFString.m			\
        OFString+CryptoHashing.m		\
-       OFString+JSONValue.m		\
-       OFString+PropertyListValue.m	\
+       OFString+JSONParsing.m		\
+       OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\

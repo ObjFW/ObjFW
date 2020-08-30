@@ -156,9 +156,8 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"-[host]", [u1.host isEqual: @"ho:st"] &&
 	    [u6.host isEqual: @"12:34::56:abcd"] &&
 	    [u7.host isEqual: @"12:34::56:abcd"])
-	TEST(@"-[port]", [u1.port isEqual: [OFNumber numberWithUInt16: 1234]] &&
-	    [u4 port] == nil &&
-	    [u7.port isEqual: [OFNumber numberWithUInt16: 234]])
+	TEST(@"-[port]", u1.port.unsignedShortValue == 1234 &&
+	    [u4 port] == nil && u7.port.unsignedShortValue == 234)
 	TEST(@"-[path]",
 	    [u1.path isEqual: @"/pa?th"] && [u4.path isEqual: @"/etc/passwd"])
 	TEST(@"-[pathComponents]",

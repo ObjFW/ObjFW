@@ -414,6 +414,7 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
+	AC_CONFIG_FILES(tests/plugin/Info.plist)
 
 	AS_IF([test x"$build_framework" = x"yes"], [
 		TESTPLUGIN_LIBS="-F../../src -F../../src/runtime"
@@ -524,6 +525,7 @@ case "$objc_runtime" in
 		])
 
 		AC_SUBST(RUNTIME, "runtime")
+		AC_CONFIG_FILES(src/runtime/Info.plist)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWRT_SHARED_LIB,
@@ -1574,6 +1576,7 @@ AC_CHECK_FUNC(pledge, [
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(BRIDGE, "bridge")
+		AC_CONFIG_FILES(src/bridge/Info.plist)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWBRIDGE_SHARED_LIB,
@@ -1909,9 +1912,7 @@ AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
 	src/Info.plist
-	src/bridge/Info.plist
 	tests/Info.plist
-	tests/plugin/Info.plist
 	utils/objfw-config
 ])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])

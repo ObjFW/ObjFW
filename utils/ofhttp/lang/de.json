@@ -68,6 +68,7 @@
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  HTTP Status-Code: %[code]"
     ],
+    "download_error": "Fehler!",
     "download_failed_exception": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  %[exception]"

@@ -47,320 +47,174 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFNumberSingleton *zeroNumber, *oneNumber, *twoNumber;
-static OFNumberSingleton *trueNumber, *falseNumber;
-
-static void
-initZeroNumber(void)
-{
-	zeroNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 0];
-}
-
-static void
-initOneNumber(void)
-{
-	oneNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 1];
-}
-
-static void
-initTwoNumber(void)
-{
-	twoNumber = [[OFNumberSingleton alloc] initWithUnsignedChar: 2];
-}
-
-static void
-initTrueNumber(void)
-{
-	trueNumber = [[OFNumberSingleton alloc] initWithBool: true];
-}
-
-static void
-initFalseNumber(void)
-{
-	falseNumber = [[OFNumberSingleton alloc] initWithBool: false];
-}
+#define SINGLETON(var, sel, val)				\
+	static OFNumberSingleton *var;				\
+								\
+	static void						\
+	var##Init(void)						\
+	{							\
+		var = [[OFNumberSingleton alloc] sel val];	\
+	}
+SINGLETON(falseNumber, initWithBool:, false)
+SINGLETON(trueNumber, initWithBool:, true)
+SINGLETON(charZeroNumber, initWithChar:, 0)
+SINGLETON(shortZeroNumber, initWithShort:, 0)
+SINGLETON(intZeroNumber, initWithInt:, 0)
+SINGLETON(longZeroNumber, initWithLong:, 0)
+SINGLETON(longLongZeroNumber, initWithLongLong:, 0)
+SINGLETON(unsignedCharZeroNumber, initWithUnsignedChar:, 0)
+SINGLETON(unsignedShortZeroNumber, initWithUnsignedShort:, 0)
+SINGLETON(unsignedIntZeroNumber, initWithUnsignedInt:, 0)
+SINGLETON(unsignedLongZeroNumber, initWithUnsignedLong:, 0)
+SINGLETON(unsignedLongLongZeroNumber, initWithUnsignedLongLong:, 0)
+SINGLETON(floatZeroNumber, initWithFloat:, 0)
+SINGLETON(doubleZeroNumber, initWithDouble:, 0)
+#undef SINGLETON
 
 @implementation OFNumberPlaceholder
-- (instancetype)initWithBool: (bool)bool_
+- (instancetype)initWithBool: (bool)value
 {
-	if (bool_) {
-		static of_once_t once;
-		of_once(&once, initTrueNumber);
+	if (value) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, trueNumberInit);
 		return (id)trueNumber;
 	} else {
-		static of_once_t once;
-		of_once(&once, initFalseNumber);
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, falseNumberInit);
 		return (id)falseNumber;
 	}
 }
 
-- (instancetype)initWithChar: (signed char)sChar
+- (instancetype)initWithChar: (signed char)value
 {
-	if (sChar >= 0)
-		return [self initWithUnsignedChar: sChar];
-
-	return (id)[[OFNumber of_alloc] initWithChar: sChar];
-}
-
-- (instancetype)initWithShort: (short)sShort
-{
-	if (sShort >= 0)
-		return [self initWithUnsignedShort: sShort];
-	if (sShort >= SCHAR_MIN)
-		return [self initWithChar: (signed char)sShort];
-
-	return (id)[[OFNumber of_alloc] initWithShort: sShort];
-}
-
-- (instancetype)initWithInt: (int)sInt
-{
-	if (sInt >= 0)
-		return [self initWithUnsignedInt: sInt];
-	if (sInt >= SHRT_MIN)
-		return [self initWithShort: (short)sInt];
-
-	return (id)[[OFNumber of_alloc] initWithInt: sInt];
-}
-
-- (instancetype)initWithLong: (long)sLong
-{
-	if (sLong >= 0)
-		return [self initWithUnsignedLong: sLong];
-	if (sLong >= INT_MIN)
-		return [self initWithShort: (int)sLong];
-
-	return (id)[[OFNumber of_alloc] initWithLong: sLong];
-}
-
-- (instancetype)initWithLongLong: (long long)sLongLong
-{
-	if (sLongLong >= 0)
-		return [self initWithUnsignedLongLong: sLongLong];
-	if (sLongLong >= LONG_MIN)
-		return [self initWithLong: (long)sLongLong];
-
-	return (id)[[OFNumber of_alloc] initWithLongLong: sLongLong];
-}
-
-- (instancetype)initWithUnsignedChar: (unsigned char)uChar
-{
-	switch (uChar) {
-	case 0: {
+	if (value == 0) {
 		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initZeroNumber);
-		return (id)zeroNumber;
+		of_once(&once, charZeroNumberInit);
+		return (id)charZeroNumber;
 	}
-	case 1: {
+
+	return (id)[[OFNumber of_alloc] initWithChar: value];
+}
+
+- (instancetype)initWithShort: (short)value
+{
+	if (value == 0) {
 		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initOneNumber);
-		return (id)oneNumber;
+		of_once(&once, shortZeroNumberInit);
+		return (id)shortZeroNumber;
 	}
-	case 2: {
+
+	return (id)[[OFNumber of_alloc] initWithShort: value];
+}
+
+- (instancetype)initWithInt: (int)value
+{
+	if (value == 0) {
 		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initTwoNumber);
-		return (id)twoNumber;
+		of_once(&once, intZeroNumberInit);
+		return (id)intZeroNumber;
 	}
+
+	return (id)[[OFNumber of_alloc] initWithInt: value];
+}
+
+- (instancetype)initWithLong: (long)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longZeroNumberInit);
+		return (id)longZeroNumber;
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedChar: uChar];
+	return (id)[[OFNumber of_alloc] initWithLong: value];
 }
 
-- (instancetype)initWithUnsignedShort: (unsigned short)uShort
+- (instancetype)initWithLongLong: (long long)value
 {
-	if (uShort <= UCHAR_MAX)
-		return [self initWithUnsignedChar: (unsigned char)uShort];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longLongZeroNumberInit);
+		return (id)longLongZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedShort: uShort];
+	return (id)[[OFNumber of_alloc] initWithLongLong: value];
 }
 
-- (instancetype)initWithUnsignedInt: (unsigned int)uInt
+- (instancetype)initWithUnsignedChar: (unsigned char)value
 {
-	if (uInt <= USHRT_MAX)
-		return [self initWithUnsignedShort: (unsigned short)uInt];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedCharZeroNumberInit);
+		return (id)unsignedCharZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedInt: uInt];
+	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
 }
 
-- (instancetype)initWithUnsignedLong: (unsigned long)uLong
+- (instancetype)initWithUnsignedShort: (unsigned short)value
 {
-	if (uLong <= UINT_MAX)
-		return [self initWithUnsignedInt: (unsigned int)uLong];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedShortZeroNumberInit);
+		return (id)unsignedShortZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedLong: uLong];
+	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
 }
 
-- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
+- (instancetype)initWithUnsignedInt: (unsigned int)value
 {
-	if (uLongLong <= ULONG_MAX)
-		return [self initWithUnsignedLong: (unsigned long)uLongLong];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedIntZeroNumberInit);
+		return (id)unsignedIntZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: uLongLong];
+	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
 }
 
-- (instancetype)initWithInt8: (int8_t)int8
+- (instancetype)initWithUnsignedLong: (unsigned long)value
 {
-	if (int8 >= 0)
-		return [self initWithUInt8: int8];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongZeroNumberInit);
+		return (id)unsignedLongZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithInt8: int8];
+	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
 }
 
-- (instancetype)initWithInt16: (int16_t)int16
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
-	if (int16 >= 0)
-		return [self initWithUInt16: int16];
-	if (int16 >= INT8_MIN)
-		return [self initWithInt8: (int8_t)int16];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongLongZeroNumberInit);
+		return (id)unsignedLongLongZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithInt16: int16];
+	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
 }
 
-- (instancetype)initWithInt32: (int32_t)int32
+- (instancetype)initWithFloat: (float)value
 {
-	if (int32 >= 0)
-		return [self initWithUInt32: int32];
-	if (int32 >= INT16_MIN)
-		return [self initWithInt16: (int16_t)int32];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, floatZeroNumberInit);
+		return (id)floatZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithInt32: int32];
+	return (id)[[OFNumber of_alloc] initWithFloat: value];
 }
 
-- (instancetype)initWithInt64: (int64_t)int64
+- (instancetype)initWithDouble: (double)value
 {
-	if (int64 >= 0)
-		return [self initWithUInt64: int64];
-	if (int64 >= INT32_MIN)
-		return [self initWithInt32: (int32_t)int64];
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, doubleZeroNumberInit);
+		return (id)doubleZeroNumber;
+	}
 
-	return (id)[[OFNumber of_alloc] initWithInt64: int64];
-}
-
-- (instancetype)initWithUInt8: (uint8_t)uInt8
-{
-	return (id)[[OFNumber of_alloc] initWithUInt8: uInt8];
-}
-
-- (instancetype)initWithUInt16: (uint16_t)uInt16
-{
-	if (uInt16 <= UINT8_MAX)
-		return [self initWithUInt8: (uint8_t)uInt16];
-
-	return (id)[[OFNumber of_alloc] initWithUInt16: uInt16];
-}
-
-- (instancetype)initWithUInt32: (uint32_t)uInt32
-{
-	if (uInt32 <= UINT16_MAX)
-		return [self initWithUInt16: (uint16_t)uInt32];
-
-	return (id)[[OFNumber of_alloc] initWithUInt32: uInt32];
-}
-
-- (instancetype)initWithUInt64: (uint64_t)uInt64
-{
-	if (uInt64 <= UINT32_MAX)
-		return [self initWithUInt32: (uint32_t)uInt64];
-
-	return (id)[[OFNumber of_alloc] initWithUInt64: uInt64];
-}
-
-- (instancetype)initWithSize: (size_t)size
-{
-	if (size <= ULONG_MAX)
-		return [self initWithUnsignedLong: (unsigned long)size];
-
-	return (id)[[OFNumber of_alloc] initWithSize: size];
-}
-
-- (instancetype)initWithSSize: (ssize_t)sSize
-{
-	if (sSize >= 0)
-		return [self initWithSize: sSize];
-	if (sSize <= LONG_MIN)
-		return [self initWithLong: (long)sSize];
-
-	return (id)[[OFNumber of_alloc] initWithSSize: sSize];
-}
-
-- (instancetype)initWithIntMax: (intmax_t)intMax
-{
-	if (intMax >= 0)
-		return [self initWithUIntMax: intMax];
-	if (intMax <= LLONG_MIN)
-		return [self initWithLongLong: (long long)intMax];
-
-	return (id)[[OFNumber of_alloc] initWithIntMax: intMax];
-}
-
-- (instancetype)initWithUIntMax: (uintmax_t)uIntMax
-{
-	if (uIntMax <= ULLONG_MAX)
-		return [self initWithUnsignedLongLong:
-		    (unsigned long long)uIntMax];
-
-	return (id)[[OFNumber of_alloc] initWithUIntMax: uIntMax];
-}
-
-#ifdef __clang__
-/*
- * This warning should probably not exist at all, as it prevents checking
- * whether one type fits into another in a portable way.
- */
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
-#endif
-
-- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
-{
-	if (ptrDiff >= LLONG_MIN && ptrDiff <= LLONG_MAX)
-		return [self initWithLongLong: (long long)ptrDiff];
-
-	return (id)[[OFNumber of_alloc] initWithPtrDiff: ptrDiff];
-}
-
-- (instancetype)initWithIntPtr: (intptr_t)intPtr
-{
-	if (intPtr >= 0)
-		return [self initWithUIntPtr: intPtr];
-	if (intPtr >= LLONG_MIN)
-		return [self initWithLongLong: (long long)intPtr];
-
-	return (id)[[OFNumber of_alloc] initWithIntPtr: intPtr];
-}
-
-- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
-{
-	if (uIntPtr <= ULLONG_MAX)
-		return [self initWithUnsignedLongLong:
-		    (unsigned long long)uIntPtr];
-
-	return (id)[[OFNumber of_alloc] initWithUIntPtr: uIntPtr];
-}
-
-#ifdef __clang__
-# pragma clang diagnostic pop
-#endif
-
-- (instancetype)initWithFloat: (float)float_
-{
-	if (float_ == (uintmax_t)float_)
-		return [self initWithUIntMax: (uintmax_t)float_];
-	if (float_ == (intmax_t)float_)
-		return [self initWithIntMax: (intmax_t)float_];
-
-	return (id)[[OFNumber of_alloc] initWithFloat: float_];
-}
-
-- (instancetype)initWithDouble: (double)double_
-{
-	if (double_ == (uintmax_t)double_)
-		return [self initWithUIntMax: (uintmax_t)double_];
-	if (double_ == (intmax_t)double_)
-		return [self initWithIntMax: (intmax_t)double_];
-	if (double_ == (float)double_)
-		return [self initWithFloat: (float)double_];
-
-	return (id)[[OFNumber of_alloc] initWithDouble: double_];
+	return (id)[[OFNumber of_alloc] initWithDouble: value];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
@@ -410,144 +264,69 @@ initFalseNumber(void)
 	return [super alloc];
 }
 
-+ (instancetype)numberWithBool: (bool)bool_
++ (instancetype)numberWithBool: (bool)value
 {
-	return [[[self alloc] initWithBool: bool_] autorelease];
+	return [[[self alloc] initWithBool: value] autorelease];
 }
 
-+ (instancetype)numberWithChar: (signed char)sChar
++ (instancetype)numberWithChar: (signed char)value
 {
-	return [[[self alloc] initWithChar: sChar] autorelease];
+	return [[[self alloc] initWithChar: value] autorelease];
 }
 
-+ (instancetype)numberWithShort: (short)sShort
++ (instancetype)numberWithShort: (short)value
 {
-	return [[[self alloc] initWithShort: sShort] autorelease];
+	return [[[self alloc] initWithShort: value] autorelease];
 }
 
-+ (instancetype)numberWithInt: (int)sInt
++ (instancetype)numberWithInt: (int)value
 {
-	return [[[self alloc] initWithInt: sInt] autorelease];
+	return [[[self alloc] initWithInt: value] autorelease];
 }
 
-+ (instancetype)numberWithLong: (long)sLong
++ (instancetype)numberWithLong: (long)value
 {
-	return [[[self alloc] initWithLong: sLong] autorelease];
+	return [[[self alloc] initWithLong: value] autorelease];
 }
 
-+ (instancetype)numberWithLongLong: (long long)sLongLong
++ (instancetype)numberWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithLongLong: sLongLong] autorelease];
+	return [[[self alloc] initWithLongLong: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedChar: (unsigned char)uChar
++ (instancetype)numberWithUnsignedChar: (unsigned char)value
 {
-	return [[[self alloc] initWithUnsignedChar: uChar] autorelease];
+	return [[[self alloc] initWithUnsignedChar: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedShort: (unsigned short)uShort
++ (instancetype)numberWithUnsignedShort: (unsigned short)value
 {
-	return [[[self alloc] initWithUnsignedShort: uShort] autorelease];
+	return [[[self alloc] initWithUnsignedShort: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedInt: (unsigned int)uInt
++ (instancetype)numberWithUnsignedInt: (unsigned int)value
 {
-	return [[[self alloc] initWithUnsignedInt: uInt] autorelease];
+	return [[[self alloc] initWithUnsignedInt: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLong: (unsigned long)uLong
++ (instancetype)numberWithUnsignedLong: (unsigned long)value
 {
-	return [[[self alloc] initWithUnsignedLong: uLong] autorelease];
+	return [[[self alloc] initWithUnsignedLong: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLongLong: (unsigned long long)uLongLong
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)value
 {
-	return [[[self alloc] initWithUnsignedLongLong: uLongLong] autorelease];
+	return [[[self alloc] initWithUnsignedLongLong: value] autorelease];
 }
 
-+ (instancetype)numberWithInt8: (int8_t)int8
++ (instancetype)numberWithFloat: (float)value
 {
-	return [[[self alloc] initWithInt8: int8] autorelease];
+	return [[[self alloc] initWithFloat: value] autorelease];
 }
 
-+ (instancetype)numberWithInt16: (int16_t)int16
++ (instancetype)numberWithDouble: (double)value
 {
-	return [[[self alloc] initWithInt16: int16] autorelease];
-}
-
-+ (instancetype)numberWithInt32: (int32_t)int32
-{
-	return [[[self alloc] initWithInt32: int32] autorelease];
-}
-
-+ (instancetype)numberWithInt64: (int64_t)int64
-{
-	return [[[self alloc] initWithInt64: int64] autorelease];
-}
-
-+ (instancetype)numberWithUInt8: (uint8_t)uInt8
-{
-	return [[[self alloc] initWithUInt8: uInt8] autorelease];
-}
-
-+ (instancetype)numberWithUInt16: (uint16_t)uInt16
-{
-	return [[[self alloc] initWithUInt16: uInt16] autorelease];
-}
-
-+ (instancetype)numberWithUInt32: (uint32_t)uInt32
-{
-	return [[[self alloc] initWithUInt32: uInt32] autorelease];
-}
-
-+ (instancetype)numberWithUInt64: (uint64_t)uInt64
-{
-	return [[[self alloc] initWithUInt64: uInt64] autorelease];
-}
-
-+ (instancetype)numberWithSize: (size_t)size
-{
-	return [[[self alloc] initWithSize: size] autorelease];
-}
-
-+ (instancetype)numberWithSSize: (ssize_t)sSize
-{
-	return [[[self alloc] initWithSSize: sSize] autorelease];
-}
-
-+ (instancetype)numberWithIntMax: (intmax_t)intMax
-{
-	return [[[self alloc] initWithIntMax: intMax] autorelease];
-}
-
-+ (instancetype)numberWithUIntMax: (uintmax_t)uIntMax
-{
-	return [[[self alloc] initWithUIntMax: uIntMax] autorelease];
-}
-
-+ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrDiff
-{
-	return [[[self alloc] initWithPtrDiff: ptrDiff] autorelease];
-}
-
-+ (instancetype)numberWithIntPtr: (intptr_t)intPtr
-{
-	return [[[self alloc] initWithIntPtr: intPtr] autorelease];
-}
-
-+ (instancetype)numberWithUIntPtr: (uintptr_t)uIntPtr
-{
-	return [[[self alloc] initWithUIntPtr: uIntPtr] autorelease];
-}
-
-+ (instancetype)numberWithFloat: (float)float_
-{
-	return [[[self alloc] initWithFloat: float_] autorelease];
-}
-
-+ (instancetype)numberWithDouble: (double)double_
-{
-	return [[[self alloc] initWithDouble: double_] autorelease];
+	return [[[self alloc] initWithDouble: value] autorelease];
 }
 
 - (instancetype)init
@@ -555,308 +334,176 @@ initFalseNumber(void)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithBool: (bool)bool_
+- (instancetype)initWithBool: (bool)value
 {
 	self = [super init];
 
-	_value.unsigned_ = bool_;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(bool);
 
 	return self;
 }
 
-- (instancetype)initWithChar: (signed char)sChar
+- (instancetype)initWithChar: (signed char)value
 {
 	self = [super init];
 
-	_value.signed_ = sChar;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(signed char);
 
 	return self;
 }
 
-- (instancetype)initWithShort: (short)sShort
+- (instancetype)initWithShort: (short)value
 {
 	self = [super init];
 
-	_value.signed_ = sShort;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(short);
 
 	return self;
 }
 
-- (instancetype)initWithInt: (int)sInt
+- (instancetype)initWithInt: (int)value
 {
 	self = [super init];
 
-	_value.signed_ = sInt;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(int);
 
 	return self;
 }
 
-- (instancetype)initWithLong: (long)sLong
+- (instancetype)initWithLong: (long)value
 {
 	self = [super init];
 
-	_value.signed_ = sLong;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(long);
 
 	return self;
 }
 
-- (instancetype)initWithLongLong: (long long)sLongLong
+- (instancetype)initWithLongLong: (long long)value
 {
 	self = [super init];
 
-	_value.signed_ = sLongLong;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(long long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedChar: (unsigned char)uChar
+- (instancetype)initWithUnsignedChar: (unsigned char)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uChar;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedShort: (unsigned short)uShort
+- (instancetype)initWithUnsignedShort: (unsigned short)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uShort;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned short);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedInt: (unsigned int)uInt
+- (instancetype)initWithUnsignedInt: (unsigned int)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uInt;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned int);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLong: (unsigned long)uLong
+- (instancetype)initWithUnsignedLong: (unsigned long)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uLong;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uLongLong;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long long);
 
 	return self;
 }
 
-- (instancetype)initWithInt8: (int8_t)int8
+- (instancetype)initWithPtrDiff: (ptrdiff_t)value
 {
 	self = [super init];
 
-	_value.signed_ = int8;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(int8_t);
-
-	return self;
-}
-
-- (instancetype)initWithInt16: (int16_t)int16
-{
-	self = [super init];
-
-	_value.signed_ = int16;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(int16_t);
-
-	return self;
-}
-
-- (instancetype)initWithInt32: (int32_t)int32
-{
-	self = [super init];
-
-	_value.signed_ = int32;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(int32_t);
-
-	return self;
-}
-
-- (instancetype)initWithInt64: (int64_t)int64
-{
-	self = [super init];
-
-	_value.signed_ = int64;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(int64_t);
-
-	return self;
-}
-
-- (instancetype)initWithUInt8: (uint8_t)uInt8
-{
-	self = [super init];
-
-	_value.unsigned_ = uInt8;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(uint8_t);
-
-	return self;
-}
-
-- (instancetype)initWithUInt16: (uint16_t)uInt16
-{
-	self = [super init];
-
-	_value.unsigned_ = uInt16;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(uint16_t);
-
-	return self;
-}
-
-- (instancetype)initWithUInt32: (uint32_t)uInt32
-{
-	self = [super init];
-
-	_value.unsigned_ = uInt32;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(uint32_t);
-
-	return self;
-}
-
-- (instancetype)initWithUInt64: (uint64_t)uInt64
-{
-	self = [super init];
-
-	_value.unsigned_ = uInt64;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(uint64_t);
-
-	return self;
-}
-
-- (instancetype)initWithSize: (size_t)size
-{
-	self = [super init];
-
-	_value.unsigned_ = size;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(size_t);
-
-	return self;
-}
-
-- (instancetype)initWithSSize: (ssize_t)sSize
-{
-	self = [super init];
-
-	_value.signed_ = sSize;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(ssize_t);
-
-	return self;
-}
-
-- (instancetype)initWithIntMax: (intmax_t)intMax
-{
-	self = [super init];
-
-	_value.signed_ = intMax;
-	_type = OF_NUMBER_TYPE_SIGNED;
-	_typeEncoding = @encode(intmax_t);
-
-	return self;
-}
-
-- (instancetype)initWithUIntMax: (uintmax_t)uIntMax
-{
-	self = [super init];
-
-	_value.unsigned_ = uIntMax;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
-	_typeEncoding = @encode(uintmax_t);
-
-	return self;
-}
-
-- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
-{
-	self = [super init];
-
-	_value.signed_ = ptrDiff;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(ptrdiff_t);
 
 	return self;
 }
 
-- (instancetype)initWithIntPtr: (intptr_t)intPtr
+- (instancetype)initWithIntPtr: (intptr_t)value
 {
 	self = [super init];
 
-	_value.signed_ = intPtr;
+	_value.signed_ = value;
 	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(intptr_t);
 
 	return self;
 }
 
-- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
+- (instancetype)initWithUIntPtr: (uintptr_t)value
 {
 	self = [super init];
 
-	_value.unsigned_ = uIntPtr;
+	_value.unsigned_ = value;
 	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(uintptr_t);
 
 	return self;
 }
 
-- (instancetype)initWithFloat: (float)float_
+- (instancetype)initWithFloat: (float)value
 {
 	self = [super init];
 
-	_value.float_ = float_;
+	_value.float_ = value;
 	_type = OF_NUMBER_TYPE_FLOAT;
 	_typeEncoding = @encode(float);
 
 	return self;
 }
 
-- (instancetype)initWithDouble: (double)double_
+- (instancetype)initWithDouble: (double)value
 {
 	self = [super init];
 
-	_value.float_ = double_;
+	_value.float_ = value;
 	_type = OF_NUMBER_TYPE_FLOAT;
 	_typeEncoding = @encode(double);
 
@@ -885,18 +532,20 @@ initFalseNumber(void)
 				self = [self initWithBool: false];
 			else
 				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"float"])
+		} else if ([typeString isEqual: @"float"]) {
+			unsigned long long value =
+			    [element unsignedLongLongValueWithBase: 16];
+
+			if (value > UINT64_MAX)
+				@throw [OFOutOfRangeException exception];
+
 			self = [self initWithDouble: OF_BSWAP_DOUBLE_IF_LE(
-			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
-			    (uint64_t)element.hexadecimalValue)))];
-		else if ([typeString isEqual: @"signed"])
-			self = [self initWithIntMax: element.doubleValue];
+			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(value)))];
+		} else if ([typeString isEqual: @"signed"])
+			self = [self initWithLongLong: element.longLongValue];
 		else if ([typeString isEqual: @"unsigned"])
-			/*
-			 * FIXME: This will fail if the value is bigger than
-			 *	  INTMAX_MAX!
-			 */
-			self = [self initWithUIntMax: element.decimalValue];
+			self = [self initWithUnsignedLongLong:
+			    element.unsignedLongLongValue];
 		else
 			@throw [OFInvalidArgumentException exception];
 
@@ -1013,81 +662,6 @@ initFalseNumber(void)
 	RETURN_AS(unsigned long long)
 }
 
-- (int8_t)int8Value
-{
-	RETURN_AS(int8_t)
-}
-
-- (int16_t)int16Value
-{
-	RETURN_AS(int16_t)
-}
-
-- (int32_t)int32Value
-{
-	RETURN_AS(int32_t)
-}
-
-- (int64_t)int64Value
-{
-	RETURN_AS(int64_t)
-}
-
-- (uint8_t)uInt8Value
-{
-	RETURN_AS(uint8_t)
-}
-
-- (uint16_t)uInt16Value
-{
-	RETURN_AS(uint16_t)
-}
-
-- (uint32_t)uInt32Value
-{
-	RETURN_AS(uint32_t)
-}
-
-- (uint64_t)uInt64Value
-{
-	RETURN_AS(uint64_t)
-}
-
-- (size_t)sizeValue
-{
-	RETURN_AS(size_t)
-}
-
-- (ssize_t)sSizeValue
-{
-	RETURN_AS(ssize_t)
-}
-
-- (intmax_t)intMaxValue
-{
-	RETURN_AS(intmax_t)
-}
-
-- (uintmax_t)uIntMaxValue
-{
-	RETURN_AS(uintmax_t)
-}
-
-- (ptrdiff_t)ptrDiffValue
-{
-	RETURN_AS(ptrdiff_t)
-}
-
-- (intptr_t)intPtrValue
-{
-	RETURN_AS(intptr_t)
-}
-
-- (uintptr_t)uIntPtrValue
-{
-	RETURN_AS(uintptr_t)
-}
-
 - (float)floatValue
 {
 	RETURN_AS(float)
@@ -1126,9 +700,9 @@ initFalseNumber(void)
 
 	if (_type == OF_NUMBER_TYPE_SIGNED ||
 	    number->_type == OF_NUMBER_TYPE_SIGNED)
-		return (number.intMaxValue == self.intMaxValue);
+		return (number.longLongValue == self.longLongValue);
 
-	return (number.uIntMaxValue == self.uIntMaxValue);
+	return (number.unsignedLongLongValue == self.unsignedLongLongValue);
 }
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object
@@ -1153,8 +727,8 @@ initFalseNumber(void)
 		return OF_ORDERED_SAME;
 	} else if (_type == OF_NUMBER_TYPE_SIGNED ||
 	    number->_type == OF_NUMBER_TYPE_SIGNED) {
-		intmax_t int1 = self.intMaxValue;
-		intmax_t int2 = number.intMaxValue;
+		long long int1 = self.longLongValue;
+		long long int2 = number.longLongValue;
 
 		if (int1 > int2)
 			return OF_ORDERED_DESCENDING;
@@ -1163,8 +737,8 @@ initFalseNumber(void)
 
 		return OF_ORDERED_SAME;
 	} else {
-		uintmax_t uint1 = self.uIntMaxValue;
-		uintmax_t uint2 = number.uIntMaxValue;
+		unsigned long long uint1 = self.unsignedLongLongValue;
+		unsigned long long uint2 = number.unsignedLongLongValue;
 
 		if (uint1 > uint2)
 			return OF_ORDERED_DESCENDING;
@@ -1192,21 +766,13 @@ initFalseNumber(void)
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, ((char *)&d)[i]);
-	} else if (type == OF_NUMBER_TYPE_SIGNED) {
-		intmax_t v = self.intMaxValue * -1;
+	} else if (type == OF_NUMBER_TYPE_SIGNED ||
+	    type == OF_NUMBER_TYPE_UNSIGNED) {
+		unsigned long long value = self.unsignedLongLongValue;
 
-		while (v != 0) {
-			OF_HASH_ADD(hash, v & 0xFF);
-			v >>= 8;
-		}
-
-		OF_HASH_ADD(hash, 1);
-	} else if (type == OF_NUMBER_TYPE_UNSIGNED) {
-		uintmax_t v = self.uIntMaxValue;
-
-		while (v != 0) {
-			OF_HASH_ADD(hash, v & 0xFF);
-			v >>= 8;
+		while (value != 0) {
+			OF_HASH_ADD(hash, value & 0xFF);
+			value >>= 8;
 		}
 	} else
 		@throw [OFInvalidFormatException exception];
@@ -1233,9 +799,9 @@ initFalseNumber(void)
 	if (_type == OF_NUMBER_TYPE_FLOAT)
 		return [OFString stringWithFormat: @"%g", _value.float_];
 	if (_type == OF_NUMBER_TYPE_SIGNED)
-		return [OFString stringWithFormat: @"%jd", _value.signed_];
+		return [OFString stringWithFormat: @"%lld", _value.signed_];
 	if (_type == OF_NUMBER_TYPE_UNSIGNED)
-		return [OFString stringWithFormat: @"%ju", _value.unsigned_];
+		return [OFString stringWithFormat: @"%llu", _value.unsigned_];
 
 	@throw [OFInvalidFormatException exception];
 }
@@ -1339,7 +905,7 @@ initFalseNumber(void)
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else if (_type == OF_NUMBER_TYPE_SIGNED) {
-		intmax_t value = self.intMaxValue;
+		long long value = self.longLongValue;
 
 		if (value >= -32 && value < 0) {
 			uint8_t tmp = 0xE0 | ((uint8_t)(value - 32) & 0x1F);
@@ -1388,7 +954,7 @@ initFalseNumber(void)
 		} else
 			@throw [OFOutOfRangeException exception];
 	} else if (_type == OF_NUMBER_TYPE_UNSIGNED) {
-		uintmax_t value = self.uIntMaxValue;
+		unsigned long long value = self.unsignedLongLongValue;
 
 		if (value <= 127) {
 			uint8_t tmp = ((uint8_t)value & 0x7F);

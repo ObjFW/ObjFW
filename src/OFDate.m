@@ -487,17 +487,29 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	void *pool = objc_autoreleasePoolPush();
 	of_time_interval_t seconds;
 
-	if (![element.name isEqual: @"OFDate"] ||
-	    ![element.namespace isEqual: OF_SERIALIZATION_NS])
-		@throw [OFInvalidArgumentException exception];
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		unsigned long long value;
 
-	seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
-	    element.hexadecimalValue)));
+		if (![element.name isEqual: @"OFDate"] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+			@throw [OFInvalidArgumentException exception];
 
-	objc_autoreleasePoolPop(pool);
+		value = [element unsignedLongLongValueWithBase: 16];
+
+		if (value > UINT64_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
+		    OF_BSWAP64_IF_LE(value)));
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return [self initWithTimeIntervalSince1970: seconds];
 }

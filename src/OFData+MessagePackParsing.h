@@ -16,39 +16,32 @@
  */
 
 #import "OFData.h"
-#import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFData_ASN1DERValue_reference;
+extern int _OFData_MessagePackParsing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFData (ASN1DERValue)
+@interface OFData (MessagePackParsing)
 /*!
- * @brief The data interpreted as ASN.1 in DER representation and parsed as an
+ * @brief The data interpreted as MessagePack representation and parsed as an
  *	  object.
- *
- * This is either an OFArray (for a sequence), an OFSet (for a set) or an
- * OFASN1Value.
  */
-@property (readonly, nonatomic) id ASN1DERValue;
+@property (readonly, nonatomic) id objectByParsingMessagePack;
 
 /*!
- * @brief Parses the ASN.1 DER representation and returns it as an object.
- *
- * This is either an OFArray (for a sequence), an OFSet (for a set) or an
- * OFASN1Value.
+ * @brief Parses the MessagePack representation and returns it as an object.
  *
  * @param depthLimit The maximum depth the parser should accept (defaults to 32
  *		     if not specified, 0 means no limit (insecure!))
- * @return The ASN.1 DER representation as an object
+ * @return The MessagePack representation as an object
  */
-- (id)ASN1DERValueWithDepthLimit: (size_t)depthLimit;
+- (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END

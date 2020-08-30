@@ -47,6 +47,9 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 	if (mode == nil)
 		return;
 
+	mode = [OFNumber numberWithUnsignedShort:
+	    mode.unsignedShortValue & 0777];
+
 	of_file_attributes_t attributes = [OFDictionary
 	    dictionaryWithObject: mode
 			  forKey: of_file_attribute_key_posix_permissions];
@@ -145,24 +148,24 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_compressed_size",
-			    [@"["
-			     @"    'Compressed: ',"
-			     @"    ["
-			     @"        {'size == 1': '1 byte'},"
-			     @"        {'': '%[size] bytes'}"
-			     @"    ]"
-			     @"]" JSONValue],
+			    @"["
+			    @"    'Compressed: ',"
+			    @"    ["
+			    @"        {'size == 1': '1 byte'},"
+			    @"        {'': '%[size] bytes'}"
+			    @"    ]"
+			    @"]".objectByParsingJSON,
 			    @"size", compressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"list_uncompressed_size",
-			    [@"["
-			     @"    'Uncompressed: ',"
-			     @"    ["
-			     @"        {'size == 1': '1 byte'},"
-			     @"        {'': '%[size] bytes'}"
-			     @"    ]"
-			     @"]" JSONValue],
+			    @"["
+			    @"    'Uncompressed: ',"
+			    @"    ["
+			    @"        {'size == 1': '1 byte'},"
+			    @"        {'': '%[size] bytes'}"
+			    @"    ]"
+			    @"]".objectByParsingJSON,
 			    @"size", uncompressedSize)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(
@@ -181,7 +184,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			if (entry.mode != nil) {
 				OFString *modeString = [OFString
 				    stringWithFormat:
-				    @"%" PRIo16, entry.mode.uInt16Value];
+				    @"%ho", entry.mode.unsignedShortValue];
 
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(@"list_mode",
@@ -469,16 +472,16 @@ outer_loop_end:
 		entry = [OFMutableLHAArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		entry.mode = [OFNumber numberWithUInt16:
+		entry.mode = [OFNumber numberWithUnsignedLong:
 		    attributes.filePOSIXPermissions];
 #endif
 		entry.date = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 		entry.UID =
-		    [OFNumber numberWithUInt16: attributes.filePOSIXUID];
+		    [OFNumber numberWithUnsignedLong: attributes.filePOSIXUID];
 		entry.GID =
-		    [OFNumber numberWithUInt16: attributes.filePOSIXGID];
+		    [OFNumber numberWithUnsignedLong: attributes.filePOSIXGID];
 		entry.owner = attributes.fileOwner;
 		entry.group = attributes.fileGroup;
 #endif
@@ -489,7 +492,8 @@ outer_loop_end:
 		output = [_archive streamForWritingEntry: entry];
 
 		if ([type isEqual: of_file_type_regular]) {
-			uintmax_t written = 0, size = attributes.fileSize;
+			unsigned long long written = 0;
+			unsigned long long size = attributes.fileSize;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

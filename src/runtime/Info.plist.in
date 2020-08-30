@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>ObjFWBridge</string>
+	<string>ObjFWRT</string>
 	<key>CFBundleName</key>
-	<string>ObjFWBridge</string>
+	<string>ObjFWRT</string>
 	<key>CFBundleIdentifier</key>
-	<string>im.nil.objfw.bridge</string>
+	<string>im.nil.objfw.rt</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>

@@ -25,14 +25,14 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-intmax_t
+long long
 of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 {
-	uintmax_t value = 0;
+	unsigned long long value = 0;
 
 	/* TODO: Support for big numbers */
-	if (length > sizeof(uintmax_t) &&
-	    (length != sizeof(uintmax_t) + 1 || buffer[0] != 0))
+	if (length > sizeof(unsigned long long) &&
+	    (length != sizeof(unsigned long long) + 1 || buffer[0] != 0))
 		@throw [OFOutOfRangeException exception];
 
 	if (length >= 2 && ((buffer[0] == 0 && !(buffer[1] & 0x80)) ||
@@ -40,7 +40,7 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 		@throw [OFInvalidFormatException exception];
 
 	if (length >= 1 && buffer[0] & 0x80)
-		value = ~(uintmax_t)0;
+		value = ~0ull;
 
 	while (length--)
 		value = (value << 8) | *buffer++;
@@ -49,18 +49,18 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 }
 
 @implementation OFASN1Integer
-@synthesize integerValue = _integerValue;
+@synthesize longLongValue = _longLongValue;
 
-+ (instancetype)integerWithIntegerValue: (intmax_t)integerValue
++ (instancetype)integerWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithIntegerValue: integerValue] autorelease];
+	return [[[self alloc] initWithLongLong: value] autorelease];
 }
 
-- (instancetype)initWithIntegerValue: (intmax_t)integerValue
+- (instancetype)initWithLongLong: (long long)value
 {
 	self = [super init];
 
-	_integerValue = integerValue;
+	_longLongValue = value;
 
 	return self;
 }
@@ -70,7 +70,7 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	intmax_t integerValue;
+	long long value;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -80,14 +80,14 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		integerValue = of_asn1_der_integer_parse(
+		value = of_asn1_der_integer_parse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	return [self initWithIntegerValue: integerValue];
+	return [self initWithLongLong: value];
 }
 
 - (instancetype)init
@@ -107,7 +107,7 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 
 	integer = object;
 
-	if (integer->_integerValue != _integerValue)
+	if (integer->_longLongValue != _longLongValue)
 		return false;
 
 	return true;
@@ -115,12 +115,12 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 
 - (uint32_t)hash
 {
-	return (uint32_t)_integerValue;
+	return (uint32_t)_longLongValue;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1Integer: %jd>",
-					   _integerValue];
+	return [OFString stringWithFormat: @"<OFASN1Integer: %lld>",
+					   _longLongValue];
 }
 @end

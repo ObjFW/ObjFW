@@ -48,9 +48,9 @@
 void
 _references_to_categories_of_OFData(void)
 {
-	_OFData_ASN1DERValue_reference = 1;
+	_OFData_ASN1DERParsing_reference = 1;
 	_OFData_CryptoHashing_reference = 1;
-	_OFData_MessagePackValue_reference = 1;
+	_OFData_MessagePackParsing_reference = 1;
 }
 
 @implementation OFData
@@ -184,7 +184,7 @@ _references_to_categories_of_OFData(void)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	char *buffer = NULL;
-	uintmax_t size;
+	unsigned long long size;
 
 	@try {
 		OFFile *file;
@@ -192,7 +192,7 @@ _references_to_categories_of_OFData(void)
 		size = [[OFFileManager defaultManager]
 		    attributesOfItemAtPath: path].fileSize;
 
-# if UINTMAX_MAX > SIZE_MAX
+# if ULLONG_MAX > SIZE_MAX
 		if (size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 # endif

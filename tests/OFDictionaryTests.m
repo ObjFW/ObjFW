@@ -182,7 +182,7 @@ static OFString *values[] = {
 	TEST(@"-[valueForKey:]",
 	    [[mutDict valueForKey: keys[0]] isEqual: values[0]] &&
 	    [[mutDict valueForKey: @"@count"] isEqual:
-	    [OFNumber numberWithSize: 2]])
+	    [OFNumber numberWithInt: 2]])
 
 	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
 	    @"dictionary", OFUndefinedKeyException,

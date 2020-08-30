@@ -38,22 +38,22 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The mode of the entry.
  */
-@property (readwrite, nonatomic) uint32_t mode;
+@property (readwrite, nonatomic) unsigned long mode;
 
 /*!
  * @brief The UID of the owner.
  */
-@property (readwrite, nonatomic) uint32_t UID;
+@property (readwrite, nonatomic) unsigned long UID;
 
 /*!
  * @brief The GID of the group.
  */
-@property (readwrite, nonatomic) uint32_t GID;
+@property (readwrite, nonatomic) unsigned long GID;
 
 /*!
  * @brief The size of the file.
  */
-@property (readwrite, nonatomic) uint64_t size;
+@property (readwrite, nonatomic) unsigned long long size;
 
 /*!
  * @brief The date of the last modification of the file.
@@ -86,12 +86,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The device major (if the file is a device).
  */
-@property (readwrite, nonatomic) uint32_t deviceMajor;
+@property (readwrite, nonatomic) unsigned long deviceMajor;
 
 /*!
  * @brief The device major (if the file is a device).
  */
-@property (readwrite, nonatomic) uint32_t deviceMinor;
+@property (readwrite, nonatomic) unsigned long deviceMinor;
 
 /*!
  * @brief Converts the OFMutableTarArchiveEntry to an immutable
