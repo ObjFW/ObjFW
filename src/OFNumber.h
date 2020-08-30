@@ -53,11 +53,6 @@ OF_SUBCLASSING_RESTRICTED
 		long long signed_;
 		unsigned long long unsigned_;
 	} _value;
-	enum of_number_type {
-		OF_NUMBER_TYPE_FLOAT = 1,
-		OF_NUMBER_TYPE_SIGNED,
-		OF_NUMBER_TYPE_UNSIGNED
-	} _type;
 	const char *_typeEncoding;
 }
 

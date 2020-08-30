@@ -71,6 +71,59 @@ SINGLETON(floatZeroNumber, initWithFloat:, 0)
 SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 #undef SINGLETON
 
+static bool
+isUnsigned(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'B':
+		return true;
+	case 'C':
+		return true;
+	case 'S':
+		return true;
+	case 'I':
+		return true;
+	case 'L':
+		return true;
+	case 'Q':
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool
+isSigned(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'c':
+		return true;
+	case 's':
+		return true;
+	case 'i':
+		return true;
+	case 'l':
+		return true;
+	case 'q':
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool
+isFloat(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'f':
+		return true;
+	case 'd':
+		return true;
+	default:
+		return false;
+	}
+}
+
 @implementation OFNumberPlaceholder
 - (instancetype)initWithBool: (bool)value
 {
@@ -339,7 +392,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(bool);
 
 	return self;
@@ -350,7 +402,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(signed char);
 
 	return self;
@@ -361,7 +412,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(short);
 
 	return self;
@@ -372,7 +422,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(int);
 
 	return self;
@@ -383,7 +432,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(long);
 
 	return self;
@@ -394,7 +442,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(long long);
 
 	return self;
@@ -405,7 +452,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long);
 
 	return self;
@@ -416,7 +462,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned short);
 
 	return self;
@@ -427,7 +472,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned int);
 
 	return self;
@@ -438,7 +482,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long);
 
 	return self;
@@ -449,7 +492,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(unsigned long long);
 
 	return self;
@@ -460,7 +502,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(ptrdiff_t);
 
 	return self;
@@ -471,7 +512,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.signed_ = value;
-	_type = OF_NUMBER_TYPE_SIGNED;
 	_typeEncoding = @encode(intptr_t);
 
 	return self;
@@ -482,7 +522,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.unsigned_ = value;
-	_type = OF_NUMBER_TYPE_UNSIGNED;
 	_typeEncoding = @encode(uintptr_t);
 
 	return self;
@@ -493,7 +532,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.float_ = value;
-	_type = OF_NUMBER_TYPE_FLOAT;
 	_typeEncoding = @encode(float);
 
 	return self;
@@ -504,7 +542,6 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 	self = [super init];
 
 	_value.float_ = value;
-	_type = OF_NUMBER_TYPE_FLOAT;
 	_typeEncoding = @encode(double);
 
 	return self;
@@ -566,10 +603,10 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	switch (*_typeEncoding) {
-#define CASE(enc, type, field)						\
+	switch (*self.objCType) {
+#define CASE(enc, type, property)					\
 	case enc: {							\
-		type tmp = (type)_value.field;				\
+		type tmp = (type)self.property;				\
 									\
 		if (size != sizeof(type))				\
 			@throw [OFOutOfRangeException exception];	\
@@ -577,101 +614,110 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 		memcpy(value, &tmp, size);				\
 		break;							\
 	}
-	CASE('B', bool, unsigned_)
-	CASE('c', signed char, signed_)
-	CASE('s', short, signed_)
-	CASE('i', int, signed_)
-	CASE('l', long, signed_)
-	CASE('q', long long, signed_)
-	CASE('C', unsigned char, unsigned_)
-	CASE('S', unsigned short, unsigned_)
-	CASE('I', unsigned int, unsigned_)
-	CASE('L', unsigned long, unsigned_)
-	CASE('Q', unsigned long long, unsigned_)
-	CASE('f', float, float_)
-	CASE('d', double, float_)
+	CASE('B', bool, unsignedLongLongValue)
+	CASE('c', signed char, longLongValue)
+	CASE('s', short, longLongValue)
+	CASE('i', int, longLongValue)
+	CASE('l', long, longLongValue)
+	CASE('q', long long, longLongValue)
+	CASE('C', unsigned char, unsignedLongLongValue)
+	CASE('S', unsigned short, unsignedLongLongValue)
+	CASE('I', unsigned int, unsignedLongLongValue)
+	CASE('L', unsigned long, unsignedLongLongValue)
+	CASE('Q', unsigned long long, unsignedLongLongValue)
+	CASE('f', float, doubleValue)
+	CASE('d', double, doubleValue)
 #undef CASE
 	default:
 		@throw [OFInvalidFormatException exception];
 	}
 }
 
-#define RETURN_AS(t)						\
-	switch (_type) {					\
-	case OF_NUMBER_TYPE_FLOAT:				\
-		return (t)_value.float_;			\
-	case OF_NUMBER_TYPE_SIGNED:				\
-		return (t)_value.signed_;			\
-	case OF_NUMBER_TYPE_UNSIGNED:				\
-		return (t)_value.unsigned_;			\
-	default:						\
-		@throw [OFInvalidFormatException exception];	\
-	}
-- (bool)boolValue
-{
-	RETURN_AS(bool)
-}
-
-- (signed char)charValue
-{
-	RETURN_AS(signed char)
-}
-
-- (short)shortValue
-{
-	RETURN_AS(short)
-}
-
-- (int)intValue
-{
-	RETURN_AS(int)
-}
-
-- (long)longValue
-{
-	RETURN_AS(long)
-}
-
 - (long long)longLongValue
 {
-	RETURN_AS(long long)
-}
-
-- (unsigned char)unsignedCharValue
-{
-	RETURN_AS(unsigned char)
-}
-
-- (unsigned short)unsignedShortValue
-{
-	RETURN_AS(unsigned short)
-}
-
-- (unsigned int)unsignedIntValue
-{
-	RETURN_AS(unsigned int)
-}
-
-- (unsigned long)unsignedLongValue
-{
-	RETURN_AS(unsigned long)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
 }
 
 - (unsigned long long)unsignedLongLongValue
 {
-	RETURN_AS(unsigned long long)
-}
-
-- (float)floatValue
-{
-	RETURN_AS(float)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
 }
 
 - (double)doubleValue
 {
-	RETURN_AS(double)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
 }
-#undef RETURN_AS
+
+- (bool)boolValue
+{
+	return (bool)self.unsignedLongLongValue;
+}
+
+- (signed char)charValue
+{
+	return (signed char)self.longLongValue;
+}
+
+- (short)shortValue
+{
+	return (short)self.longLongValue;
+}
+
+- (int)intValue
+{
+	return (int)self.longLongValue;
+}
+
+- (long)longValue
+{
+	return (long)self.longLongValue;
+}
+
+- (unsigned char)unsignedCharValue
+{
+	return (unsigned char)self.unsignedLongLongValue;
+}
+
+- (unsigned short)unsignedShortValue
+{
+	return (unsigned short)self.unsignedLongLongValue;
+}
+
+- (unsigned int)unsignedIntValue
+{
+	return (unsigned int)self.unsignedLongLongValue;
+}
+
+- (unsigned long)unsignedLongValue
+{
+	return (unsigned long)self.unsignedLongLongValue;
+}
+
+- (float)floatValue
+{
+	return (float)self.doubleValue;
+}
 
 - (bool)isEqual: (id)object
 {
@@ -685,8 +731,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 
 	number = object;
 
-	if (_type == OF_NUMBER_TYPE_FLOAT ||
-	    number->_type == OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self) || isFloat(number)) {
 		double value1 = number.doubleValue;
 		double value2 = self.doubleValue;
 
@@ -698,8 +743,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 		return (value1 == value2);
 	}
 
-	if (_type == OF_NUMBER_TYPE_SIGNED ||
-	    number->_type == OF_NUMBER_TYPE_SIGNED)
+	if (isSigned(self) || isSigned(number))
 		return (number.longLongValue == self.longLongValue);
 
 	return (number.unsignedLongLongValue == self.unsignedLongLongValue);
@@ -714,8 +758,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 
 	number = (OFNumber *)object;
 
-	if (_type == OF_NUMBER_TYPE_FLOAT ||
-	    number->_type == OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self) || isFloat(number)) {
 		double double1 = self.doubleValue;
 		double double2 = number.doubleValue;
 
@@ -725,8 +768,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 			return OF_ORDERED_ASCENDING;
 
 		return OF_ORDERED_SAME;
-	} else if (_type == OF_NUMBER_TYPE_SIGNED ||
-	    number->_type == OF_NUMBER_TYPE_SIGNED) {
+	} else if (isSigned(self) || isSigned(number)) {
 		long long int1 = self.longLongValue;
 		long long int2 = number.longLongValue;
 
@@ -751,12 +793,11 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 
 - (uint32_t)hash
 {
-	enum of_number_type type = _type;
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	if (type == OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self)) {
 		double d;
 
 		if (isnan(self.doubleValue))
@@ -766,8 +807,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, ((char *)&d)[i]);
-	} else if (type == OF_NUMBER_TYPE_SIGNED ||
-	    type == OF_NUMBER_TYPE_UNSIGNED) {
+	} else if (isSigned(self) || isUnsigned(self)) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		while (value != 0) {
@@ -794,14 +834,15 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 
 - (OFString *)stringValue
 {
-	if (*_typeEncoding == 'B')
-		return (_value.unsigned_ ? @"true" : @"false");
-	if (_type == OF_NUMBER_TYPE_FLOAT)
-		return [OFString stringWithFormat: @"%g", _value.float_];
-	if (_type == OF_NUMBER_TYPE_SIGNED)
-		return [OFString stringWithFormat: @"%lld", _value.signed_];
-	if (_type == OF_NUMBER_TYPE_UNSIGNED)
-		return [OFString stringWithFormat: @"%llu", _value.unsigned_];
+	if (*self.objCType == 'B')
+		return (self.boolValue ? @"true" : @"false");
+	if (isFloat(self))
+		return [OFString stringWithFormat: @"%g", self.doubleValue];
+	if (isSigned(self))
+		return [OFString stringWithFormat: @"%lld", self.longLongValue];
+	if (isUnsigned(self))
+		return [OFString stringWithFormat: @"%llu",
+						   self.unsignedLongLongValue];
 
 	@throw [OFInvalidFormatException exception];
 }
@@ -815,20 +856,20 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 				      namespace: OF_SERIALIZATION_NS
 				    stringValue: self.description];
 
-	if (*_typeEncoding == 'B')
+	if (*self.objCType == 'B')
 		[element addAttributeWithName: @"type"
 				  stringValue: @"bool"];
-	else if (_type == OF_NUMBER_TYPE_FLOAT) {
+	else if (isFloat(self)) {
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
 		element.stringValue = [OFString
 		    stringWithFormat: @"%016" PRIx64,
 		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
-		    _value.float_)))];
-	} else if (_type == OF_NUMBER_TYPE_SIGNED)
+		    self.doubleValue)))];
+	} else if (isSigned(self))
 		[element addAttributeWithName: @"type"
 				  stringValue: @"signed"];
-	else if (_type == OF_NUMBER_TYPE_UNSIGNED)
+	else if (isUnsigned(self))
 		[element addAttributeWithName: @"type"
 				  stringValue: @"unsigned"];
 	else
@@ -858,8 +899,8 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 {
 	double doubleValue;
 
-	if (*_typeEncoding == 'B')
-		return (_value.unsigned_ ? @"true" : @"false");
+	if (*self.objCType == 'B')
+		return (self.boolValue ? @"true" : @"false");
 
 	doubleValue = self.doubleValue;
 	if (isinf(doubleValue)) {
@@ -878,15 +919,16 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 - (OFData *)messagePackRepresentation
 {
 	OFMutableData *data;
+	const char *typeEncoding = self.objCType;
 
-	if (*_typeEncoding == 'B') {
-		uint8_t type = (_value.unsigned_ ? 0xC3 : 0xC2);
+	if (*typeEncoding == 'B') {
+		uint8_t type = (self.boolValue ? 0xC3 : 0xC2);
 
 		data = [OFMutableData dataWithItems: &type
 					      count: 1];
-	} else if (*_typeEncoding == 'f') {
+	} else if (*typeEncoding == 'f') {
 		uint8_t type = 0xCA;
-		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
+		float tmp = OF_BSWAP_FLOAT_IF_LE(self.floatValue);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 5];
@@ -894,9 +936,9 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (*_typeEncoding == 'd') {
+	} else if (*typeEncoding == 'd') {
 		uint8_t type = 0xCB;
-		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.float_);
+		double tmp = OF_BSWAP_DOUBLE_IF_LE(self.doubleValue);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 9];
@@ -904,7 +946,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type == OF_NUMBER_TYPE_SIGNED) {
+	} else if (isSigned(self)) {
 		long long value = self.longLongValue;
 
 		if (value >= -32 && value < 0) {
@@ -953,7 +995,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 				 count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
-	} else if (_type == OF_NUMBER_TYPE_UNSIGNED) {
+	} else if (isUnsigned(self)) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		if (value <= 127) {
