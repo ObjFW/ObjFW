@@ -172,12 +172,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, charZeroNumberInit);
 		return (id)charZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned char)value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned char)value << TAG_BITS) | TAG_CHAR);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithChar: value];
@@ -189,12 +191,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, shortZeroNumberInit);
 		return (id)shortZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned short)value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned short)value << TAG_BITS) | TAG_SHORT);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithShort: value];
@@ -206,12 +210,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, intZeroNumberInit);
 		return (id)intZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned int)value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned int)value << TAG_BITS) | TAG_INT);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithInt: value];
@@ -223,12 +229,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, longZeroNumberInit);
 		return (id)longZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned long)value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned long)value << TAG_BITS) | TAG_LONG);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithLong: value];
@@ -240,6 +248,7 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, longLongZeroNumberInit);
 		return (id)longLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned long long)value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned long long)value << TAG_BITS) |
@@ -247,6 +256,7 @@ isFloat(OFNumber *number)
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithLongLong: value];
@@ -258,12 +268,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedCharZeroNumberInit);
 		return (id)unsignedCharZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_CHAR);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
@@ -275,12 +287,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedShortZeroNumberInit);
 		return (id)unsignedShortZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_SHORT);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
@@ -292,12 +306,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedIntZeroNumberInit);
 		return (id)unsignedIntZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_INT);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
@@ -309,12 +325,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedLongZeroNumberInit);
 		return (id)unsignedLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
@@ -326,12 +344,14 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedLongLongZeroNumberInit);
 		return (id)unsignedLongLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG_LONG);
 
 		if (ret != nil)
 			return ret;
+#endif
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
