@@ -43,6 +43,26 @@
 @interface OFNumberSingleton: OFNumber
 @end
 
+#ifdef OF_OBJFW_RUNTIME
+enum {
+	TAG_CHAR,
+	TAG_SHORT,
+	TAG_INT,
+	TAG_LONG,
+	TAG_LONG_LONG,
+	TAG_UNSIGNED_CHAR,
+	TAG_UNSIGNED_SHORT,
+	TAG_UNSIGNED_INT,
+	TAG_UNSIGNED_LONG,
+	TAG_UNSIGNED_LONG_LONG,
+};
+# define TAG_BITS 4
+# define TAG_MASK 0xF
+
+@interface OFTaggedPointerNumber: OFNumberSingleton
+@end
+#endif
+
 static struct {
 	Class isa;
 } placeholder;
@@ -70,6 +90,10 @@ SINGLETON(unsignedLongLongZeroNumber, initWithUnsignedLongLong:, 0)
 SINGLETON(floatZeroNumber, initWithFloat:, 0)
 SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 #undef SINGLETON
+
+#ifdef OF_OBJFW_RUNTIME
+static int numberTag;
+#endif
 
 static bool
 isUnsigned(OFNumber *number)
@@ -138,12 +162,22 @@ isFloat(OFNumber *number)
 	}
 }
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#endif
 - (instancetype)initWithChar: (signed char)value
 {
 	if (value == 0) {
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, charZeroNumberInit);
 		return (id)charZeroNumber;
+	} else if ((unsigned char)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned char)value << TAG_BITS) | TAG_CHAR);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithChar: value];
@@ -155,6 +189,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, shortZeroNumberInit);
 		return (id)shortZeroNumber;
+	} else if ((unsigned short)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned short)value << TAG_BITS) | TAG_SHORT);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithShort: value];
@@ -166,6 +206,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, intZeroNumberInit);
 		return (id)intZeroNumber;
+	} else if ((unsigned int)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned int)value << TAG_BITS) | TAG_INT);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithInt: value];
@@ -177,6 +223,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, longZeroNumberInit);
 		return (id)longZeroNumber;
+	} else if ((unsigned long)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned long)value << TAG_BITS) | TAG_LONG);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithLong: value];
@@ -188,6 +240,13 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, longLongZeroNumberInit);
 		return (id)longLongZeroNumber;
+	} else if ((unsigned long long)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned long long)value << TAG_BITS) |
+		    TAG_LONG_LONG);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithLongLong: value];
@@ -199,6 +258,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedCharZeroNumberInit);
 		return (id)unsignedCharZeroNumber;
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_CHAR);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
@@ -210,6 +275,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedShortZeroNumberInit);
 		return (id)unsignedShortZeroNumber;
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_SHORT);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
@@ -221,6 +292,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedIntZeroNumberInit);
 		return (id)unsignedIntZeroNumber;
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_INT);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
@@ -232,6 +309,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedLongZeroNumberInit);
 		return (id)unsignedLongZeroNumber;
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
@@ -243,6 +326,12 @@ isFloat(OFNumber *number)
 		static of_once_t once = OF_ONCE_INIT;
 		of_once(&once, unsignedLongLongZeroNumberInit);
 		return (id)unsignedLongLongZeroNumber;
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG_LONG);
+
+		if (ret != nil)
+			return ret;
 	}
 
 	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
@@ -274,6 +363,9 @@ isFloat(OFNumber *number)
 {
 	return (id)[[OFNumber of_alloc] initWithSerialization: element];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 @end
 
 @implementation OFNumberSingleton
@@ -297,11 +389,95 @@ isFloat(OFNumber *number)
 }
 @end
 
+#ifdef OF_OBJFW_RUNTIME
+@implementation OFTaggedPointerNumber
+- (const char *)objCType
+{
+	uintptr_t value = object_getTaggedPointerValue(self);
+
+	switch (value & TAG_MASK) {
+	case TAG_CHAR:
+		return @encode(signed char);
+	case TAG_SHORT:
+		return @encode(short);
+	case TAG_INT:
+		return @encode(int);
+	case TAG_LONG:
+		return @encode(long);
+	case TAG_LONG_LONG:
+		return @encode(long long);
+	case TAG_UNSIGNED_CHAR:
+		return @encode(unsigned char);
+	case TAG_UNSIGNED_SHORT:
+		return @encode(unsigned short);
+	case TAG_UNSIGNED_INT:
+		return @encode(unsigned int);
+	case TAG_UNSIGNED_LONG:
+		return @encode(unsigned long);
+	case TAG_UNSIGNED_LONG_LONG:
+		return @encode(unsigned long long);
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}
+
+# define RETURN_VALUE							   \
+	uintptr_t value = object_getTaggedPointerValue(self);		   \
+									   \
+	switch (value & TAG_MASK) {					   \
+	case TAG_CHAR:							   \
+		return (signed char)(unsigned char)(value >> TAG_BITS);	   \
+	case TAG_SHORT:							   \
+		return (short)(unsigned short)(value >> TAG_BITS);	   \
+	case TAG_INT:							   \
+		return (int)(unsigned int)(value >> TAG_BITS);		   \
+	case TAG_LONG:							   \
+		return (long)(unsigned long)(value >> TAG_BITS);	   \
+	case TAG_LONG_LONG:						   \
+		return (long long)(unsigned long long)(value >> TAG_BITS); \
+	case TAG_UNSIGNED_CHAR:						   \
+		return (unsigned char)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_SHORT:					   \
+		return (unsigned short)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_INT:						   \
+		return (unsigned int)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_LONG:						   \
+		return (unsigned long)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_LONG_LONG:					   \
+		return (unsigned long long)(value >> TAG_BITS);		   \
+	default:							   \
+		@throw [OFInvalidArgumentException exception];		   \
+	}
+- (long long)longLongValue
+{
+	RETURN_VALUE
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	RETURN_VALUE
+}
+
+- (double)doubleValue
+{
+	RETURN_VALUE
+}
+@end
+# undef RETURN_VALUE
+#endif
+
 @implementation OFNumber
 + (void)initialize
 {
-	if (self == [OFNumber class])
-		placeholder.isa = [OFNumberPlaceholder class];
+	if (self != [OFNumber class])
+		return;
+
+	placeholder.isa = [OFNumberPlaceholder class];
+
+#ifdef OF_OBJFW_RUNTIME
+	numberTag =
+	    objc_registerTaggedPointerClass([OFTaggedPointerNumber class]);
+#endif
 }
 
 + (instancetype)of_alloc
@@ -555,7 +731,7 @@ isFloat(OFNumber *number)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *typeString;
 
-		if (![element.name isEqual: self.className] ||
+		if (![element.name isEqual: @"OFNumber"] ||
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
@@ -852,7 +1028,7 @@ isFloat(OFNumber *number)
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: self.className
+	element = [OFXMLElement elementWithName: @"OFNumber"
 				      namespace: OF_SERIALIZATION_NS
 				    stringValue: self.description];
 
