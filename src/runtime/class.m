@@ -470,7 +470,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	Class iter, rootclass = Nil;
 
 	if (extraBytes > LONG_MAX)
-		OBJC_ERROR("extra_bytes out of range!")
+		OBJC_ERROR("extraBytes out of range!")
 
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)

@@ -29,6 +29,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*! @file */
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -78,8 +80,6 @@
  *	 C99 false instead!
  */
 #define NO false
-
-/*! @file */
 
 /*!
  * @brief A pointer to a class.
@@ -178,71 +178,433 @@ struct objc_super {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*!
+ * @brief Registers a selector with the specified name with the runtime.
+ *
+ * @param name The name for the selector to register
+ * @return The registered selector
+ */
 extern SEL _Nonnull sel_registerName(const char *_Nonnull name);
+
+/*!
+ * @brief Returns the name of the specified selector.
+ *
+ * @param selector The selector whose name should be returned
+ * @return The name of the specified selector
+ */
 extern const char *_Nonnull sel_getName(SEL _Nonnull selector);
+
+/*!
+ * @brief Checks two selectors for equality.
+ *
+ * Selectors are considered equal if they have the same name - any type
+ * encoding is ignored.
+ *
+ * @param selector1 The first selector
+ * @param selector2 The second selector
+ * @return Whether the two selectors are equal
+ */
 extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
+
+/*!
+ * @brief Allocates a new class and its metaclass.
+ *
+ * @param superclass The superclass for the new class
+ * @param name The name for the new class
+ * @param extraBytes Extra bytes to add to the instance size
+ * @return A new, unregistered class pair
+ */
 extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
     const char *_Nonnull name, size_t extraBytes);
+
+/*!
+ * @brief Registers an already allocated class pair.
+ *
+ * @param class_ The class pair to register
+ */
 extern void objc_registerClassPair(Class _Nonnull class_);
+
+/*!
+ * @brief Gets the list of all classes known to the runtime.
+ *
+ * @param buffer An array of Class to write to. If the buffer does not have
+ *		 enough space, the result is truncated.
+ * @param count The number of classes for which there is space in `buffer`
+ * @return The number of classes written
+ */
 extern unsigned int objc_getClassList(Class _Nonnull *_Nullable buffer,
     unsigned int count);
+
+/*!
+ * @brief Copies the list of all classes known to the runtime.
+ *
+ * This is like @ref objc_getClassList, but allocates a buffer large enough for
+ * all classes.
+ *
+ * @param length An optional pointer to an `unsigned int` that will be set to
+ *		 the number of classes returned
+ * @return An array of classes, terminated by `Nil`. You need to call `free()`
+ *	   on it when done.
+ */
 extern Class _Nonnull *_Nonnull objc_copyClassList(
     unsigned int *_Nullable length);
+
+/*!
+ * @brief Returns whether the specified class is a metaclass.
+ *
+ * @param class_ The class which should be examined
+ * @return Whether the specified class is a metaclass
+ */
 extern bool class_isMetaClass(Class _Nullable class_);
+
+/*!
+ * @brief Returns the name of the specified class.
+ *
+ * @param class_ The class whose name should be returned
+ * @return The name of the specified class
+ */
 extern const char *_Nullable class_getName(Class _Nullable class_);
+
+/*!
+ * @brief Returns the superclass of the specified class.
+ *
+ * @param class_ The class whose superclass should be returned
+ * @return The superclass of the specified class
+ */
 extern Class _Nullable class_getSuperclass(Class _Nullable class_);
+
+/*!
+ * @brief Returns the instance size of the specified class.
+ *
+ * @param class_ The class whose instance size should be returned
+ * @return The instance size of the specified class
+ */
 extern unsigned long class_getInstanceSize(Class _Nullable class_);
+
+/*!
+ * @brief Returns whether the specified class responds to the specified
+ *	  selector.
+ *
+ * @param class_ The class which should be examined
+ * @param selector The selector which should be checked
+ * @return Whether the specified class responds to the specified selector
+ */
 extern bool class_respondsToSelector(Class _Nullable class_,
     SEL _Nonnull selector);
+
+/*!
+ * @brief Returns whether the specified class conforms to the specified
+ *	  protocol.
+ *
+ * @param class_ The class which should be examined
+ * @param protocol The protocol for which conformance should be checked
+ * @return Whether the specified class conforms to the specified protocol
+ */
 extern bool class_conformsToProtocol(Class _Nullable class_,
     Protocol *_Nonnull protocol);
+
+/*!
+ * @brief Returns the class's method implementation for the specified selector.
+ *
+ * @warning If the method uses the struct return ABI, you need to use
+ *	    @ref class_getMethodImplementation_stret instead! Depending on the
+ *	    ABI, small structs might not use the struct return ABI.
+ *
+ * @param class_ The class whose method implementation should be returned
+ * @param selector The selector for the method whose implementation should be
+ *		   returned
+ * @return The class's metod implementation for the specified selector
+ */
 extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
+
+/*!
+ * @brief Returns the class's method implementation for the specified selector.
+ *
+ * @warning If the method does not use use the struct return ABI, you need to
+ *	    use @ref class_getMethodImplementation instead! Depending on the
+ *	    ABI, small structs might not use the struct return ABI.
+ *
+ * @param class_ The class whose method implementation should be returned
+ * @param selector The selector for the method whose implementation should be
+ *		   returned
+ * @return The class's metod implementation for the specified selector
+ */
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
+
+/*!
+ * @brief Returns the class's instance method for the specified selector
+ *
+ * @param class_ The class whose instance method should be returned
+ * @param selector The selector of the instance method to return
+ * @return The class's instance method for the specified selector
+ */
 extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
     SEL _Nonnull selector);
+
+/*!
+ * @brief Adds the specified method to the class.
+ *
+ * @param class_ The class to which to add the method
+ * @param selector The selector for the method to add
+ * @param implementation The implementation of the method to add
+ * @param typeEncoding The type encoding of the method to add
+ * @return Whether the specified method was added
+ */
 extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
+
+/*!
+ * @brief Replaces or adds the specified method of the class.
+ *
+ * @param class_ The class to which to replace the method
+ * @param selector The selector for the method to replace
+ * @param implementation The implementation of the method to replace
+ * @param typeEncoding The type encoding of the method to replace. Only used if
+ *		       the method does not exist yet.
+ * @return The old implementation of the method
+ */
 extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
     SEL _Nonnull selector, IMP _Nonnull implementation,
     const char *_Nullable typeEncoding);
+
+/*!
+ * @brief Returns the object's class.
+ *
+ * @param object The object whose class should be returned
+ * @return The object's class
+ */
 extern Class _Nullable object_getClass(id _Nullable object);
+
+/*!
+ * @brief Sets the object's class.
+ *
+ * This can be used to swizzle an object's class.
+ *
+ * @param object The object whose class should be set
+ * @param class_ The new class for the object
+ * @return The old class of the object
+ */
 extern Class _Nullable object_setClass(id _Nullable object,
     Class _Nonnull class_);
+
+/*!
+ * @brief Returns the object's class name.
+ *
+ * @param object The object whose class name should be returned
+ * @return The object's class name
+ */
 extern const char *_Nullable object_getClassName(id _Nullable object);
+
+/*!
+ * @brief Returns the name of the specified protocol.
+ *
+ * @param protocol The protocol whose name should be returned
+ * @return The name of the specified protocol
+ */
 extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
+
+/*!
+ * @brief Returns whether two protocols are equal.
+ *
+ * @param protocol1 The first protocol
+ * @param protocol2 The second protocol
+ * @return Whether the two protocols are equal
+ */
 extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
+
+/*!
+ * @brief Returns whether the first protocol conforms to the second protocol.
+ *
+ * @param protocol1 The first protocol
+ * @param protocol2 The second protocol
+ * @return Whether the first protocol conforms to the second protocol
+ */
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
+
+/*!
+ * @brief Copies the method list of the specified class.
+ *
+ * @param class_ The class whose method list should be copied
+ * @param outCount An optional pointer to an `unsigned int` that should be set
+ *		   to the number of methods returned
+ * @return An array of methods, terminated by `NULL`. You need to call `free()`
+ *	   on it when done.
+ */
 extern Method _Nullable *_Nullable class_copyMethodList(Class _Nullable class_,
     unsigned int *_Nullable outCount);
+
+/*!
+ * @brief Returns the name of the specified method.
+ *
+ * @param method The method whose name should be returned
+ * @return The name of the specified method
+ */
 extern SEL _Nonnull method_getName(Method _Nonnull method);
+
+/*!
+ * @brief Returns the type encoding of the specified method.
+ *
+ * @param method The method whose type encoding should be returned
+ * @return The type encoding of the specified method
+ */
 extern const char *_Nullable method_getTypeEncoding(Method _Nonnull method);
+
+/*!
+ * @brief Copies the instance variable list of the specified class.
+ *
+ * @param class_ The class whose instance variable list should be copied
+ * @param outCount An optional pointer to an `unsigned int` that should be set
+ *		   to the number of instance variables returned
+ * @return An array of instance variables, terminated by `NULL`. You need to
+ *	   call `free()` on it when done.
+ */
 extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
     unsigned int *_Nullable outCount);
+
+/*!
+ * @brief Returns the name of the specified instance variable.
+ *
+ * @param ivar The instance variable whose name should be returned
+ * @return The name of the specified instance variable
+ */
 extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);
+
+/*!
+ * @brief Returns the type encoding of the specified instance variable.
+ *
+ * @param ivar The instance variable whose type encoding should be returned
+ * @return The type encoding of the specified instance variable
+ */
 extern const char *_Nonnull ivar_getTypeEncoding(Ivar _Nonnull ivar);
+
+/*!
+ * @brief Returns the offset of the specified instance variable.
+ *
+ * @param ivar The instance variable whose offset should be returned
+ * @return The offset of the specified instance variable
+ */
 extern ptrdiff_t ivar_getOffset(Ivar _Nonnull ivar);
+
+/*!
+ * @brief Copies the property list of the specified class.
+ *
+ * @param class_ The class whose property list should be copied
+ * @param outCount An optional pointer to an `unsigned int` that should be set
+ *		   to the number of properties returned
+ * @return An array of properties, terminated by `NULL`. You need to call
+ *	   `free()` on it when done.
+ */
 extern objc_property_t _Nullable *_Nullable class_copyPropertyList(
     Class _Nullable class_, unsigned int *_Nullable outCount);
+
+/*!
+ * @brief Returns the name of the specified property.
+ *
+ * @param property The property whose name should be returned
+ * @return The name of the specified property
+ */
 extern const char *_Nonnull property_getName(objc_property_t _Nonnull property);
+
+/*!
+ * @brief Copies the specified attribute value.
+ *
+ * @param property The property whose attribute value should be copied
+ * @param name The name of the attribute value to copy
+ * @return A copy of the attribute value. You need to call `free()` on it when
+ *	   done.
+ */
 extern char *_Nullable property_copyAttributeValue(
     objc_property_t _Nonnull property, const char *_Nonnull name);
+
+/*!
+ * @brief Exits the Objective-C runtime.
+ *
+ * This frees all data structures used by the runtime, after which Objective-C
+ * can no longer be used inside the current process. This is only useful for
+ * debugging.
+ */
 extern void objc_exit(void);
+
+/*!
+ * @brief Sets the handler for uncaught exceptions.
+ *
+ * @param handler The new handler for uncaught exceptions
+ * @return The old handler for uncaught exceptions
+ */
 extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler_t _Nullable handler);
+
+/*!
+ * @brief Sets the forwarding handler for unimplemented methods.
+ *
+ * @param forward The forwarding handler for regular methods
+ * @param stretForward The forwarding handler for methods using the struct
+ *		       return ABI
+ */
 extern void objc_setForwardHandler(IMP _Nullable forward,
     IMP _Nullable stretForward);
+
+/*!
+ * @brief Sets the handler for mutations during enumeration.
+ *
+ * @param handler The handler for mutations during enumeration
+ */
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler_t _Nullable handler);
+
+/*!
+ * @brief Constructs an instance of the specified class in the specified array
+ *	  of bytes.
+ *
+ * @param class_ The class of which to construct an instance
+ * @param bytes An array of bytes of at least the length of the instance size.
+ *		Must be properly aligned for the class.
+ * @return The constructed instance
+ */
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
+
+/*!
+ * @brief Destructs the specified object.
+ *
+ * @param object The object to destruct
+ * @return The array of bytes that was used to back the instance
+ */
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+
+/*!
+ * @brief Creates a new autorelease pool and puts it on top of the stack of
+ *	  autorelease pools.
+ *
+ * @return A new autorelease pool, which is now on the top of the stack of
+ *	   autorelease pools
+ */
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
+
+/*!
+ * @brief Drains the specified autorelease pool and all pools on top of it and
+ *	  removes it from the stack of autorelease pools.
+ *
+ * @param pool The pool which should be drained together with all pools on top
+ *	       of it
+ */
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
+
+/*!
+ * @brief Adds the specified object to the topmost autorelease pool.
+ *
+ * This is only to be used to implement the `autorelease` method in a root
+ * class.
+ *
+ * @param object The object to add to the topmost autorelease pool
+ * @return The autoreleased object
+ */
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 
 /*
