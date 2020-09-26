@@ -88,7 +88,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # ifdef OF_HAVE_SOCKETS
 	OFDNSResolver *_DNSResolver;
 # endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFThread, 4)
 }
 #endif
 

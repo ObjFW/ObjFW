@@ -199,7 +199,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFStream, 4)
 }
 
 /*!

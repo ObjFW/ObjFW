@@ -78,7 +78,7 @@ typedef enum {
 	of_dns_class_t _DNSClass;
 	of_dns_record_type_t _recordType;
 	uint32_t _TTL;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDNSResourceRecord, 4)
 }
 
 /**

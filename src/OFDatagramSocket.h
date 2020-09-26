@@ -117,7 +117,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	bool _canSendToBroadcastAddresses;
 #endif
 	id <OFDatagramSocketDelegate> _Nullable _delegate;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDatagramSocket, 4)
 }
 
 /*!

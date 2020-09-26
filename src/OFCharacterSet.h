@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCharacterSet: OFObject
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFCharacterSet, 4)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES

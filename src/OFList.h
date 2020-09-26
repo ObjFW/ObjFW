@@ -55,7 +55,7 @@ struct of_list_object_t {
 	of_list_object_t *_Nullable _lastListObject;
 	size_t _count;
 	unsigned long  _mutations;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFList, 4)
 }
 
 /*!

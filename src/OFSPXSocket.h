@@ -72,7 +72,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
  */
 @interface OFSPXSocket: OFSequencedPacketSocket
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSPXSocket, 4)
 }
 
 /*!

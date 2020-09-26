@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutableTarArchiveEntry: OFTarArchiveEntry
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutableTarArchiveEntry, 4)
 }
 
 /*!

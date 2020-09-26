@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
 /*!

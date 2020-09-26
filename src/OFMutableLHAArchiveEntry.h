@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutableLHAArchiveEntry, 4)
 }
 
 /*!

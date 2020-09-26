@@ -68,7 +68,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  */
 @interface OFSCTPSocket: OFSequencedPacketSocket
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSCTPSocket, 4)
 }
 
 /*!

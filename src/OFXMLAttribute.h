@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFString *_name, *_Nullable _namespace, *_stringValue;
 	bool _useDoubleQuotes;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLAttribute, 4)
 }
 
 /*!

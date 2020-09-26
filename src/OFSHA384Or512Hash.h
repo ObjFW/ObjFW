@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 @private
 	bool _allowsSwappableMemory;
 	bool _calculated;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSHA384Or512Hash, 4)
 }
 @end
 

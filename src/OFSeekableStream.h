@@ -57,7 +57,7 @@ typedef off_t of_offset_t;
  */
 @interface OFSeekableStream: OFStream
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSeekableStream, 4)
 }
 
 /*!

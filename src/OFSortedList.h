@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 # define ObjectType id
 #endif
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSortedList, 4)
 }
 
 - (of_list_object_t *)appendObject: (ObjectType)object OF_UNAVAILABLE;

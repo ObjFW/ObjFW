@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_domainName;
 	of_dns_class_t _DNSClass;
 	of_dns_record_type_t _recordType;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDNSQuery, 4)
 }
 
 /*!

@@ -71,7 +71,7 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
 	of_socket_t _socket;
 	bool _atEndOfStream, _listening;
 	of_socket_address_t _remoteAddress;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFStreamSocket, 4)
 }
 
 /*!

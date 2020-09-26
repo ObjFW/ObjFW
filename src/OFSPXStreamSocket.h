@@ -74,7 +74,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
  */
 @interface OFSPXStreamSocket: OFStreamSocket
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSPXStreamSocket, 4)
 }
 
 /*!

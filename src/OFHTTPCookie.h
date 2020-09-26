@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDate *_Nullable _expires;
 	bool _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFHTTPCookie, 4)
 }
 
 /*!

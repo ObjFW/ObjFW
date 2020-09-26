@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLComment: OFXMLNode
 {
 	OFString *_comment;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLComment, 4)
 }
 
 /*!

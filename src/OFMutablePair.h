@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 # define SecondType id
 #endif
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutablePair, 4)
 }
 
 /*!

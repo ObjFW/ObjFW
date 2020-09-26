@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutableZIPArchiveEntry, 4)
 }
 
 /*!

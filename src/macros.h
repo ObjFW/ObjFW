@@ -136,11 +136,11 @@
 #endif
 
 #ifdef OF_HAVE_NONFRAGILE_IVARS
-# define OF_RESERVE_IVARS(num)
+# define OF_RESERVE_IVARS(cls, num)
 #else
-# define OF_RESERVE_IVARS(num)						   \
+# define OF_RESERVE_IVARS(cls, num)					   \
 	@private							   \
-		void *OF_PREPROCESSOR_CONCAT(_reserved, __COUNTER__)[num];
+		void *OF_PREPROCESSOR_CONCAT(_reserved_, cls)[num];
 #endif
 
 #ifdef __GNUC__

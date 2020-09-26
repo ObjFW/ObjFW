@@ -37,7 +37,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 	of_dns_response_records_t _answerRecords;
 	of_dns_response_records_t _authorityRecords;
 	of_dns_response_records_t _additionalRecords;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDNSResponse, 4)
 }
 
 /*!

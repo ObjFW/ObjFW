@@ -78,7 +78,7 @@ typedef struct of_http_request_protocol_version_t
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
 	of_socket_address_t _remoteAddress;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFHTTPRequest, 4)
 }
 
 /*!

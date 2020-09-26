@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSettings: OFObject
 {
 	OFString *_applicationName;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSettings, 4)
 }
 
 /*!

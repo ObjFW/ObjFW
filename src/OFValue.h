@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFValue: OFObject <OFCopying>
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFValue, 4)
 }
 
 /*!

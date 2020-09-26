@@ -72,7 +72,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFTCPSocket, 4)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES

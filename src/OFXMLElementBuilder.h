@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLElementBuilder, 4)
 }
 
 /*!

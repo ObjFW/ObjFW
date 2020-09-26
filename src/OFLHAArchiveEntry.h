@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _owner, *_Nullable _group;
 	OFDate *_Nullable _modificationDate;
 	OFMutableArray OF_GENERIC(OFData *) *_extensions;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFLHAArchiveEntry, 4)
 }
 
 /*!

@@ -133,7 +133,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 	bool _canBlock, _listening;
 	of_socket_address_t _remoteAddress;
 	id _Nullable _delegate;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSequencedPacketSocket, 4)
 }
 
 /*!

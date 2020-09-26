@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifndef OF_WINDOWS
 	uint8_t _packetType;
 #endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFIPXSocket, 4)
 }
 
 /*!

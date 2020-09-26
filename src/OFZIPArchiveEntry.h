@@ -112,7 +112,7 @@ enum {
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
 	int64_t _localFileHeaderOffset;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
 }
 
 /*!

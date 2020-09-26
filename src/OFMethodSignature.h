@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	char *_types;
 	OFMutableData *_typesPointers, *_offsets;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMethodSignature, 4)
 }
 
 /*!

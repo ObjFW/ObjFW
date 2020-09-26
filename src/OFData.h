@@ -44,7 +44,7 @@ enum {
 	bool _freeWhenDone;
 @private
 	OFData *_parentData;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFData, 4)
 }
 
 /*!

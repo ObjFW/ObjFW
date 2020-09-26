@@ -71,7 +71,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 	OFMutableArray OF_GENERIC(of_sandbox_unveil_path_t) *_unveiledPaths;
 @public
 	size_t _unveiledPathsIndex;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSandbox, 4)
 }
 
 /*!

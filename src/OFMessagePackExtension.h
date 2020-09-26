@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	int8_t _type;
 	OFData *_data;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMessagePackExtension, 4)
 }
 
 /*!

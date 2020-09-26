@@ -97,7 +97,7 @@ typedef struct {
 # define ObjectType id
 #endif
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFEnumerator, 4)
 }
 
 /*!

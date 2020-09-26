@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFUDPSocket, 4)
 }
 
 /*!

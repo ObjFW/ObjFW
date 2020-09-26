@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 # define ThirdType id
 #endif
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutableTriple, 4)
 }
 
 /*!

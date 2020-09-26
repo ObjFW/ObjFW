@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	FirstType _Nullable _firstObject;
 	SecondType _Nullable _secondObject;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFPair, 4)
 }
 
 /*!
