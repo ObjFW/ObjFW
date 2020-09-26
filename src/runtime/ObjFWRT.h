@@ -244,10 +244,54 @@ extern void *_Nullable objc_destructInstance(id _Nullable object);
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+
+/*!
+ * @brief Sets the tagged pointer secret.
+ *
+ * @param secret A secret, random value that will be used to XOR all tagged
+ *		 pointers with
+ */
 extern void objc_setTaggedPointerSecret(uintptr_t secret);
+
+/*!
+ * @brief Registers a class for tagged pointers.
+ *
+ * @param class The class to register for tagged pointers
+ * @return The tagged pointer ID for the registered class
+ */
 extern int objc_registerTaggedPointerClass(Class _Nonnull class);
+
+/*!
+ * @brief Returns whether the specified object is a tagged pointer.
+ *
+ * @param object The object to inspect
+ * @return Whether the specified object is a tagged pointer
+ */
+static inline bool
+object_isTaggedPointer(id _Nullable object)
+{
+	uintptr_t pointer = (uintptr_t)object;
+
+	return pointer & 1;
+}
+
 extern Class _Nullable object_getTaggedPointerClass(id _Nonnull object);
+
+/*!
+ * @brief Returns the value of the specified tagged pointer.
+ *
+ * @param object The object whose tagged pointer value should be returned
+ * @return The tagged pointer value of the object
+ */
 extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
+
+/*!
+ * @brief Creates a new tagged pointer.
+ *
+ * @param class The tag ID for the tagged pointer class to use
+ * @param value The value the tagged pointer should have
+ * @return A tagged pointer, or `nil` if it could not be created
+ */
 extern id _Nullable objc_createTaggedPointer(int class, uintptr_t value);
 
 /*

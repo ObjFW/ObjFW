@@ -336,14 +336,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
-static inline bool
-object_isTaggedPointer(id _Nullable object)
-{
-	uintptr_t pointer = (uintptr_t)object;
-
-	return pointer & 1;
-}
-
 #if defined(OF_ELF)
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
