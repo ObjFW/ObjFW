@@ -131,6 +131,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @note This method is only available in read mode.
  *
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
+ *
  * @warning Calling @ref streamForReadingFile: will invalidate all streams
  *	    previously returned by @ref streamForReadingFile: or
  *	    @ref streamForWritingEntry:! Reading from or writing to an
@@ -146,6 +149,9 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns a stream for writing the specified entry to the archive.
  *
  * @note This method is only available in write and append mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
+ *	 underlying stream does so, too.
  *
  * @warning Calling @ref streamForWritingEntry: will invalidate all streams
  *	    previously returned by @ref streamForReadingFile: or

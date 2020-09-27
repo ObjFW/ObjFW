@@ -52,11 +52,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @note This is only available in read mode.
  *
- * @note The returned stream only conforms to @ref OFReadyForReadingObserving if
- *	 the underlying stream does so, too.
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
  */
-@property (readonly, nonatomic)
-    OFStream <OFReadyForReadingObserving> *streamForReadingCurrentEntry;
+@property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
 
 /*!
  * @brief Creates a new OFTarArchive object with the specified stream.
@@ -138,8 +137,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @note This is only available in write and append mode.
  *
- * @note The returned stream only conforms to @ref OFReadyForWritingObserving if
- *	 the underlying stream does so, too.
+ * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
+ *	 underlying stream does so, too.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
  *	    @ref streamForReadingCurrentEntry or
@@ -150,8 +149,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param entry The entry for which a stream for writing should be returned
  * @return A stream for writing the specified entry
  */
-- (OFStream <OFReadyForWritingObserving> *)
-    streamForWritingEntry: (OFTarArchiveEntry *)entry;
+- (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry;
 
 /*!
  * @brief Closes the OFTarArchive.

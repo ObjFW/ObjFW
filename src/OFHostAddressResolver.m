@@ -209,7 +209,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 	for (OF_KINDOF(OFDNSResourceRecord *) record in
 	    [response.answerRecords objectForKey: query.domainName]) {
-		const of_socket_address_t *address;
+		const of_socket_address_t *address = NULL;
 		OFDNSQuery *CNAMEQuery;
 
 		if ([record DNSClass] != OF_DNS_CLASS_IN)

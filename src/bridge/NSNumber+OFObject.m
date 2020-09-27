@@ -23,7 +23,7 @@
 int _NSNumber_OFObject_reference;
 
 @implementation NSNumber (OFObject)
-- (id)OFObject
+- (OFNumber *)OFObject
 {
 	const char *type = self.objCType;
 

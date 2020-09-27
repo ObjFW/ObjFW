@@ -230,7 +230,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 			  length: (size_t)length
 {
 	unsigned char *buffer = buffer_;
-	uint16_t bits, tmp, value;
+	uint16_t bits = 0, tmp, value = 0;
 	size_t bytesWritten = 0;
 	unsigned char *slidingWindow;
 	uint16_t slidingWindowIndex;

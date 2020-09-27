@@ -336,7 +336,7 @@ callMain(id object)
 		of_thread_set_name(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(class_getName(self.class));
+		of_thread_set_name(class_getName([self class]));
 }
 
 + (OFString *)name

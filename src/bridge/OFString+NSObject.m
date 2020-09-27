@@ -24,7 +24,7 @@
 int _OFString_NSObject_reference;
 
 @implementation OFString (NSObject)
-- (id)NSObject
+- (NSString *)NSObject
 {
 	NSString *string = [NSString stringWithUTF8String: self.UTF8String];
 
