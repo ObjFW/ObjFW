@@ -166,7 +166,7 @@ of_random32(void)
 uint64_t
 of_random64(void)
 {
-#if defined(HAVE_ARC4RANDOM)
+#if defined(HAVE_ARC4RANDOM_BUF)
 	uint64_t buffer;
 
 	arc4random_buf(&buffer, sizeof(buffer));
