@@ -94,7 +94,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[of_stdout clear];
 	[OFThread sleepForTimeInterval: 2];
 
-	of_stdout.cursorPosition = of_point(5, 3);
+	[of_stdout setCursorPosition: of_point(5, 3)];
 	[of_stdout writeString: @"Text at (5, 3)"];
 	[OFThread sleepForTimeInterval: 2];
 
@@ -111,7 +111,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[of_stdout setRelativeCursorPosition: of_point(-1, -1)];
 	[OFThread sleepForTimeInterval: 2];
 
-	of_stdout.cursorColumn = 2;
+	[of_stdout setCursorColumn: 2];
 	[OFThread sleepForTimeInterval: 2];
 
 	[of_stdout reset];
