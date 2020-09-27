@@ -44,7 +44,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		of_stdout.foregroundColor = color;
+		[of_stdout setForegroundColor: color];
 		[of_stdout writeFormat: @"%zx", i++];
 	}
 	[of_stdout reset];
@@ -52,7 +52,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		of_stdout.backgroundColor = color;
+		[of_stdout setBackgroundColor: color];
 		[of_stdout writeFormat: @"%zx", i++];
 	}
 	[of_stdout reset];
@@ -61,8 +61,8 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	i = 0;
 	reverseEnumerator = [colors.reversedArray objectEnumerator];
 	for (OFColor *color in colors) {
-		of_stdout.foregroundColor = color;
-		of_stdout.backgroundColor = [reverseEnumerator nextObject];
+		[of_stdout setForegroundColor: color];
+		[of_stdout setBackgroundColor: [reverseEnumerator nextObject]];
 		[of_stdout writeFormat: @"%zx", i++];
 	}
 	[of_stdout reset];
@@ -70,11 +70,11 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	for (i = 0; i < colors.count * 2; i++) {
 		if (i % 2)
-			of_stdout.backgroundColor = [colors objectAtIndex:
-			    ((i / 2) + 2) % colors.count];
+			[of_stdout setBackgroundColor: [colors objectAtIndex:
+			    ((i / 2) + 2) % colors.count]];
 		else
-			of_stdout.foregroundColor =
-			    [colors objectAtIndex: i / 2];
+			[of_stdout setForegroundColor:
+			    [colors objectAtIndex: i / 2]];
 
 		[of_stdout writeFormat: @"%zx", i / 2];
 	}
@@ -84,7 +84,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[of_stdout writeLine: @"Press return"];
 	[of_stdin readLine];
 
-	of_stdout.backgroundColor = [OFColor green];
+	[of_stdout setBackgroundColor: [OFColor green]];
 	[of_stdout writeString: @"Hello!"];
 	[OFThread sleepForTimeInterval: 2];
 	[of_stdout eraseLine];

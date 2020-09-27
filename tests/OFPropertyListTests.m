@@ -66,7 +66,7 @@ static OFString *PLIST3 = PLIST(
 	    [OFDate dateWithTimeIntervalSince1970: 1521030896],
 	    [OFNumber numberWithBool: true],
 	    [OFNumber numberWithBool: false],
-	    [OFNumber numberWithFloat: 12.25],
+	    [OFNumber numberWithFloat: 12.25f],
 	    [OFNumber numberWithInt: -10],
 	    nil];
 

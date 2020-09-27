@@ -26,7 +26,7 @@
 	OFDNSResolver *resolver = [OFDNSResolver resolver];
 	OFMutableString *staticHosts = [OFMutableString string];
 
-	of_stdout.foregroundColor = [OFColor lime];
+	[of_stdout setForegroundColor: [OFColor lime]];
 
 	for (OFString *host in resolver.staticHosts) {
 		OFString *IPs;

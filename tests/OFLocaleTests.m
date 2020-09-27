@@ -24,7 +24,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	of_stdout.foregroundColor = [OFColor lime];
+	[of_stdout setForegroundColor: [OFColor lime]];
 
 	[of_stdout writeFormat: @"[OFLocale] Language: %@\n",
 	    [OFLocale language]];
