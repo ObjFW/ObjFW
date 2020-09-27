@@ -460,7 +460,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'b':
-			self.body = optionsParser.argument;
+			[self setBody: optionsParser.argument];
 			break;
 		case 'h':
 			help(of_stdout, true, 0);
@@ -469,10 +469,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[self addHeader: optionsParser.argument];
 			break;
 		case 'm':
-			self.method = optionsParser.argument;
+			[self setMethod: optionsParser.argument];
 			break;
 		case 'P':
-			self.proxy = optionsParser.argument;
+			[self setProxy: optionsParser.argument];
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
@@ -762,7 +762,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	[_output writeBuffer: buffer
 		      length: length];
 
-	_progressBar.received = _received;
+	[_progressBar setReceived: _received];
 
 	if (response.atEndOfStream) {
 		[_progressBar stop];
@@ -940,7 +940,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_progressBar = [[ProgressBar alloc]
 		    initWithLength: _length
 		       resumedFrom: _resumedFrom];
-		_progressBar.received = _received;
+		[_progressBar setReceived: _received];
 		[_progressBar draw];
 	}
 
