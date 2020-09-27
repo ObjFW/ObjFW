@@ -470,7 +470,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 {
 	void *pool = objc_autoreleasePoolPush();
 	int64_t seconds = (int64_t)_seconds;
-	uint32_t nanoseconds = (_seconds - trunc(_seconds)) * 1000000000;
+	uint32_t nanoseconds =
+	    (uint32_t)((_seconds - trunc(_seconds)) * 1000000000);
 	OFData *ret;
 
 	if (seconds >= 0 && seconds < 0x400000000) {

@@ -82,27 +82,31 @@ static OFMutex *mutex;
 		} @finally {
 			[handler release];
 		}
-
-		return true;
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
 	}
 #endif
+
+	return true;
 }
 
 + (OF_KINDOF(OFURLHandler *))handlerForURL: (OFURL *)URL
 {
+	OF_KINDOF(OFURLHandler *) handler;
+
 #ifdef OF_HAVE_THREADS
 	[mutex lock];
 	@try {
 #endif
-		return [handlers objectForKey: URL.scheme];
+		handler = [handlers objectForKey: URL.scheme];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
 	}
 #endif
+
+	return handler;
 }
 
 - (instancetype)init

@@ -72,7 +72,7 @@ static OFString *
 domainFromHostname(void)
 {
 	char hostname[256];
-	OFString *domain;
+	OFString *domain, *ret;
 
 	if (gethostname(hostname, 256) != 0)
 		return nil;
@@ -95,9 +95,11 @@ domainFromHostname(void)
 		if (pos == OF_NOT_FOUND)
 			return nil;
 
-		return [domain substringWithRange:
+		ret = [domain substringWithRange:
 		    of_range(pos + 1, domain.length - pos - 1)];
 	}
+
+	return ret;
 }
 #endif
 

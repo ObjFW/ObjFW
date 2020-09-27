@@ -44,7 +44,7 @@
 #  import "tlskey.h"
 # endif
 #endif
-#include "once.h"
+#import "once.h"
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
@@ -390,7 +390,7 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 		if (number > UINT8_MAX)
 			@throw [OFInvalidFormatException exception];
 
-		addr = (addr << 8) | (number & 0xFF);
+		addr = (addr << 8) | ((uint32_t)number & 0xFF);
 	}
 
 	addrIn->sin_addr.s_addr = OF_BSWAP32_IF_LE(addr);
@@ -501,11 +501,15 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 of_socket_address_t
 of_socket_address_parse_ip(OFString *IP, uint16_t port)
 {
+	of_socket_address_t ret;
+
 	@try {
-		return of_socket_address_parse_ipv6(IP, port);
+		ret = of_socket_address_parse_ipv6(IP, port);
 	} @catch (OFInvalidFormatException *e) {
-		return of_socket_address_parse_ipv4(IP, port);
+		ret = of_socket_address_parse_ipv4(IP, port);
 	}
+
+	return ret;
 }
 
 of_socket_address_t

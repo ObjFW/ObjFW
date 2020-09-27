@@ -297,21 +297,21 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 @protocol OFObject
 /*!
- * @brief The class of the object.
+ * @brief Returns the class of the object.
+ *
+ * @return The class of the object
  */
-# ifndef __cplusplus
-@property (readonly, nonatomic) Class class;
-# else
-@property (readonly, nonatomic, getter=class) Class class_;
-# endif
+- (Class)class;
 
 /*!
- * @brief The superclass of the object.
+ * @brief Returns the superclass of the object.
+ *
+ * @return The superclass of the object
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
+- (nullable Class)superclass;
 
 /*!
- * @brief A 32 bit hash for the object.
+ * @brief Returns a 32 bit hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -319,23 +319,31 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  * @warning If you reimplement this, you also need to reimplement @ref isEqual:
  *	    to behave in a way compatible to your reimplementation of this
  *	    method!
+ *
+ * @return A 32 bit hash for the object
  */
-@property (readonly, nonatomic) uint32_t hash;
+- (uint32_t)hash;
 
 /*!
- * @brief The retain count.
+ * @brief Returns the retain count.
+ *
+ * @return The retain count
  */
-@property (readonly, nonatomic) unsigned int retainCount;
+- (unsigned int)retainCount;
 
 /*!
- * @brief Whether the object is a proxy object.
+ * @brief Returns whether the object is a proxy object.
+ *
+ * @return Whether the object is a proxy object
  */
-@property (readonly, nonatomic) bool isProxy;
+- (bool)isProxy;
 
 /*!
- * @brief Whether the object allows weak references.
+ * @brief Returns whether the object allows weak references.
+ *
+ * @return Whether the object allows weak references
  */
-@property (readonly, nonatomic) bool allowsWeakReference;
+- (bool)allowsWeakReference;
 
 /*!
  * @brief Returns a boolean whether the object of the specified kind.
@@ -530,6 +538,17 @@ OF_ROOT_CLASS
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
 # endif
+
+# ifdef __cplusplus
+@property (readonly, nonatomic) Class class;
+# else
+@property (readonly, nonatomic, getter=class) Class class_;
+#endif
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
+@property (readonly, nonatomic) uint32_t hash;
+@property (readonly, nonatomic) unsigned int retainCount;
+@property (readonly, nonatomic) bool isProxy;
+@property (readonly, nonatomic) bool allowsWeakReference;
 
 /*!
  * @brief The name of the object's class.

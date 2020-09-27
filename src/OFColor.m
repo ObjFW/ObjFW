@@ -44,22 +44,22 @@
 		return name##Color;					\
 	}
 
-PREDEFINED_COLOR(black,   0.00, 0.00, 0.00)
-PREDEFINED_COLOR(silver,  0.75, 0.75, 0.75)
-PREDEFINED_COLOR(grey,    0.50, 0.50, 0.50)
-PREDEFINED_COLOR(white,   1.00, 1.00, 1.00)
-PREDEFINED_COLOR(maroon,  0.50, 0.00, 0.00)
-PREDEFINED_COLOR(red,     1.00, 0.00, 0.00)
-PREDEFINED_COLOR(purple,  0.50, 0.00, 0.50)
-PREDEFINED_COLOR(fuchsia, 1.00, 0.00, 1.00)
-PREDEFINED_COLOR(green,   0.00, 0.50, 0.00)
-PREDEFINED_COLOR(lime,    0.00, 1.00, 0.00)
-PREDEFINED_COLOR(olive,   0.50, 0.50, 0.00)
-PREDEFINED_COLOR(yellow,  1.00, 1.00, 0.00)
-PREDEFINED_COLOR(navy,    0.00, 0.00, 0.50)
-PREDEFINED_COLOR(blue,    0.00, 0.00, 1.00)
-PREDEFINED_COLOR(teal,    0.00, 0.50, 0.50)
-PREDEFINED_COLOR(aqua,    0.00, 1.00, 1.00)
+PREDEFINED_COLOR(black,   0.00f, 0.00f, 0.00f)
+PREDEFINED_COLOR(silver,  0.75f, 0.75f, 0.75f)
+PREDEFINED_COLOR(grey,    0.50f, 0.50f, 0.50f)
+PREDEFINED_COLOR(white,   1.00f, 1.00f, 1.00f)
+PREDEFINED_COLOR(maroon,  0.50f, 0.00f, 0.00f)
+PREDEFINED_COLOR(red,     1.00f, 0.00f, 0.00f)
+PREDEFINED_COLOR(purple,  0.50f, 0.00f, 0.50f)
+PREDEFINED_COLOR(fuchsia, 1.00f, 0.00f, 1.00f)
+PREDEFINED_COLOR(green,   0.00f, 0.50f, 0.00f)
+PREDEFINED_COLOR(lime,    0.00f, 1.00f, 0.00f)
+PREDEFINED_COLOR(olive,   0.50f, 0.50f, 0.00f)
+PREDEFINED_COLOR(yellow,  1.00f, 1.00f, 0.00f)
+PREDEFINED_COLOR(navy,    0.00f, 0.00f, 0.50f)
+PREDEFINED_COLOR(blue,    0.00f, 0.00f, 1.00f)
+PREDEFINED_COLOR(teal,    0.00f, 0.50f, 0.50f)
+PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 + (instancetype)colorWithRed: (float)red
 		       green: (float)green

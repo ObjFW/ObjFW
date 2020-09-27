@@ -886,7 +886,7 @@ SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 					      count: 1];
 	} else if (*_typeEncoding == 'f') {
 		uint8_t type = 0xCA;
-		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
+		float tmp = OF_BSWAP_FLOAT_IF_LE((float)_value.float_);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 5];
