@@ -20,11 +20,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "ObjFWRT.h"
-#import "private.h"
+#ifdef OF_OBJFW_RUNTIME
+# import "ObjFWRT.h"
+# import "private.h"
+#else
+# import <objc/runtime.h>
+#endif
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "tlskey.h"
+#endif
+
+#ifndef OF_OBJFW_RUNTIME
+@interface DummyObject
+- (void)release;
+@end
 #endif
 
 #if defined(OF_HAVE_COMPILER_TLS)

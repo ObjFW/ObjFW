@@ -214,7 +214,9 @@ SRCS += OFAdjacentArray.m		\
 	OFRectangleValue.m		\
 	OFSubarray.m			\
 	OFUTF8String.m			\
-	${LIBBASES_M}
+	${LIBBASES_M}			\
+	${RUNTIME_AUTORELEASE_M}	\
+	${RUNTIME_INSTANCE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\

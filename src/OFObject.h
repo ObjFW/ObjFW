@@ -1332,6 +1332,11 @@ extern "C" {
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
+# ifndef __OBJC2__
+extern id _Nullable objc_constructInstance(Class _Nullable class_,
+    void *_Nullable bytes);
+extern void *_Nullable objc_destructInstance(id _Nullable object);
+# endif
 #endif
 extern id of_alloc_object(Class class_, size_t extraSize,
     size_t extraAlignment, void *_Nullable *_Nullable extra);
