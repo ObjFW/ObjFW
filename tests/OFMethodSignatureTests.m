@@ -77,7 +77,7 @@ union test4_union {
 	void *pool = objc_autoreleasePoolPush();
 	OFMethodSignature *ms;
 
-	TEST(@"-[:signatureWithObjCTypes:] #1",
+	TEST(@"-[signatureWithObjCTypes:] #1",
 	    (ms = [OFMethodSignature signatureWithObjCTypes:
 	    "i28@0:8S16*20"]) && ms.numberOfArguments == 4 &&
 	    strcmp(ms.methodReturnType, "i") == 0 &&
