@@ -635,17 +635,17 @@ case "$objc_runtime" in
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
+
+		AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
+			AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
+		])
+		AC_CHECK_FUNC(objc_constructInstance, [], [
+			AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
+		])
 		;;
 esac
 
 AC_CHECK_FUNCS(_Unwind_Backtrace)
-
-AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-	AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
-])
-AC_CHECK_FUNC(objc_constructInstance, [], [
-	AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
-])
 
 case "$host_os" in
 	darwin*)
