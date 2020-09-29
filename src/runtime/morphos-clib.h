@@ -79,8 +79,14 @@ void *glue_objc_autoreleasePoolPush(void);
 void glue_objc_autoreleasePoolPop(void *);
 id glue__objc_rootAutorelease(id);
 /* The following functions are private! Don't use! */
-struct objc_hashtable *glue_objc_hashtable_new(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size);
-void glue_objc_hashtable_set(struct objc_hashtable *table, const void *key, const void *object);
-void *glue_objc_hashtable_get(struct objc_hashtable *table, const void *key);
-void glue_objc_hashtable_delete(struct objc_hashtable *table, const void *key);
-void glue_objc_hashtable_free(struct objc_hashtable *table);
+struct objc_hashtable *glue_objc_hashtable_new(objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t);
+void glue_objc_hashtable_set(struct objc_hashtable *, const void *, const void *);
+void *glue_objc_hashtable_get(struct objc_hashtable *, const void *);
+void glue_objc_hashtable_delete(struct objc_hashtable *, const void *);
+void glue_objc_hashtable_free(struct objc_hashtable *);
+/* Public functions again */
+void glue_objc_setTaggedPointerSecret(uintptr_t);
+int glue_objc_registerTaggedPointerClass(Class);
+Class _Nullable glue_object_getTaggedPointerClass(id);
+uintptr_t glue_object_getTaggedPointerValue(id);
+id glue_objc_createTaggedPointer(int, uintptr_t);

@@ -29,7 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing, accessing and comparing dates.
  */
+#ifndef OF_DATE_M
 OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
     OFMessagePackRepresentation>
 {
@@ -217,7 +219,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return An initialized OFDate with the specified date and time
  */
-- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds;
+- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified date and

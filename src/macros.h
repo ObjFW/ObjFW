@@ -417,13 +417,13 @@
 	abort();
 #endif
 #ifdef __clang__
-# define OF_DEALLOC_UNSUPPORTED						\
-	[self doesNotRecognizeSelector: _cmd];				\
-									\
-	abort();							\
-									\
-	_Pragma("clang diagnostic push ignore \"-Wunreachable-code\"");	\
-	[super dealloc];	/* Get rid of a stupid warning */	\
+# define OF_DEALLOC_UNSUPPORTED						 \
+	[self doesNotRecognizeSelector: _cmd];				 \
+									 \
+	abort();							 \
+									 \
+	_Pragma("clang diagnostic push ignored \"-Wunreachable-code\""); \
+	[super dealloc];	/* Get rid of a stupid warning */	 \
 	_Pragma("clang diagnostic pop");
 #else
 # define OF_DEALLOC_UNSUPPORTED						\

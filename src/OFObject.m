@@ -333,6 +333,11 @@ _references_to_categories_of_OFObject(void)
 	do {
 		of_hash_seed = of_random32();
 	} while (of_hash_seed == 0);
+
+#ifdef OF_OBJFW_RUNTIME
+	objc_setTaggedPointerSecret(sizeof(uintptr_t) == 4
+	    ? (uintptr_t)of_random32() : (uintptr_t)of_random64());
+#endif
 }
 
 + (void)unload

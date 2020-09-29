@@ -28,6 +28,8 @@
 .macro generate_lookup name not_found
 \name:
 	brz,pn	%o0, ret_nil
+	 and	%o0, 1, %o2
+	brnz,pn	%o2, .Ltagged_pointer_\name
 	 nop
 
 	ldx	[%o0], %o2
@@ -52,8 +54,7 @@
 	ldx	[%o2 + %o4], %o2
 	ldx	[%o2 + %o5], %o2
 
-	cmp	%o2, 0
-	be,pn	%xcc, 0f
+	brz,pn	%o2, 0f
 	 nop
 
 	retl
@@ -63,6 +64,37 @@
 	mov	%o7, %g1
 	call	\not_found
 	 mov	%g1, %o7
+
+.Ltagged_pointer_\name:
+#ifdef OF_PIC
+	mov	%o7, %g1
+	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
+	call	0f
+	 or	%o3, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o3
+0:
+	add	%o7, %o3, %o3
+	mov	%g1, %o7
+#endif
+
+	sethi	%hi(objc_tagged_pointer_secret), %o2
+	or	%o2, %lo(objc_tagged_pointer_secret), %o2
+#ifdef OF_PIC
+	ldx	[%o3 + %o2], %o2
+#endif
+	ldx	[%o2], %o2
+	xor	%o0, %o2, %o0
+	and	%o0, 0xE, %o0
+	sll	%o0, 2, %o0
+
+	sethi	%hi(objc_tagged_pointer_classes), %o2
+	or	%o2, %lo(objc_tagged_pointer_classes), %o2
+#ifdef OF_PIC
+	ldx	[%o3 + %o2], %o2
+#endif
+
+	ldx	[%o2 + %o0], %o2
+	ba	.Lmain_\name
+	 ldx	[%o2 + 64], %o2
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -92,7 +124,7 @@ ret_nil:
 
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o1
 	call	0f
-	 add	%o1, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o1
+	 or	%o1, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o1
 0:
 	add	%o7, %o1, %o1
 
