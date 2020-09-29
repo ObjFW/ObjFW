@@ -720,6 +720,12 @@ objc_registerTaggedPointerClass(Class class)
 	return glue_objc_registerTaggedPointerClass(class);
 }
 
+bool
+object_isTaggedPointer(id object)
+{
+	return glue_object_isTaggedPointer(object);
+}
+
 Class
 object_getTaggedPointerClass(id object)
 {

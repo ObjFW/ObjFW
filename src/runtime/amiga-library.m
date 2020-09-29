@@ -149,9 +149,10 @@ extern void glue_objc_hashtable_delete(void);
 extern void glue_objc_hashtable_free(void);
 extern void glue_objc_setTaggedPointerSecret(void);
 extern int glue_objc_registerTaggedPointerClass(void);
-extern Class _Nullable glue_object_getTaggedPointerClass(void);
+extern bool glue_object_isTaggedPointer(void);
+extern Class glue_object_getTaggedPointerClass(void);
 extern uintptr_t glue_object_getTaggedPointerValue(void);
-extern id _Nullable glue_objc_createTaggedPointer(void);
+extern id glue_objc_createTaggedPointer(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -680,6 +681,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_hashtable_free,
 	(CONST_APTR)glue_objc_setTaggedPointerSecret,
 	(CONST_APTR)glue_objc_registerTaggedPointerClass,
+	(CONST_APTR)glue_object_isTaggedPointer,
 	(CONST_APTR)glue_object_getTaggedPointerClass,
 	(CONST_APTR)glue_object_getTaggedPointerValue,
 	(CONST_APTR)glue_objc_createTaggedPointer,

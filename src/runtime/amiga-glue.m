@@ -816,6 +816,14 @@ glue_objc_registerTaggedPointerClass PPC_PARAMS(Class class)
 	return objc_registerTaggedPointerClass(class);
 }
 
+bool __saveds
+glue_object_isTaggedPointer PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return object_isTaggedPointer(object);
+}
+
 Class __saveds
 glue_object_getTaggedPointerClass PPC_PARAMS(id object)
 {

@@ -52,6 +52,14 @@ objc_registerTaggedPointerClass(Class class)
 	return i;
 }
 
+bool
+object_isTaggedPointer(id object)
+{
+	uintptr_t pointer = (uintptr_t)object;
+
+	return pointer & 1;
+}
+
 Class
 object_getTaggedPointerClass(id object)
 {

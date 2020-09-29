@@ -629,15 +629,7 @@ extern int objc_registerTaggedPointerClass(Class _Nonnull class);
  * @param object The object to inspect
  * @return Whether the specified object is a tagged pointer
  */
-static inline bool
-object_isTaggedPointer(id _Nullable object)
-{
-	uintptr_t pointer = (uintptr_t)object;
-
-	return pointer & 1;
-}
-
-extern Class _Nullable object_getTaggedPointerClass(id _Nonnull object);
+extern bool object_isTaggedPointer(id _Nullable object);
 
 /*!
  * @brief Returns the value of the specified tagged pointer.

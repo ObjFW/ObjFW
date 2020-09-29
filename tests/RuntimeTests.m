@@ -101,7 +101,7 @@ static OFString *module = @"Runtime";
 	    (cid1 = objc_registerTaggedPointerClass([OFString class])) != -1 &&
 	    (cid2 = objc_registerTaggedPointerClass([OFNumber class])) != -1 &&
 	    (object = objc_createTaggedPointer(cid2, (uintptr_t)value)) &&
-	    object_getTaggedPointerClass(object) == [OFNumber class] &&
+	    object_getClass(object) == [OFNumber class] &&
 	    [object class] == [OFNumber class] &&
 	    object_getTaggedPointerValue(object) == value &&
 	    objc_createTaggedPointer(cid2, UINTPTR_MAX >> 4) != nil &&
