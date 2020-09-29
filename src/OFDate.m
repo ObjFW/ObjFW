@@ -439,6 +439,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
+	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
 	int16_t tz = 0;
@@ -447,12 +448,15 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 
+	objc_autoreleasePoolPop(pool);
+
 	return [self initWithTimeIntervalSince1970: tmAndTzToTime(&tm, &tz)];
 }
 
 - (instancetype)initWithLocalDateString: (OFString *)string
 				 format: (OFString *)format
 {
+	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
 	/*
@@ -481,6 +485,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 	} else
 		seconds = tmAndTzToTime(&tm, &tz);
+
+	objc_autoreleasePoolPop(pool);
 
 	return [self initWithTimeIntervalSince1970: seconds];
 }
