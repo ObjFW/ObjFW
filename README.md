@@ -357,8 +357,9 @@ other place, you are most likely using a mirror.
 
    * The [forum](https://objfw.nil.im/forum)
    * A [Matrix](https://matrix.to/#/%23objfw:nil.im) room
-   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`),
-     bridged to the Matrix room above
+   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`,
+     [web chat](https://webchat.freenode.net/?channels=objfw)), bridged to the
+     Matrix room above
 
   Please don't hesitate to join any or all of those!
 
