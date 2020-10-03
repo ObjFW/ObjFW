@@ -130,10 +130,10 @@ run:
 	ASAN_OPTIONS=allocator_may_return_null=1 \
 	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
-	rm -f objfw.so.${OBJFW_LIB_MAJOR_MINOR} objfw.dll; \
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} objfw.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
-	rm -f objfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
