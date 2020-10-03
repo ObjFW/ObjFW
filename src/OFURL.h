@@ -22,6 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
 @class OFString;
 
@@ -126,6 +127,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedQuery;
+
+/**
+ * @brief The query part of the URL as a dictionary.
+ *
+ * For example, a query like `key1=value1&key2=value2` would correspond to the
+ * following dictionary:
+ *
+ *     @{
+ *         @"key1": "value1",
+ *         @"key2": "value2"
+ *     }
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
 
 /**
  * @brief The fragment part of the URL.
@@ -290,6 +305,8 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic)
     OFCharacterSet *URLQueryAllowedCharacterSet;
 @property (class, readonly, nonatomic)
+    OFCharacterSet *URLQueryKeyValueAllowedCharacterSet;
+@property (class, readonly, nonatomic)
     OFCharacterSet *URLFragmentAllowedCharacterSet;
 #endif
 
@@ -334,6 +351,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The characters allowed in the query part of a URL.
  */
 + (OFCharacterSet *)URLQueryAllowedCharacterSet;
+
+/**
+ * @brief Returns the characters allowed in a key/value in the query part of a
+ *	  URL.
+ *
+ * @return The characters allowed in a key/value in the query part of a URL.
+ */
++ (OFCharacterSet *)URLQueryKeyValueAllowedCharacterSet;
 
 /**
  * @brief Returns the characters allowed in the fragment part of a URL.

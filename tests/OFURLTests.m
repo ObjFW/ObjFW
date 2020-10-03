@@ -21,7 +21,7 @@
 
 static OFString *module = @"OFURL";
 static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
-    @"pa%3Fth?que%23ry#frag%23ment";
+    @"pa%3Fth?que%23ry=1&f%26oo=b%3dar#frag%23ment";
 
 @implementation TestsAppDelegate (OFURLTests)
 - (void)URLTests
@@ -178,7 +178,11 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    lastPathComponent] isEqual: @"/"] &&
 	    [u5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
-	    [u1.query isEqual: @"que#ry"] && u4.query == nil)
+	    [u1.query isEqual: @"que#ry=1&f&oo=b=ar"] && u4.query == nil)
+	TEST(@"-[queryDictionary]",
+	    [u1.queryDictionary isEqual:
+	    [OFDictionary dictionaryWithKeysAndObjects:
+	    @"que#ry", @"1", @"f&oo", @"b=ar", nil]]);
 	TEST(@"-[fragment]",
 	    [u1.fragment isEqual: @"frag#ment"] && u4.fragment == nil)
 
@@ -268,6 +272,12 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(
 	    @"-[setURLEncodedQuery:] with invalid characters fails",
 	    OFInvalidFormatException, mu.URLEncodedQuery = @"`")
+
+	TEST(@"-[setQueryDictionary:]",
+	    (mu.queryDictionary = [OFDictionary dictionaryWithKeysAndObjects:
+	    @"foo&bar", @"baz=qux", @"f=oobar", @"b&azqux", nil]) &&
+	    [mu.URLEncodedQuery isEqual:
+	    @"foo%26bar=baz%3Dqux&f%3Doobar=b%26azqux"])
 
 	TEST(@"-[setFragment:]",
 	    (mu.fragment = @"frag/ment?#") &&

@@ -127,6 +127,20 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedQuery;
 
 /**
+ * @brief The query part of the URL as a dictionary.
+ *
+ * For example, a query like `key1=value1&key2=value2` would correspond to the
+ * following dictionary:
+ *
+ *     @{
+ *         @"key1": "value1",
+ *         @"key2": "value2"
+ *     }
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
+
+/**
  * @brief The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;

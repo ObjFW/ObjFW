@@ -32,7 +32,8 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 @implementation OFMutableURL
 @dynamic scheme, URLEncodedScheme, host, URLEncodedHost, port, user;
 @dynamic URLEncodedUser, password, URLEncodedPassword, path, URLEncodedPath;
-@dynamic pathComponents, query, URLEncodedQuery, fragment, URLEncodedFragment;
+@dynamic pathComponents, query, URLEncodedQuery, queryDictionary, fragment;
+@dynamic URLEncodedFragment;
 
 + (instancetype)URL
 {
@@ -231,6 +232,37 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	old = _URLEncodedQuery;
 	_URLEncodedQuery = [URLEncodedQuery copy];
 	[old release];
+}
+
+- (void)setQueryDictionary:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)dictionary
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableString *URLEncodedQuery = [OFMutableString string];
+	OFEnumerator *keyEnumerator = [dictionary keyEnumerator];
+	OFEnumerator *objectEnumerator = [dictionary objectEnumerator];
+	OFCharacterSet *characterSet =
+	    [OFCharacterSet URLQueryKeyValueAllowedCharacterSet];
+	OFString *key, *object, *old;
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		key = [key
+		    stringByURLEncodingWithAllowedCharacters: characterSet];
+		object = [object
+		    stringByURLEncodingWithAllowedCharacters: characterSet];
+
+		if (URLEncodedQuery.length > 0)
+			[URLEncodedQuery appendString: @"&"];
+
+		[URLEncodedQuery appendFormat: @"%@=%@", key, object];
+	}
+
+	old = _URLEncodedQuery;
+	_URLEncodedQuery = [URLEncodedQuery copy];
+	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setFragment: (OFString *)fragment

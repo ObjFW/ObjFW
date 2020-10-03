@@ -52,10 +52,14 @@
 @interface OFURLQueryOrFragmentAllowedCharacterSet: OFURLAllowedCharacterSetBase
 @end
 
+@interface OFURLQueryKeyValueAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@end
+
 static OFCharacterSet *URLAllowedCharacterSet = nil;
 static OFCharacterSet *URLSchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
+static OFCharacterSet *URLQueryKeyValueAllowedCharacterSet = nil;
 
 static of_once_t URLAllowedCharacterSetOnce = OF_ONCE_INIT;
 static of_once_t URLQueryOrFragmentAllowedCharacterSetOnce = OF_ONCE_INIT;
@@ -85,6 +89,13 @@ initURLQueryOrFragmentAllowedCharacterSet(void)
 {
 	URLQueryOrFragmentAllowedCharacterSet =
 	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] init];
+}
+
+static void
+initURLQueryKeyValueAllowedCharacterSet(void)
+{
+	URLQueryKeyValueAllowedCharacterSet =
+	    [[OFURLQueryKeyValueAllowedCharacterSet alloc] init];
 }
 
 OF_DIRECT_MEMBERS
@@ -250,6 +261,37 @@ of_url_is_ipv6_host(OFString *host)
 }
 @end
 
+@implementation OFURLQueryKeyValueAllowedCharacterSet
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+	case ':':
+	case '@':
+	case '/':
+	case '?':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
 @implementation OFInvertedCharacterSetWithoutPercent
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet
 {
@@ -340,6 +382,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	    initURLQueryOrFragmentAllowedCharacterSet);
 
 	return URLQueryOrFragmentAllowedCharacterSet;
+}
+
++ (OFCharacterSet *)URLQueryKeyValueAllowedCharacterSet
+{
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
+
+	return URLQueryKeyValueAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet
@@ -984,6 +1034,31 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 - (OFString *)URLEncodedQuery
 {
 	return _URLEncodedQuery;
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OFString *) *)queryDictionary
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *pairs = [_URLEncodedQuery componentsSeparatedByString: @"&"];
+	OFMutableDictionary *ret = [OFMutableDictionary
+	    dictionaryWithCapacity: pairs.count];
+
+	for (OFString *pair in pairs) {
+		OFArray *parts = [pair componentsSeparatedByString: @"="];
+
+		if (parts.count != 2)
+			@throw [OFInvalidFormatException exception];
+
+		[ret setObject: [[parts objectAtIndex: 1] stringByURLDecoding]
+			forKey: [[parts objectAtIndex: 0] stringByURLDecoding]];
+	}
+
+	[ret makeImmutable];
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (OFString *)fragment
