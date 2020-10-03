@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @brief An ASN.1 BitString.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -33,17 +33,17 @@ OF_SUBCLASSING_RESTRICTED
 	size_t _bitStringLength;
 }
 
-/*!
+/**
  * @brief The BitString value.
  */
 @property (readonly, nonatomic) OFData *bitStringValue;
 
-/*!
+/**
  * @brief The length of the BitString in bits.
  */
 @property (readonly, nonatomic) size_t bitStringLength;
 
-/*!
+/**
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
@@ -56,7 +56,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
  *
@@ -68,7 +68,7 @@ OF_SUBCLASSING_RESTRICTED
 		       bitStringLength: (size_t)bitStringLength
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  arguments.
  *

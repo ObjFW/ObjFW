@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFReadFailedException \
  *	  OFReadFailedException.h ObjFW/OFReadFailedException.h
  *

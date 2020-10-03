@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @brief An ASN.1 Enumerated.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -29,12 +29,12 @@ OF_SUBCLASSING_RESTRICTED
 	long long _longLongValue;
 }
 
-/*!
+/**
  * @brief The integer value.
  */
 @property (readonly, nonatomic) long long longLongValue;
 
-/*!
+/**
  * @brief Creates an ASN.1 Enumerated with the specified integer value.
  *
  * @param value The `long long` value of the Enumerated
@@ -44,7 +44,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
  *	  integer value.
  *
@@ -53,7 +53,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithLongLong: (long long)value OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
  *	  arguments.
  *

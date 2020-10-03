@@ -33,7 +33,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFString;
 
@@ -43,7 +43,7 @@ enum {
 };
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for enumerating an OFArray.
  *
  * @param object The current object
@@ -54,7 +54,7 @@ enum {
 typedef void (^of_array_enumeration_block_t)(id object, size_t index,
     bool *stop);
 
-/*!
+/**
  * @brief A block for filtering an OFArray.
  *
  * @param object The object to inspect
@@ -63,7 +63,7 @@ typedef void (^of_array_enumeration_block_t)(id object, size_t index,
  */
 typedef bool (^of_array_filter_block_t)(id object, size_t index);
 
-/*!
+/**
  * @brief A block for mapping objects to objects in an OFArray.
  *
  * @param object The object to map
@@ -72,7 +72,7 @@ typedef bool (^of_array_filter_block_t)(id object, size_t index);
  */
 typedef id _Nonnull (^of_array_map_block_t)(id object, size_t index);
 
-/*!
+/**
  * @brief A block for folding an OFArray.
  *
  * @param left The object to which the object has been folded so far
@@ -82,7 +82,7 @@ typedef id _Nonnull (^of_array_map_block_t)(id object, size_t index);
 typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 #endif
 
-/*!
+/**
  * @class OFArray OFArray.h ObjFW/OFArray.h
  *
  * @brief An abstract class for storing objects in an array.
@@ -95,7 +95,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief The objects of the array as a C array.
  *
  * The result is valid until the autorelease pool is released. If you want to
@@ -105,7 +105,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 @property (readonly, nonatomic)
     ObjectType const __unsafe_unretained _Nonnull *_Nonnull objects;
 
-/*!
+/**
  * @brief The first object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -113,7 +113,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
 
-/*!
+/**
  * @brief The last object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -121,24 +121,24 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
 
-/*!
+/**
  * @brief The array sorted in ascending order.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *sortedArray;
 
-/*!
+/**
  * @brief The array with the order reversed.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *reversedArray;
 
-/*!
+/**
  * @brief Creates a new OFArray.
  *
  * @return A new autoreleased OFArray
  */
 + (instancetype)array;
 
-/*!
+/**
  * @brief Creates a new OFArray with the specified object.
  *
  * @param object An object
@@ -146,7 +146,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 + (instancetype)arrayWithObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Creates a new OFArray with the specified objects, terminated by `nil`.
  *
  * @param firstObject The first object in the array
@@ -154,7 +154,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 + (instancetype)arrayWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
-/*!
+/**
  * @brief Creates a new OFArray with the objects from the specified array.
  *
  * @param array An array
@@ -162,7 +162,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 + (instancetype)arrayWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Creates a new OFArray with the objects from the specified C array of
  *	  the specified length.
  *
@@ -174,7 +174,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
     arrayWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 	       count: (size_t)count;
 
-/*!
+/**
  * @brief Initializes an OFArray with the specified object.
  *
  * @param object An object
@@ -182,7 +182,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (instancetype)initWithObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Initializes an OFArray with the specified objects.
  *
  * @param firstObject The first object
@@ -190,7 +190,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
-/*!
+/**
  * @brief Initializes an OFArray with the specified object and a va_list.
  *
  * @param firstObject The first object
@@ -200,7 +200,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (instancetype)initWithObject: (ObjectType)firstObject
 		     arguments: (va_list)arguments;
 
-/*!
+/**
  * @brief Initializes an OFArray with the objects from the specified array.
  *
  * @param array An array
@@ -208,7 +208,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (instancetype)initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Initializes an OFArray with the objects from the specified C array of
  *	  the specified length.
  *
@@ -219,7 +219,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			  count: (size_t)count;
 
-/*!
+/**
  * @brief Returns the object at the specified index in the array.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -231,7 +231,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (ObjectType)objectAtIndex: (size_t)index;
 - (ObjectType)objectAtIndexedSubscript: (size_t)index;
 
-/*!
+/**
  * @brief Returns the value for the specified key
  *
  * A new array with the value for the specified key for each object is
@@ -246,7 +246,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (nullable id)valueForKey: (OFString *)key;
 
-/*!
+/**
  * @brief Set the value for the specified key
  *
  * @ref setValue:forKey: is called for each object in the array.
@@ -259,7 +259,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Copies the objects at the specified range to the specified buffer.
  *
  * @param buffer The buffer to copy the objects to
@@ -268,7 +268,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (void)getObjects: (ObjectType __unsafe_unretained _Nonnull *_Nonnull)buffer
 	   inRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Returns the index of the first object that is equivalent to the
  *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
@@ -278,7 +278,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (size_t)indexOfObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Returns the index of the first object that has the same address as the
  *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
@@ -288,7 +288,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (size_t)indexOfObjectIdenticalTo: (ObjectType)object;
 
-/*!
+/**
  * @brief Checks whether the array contains an object equal to the specified
  *	  object.
  *
@@ -297,7 +297,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (bool)containsObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Checks whether the array contains an object with the specified
  *	  address.
  *
@@ -307,7 +307,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (bool)containsObjectIdenticalTo: (ObjectType)object;
 
-/*!
+/**
  * @brief Returns the objects in the specified range as a new OFArray.
  *
  * @param range The range for the subarray
@@ -315,7 +315,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Creates a string by joining all objects of the array.
  *
  * @param separator The string with which the objects should be joined
@@ -323,7 +323,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator;
 
-/*!
+/**
  * @brief Creates a string by joining all objects of the array.
  *
  * @param separator The string with which the objects should be joined
@@ -337,7 +337,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			       options: (int)options;
 
-/*!
+/**
  * @brief Creates a string by calling the selector on all objects of the array
  *	  and joining the strings returned by calling the selector.
  *
@@ -348,7 +348,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Creates a string by calling the selector on all objects of the array
  *	  and joining the strings returned by calling the selector.
  *
@@ -365,14 +365,14 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 			 usingSelector: (SEL)selector
 			       options: (int)options;
 
-/*!
+/**
  * @brief Performs the specified selector on all objects in the array.
  *
  * @param selector The selector to perform on all objects in the array
  */
 - (void)makeObjectsPerformSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Performs the specified selector on all objects in the array with the
  *	  specified object.
  *
@@ -383,7 +383,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (nullable id)object;
 
-/*!
+/**
  * @brief Returns a copy of the array sorted using the specified selector and
  *	  options.
  *
@@ -400,7 +400,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 						     options: (int)options;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Returns a copy of the array sorted using the specified selector and
  *	  options.
  *
@@ -417,7 +417,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 		       options: (int)options;
 #endif
 
-/*!
+/**
  * @brief Creates a new array with the specified object added.
  *
  * @param object The object to add
@@ -425,7 +425,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Creates a new array with the objects from the specified array added.
  *
  * @param array The array with objects to add
@@ -434,7 +434,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObjectsFromArray:
     (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Creates a new array with the specified object removed.
  *
  * @param object The object to remove
@@ -443,14 +443,14 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (OFArray OF_GENERIC(ObjectType) *)arrayByRemovingObject: (ObjectType)object;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Executes a block for each object.
  *
  * @param block The block to execute for each object
  */
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
 
-/*!
+/**
  * @brief Creates a new array, mapping each object using the specified block.
  *
  * @param block A block which maps an object for each object
@@ -458,7 +458,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block;
 
-/*!
+/**
  * @brief Creates a new array, only containing the objects for which the block
  *	  returns true.
  *
@@ -469,7 +469,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (OFArray OF_GENERIC(ObjectType) *)filteredArrayUsingBlock:
     (of_array_filter_block_t)block;
 
-/*!
+/**
  * @brief Folds the array to a single object using the specified block.
  *
  * If the array is empty, it will return `nil`.

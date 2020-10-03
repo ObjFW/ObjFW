@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFXMLComment OFXMLComment.h ObjFW/OFXMLComment.h
  *
  * @brief A class for representing XML comments.
@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFXMLComment, 4)
 }
 
-/*!
+/**
  * @brief Creates a new OFXMLComment with the specified string.
  *
  * @param string The string for the comment
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)commentWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLComment with the specified
  *	  string.
  *

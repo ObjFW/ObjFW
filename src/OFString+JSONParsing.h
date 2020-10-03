@@ -28,7 +28,7 @@ extern int _OFString_JSONParsing_reference;
 #endif
 
 @interface OFString (JSONParsing)
-/*!
+/**
  * @brief The string interpreted as JSON and parsed as an object.
  *
  * @note This also allows parsing JSON5, an extension of JSON. See
@@ -45,7 +45,7 @@ extern int _OFString_JSONParsing_reference;
  */
 @property (readonly, nonatomic) id objectByParsingJSON;
 
-/*!
+/**
  * @brief Creates an object from the JSON value of the string.
  *
  * @note This also allows parsing JSON5, an extension of JSON. See

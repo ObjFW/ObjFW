@@ -1783,7 +1783,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_TRY_COMPILE([
-		/*!
+		/**
 		 * @class Test conftest.m conftest.m
 		 */
 		#ifdef __has_attribute

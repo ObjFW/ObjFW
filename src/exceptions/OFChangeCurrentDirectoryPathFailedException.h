@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFChangeCurrentDirectoryPathFailedException \
  *	  OFChangeCurrentDirectoryPathFailedException.h \
  *	  ObjFW/OFChangeCurrentDirectoryPathFailedException.h
@@ -33,20 +33,20 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The path of the directory to which the current path could not be
  *	  changed.
  */
 @property (readonly, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased change current directory path failed
  *	  exception.
  *
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated change directory failed exception.
  *
  * @param path The path of the directory to which the current path could not be

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFOutOfMemoryException \
  *	  OFOutOfMemoryException.h ObjFW/OFOutOfMemoryException.h
  *
@@ -30,12 +30,12 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _requestedSize;
 }
 
-/*!
+/**
  * @brief The size of the memory that could not be allocated.
  */
 @property (readonly, nonatomic) size_t requestedSize;
 
-/*!
+/**
  * @brief Creates a new, autoreleased no memory exception.
  *
  * @param requestedSize The size of the memory that could not be allocated
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithRequestedSize: (size_t)requestedSize;
 
-/*!
+/**
  * @brief Initializes an already allocated no memory exception.
  *
  * @param requestedSize The size of the memory that could not be allocated

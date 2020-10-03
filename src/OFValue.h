@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFValue OFValue.h ObjFW/OFValue.h
  *
  * @brief A class for storing arbitrary values in an object.
@@ -29,54 +29,54 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFValue, 4)
 }
 
-/*!
+/**
  * @brief The ObjC type encoding of the value.
  */
 @property (readonly, nonatomic) const char *objCType;
 
-/*!
+/**
  * @brief The value as a pointer to void.
  *
  * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) void *pointerValue;
 
-/*!
+/**
  * @brief The value as a non-retained object.
  *
  * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) id nonretainedObjectValue;
 
-/*!
+/**
  * @brief The value as a range.
  *
  * If the value is not range-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) of_range_t rangeValue;
 
-/*!
+/**
  * @brief The value as a point.
  *
  * If the value is not point-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) of_point_t pointValue;
 
-/*!
+/**
  * @brief The value as a dimension.
  *
  * If the value is not dimension-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) of_dimension_t dimensionValue;
 
-/*!
+/**
  * @brief The value as a rectangle.
  *
  * If the value is not rectangle-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) of_rectangle_t rectangleValue;
 
-/*!
+/**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
  *	  specified type.
  *
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified pointer.
  *
  * Only the raw value of the pointer is stored and no data will be copied.
@@ -97,7 +97,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithPointer: (const void *)pointer;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified
  *	  non-retained object.
  *
@@ -109,7 +109,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithNonretainedObject: (id)object;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified range.
  *
  * @param range The range the OFValue should contain
@@ -117,7 +117,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified point.
  *
  * @param point The point the OFValue should contain
@@ -125,7 +125,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithPoint: (of_point_t)point;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified
  *	  dimension.
  *
@@ -134,7 +134,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithDimension: (of_dimension_t)dimension;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFValue containing the specified
  *	  rectangle.
  *
@@ -143,7 +143,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue with the specified bytes of
  *	  the specified type.
  *
@@ -154,7 +154,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  pointer.
  *
@@ -165,7 +165,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithPointer: (const void *)pointer;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  non-retained object.
  *
@@ -177,7 +177,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithNonretainedObject: (id)object;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  range.
  *
@@ -186,7 +186,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  point.
  *
@@ -195,7 +195,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithPoint: (of_point_t)point;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  dimension.
  *
@@ -204,7 +204,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithDimension: (of_dimension_t)dimension;
 
-/*!
+/**
  * @brief Initializes an already allocated OFValue containing the specified
  *	  rectangle.
  *
@@ -213,7 +213,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithRectangle: (of_rectangle_t)rectangle;
 
-/*!
+/**
  * @brief Gets the value.
  *
  * If the specified size does not match, this raises an

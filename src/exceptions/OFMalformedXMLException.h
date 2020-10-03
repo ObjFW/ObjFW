@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMalformedXMLException \
  *	  OFMalformedXMLException.h ObjFW/OFMalformedXMLException.h
  *
@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OFXMLParser *_parser;
 }
 
-/*!
+/**
  * @brief The parser which encountered malformed XML.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFXMLParser *parser;
 
-/*!
+/**
  * @brief Creates a new, autoreleased malformed XML exception.
  *
  * @param parser The parser which encountered malformed XML
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithParser: (nullable OFXMLParser *)parser;
 
-/*!
+/**
  * @brief Initializes an already allocated malformed XML exception.
  *
  * @param parser The parser which encountered malformed XML

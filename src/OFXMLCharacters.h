@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFXMLCharacters OFXMLCharacters.h ObjFW/OFXMLCharacters.h
  *
  * @brief A class representing XML characters.
@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFXMLCharacters, 4)
 }
 
-/*!
+/**
  * @brief Creates a new OFXMLCharacters with the specified string.
  *
  * @param string The string value for the characters
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)charactersWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLCharacters with the specified
  *	  string.
  *

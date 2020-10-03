@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSortedList OFSortedList.h ObjFW/OFSortedList.h
  *
  * @brief A class which provides easy to use sorted double-linked lists.
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 		   afterListObject: (of_list_object_t *)listObject
     OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Inserts the object to the list while keeping the list sorted.
  *
  * @param object The object to insert

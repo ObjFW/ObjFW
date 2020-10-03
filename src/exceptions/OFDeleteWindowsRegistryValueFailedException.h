@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFDeleteWindowsRegistryValueFailedException \
  *	  OFDeleteWindowsRegistryValueFailedException.h \
  *	  ObjFW/OFDeleteWindowsRegistryValueFailedException.h
@@ -36,22 +36,22 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which deleting the value failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The value which could not be deleted.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
-/*!
+/**
  * @brief The status returned by RegDeleteValueEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased delete Windows registry value failed
  *	  exception.
  *
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated delete Windows registry value failed
  *	  exception.
  *

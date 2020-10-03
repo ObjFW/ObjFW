@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 
-/*!
+/**
  * @class OFHTTPRequestFailedException \
  *	  OFHTTPRequestFailedException.h \
  *	  ObjFW/OFHTTPRequestFailedException.h
@@ -39,19 +39,19 @@ OF_ASSUME_NONNULL_BEGIN
 	OFHTTPResponse *_response;
 }
 
-/*!
+/**
  * @brief The HTTP request which failed.
  */
 @property (readonly, nonatomic) OFHTTPRequest *request;
 
-/*!
+/**
  * @brief The response for the failed HTTP request.
  */
 @property (readonly, nonatomic) OFHTTPResponse *response;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased HTTP request failed exception.
  *
  * @param request The HTTP request which failed
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated HTTP request failed exception.
  *
  * @param request The HTTP request which failed

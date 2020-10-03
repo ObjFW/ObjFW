@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFCharacterSet OFCharacterSet.h ObjFW/OFCharacterSet.h
  *
  * @brief A class cluster representing a character set.
@@ -36,13 +36,13 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) OFCharacterSet *whitespaceCharacterSet;
 #endif
 
-/*!
+/**
  * @brief The inverted set, containing only the characters that do not exist in
  *	  the receiver.
  */
 @property (readonly, nonatomic) OFCharacterSet *invertedSet;
 
-/*!
+/**
  * @brief Creates a new character set containing the characters of the
  *	  specified string.
  *
@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)characterSetWithCharactersInString: (OFString *)characters;
 
-/*!
+/**
  * @brief Creates a new character set containing the characters in the specified
  *	  range.
  *
@@ -60,13 +60,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)characterSetWithRange: (of_range_t)range;
 
-/*!
+/**
  * @brief A character set containing all Unicode characters in the category
  *	  `Zs` plus CHARACTER TABULATION (U+0009).
  */
 + (OFCharacterSet *)whitespaceCharacterSet;
 
-/*!
+/**
  * @brief Initializes an already allocated character set with the characters of
  *	  the specified string.
  *
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithCharactersInString: (OFString *)characters;
 
-/*!
+/**
  * @brief Initializes an already allocated character set with the characters in
  *	  the specified range.
  *
@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Returns whether the specified character is a member of the character
  *	  set.
  *

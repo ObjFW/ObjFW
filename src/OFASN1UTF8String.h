@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @brief An ASN.1 UTF8String.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -31,17 +31,17 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_UTF8StringValue;
 }
 
-/*!
+/**
  * @brief The UTF8String value.
  */
 @property (readonly, nonatomic) OFString *UTF8StringValue;
 
-/*!
+/**
  * @brief The string value.
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
-/*!
+/**
  * @brief Creates a UTF8String with the specified string value.
  *
  * @param stringValue The string value of the UTF8String
@@ -51,7 +51,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated UTF8String with the specified
  *	  string value.
  *
@@ -61,7 +61,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithStringValue: (OFString *)stringValue
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 UTF8String with the specified
  *	  arguments.
  *

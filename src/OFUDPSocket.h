@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @protocol OFUDPSocketDelegate OFUDPSocket.h ObjFW/OFUDPSocket.h
  *
  * @brief A delegate for OFUDPSocket.
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFUDPSocketDelegate <OFDatagramSocketDelegate>
 @end
 
-/*!
+/**
  * @class OFUDPSocket OFUDPSocket.h ObjFW/OFUDPSocket.h
  *
  * @brief A class which provides methods to create and use UDP sockets.
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFUDPSocket, 4)
 }
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFUDPSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Binds the socket to the specified host and port.
  *
  * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for

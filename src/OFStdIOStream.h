@@ -24,11 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFColor;
 
-/*!
+/**
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
  * @brief A class for providing standard input, output and error as OFStream.
@@ -53,18 +53,18 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 }
 
-/*!
+/**
  * @brief Whether there is an underlying terminal.
  */
 @property (readonly, nonatomic) bool hasTerminal;
 
-/*!
+/**
  * @brief The number of columns, or -1 if there is no underlying terminal or
  *	  the number of columns could not be queried.
  */
 @property (readonly, nonatomic) int columns;
 
-/*!
+/**
  * @brief The number of rows, or -1 if there is no underlying terminal or the
  *	  number of rows could not be queried.
  */
@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Sets the foreground color on the underlying terminal. Does nothing if
  *	  there is no underlying terminal or colors are unsupported.
  *
@@ -80,7 +80,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)setForegroundColor: (OFColor *)color;
 
-/*!
+/**
  * @brief Sets the background color on the underlying terminal. Does nothing if
  *	  there is no underlying terminal or colors are unsupported.
  *
@@ -88,25 +88,25 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)setBackgroundColor: (OFColor *)color;
 
-/*!
+/**
  * @brief Resets all attributes (color, bold, etc.). Does nothing if there is
  *	  no underlying terminal.
  */
 - (void)reset;
 
-/*!
+/**
  * @brief Clears the entire underlying terminal. Does nothing if there is no
  *	  underlying terminal.
  */
 - (void)clear;
 
-/*!
+/**
  * @brief Erases the entire current line on the underlying terminal. Does
  *	  nothing if there is no underlying terminal.
  */
 - (void)eraseLine;
 
-/*!
+/**
  * @brief Moves the cursor to the specified column in the current row. Does
  *	  nothing if there is no underlying terminal.
  *
@@ -114,7 +114,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)setCursorColumn: (unsigned int)column;
 
-/*!
+/**
  * @brief Moves the cursor to the specified absolute position. Does nothing if
  *	  there is no underlying terminal.
  *
@@ -122,7 +122,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)setCursorPosition: (of_point_t)position;
 
-/*!
+/**
  * @brief Moves the cursor to the specified relative position. Does nothing if
  *	  there is no underlying terminal.
  *
@@ -134,24 +134,24 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*! @file */
+/** @file */
 
-/*!
+/**
  * @brief The standard input as an OFStream.
  */
 extern OFStdIOStream *_Nullable of_stdin;
 
-/*!
+/**
  * @brief The standard output as an OFStream.
  */
 extern OFStdIOStream *_Nullable of_stdout;
 
-/*!
+/**
  * @brief The standard error as an OFStream.
  */
 extern OFStdIOStream *_Nullable of_stderr;
 
-/*!
+/**
  * @brief Log the specified printf-style format to @ref of_stderr.
  *
  * This prefixes the output with the date, timestamp, process name and PID and

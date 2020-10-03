@@ -37,7 +37,7 @@ extern int _OFNumber_NSObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category OFNumber (NSObject) \
  *	     OFNumber+NSObject.h ObjFWBridge/OFNumber+NSObject.h
  *

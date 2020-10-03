@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFURL;
 
-/*!
+/**
  * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
  *
  * @brief A class for storing and manipulating HTTP cookies.
@@ -40,48 +40,48 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFHTTPCookie, 4)
 }
 
-/*!
+/**
  * @brief The name of the cookie.
  */
 @property (copy, nonatomic) OFString *name;
 
-/*!
+/**
  * @brief The value of the cookie.
  */
 @property (copy, nonatomic) OFString *value;
 
-/*!
+/**
  * @brief The domain for the cookie.
  */
 @property (copy, nonatomic) OFString *domain;
 
-/*!
+/**
  * @brief The path for the cookie.
  */
 @property (copy, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The date when the cookie expires.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFDate *expires;
 
-/*!
+/**
  * @brief Whether the cookie is only to be used with HTTPS.
  */
 @property (nonatomic, getter=isSecure) bool secure;
 
-/*!
+/**
  * @brief Whether the cookie is only to be accessed through HTTP.
  */
 @property (nonatomic, getter=isHTTPOnly) bool HTTPOnly;
 
-/*!
+/**
  * @brief An array of other attributes.
  */
 @property (readonly, nonatomic)
     OFMutableArray OF_GENERIC(OFString *) *extensions;
 
-/*!
+/**
  * @brief Parses the specified response header fields for the specified URL and
  *	  returns an array of cookies.
  *
@@ -93,7 +93,7 @@ OF_ASSUME_NONNULL_BEGIN
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
     forURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Returns the request header fields for the specified cookies.
  *
  * @param cookies The cookies to return the request header fields for
@@ -102,7 +102,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFDictionary *)requestHeaderFieldsWithCookies:
     (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies;
 
-/*!
+/**
  * @brief Create a new cookie with the specified name and value.
  *
  * @param name The name of the cookie
@@ -116,7 +116,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated new cookie with the specified name
  *	  and value.
  *

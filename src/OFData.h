@@ -28,7 +28,7 @@ enum {
 	OF_DATA_SEARCH_BACKWARDS = 1
 };
 
-/*!
+/**
  * @class OFData OFData.h ObjFW/OFData.h
  *
  * @brief A class for storing arbitrary data in an array.
@@ -47,36 +47,36 @@ enum {
 	OF_RESERVE_IVARS(OFData, 4)
 }
 
-/*!
+/**
  * @brief The size of a single item in the OFData in bytes.
  */
 @property (readonly, nonatomic) size_t itemSize;
 
-/*!
+/**
  * @brief The number of items in the OFData.
  */
 @property (readonly, nonatomic) size_t count;
 
-/*!
+/**
  * @brief All elements of the OFData as a C array.
  *
  * @warning The pointer is only valid until the OFData is changed!
  */
 @property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The first item of the OFData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *firstItem
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The last item of the OFData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *lastItem
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The string representation of the data.
  *
  * The string representation is a hex dump of the data, grouped by itemSize
@@ -84,12 +84,12 @@ enum {
  */
 @property (readonly, nonatomic) OFString *stringRepresentation;
 
-/*!
+/**
  * @brief A string containing the data in Base64 encoding.
  */
 @property (readonly, nonatomic) OFString *stringByBase64Encoding;
 
-/*!
+/**
  * @brief Creates a new OFData with the specified `count` items of size 1.
  *
  * @param items The items to store in the OFData
@@ -99,7 +99,7 @@ enum {
 + (instancetype)dataWithItems: (const void *)items
 			count: (size_t)count;
 
-/*!
+/**
  * @brief Creates a new OFData with the specified `count` items of the
  *	  specified size.
  *
@@ -112,7 +112,7 @@ enum {
 		     itemSize: (size_t)itemSize
 			count: (size_t)count;
 
-/*!
+/**
  * @brief Creates a new OFData with the specified `count` items of size 1 by
  *	  taking over ownership of the specified items pointer.
  *
@@ -126,7 +126,7 @@ enum {
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
 
-/*!
+/**
  * @brief Creates a new OFData with the specified `count` items of the
  *	  specified size by taking ownership of the specified items pointer.
  *
@@ -143,7 +143,7 @@ enum {
 		       freeWhenDone: (bool)freeWhenDone;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a new OFData with an item size of 1, containing the data of
  *	  the specified file.
  *
@@ -153,7 +153,7 @@ enum {
 + (instancetype)dataWithContentsOfFile: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Creates a new OFData with an item size of 1, containing the data of
  *	  the specified URL.
  *
@@ -162,7 +162,7 @@ enum {
  */
 + (instancetype)dataWithContentsOfURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Creates a new OFData with an item size of 1, containing the data of
  *	  the string representation.
  *
@@ -171,7 +171,7 @@ enum {
  */
 + (instancetype)dataWithStringRepresentation: (OFString *)string;
 
-/*!
+/**
  * @brief Creates a new OFData with an item size of 1, containing the data of
  *	  the Base64-encoded string.
  *
@@ -180,7 +180,7 @@ enum {
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
-/*!
+/**
  * @brief Initialized an already allocated OFData with the specified `count`
  *	  items of size 1.
  *
@@ -191,7 +191,7 @@ enum {
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count;
 
-/*!
+/**
  * @brief Initialized an already allocated OFData with the specified `count`
  *	  items of the specified size.
  *
@@ -204,7 +204,7 @@ enum {
 		     itemSize: (size_t)itemSize
 			count: (size_t)count;
 
-/*!
+/**
  * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of size 1 by taking over ownership of the specified items
  *	  pointer.
@@ -219,7 +219,7 @@ enum {
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
 
-/*!
+/**
  * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size by taking ownership of the specified
  *	  items pointer.
@@ -237,7 +237,7 @@ enum {
 		       freeWhenDone: (bool)freeWhenDone;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Initializes an already allocated OFData with an item size of 1,
  *	  containing the data of the specified file.
  *
@@ -247,7 +247,7 @@ enum {
 - (instancetype)initWithContentsOfFile: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Initializes an already allocated OFData with an item size of 1,
  *	  containing the data of the specified URL.
  *
@@ -256,7 +256,7 @@ enum {
  */
 - (instancetype)initWithContentsOfURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Initializes an already allocated OFData with an item size of 1,
  *	  containing the data of the string representation.
  *
@@ -265,7 +265,7 @@ enum {
  */
 - (instancetype)initWithStringRepresentation: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFData with an item size of 1,
  *	  containing the data of the Base64-encoded string.
  *
@@ -274,7 +274,7 @@ enum {
  */
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
-/*!
+/**
  * @brief Returns a specific item of the OFData.
  *
  * @param index The number of the item to return
@@ -282,7 +282,7 @@ enum {
  */
 - (const void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Returns the data in the specified range as a new OFData.
  *
  * @param range The range of the data for the new OFData
@@ -290,7 +290,7 @@ enum {
  */
 - (OFData *)subdataWithRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Returns the range of the data.
  *
  * @param data The data to search for
@@ -308,7 +308,7 @@ enum {
 		    range: (of_range_t)range;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Writes the OFData into the specified file.
  *
  * @param path The path of the file to write to
@@ -316,7 +316,7 @@ enum {
 - (void)writeToFile: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Writes the OFData to the specified URL.
  *
  * @param URL The URL to write to

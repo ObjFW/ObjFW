@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFThread;
 
-/*!
+/**
  * @class OFThreadStartFailedException \
  *	  OFThreadStartFailedException.h ObjFW/OFThreadStartFailedException.h
  *
@@ -37,17 +37,17 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The thread which could not be started.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased thread start failed exception.
  *
  * @param thread The thread which could not be started
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithThread: (nullable OFThread *)thread
 			      errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated thread start failed exception.
  *
  * @param thread The thread which could not be started

@@ -19,10 +19,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for replacing values in an OFMutableArray.
  *
  * @param object The object to replace
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 #endif
 
-/*!
+/**
  * @class OFMutableArray OFArray.h ObjFW/OFArray.h
  *
  * @brief An abstract class for storing, adding and removing objects in an
@@ -46,7 +46,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief Creates a new OFMutableArray with enough memory to hold the specified
  *	  number of objects.
  *
@@ -55,7 +55,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  */
 + (instancetype)arrayWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableArray with enough memory to
  *	  hold the specified number of objects.
  *
@@ -64,21 +64,21 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  */
 - (instancetype)initWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Adds an object to the end of the array.
  *
  * @param object An object to add
  */
 - (void)addObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Adds the objects from the specified OFArray to the end of the array.
  *
  * @param array An array of objects to add
  */
 - (void)addObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Inserts an object to the OFArray at the specified index.
  *
  * @param object An object to add
@@ -87,7 +87,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)insertObject: (ObjectType)object
 	     atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Inserts the objects from the specified OFArray at the specified index.
  *
  * @param array An array of objects
@@ -96,7 +96,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)insertObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)array
 		       atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Replaces the first object equivalent to the specified object with the
  *	  other specified object.
  *
@@ -106,7 +106,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)replaceObject: (ObjectType)oldObject
 	   withObject: (ObjectType)newObject;
 
-/*!
+/**
  * @brief Replaces the object at the specified index with the specified object.
  *
  * @param index The index of the object to replace
@@ -115,7 +115,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Replaces the object at the specified index with the specified object.
  *
  * This method is the same as @ref replaceObjectAtIndex:withObject:.
@@ -128,7 +128,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 -    (void)setObject: (ObjectType)object
   atIndexedSubscript: (size_t)index;
 
-/*!
+/**
  * @brief Replaces the first object that has the same address as the specified
  *	  object with the other specified object.
  *
@@ -138,14 +138,14 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)replaceObjectIdenticalTo: (ObjectType)oldObject
 		      withObject: (ObjectType)newObject;
 
-/*!
+/**
  * @brief Removes the first object equivalent to the specified object.
  *
  * @param object The object to remove
  */
 - (void)removeObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Removes the first object that has the same address as the specified
  *	  object.
  *
@@ -153,32 +153,32 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  */
 - (void)removeObjectIdenticalTo: (ObjectType)object;
 
-/*!
+/**
  * @brief Removes the object at the specified index.
  *
  * @param index The index of the object to remove
  */
 - (void)removeObjectAtIndex: (size_t)index;
 
-/*!
+/**
  * @brief Removes the object in the specified range.
  *
  * @param range The range of the objects to remove
  */
 - (void)removeObjectsInRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Removes the last object.
  */
 - (void)removeLastObject;
 
-/*!
+/**
  * @brief Removes all objects.
  */
 - (void)removeAllObjects;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Replaces each object with the object returned by the block.
  *
  * @param block The block which returns a new object for each object
@@ -186,7 +186,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Exchange the objects at the specified indices.
  *
  * @param index1 The index of the first object to exchange
@@ -195,12 +195,12 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 - (void)exchangeObjectAtIndex: (size_t)index1
 	    withObjectAtIndex: (size_t)index2;
 
-/*!
+/**
  * @brief Sorts the array in ascending order.
  */
 - (void)sort;
 
-/*!
+/**
  * @brief Sorts the array using the specified selector and options.
  *
  * @param selector The selector to use to sort the array. It's signature
@@ -215,7 +215,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 		  options: (int)options;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Sorts the array using the specified comparator and options.
  *
  * @param comparator The comparator to use to sort the array
@@ -229,12 +229,12 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 		    options: (int)options;
 #endif
 
-/*!
+/**
  * @brief Reverts the order of the objects in the array.
  */
 - (void)reverse;
 
-/*!
+/**
  * @brief Converts the mutable array to an immutable array.
  */
 - (void)makeImmutable;

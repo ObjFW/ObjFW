@@ -24,7 +24,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFSortedList OF_GENERIC(ObjectType);
 #ifdef OF_HAVE_THREADS
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTimer;
 @class OFDate;
 
-/*!
+/**
  * @brief A mode for an OFRunLoop.
  */
 typedef OFConstantString *of_run_loop_mode_t;
@@ -46,7 +46,7 @@ typedef OFConstantString *of_run_loop_mode_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief The default mode for an OFRunLoop.
  */
 extern const of_run_loop_mode_t of_run_loop_mode_default;
@@ -54,7 +54,7 @@ extern const of_run_loop_mode_t of_run_loop_mode_default;
 }
 #endif
 
-/*!
+/**
  * @class OFRunLoop OFRunLoop.h ObjFW/OFRunLoop.h
  *
  * @brief A class providing a run loop for the application and its processes.
@@ -77,28 +77,28 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_run_loop_mode_t currentMode;
 
-/*!
+/**
  * @brief Returns the run loop for the main thread.
  *
  * @return The run loop for the main thread
  */
 + (nullable OFRunLoop *)mainRunLoop;
 
-/*!
+/**
  * @brief Returns the run loop for the current thread.
  *
  * @return The run loop for the current thread
  */
 + (nullable OFRunLoop *)currentRunLoop;
 
-/*!
+/**
  * @brief Adds an OFTimer to the run loop.
  *
  * @param timer The timer to add
  */
 - (void)addTimer: (OFTimer *)timer;
 
-/*!
+/**
  * @brief Adds an OFTimer to the run loop for the specified mode.
  *
  * @param timer The timer to add
@@ -108,7 +108,7 @@ OF_SUBCLASSING_RESTRICTED
 	 forMode: (of_run_loop_mode_t)mode;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief Adds an Exec Signal to the run loop.
  *
  * If a signal is added multiple times, the specified methods will be performed
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
 	       target: (id)target
 	     selector: (SEL)selector;
 
-/*!
+/**
  * @brief Adds an Exec Signal to the run loop for the specified mode.
  *
  * If a signal is added multiple times, the specified methods will be performed
@@ -146,7 +146,7 @@ OF_SUBCLASSING_RESTRICTED
 	       target: (id)target
 	     selector: (SEL)selector;
 
-/*!
+/**
  * @brief Removes the specified Exec Signal with the specified target and
  *	  selector.
  *
@@ -158,7 +158,7 @@ OF_SUBCLASSING_RESTRICTED
 		  target: (id)target
 		selector: (SEL)selector;
 
-/*!
+/**
  * @brief Removes the specified Exec Signal from the specified mode with the
  *	  specified target and selector.
  *
@@ -173,19 +173,19 @@ OF_SUBCLASSING_RESTRICTED
 		selector: (SEL)selector;
 #endif
 
-/*!
+/**
  * @brief Starts the run loop.
  */
 - (void)run;
 
-/*!
+/**
  * @brief Run the run loop until the specified deadline.
  *
  * @param deadline The date until which the run loop should run
  */
 - (void)runUntilDate: (nullable OFDate *)deadline;
 
-/*!
+/**
  * @brief Run the run loop until an event or timer occurs or the specified
  *	  deadline is reached.
  *
@@ -195,7 +195,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)runMode: (of_run_loop_mode_t)mode
      beforeDate: (nullable OFDate *)deadline;
 
-/*!
+/**
  * @brief Stops the run loop. If there is still an operation being executed, it
  *	  is finished before the run loop stops.
  */

@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSetWindowsRegistryValueFailedException \
  *	  OFSetWindowsRegistryValueFailedException.h \
  *	  ObjFW/OFSetWindowsRegistryValueFailedException.h
@@ -38,32 +38,32 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which setting the value failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The value which could not be set.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
-/*!
+/**
  * @brief The data to which the value could not be set.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFData *data;
 
-/*!
+/**
  * @brief The type for the value that could not be set.
  */
 @property (readonly, nonatomic) DWORD type;
 
-/*!
+/**
  * @brief The status returned by RegSetValueEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased set Windows registry value failed
  *	  exception.
  *
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated set Windows registry value failed
  *	  exception.
  *

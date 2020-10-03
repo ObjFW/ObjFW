@@ -23,13 +23,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFData;
 @class OFSequencedPacketSocket;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when a packet has been received.
  *
  * @param length The length of the packet
@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(size_t length,
     id _Nullable exception);
 
-/*!
+/**
  * @brief A block which is called when a packet has been sent.
  *
  * @param data The data which was sent
@@ -51,7 +51,7 @@ typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(size_t length,
 typedef OFData *_Nullable (^of_sequenced_packet_socket_async_send_data_block_t)(
     OFData *_Nonnull data, id _Nullable exception);
 
-/*!
+/**
  * @brief A block which is called when the socket accepted a connection.
  *
  * @param acceptedSocket The socket which has been accepted
@@ -64,7 +64,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
     OFSequencedPacketSocket *acceptedSocket, id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFSequencedPacketSocketDelegate OFSequencedPacketSocket.h \
  *	     ObjFW/OFSequencedPacketSocket.h
  *
@@ -72,7 +72,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  */
 @protocol OFSequencedPacketSocketDelegate <OFObject>
 @optional
-/*!
+/**
  * @brief This method is called when a packet has been received.
  *
  * @param socket The sequenced packet socket which received a packet
@@ -87,7 +87,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 		length: (size_t)length
 	     exception: (nullable id)exception;
 
-/*!
+/**
  * @brief This method is called when a packet has been sent.
  *
  * @param socket The sequenced packet socket which sent a packet
@@ -99,7 +99,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 		didSendData: (OFData *)data
 		  exception: (nullable id)exception;
 
-/*!
+/**
  * @brief A method which is called when a socket accepted a connection.
  *
  * @param socket The socket which accepted the connection
@@ -113,7 +113,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 	exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFSequencedPacketSocket OFSequencedPacketSocket.h \
  *	  ObjFW/OFSequencedPacketSocket.h
  *
@@ -136,26 +136,26 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 	OF_RESERVE_IVARS(OFSequencedPacketSocket, 4)
 }
 
-/*!
+/**
  * @brief Whether the socket can block.
  *
  * By default, a socket can block.
  */
 @property (nonatomic) bool canBlock;
 
-/*!
+/**
  * @brief Whether the socket is a listening socket.
  */
 @property (readonly, nonatomic, getter=isListening) bool listening;
 
-/*!
+/**
  * @brief The remote address.
  *
  * @note This only works for accepted sockets!
  */
 @property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -164,14 +164,14 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFSequencedPacketSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Returns a new, autoreleased OFSequencedPacketSocket.
  *
  * @return A new, autoreleased OFSequencedPacketSocket
  */
 + (instancetype)socket;
 
-/*!
+/**
  * @brief Receives a packet and stores it into the specified buffer.
  *
  * If the buffer is too small, the receive operation fails.
@@ -183,7 +183,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length;
 
-/*!
+/**
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
@@ -195,7 +195,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length;
 
-/*!
+/**
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
@@ -210,7 +210,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
@@ -230,7 +230,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 		     block: (of_sequenced_packet_socket_async_receive_block_t)
 				block;
 
-/*!
+/**
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
@@ -253,7 +253,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 				block;
 #endif
 
-/*!
+/**
  * @brief Sends the specified packet.
  *
  * @param buffer The buffer to send as a packet
@@ -262,14 +262,14 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length;
 
-/*!
+/**
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
  */
 - (void)asyncSendData: (OFData *)data;
 
-/*!
+/**
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
@@ -279,7 +279,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
@@ -291,7 +291,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 		block: (of_sequenced_packet_socket_async_send_data_block_t)
 			   block;
 
-/*!
+/**
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
@@ -306,31 +306,31 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 			   block;
 #endif
 
-/*!
+/**
  * @brief Listen on the socket.
  *
  * @param backlog Maximum length for the queue of pending connections.
  */
 - (void)listenWithBacklog: (int)backlog;
 
-/*!
+/**
  * @brief Listen on the socket.
  */
 - (void)listen;
 
-/*!
+/**
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased sequenced packet socket for the accepted connection.
  */
 - (instancetype)accept;
 
-/*!
+/**
  * @brief Asynchronously accept an incoming connection.
  */
 - (void)asyncAccept;
 
-/*!
+/**
  * @brief Asynchronously accept an incoming connection.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
@@ -338,7 +338,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 - (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously accept an incoming connection.
  *
  * @param block The block to execute when a new connection has been accepted.
@@ -348,7 +348,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 - (void)asyncAcceptWithBlock:
     (of_sequenced_packet_socket_async_accept_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously accept an incoming connection.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
@@ -360,12 +360,12 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
     block: (of_sequenced_packet_socket_async_accept_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Cancels all pending asynchronous requests on the socket.
  */
 - (void)cancelAsyncRequests;
 
-/*!
+/**
  * @brief Closes the socket so that it can neither receive nor send any more
  *	  datagrams.
  */

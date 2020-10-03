@@ -35,9 +35,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
-/*!
+/**
  * @class OFNumber OFNumber.h ObjFW/OFNumber.h
  *
  * @brief Provides a way to store a number in an object.
@@ -56,72 +56,72 @@ OF_SUBCLASSING_RESTRICTED
 	const char *_typeEncoding;
 }
 
-/*!
+/**
  * @brief The OFNumber as a `bool`.
  */
 @property (readonly, nonatomic) bool boolValue;
 
-/*!
+/**
  * @brief The OFNumber as a `signed char`.
  */
 @property (readonly, nonatomic) signed char charValue;
 
-/*!
+/**
  * @brief The OFNumber as a `short`.
  */
 @property (readonly, nonatomic) short shortValue;
 
-/*!
+/**
  * @brief The OFNumber as an `int`.
  */
 @property (readonly, nonatomic) int intValue;
 
-/*!
+/**
  * @brief The OFNumber as a `long`.
  */
 @property (readonly, nonatomic) long longValue;
 
-/*!
+/**
  * @brief The OFNumber as a `long long`.
  */
 @property (readonly, nonatomic) long long longLongValue;
 
-/*!
+/**
  * @brief The OFNumber as an `unsigned char`.
  */
 @property (readonly, nonatomic) unsigned char unsignedCharValue;
 
-/*!
+/**
  * @brief The OFNumber as an `unsigned short`.
  */
 @property (readonly, nonatomic) unsigned short unsignedShortValue;
 
-/*!
+/**
  * @brief The OFNumber as an `unsigned int`.
  */
 @property (readonly, nonatomic) unsigned int unsignedIntValue;
 
-/*!
+/**
  * @brief The OFNumber as an `unsigned long`.
  */
 @property (readonly, nonatomic) unsigned long unsignedLongValue;
 
-/*!
+/**
  * @brief The OFNumber as an `unsigned long long`.
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
-/*!
+/**
  * @brief The OFNumber as a `float`.
  */
 @property (readonly, nonatomic) float floatValue;
 
-/*!
+/**
  * @brief The OFNumber as a `double`.
  */
 @property (readonly, nonatomic) double doubleValue;
 
-/*!
+/**
  * @brief The OFNumber as a string.
  */
 @property (readonly, nonatomic) OFString *stringValue;
@@ -137,7 +137,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `bool`.
  *
  * @param value The `bool` value which the OFNumber should contain
@@ -145,7 +145,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithBool: (bool)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `signed char`.
  *
  * @param value The `signed char` value which the OFNumber should contain
@@ -153,7 +153,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithChar: (signed char)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `short`.
  *
  * @param value The `short` value which the OFNumber should contain
@@ -161,7 +161,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithShort: (short)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `int`.
  *
  * @param value The `int` value which the OFNumber should contain
@@ -169,7 +169,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithInt: (int)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `long`.
  *
  * @param value The `long` value which the OFNumber should contain
@@ -177,7 +177,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithLong: (long)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `long long`.
  *
  * @param value The `long long` value which the OFNumber should contain
@@ -185,7 +185,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithLongLong: (long long)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `unsigned char`.
  *
  * @param value The `unsigned char` value which the OFNumber should contain
@@ -193,7 +193,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithUnsignedChar: (unsigned char)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `unsigned short`.
  *
  * @param value The `unsigned short` value which the OFNumber should contain
@@ -201,7 +201,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithUnsignedShort: (unsigned short)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `unsigned int`.
  *
  * @param value The `unsigned int` value which the OFNumber should contain
@@ -209,7 +209,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithUnsignedInt: (unsigned int)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `unsigned long`.
  *
  * @param value The `unsigned long` value which the OFNumber should contain
@@ -217,7 +217,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithUnsignedLong: (unsigned long)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `unsigned long long`.
  *
  * @param value The `unsigned long long` value which the OFNumber should contain
@@ -225,7 +225,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithUnsignedLongLong: (unsigned long long)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `float`.
  *
  * @param value The `float` value which the OFNumber should contain
@@ -233,7 +233,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)numberWithFloat: (float)value;
 
-/*!
+/**
  * @brief Creates a new OFNumber with the specified `double`.
  *
  * @param value The `double` value which the OFNumber should contain
@@ -253,7 +253,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `bool`.
  *
  * @param value The `bool` value which the OFNumber should contain
@@ -261,7 +261,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithBool: (bool)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `signed char`.
  *
@@ -270,7 +270,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithChar: (signed char)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `short`.
  *
  * @param value The `short` value which the OFNumber should contain
@@ -278,7 +278,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithShort: (short)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `int`.
  *
  * @param value The `int` value which the OFNumber should contain
@@ -286,7 +286,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithInt: (int)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `long`.
  *
  * @param value The `long` value which the OFNumber should contain
@@ -294,7 +294,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithLong: (long)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `long long`.
  *
@@ -303,7 +303,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithLongLong: (long long)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `unsigned char`.
  *
@@ -312,7 +312,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithUnsignedChar: (unsigned char)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `unsigned short`.
  *
@@ -321,7 +321,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithUnsignedShort: (unsigned short)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `unsigned int`.
  *
@@ -330,7 +330,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithUnsignedInt: (unsigned int)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `unsigned long`.
  *
@@ -339,7 +339,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithUnsignedLong: (unsigned long)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified
  *	  `unsigned long long`.
  *
@@ -348,7 +348,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `float`.
  *
  * @param value The `float` value which the OFNumber should contain
@@ -356,7 +356,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithFloat: (float)value;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNumber with the specified `double`.
  *
  * @param value The `double` value which the OFNumber should contain

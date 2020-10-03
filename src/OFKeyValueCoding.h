@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @protocol OFKeyValueCoding OFKeyValueCoding.h ObjFW/OFKeyValueCoding.h
  *
  * @brief A protocol for Key Value Coding.
@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * the interface described by this protocol.
  */
 @protocol OFKeyValueCoding
-/*!
+/**
  * @brief Returns the value for the specified key.
  *
  * @param key The key of the value to return
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable id)valueForKey: (OFString *)key;
 
-/*!
+/**
  * @brief Returns the value for the specified key path.
  *
  * @param keyPath The key path of the value to return
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable id)valueForKeyPath: (OFString *)keyPath;
 
-/*!
+/**
  * @brief This is called by @ref valueForKey: if the specified key does not
  *	  exist.
  *
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable id)valueForUndefinedKey: (OFString *)key;
 
-/*!
+/**
  * @brief Set the value for the specified key.
  *
  * @param value The value for the specified key
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Set the value for the specified key path.
  *
  * @param value The value for the specified key path
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setValue: (nullable id)value
       forKeyPath: (OFString *)keyPath;
 
-/*!
+/**
  * @brief This is called by @ref setValue:forKey: if the specified key does not
  *	  exist.
  *
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
 -  (void)setValue: (nullable id)value
   forUndefinedKey: (OFString *)key;
 
-/*!
+/**
  * @brief This is called by @ref setValue:forKey: if the specified key is a
  *	  scalar, but the value specified is `nil`.
  *

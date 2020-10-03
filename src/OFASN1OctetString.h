@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @brief An ASN.1 OctetString.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -31,12 +31,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFData *_octetStringValue;
 }
 
-/*!
+/**
  * @brief The OctetString value.
  */
 @property (readonly, nonatomic) OFData *octetStringValue;
 
-/*!
+/**
  * @brief Creates an OctetString with the specified value.
  *
  * @param octetStringValue The OctetString value
@@ -46,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OctetString with the specified
  *	  value.
  *
@@ -56,7 +56,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithOctetStringValue: (OFData *)octetStringValue
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 OctetString with the specified
  *	  arguments.
  *

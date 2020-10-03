@@ -20,13 +20,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFTCPSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when the socket connected.
  *
  * @param exception An exception which occurred while connecting the socket or
@@ -35,14 +35,14 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/OFTCPSocket.h
  *
  * A delegate for OFTCPSocket.
  */
 @protocol OFTCPSocketDelegate <OFStreamSocketDelegate>
 @optional
-/*!
+/**
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
@@ -57,7 +57,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 	 exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFTCPSocket OFTCPSocket.h ObjFW/OFTCPSocket.h
  *
  * @brief A class which provides methods to create and use TCP sockets.
@@ -81,7 +81,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-/*!
+/**
  * @brief Whether the socket sends keep alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
@@ -90,7 +90,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
 #ifndef OF_WII
-/*!
+/**
  * @brief Whether sending segments can be delayed. Setting this to NO sets
  *        TCP_NODELAY on the socket.
  *
@@ -99,17 +99,17 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 @property (nonatomic) bool canDelaySendingSegments;
 #endif
 
-/*!
+/**
  * @brief The host to use as a SOCKS5 proxy.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *SOCKS5Host;
 
-/*!
+/**
  * @brief The port to use on the SOCKS5 proxy.
  */
 @property (nonatomic) uint16_t SOCKS5Port;
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -118,7 +118,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFTCPSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Sets the global SOCKS5 proxy host to use when creating a new socket
  *
  * @param SOCKS5Host The host to use as a SOCKS5 proxy when creating a new
@@ -126,28 +126,28 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  */
 + (void)setSOCKS5Host: (nullable OFString *)SOCKS5Host;
 
-/*!
+/**
  * @brief Returns the host to use as a SOCKS5 proxy when creating a new socket
  *
  * @return The host to use as a SOCKS5 proxy when creating a new socket
  */
 + (nullable OFString *)SOCKS5Host;
 
-/*!
+/**
  * @brief Sets the global SOCKS5 proxy port to use when creating a new socket
  *
  * @param SOCKS5Port The port to use as a SOCKS5 proxy when creating a new socket
  */
 + (void)setSOCKS5Port: (uint16_t)SOCKS5Port;
 
-/*!
+/**
  * @brief Returns the port to use as a SOCKS5 proxy when creating a new socket
  *
  * @return The port to use as a SOCKS5 proxy when creating a new socket
  */
 + (uint16_t)SOCKS5Port;
 
-/*!
+/**
  * @brief Connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -156,7 +156,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -165,7 +165,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -177,7 +177,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -188,7 +188,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 		      port: (uint16_t)port
 		     block: (of_tcp_socket_async_connect_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -202,7 +202,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
 		     block: (of_tcp_socket_async_connect_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Bind the socket to the specified host and port.
  *
  * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for

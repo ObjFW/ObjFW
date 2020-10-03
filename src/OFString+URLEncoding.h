@@ -30,12 +30,12 @@ extern int _OFString_URLEncoding_reference;
 #endif
 
 @interface OFString (URLEncoding)
-/*!
+/**
  * @brief The string as an URL decoded string.
  */
 @property (readonly, nonatomic) OFString *stringByURLDecoding;
 
-/*!
+/**
  * @brief Encodes a string for use in a URL, but does not escape the specified
  *	  allowed characters.
  *

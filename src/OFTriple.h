@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFTriple OFTriple.h ObjFW/OFTriple.h
  *
  * @brief A class for storing a triple of three objects.
@@ -38,25 +38,25 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFTriple, 4)
 }
 
-/*!
+/**
  * @brief The first object of the triple.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     FirstType firstObject;
 
-/*!
+/**
  * @brief The second object of the triple.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     SecondType secondObject;
 
-/*!
+/**
  * @brief The third object of the triple.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     ThirdType thirdObject;
 
-/*!
+/**
  * @brief Creates a new OFTriple with the specified objects.
  *
  * @param firstObject The first object for the triple
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
 			 secondObject: (nullable SecondType)secondObject
 			  thirdObject: (nullable ThirdType)thirdObject;
 
-/*!
+/**
  * @brief Initializes an already allocated OFTriple with the specified objects.
  *
  * @param firstObject The first object for the triple

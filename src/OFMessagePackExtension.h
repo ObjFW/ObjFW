@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @class OFMessagePackExtension \
  *	  OFMessagePackExtension.h ObjFW/OFMessagePackExtension.h
  *
@@ -36,17 +36,17 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMessagePackExtension, 4)
 }
 
-/*!
+/**
  * @brief The MessagePack extension type.
  */
 @property (readonly, nonatomic) int8_t type;
 
-/*!
+/**
  * @brief The data of the extension.
  */
 @property (readonly, nonatomic) OFData *data;
 
-/*!
+/**
  * @brief Creates a new OFMessagePackRepresentation with the specified type and
  *	  data.
  *
@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMessagePackRepresentation with the
  *	  specified type and data.
  *

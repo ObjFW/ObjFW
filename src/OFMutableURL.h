@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutableURL OFMutableURL.h ObjFW/OFMutableURL.h
  *
  * @brief A class for parsing URLs and accessing parts of it.
@@ -29,12 +29,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutableURL, 4)
 }
 
-/*!
+/**
  * @brief The scheme part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
 
-/*!
+/**
  * @brief The scheme part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -43,12 +43,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedScheme;
 
-/*!
+/**
  * @brief The host part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The host part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -57,17 +57,17 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedHost;
 
-/*!
+/**
  * @brief The port part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 
-/*!
+/**
  * @brief The user part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *user;
 
-/*!
+/**
  * @brief The user part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -76,12 +76,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedUser;
 
-/*!
+/**
  * @brief The password part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *password;
 
-/*!
+/**
  * @brief The password part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -90,12 +90,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedPassword;
 
-/*!
+/**
  * @brief The path part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The path part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -104,7 +104,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedPath;
 
-/*!
+/**
  * @brief The path of the URL split into components.
  *
  * The first component must always be empty to designate the root.
@@ -112,12 +112,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
-/*!
+/**
  * @brief The query part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;
 
-/*!
+/**
  * @brief The query part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -126,12 +126,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedQuery;
 
-/*!
+/**
  * @brief The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;
 
-/*!
+/**
  * @brief The fragment part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
@@ -140,21 +140,21 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedFragment;
 
-/*!
+/**
  * @brief Creates a new mutable URL.
  *
  * @return A new, autoreleased OFMutableURL
  */
 + (instancetype)URL;
 
-/*!
+/**
  * @brief Appends the specified path component.
  *
  * @param component The component to append
  */
 - (void)appendPathComponent: (OFString *)component;
 
-/*!
+/**
  * @brief Appends the specified path component.
  *
  * @param component The component to append
@@ -164,12 +164,12 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendPathComponent: (OFString *)component
 		isDirectory: (bool)isDirectory;
 
-/*!
+/**
  * @brief Resolves relative sub paths.
  */
 - (void)standardizePath;
 
-/*!
+/**
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutableZIPArchiveEntry \
  *	  OFMutableZIPArchiveEntry.h ObjFW/OFMutableZIPArchiveEntry.h
  *
@@ -31,25 +31,25 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutableZIPArchiveEntry, 4)
 }
 
-/*!
+/**
  * @brief The file name of the entry.
  */
 @property (readwrite, copy, nonatomic) OFString *fileName;
 
-/*!
+/**
  * @brief The comment of the entry's file.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *fileComment;
 
-/*!
+/**
  * @brief The extra field of the entry.
  *
  * The item size *must* be 1!
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFData *extraField;
 
-/*!
+/**
  * @brief The version which made the entry.
  *
  * The lower 8 bits are the ZIP specification version.@n
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic) uint16_t versionMadeBy;
 
-/*!
+/**
  * @brief The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
@@ -67,14 +67,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic) uint16_t minVersionNeeded;
 
-/*!
+/**
  * @brief The last modification date of the entry's file.
  *
  * @note Due to limitations of the ZIP format, this has only 2 second precision.
  */
 @property (readwrite, retain, nonatomic) OFDate *modificationDate;
 
-/*!
+/**
  * @brief The compression method of the entry.
  *
  * Supported values are:
@@ -88,22 +88,22 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic) uint16_t compressionMethod;
 
-/*!
+/**
  * @brief The compressed size of the entry's file.
  */
 @property (readwrite, nonatomic) uint64_t compressedSize;
 
-/*!
+/**
  * @brief The uncompressed size of the entry's file.
  */
 @property (readwrite, nonatomic) uint64_t uncompressedSize;
 
-/*!
+/**
  * @brief The CRC32 checksum of the entry's file.
  */
 @property (readwrite, nonatomic) uint32_t CRC32;
 
-/*!
+/**
  * @brief The version specific attributes.
  *
  * The meaning of the version specific attributes depends on the attribute
@@ -111,14 +111,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic) uint32_t versionSpecificAttributes;
 
-/*!
+/**
  * @brief The general purpose bit flag of the entry.
  *
  * See the ZIP specification for details.
  */
 @property (readwrite, nonatomic) uint16_t generalPurposeBitFlag;
 
-/*!
+/**
  * @brief Converts the OFMutableZIPArchiveEntry to an immutable
  *	  OFZIPArchiveEntry.
  */

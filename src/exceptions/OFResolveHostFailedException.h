@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFResolveHostFailedException \
  *	  OFResolveHostFailedException.h ObjFW/OFResolveHostFailedException.h
  *
@@ -33,22 +33,22 @@ OF_ASSUME_NONNULL_BEGIN
 	of_dns_resolver_error_t _error;
 }
 
-/*!
+/**
  * @brief The host which could not be resolved.
  */
 @property (readonly, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The address family for which the host could not be resolved.
  */
 @property (readonly, nonatomic) of_socket_address_family_t addressFamily;
 
-/*!
+/**
  * @brief The error from the resolver.
  */
 @property (readonly, nonatomic) of_dns_resolver_error_t error;
 
-/*!
+/**
  * @brief Creates a new, autoreleased resolve host failed exception.
  *
  * @param host The host which could not be resolved
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 		    addressFamily: (of_socket_address_family_t)addressFamily
 			    error: (of_dns_resolver_error_t)error;
 
-/*!
+/**
  * @brief Initializes an already allocated resolve host failed exception.
  *
  * @param host The host which could not be resolved

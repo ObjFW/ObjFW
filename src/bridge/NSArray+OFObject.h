@@ -31,7 +31,7 @@ extern int _NSArray_OFObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category NSArray (OFObject) \
  *	     NSArray+OFObject.h ObjFWBridge/NSArray+OFObject.h
  *

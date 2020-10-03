@@ -23,7 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFListenFailedException \
  *	  OFListenFailedException.h ObjFW/OFListenFailedException.h
  *
@@ -35,24 +35,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _backlog, _errNo;
 }
 
-/*!
+/**
  * @brief The socket which failed to listen.
  */
 @property (readonly, nonatomic) id socket;
 
-/*!
+/**
  * @brief The requested back log.
  */
 @property (readonly, nonatomic) int backlog;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased listen failed exception.
  *
  * @param socket The socket which failed to listen
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated listen failed exception
  *
  * @param socket The socket which failed to listen

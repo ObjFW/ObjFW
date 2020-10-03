@@ -28,7 +28,7 @@ extern int _OFString_PropertyListParsing_reference;
 #endif
 
 @interface OFString (PropertyListParsing)
-/*!
+/**
  * @brief The string interpreted as a property list and parsed as an object.
  *
  * @note This only supports XML property lists!

@@ -22,21 +22,21 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @struct of_options_parser_option_t OFOptionsParser.h ObjFW/OFOptionsParser.h
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
 struct of_options_parser_option_t {
-	/*! The short version (e.g. `-v`) of the option or `\0` for none. */
+	/** The short version (e.g. `-v`) of the option or `\0` for none. */
 	of_unichar_t shortOption;
 
-	/*!
+	/**
 	 * The long version (e.g. `--verbose`) of the option or `nil` for none.
 	 */
 	OFString *__unsafe_unretained _Nullable longOption;
 
-	/*!
+	/**
 	 * Whether the option takes an argument.
 	 *
 	 * 0 means it takes no argument.@n
@@ -48,13 +48,13 @@ struct of_options_parser_option_t {
 	 */
 	signed char hasArgument;
 
-	/*!
+	/**
 	 * An optional pointer to a bool that is set to whether the option has
 	 * been specified.
 	 */
 	bool *_Nullable isSpecifiedPtr;
 
-	/*!
+	/**
 	 * An optional pointer to an `OFString *` that is set to the
 	 * argument specified for the option or `nil` for no argument.
 	 */
@@ -62,7 +62,7 @@ struct of_options_parser_option_t {
 };
 typedef struct of_options_parser_option_t of_options_parser_option_t;
 
-/*!
+/**
  * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
  *
  * @brief A class for parsing the program options specified on the command line.
@@ -79,7 +79,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _done;
 }
 
-/*!
+/**
  * @brief The last parsed option.
  *
  * If @ref nextOption returned `?` or `:`, this returns the option which was
@@ -89,7 +89,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) of_unichar_t lastOption;
 
-/*!
+/**
  * @brief The long option for the last parsed option, or `nil` if the last
  *	  parsed option was not passed as a long option by the user.
  *
@@ -106,19 +106,19 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *lastLongOption;
 
-/*!
+/**
  * @brief The argument for the last parsed option, or `nil` if the last parsed
  *	  option takes no argument.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *argument;
 
-/*!
+/**
  * @brief The arguments following the last option.
  */
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFString *) *remainingArguments;
 
-/*!
+/**
  * @brief Creates a new OFOptionsParser which accepts the specified options.
  *
  * @param options An array of @ref of_options_parser_option_t specifying all
@@ -131,7 +131,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFOptionsParser so that it accepts
  *	  the specified options.
  *
@@ -144,7 +144,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithOptions: (const of_options_parser_option_t *)options
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Returns the next option.
  *
  * If the option is only available as a long option, `-` is returned.

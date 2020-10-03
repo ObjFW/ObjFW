@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFInvalidEncodingException \
  *	  OFInvalidEncodingException.h ObjFW/OFInvalidEncodingException.h
  *

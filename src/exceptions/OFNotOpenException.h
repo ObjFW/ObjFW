@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFNotOpenException OFNotOpenException.h ObjFW/OFNotOpenException.h
  *
  * @brief An exception indicating an object is not open, connected or bound.
@@ -29,14 +29,14 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-/*!
+/**
  * @brief The object which is not open, connected or bound.
  */
 @property (readonly, nonatomic) id object;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased not open exception.
  *
  * @param object The object which is not open, connected or bound
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated not open exception.
  *
  * @param object The object which is not open, connected or bound

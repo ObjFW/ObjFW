@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFDate;
 
-/*!
+/**
  * @class OFCondition OFCondition.h ObjFW/OFCondition.h
  *
  * @brief A class implementing a condition variable for thread synchronization.
@@ -35,14 +35,14 @@ OF_SUBCLASSING_RESTRICTED
 	bool _conditionInitialized;
 }
 
-/*!
+/**
  * @brief Creates a new condition.
  *
  * @return A new, autoreleased OFCondition
  */
 + (instancetype)condition;
 
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal or
  *	  @ref broadcast.
  *
@@ -52,7 +52,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)wait;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or an Exec Signal is received.
  *
@@ -64,7 +64,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)waitForConditionOrExecSignal: (ULONG *)signalMask;
 #endif
 
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
  *
@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast, the timeout is reached or an Exec Signal is received.
  *
@@ -92,7 +92,7 @@ OF_SUBCLASSING_RESTRICTED
 	       orExecSignal: (ULONG *)signalMask;
 #endif
 
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
  *
@@ -105,7 +105,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)waitUntilDate: (OFDate *)date;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast, the timeout is reached or an Exec Signal is received.
  *
@@ -120,12 +120,12 @@ OF_SUBCLASSING_RESTRICTED
 	 orExecSignal: (ULONG *)signalMask;
 #endif
 
-/*!
+/**
  * @brief Signals the next waiting thread to continue.
  */
 - (void)signal;
 
-/*!
+/**
  * @brief Signals all threads to continue.
  */
 - (void)broadcast;

@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 @class OFURL;
 
-/*!
+/**
  * @class OFURLHandler OFURLHandler.h ObjFW/OFURLHandler.h
  *
  * @brief A handler for a URL scheme.
@@ -37,12 +37,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFURLHandler, 4)
 }
 
-/*!
+/**
  * @brief The scheme this OFURLHandler handles.
  */
 @property (readonly, nonatomic) OFString *scheme;
 
-/*!
+/**
  * @brief Registers the specified class as the handler for the specified scheme.
  *
  * If the same class is specified for two schemes, one instance of it is
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (bool)registerClass: (Class)class_
 	    forScheme: (OFString *)scheme;
 
-/*!
+/**
  * @brief Returns the handler for the specified URL.
  *
  * @return The handler for the specified URL.
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes the handler for the specified scheme.
  *
  * @param scheme The scheme to initialize for
@@ -73,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithScheme: (OFString *)scheme OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Opens the item at the specified URL.
  *
  * @param URL The URL of the item which should be opened
@@ -97,7 +97,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFStream *)openItemAtURL: (OFURL *)URL
 		       mode: (OFString *)mode;
 
-/*!
+/**
  * @brief Returns the attributes for the item at the specified URL.
  *
  * @param URL The URL to return the attributes for
@@ -106,7 +106,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Sets the attributes for the item at the specified URL.
  *
  * All attributes not part of the dictionary are left unchanged.
@@ -117,7 +117,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setAttributes: (of_file_attributes_t)attributes
 	  ofItemAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Checks whether a file exists at the specified URL.
  *
  * @param URL The URL to check
@@ -125,7 +125,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (bool)fileExistsAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Checks whether a directory exists at the specified URL.
  *
  * @param URL The URL to check
@@ -133,14 +133,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (bool)directoryExistsAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Creates a directory at the specified URL.
  *
  * @param URL The URL of the directory to create
  */
 - (void)createDirectoryAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Returns an array with the items in the specified directory.
  *
  * @note `.` and `..` are not part of the returned array.
@@ -150,7 +150,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Removes the item at the specified URL.
  *
  * If the item at the specified URL is a directory, it is removed recursively.
@@ -159,7 +159,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)removeItemAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Creates a hard link for the specified item.
  *
  * The destination URL must have a full path, which means it must include the
@@ -173,7 +173,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)linkItemAtURL: (OFURL *)source
 		toURL: (OFURL *)destination;
 
-/*!
+/**
  * @brief Creates a symbolic link for an item.
  *
  * The destination uRL must have a full path, which means it must include the
@@ -190,7 +190,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)createSymbolicLinkAtURL: (OFURL *)URL
 	    withDestinationPath: (OFString *)target;
 
-/*!
+/**
  * @brief Tries to efficiently copy an item. If a copy would only be possible
  *	  by reading the entire item and then writing it, it returns false.
  *
@@ -210,7 +210,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (bool)copyItemAtURL: (OFURL *)source
 		toURL: (OFURL *)destination;
 
-/*!
+/**
  * @brief Tries to efficiently move an item. If a move would only be possible
  *	  by copying the source and deleting it, it returns false.
  *

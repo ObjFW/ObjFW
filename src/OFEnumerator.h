@@ -22,13 +22,13 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFEnumerator OF_GENERIC(ObjectType);
 
-/*!
+/**
  * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief A protocol for getting an enumerator for the object.
  */
 @protocol OFEnumerating
-/*!
+/**
  * @brief Returns an OFEnumerator to enumerate through all objects of the
  *	  collection.
  *
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * We need this bad check to see if we already imported Cocoa, which defines
  * this as well.
  */
-/*!
+/**
  * @struct of_fast_enumeration_state_t OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief State information for fast enumerations.
@@ -51,18 +51,18 @@ OF_ASSUME_NONNULL_BEGIN
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
 typedef struct {
-	/*! Arbitrary state information for the enumeration */
+	/** Arbitrary state information for the enumeration */
 	unsigned long state;
-	/*! Pointer to a C array of objects to return */
+	/** Pointer to a C array of objects to return */
 	id __unsafe_unretained _Nullable *_Nullable itemsPtr;
-	/*! Arbitrary state information to detect mutations */
+	/** Arbitrary state information to detect mutations */
 	unsigned long *_Nullable mutationsPtr;
-	/*! Additional arbitrary state information */
+	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
 #endif
 
-/*!
+/**
  * @protocol OFFastEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief A protocol for fast enumeration.
@@ -71,7 +71,7 @@ typedef struct {
  * supporting fast enumeration.
  */
 @protocol OFFastEnumeration
-/*!
+/**
  * @brief A method which is called by the code produced by the compiler when
  *	  doing a fast enumeration.
  *
@@ -87,7 +87,7 @@ typedef struct {
 			     count: (int)count;
 @end
 
-/*!
+/**
  * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief A class which provides methods to enumerate through collections.
@@ -100,14 +100,14 @@ typedef struct {
 	OF_RESERVE_IVARS(OFEnumerator, 4)
 }
 
-/*!
+/**
  * @brief Returns the next object or `nil` if there is none left.
  *
  * @return The next object or `nil` if there is none left
  */
 - (nullable ObjectType)nextObject;
 
-/*!
+/**
  * @brief Returns an array of all remaining objects in the collection.
  *
  * @return An array of all remaining objects in the collection.

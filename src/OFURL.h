@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 @class OFString;
 
-/*!
+/**
  * @class OFURL OFURL.h ObjFW/OFURL.h
  *
  * @brief A class for parsing URLs and accessing parts of it.
@@ -40,67 +40,67 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFURL, 4)
 }
 
-/*!
+/**
  * @brief The scheme part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
 
-/*!
+/**
  * @brief The scheme part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedScheme;
 
-/*!
+/**
  * @brief The host part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The host part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedHost;
 
-/*!
+/**
  * @brief The port part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFNumber *port;
 
-/*!
+/**
  * @brief The user part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *user;
 
-/*!
+/**
  * @brief The user part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedUser;
 
-/*!
+/**
  * @brief The password part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *password;
 
-/*!
+/**
  * @brief The password part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedPassword;
 
-/*!
+/**
  * @brief The path part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The path part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedPath;
 
-/*!
+/**
  * @brief The path of the URL split into components.
  *
  * The first component must always be `/` to designate the root.
@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
-/*!
+/**
  * @brief The last path component of the URL.
  *
  * Returns the empty string if the path is the root.
@@ -116,40 +116,40 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *lastPathComponent;
 
-/*!
+/**
  * @brief The query part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
 
-/*!
+/**
  * @brief The query part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedQuery;
 
-/*!
+/**
  * @brief The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
 
-/*!
+/**
  * @brief The fragment part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedFragment;
 
-/*!
+/**
  * @brief The URL as a string.
  */
 @property (readonly, nonatomic) OFString *string;
 
-/*!
+/**
  * @brief The URL with relative sub paths resolved.
  */
 @property (readonly, nonatomic) OFURL *URLByStandardizingPath;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief The local file system representation for a file URL.
  *
  * @note This only exists for URLs with the file scheme and throws an exception
@@ -160,7 +160,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *fileSystemRepresentation;
 #endif
 
-/*!
+/**
  * @brief Creates a new URL with the specified string.
  *
  * @param string A string describing a URL
@@ -168,7 +168,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)URLWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Creates a new URL with the specified string relative to the
  *	  specified URL.
  *
@@ -180,7 +180,7 @@ OF_ASSUME_NONNULL_BEGIN
 		relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a new URL with the specified local file path.
  *
  * If a directory exists at the specified path, a slash is appended if there is
@@ -191,7 +191,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
 
-/*!
+/**
  * @brief Creates a new URL with the specified local file path.
  *
  * @param path The local file path
@@ -203,7 +203,7 @@ OF_ASSUME_NONNULL_BEGIN
 		    isDirectory: (bool)isDirectory;
 #endif
 
-/*!
+/**
  * @brief Initializes an already allocated OFURL with the specified string.
  *
  * @param string A string describing a URL
@@ -211,7 +211,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFURL with the specified string and
  *	  relative URL.
  *
@@ -223,7 +223,7 @@ OF_ASSUME_NONNULL_BEGIN
 		 relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Initializes an already allocated OFURL with the specified local file
  *	  path.
  *
@@ -235,7 +235,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initFileURLWithPath: (OFString *)path;
 
-/*!
+/**
  * @brief Initializes an already allocated OFURL with the specified local file
  *	  path.
  *
@@ -248,7 +248,7 @@ OF_ASSUME_NONNULL_BEGIN
 			isDirectory: (bool)isDirectory;
 #endif
 
-/*!
+/**
  * @brief Returns a new URL with the specified path component appended.
  *
  * If the URL is a file URL, the file system is queried whether the appended
@@ -261,7 +261,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFURL *)URLByAppendingPathComponent: (OFString *)component;
 
-/*!
+/**
  * @brief Returns a new URL with the specified path component appended.
  *
  * @param component The path component to append. If it starts with the slash,
@@ -293,49 +293,49 @@ OF_ASSUME_NONNULL_BEGIN
     OFCharacterSet *URLFragmentAllowedCharacterSet;
 #endif
 
-/*!
+/**
  * @brief Returns the characters allowed in the scheme part of a URL.
  *
  * @return The characters allowed in the scheme part of a URL.
  */
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the host part of a URL.
  *
  * @return The characters allowed in the host part of a URL.
  */
 + (OFCharacterSet *)URLHostAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the user part of a URL.
  *
  * @return The characters allowed in the user part of a URL.
  */
 + (OFCharacterSet *)URLUserAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the password part of a URL.
  *
  * @return The characters allowed in the password part of a URL.
  */
 + (OFCharacterSet *)URLPasswordAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the path part of a URL.
  *
  * @return The characters allowed in the path part of a URL.
  */
 + (OFCharacterSet *)URLPathAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the query part of a URL.
  *
  * @return The characters allowed in the query part of a URL.
  */
 + (OFCharacterSet *)URLQueryAllowedCharacterSet;
 
-/*!
+/**
  * @brief Returns the characters allowed in the fragment part of a URL.
  *
  * @return The characters allowed in the fragment part of a URL.

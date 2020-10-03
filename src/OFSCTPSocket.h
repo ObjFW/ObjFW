@@ -20,13 +20,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFSCTPSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when the socket connected.
  *
  * @param exception An exception which occurred while connecting the socket or
@@ -35,14 +35,14 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFSCTPSocketDelegate OFSCTPSocket.h ObjFW/OFSCTPSocket.h
  *
  * A delegate for OFSCTPSocket.
  */
 @protocol OFSCTPSocketDelegate <OFSequencedPacketSocketDelegate>
 @optional
-/*!
+/**
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
@@ -57,7 +57,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 	 exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFSCTPSocket OFSCTPSocket.h ObjFW/OFSCTPSocket.h
  *
  * @brief A class which provides methods to create and use SCTP sockets in
@@ -71,13 +71,13 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 	OF_RESERVE_IVARS(OFSCTPSocket, 4)
 }
 
-/*!
+/**
  * @brief Whether sending packets can be delayed. Setting this to NO sets
  *        SCTP_NODELAY on the socket.
  */
 @property (nonatomic) bool canDelaySendingPackets;
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -86,7 +86,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFSCTPSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Connect the OFSCTPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -95,7 +95,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -104,7 +104,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -116,7 +116,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -127,7 +127,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 		      port: (uint16_t)port
 		     block: (of_sctp_socket_async_connect_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
  *
  * @param host The host to connect to
@@ -141,7 +141,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
 		     block: (of_sctp_socket_async_connect_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Bind the socket to the specified host and port.
  *
  * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for

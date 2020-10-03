@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFDeleteWindowsRegistryKeyFailedException \
  *	  OFDeleteWindowsRegistryKeyFailedException.h \
  *	  ObjFW/OFDeleteWindowsRegistryKeyFailedException.h
@@ -36,22 +36,22 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which deleting the subkey failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The path of the subkey which could not be deleted.
  */
 @property (readonly, nonatomic) OFString *subkeyPath;
 
-/*!
+/**
  * @brief The status returned by RegDeleteKeyEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased delete Windows registry key failed
  *	  exception.
  *
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated delete Windows registry key failed
  *	  exception.
  *

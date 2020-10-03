@@ -33,7 +33,7 @@ typedef HMODULE of_plugin_handle_t;
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
  *
  * @brief Provides a system for loading plugins at runtime.
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFPlugin, 4)
 }
 
-/*!
+/**
  * @brief Loads a plugin from a file.
  *
  * @param path Path to the plugin file. The suffix is appended automatically.

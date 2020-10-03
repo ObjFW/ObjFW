@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @class OFDNSQuery OFDNSQuery.h ObjFW/OFDNSQuery.h
  *
  * @brief A class representing a DNS query.
@@ -35,22 +35,22 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFDNSQuery, 4)
 }
 
-/*!
+/**
  * @brief The domain name of the query.
  */
 @property (readonly, nonatomic) OFString *domainName;
 
-/*!
+/**
  * @brief The DNS class of the query.
  */
 @property (readonly, nonatomic) of_dns_class_t DNSClass;
 
-/*!
+/**
  * @brief The record type of the query.
  */
 @property (readonly, nonatomic) of_dns_record_type_t recordType;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFDNSQuery.
  *
  * @param domainName The domain name to query
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
 			   DNSClass: (of_dns_class_t)DNSClass
 			 recordType: (of_dns_record_type_t)recordType;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDNSQuery.
  *
  * @param domainName The domain name to query

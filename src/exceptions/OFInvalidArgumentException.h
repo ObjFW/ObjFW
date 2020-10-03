@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFInvalidArgumentException \
  *	  OFInvalidArgumentException.h ObjFW/OFInvalidArgumentException.h
  *

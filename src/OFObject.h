@@ -51,22 +51,22 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
-/*!
+/**
  * @brief A result of a comparison.
  */
 typedef enum {
-	/*! The left object is smaller than the right */
+	/** The left object is smaller than the right */
 	OF_ORDERED_ASCENDING = -1,
-	/*! Both objects are equal */
+	/** Both objects are equal */
 	OF_ORDERED_SAME = 0,
-	/*! The left object is bigger than the right */
+	/** The left object is bigger than the right */
 	OF_ORDERED_DESCENDING = 1
 } of_comparison_result_t;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A comparator to compare two objects.
  *
  * @param left The left object
@@ -77,30 +77,30 @@ typedef of_comparison_result_t (^of_comparator_t)(id _Nonnull left,
     id _Nonnull right);
 #endif
 
-/*!
+/**
  * @brief An enum for storing endianess.
  */
 typedef enum {
-	/*! Most significant byte first (big endian) */
+	/** Most significant byte first (big endian) */
 	OF_BYTE_ORDER_BIG_ENDIAN,
-	/*! Least significant byte first (little endian) */
+	/** Least significant byte first (little endian) */
 	OF_BYTE_ORDER_LITTLE_ENDIAN
 } of_byte_order_t;
 
-/*!
+/**
  * @struct of_range_t OFObject.h ObjFW/OFObject.h
  *
  * @brief A range.
  */
 struct OF_BOXABLE of_range_t {
-	/*! The start of the range */
+	/** The start of the range */
 	size_t location;
-	/*! The length of the range */
+	/** The length of the range */
 	size_t length;
 };
 typedef struct of_range_t of_range_t;
 
-/*!
+/**
  * @brief Creates a new of_range_t.
  *
  * @param start The starting index of the range
@@ -115,7 +115,7 @@ of_range(size_t start, size_t length)
 	return range;
 }
 
-/*!
+/**
  * @brief Returns whether the two ranges are equal.
  *
  * @param range1 The first range for the comparison
@@ -134,25 +134,25 @@ of_range_equal(of_range_t range1, of_range_t range2)
 	return true;
 }
 
-/*!
+/**
  * @brief A time interval in seconds.
  */
 typedef double of_time_interval_t;
 
-/*!
+/**
  * @struct of_point_t OFObject.h ObjFW/OFObject.h
  *
  * @brief A point.
  */
 struct OF_BOXABLE of_point_t {
-	/*! The x coordinate of the point */
+	/** The x coordinate of the point */
 	float x;
-	/*! The y coordinate of the point */
+	/** The y coordinate of the point */
 	float y;
 };
 typedef struct of_point_t of_point_t;
 
-/*!
+/**
  * @brief Creates a new of_point_t.
  *
  * @param x The x coordinate of the point
@@ -167,7 +167,7 @@ of_point(float x, float y)
 	return point;
 }
 
-/*!
+/**
  * @brief Returns whether the two points are equal.
  *
  * @param point1 The first point for the comparison
@@ -186,20 +186,20 @@ of_point_equal(of_point_t point1, of_point_t point2)
 	return true;
 }
 
-/*!
+/**
  * @struct of_dimension_t OFObject.h ObjFW/OFObject.h
  *
  * @brief A dimension.
  */
 struct OF_BOXABLE of_dimension_t {
-	/*! The width of the dimension */
+	/** The width of the dimension */
 	float width;
-	/*! The height of the dimension */
+	/** The height of the dimension */
 	float height;
 };
 typedef struct of_dimension_t of_dimension_t;
 
-/*!
+/**
  * @brief Creates a new of_dimension_t.
  *
  * @param width The width of the dimension
@@ -214,7 +214,7 @@ of_dimension(float width, float height)
 	return dimension;
 }
 
-/*!
+/**
  * @brief Returns whether the two dimensions are equal.
  *
  * @param dimension1 The first dimension for the comparison
@@ -233,20 +233,20 @@ of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
 	return true;
 }
 
-/*!
+/**
  * @struct of_rectangle_t OFObject.h ObjFW/OFObject.h
  *
  * @brief A rectangle.
  */
 struct OF_BOXABLE of_rectangle_t {
-	/*! The point from where the rectangle originates */
+	/** The point from where the rectangle originates */
 	of_point_t origin;
-	/*! The size of the rectangle */
+	/** The size of the rectangle */
 	of_dimension_t size;
 };
 typedef struct of_rectangle_t of_rectangle_t;
 
-/*!
+/**
  * @brief Creates a new of_rectangle_t.
  *
  * @param x The x coordinate of the top left corner of the rectangle
@@ -266,7 +266,7 @@ of_rectangle(float x, float y, float width, float height)
 	return rectangle;
 }
 
-/*!
+/**
  * @brief Returns whether the two rectangles are equal.
  *
  * @param rectangle1 The first rectangle for the comparison
@@ -290,27 +290,27 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 @class OFString;
 @class OFThread;
 
-/*!
+/**
  * @protocol OFObject OFObject.h ObjFW/OFObject.h
  *
  * @brief The protocol which all root classes implement.
  */
 @protocol OFObject
-/*!
+/**
  * @brief Returns the class of the object.
  *
  * @return The class of the object
  */
 - (Class)class;
 
-/*!
+/**
  * @brief Returns the superclass of the object.
  *
  * @return The superclass of the object
  */
 - (nullable Class)superclass;
 
-/*!
+/**
  * @brief Returns a 32 bit hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
@@ -324,28 +324,28 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (uint32_t)hash;
 
-/*!
+/**
  * @brief Returns the retain count.
  *
  * @return The retain count
  */
 - (unsigned int)retainCount;
 
-/*!
+/**
  * @brief Returns whether the object is a proxy object.
  *
  * @return Whether the object is a proxy object
  */
 - (bool)isProxy;
 
-/*!
+/**
  * @brief Returns whether the object allows weak references.
  *
  * @return Whether the object allows weak references
  */
 - (bool)allowsWeakReference;
 
-/*!
+/**
  * @brief Returns a boolean whether the object of the specified kind.
  *
  * @param class_ The class whose kind is checked
@@ -353,7 +353,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)isKindOfClass: (Class)class_;
 
-/*!
+/**
  * @brief Returns a boolean whether the object is a member of the specified
  *	  class.
  *
@@ -362,7 +362,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)isMemberOfClass: (Class)class_;
 
-/*!
+/**
  * @brief Returns a boolean whether the object responds to the specified
  *	  selector.
  *
@@ -371,7 +371,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)respondsToSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Checks whether the object conforms to the specified protocol.
  *
  * @param protocol The protocol which should be checked for conformance
@@ -379,7 +379,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)conformsToProtocol: (Protocol *)protocol;
 
-/*!
+/**
  * @brief Returns the implementation for the specified selector.
  *
  * @param selector The selector for which the method should be returned
@@ -387,7 +387,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (nullable IMP)methodForSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Performs the specified selector.
  *
  * @param selector The selector to perform
@@ -395,7 +395,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (nullable id)performSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified object.
  *
  * @param selector The selector to perform
@@ -406,7 +406,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 - (nullable id)performSelector: (SEL)selector
 		    withObject: (nullable id)object;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects.
  *
  * @param selector The selector to perform
@@ -420,7 +420,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 		    withObject: (nullable id)object1
 		    withObject: (nullable id)object2;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects.
  *
  * @param selector The selector to perform
@@ -437,7 +437,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 		    withObject: (nullable id)object2
 		    withObject: (nullable id)object3;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects.
  *
  * @param selector The selector to perform
@@ -457,7 +457,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 		    withObject: (nullable id)object3
 		    withObject: (nullable id)object4;
 
-/*!
+/**
  * @brief Checks two objects for equality.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
@@ -471,7 +471,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (bool)isEqual: (nullable id)object;
 
-/*!
+/**
  * @brief Increases the retain count.
  *
  * Each time an object is released, the retain count gets decreased and the
@@ -479,7 +479,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (instancetype)retain;
 
-/*!
+/**
  * @brief Decreases the retain count.
  *
  * Each time an object is released, the retain count gets decreased and the
@@ -487,7 +487,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (void)release;
 
-/*!
+/**
  * @brief Adds the object to the topmost autorelease pool of the thread's
  *	  autorelease pool stack.
  *
@@ -495,14 +495,14 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  */
 - (instancetype)autorelease;
 
-/*!
+/**
  * @brief Returns the receiver.
  *
  * @return The receiver
  */
 - (instancetype)self;
 
-/*!
+/**
  * @brief Retain a weak reference to this object.
  *
  * @return Whether a weak reference to this object has been retained
@@ -511,7 +511,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 @end
 #endif
 
-/*!
+/**
  * @class OFObject OFObject.h ObjFW/OFObject.h
  *
  * @brief The root class for all other classes inside ObjFW.
@@ -550,12 +550,12 @@ OF_ROOT_CLASS
 @property (readonly, nonatomic) bool isProxy;
 @property (readonly, nonatomic) bool allowsWeakReference;
 
-/*!
+/**
  * @brief The name of the object's class.
  */
 @property (readonly, nonatomic) OFString *className;
 
-/*!
+/**
  * @brief A description for the object.
  *
  * This is used when the object is used in a format string and for debugging
@@ -563,7 +563,7 @@ OF_ROOT_CLASS
  */
 @property (readonly, nonatomic) OFString *description;
 
-/*!
+/**
  * @brief A method which is called once when the class is loaded into the
  *	  runtime.
  *
@@ -572,7 +572,7 @@ OF_ROOT_CLASS
  */
 + (void)load;
 
-/*!
+/**
  * @brief A method which is called when the class is unloaded from the runtime.
  *
  * Derived classes can override this to execute their own code when the class
@@ -586,7 +586,7 @@ OF_ROOT_CLASS
  */
 + (void)unload;
 
-/*!
+/**
  * @brief A method which is called the moment before the first call to the class
  *	  is being made.
  *
@@ -597,7 +597,7 @@ OF_ROOT_CLASS
  */
 + (void)initialize;
 
-/*!
+/**
  * @brief Allocates memory for an instance of the class and sets up the memory
  *	  pool for the object.
  *
@@ -608,28 +608,28 @@ OF_ROOT_CLASS
  */
 + (instancetype)alloc;
 
-/*!
+/**
  * @brief Calls @ref alloc on `self` and then `init` on the returned object.
  *
  * @return An allocated and initialized object
  */
 + (instancetype)new;
 
-/*!
+/**
  * @brief Returns the class.
  *
  * @return The class
  */
 + (Class)class;
 
-/*!
+/**
  * @brief Returns the name of the class as a string.
  *
  * @return The name of the class as a string
  */
 + (OFString *)className;
 
-/*!
+/**
  * @brief Returns a boolean whether the class is a subclass of the specified
  *	  class.
  *
@@ -638,14 +638,14 @@ OF_ROOT_CLASS
  */
 + (bool)isSubclassOfClass: (Class)class_;
 
-/*!
+/**
  * @brief Returns the superclass of the class.
  *
  * @return The superclass of the class
  */
 + (nullable Class)superclass;
 
-/*!
+/**
  * @brief Checks whether instances of the class respond to a given selector.
  *
  * @param selector The selector which should be checked for respondence
@@ -654,7 +654,7 @@ OF_ROOT_CLASS
  */
 + (bool)instancesRespondToSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Checks whether the class conforms to a given protocol.
  *
  * @param protocol The protocol which should be checked for conformance
@@ -662,7 +662,7 @@ OF_ROOT_CLASS
  */
 + (bool)conformsToProtocol: (Protocol *)protocol;
 
-/*!
+/**
  * @brief Returns the implementation of the instance method for the specified
  *	  selector.
  *
@@ -672,7 +672,7 @@ OF_ROOT_CLASS
  */
 + (nullable IMP)instanceMethodForSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Returns the method signature of the instance method for the specified
  *	  selector.
  *
@@ -684,7 +684,7 @@ OF_ROOT_CLASS
 + (nullable OFMethodSignature *)
     instanceMethodSignatureForSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Returns a description for the class, which is usually the class name.
  *
  * This is mostly for debugging purposes.
@@ -693,7 +693,7 @@ OF_ROOT_CLASS
  */
 + (OFString *)description;
 
-/*!
+/**
  * @brief Replaces a class method with a class method from another class.
  *
  * @param selector The selector of the class method to replace
@@ -703,7 +703,7 @@ OF_ROOT_CLASS
 + (nullable IMP)replaceClassMethod: (SEL)selector
 	       withMethodFromClass: (Class)class_;
 
-/*!
+/**
  * @brief Replaces an instance method with an instance method from another
  *	  class.
  *
@@ -714,7 +714,7 @@ OF_ROOT_CLASS
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		  withMethodFromClass: (Class)class_;
 
-/*!
+/**
  * @brief Adds all methods from the specified class to the class that is the
  *	  receiver.
  *
@@ -734,7 +734,7 @@ OF_ROOT_CLASS
  */
 + (void)inheritMethodsFromClass: (Class)class_;
 
-/*!
+/**
  * @brief Try to resolve the specified class method.
  *
  * This method is called if a class method was not found, so that an
@@ -744,7 +744,7 @@ OF_ROOT_CLASS
  */
 + (bool)resolveClassMethod: (SEL)selector;
 
-/*!
+/**
  * @brief Try to resolve the specified instance method.
  *
  * This method is called if an instance method was not found, so that an
@@ -754,7 +754,7 @@ OF_ROOT_CLASS
  */
 + (bool)resolveInstanceMethod: (SEL)selector;
 
-/*!
+/**
  * @brief Returns the class.
  *
  * This method exists so that classes can be used in collections requiring
@@ -764,7 +764,7 @@ OF_ROOT_CLASS
  */
 + (id)copy;
 
-/*!
+/**
  * @brief Initializes an already allocated object.
  *
  * Derived classes may override this, but need to use the following pattern:
@@ -797,7 +797,7 @@ OF_ROOT_CLASS
  */
 - (instancetype)init;
 
-/*!
+/**
  * @brief Returns the method signature for the specified selector.
  *
  * @param selector The selector for which the method signature should be
@@ -806,7 +806,7 @@ OF_ROOT_CLASS
  */
 - (nullable OFMethodSignature *)methodSignatureForSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Allocates memory and stores it in the object's memory pool.
  *
  * It will be free'd automatically when the object is deallocated.
@@ -817,7 +817,7 @@ OF_ROOT_CLASS
  */
 - (nullable void *)allocMemoryWithSize: (size_t)size OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Allocates memory for the specified number of items and stores it in
  *	  the object's memory pool.
  *
@@ -831,7 +831,7 @@ OF_ROOT_CLASS
 - (nullable void *)allocMemoryWithSize: (size_t)size
 				 count: (size_t)count OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Allocates memory, initializes it with zeros and stores it in the
  *	  object's memory pool.
  *
@@ -844,7 +844,7 @@ OF_ROOT_CLASS
 - (nullable void *)allocZeroedMemoryWithSize: (size_t)size
     OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Allocates memory for the specified number of items, initializes it
  *	  with zeros and stores it in the object's memory pool.
  *
@@ -859,7 +859,7 @@ OF_ROOT_CLASS
 				       count: (size_t)count
     OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Resizes memory in the object's memory pool to the specified size.
  *
  * If the pointer is NULL, this is equivalent to allocating memory.
@@ -872,7 +872,7 @@ OF_ROOT_CLASS
 - (nullable void *)resizeMemory: (nullable void *)pointer
 			   size: (size_t)size OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Resizes memory in the object's memory pool to the specific number of
  *	  items of the specified size.
  *
@@ -888,7 +888,7 @@ OF_ROOT_CLASS
 			   size: (size_t)size
 			  count: (size_t)count OF_WARN_UNUSED_RESULT;
 
-/*!
+/**
  * @brief Frees allocated memory and removes it from the object's memory pool.
  *
  * Does nothing if the pointer is NULL.
@@ -897,7 +897,7 @@ OF_ROOT_CLASS
  */
 - (void)freeMemory: (nullable void *)pointer;
 
-/*!
+/**
  * @brief Deallocates the object.
  *
  * It is automatically called when the retain count reaches zero.
@@ -906,7 +906,7 @@ OF_ROOT_CLASS
  */
 - (void)dealloc;
 
-/*!
+/**
  * @brief Performs the specified selector after the specified delay.
  *
  * @param selector The selector to perform
@@ -915,7 +915,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified object after the
  *	  specified delay.
  *
@@ -928,7 +928,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects after the
  *	  specified delay.
  *
@@ -944,7 +944,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects after the
  *	  specified delay.
  *
@@ -963,7 +963,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector with the specified objects after the
  *	  specified delay.
  *
@@ -986,7 +986,7 @@ OF_ROOT_CLASS
 	     afterDelay: (of_time_interval_t)delay;
 
 # ifdef OF_HAVE_THREADS
-/*!
+/**
  * @brief Performs the specified selector on the specified thread.
  *
  * @param selector The selector to perform
@@ -997,7 +997,7 @@ OF_ROOT_CLASS
 	       onThread: (OFThread *)thread
 	  waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified object.
  *
@@ -1012,7 +1012,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object
 	  waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects.
  *
@@ -1030,7 +1030,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	  waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects.
  *
@@ -1051,7 +1051,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	  waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects.
  *
@@ -1075,7 +1075,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object4
 	  waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the main thread.
  *
  * @param selector The selector to perform
@@ -1084,7 +1084,7 @@ OF_ROOT_CLASS
 - (void)performSelectorOnMainThread: (SEL)selector
 		      waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the main thread with the specified
  *	  object.
  *
@@ -1097,7 +1097,7 @@ OF_ROOT_CLASS
 			 withObject: (nullable id)object
 		      waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the main thread with the specified
  *	  objects.
  *
@@ -1113,7 +1113,7 @@ OF_ROOT_CLASS
 			 withObject: (nullable id)object2
 		      waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the main thread with the specified
  *	  objects.
  *
@@ -1132,7 +1132,7 @@ OF_ROOT_CLASS
 			 withObject: (nullable id)object3
 		      waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the main thread with the specified
  *	  objects.
  *
@@ -1154,7 +1154,7 @@ OF_ROOT_CLASS
 			 withObject: (nullable id)object4
 		      waitUntilDone: (bool)waitUntilDone;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread after the
  *	  specified delay.
  *
@@ -1166,7 +1166,7 @@ OF_ROOT_CLASS
 	       onThread: (OFThread *)thread
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified object after the specified delay.
  *
@@ -1181,7 +1181,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects after the specified delay.
  *
@@ -1199,7 +1199,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects after the specified delay.
  *
@@ -1220,7 +1220,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     afterDelay: (of_time_interval_t)delay;
 
-/*!
+/**
  * @brief Performs the specified selector on the specified thread with the
  *	  specified objects after the specified delay.
  *
@@ -1245,7 +1245,7 @@ OF_ROOT_CLASS
 	     afterDelay: (of_time_interval_t)delay;
 # endif
 
-/*!
+/**
  * @brief This method is called when @ref resolveClassMethod: or
  *	  @ref resolveInstanceMethod: returned false. It should return a target
  *	  to which the message should be forwarded.
@@ -1258,7 +1258,7 @@ OF_ROOT_CLASS
  */
 - (nullable id)forwardingTargetForSelector: (SEL)selector;
 
-/*!
+/**
  * @brief Handles messages which are not understood by the receiver.
  *
  * @warning If you override this method, you must make sure that it never
@@ -1273,13 +1273,13 @@ typedef void OFObject;
 #endif
 
 #ifdef __OBJC__
-/*!
+/**
  * @protocol OFCopying OFObject.h ObjFW/OFObject.h
  *
  * @brief A protocol for the creation of copies.
  */
 @protocol OFCopying
-/*!
+/**
  * @brief Copies the object.
  *
  * For classes which can be immutable or mutable, this returns an immutable
@@ -1291,7 +1291,7 @@ typedef void OFObject;
 - (id)copy;
 @end
 
-/*!
+/**
  * @protocol OFMutableCopying OFObject.h ObjFW/OFObject.h
  *
  * @brief A protocol for the creation of mutable copies.
@@ -1300,7 +1300,7 @@ typedef void OFObject;
  * and allows returning a mutable copy.
  */
 @protocol OFMutableCopying
-/*!
+/**
  * @brief Creates a mutable copy of the object.
  *
  * @return A mutable copy of the object
@@ -1308,7 +1308,7 @@ typedef void OFObject;
 - (id)mutableCopy;
 @end
 
-/*!
+/**
  * @protocol OFComparing OFObject.h ObjFW/OFObject.h
  *
  * @brief A protocol for comparing objects.
@@ -1316,7 +1316,7 @@ typedef void OFObject;
  * This protocol is implemented by objects that can be compared.
  */
 @protocol OFComparing
-/*!
+/**
  * @brief Compares the object with another object.
  *
  * @param object An object to compare the object to

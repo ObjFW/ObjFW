@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @brief An ASN.1 Boolean.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -30,12 +30,12 @@ OF_SUBCLASSING_RESTRICTED
 	bool _booleanValue;
 }
 
-/*!
+/**
  * @brief The Boolean value.
  */
 @property (readonly, nonatomic) bool booleanValue;
 
-/*!
+/**
  * @brief Creates an ASN.1 Boolean with the specified Boolean value.
  *
  * @param booleanValue The value of the Boolean
@@ -45,7 +45,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
  *	  Boolean value.
  *
@@ -55,7 +55,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithBooleanValue: (bool)booleanValue
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
  *	  arguments.
  *

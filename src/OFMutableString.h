@@ -23,13 +23,13 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __OBJC__
-/*!
+/**
  * @class OFMutableString OFString.h ObjFW/OFString.h
  *
  * @brief A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString
-/*!
+/**
  * @brief Sets the character at the specified index.
  *
  * @param character The character to set
@@ -38,14 +38,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setCharacter: (of_unichar_t)character
 	     atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Appends another OFString to the OFMutableString.
  *
  * @param string An OFString to append
  */
 - (void)appendString: (OFString *)string;
 
-/*!
+/**
  * @brief Appends the specified characters to the OFMutableString.
  *
  * @param characters An array of characters to append
@@ -54,14 +54,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length;
 
-/*!
+/**
  * @brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * @param UTF8String A UTF-8 encoded C string to append
  */
 - (void)appendUTF8String: (const char *)UTF8String;
 
-/*!
+/**
  * @brief Appends a UTF-8 encoded C string with the specified length to the
  *	  OFMutableString.
  *
@@ -71,7 +71,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength;
 
-/*!
+/**
  * @brief Appends a C string with the specified encoding to the OFMutableString.
  *
  * @param cString A C string to append
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding;
 
-/*!
+/**
  * @brief Appends a C string with the specified encoding and length to the
  *	  OFMutableString.
  *
@@ -92,7 +92,7 @@ OF_ASSUME_NONNULL_BEGIN
 	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength;
 
-/*!
+/**
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See `printf` for the format syntax. As an addition, `%@` is available as
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)appendFormat: (OFConstantString *)format, ...;
 
-/*!
+/**
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
@@ -116,29 +116,29 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendFormat: (OFConstantString *)format
 	   arguments: (va_list)arguments;
 
-/*!
+/**
  * @brief Prepends another OFString to the OFMutableString.
  *
  * @param string An OFString to prepend
  */
 - (void)prependString: (OFString *)string;
 
-/*!
+/**
  * @brief Reverses the string.
  */
 - (void)reverse;
 
-/*!
+/**
  * @brief Converts the string to uppercase.
  */
 - (void)uppercase;
 
-/*!
+/**
  * @brief Converts the string to lowercase.
  */
 - (void)lowercase;
 
-/*!
+/**
  * @brief Capitalizes the string.
  *
  * @note This only considers spaces, tabs and newlines to be word delimiters!
@@ -147,7 +147,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)capitalize;
 
-/*!
+/**
  * @brief Inserts a string at the specified index.
  *
  * @param string The string to insert
@@ -156,14 +156,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)insertString: (OFString *)string
 	     atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Deletes the characters at the specified range.
  *
  * @param range The range of the characters which should be removed
  */
 - (void)deleteCharactersInRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Replaces the characters at the specified range.
  *
  * @param range The range of the characters which should be replaced
@@ -172,7 +172,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString *)replacement;
 
-/*!
+/**
  * @brief Replaces all occurrences of a string with another string.
  *
  * @param string The string to replace
@@ -181,7 +181,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement;
 
-/*!
+/**
  * @brief Replaces all occurrences of a string in the specified range with
  *	  another string.
  *
@@ -196,22 +196,22 @@ OF_ASSUME_NONNULL_BEGIN
 			   options: (int)options
 			     range: (of_range_t)range;
 
-/*!
+/**
  * @brief Deletes all whitespaces at the beginning of the string.
  */
 - (void)deleteLeadingWhitespaces;
 
-/*!
+/**
  * @brief Deletes all whitespaces at the end of the string.
  */
 - (void)deleteTrailingWhitespaces;
 
-/*!
+/**
  * @brief Deletes all whitespaces at the beginning and the end of the string.
  */
 - (void)deleteEnclosingWhitespaces;
 
-/*!
+/**
  * @brief Converts the mutable string to an immutable string.
  */
 - (void)makeImmutable;

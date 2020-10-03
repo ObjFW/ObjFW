@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFPair OFPair.h ObjFW/OFPair.h
  *
  * @brief A class for storing a pair of two objects.
@@ -36,19 +36,19 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFPair, 4)
 }
 
-/*!
+/**
  * @brief The first object of the pair.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     FirstType firstObject;
 
-/*!
+/**
  * @brief The second object of the pair.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     SecondType secondObject;
 
-/*!
+/**
  * @brief Creates a new OFPair with the specified objects.
  *
  * @param firstObject The first object for the pair
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)pairWithFirstObject: (nullable FirstType)firstObject
 		       secondObject: (nullable SecondType)secondObject;
 
-/*!
+/**
  * @brief Initializes an already allocated OFPair with the specified objects.
  *
  * @param firstObject The first object for the pair

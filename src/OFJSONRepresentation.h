@@ -27,7 +27,7 @@ enum {
 	OF_JSON_REPRESENTATION_IDENTIFIER = 0x10
 };
 
-/*!
+/**
  * @protocol OFJSONRepresentation
  *	     OFJSONRepresentation.h ObjFW/OFJSONRepresentation.h
  *
@@ -39,12 +39,12 @@ enum {
  *	    requires all data to be encapsulated in an array or a dictionary!
  */
 @protocol OFJSONRepresentation
-/*!
+/**
  * @brief The JSON representation of the object as a string.
  */
 @property (readonly, nonatomic) OFString *JSONRepresentation;
 
-/*!
+/**
  * @brief Returns the JSON representation of the object as a string.
  *
  * @param options The options to use when creating a JSON representation.@n

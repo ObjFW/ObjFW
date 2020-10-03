@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFURL;
 
-/*!
+/**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
  *
  * @brief A class for storing and manipulating arbitrary data in an array.
@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutableData, 4)
 }
 
-/*!
+/**
  * @brief All items of the OFMutableData as a C array.
  *
  * @warning The pointer is only valid until the OFMutableData is changed!
@@ -43,26 +43,26 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The first item of the OFMutableData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableFirstItem
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The last item of the OFMutableData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableLastItem
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Creates a new OFMutableData with an item size of 1.
  *
  * @return A new autoreleased OFMutableData
  */
 + (instancetype)data;
 
-/*!
+/**
  * @brief Creates a new OFMutableData whose items all have the same specified
  *	  size.
  *
@@ -71,7 +71,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)dataWithItemSize: (size_t)itemSize;
 
-/*!
+/**
  * @brief Creates a new OFMutableData with enough memory to hold the specified
  *	  number of items which all have an item size of 1.
  *
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)dataWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Creates a new OFMutableData with enough memory to hold the specified
  *	  number of items which all have the same specified size.
  *
@@ -91,14 +91,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)dataWithItemSize: (size_t)itemSize
 			capacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableData with an item size of 1.
  *
  * @return An initialized OFMutableData
  */
 - (instancetype)init;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableData whose items all have
  *	  the same size.
  *
@@ -107,7 +107,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithItemSize: (size_t)itemSize;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableData with enough memory to
  *	  hold the the specified number of items which all have an item size of
  *	  1.
@@ -117,7 +117,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableData with enough memory to
  *	  hold the the specified number of items which all have the same
  *	  specified size.
@@ -129,7 +129,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithItemSize: (size_t)itemSize
 			capacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Returns a specific item of the OFMutableData.
  *
  * Modifying the returned item directly is allowed and will change the contents
@@ -140,14 +140,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void *)mutableItemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Adds an item to the OFMutableData.
  *
  * @param item A pointer to an arbitrary item
  */
 - (void)addItem: (const void *)item;
 
-/*!
+/**
  * @brief Adds an item to the OFMutableData at the specified index.
  *
  * @param item A pointer to an arbitrary item
@@ -156,7 +156,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)insertItem: (const void *)item
 	   atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Adds items from a C array to the OFMutableData.
  *
  * @param items A C array containing the items to add
@@ -165,7 +165,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)addItems: (const void *)items
 	   count: (size_t)count;
 
-/*!
+/**
  * @brief Adds items from a C array to the OFMutableData at the specified index.
  *
  * @param items A C array containing the items to add
@@ -176,7 +176,7 @@ OF_ASSUME_NONNULL_BEGIN
 	    atIndex: (size_t)index
 	      count: (size_t)count;
 
-/*!
+/**
  * @brief Increases the count by the specified number. The new items are all
  *	  filled with null bytes.
  *
@@ -184,31 +184,31 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)increaseCountBy: (size_t)count;
 
-/*!
+/**
  * @brief Removes the item at the specified index.
  *
  * @param index The index of the item to remove
  */
 - (void)removeItemAtIndex: (size_t)index;
 
-/*!
+/**
  * @brief Removes the specified amount of items at the specified index.
  *
  * @param range The range of items to remove
  */
 - (void)removeItemsInRange: (of_range_t)range;
 
-/*!
+/**
  * @brief Removes the last item.
  */
 - (void)removeLastItem;
 
-/*!
+/**
  * @brief Removes all items.
  */
 - (void)removeAllItems;
 
-/*!
+/**
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;

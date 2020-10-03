@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFGetCurrentDirectoryPathFailedException \
  *	  OFGetCurrentDirectoryPathFailedException.h \
  *	  ObjFW/OFGetCurrentDirectoryPathFailedException.h
@@ -32,14 +32,14 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased get current directory path failed
  *	  exception.
  *
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated get current directory path failed
  *	  exception.
  *

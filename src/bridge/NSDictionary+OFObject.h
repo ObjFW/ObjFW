@@ -31,7 +31,7 @@ extern int _NSDictionary_OFObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category NSDictionary (OFObject) \
  *	     NSDictionary+OFObject.h ObjFWBridge/NSDictionary+OFObject.h
  *

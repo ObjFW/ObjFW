@@ -19,30 +19,30 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @protocol OFLocking OFLocking.h ObjFW/OFLocking.h
  *
  * @brief A protocol for locks.
  */
 @protocol OFLocking <OFObject>
-/*!
+/**
  * @brief The name of the lock.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
 
-/*!
+/**
  * @brief Locks the lock.
  */
 - (void)lock;
 
-/*!
+/**
  * @brief Tries to lock the lock.
  *
  * @return A boolean whether the lock could be locked
  */
 - (bool)tryLock;
 
-/*!
+/**
  * @brief Unlocks the lock.
  */
 - (void)unlock;

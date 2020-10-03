@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutablePair OFMutablePair.h ObjFW/OFMutablePair.h
  *
  * @brief A class for storing a pair of two objects.
@@ -34,17 +34,17 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutablePair, 4)
 }
 
-/*!
+/**
  * @brief The first object of the pair.
  */
 @property (readwrite, nonatomic, retain) FirstType firstObject;
 
-/*!
+/**
  * @brief The second object of the pair.
  */
 @property (readwrite, nonatomic, retain) SecondType secondObject;
 
-/*!
+/**
  * @brief Converts the mutable pair to an immutable pair.
  */
 - (void)makeImmutable;

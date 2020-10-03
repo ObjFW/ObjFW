@@ -37,46 +37,46 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTCPSocket;
 @class OFUDPSocket;
 
-/*!
+/**
  * @enum of_dns_resolver_error_t OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief An enum describing why resolving a host failed.
  */
 typedef enum of_dns_resolver_error_t {
-	/*! An unknown error */
+	/** An unknown error */
 	OF_DNS_RESOLVER_ERROR_UNKNOWN,
-	/*! The query timed out */
+	/** The query timed out */
 	OF_DNS_RESOLVER_ERROR_TIMEOUT,
-	/*! The query was canceled */
+	/** The query was canceled */
 	OF_DNS_RESOLVER_ERROR_CANCELED,
-	/*!
+	/**
 	 * No result for the specified host with the specified type and class.
 	 *
 	 * This is only used in situations where this is an error, e.g. when
 	 * trying to connect to a host.
 	 */
 	OF_DNS_RESOLVER_ERROR_NO_RESULT,
-	/*! The server considered the query to be malformed */
+	/** The server considered the query to be malformed */
 	OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT,
-	/*! The server was unable to process due to an internal error */
+	/** The server was unable to process due to an internal error */
 	OF_DNS_RESOLVER_ERROR_SERVER_FAILURE,
-	/*! The server returned an error that the domain does not exist */
+	/** The server returned an error that the domain does not exist */
 	OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR,
-	/*! The server does not have support for the requested query */
+	/** The server does not have support for the requested query */
 	OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED,
-	/*! The server refused the query */
+	/** The server refused the query */
 	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED,
-	/*! There was no name server to query */
+	/** There was no name server to query */
 	OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER
 } of_dns_resolver_error_t;
 
-/*!
+/**
  * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief A delegate for performed DNS queries.
  */
 @protocol OFDNSResolverQueryDelegate <OFObject>
-/*!
+/**
  * @brief This method is called when a DNS resolver performed a query.
  *
  * @param resolver The acting resolver
@@ -91,13 +91,13 @@ typedef enum of_dns_resolver_error_t {
 	exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief A delegate for resolved hosts.
  */
 @protocol OFDNSResolverHostDelegate <OFObject>
-/*!
+/**
  * @brief This method is called when a DNS resolver resolved a host to
  *	  addresses.
  *
@@ -113,7 +113,7 @@ typedef enum of_dns_resolver_error_t {
        exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief A class for resolving DNS names.
@@ -138,7 +138,7 @@ OF_SUBCLASSING_RESTRICTED
 	    *_TCPQueries;
 }
 
-/*!
+/**
  * @brief A dictionary of static hosts.
  *
  * This dictionary is checked before actually looking up a host.
@@ -146,64 +146,64 @@ OF_SUBCLASSING_RESTRICTED
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *,
     OFArray OF_GENERIC(OFString *) *) *staticHosts;
 
-/*!
+/**
  * @brief An array of name servers to use.
  *
  * The name servers are tried in order.
  */
 @property (copy, nonatomic) OFArray OF_GENERIC(OFString *) *nameServers;
 
-/*!
+/**
  * @brief The local domain.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *localDomain;
 
-/*!
+/**
  * @brief The domains to search for queries for short names.
  */
 @property (copy, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 
-/*!
+/**
  * @brief The timeout, in seconds, after which the next name server should be
  *	  tried.
  */
 @property (nonatomic) of_time_interval_t timeout;
 
-/*!
+/**
  * @brief The number of attempts before giving up to resolve a host.
  *
  * Trying all name servers once is considered a single attempt.
  */
 @property (nonatomic) unsigned int maxAttempts;
 
-/*!
+/**
  * @brief The minimum number of dots for a name to be considered absolute.
  */
 @property (nonatomic) unsigned int minNumberOfDotsInAbsoluteName;
 
-/*!
+/**
  * @brief Whether the resolver uses TCP to talk to a name server.
  */
 @property (nonatomic) bool usesTCP;
 
-/*!
+/**
  * @brief The interval in seconds in which the config should be reloaded.
  *
  * Setting this to 0 disables config reloading.
  */
 @property (nonatomic) of_time_interval_t configReloadInterval;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFDNSResolver.
  */
 + (instancetype)resolver;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDNSResolver.
  */
 - (instancetype)init;
 
-/*!
+/**
  * @brief Asynchronously performs the specified query.
  *
  * @param query The query to perform
@@ -212,7 +212,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)asyncPerformQuery: (OFDNSQuery *)query
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
-/*!
+/**
  * @brief Asynchronously performs the specified query.
  *
  * @param query The query to perform
@@ -223,7 +223,7 @@ OF_SUBCLASSING_RESTRICTED
 	      runLoopMode: (of_run_loop_mode_t)runLoopMode
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
-/*!
+/**
  * @brief Asynchronously resolves the specified host to socket addresses.
  *
  * @param host The host to resolve
@@ -232,7 +232,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)asyncResolveAddressesForHost: (OFString *)host
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
-/*!
+/**
  * @brief Asynchronously resolves the specified host to socket addresses.
  *
  * @param host The host to resolve
@@ -243,7 +243,7 @@ OF_SUBCLASSING_RESTRICTED
 		       addressFamily: (of_socket_address_family_t)addressFamily
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
-/*!
+/**
  * @brief Asynchronously resolves the specified host to socket addresses.
  *
  * @param host The host to resolve
@@ -256,7 +256,7 @@ OF_SUBCLASSING_RESTRICTED
 			 runLoopMode: (of_run_loop_mode_t)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
-/*!
+/**
  * @brief Synchronously resolves the specified host to socket addresses.
  *
  * @param host The host to resolve
@@ -266,7 +266,7 @@ OF_SUBCLASSING_RESTRICTED
 - (OFData *)resolveAddressesForHost: (OFString *)host
 		      addressFamily: (of_socket_address_family_t)addressFamily;
 
-/*!
+/**
  * @brief Closes all sockets and cancels all ongoing queries.
  */
 - (void)close;

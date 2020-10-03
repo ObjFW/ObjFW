@@ -29,7 +29,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/*! @file */
+/** @file */
 
 #ifndef __has_feature
 # define __has_feature(x) 0
@@ -55,17 +55,17 @@
 # define __unsafe_unretained
 #endif
 
-/*!
+/**
  * @brief A value representing no class.
  */
 #define Nil (Class _Null_unspecified)0
 
-/*!
+/**
  * @brief A value representing no object.
  */
 #define nil (id _Null_unspecified)0
 
-/*!
+/**
  * @brief An Objective-C boolean representing true.
  *
  * @note This is a legacy from before C had a boolean type. Prefer the standard
@@ -73,7 +73,7 @@
  */
 #define YES true
 
-/*!
+/**
  * @brief An Objective-C boolean representing false.
  *
  * @note This is a legacy from before C had a boolean type. Prefer the standard
@@ -81,17 +81,17 @@
  */
 #define NO false
 
-/*!
+/**
  * @brief A pointer to a class.
  */
 typedef struct objc_class *Class;
 
-/*!
+/**
  * @brief A pointer to any object.
  */
 typedef struct objc_object *id;
 
-/*!
+/**
  * @brief A selector.
  *
  * A selector is the name of a method including the colons and an optional type
@@ -99,14 +99,14 @@ typedef struct objc_object *id;
  */
 typedef const struct objc_selector *SEL;
 
-/*!
+/**
  * @brief A method.
  *
  * A method consists of a selector with a type encoding and an implementation.
  */
 typedef const struct objc_method *Method;
 
-/*!
+/**
  * @brief A protocol.
  */
 #if defined(__OBJC__) && !defined(DOXYGEN)
@@ -115,18 +115,18 @@ typedef const struct objc_method *Method;
 typedef const struct objc_protocol *Protocol;
 #endif
 
-/*!
+/**
  * @brief An instance variable.
  */
 typedef const struct objc_ivar *Ivar;
 
-/*!
+/**
  * @brief A property.
  */
 typedef const struct objc_property *objc_property_t;
 
 #if !defined(__wii__) && !defined(__amigaos__)
-/*!
+/**
  * @brief An Objective-C boolean. Either @ref YES or @ref NO.
  *
  * @note This is a legacy from before C had a boolean type. Prefer the standard
@@ -135,7 +135,7 @@ typedef const struct objc_property *objc_property_t;
 typedef bool BOOL;
 #endif
 
-/*!
+/**
  * @brief A method implemenation.
  *
  * @param object The messaged object
@@ -143,29 +143,29 @@ typedef bool BOOL;
  */
 typedef id _Nullable (*IMP)(id _Nonnull object, SEL _Nonnull selector, ...);
 
-/*!
+/**
  * @brief A handler for uncaught exceptions.
  *
  * @param exception The exception which was not caught.
  */
 typedef void (*objc_uncaught_exception_handler_t)(id _Nullable exception);
 
-/*!
+/**
  * @brief A handler for mutation during enumeration.
  *
  * @param object The object that was mutated during enumeration
  */
 typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull object);
 
-/*!
+/**
  * @brief A struct representing a call to super.
  */
 struct objc_super {
-	/*!
+	/**
 	 * @brief The object on which to perform the super call.
 	 */
 	id __unsafe_unretained _Nullable self;
-	/*!
+	/**
 	 * @brief The class from which to take the method.
 	 */
 #ifdef __cplusplus
@@ -179,7 +179,7 @@ struct objc_super {
 extern "C" {
 #endif
 
-/*!
+/**
  * @brief Registers a selector with the specified name with the runtime.
  *
  * @param name The name for the selector to register
@@ -187,7 +187,7 @@ extern "C" {
  */
 extern SEL _Nonnull sel_registerName(const char *_Nonnull name);
 
-/*!
+/**
  * @brief Returns the name of the specified selector.
  *
  * @param selector The selector whose name should be returned
@@ -195,7 +195,7 @@ extern SEL _Nonnull sel_registerName(const char *_Nonnull name);
  */
 extern const char *_Nonnull sel_getName(SEL _Nonnull selector);
 
-/*!
+/**
  * @brief Checks two selectors for equality.
  *
  * Selectors are considered equal if they have the same name - any type
@@ -207,7 +207,7 @@ extern const char *_Nonnull sel_getName(SEL _Nonnull selector);
  */
 extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
 
-/*!
+/**
  * @brief Allocates a new class and its metaclass.
  *
  * @param superclass The superclass for the new class
@@ -218,14 +218,14 @@ extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
 extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
     const char *_Nonnull name, size_t extraBytes);
 
-/*!
+/**
  * @brief Registers an already allocated class pair.
  *
  * @param class_ The class pair to register
  */
 extern void objc_registerClassPair(Class _Nonnull class_);
 
-/*!
+/**
  * @brief Gets the list of all classes known to the runtime.
  *
  * @param buffer An array of Class to write to. If the buffer does not have
@@ -236,7 +236,7 @@ extern void objc_registerClassPair(Class _Nonnull class_);
 extern unsigned int objc_getClassList(Class _Nonnull *_Nullable buffer,
     unsigned int count);
 
-/*!
+/**
  * @brief Copies the list of all classes known to the runtime.
  *
  * This is like @ref objc_getClassList, but allocates a buffer large enough for
@@ -250,7 +250,7 @@ extern unsigned int objc_getClassList(Class _Nonnull *_Nullable buffer,
 extern Class _Nonnull *_Nonnull objc_copyClassList(
     unsigned int *_Nullable length);
 
-/*!
+/**
  * @brief Returns whether the specified class is a metaclass.
  *
  * @param class_ The class which should be examined
@@ -258,7 +258,7 @@ extern Class _Nonnull *_Nonnull objc_copyClassList(
  */
 extern bool class_isMetaClass(Class _Nullable class_);
 
-/*!
+/**
  * @brief Returns the name of the specified class.
  *
  * @param class_ The class whose name should be returned
@@ -266,7 +266,7 @@ extern bool class_isMetaClass(Class _Nullable class_);
  */
 extern const char *_Nullable class_getName(Class _Nullable class_);
 
-/*!
+/**
  * @brief Returns the superclass of the specified class.
  *
  * @param class_ The class whose superclass should be returned
@@ -274,7 +274,7 @@ extern const char *_Nullable class_getName(Class _Nullable class_);
  */
 extern Class _Nullable class_getSuperclass(Class _Nullable class_);
 
-/*!
+/**
  * @brief Returns the instance size of the specified class.
  *
  * @param class_ The class whose instance size should be returned
@@ -282,7 +282,7 @@ extern Class _Nullable class_getSuperclass(Class _Nullable class_);
  */
 extern unsigned long class_getInstanceSize(Class _Nullable class_);
 
-/*!
+/**
  * @brief Returns whether the specified class responds to the specified
  *	  selector.
  *
@@ -293,7 +293,7 @@ extern unsigned long class_getInstanceSize(Class _Nullable class_);
 extern bool class_respondsToSelector(Class _Nullable class_,
     SEL _Nonnull selector);
 
-/*!
+/**
  * @brief Returns whether the specified class conforms to the specified
  *	  protocol.
  *
@@ -304,7 +304,7 @@ extern bool class_respondsToSelector(Class _Nullable class_,
 extern bool class_conformsToProtocol(Class _Nullable class_,
     Protocol *_Nonnull protocol);
 
-/*!
+/**
  * @brief Returns the class's method implementation for the specified selector.
  *
  * @warning If the method uses the struct return ABI, you need to use
@@ -319,7 +319,7 @@ extern bool class_conformsToProtocol(Class _Nullable class_,
 extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
 
-/*!
+/**
  * @brief Returns the class's method implementation for the specified selector.
  *
  * @warning If the method does not use use the struct return ABI, you need to
@@ -334,7 +334,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
 
-/*!
+/**
  * @brief Returns the class's instance method for the specified selector
  *
  * @param class_ The class whose instance method should be returned
@@ -344,7 +344,7 @@ extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
 extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
     SEL _Nonnull selector);
 
-/*!
+/**
  * @brief Adds the specified method to the class.
  *
  * @param class_ The class to which to add the method
@@ -356,7 +356,7 @@ extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
 extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 
-/*!
+/**
  * @brief Replaces or adds the specified method of the class.
  *
  * @param class_ The class to which to replace the method
@@ -370,7 +370,7 @@ extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
     SEL _Nonnull selector, IMP _Nonnull implementation,
     const char *_Nullable typeEncoding);
 
-/*!
+/**
  * @brief Returns the object's class.
  *
  * @param object The object whose class should be returned
@@ -378,7 +378,7 @@ extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
  */
 extern Class _Nullable object_getClass(id _Nullable object);
 
-/*!
+/**
  * @brief Sets the object's class.
  *
  * This can be used to swizzle an object's class.
@@ -390,7 +390,7 @@ extern Class _Nullable object_getClass(id _Nullable object);
 extern Class _Nullable object_setClass(id _Nullable object,
     Class _Nonnull class_);
 
-/*!
+/**
  * @brief Returns the object's class name.
  *
  * @param object The object whose class name should be returned
@@ -398,7 +398,7 @@ extern Class _Nullable object_setClass(id _Nullable object,
  */
 extern const char *_Nullable object_getClassName(id _Nullable object);
 
-/*!
+/**
  * @brief Returns the name of the specified protocol.
  *
  * @param protocol The protocol whose name should be returned
@@ -406,7 +406,7 @@ extern const char *_Nullable object_getClassName(id _Nullable object);
  */
 extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
 
-/*!
+/**
  * @brief Returns whether two protocols are equal.
  *
  * @param protocol1 The first protocol
@@ -416,7 +416,7 @@ extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
 extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 
-/*!
+/**
  * @brief Returns whether the first protocol conforms to the second protocol.
  *
  * @param protocol1 The first protocol
@@ -426,7 +426,7 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 
-/*!
+/**
  * @brief Copies the method list of the specified class.
  *
  * @param class_ The class whose method list should be copied
@@ -438,7 +438,7 @@ extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
 extern Method _Nullable *_Nullable class_copyMethodList(Class _Nullable class_,
     unsigned int *_Nullable outCount);
 
-/*!
+/**
  * @brief Returns the name of the specified method.
  *
  * @param method The method whose name should be returned
@@ -446,7 +446,7 @@ extern Method _Nullable *_Nullable class_copyMethodList(Class _Nullable class_,
  */
 extern SEL _Nonnull method_getName(Method _Nonnull method);
 
-/*!
+/**
  * @brief Returns the type encoding of the specified method.
  *
  * @param method The method whose type encoding should be returned
@@ -454,7 +454,7 @@ extern SEL _Nonnull method_getName(Method _Nonnull method);
  */
 extern const char *_Nullable method_getTypeEncoding(Method _Nonnull method);
 
-/*!
+/**
  * @brief Copies the instance variable list of the specified class.
  *
  * @param class_ The class whose instance variable list should be copied
@@ -466,7 +466,7 @@ extern const char *_Nullable method_getTypeEncoding(Method _Nonnull method);
 extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
     unsigned int *_Nullable outCount);
 
-/*!
+/**
  * @brief Returns the name of the specified instance variable.
  *
  * @param ivar The instance variable whose name should be returned
@@ -474,7 +474,7 @@ extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
  */
 extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);
 
-/*!
+/**
  * @brief Returns the type encoding of the specified instance variable.
  *
  * @param ivar The instance variable whose type encoding should be returned
@@ -482,7 +482,7 @@ extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);
  */
 extern const char *_Nonnull ivar_getTypeEncoding(Ivar _Nonnull ivar);
 
-/*!
+/**
  * @brief Returns the offset of the specified instance variable.
  *
  * @param ivar The instance variable whose offset should be returned
@@ -490,7 +490,7 @@ extern const char *_Nonnull ivar_getTypeEncoding(Ivar _Nonnull ivar);
  */
 extern ptrdiff_t ivar_getOffset(Ivar _Nonnull ivar);
 
-/*!
+/**
  * @brief Copies the property list of the specified class.
  *
  * @param class_ The class whose property list should be copied
@@ -502,7 +502,7 @@ extern ptrdiff_t ivar_getOffset(Ivar _Nonnull ivar);
 extern objc_property_t _Nullable *_Nullable class_copyPropertyList(
     Class _Nullable class_, unsigned int *_Nullable outCount);
 
-/*!
+/**
  * @brief Returns the name of the specified property.
  *
  * @param property The property whose name should be returned
@@ -510,7 +510,7 @@ extern objc_property_t _Nullable *_Nullable class_copyPropertyList(
  */
 extern const char *_Nonnull property_getName(objc_property_t _Nonnull property);
 
-/*!
+/**
  * @brief Copies the specified attribute value.
  *
  * @param property The property whose attribute value should be copied
@@ -521,7 +521,7 @@ extern const char *_Nonnull property_getName(objc_property_t _Nonnull property);
 extern char *_Nullable property_copyAttributeValue(
     objc_property_t _Nonnull property, const char *_Nonnull name);
 
-/*!
+/**
  * @brief Exits the Objective-C runtime.
  *
  * This frees all data structures used by the runtime, after which Objective-C
@@ -530,7 +530,7 @@ extern char *_Nullable property_copyAttributeValue(
  */
 extern void objc_exit(void);
 
-/*!
+/**
  * @brief Sets the handler for uncaught exceptions.
  *
  * @param handler The new handler for uncaught exceptions
@@ -540,7 +540,7 @@ extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler_t _Nullable handler);
 
-/*!
+/**
  * @brief Sets the forwarding handler for unimplemented methods.
  *
  * @param forward The forwarding handler for regular methods
@@ -550,7 +550,7 @@ extern _Nullable objc_uncaught_exception_handler_t
 extern void objc_setForwardHandler(IMP _Nullable forward,
     IMP _Nullable stretForward);
 
-/*!
+/**
  * @brief Sets the handler for mutations during enumeration.
  *
  * @param handler The handler for mutations during enumeration
@@ -558,7 +558,7 @@ extern void objc_setForwardHandler(IMP _Nullable forward,
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler_t _Nullable handler);
 
-/*!
+/**
  * @brief Constructs an instance of the specified class in the specified array
  *	  of bytes.
  *
@@ -570,7 +570,7 @@ extern void objc_setEnumerationMutationHandler(
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 
-/*!
+/**
  * @brief Destructs the specified object.
  *
  * @param object The object to destruct
@@ -578,7 +578,7 @@ extern id _Nullable objc_constructInstance(Class _Nullable class_,
  */
 extern void *_Nullable objc_destructInstance(id _Nullable object);
 
-/*!
+/**
  * @brief Creates a new autorelease pool and puts it on top of the stack of
  *	  autorelease pools.
  *
@@ -587,7 +587,7 @@ extern void *_Nullable objc_destructInstance(id _Nullable object);
  */
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 
-/*!
+/**
  * @brief Drains the specified autorelease pool and all pools on top of it and
  *	  removes it from the stack of autorelease pools.
  *
@@ -596,7 +596,7 @@ extern void *_Null_unspecified objc_autoreleasePoolPush(void);
  */
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
 
-/*!
+/**
  * @brief Adds the specified object to the topmost autorelease pool.
  *
  * This is only to be used to implement the `autorelease` method in a root
@@ -607,7 +607,7 @@ extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
  */
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 
-/*!
+/**
  * @brief Sets the tagged pointer secret.
  *
  * @param secret A secret, random value that will be used to XOR all tagged
@@ -615,7 +615,7 @@ extern id _Nullable _objc_rootAutorelease(id _Nullable object);
  */
 extern void objc_setTaggedPointerSecret(uintptr_t secret);
 
-/*!
+/**
  * @brief Registers a class for tagged pointers.
  *
  * @param class The class to register for tagged pointers
@@ -623,7 +623,7 @@ extern void objc_setTaggedPointerSecret(uintptr_t secret);
  */
 extern int objc_registerTaggedPointerClass(Class _Nonnull class);
 
-/*!
+/**
  * @brief Returns whether the specified object is a tagged pointer.
  *
  * @param object The object to inspect
@@ -631,7 +631,7 @@ extern int objc_registerTaggedPointerClass(Class _Nonnull class);
  */
 extern bool object_isTaggedPointer(id _Nullable object);
 
-/*!
+/**
  * @brief Returns the value of the specified tagged pointer.
  *
  * @param object The object whose tagged pointer value should be returned
@@ -639,7 +639,7 @@ extern bool object_isTaggedPointer(id _Nullable object);
  */
 extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
 
-/*!
+/**
  * @brief Creates a new tagged pointer.
  *
  * @param class The tag ID for the tagged pointer class to use

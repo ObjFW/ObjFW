@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #define OF_INFLATE_STREAM_BUFFER_SIZE 4096
 
-/*!
+/**
  * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
  *
  * @note This class only conforms to OFReadyForReadingObserving if the
@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _inLastBlock, _atEndOfStream;
 }
 
-/*!
+/**
  * @brief Creates a new OFInflateStream with the specified underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or
@@ -83,7 +83,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFInflateStream with the specified
  *	  underlying stream.
  *

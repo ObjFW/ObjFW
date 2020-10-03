@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFWriteFailedException \
  *	  OFWriteFailedException.h ObjFW/OFWriteFailedException.h
  *
@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _bytesWritten;
 }
 
-/*!
+/**
  * @brief The number of bytes already written before the write failed.
  *
  * This can be used to make sure that a retry does not write data already
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased write failed exception.
  *
  * @param object The object from which reading or to which writing failed
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
 	       requestedLength: (size_t)requestedLength
 			 errNo: (int)errNo OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated write failed exception.
  *
  * @param object The object from which reading or to which writing failed

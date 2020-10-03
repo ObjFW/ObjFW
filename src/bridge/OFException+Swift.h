@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFException (Swift)
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Execute the specified try block and call the catch block if an
  *	  OFException occurred.
  *
@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)try: (void (^)(void))try
       catch: (void (^)(OF_KINDOF(OFException *)))catch;
 
-/*!
+/**
  * @brief Execute the specified try block and finally call the finally block.
  *
  * @note This is only useful for Swift.
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)try: (void (^)(void))try
     finally: (void (^)(void))finally;
 
-/*!
+/**
  * @brief Execute the specified try block and call the catch block if an
  *	  OFException occurred and finally call the finally block.
  *
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
     finally: (void (^)(void))finally;
 #endif
 
-/*!
+/**
  * @brief Raises the exception.
  *
  * @note This is only useful to raise OFExceptions in Swift.

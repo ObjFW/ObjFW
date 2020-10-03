@@ -28,7 +28,7 @@ extern int _OFXMLElement_Serialization_reference;
 #endif
 
 @interface OFXMLElement (OFSerialization)
-/*!
+/**
  * @brief The XML element interpreted as serialization and parsed into an
  *	  object.
  */

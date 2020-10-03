@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutableTarArchiveEntry \
  *	  OFMutableTarArchiveEntry.h ObjFW/OFMutableTarArchiveEntry.h
  *
@@ -30,70 +30,70 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutableTarArchiveEntry, 4)
 }
 
-/*!
+/**
  * @brief The file name of the entry.
  */
 @property (readwrite, copy, nonatomic) OFString *fileName;
 
-/*!
+/**
  * @brief The mode of the entry.
  */
 @property (readwrite, nonatomic) unsigned long mode;
 
-/*!
+/**
  * @brief The UID of the owner.
  */
 @property (readwrite, nonatomic) unsigned long UID;
 
-/*!
+/**
  * @brief The GID of the group.
  */
 @property (readwrite, nonatomic) unsigned long GID;
 
-/*!
+/**
  * @brief The size of the file.
  */
 @property (readwrite, nonatomic) unsigned long long size;
 
-/*!
+/**
  * @brief The date of the last modification of the file.
  */
 @property (readwrite, retain, nonatomic) OFDate *modificationDate;
 
-/*!
+/**
  * @brief The type of the archive entry.
  *
  * See @ref of_tar_archive_entry_type_t.
  */
 @property (readwrite, nonatomic) of_tar_archive_entry_type_t type;
 
-/*!
+/**
  * @brief The file name of the target (for a hard link or symbolic link).
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *targetFileName;
 
-/*!
+/**
  * @brief The owner of the file.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *owner;
 
-/*!
+/**
  * @brief The group of the file.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *group;
 
-/*!
+/**
  * @brief The device major (if the file is a device).
  */
 @property (readwrite, nonatomic) unsigned long deviceMajor;
 
-/*!
+/**
  * @brief The device major (if the file is a device).
  */
 @property (readwrite, nonatomic) unsigned long deviceMinor;
 
-/*!
+/**
  * @brief Converts the OFMutableTarArchiveEntry to an immutable
  *	  OFTarArchiveEntry.
  */

@@ -29,7 +29,7 @@ extern int _OFData_ASN1DERParsing_reference;
 #endif
 
 @interface OFData (ASN1DERParsing)
-/*!
+/**
  * @brief The data interpreted as ASN.1 in DER representation and parsed as an
  *	  object.
  *
@@ -38,7 +38,7 @@ extern int _OFData_ASN1DERParsing_reference;
  */
 @property (readonly, nonatomic) id objectByParsingASN1DER;
 
-/*!
+/**
  * @brief Parses the ASN.1 DER representation and returns it as an object.
  *
  * This is either an OFArray (for a sequence), an OFSet (for a set) or an

@@ -23,13 +23,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFData;
 @class OFDatagramSocket;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when a packet has been received.
  *
  * @param length The length of the packet
@@ -42,7 +42,7 @@ typedef bool (^of_datagram_socket_async_receive_block_t)(
     size_t length, const of_socket_address_t *_Nonnull sender,
     id _Nullable exception);
 
-/*!
+/**
  * @brief A block which is called when a packet has been sent.
  *
  * @param data The data which was sent
@@ -56,7 +56,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
     id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFDatagramSocketDelegate OFDatagramSocket.h \
  *	     ObjFW/OFDatagramSocket.h
  *
@@ -64,7 +64,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 @protocol OFDatagramSocketDelegate <OFObject>
 @optional
-/*!
+/**
  * @brief This method is called when a packet has been received.
  *
  * @param socket The datagram socket which received a packet
@@ -81,7 +81,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 		sender: (const of_socket_address_t *_Nonnull)sender
 	     exception: (nullable id)exception;
 
-/*!
+/**
  * @brief This method is called when a packet has been sent.
  *
  * @param socket The datagram socket which sent a packet
@@ -96,7 +96,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 		  exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFDatagramSocket OFDatagramSocket.h ObjFW/OFDatagramSocket.h
  *
  * @brief A base class for datagram sockets.
@@ -120,19 +120,19 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	OF_RESERVE_IVARS(OFDatagramSocket, 4)
 }
 
-/*!
+/**
  * @brief Whether the socket can block.
  *
  * By default, a socket can block.
  */
 @property (nonatomic) bool canBlock;
 
-/*!
+/**
  * @brief Whether the socket can send to broadcast addresses.
  */
 @property (nonatomic) bool canSendToBroadcastAddresses;
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -141,14 +141,14 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFDatagramSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Returns a new, autoreleased OFDatagramSocket.
  *
  * @return A new, autoreleased OFDatagramSocket
  */
 + (instancetype)socket;
 
-/*!
+/**
  * @brief Receives a datagram and stores it into the specified buffer.
  *
  * If the buffer is too small, the datagram is truncated.
@@ -163,7 +163,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 		     length: (size_t)length
 		     sender: (of_socket_address_t *)sender;
 
-/*!
+/**
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
  *
@@ -175,7 +175,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length;
 
-/*!
+/**
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
  *
@@ -190,7 +190,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
  *
@@ -209,7 +209,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 			length: (size_t)length
 			 block: (of_datagram_socket_async_receive_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
  *
@@ -231,7 +231,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 			 block: (of_datagram_socket_async_receive_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Sends the specified datagram to the specified address.
  *
  * @param buffer The buffer to send as a datagram
@@ -243,7 +243,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	    length: (size_t)length
 	  receiver: (const of_socket_address_t *)receiver;
 
-/*!
+/**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
@@ -253,7 +253,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver;
 
-/*!
+/**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
@@ -266,7 +266,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
@@ -280,7 +280,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 	     receiver: (const of_socket_address_t *)receiver
 		block: (of_datagram_socket_async_send_data_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
@@ -297,12 +297,12 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 		block: (of_datagram_socket_async_send_data_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Cancels all pending asynchronous requests on the socket.
  */
 - (void)cancelAsyncRequests;
 
-/*!
+/**
  * @brief Closes the socket so that it can neither receive nor send any more
  *	  datagrams.
  */

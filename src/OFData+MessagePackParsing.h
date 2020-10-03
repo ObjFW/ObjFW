@@ -28,13 +28,13 @@ extern int _OFData_MessagePackParsing_reference;
 #endif
 
 @interface OFData (MessagePackParsing)
-/*!
+/**
  * @brief The data interpreted as MessagePack representation and parsed as an
  *	  object.
  */
 @property (readonly, nonatomic) id objectByParsingMessagePack;
 
-/*!
+/**
  * @brief Parses the MessagePack representation and returns it as an object.
  *
  * @param depthLimit The maximum depth the parser should accept (defaults to 32

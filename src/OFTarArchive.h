@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
-/*!
+/**
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
  *
  * @brief A class for accessing and manipulating tar archives.
@@ -42,12 +42,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _lastReturnedStream;
 }
 
-/*!
+/**
  * @brief The encoding to use for the archive. Defaults to UTF-8.
  */
 @property (nonatomic) of_string_encoding_t encoding;
 
-/*!
+/**
  * @brief A stream for reading the current entry.
  *
  * @note This is only available in read mode.
@@ -57,7 +57,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
 
-/*!
+/**
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
  * @param stream A stream from which the tar archive will be read.
@@ -71,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a new OFTarArchive object with the specified file.
  *
  * @param path The path to the tar archive
@@ -86,7 +86,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified stream.
  *
@@ -101,7 +101,7 @@ OF_SUBCLASSING_RESTRICTED
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified file.
  *
@@ -115,7 +115,7 @@ OF_SUBCLASSING_RESTRICTED
 			mode: (OFString *)mode;
 #endif
 
-/*!
+/**
  * @brief Returns the next entry from the tar archive or `nil` if all entries
  *	  have been read.
  *
@@ -132,7 +132,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (nullable OFTarArchiveEntry *)nextEntry;
 
-/*!
+/**
  * @brief Returns a stream for writing the specified entry.
  *
  * @note This is only available in write and append mode.
@@ -151,7 +151,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry;
 
-/*!
+/**
  * @brief Closes the OFTarArchive.
  */
 - (void)close;

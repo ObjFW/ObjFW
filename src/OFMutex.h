@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutex OFMutex.h ObjFW/OFMutex.h
  *
  * @brief A class for creating mutual exclusions.
@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFMutex, 4)
 }
 
-/*!
+/**
  * @brief Creates a new mutex.
  *
  * @return A new autoreleased mutex.

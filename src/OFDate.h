@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFConstantString;
 
-/*!
+/**
  * @class OFDate OFDate.h ObjFW/OFDate.h
  *
  * @brief A class for storing, accessing and comparing dates.
@@ -43,104 +43,104 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) OFDate *distantPast;
 #endif
 
-/*!
+/**
  * @brief The microsecond of the date.
  */
 @property (readonly, nonatomic) uint32_t microsecond;
 
-/*!
+/**
  * @brief The second of the date.
  */
 @property (readonly, nonatomic) uint8_t second;
 
-/*!
+/**
  * @brief The minute of the date.
  */
 @property (readonly, nonatomic) uint8_t minute;
 
-/*!
+/**
  * @brief The minute of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localMinute;
 
-/*!
+/**
  * @brief The hour of the date.
  */
 @property (readonly, nonatomic) uint8_t hour;
 
-/*!
+/**
  * @brief The hour of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localHour;
 
-/*!
+/**
  * @brief The day of the month of the date.
  */
 @property (readonly, nonatomic) uint8_t dayOfMonth;
 
-/*!
+/**
  * @brief The day of the month of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localDayOfMonth;
 
-/*!
+/**
  * @brief The month of the year of the date.
  */
 @property (readonly, nonatomic) uint8_t monthOfYear;
 
-/*!
+/**
  * @brief The month of the year of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localMonthOfYear;
 
-/*!
+/**
  * @brief The year of the date.
  */
 @property (readonly, nonatomic) uint16_t year;
 
-/*!
+/**
  * @brief The year of the date in local time.
  */
 @property (readonly, nonatomic) uint16_t localYear;
 
-/*!
+/**
  * @brief The day of the week of the date.
  */
 @property (readonly, nonatomic) uint8_t dayOfWeek;
 
-/*!
+/**
  * @brief The day of the week of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localDayOfWeek;
 
-/*!
+/**
  * @brief The day of the year of the date.
  */
 @property (readonly, nonatomic) uint16_t dayOfYear;
 
-/*!
+/**
  * @brief The day of the year of the date in local time.
  */
 @property (readonly, nonatomic) uint16_t localDayOfYear;
 
-/*!
+/**
  * @brief The seconds since 1970-01-01T00:00:00Z.
  */
 @property (readonly, nonatomic) of_time_interval_t timeIntervalSince1970;
 
-/*!
+/**
  * @brief The seconds the date is in the future.
  */
 @property (readonly, nonatomic) of_time_interval_t timeIntervalSinceNow;
 
-/*!
+/**
  * @brief Creates a new OFDate with the current date and time.
  *
  * @return A new, autoreleased OFDate with the current date and time
  */
 + (instancetype)date;
 
-/*!
+/**
  * @brief Creates a new OFDate with the specified date and time since
  *	  1970-01-01T00:00:00Z.
  *
@@ -149,7 +149,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)dateWithTimeIntervalSince1970: (of_time_interval_t)seconds;
 
-/*!
+/**
  * @brief Creates a new OFDate with the specified date and time since now.
  *
  * @param seconds The seconds since now
@@ -157,7 +157,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)dateWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
 
-/*!
+/**
  * @brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
@@ -177,7 +177,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)dateWithDateString: (OFString *)string
 			    format: (OFString *)format;
 
-/*!
+/**
  * @brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
@@ -194,7 +194,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)dateWithLocalDateString: (OFString *)string
 				 format: (OFString *)format;
 
-/*!
+/**
  * @brief Returns a date in the distant future.
  *
  * The date is system-dependant.
@@ -203,7 +203,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)distantFuture;
 
-/*!
+/**
  * @brief Returns a date in the distant past.
  *
  * The date is system-dependant.
@@ -212,7 +212,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)distantPast;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDate with the specified date and
  *	  time since 1970-01-01T00:00:00Z.
  *
@@ -222,7 +222,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDate with the specified date and
  *	  time since now.
  *
@@ -231,7 +231,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDate with the specified string in
  *	  the specified format.
  *
@@ -251,7 +251,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDate with the specified string in
  *	  the specified format.
  *
@@ -269,7 +269,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithLocalDateString: (OFString *)string
 				 format: (OFString *)format;
 
-/*!
+/**
  * @brief Creates a string of the date with the specified format.
  *
  * See the man page for `strftime` for information on the format.
@@ -279,7 +279,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFString *)dateStringWithFormat: (OFConstantString *)format;
 
-/*!
+/**
  * @brief Creates a string of the local date with the specified format.
  *
  * See the man page for `strftime` for information on the format.
@@ -289,7 +289,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFString *)localDateStringWithFormat: (OFConstantString *)format;
 
-/*!
+/**
  * @brief Returns the earlier of the two dates.
  *
  * If the argument is `nil`, it returns the receiver.
@@ -299,7 +299,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFDate *)earlierDate: (nullable OFDate *)otherDate;
 
-/*!
+/**
  * @brief Returns the later of the two dates.
  *
  * If the argument is `nil`, it returns the receiver.
@@ -309,7 +309,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFDate *)laterDate: (nullable OFDate *)otherDate;
 
-/*!
+/**
  * @brief Returns the seconds the receiver is after the date.
  *
  * @param otherDate Date date to generate the difference with receiver
@@ -317,7 +317,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate;
 
-/*!
+/**
  * @brief Creates a new date with the specified time interval added.
  *
  * @param seconds The seconds after the date

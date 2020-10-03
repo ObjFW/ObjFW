@@ -20,13 +20,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFSPXSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when the socket connected.
  *
  * @param exception An exception which occurred while connecting the socket or
@@ -35,14 +35,14 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFSPXSocketDelegate OFSPXSocket.h ObjFW/OFSPXSocket.h
  *
  * A delegate for OFSPXSocket.
  */
 @protocol OFSPXSocketDelegate <OFSequencedPacketSocketDelegate>
 @optional
-/*!
+/**
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
@@ -59,7 +59,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 	 exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFSPXSocket OFSPXSocket.h ObjFW/OFSPXSocket.h
  *
  * @brief A class which provides methods to create and use SPX sockets.
@@ -75,7 +75,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 	OF_RESERVE_IVARS(OFSPXSocket, 4)
 }
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -84,7 +84,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFSPXSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Connect the OFSPXSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -96,7 +96,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 	      network: (uint32_t)network
 		 port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -108,7 +108,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		   network: (uint32_t)network
 		      port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -123,7 +123,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -137,7 +137,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		      port: (uint16_t)port
 		     block: (of_spx_socket_async_connect_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -154,7 +154,7 @@ typedef void (^of_spx_socket_async_connect_block_t)(id _Nullable exception);
 		     block: (of_spx_socket_async_connect_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Bind the socket to the specified network, node and port.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to
