@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFUnlockFailedException \
  *	  OFUnlockFailedException.h ObjFW/OFUnlockFailedException.h
  *
@@ -32,17 +32,17 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The lock which could not be unlocked.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased unlock failed exception.
  *
  * @param lock The lock which could not be unlocked
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock
 			    errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated unlock failed exception.
  *
  * @param lock The lock which could not be unlocked

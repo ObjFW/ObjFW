@@ -35,7 +35,7 @@ Bare metal ARM Cortex-M4
 DOS
 ---
 
-  * OS Versions: Windows XP DOS Emulation, DOSBox
+  * OS Versions: Windows XP DOS Emulation, DOSBox, MS-DOS 6.0, FreeDOS 1.2
   * Architectures: x86
   * Compilers: DJGPP GCC 4.7.3 (djdev204)
   * Runtimes: ObjFW
@@ -89,9 +89,9 @@ Linux
 macOS
 -----
 
-  * OS Versions: 10.5, 10.7-10.14, Darling
+  * OS Versions: 10.5, 10.7-10.15, Darling
   * Architectures: PowerPC, PowerPC64, x86, x86_64
-  * Compilers: Clang 3.1-10.0, GCC 4.2.1
+  * Compilers: Clang 3.1-10.0, Apple GCC 4.0.1 & 4.2.1
   * Runtimes: Apple, ObjFW
 
 
@@ -109,9 +109,9 @@ NetBSD
 ------
 
   * OS Versions: 5.1-9.0
-  * Architectures: ARM, ARM (big endian, BE8 mode), MIPS (O32), SPARC, SPARC64,
-                   x86, x86_64
-  * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3
+  * Architectures: ARM, ARM (big endian, BE8 mode), MIPS (O32), PowerPC, SPARC,
+                   SPARC64, x86, x86_64
+  * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3 & 7.4.0
   * Runtimes: ObjFW
 
 

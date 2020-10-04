@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFHMAC OFHMAC.h ObjFW/OFHMAC.h
  *
  * @brief A class which provides methods to calculate an HMAC.
@@ -35,17 +35,17 @@ OF_SUBCLASSING_RESTRICTED
 	bool _calculated;
 }
 
-/*!
+/**
  * @brief The class for the cryptographic hash used by the HMAC.
  */
 @property (readonly, nonatomic) Class <OFCryptoHash> hashClass;
 
-/*!
+/**
  * @brief Whether data may be stored in swappable memory.
  */
 @property (readonly, nonatomic) bool allowsSwappableMemory;
 
-/*!
+/**
  * @brief A buffer containing the HMAC.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
@@ -54,12 +54,12 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) const unsigned char *digest
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief The size of the digest.
  */
 @property (readonly, nonatomic) size_t digestSize;
 
-/*!
+/**
  * @brief Returns a new OFHMAC with the specified hashing algorithm.
  *
  * @param hashClass The class of the hashing algorithm
@@ -71,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initialized an already allocated OFHMAC with the specified hashing
  *	  algorithm.
  *
@@ -83,7 +83,7 @@ OF_SUBCLASSING_RESTRICTED
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Sets the key for the HMAC.
  *
  * @note This resets the HMAC!
@@ -98,7 +98,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setKey: (const void *)key
 	length: (size_t)length;
 
-/*!
+/**
  * @brief Adds a buffer to the HMAC to be calculated.
  *
  * @param buffer The buffer which should be included into the calculation
@@ -107,7 +107,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length;
 
-/*!
+/**
  * @brief Resets the HMAC so that it can be calculated for a new message.
  *
  * @note This does not reset the key so that a new HMAC with the same key can
@@ -120,7 +120,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)reset;
 
-/*!
+/**
  * @brief This is like @ref reset, but also zeroes the hashed key and all state.
  *
  * @warning After calling this, you *must* set a new key before reusing the

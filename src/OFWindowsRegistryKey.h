@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @class OFWindowsRegistryKey \
  *	  OFWindowsRegistryKey.h ObjFW/OFWindowsRegistryKey.h
  */
@@ -35,35 +35,35 @@ OF_SUBCLASSING_RESTRICTED
 	bool _close;
 }
 
-/*!
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_CLASSES_ROOT key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_CLASSES_ROOT key
  */
 + (instancetype)classesRootKey;
 
-/*!
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_CURRENT_CONFIG key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_CURRENT_CONFIG key
  */
 + (instancetype)currentConfigKey;
 
-/*!
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_CURRENT_USER key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_CURRENT_USER key
  */
 + (instancetype)currentUserKey;
 
-/*!
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_LOCAL_MACHINE key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_LOCAL_MACHINE key
  */
 + (instancetype)localMachineKey;
 
-/*!
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_USERS key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_USERS key
@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Opens the subkey at the specified path.
  *
  * @param path The path of the subkey to open
@@ -84,7 +84,7 @@ OF_SUBCLASSING_RESTRICTED
 	   openSubkeyAtPath: (OFString *)path
     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
-/*!
+/**
  * @brief Opens the subkey at the specified path.
  *
  * @param path The path of the subkey to open
@@ -99,7 +99,7 @@ OF_SUBCLASSING_RESTRICTED
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
-/*!
+/**
  * @brief Creates a subkey at the specified path or opens it if it already
  *	  exists.
  *
@@ -111,7 +111,7 @@ OF_SUBCLASSING_RESTRICTED
 - (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
 		     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
-/*!
+/**
  * @brief Creates a subkey at the specified path or opens it if it already
  *	  exists.
  *
@@ -135,7 +135,7 @@ OF_SUBCLASSING_RESTRICTED
 	 securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
 		disposition: (nullable DWORD *)disposition;
 
-/*!
+/**
  * @brief Returns the data for the specified value at the specified path.
  *
  * @param value The name of the value to return
@@ -145,7 +145,7 @@ OF_SUBCLASSING_RESTRICTED
 - (nullable OFData *)dataForValue: (nullable OFString *)value
 			     type: (nullable DWORD *)type;
 
-/*!
+/**
  * @brief Sets the data for the specified value.
  *
  * @param data The data to set the value to
@@ -156,7 +156,7 @@ OF_SUBCLASSING_RESTRICTED
        forValue: (nullable OFString *)value
 	   type: (DWORD)type;
 
-/*!
+/**
  * @brief Returns the string for the specified value at the specified path.
  *
  * @param value The name of the value to return
@@ -164,7 +164,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (nullable OFString *)stringForValue: (nullable OFString *)value;
 
-/*!
+/**
  * @brief Returns the string for the specified value at the specified path.
  *
  * @param value The name of the value to return
@@ -174,7 +174,7 @@ OF_SUBCLASSING_RESTRICTED
 - (nullable OFString *)stringForValue: (nullable OFString *)value
 				 type: (nullable DWORD *)type;
 
-/*!
+/**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
@@ -183,7 +183,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setString: (nullable OFString *)string
 	 forValue: (nullable OFString *)value;
 
-/*!
+/**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
@@ -194,14 +194,14 @@ OF_SUBCLASSING_RESTRICTED
 	 forValue: (nullable OFString *)value
 	     type: (DWORD)type;
 
-/*!
+/**
  * @brief Deletes the specified value.
  *
  * @param value The value to delete
  */
 - (void)deleteValue: (nullable OFString *)value;
 
-/*!
+/**
  * @brief Deletes the specified subkey.
  *
  * @param subkeyPath The path of the subkey to delete

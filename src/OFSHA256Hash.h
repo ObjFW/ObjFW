@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSHA256Hash OFSHA256Hash.h ObjFW/OFSHA256Hash.h
  *
  * @brief A class which provides methods to create an SHA-256 hash.

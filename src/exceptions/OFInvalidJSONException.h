@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFInvalidJSONException \
  *	  OFInvalidJSONException.h ObjFW/OFInvalidJSONException.h
  *
@@ -31,19 +31,19 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _line;
 }
 
-/*!
+/**
  * @brief The string containing the invalid JSON representation.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *string;
 
-/*!
+/**
  * @brief The line in which parsing the JSON representation failed.
  */
 @property (readonly, nonatomic) size_t line;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased invalid JSON exception.
  *
  * @param string The string containing the invalid JSON representation
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated invalid JSON exception.
  *
  * @param string The string containing the invalid JSON representation

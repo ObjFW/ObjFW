@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFGetWindowsRegistryValueFailedException \
  *	  OFGetWindowsRegistryValueFailedException.h \
  *	  ObjFW/OFGetWindowsRegistryValueFailedException.h
@@ -37,22 +37,22 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which getting the value at the key path failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The value which could not be retrieved.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
-/*!
+/**
  * @brief The status returned by RegGetValueEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased get Windows registry value failed
  *	  exception.
  *
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated get Windows registry value failed
  *	  exception.
  *

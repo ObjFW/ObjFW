@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFXMLParser;
 
-/*!
+/**
  * @class OFUnboundPrefixException \
  *	  OFUnboundPrefixException.h ObjFW/OFUnboundPrefixException.h
  *
@@ -33,19 +33,19 @@ OF_ASSUME_NONNULL_BEGIN
 	OFXMLParser *_parser;
 }
 
-/*!
+/**
  * @brief The unbound prefix.
  */
 @property (readonly, nonatomic) OFString *prefix;
 
-/*!
+/**
  * @brief The parser which encountered the unbound prefix.
  */
 @property (readonly, nonatomic) OFXMLParser *parser;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased unbound prefix exception.
  *
  * @param prefix The prefix which is unbound
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated unbound prefix exception.
  *
  * @param prefix The prefix which is unbound

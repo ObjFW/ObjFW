@@ -77,7 +77,7 @@ union test4_union {
 	void *pool = objc_autoreleasePoolPush();
 	OFMethodSignature *ms;
 
-	TEST(@"-[:signatureWithObjCTypes:] #1",
+	TEST(@"-[signatureWithObjCTypes:] #1",
 	    (ms = [OFMethodSignature signatureWithObjCTypes:
 	    "i28@0:8S16*20"]) && ms.numberOfArguments == 4 &&
 	    strcmp(ms.methodReturnType, "i") == 0 &&
@@ -128,7 +128,8 @@ union test4_union {
 	    of_sizeof_type_encoding(@encode(struct test2_struct)) ==
 	    sizeof(struct test2_struct))
 
-#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
+    OF_GCC_VERSION >= 402
 	TEST(@"of_sizeof_type_encoding() #3",
 	    of_sizeof_type_encoding(@encode(struct test3_struct)) ==
 	    sizeof(struct test3_struct))
@@ -154,7 +155,8 @@ union test4_union {
 	    of_alignof_type_encoding(@encode(struct test2_struct)) ==
 	    OF_ALIGNOF(struct test2_struct))
 
-#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
+    OF_GCC_VERSION >= 402
 	TEST(@"of_alignof_type_encoding() #3",
 	    of_alignof_type_encoding(@encode(struct test3_struct)) ==
 	    OF_ALIGNOF(struct test3_struct))

@@ -30,37 +30,37 @@ extern int _OFData_CryptoHashing_reference;
 #endif
 
 @interface OFData (CryptoHashing)
-/*!
+/**
  * @brief The MD5 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *MD5Hash;
 
-/*!
+/**
  * @brief The RIPEMD-160 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *RIPEMD160Hash;
 
-/*!
+/**
  * @brief The SHA-1 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *SHA1Hash;
 
-/*!
+/**
  * @brief The SHA-224 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *SHA224Hash;
 
-/*!
+/**
  * @brief The SHA-256 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *SHA256Hash;
 
-/*!
+/**
  * @brief The SHA-384 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *SHA384Hash;
 
-/*!
+/**
  * @brief The SHA-512 hash of the data as a string.
  */
 @property (readonly, nonatomic) OFString *SHA512Hash;

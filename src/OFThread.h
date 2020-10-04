@@ -25,7 +25,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFDate;
 #ifdef OF_HAVE_SOCKETS
@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_BLOCKS)
-/*!
+/**
  * @brief A block to be executed in a new thread.
  *
  * @return The object which should be returned when the thread is joined
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef id _Nullable (^of_thread_block_t)(void);
 #endif
 
-/*!
+/**
  * @class OFThread OFThread.h ObjFW/OFThread.h
  *
  * @brief A class which provides portable threads.
@@ -88,7 +88,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # ifdef OF_HAVE_SOCKETS
 	OFDNSResolver *_DNSResolver;
 # endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFThread, 4)
 }
 #endif
 
@@ -107,7 +107,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 #endif
 
 #ifdef OF_HAVE_THREADS
-/*!
+/**
  * @brief The name for the thread to use when starting it.
  *
  * @note While this can be changed after the thread has been started, it will
@@ -118,19 +118,19 @@ typedef id _Nullable (^of_thread_block_t)(void);
 @property OF_NULLABLE_PROPERTY (copy) OFString *name;
 
 # ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief The block to execute in the thread.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_thread_block_t threadBlock;
 # endif
 
-/*!
+/**
  * @brief The run loop for the thread.
  */
 @property (readonly, nonatomic) OFRunLoop *runLoop;
 
-/*!
+/**
  * @brief The priority of the thread.
  *
  * @note This has to be set before the thread is started!
@@ -141,14 +141,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 @property (nonatomic) float priority;
 
-/*!
+/**
  * @brief The stack size of the thread.
  *
  * @note This has to be set before the thread is started!
  */
 @property (nonatomic) size_t stackSize;
 
-/*!
+/**
  * @brief Whether the thread supports sockets.
  *
  * Some operating systems such as AmigaOS need special per-thread
@@ -157,7 +157,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 @property (nonatomic) bool supportsSockets;
 
-/*!
+/**
  * @brief Creates a new thread.
  *
  * @return A new, autoreleased thread
@@ -165,7 +165,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 + (instancetype)thread;
 
 # ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Creates a new thread with the specified block.
  *
  * @param threadBlock A block which is executed by the thread
@@ -174,28 +174,28 @@ typedef id _Nullable (^of_thread_block_t)(void);
 + (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock;
 # endif
 
-/*!
+/**
  * @brief Returns the current thread.
  *
  * @return The current thread
  */
 + (nullable OFThread *)currentThread;
 
-/*!
+/**
  * @brief Returns the main thread.
  *
  * @return The main thread
  */
 + (nullable OFThread *)mainThread;
 
-/*!
+/**
  * @brief Returns whether the current thread is the main thread.
  *
  * @return Whether the current thread is the main thread.
  */
 + (bool)isMainThread;
 
-/*!
+/**
  * @brief Returns a dictionary to store thread-specific data, meaning it
  *	  returns a different dictionary for every thread.
  *
@@ -205,7 +205,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 #endif
 
 #ifdef OF_HAVE_SOCKETS
-/*!
+/**
  * @brief Returns the DNS resolver for the current thread.
  *
  * @return The DNS resolver for the current thread
@@ -213,7 +213,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 + (OFDNSResolver *)DNSResolver;
 #endif
 
-/*!
+/**
  * @brief Suspends execution of the current thread for the specified time
  *	  interval.
  *
@@ -221,33 +221,33 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 + (void)sleepForTimeInterval: (of_time_interval_t)timeInterval;
 
-/*!
+/**
  * @brief Suspends execution of the current thread until the specified date.
  *
  * @param date The date to wait for
  */
 + (void)sleepUntilDate: (OFDate *)date;
 
-/*!
+/**
  * @brief Yields a processor voluntarily and moves the thread to the end of the
  *	  queue for its priority.
  */
 + (void)yield;
 
 #ifdef OF_HAVE_THREADS
-/*!
+/**
  * @brief Terminates the current thread, letting it return `nil`.
  */
 + (void)terminate OF_NO_RETURN;
 
-/*!
+/**
  * @brief Terminates the current thread, letting it return the specified object.
  *
  * @param object The object which the terminated thread will return
  */
 + (void)terminateWithObject: (nullable id)object OF_NO_RETURN;
 
-/*!
+/**
  * @brief Sets the name of the current thread.
  *
  * Unlike the instance method, this can be used after the thread has been
@@ -257,7 +257,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 + (void)setName: (nullable OFString *)name;
 
-/*!
+/**
  * @brief Returns the name of the current thread.
  *
  * @return The name of the current thread.
@@ -265,7 +265,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 + (nullable OFString *)name;
 
 # ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Initializes an already allocated thread with the specified block.
  *
  * @param threadBlock A block which is executed by the thread
@@ -274,14 +274,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
 - (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock;
 # endif
 
-/*!
+/**
  * @brief The main routine of the thread. You need to reimplement this!
  *
  * @return The object the join method should return when called for this thread
  */
 - (nullable id)main;
 
-/*!
+/**
  * @brief This routine is executed when the thread's main method has finished
  *	  executing or terminate has been called.
  *
@@ -289,12 +289,12 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 - (void)handleTermination OF_REQUIRES_SUPER;
 
-/*!
+/**
  * @brief Starts the thread.
  */
 - (void)start;
 
-/*!
+/**
  * @brief Joins a thread.
  *
  * @return The object returned by the main method of the thread.

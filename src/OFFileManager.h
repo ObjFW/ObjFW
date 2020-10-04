@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS)
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFURL;
 
-/*!
+/**
  * @brief A key for a file attribute in the file attributes dictionary.
  *
  * Possible keys for file URLs are:
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef OFConstantString *of_file_attribute_key_t;
 
-/*!
+/**
  * @brief The type of a file.
  *
  * Possibles values for file URLs are:
@@ -82,14 +82,14 @@ typedef OFConstantString *of_file_attribute_key_t;
  */
 typedef OFConstantString *of_file_type_t;
 
-/*!
+/**
  * @brief A dictionary mapping keys of type @ref of_file_attribute_key_t
  *	  to their attribute values.
  */
 typedef OFDictionary OF_GENERIC(of_file_attribute_key_t, id)
     *of_file_attributes_t;
 
-/*!
+/**
  * @brief A mutable dictionary mapping keys of type
  *	  @ref of_file_attribute_key_t to their attribute values.
  */
@@ -99,7 +99,7 @@ typedef OFMutableDictionary OF_GENERIC(of_file_attribute_key_t, id)
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief The size of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -107,7 +107,7 @@ extern "C" {
  */
 extern const of_file_attribute_key_t of_file_attribute_key_size;
 
-/*!
+/**
  * @brief The type of the file.
  *
  * The corresponding value is of type @ref of_file_type_t.
@@ -117,7 +117,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_size;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_type;
 
-/*!
+/**
  * @brief The POSIX permissions of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -125,7 +125,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_type;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
 
-/*!
+/**
  * @brief The POSIX UID of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -133,7 +133,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
 
-/*!
+/**
  * @brief The POSIX GID of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -141,7 +141,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
 
-/*!
+/**
  * @brief The owner of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -149,7 +149,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_owner;
 
-/*!
+/**
  * @brief The group of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -157,7 +157,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_owner;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_group;
 
-/*!
+/**
  * @brief The last access date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -165,7 +165,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_group;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
 
-/*!
+/**
  * @brief The last modification date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -173,7 +173,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
 
-/*!
+/**
  * @brief The last status change date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -181,7 +181,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
 
-/*!
+/**
  * @brief The creation date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -189,7 +189,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
  */
 extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
 
-/*!
+/**
  * @brief The destination of a symbolic link as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
@@ -198,37 +198,37 @@ extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
 extern const of_file_attribute_key_t
     of_file_attribute_key_symbolic_link_destination;
 
-/*!
+/**
  * @brief A regular file.
  */
 extern const of_file_type_t of_file_type_regular;
 
-/*!
+/**
  * @brief A directory.
  */
 extern const of_file_type_t of_file_type_directory;
 
-/*!
+/**
  * @brief A symbolic link.
  */
 extern const of_file_type_t of_file_type_symbolic_link;
 
-/*!
+/**
  * @brief A FIFO.
  */
 extern const of_file_type_t of_file_type_fifo;
 
-/*!
+/**
  * @brief A character special file.
  */
 extern const of_file_type_t of_file_type_character_special;
 
-/*!
+/**
  * @brief A block special file.
  */
 extern const of_file_type_t of_file_type_block_special;
 
-/*!
+/**
  * @brief A socket.
  */
 extern const of_file_type_t of_file_type_socket;
@@ -236,7 +236,7 @@ extern const of_file_type_t of_file_type_socket;
 }
 #endif
 
-/*!
+/**
  * @class OFFileManager OFFileManager.h ObjFW/OFFileManager.h
  *
  * @brief A class which provides management for files, e.g. reading contents of
@@ -251,24 +251,24 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief The path of the current working directory.
  */
 @property (readonly, nonatomic) OFString *currentDirectoryPath;
 
-/*!
+/**
  * @brief The URL of the current working directory.
  */
 @property (readonly, nonatomic) OFURL *currentDirectoryURL;
 #endif
 
-/*!
+/**
  * @brief Returns the default file manager.
  */
 + (OFFileManager *)defaultManager;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Returns the attributes for the item at the specified path.
  *
  * @param path The path to return the attributes for
@@ -278,7 +278,7 @@ OF_SUBCLASSING_RESTRICTED
 - (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Returns the attributes for the item at the specified URL.
  *
  * @param URL The URL to return the attributes for
@@ -288,7 +288,7 @@ OF_SUBCLASSING_RESTRICTED
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Sets the attributes for the item at the specified path.
  *
  * All attributes not part of the dictionary are left unchanged.
@@ -300,7 +300,7 @@ OF_SUBCLASSING_RESTRICTED
 	 ofItemAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Sets the attributes for the item at the specified URL.
  *
  * All attributes not part of the dictionary are left unchanged.
@@ -312,7 +312,7 @@ OF_SUBCLASSING_RESTRICTED
 	  ofItemAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Checks whether a file exists at the specified path.
  *
  * @param path The path to check
@@ -321,7 +321,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)fileExistsAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Checks whether a file exists at the specified URL.
  *
  * @param URL The URL to check
@@ -330,7 +330,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)fileExistsAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Checks whether a directory exists at the specified path.
  *
  * @param path The path to check
@@ -339,7 +339,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)directoryExistsAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Checks whether a directory exists at the specified URL.
  *
  * @param URL The URL to check
@@ -348,14 +348,14 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)directoryExistsAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a directory at the specified path.
  *
  * @param path The path of the directory to create
  */
 - (void)createDirectoryAtPath: (OFString *)path;
 
-/*!
+/**
  * @brief Creates a directory at the specified path.
  *
  * @param path The path of the directory to create
@@ -365,14 +365,14 @@ OF_SUBCLASSING_RESTRICTED
 		createParents: (bool)createParents;
 #endif
 
-/*!
+/**
  * @brief Creates a directory at the specified URL.
  *
  * @param URL The URL of the directory to create
  */
 - (void)createDirectoryAtURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Creates a directory at the specified URL.
  *
  * @param URL The URL of the directory to create
@@ -382,7 +382,7 @@ OF_SUBCLASSING_RESTRICTED
 	       createParents: (bool)createParents;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Returns an array with the items in the specified directory.
  *
  * @note `.` and `..` are not part of the returned array.
@@ -393,7 +393,7 @@ OF_SUBCLASSING_RESTRICTED
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Returns an array with the items in the specified directory.
  *
  * @note `.` and `..` are not part of the returned array.
@@ -404,21 +404,21 @@ OF_SUBCLASSING_RESTRICTED
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Changes the current working directory.
  *
  * @param path The new directory to change to
  */
 - (void)changeCurrentDirectoryPath: (OFString *)path;
 
-/*!
+/**
  * @brief Changes the current working directory.
  *
  * @param URL The new directory to change to
  */
 - (void)changeCurrentDirectoryURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Copies a file, directory or symbolic link (if supported by the OS).
  *
  * The destination path must be a full path, which means it must include the
@@ -435,7 +435,7 @@ OF_SUBCLASSING_RESTRICTED
 		toPath: (OFString *)destination;
 #endif
 
-/*!
+/**
  * @brief Copies a file, directory or symbolic link (if supported by the OS).
  *
  * The destination URL must have a full path, which means it must include the
@@ -452,7 +452,7 @@ OF_SUBCLASSING_RESTRICTED
 		toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Moves an item.
  *
  * The destination path must be a full path, which means it must include the
@@ -469,7 +469,7 @@ OF_SUBCLASSING_RESTRICTED
 		toPath: (OFString *)destination;
 #endif
 
-/*!
+/**
  * @brief Moves an item.
  *
  * The destination URL must have a full path, which means it must include the
@@ -486,7 +486,7 @@ OF_SUBCLASSING_RESTRICTED
 		toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Removes the item at the specified path.
  *
  * If the item at the specified path is a directory, it is removed recursively.
@@ -496,7 +496,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)removeItemAtPath: (OFString *)path;
 #endif
 
-/*!
+/**
  * @brief Removes the item at the specified URL.
  *
  * If the item at the specified URL is a directory, it is removed recursively.
@@ -506,7 +506,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)removeItemAtURL: (OFURL *)URL;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-/*!
+/**
  * @brief Creates a hard link for the specified item.
  *
  * The destination path must be a full path, which means it must include the
@@ -521,7 +521,7 @@ OF_SUBCLASSING_RESTRICTED
 		toPath: (OFString *)destination;
 #endif
 
-/*!
+/**
  * @brief Creates a hard link for the specified item.
  *
  * The destination URL must have a full path, which means it must include the
@@ -536,7 +536,7 @@ OF_SUBCLASSING_RESTRICTED
 		toURL: (OFURL *)destination;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
-/*!
+/**
  * @brief Creates a symbolic link for an item.
  *
  * The destination path must be a full path, which means it must include the
@@ -554,7 +554,7 @@ OF_SUBCLASSING_RESTRICTED
 	     withDestinationPath: (OFString *)target;
 #endif
 
-/*!
+/**
  * @brief Creates a symbolic link for an item.
  *
  * The destination uRL must have a full path, which means it must include the
@@ -573,57 +573,57 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 @interface OFDictionary (FileAttributes)
-/*!
+/**
  * @brief The @ref of_file_attribute_key_size key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uintmax_t fileSize;
+@property (readonly, nonatomic) unsigned long long fileSize;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_type key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) of_file_type_t fileType;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_posix_permissions key from the
  *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint16_t filePOSIXPermissions;
+@property (readonly, nonatomic) unsigned long filePOSIXPermissions;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_posix_uid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint32_t filePOSIXUID;
+@property (readonly, nonatomic) unsigned long filePOSIXUID;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_posix_gid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) uint32_t filePOSIXGID;
+@property (readonly, nonatomic) unsigned long filePOSIXGID;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_owner key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFString *fileOwner;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_group key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFString *fileGroup;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_last_access_date key from the
  *	  dictionary.
  *
@@ -631,7 +631,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFDate *fileLastAccessDate;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_modification_date key from the
  *	  dictionary.
  *
@@ -639,7 +639,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFDate *fileModificationDate;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_status_change_date key from the
  *	  dictionary.
  *
@@ -647,14 +647,14 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFDate *fileStatusChangeDate;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_creation_date key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileCreationDate;
 
-/*!
+/**
  * @brief The @ref of_file_attribute_key_symbolic_link_destination key from the
  *	  dictionary.
  *

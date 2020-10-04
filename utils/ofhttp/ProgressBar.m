@@ -33,8 +33,8 @@
 #define UPDATE_INTERVAL 0.1
 
 @implementation ProgressBar
-- (instancetype)initWithLength: (intmax_t)length
-		   resumedFrom: (intmax_t)resumedFrom
+- (instancetype)initWithLength: (unsigned long long)length
+		   resumedFrom: (unsigned long long)resumedFrom
 {
 	self = [super init];
 
@@ -78,7 +78,7 @@
 	[super dealloc];
 }
 
-- (void)setReceived: (intmax_t)received
+- (void)setReceived: (unsigned long long)received
 {
 	_received = received;
 }
@@ -204,12 +204,12 @@
 		OFString *num = [OFString stringWithFormat:
 		    @"%jd", _resumedFrom + _received];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_bytes",
-		    [@"["
-		     @"    ["
-		     @"        {'num == 1': '1 byte '},"
-		     @"        {'': '%[num] bytes'}"
-		     @"    ]"
-		     @"]" JSONValue],
+		    @"["
+		    @"    ["
+		    @"        {'num == 1': '1 byte '},"
+		    @"        {'': '%[num] bytes'}"
+		    @"    ]"
+		    @"]".objectByParsingJSON,
 		    @"num", num)];
 	}
 
@@ -256,8 +256,18 @@
 
 - (void)calculateBPSAndETA
 {
-	_BPS = (float)(_received - _lastReceived) /
+	_BPSWindow[_BPSWindowIndex++ % BPS_WINDOW_SIZE] =
+	    (float)(_received - _lastReceived) /
 	    -(float)_lastReceivedDate.timeIntervalSinceNow;
+
+	if (_BPSWindowLength < BPS_WINDOW_SIZE)
+		_BPSWindowLength++;
+
+	_BPS = 0;
+	for (size_t i = 0; i < _BPSWindowLength; i++)
+		_BPS += _BPSWindow[i];
+	_BPS /= _BPSWindowLength;
+
 	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;

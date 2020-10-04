@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFCondition;
 
-/*!
+/**
  * @class OFConditionBroadcastFailedException \
  *	  OFConditionBroadcastFailedException.h \
  *	  ObjFW/OFConditionBroadcastFailedException.h
@@ -38,17 +38,17 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The condition which could not be broadcasted.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief Returns a new, autoreleased condition broadcast failed exception.
  *
  * @param condition The condition which could not be broadcasted
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithCondition: (nullable OFCondition *)condition
 				 errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated condition broadcast failed exception.
  *
  * @param condition The condition which could not be broadcasted

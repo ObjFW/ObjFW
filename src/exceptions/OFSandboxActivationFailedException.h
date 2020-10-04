@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFSandbox;
 
-/*!
+/**
  * @class OFSandboxActivationFailedException \
  *	  OFSandboxActivationFailedException.h \
  *	  ObjFW/OFSandboxActivationFailedException.h
@@ -34,19 +34,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The sandbox which could not be activated.
  */
 @property (readonly, nonatomic) OFSandbox *sandbox;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased sandboxing failed exception.
  *
  * @param sandbox The sandbox which could not be activated
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated sandboxing failed exception.
  *
  * @param sandbox The sandbox which could not be activated

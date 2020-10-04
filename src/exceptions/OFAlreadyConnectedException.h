@@ -23,7 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFAlreadyConnectedException \
  *	  OFAlreadyConnectedException.h ObjFW/OFAlreadyConnectedException.h
  *
@@ -35,12 +35,12 @@ OF_ASSUME_NONNULL_BEGIN
 	id _socket;
 }
 
-/*!
+/**
  * @brief The socket which is already connected.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id socket;
 
-/*!
+/**
  * @brief Creates a new, autoreleased already connected exception.
  *
  * @param socket The socket which is already connected
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithSocket: (nullable id)socket;
 
-/*!
+/**
  * @brief Initializes an already allocated already connected exception.
  *
  * @param socket The socket which is already connected

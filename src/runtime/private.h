@@ -257,6 +257,7 @@ extern void objc_dtable_cleanup(void);
 extern void objc_init_static_instances(struct objc_symtab *_Nonnull);
 extern void objc_forget_pending_static_instances(void);
 extern void objc_zero_weak_references(id _Nonnull);
+extern Class _Nullable object_getTaggedPointerClass(id _Nonnull);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);
 extern void objc_global_mutex_unlock(void);
@@ -292,7 +293,7 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(OF_MACH_O)
-# if defined(OF_X86_64) || defined(OF_POWERPC)
+# if defined(OF_X86_64)
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(OF_WINDOWS)

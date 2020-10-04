@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSecureData OFSecureData.h ObjFW/OFSecureData.h
  *
  * @brief A class for storing arbitrary data in secure (non-swappable) memory,
@@ -38,12 +38,12 @@ OF_SUBCLASSING_RESTRICTED
 	bool _allowsSwappableMemory;
 }
 
-/*!
+/**
  * @brief Whether the data may be stored in swappable memory.
  */
 @property (readonly, nonatomic) bool allowsSwappableMemory;
 
-/*!
+/**
  * @brief All items of the OFSecureData as a C array.
  *
  * Modifying the returned array directly is allowed and will change the contents
@@ -51,7 +51,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Preallocates the specified number of bytes for unswappable memory.
  *
  * This is useful to allocate unswappable memory before enabling a sandbox that
@@ -65,7 +65,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (void)preallocateUnswappableMemoryWithSize: (size_t)size;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFSecureData with count items of item
  *	  size 1, all set to zero.
  *
@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)dataWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFSecureData with count items of the
  *	  specified item size, all set to zero.
  *
@@ -110,7 +110,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFSecureData with count items of
  *	  item size 1, all set to zero.
  *
@@ -122,7 +122,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
-/*!
+/**
  * @brief Initializes an already allocated OFSecureData with count items of the
  *	  specified item size, all set to zero.
  *
@@ -157,7 +157,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Returns a specific item of the OFSecureData.
  *
  * Modifying the returned item directly is allowed and will change the contents
@@ -168,7 +168,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void *)mutableItemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Checks the OFSecureData for equality to another object.
  *
  * If the specified object is a subclass of @ref OFData, the comparison is
@@ -179,7 +179,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (bool)isEqual: (nullable id)object;
 
-/*!
+/**
  * @brief Zeroes the data.
  */
 - (void)zero;

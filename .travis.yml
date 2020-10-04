@@ -241,6 +241,8 @@ matrix:
       env:
         - config=wii
 
+services: docker
+
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
             case "$TRAVIS_CPU_ARCH" in
@@ -268,24 +270,12 @@ before_install:
             fi;
     fi
 
-  - if [ "$config" = "nintendo_3ds" -o "$config" = "nintendo_ds"
-        -o "$config" = "wii" ]; then
-            deb=devkitpro-pacman.amd64.deb;
-            wget https://github.com/devkitPro/pacman/releases/download/v1.0.2/$deb;
-            sudo apt install gdebi;
-            sudo gdebi -n $deb;
-    fi
-
-  - if [ "$config" = "nintendo_3ds" ]; then
-            sudo dkp-pacman --noconfirm -Syu 3ds-dev;
-    fi
-
-  - if [ "$config" = "nintendo_ds" ]; then
-            sudo dkp-pacman --noconfirm -Syu nds-dev;
+  - if [ "$config" = "nintendo_3ds" -o "$config" = "nintendo_ds" ]; then
+            docker pull devkitpro/devkitarm;
     fi
 
   - if [ "$config" = "wii" ]; then
-            sudo dkp-pacman --noconfirm -Syu wii-dev;
+            docker pull devkitpro/devkitppc;
     fi
 
   - if [ "$config" = "amigaos" ]; then
@@ -299,22 +289,8 @@ script:
                     cat /tmp/clean_log;
                     exit 1;
             fi;
-            echo ">> Configuring with $@";
-            ./autogen.sh;
-            if ! ./configure ac_cv_path_TPUT= "$@"; then
-                    cat config.log;
-                    exit 1;
-            fi;
-            echo ">> Building (configured with $@)";
-            if ! make -j4 >/tmp/make_log 2>&1; then
-                    cat /tmp/make_log;
-                    exit 1;
-            fi;
-            echo ">> Installing (configured with $@)";
-            if ! sudo PATH="$PATH" make install >/tmp/install_log 2>&1; then
-                    cat /tmp/install_log;
-                    exit 1;
-            fi;
+            ./autogen.sh || exit 1;
+            .travis/build.sh "$@" || exit 1;
     }
 
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
@@ -425,22 +401,26 @@ script:
     fi
 
   - if [ "$config" = "nintendo_3ds" ]; then
-            export DEVKITPRO="/opt/devkitpro";
-            export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
-
-            build --host=arm-none-eabi --with-3ds;
+            ./autogen.sh;
+            docker run -e DEVKITPRO=/opt/devkitpro
+                    -e PATH="/opt/devkitpro/devkitARM/bin:$PATH"
+                    -v $TRAVIS_BUILD_DIR:/objfw devkitpro/devkitarm
+                    /objfw/.travis/build.sh --host=arm-none-eabi --with-3ds;
     fi
 
   - if [ "$config" = "nintendo_ds" ]; then
-            export DEVKITPRO="/opt/devkitpro";
-            export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
-
-            build --host=arm-none-eabi --with-nds;
+            ./autogen.sh;
+            docker run -e DEVKITPRO=/opt/devkitpro
+                    -e PATH="/opt/devkitpro/devkitARM/bin:$PATH"
+                    -v $TRAVIS_BUILD_DIR:/objfw devkitpro/devkitarm
+                    /objfw/.travis/build.sh --host=arm-none-eabi --with-nds;
     fi
 
   - if [ "$config" = "wii" ]; then
-            export DEVKITPRO="/opt/devkitpro";
-            export PATH="$DEVKITPRO/devkitPPC/bin:$PATH";
-
-            build ac_cv_prog_wiiload= --host=powerpc-eabi --with-wii;
+            ./autogen.sh;
+            docker run -e DEVKITPRO=/opt/devkitpro
+                    -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH"
+                    -v $TRAVIS_BUILD_DIR:/objfw devkitpro/devkitppc
+                    /objfw/.travis/build.sh ac_cv_prog_wiiload=
+                    --host=powerpc-eabi --with-wii;
     fi

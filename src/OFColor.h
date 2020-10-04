@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFColor OFColor.h ObjFW/OFColor.h
  *
  * @brief A class for storing a color.
@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFColor: OFObject
 {
 	float _red, _green, _blue, _alpha;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFColor, 4)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) OFColor *aqua;
 #endif
 
-/*!
+/**
  * @brief Creates a new color with the specified red, green, blue and alpha
  *	  value.
  *
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 			blue: (float)blue
 		       alpha: (float)alpha;
 
-/*!
+/**
  * @brief Returns the HTML color `black`.
  *
  * The RGBA value is (0, 0, 0, 1).
@@ -73,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)black;
 
-/*!
+/**
  * @brief Returns the HTML color `silver`.
  *
  * The RGBA value is (0.75, 0.75, 0.75, 1).
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)silver;
 
-/*!
+/**
  * @brief Returns the HTML color `grey`.
  *
  * The RGBA value is (0.5, 0.5, 0.5, 1).
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)grey;
 
-/*!
+/**
  * @brief Returns the HTML color `white`.
  *
  * The RGBA value is (1, 1, 1, 1).
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)white;
 
-/*!
+/**
  * @brief Returns the HTML color `maroon`.
  *
  * The RGBA value is (0.5, 0, 0, 1).
@@ -109,7 +109,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)maroon;
 
-/*!
+/**
  * @brief Returns the HTML color `red`.
  *
  * The RGBA value is (1, 0, 0, 1).
@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)red;
 
-/*!
+/**
  * @brief Returns the HTML color `purple`.
  *
  * The RGBA value is (0.5, 0, 0.5, 1).
@@ -127,7 +127,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)purple;
 
-/*!
+/**
  * @brief Returns the HTML color `fuchsia`.
  *
  * The RGBA value is (1, 0, 1, 1).
@@ -136,7 +136,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)fuchsia;
 
-/*!
+/**
  * @brief Returns the HTML color `green`.
  *
  * The RGBA value is (0, 0.5, 0, 1).
@@ -145,7 +145,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)green;
 
-/*!
+/**
  * @brief Returns the HTML color `lime`.
  *
  * The RGBA value is (0, 1, 0, 1).
@@ -154,7 +154,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)lime;
 
-/*!
+/**
  * @brief Returns the HTML color `olive`.
  *
  * The RGBA value is (0.5, 0.5, 0, 1).
@@ -163,7 +163,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)olive;
 
-/*!
+/**
  * @brief Returns the HTML color `yellow`.
  *
  * The RGBA value is (1, 1, 0, 1).
@@ -172,7 +172,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)yellow;
 
-/*!
+/**
  * @brief Returns the HTML color `navy`.
  *
  * The RGBA value is (0, 0, 0.5, 1).
@@ -181,7 +181,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)navy;
 
-/*!
+/**
  * @brief Returns the HTML color `blue`.
  *
  * The RGBA value is (0, 0, 1, 1).
@@ -190,7 +190,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)blue;
 
-/*!
+/**
  * @brief Returns the HTML color `teal`.
  *
  * The RGBA value is (0, 0.5, 0.5, 1).
@@ -199,7 +199,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)teal;
 
-/*!
+/**
  * @brief Returns the HTML color `aqua`.
  *
  * The RGBA value is (0, 1, 1, 1).
@@ -208,7 +208,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFColor *)aqua;
 
-/*!
+/**
  * @brief Initializes an already allocated color with the specified red, green,
  *	  blue and alpha value.
  *
@@ -224,7 +224,7 @@ OF_ASSUME_NONNULL_BEGIN
 		       blue: (float)blue
 		      alpha: (float)alpha;
 
-/*!
+/**
  * @brief Returns the red, green, blue and alpha value of the color.
  *
  * @param red A pointer to store the red value of the color

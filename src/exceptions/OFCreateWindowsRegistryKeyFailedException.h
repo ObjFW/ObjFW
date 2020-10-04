@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFCreateWindowsRegistryKeyFailedException \
  *	  OFCreateWindowsRegistryKeyFailedException.h \
  *	  ObjFW/OFCreateWindowsRegistryKeyFailedException.h
@@ -39,39 +39,39 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which creating the subkey failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The path for the subkey that could not be created.
  */
 @property (readonly, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The options for the subkey that could not be created.
  */
 @property (readonly, nonatomic) DWORD options;
 
-/*!
+/**
  * @brief The security and access rights for the subkey that could not be
  *	  created.
  */
 @property (readonly, nonatomic) REGSAM securityAndAccessRights;
 
-/*!
+/**
  * @brief The security options for the subkey that could not be created.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     LPSECURITY_ATTRIBUTES securityAttributes;
 
-/*!
+/**
  * @brief The status returned by RegCreateKeyEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased create Windows registry key failed
  *	  exception.
  *
@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated create Windows registry key failed
  *	  exception.
  *

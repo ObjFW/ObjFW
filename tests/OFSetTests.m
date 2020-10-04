@@ -278,10 +278,10 @@ static OFString *module = nil;
 	TEST(@"-[valueForKey:]",
 	    [(set1 = [[setClass setWithObjects: @"a", @"ab", @"abc", @"b", nil]
 	    valueForKey: @"length"]) isEqual: [setClass setWithObjects:
-	    [OFNumber numberWithSize: 1], [OFNumber numberWithSize: 2],
-	    [OFNumber numberWithSize: 3], nil]] &&
+	    [OFNumber numberWithInt: 1], [OFNumber numberWithInt: 2],
+	    [OFNumber numberWithInt: 3], nil]] &&
 	    [[set1 valueForKey: @"@count"] isEqual:
-	    [OFNumber numberWithSize: 3]])
+	    [OFNumber numberWithInt: 3]])
 
 	objc_autoreleasePoolPop(pool);
 }

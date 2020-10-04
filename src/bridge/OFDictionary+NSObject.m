@@ -22,7 +22,7 @@
 int _OFDictionary_NSObject_reference;
 
 @implementation OFDictionary (NSObject)
-- (id)NSObject
+- (NSDictionary *)NSObject
 {
 	return [[[NSOFDictionary alloc]
 	    initWithOFDictionary: self] autorelease];

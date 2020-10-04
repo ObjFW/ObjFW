@@ -12,7 +12,7 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-.PHONY: docs tarball
+.PHONY: docs release
 
 utils tests: src
 
@@ -20,12 +20,12 @@ docs:
 	rm -fr docs
 	doxygen >/dev/null
 
-tarball: docs
+release: docs
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil-settings/*,.gitignore,.travis.yml' | \
+		--exclude '.cirrus*,.fossil*,.git*,.travis*' | \
 		ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar \

@@ -37,7 +37,7 @@ extern int _OFSet_NSObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category OFSet (NSObject) \
  *	     OFSet+NSObject.h ObjFWBridge/OFSet+NSObject.h
  * @brief Support for bridging OFSets to NSSets.

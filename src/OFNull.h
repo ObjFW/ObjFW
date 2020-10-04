@@ -23,7 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFNull OFNull.h ObjFW/OFNull.h
  *
  * @brief A class for representing null values in collections.
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
     OFMessagePackRepresentation, OFASN1DERRepresentation>
-/*!
+/**
  * @brief Returns an OFNull singleton.
  *
  * @return An OFNull singleton

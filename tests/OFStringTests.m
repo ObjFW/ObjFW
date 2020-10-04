@@ -1069,24 +1069,29 @@ static uint16_t sutf16str[] = {
 # endif
 #endif
 
-	TEST(@"-[decimalValue]",
-	    C(@"1234").decimalValue == 1234 &&
-	    C(@"\r\n+123  ").decimalValue == 123 &&
-	    C(@"-500\t").decimalValue == -500 &&
-	    C(@"\t\t\r\n").decimalValue == 0)
+	TEST(@"-[longLongValue]",
+	    C(@"1234").longLongValue == 1234 &&
+	    C(@"\r\n+123  ").longLongValue == 123 &&
+	    C(@"-500\t").longLongValue == -500 &&
+	    [C(@"-0x10\t") longLongValueWithBase: 0] == -0x10 &&
+	    C(@"\t\t\r\n").longLongValue == 0 &&
+	    [C(@"123f") longLongValueWithBase: 16] == 0x123f &&
+	    [C(@"\t\n0xABcd\r") longLongValueWithBase: 0] == 0xABCD &&
+	    [C(@"1234567") longLongValueWithBase: 8] == 01234567 &&
+	    [C(@"\r\n0123") longLongValueWithBase: 0] == 0123 &&
+	    [C(@"765\t") longLongValueWithBase: 8] == 0765 &&
+	    [C(@"\t\t\r\n") longLongValueWithBase: 8] == 0)
 
-	TEST(@"-[hexadecimalValue]",
-	    C(@"123f").hexadecimalValue == 0x123f &&
-	    C(@"\t\n0xABcd\r").hexadecimalValue == 0xABCD &&
-	    C(@"  xbCDE").hexadecimalValue == 0xBCDE &&
-	    C(@"$CdEf").hexadecimalValue == 0xCDEF &&
-	    C(@"\rFeh ").hexadecimalValue == 0xFE &&
-	    C(@"\r\t").hexadecimalValue == 0)
-
-	TEST(@"-[octalValue]",
-	    C(@"1234567").octalValue == 01234567 &&
-	    C(@"\r\n123").octalValue == 0123 &&
-	    C(@"765\t").octalValue == 0765 && C(@"\t\t\r\n").octalValue == 0)
+	TEST(@"-[unsignedLongLongValue]",
+	    C(@"1234").unsignedLongLongValue == 1234 &&
+	    C(@"\r\n+123  ").unsignedLongLongValue == 123 &&
+	    C(@"\t\t\r\n").unsignedLongLongValue == 0 &&
+	    [C(@"123f") unsignedLongLongValueWithBase: 16] == 0x123f &&
+	    [C(@"\t\n0xABcd\r") unsignedLongLongValueWithBase: 0] == 0xABCD &&
+	    [C(@"1234567") unsignedLongLongValueWithBase: 8] == 01234567 &&
+	    [C(@"\r\n0123") unsignedLongLongValueWithBase: 0] == 0123 &&
+	    [C(@"765\t") unsignedLongLongValueWithBase: 8] == 0765 &&
+	    [C(@"\t\t\r\n") unsignedLongLongValueWithBase: 8] == 0)
 
 	/*
 	 * These test numbers can be generated without rounding if we have IEEE
@@ -1109,7 +1114,7 @@ static uint16_t sutf16str[] = {
 #  define EXPECTED -0.123456789
 # else
 /*
- * Solaris' strtod() has weird rounding on x86, but not on x86_64/
+ * Solaris' strtod() has weird rounding on x86, but not on x86_64.
  * AmigaOS 3 with libnix has weird rounding as well.
  */
 #  define INPUT @"\t-0.125 "
@@ -1124,21 +1129,17 @@ static uint16_t sutf16str[] = {
 #undef INPUT
 #undef EXPECTED
 
-	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
-	    OFInvalidFormatException, [C(@"abc") decimalValue])
-	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #2",
-	    OFInvalidFormatException, [C(@"0a") decimalValue])
-	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #3",
-	    OFInvalidFormatException, [C(@"0 1") decimalValue])
-
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #1",
-	    OFInvalidFormatException, [C(@"0xABCDEFG") hexadecimalValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #2",
-	    OFInvalidFormatException, [C(@"0x") hexadecimalValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #3",
-	    OFInvalidFormatException, [C(@"$") hexadecimalValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[hexadecimalValue] #4",
-	    OFInvalidFormatException, [C(@"$ ") hexadecimalValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[longLongValue] #1",
+	    OFInvalidFormatException, [C(@"abc") longLongValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[longLongValue] #2",
+	    OFInvalidFormatException, [C(@"0a") longLongValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[longLongValue] #3",
+	    OFInvalidFormatException, [C(@"0 1") longLongValue])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[longLongValue] #4",
+	    OFInvalidFormatException,
+	    [C(@"0xABCDEFG") longLongValueWithBase: 0])
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[longLongValue] #5",
+	    OFInvalidFormatException, [C(@"0x") longLongValueWithBase: 0])
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #1",
 	    OFInvalidFormatException, [C(@"0.0a") floatValue])
@@ -1166,17 +1167,17 @@ static uint16_t sutf16str[] = {
 	    OFInvalidFormatException, [C(@"0,0") doubleValue])
 #endif
 
-	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
+	EXPECT_EXCEPTION(@"Detect out of range in -[longLongValue]",
 	    OFOutOfRangeException,
-	    [C(@"12345678901234567890123456789012345678901234567890"
+	    [C(@"-12345678901234567890123456789012345678901234567890"
 	       @"12345678901234567890123456789012345678901234567890")
-	    decimalValue])
+	    longLongValueWithBase: 16])
 
-	EXPECT_EXCEPTION(@"Detect out of range in -[hexadecimalValue]",
+	EXPECT_EXCEPTION(@"Detect out of range in -[unsignedLongLongValue]",
 	    OFOutOfRangeException,
 	    [C(@"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF"
 	       @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
-	    hexadecimalValue])
+	    unsignedLongLongValueWithBase: 16])
 
 	TEST(@"-[characters]", (ua = C(@"fööbär🀺").characters) &&
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))

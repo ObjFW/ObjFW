@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 @class OFMutableData;
 
-/*!
+/**
  * @protocol OFKernelEventObserverDelegate
  *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
  *
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFKernelEventObserverDelegate <OFObject>
 @optional
-/*!
+/**
  * @brief This callback is called when an object did get ready for reading.
  *
  * @note If the object is a subclass of @ref OFStream and
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)objectIsReadyForReading: (id)object;
 
-/*!
+/**
  * @brief This callback is called when an object did get ready for writing.
  *
  * @param object The object which did become ready for writing
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)objectIsReadyForWriting: (id)object;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief This callback is called when an Exec Signal was received.
  *
  * @note This is only available on AmigaOS!
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 @end
 
-/*!
+/**
  * @protocol OFReadyForReadingObserving
  *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
  *
@@ -85,14 +85,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	  readiness for reading by OFKernelEventObserver.
  */
 @protocol OFReadyForReadingObserving <OFObject>
-/*!
+/**
  * @brief The file descriptor for reading that should be checked by the
  *	  OFKernelEventObserver.
  */
 @property (readonly, nonatomic) int fileDescriptorForReading;
 @end
 
-/*!
+/**
  * @protocol OFReadyForWritingObserving
  *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
  *
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	  readiness for writing by OFKernelEventObserver.
  */
 @protocol OFReadyForWritingObserving <OFObject>
-/*!
+/**
  * @brief The file descriptor for writing that should be checked by the
  *	  OFKernelEventObserver.
  */
@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 #ifdef OF_HAVE_SOCKETS
-/*!
+/**
  * @class OFKernelEventObserver
  *	  OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
  *
@@ -136,17 +136,17 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
 #endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFKernelEventObserver, 4)
 }
 
-/*!
+/**
  * @brief The delegate for the OFKernelEventObserver.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;
 
 #ifdef OF_AMIGAOS
-/*!
+/**
  * @brief A mask of Exec Signals to wait for.
  *
  * @note This is only available on AmigaOS!
@@ -154,14 +154,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic) ULONG execSignalMask;
 #endif
 
-/*!
+/**
  * @brief Creates a new OFKernelEventObserver.
  *
  * @return A new, autoreleased OFKernelEventObserver
  */
 + (instancetype)observer;
 
-/*!
+/**
  * @brief Adds an object to observe for reading.
  *
  * This is also used to observe a listening socket for incoming connections,
@@ -174,7 +174,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object;
 
-/*!
+/**
  * @brief Adds an object to observe for writing.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
@@ -184,7 +184,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
-/*!
+/**
  * @brief Removes an object to observe for reading.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
@@ -194,7 +194,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object;
 
-/*!
+/**
  * @brief Removes an object to observe for writing.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
@@ -204,12 +204,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
-/*!
+/**
  * @brief Observes all objects and blocks until an event happens on an object.
  */
 - (void)observe;
 
-/*!
+/**
  * @brief Observes all objects until an event happens on an object or the
  *	  timeout is reached.
  *
@@ -217,7 +217,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
-/*!
+/**
  * @brief Observes all objects until an event happens on an object or the
  *	  specified date is reached.
  *
@@ -225,7 +225,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)observeUntilDate: (OFDate *)date;
 
-/*!
+/**
  * @brief Cancels the currently blocking observe call.
  *
  * This is the only method that can and should be called from another thread
@@ -233,7 +233,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)cancel;
 
-/*!
+/**
  * @brief This method should be called by subclasses in @ref observeUntilDate:
  *	  as the first thing to handle all sockets that currently have data in
  *	  the read buffer.

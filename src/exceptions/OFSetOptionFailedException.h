@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSetOptionFailedException \
  *	  OFSetOptionFailedException.h ObjFW/OFSetOptionFailedException.h
  *
@@ -31,19 +31,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The object for which the option could not be set.
  */
 @property (readonly, nonatomic) id object;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased set option failed exception.
  *
  * @param object The object for which the option could not be set
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated set option failed exception.
  *
  * @param object The object for which the option could not be set

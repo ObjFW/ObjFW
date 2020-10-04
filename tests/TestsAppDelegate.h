@@ -70,8 +70,8 @@
 	     inModule: (OFString *)module;
 @end
 
-@interface TestsAppDelegate (OFASN1DERValueTests)
-- (void)ASN1DERValueTests;
+@interface TestsAppDelegate (OFASN1DERParsingTests)
+- (void)ASN1DERParsingTests;
 @end
 
 @interface TestsAppDelegate (OFASN1DERRepresentationTests)

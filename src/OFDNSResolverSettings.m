@@ -34,6 +34,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 #ifdef OF_WINDOWS
 # define interface struct
@@ -71,7 +72,7 @@ static OFString *
 domainFromHostname(void)
 {
 	char hostname[256];
-	OFString *domain;
+	OFString *domain, *ret;
 
 	if (gethostname(hostname, 256) != 0)
 		return nil;
@@ -94,9 +95,11 @@ domainFromHostname(void)
 		if (pos == OF_NOT_FOUND)
 			return nil;
 
-		return [domain substringWithRange:
+		ret = [domain substringWithRange:
 		    of_range(pos + 1, domain.length - pos - 1)];
 	}
+
+	return ret;
 }
 #endif
 
@@ -238,26 +241,37 @@ domainFromHostname(void)
 {
 	@try {
 		if ([option hasPrefix: @"ndots:"]) {
+			unsigned long long number;
+
 			option = [option substringWithRange:
 			    of_range(6, option.length - 6)];
+			number = option.unsignedLongLongValue;
 
-			_minNumberOfDotsInAbsoluteName =
-			    (unsigned int)option.decimalValue;
+			if (number > UINT_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_minNumberOfDotsInAbsoluteName = (unsigned int)number;
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringWithRange:
 			    of_range(8, option.length - 8)];
 
-			_timeout = option.decimalValue;
+			_timeout = option.unsignedLongLongValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
+			unsigned long long number;
+
 			option = [option substringWithRange:
 			    of_range(9, option.length - 9)];
+			number = option.unsignedLongLongValue;
 
-			_maxAttempts = (unsigned int)option.decimalValue;
+			if (number > UINT_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_maxAttempts = (unsigned int)number;
 		} else if ([option hasPrefix: @"reload-period:"]) {
 			option = [option substringWithRange:
 			    of_range(14, option.length - 14)];
 
-			_configReloadInterval = option.decimalValue;
+			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
 			_usesTCP = true;
 	} @catch (OFInvalidFormatException *e) {

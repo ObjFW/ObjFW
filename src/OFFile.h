@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFFile OFFile.h ObjFW/OFFile.h
  *
  * @brief A class which provides methods to read and write files.
@@ -46,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 }
 
-/*!
+/**
  * @brief Creates a new OFFile with the specified path and mode.
  *
  * @param path The path to the file to open as a string
@@ -68,7 +68,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)fileWithPath: (OFString *)path
 			mode: (OFString *)mode;
 
-/*!
+/**
  * @brief Creates a new OFFile with the specified URL and mode.
  *
  * @param URL The URL to the file to open
@@ -89,7 +89,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)fileWithURL: (OFURL *)URL
 		       mode: (OFString *)mode;
 
-/*!
+/**
  * @brief Creates a new OFFile with the specified native file handle.
  *
  * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this
@@ -101,7 +101,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFFile.
  *
  * @param path The path to the file to open as a string
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithPath: (OFString *)path
 			mode: (OFString *)mode;
 
-/*!
+/**
  * @brief Initializes an already allocated OFFile.
  *
  * @param URL The URL to the file to open
@@ -151,7 +151,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithURL: (OFURL *)URL
 		       mode: (OFString *)mode;
 
-/*!
+/**
  * @brief Initializes an already allocated OFFile.
  *
  * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this

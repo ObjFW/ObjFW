@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFInvalidFormatException \
  *	  OFInvalidFormatException.h ObjFW/OFInvalidFormatException.h
  *

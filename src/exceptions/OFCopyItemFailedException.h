@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFCopyItemFailedException \
  *	  OFCopyItemFailedException.h ObjFW/OFCopyItemFailedException.h
  *
@@ -33,24 +33,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The path of the source item.
  */
 @property (readonly, nonatomic) OFURL *sourceURL;
 
-/*!
+/**
  * @brief The destination path.
  */
 @property (readonly, nonatomic) OFURL *destinationURL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased copy item failed exception.
  *
  * @param sourceURL The original path
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated copy item failed exception.
  *
  * @param sourceURL The original path

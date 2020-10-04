@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjetType);
 @class OFNumber;
 
-/*!
+/**
  * @brief An ASN.1 ObjectIdentifier.
  */
 OF_SUBCLASSING_RESTRICTED
@@ -32,12 +32,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFArray OF_GENERIC(OFNumber *) *_subidentifiers;
 }
 
-/*!
+/**
  * @brief The subidentifiers of the ObjectIdentifier.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFNumber *) *subidentifiers;
 
-/*!
+/**
  * @brief Creates an ASN.1 ObjectIdentifier with the specified subidentifiers.
  *
  * @param subidentifiers The subidentifiers of the ASN.1 ObjectIdentifier
@@ -48,7 +48,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
  *	  specified subidentifiers.
  *
@@ -58,7 +58,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithSubidentifiers:
     (OFArray OF_GENERIC(OFNumber *) *)subidentifiers OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
  *	  specified arguments.
  *

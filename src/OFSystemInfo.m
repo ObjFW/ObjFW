@@ -150,9 +150,10 @@ initOperatingSystemVersion(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		OFDictionary *propertyList = [OFString stringWithContentsOfFile:
-		    @"/System/Library/CoreServices/SystemVersion.plist"]
-		    .propertyListValue;
+		OFDictionary *propertyList = [[OFString
+		    stringWithContentsOfFile: @"/System/Library/CoreServices/"
+		                              @"SystemVersion.plist"]
+		    objectByParsingPropertyList];
 
 		operatingSystemVersion = [[propertyList
 		    objectForKey: @"ProductVersion"] copy];

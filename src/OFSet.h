@@ -30,12 +30,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for enumerating an OFSet.
  *
  * @param object The current object
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
 
-/*!
+/**
  * @brief A block for filtering an OFSet.
  *
  * @param object The object to inspect
@@ -53,7 +53,7 @@ typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
 typedef bool (^of_set_filter_block_t)(id object);
 #endif
 
-/*!
+/**
  * @class OFSet OFSet.h ObjFW/OFSet.h
  *
  * @brief An abstract class for an unordered set of unique objects.
@@ -69,24 +69,24 @@ typedef bool (^of_set_filter_block_t)(id object);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief An array of all objects in the set.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
 
-/*!
+/**
  * @brief An arbitrary object in the set.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType anyObject;
 
-/*!
+/**
  * @brief Creates a new set.
  *
  * @return A new, autoreleased set
  */
 + (instancetype)set;
 
-/*!
+/**
  * @brief Creates a new set with the specified set.
  *
  * @param set The set to initialize the set with
@@ -94,7 +94,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 + (instancetype)setWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Creates a new set with the specified array.
  *
  * @param array The array to initialize the set with
@@ -102,7 +102,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 + (instancetype)setWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Creates a new set with the specified objects.
  *
  * @param firstObject The first object for the set
@@ -110,7 +110,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 + (instancetype)setWithObjects: (ObjectType)firstObject, ...;
 
-/*!
+/**
  * @brief Creates a new set with the specified objects.
  *
  * @param objects An array of objects for the set
@@ -120,7 +120,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 + (instancetype)setWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			 count: (size_t)count;
 
-/*!
+/**
  * @brief Initializes an already allocated set with the specified set.
  *
  * @param set The set to initialize the set with
@@ -128,7 +128,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (instancetype)initWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Initializes an already allocated set with the specified array.
  *
  * @param array The array to initialize the set with
@@ -136,7 +136,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (instancetype)initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
-/*!
+/**
  * @brief Initializes an already allocated set with the specified objects.
  *
  * @param firstObject The first object for the set
@@ -144,7 +144,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
-/*!
+/**
  * @brief Initializes an already allocated set with the specified objects.
  *
  * @param objects An array of objects for the set
@@ -154,7 +154,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			  count: (size_t)count;
 
-/*!
+/**
  * @brief Initializes an already allocated set with the specified object and
  *	  va_list.
  *
@@ -165,14 +165,14 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (instancetype)initWithObject: (ObjectType)firstObject
 		     arguments: (va_list)arguments;
 
-/*!
+/**
  * @brief Returns whether the receiver is a subset of the specified set.
  *
  * @return Whether the receiver is a subset of the specified set
  */
 - (bool)isSubsetOfSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Returns whether the receiver and the specified set have at least one
  *	  object in common.
  *
@@ -181,7 +181,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Creates a new set which contains the objects which are in the
  *	  receiver, but not in the specified set.
  *
@@ -190,7 +190,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (OFSet OF_GENERIC(ObjectType) *)setBySubtractingSet:
     (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Creates a new set by creating the intersection of the receiver and
  *	  the specified set.
  *
@@ -199,7 +199,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (OFSet OF_GENERIC(ObjectType) *)setByIntersectingWithSet:
     (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Creates a new set by creating the union of the receiver and the
  *	  specified set.
  *
@@ -208,7 +208,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (OFSet OF_GENERIC(ObjectType) *)setByAddingSet:
     (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Checks whether the set contains an object equal to the specified
  *	  object.
  *
@@ -217,7 +217,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (bool)containsObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Returns the value for the specified key
  *
  * A new set with the value for the specified key for each object is returned.
@@ -231,7 +231,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (nullable id)valueForKey: (OFString *)key;
 
-/*!
+/**
  * @brief Set the value for the specified key
  *
  * @ref setValue:forKey: is called for each object.
@@ -245,14 +245,14 @@ typedef bool (^of_set_filter_block_t)(id object);
 	  forKey: (OFString *)key;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Executes a block for each object in the set.
  *
  * @param block The block to execute for each object in the set
  */
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
 
-/*!
+/**
  * @brief Creates a new set, only containing the objects for which the block
  *	  returns true.
  *

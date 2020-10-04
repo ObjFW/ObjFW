@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFStillLockedException \
  *	  OFStillLockedException.h ObjFW/OFStillLockedException.h
  *
@@ -31,12 +31,12 @@ OF_ASSUME_NONNULL_BEGIN
 	id <OFLocking> _lock;
 }
 
-/*!
+/**
  * @brief The lock which is still locked.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 
-/*!
+/**
  * @brief Creates a new, autoreleased still locked exception.
  *
  * @param lock The lock which is still locked
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock;
 
-/*!
+/**
  * @brief Initializes an already allocated still locked exception.
  *
  * @param lock The lock which is still locked

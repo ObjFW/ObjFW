@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFArray OF_GENERIC(ObjectType);
 
-/*!
+/**
  * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
  *
  * @brief A class for representing an HTTP request reply as a stream.
@@ -33,36 +33,36 @@ OF_ASSUME_NONNULL_BEGIN
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
-/*!
+/**
  * @brief The protocol version of the HTTP request reply.
  */
 @property (nonatomic) of_http_request_protocol_version_t protocolVersion;
 
-/*!
+/**
  * @brief The protocol version of the HTTP request reply as a string.
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 
-/*!
+/**
  * @brief The status code of the reply to the HTTP request.
  */
 @property (nonatomic) short statusCode;
 
-/*!
+/**
  * @brief The headers of the reply to the HTTP request.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
     *headers;
 
-/*!
+/**
  * @brief The reply as a string, trying to detect the encoding.
  */
 @property (readonly, nonatomic) OFString *string;
 
-/*!
+/**
  * @brief Returns the reply as a string, trying to detect the encoding and
  *	  falling back to the specified encoding if not detectable.
  *
@@ -74,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief Returns a description string for the specified HTTP status code.
  *
  * @param code The HTTP status code to return a description string for

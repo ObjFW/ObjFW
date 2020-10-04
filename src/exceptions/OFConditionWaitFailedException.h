@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFCondition;
 
-/*!
+/**
  * @class OFConditionWaitFailedException \
  *	  OFConditionWaitFailedException.h \
  *	  ObjFW/OFConditionWaitFailedException.h
@@ -38,17 +38,17 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The condition for which could not be waited.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased condition wait failed exception.
  *
  * @param condition The condition for which could not be waited
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithCondition: (nullable OFCondition *)condition
 				 errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated condition wait failed exception.
  *
  * @param condition The condition for which could not be waited

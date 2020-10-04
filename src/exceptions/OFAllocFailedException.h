@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @class OFAllocFailedException \
  *	  OFAllocFailedException.h ObjFW/OFAllocFailedException.h
  *
@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exception OF_UNAVAILABLE;
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Returns a description of the exception.
  *
  * @return A description of the exception

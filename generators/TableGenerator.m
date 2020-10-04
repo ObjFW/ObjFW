@@ -121,18 +121,18 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		codePoint = (of_unichar_t)
-		    [[components objectAtIndex: 0] hexadecimalValue];
+		codePoint = (of_unichar_t)[[components objectAtIndex: 0]
+		    unsignedLongLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_uppercaseTable[codePoint] = (of_unichar_t)
-		    [[components objectAtIndex: 12] hexadecimalValue];
-		_lowercaseTable[codePoint] = (of_unichar_t)
-		    [[components objectAtIndex: 13] hexadecimalValue];
-		_titlecaseTable[codePoint] = (of_unichar_t)
-		    [[components objectAtIndex: 14] hexadecimalValue];
+		_uppercaseTable[codePoint] = (of_unichar_t)[[components
+		    objectAtIndex: 12] unsignedLongLongValueWithBase: 16];
+		_lowercaseTable[codePoint] = (of_unichar_t)[[components
+		    objectAtIndex: 13] unsignedLongLongValueWithBase: 16];
+		_titlecaseTable[codePoint] = (of_unichar_t)[[components
+		    objectAtIndex: 14] unsignedLongLongValueWithBase: 16];
 
 		if ([[components objectAtIndex: 5] length] > 0) {
 			OFArray *decomposed = [[components objectAtIndex: 5]
@@ -149,8 +149,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			string = [OFMutableString string];
 
 			for (OFString *character in decomposed) {
-				of_unichar_t unichar =
-				    (of_unichar_t)character.hexadecimalValue;
+				of_unichar_t unichar = (of_unichar_t)[character
+				    unsignedLongLongValueWithBase: 16];
 
 				[string appendCharacters: &unichar
 						  length: 1];
@@ -204,14 +204,14 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		    ![[components objectAtIndex: 1] isEqual: @"C"])
 			continue;
 
-		codePoint = (of_unichar_t)
-		    [[components objectAtIndex: 0] hexadecimalValue];
+		codePoint = (of_unichar_t)[[components objectAtIndex: 0]
+		    unsignedLongLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_casefoldingTable[codePoint] = (of_unichar_t)
-		    [[components objectAtIndex: 2] hexadecimalValue];
+		_casefoldingTable[codePoint] = (of_unichar_t)[[components
+		    objectAtIndex: 2] unsignedLongLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -267,6 +267,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 				done = false;
 			}
+
+			objc_autoreleasePoolPop(pool);
 		}
 	} while (!done);
 }

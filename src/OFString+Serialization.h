@@ -28,7 +28,7 @@ extern int _OFString_Serialization_reference;
 #endif
 
 @interface OFString (Serialization)
-/*!
+/**
  * @brief The string interpreted as serialization and parsed as an object.
  */
 @property (readonly, nonatomic) id objectByDeserializing;

@@ -28,14 +28,14 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 @class OFXMLParser;
 
-/*!
+/**
  * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/OFXMLParser.h
  *
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 @protocol OFXMLParserDelegate <OFObject>
 @optional
-/*!
+/**
  * @brief This callback is called when the XML parser found processing
  *	  instructions.
  *
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 -		 (void)parser: (OFXMLParser *)parser
   foundProcessingInstructions: (OFString *)processingInstructions;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found the start of a new
  *	  tag.
  *
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
 	namespace: (nullable OFString *)ns
        attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found the end of a tag.
  *
  * @param parser The parser which found the end of a tag
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 	 prefix: (nullable OFString *)prefix
       namespace: (nullable OFString *)ns;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found characters.
  *
  * In case there are comments or CDATA, it is possible that this callback is
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
 -    (void)parser: (OFXMLParser *)parser
   foundCharacters: (OFString *)characters;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found CDATA.
  *
  * @param parser The parser which found a string
@@ -96,7 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)parser: (OFXMLParser *)parser
     foundCDATA: (OFString *)CDATA;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found a comment.
  *
  * @param parser The parser which found a comment
@@ -105,7 +105,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)parser: (OFXMLParser *)parser
   foundComment: (OFString *)comment;
 
-/*!
+/**
  * @brief This callback is called when the XML parser found an entity it
  *	  doesn't know.
  *
@@ -121,7 +121,7 @@ OF_ASSUME_NONNULL_BEGIN
       foundUnknownEntityNamed: (OFString *)entity;
 @end
 
-/*!
+/**
  * @class OFXMLParser OFXMLParser.h ObjFW/OFXMLParser.h
  *
  * @brief An event-based XML parser.
@@ -174,23 +174,23 @@ OF_SUBCLASSING_RESTRICTED
 	size_t _depthLimit;
 }
 
-/*!
+/**
  * @brief The delegate that is used by the XML parser.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFXMLParserDelegate> delegate;
 
-/*!
+/**
  * @brief The current line number.
  */
 @property (readonly, nonatomic) size_t lineNumber;
 
-/*!
+/**
  * @brief Whether the XML parser has finished parsing.
  */
 @property (readonly, nonatomic) bool hasFinishedParsing;
 
-/*!
+/**
  * @brief The depth limit for the XML parser.
  *
  * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
@@ -199,14 +199,14 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (nonatomic) size_t depthLimit;
 
-/*!
+/**
  * @brief Creates a new XML parser.
  *
  * @return A new, autoreleased OFXMLParser
  */
 + (instancetype)parser;
 
-/*!
+/**
  * @brief Parses the specified buffer with the specified size.
  *
  * @param buffer The buffer to parse
@@ -215,14 +215,14 @@ OF_SUBCLASSING_RESTRICTED
 - (void)parseBuffer: (const char *)buffer
 	     length: (size_t)length;
 
-/*!
+/**
  * @brief Parses the specified string.
  *
  * @param string The string to parse
  */
 - (void)parseString: (OFString *)string;
 
-/*!
+/**
  * @brief Parses the specified stream.
  *
  * @param stream The stream to parse
@@ -230,7 +230,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)parseStream: (OFStream *)stream;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Parses the specified file.
  *
  * @param path The path to the file to parse

@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 		    @"\nBacktrace:\n  %@\n\n",
 		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
-		of_stdout.foregroundColor = [OFColor red];
+		[of_stdout setForegroundColor: [OFColor red]];
 		[of_stdout writeString: string];
 		[of_stdout writeString: backtrace];
 
@@ -205,7 +205,7 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 	if (of_stdout.hasTerminal) {
-		of_stdout.foregroundColor = [OFColor yellow];
+		[of_stdout setForegroundColor: [OFColor yellow]];
 		[of_stdout writeFormat: @"[%@] %@: testing...", module, test];
 	} else
 		[of_stdout writeFormat: @"[%@] %@: ", module, test];
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 	if (of_stdout.hasTerminal) {
-		of_stdout.foregroundColor = [OFColor lime];
+		[of_stdout setForegroundColor: [OFColor lime]];
 		[of_stdout eraseLine];
 		[of_stdout writeFormat: @"\r[%@] %@: ok\n", module, test];
 	} else
@@ -226,7 +226,7 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 	if (of_stdout.hasTerminal) {
-		of_stdout.foregroundColor = [OFColor red];
+		[of_stdout setForegroundColor: [OFColor red]];
 		[of_stdout eraseLine];
 		[of_stdout writeFormat: @"\r[%@] %@: failed\n", module, test];
 
@@ -380,7 +380,7 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
-	[self ASN1DERValueTests];
+	[self ASN1DERParsingTests];
 	[self ASN1DERRepresentationTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];

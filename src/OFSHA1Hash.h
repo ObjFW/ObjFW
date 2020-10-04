@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFSecureData;
 
-/*!
+/**
  * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
  *
  * @brief A class which provides methods to create an SHA-1 hash.

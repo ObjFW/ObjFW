@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFThread;
 
-/*!
+/**
  * @class OFThreadJoinFailedException \
  *	  OFThreadJoinFailedException.h ObjFW/OFThreadJoinFailedException.h
  *
@@ -37,17 +37,17 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The thread which could not be joined.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased thread join failed exception.
  *
  * @param thread The thread which could not be joined
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithThread: (nullable OFThread *)thread
 			      errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated thread join failed exception.
  *
  * @param thread The thread which could not be joined

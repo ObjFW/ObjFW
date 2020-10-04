@@ -19,10 +19,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for replacing objects in an OFMutableDictionary.
  *
  * @param key The key of the object to replace
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
-/*!
+/**
  * @class OFMutableDictionary OFDictionary.h ObjFW/OFDictionary.h
  *
  * @brief An abstract class for storing and changing objects in a dictionary.
@@ -47,7 +47,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 # define KeyType id
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief Creates a new OFMutableDictionary with enough memory to hold the
  *	  specified number of objects.
  *
@@ -56,7 +56,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  */
 + (instancetype)dictionaryWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableDictionary with enough
  *	  memory to hold the specified number of objects.
  *
@@ -65,7 +65,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  */
 - (instancetype)initWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Sets an object for a key.
  *
  * A key can be any object that conforms to the OFCopying protocol.
@@ -76,7 +76,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 - (void)setObject: (ObjectType)object
 	   forKey: (KeyType)key;
 
-/*!
+/**
  * @brief Sets an object for a key.
  *
  * A key can be any object that conforms to the OFCopying protocol.
@@ -90,19 +90,19 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 -   (void)setObject: (nullable ObjectType)object
   forKeyedSubscript: (KeyType)key;
 
-/*!
+/**
  * @brief Removes the object for the specified key from the dictionary.
  *
  * @param key The key whose object should be removed
  */
 - (void)removeObjectForKey: (KeyType)key;
 
-/*!
+/**
  * @brief Removes all objects.
  */
 - (void)removeAllObjects;
 
-/*!
+/**
  * @brief Adds the entries from the specified dictionary.
  *
  * @param dictionary The dictionary whose entries should be added
@@ -111,7 +111,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
     (OFDictionary OF_GENERIC(KeyType, ObjectType) *)dictionary;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Replaces each object with the object returned by the block.
  *
  * @param block The block which returns a new object for each object
@@ -119,7 +119,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Converts the mutable dictionary to an immutable dictionary.
  */
 - (void)makeImmutable;

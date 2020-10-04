@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @protocol OFMessagePackRepresentation \
  *	     OFMessagePackRepresentation.h ObjFW/OFMessagePackRepresentation.h
  *
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	  MessagePack representation.
  */
 @protocol OFMessagePackRepresentation
-/*!
+/**
  * @brief The MessagePack representation of the object as OFData.
  */
 @property (readonly, nonatomic) OFData *messagePackRepresentation;

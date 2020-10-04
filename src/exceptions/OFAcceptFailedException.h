@@ -23,7 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFAcceptFailedException \
  *	  OFAcceptFailedException.h ObjFW/OFAcceptFailedException.h
  *
@@ -35,19 +35,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The socket which could not accept a connection.
  */
 @property (readonly, nonatomic) id socket;
 
-/*!
+/**
  * @brief The errno from when the exception was created.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased accept failed exception.
  *
  * @param socket The socket which could not accept a connection
@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated accept failed exception.
  *
  * @param socket The socket which could not accept a connection

@@ -24,7 +24,7 @@
 int _OFNumber_NSObject_reference;
 
 @implementation OFNumber (NSObject)
-- (id)NSObject
+- (NSNumber *)NSObject
 {
 	const char *type = self.objCType;
 

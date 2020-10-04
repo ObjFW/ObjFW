@@ -46,7 +46,7 @@
 		if (subidentifiers.count < 1)
 			@throw [OFInvalidFormatException exception];
 
-		switch ([[subidentifiers objectAtIndex: 0] intMaxValue]) {
+		switch ([[subidentifiers objectAtIndex: 0] longLongValue]) {
 		case 0:
 		case 1:
 		case 2:
@@ -75,7 +75,7 @@
 	@try {
 		const unsigned char *items = DEREncodedContents.items;
 		size_t count = DEREncodedContents.count;
-		uintmax_t value = 0;
+		unsigned long long value = 0;
 		uint_fast8_t bits = 0;
 
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -95,7 +95,7 @@
 			value = (value << 7) | (items[i] & 0x7F);
 			bits += 7;
 
-			if (bits > sizeof(uintmax_t) * 8)
+			if (bits > sizeof(unsigned long long) * 8)
 				@throw [OFOutOfRangeException exception];
 
 			if (items[i] & 0x80)
@@ -104,20 +104,20 @@
 			if (subidentifiers.count == 0) {
 				if (value < 40)
 					[subidentifiers addObject:
-					    [OFNumber numberWithUIntMax: 0]];
+					    [OFNumber numberWithInt: 0]];
 				else if (value < 80) {
 					[subidentifiers addObject:
-					    [OFNumber numberWithUIntMax: 1]];
+					    [OFNumber numberWithInt: 1]];
 					value -= 40;
 				} else {
 					[subidentifiers addObject:
-					    [OFNumber numberWithUIntMax: 2]];
+					    [OFNumber numberWithInt: 2]];
 					value -= 80;
 				}
 			}
 
 			[subidentifiers addObject:
-			    [OFNumber numberWithUIntMax: value]];
+			    [OFNumber numberWithUnsignedLongLong: value]];
 
 			value = 0;
 			bits = 0;

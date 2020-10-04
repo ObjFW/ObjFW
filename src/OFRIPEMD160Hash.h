@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFSecureData;
 
-/*!
+/**
  * @class OFRIPEMD160Hash OFRIPEMD160Hash.h ObjFW/OFRIPEMD160Hash.h
  *
  * @brief A class which provides methods to create a RIPEMD-160 hash.

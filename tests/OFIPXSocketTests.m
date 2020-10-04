@@ -40,13 +40,13 @@ static OFString *module = @"OFIPXSocket";
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
-			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
 			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
-			of_stdout.foregroundColor = [OFColor lime];
+			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
 			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX not configured, skipping tests"];

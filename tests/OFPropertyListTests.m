@@ -66,53 +66,55 @@ static OFString *PLIST3 = PLIST(
 	    [OFDate dateWithTimeIntervalSince1970: 1521030896],
 	    [OFNumber numberWithBool: true],
 	    [OFNumber numberWithBool: false],
-	    [OFNumber numberWithFloat: 12.25],
+	    [OFNumber numberWithFloat: 12.25f],
 	    [OFNumber numberWithInt: -10],
 	    nil];
 
-	TEST(@"-[propertyListValue:] #1",
-	    [PLIST1.propertyListValue isEqual: @"Hello"])
+	TEST(@"-[objectByParsingPropertyList:] #1",
+	    [PLIST1.objectByParsingPropertyList isEqual: @"Hello"])
 
-	TEST(@"-[propertyListValue:] #2",
-	    [PLIST2.propertyListValue isEqual: array])
+	TEST(@"-[objectByParsingPropertyList:] #2",
+	    [PLIST2.objectByParsingPropertyList isEqual: array])
 
-	TEST(@"-[propertyListValue:] #3",
-	    [PLIST3.propertyListValue isEqual:
+	TEST(@"-[objectByParsingPropertyList:] #3",
+	    [PLIST3.objectByParsingPropertyList isEqual:
 	    [OFDictionary dictionaryWithKeysAndObjects:
 	    @"array", array,
 	    @"foo", @"bar",
 	    nil]])
 
-	EXPECT_EXCEPTION(@"-[propertyListValue] detecting unsupported version",
+	EXPECT_EXCEPTION(@"Detecting unsupported version",
 	    OFUnsupportedVersionException,
 	    [[PLIST(@"<string/>") stringByReplacingOccurrencesOfString: @"1.0"
 							    withString: @"1.1"]
-	    propertyListValue])
+	    objectByParsingPropertyList])
 
 	EXPECT_EXCEPTION(
-	    @"-[propertyListValue] detecting invalid format #1",
+	    @"-[objectByParsingPropertyList] detecting invalid format #1",
 	    OFInvalidFormatException,
-	    [PLIST(@"<string x='b'/>") propertyListValue])
+	    [PLIST(@"<string x='b'/>") objectByParsingPropertyList])
 
 	EXPECT_EXCEPTION(
-	    @"-[propertyListValue] detecting invalid format #2",
+	    @"-[objectByParsingPropertyList] detecting invalid format #2",
 	    OFInvalidFormatException,
-	    [PLIST(@"<string xmlns='foo'/>") propertyListValue])
+	    [PLIST(@"<string xmlns='foo'/>") objectByParsingPropertyList])
 
 	EXPECT_EXCEPTION(
-	    @"-[propertyListValue] detecting invalid format #3",
+	    @"-[objectByParsingPropertyList] detecting invalid format #3",
 	    OFInvalidFormatException,
-	    [PLIST(@"<dict count='0'/>") propertyListValue])
+	    [PLIST(@"<dict count='0'/>") objectByParsingPropertyList])
 
 	EXPECT_EXCEPTION(
-	    @"-[propertyListValue] detecting invalid format #4",
+	    @"-[objectByParsingPropertyList] detecting invalid format #4",
 	    OFInvalidFormatException,
-	    [PLIST(@"<dict><key/><string/><key/></dict>") propertyListValue])
+	    [PLIST(@"<dict><key/><string/><key/></dict>")
+	    objectByParsingPropertyList])
 
 	EXPECT_EXCEPTION(
-	    @"-[propertyListValue] detecting invalid format #5",
+	    @"-[objectByParsingPropertyList] detecting invalid format #5",
 	    OFInvalidFormatException,
-	    [PLIST(@"<dict><key x='x'/><string/></dict>") propertyListValue])
+	    [PLIST(@"<dict><key x='x'/><string/></dict>")
+	    objectByParsingPropertyList])
 
 	objc_autoreleasePoolPop(pool);
 }

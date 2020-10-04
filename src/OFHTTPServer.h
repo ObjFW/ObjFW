@@ -30,13 +30,13 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 @class OFTCPSocket;
 
-/*!
+/**
  * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/OFHTTPServer.h
  *
  * @brief A delegate for OFHTTPServer.
  */
 @protocol OFHTTPServerDelegate <OFObject>
-/*!
+/**
  * @brief This method is called when the HTTP server received a request from a
  *	  client.
  *
@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
 	   response: (OFHTTPResponse *)response;
 
 @optional
-/*!
+/**
  * @brief This method is called when the HTTP server's listening socket
  *	  encountered an exception.
  *
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 -			  (bool)server: (OFHTTPServer *)server
   didReceiveExceptionOnListeningSocket: (id)exception;
 
-/*!
+/**
  * @brief This method is called when a client socket encountered an exception.
  *
  * This can happen when the OFHTTPServer tries to properly close the
@@ -85,7 +85,7 @@ OF_ASSUME_NONNULL_BEGIN
 		       exception: (id)exception;
 @end
 
-/*!
+/**
  * @class OFHTTPServer OFHTTPServer.h ObjFW/OFHTTPServer.h
  *
  * @brief A class for creating a simple HTTP server inside of applications.
@@ -107,7 +107,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 }
 
-/*!
+/**
  * @brief The host on which the HTTP server will listen.
  *
  * Setting this after @ref start has been called raises an
@@ -115,7 +115,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The port on which the HTTP server will listen.
  *
  * Setting this after @ref start has been called raises an
@@ -123,7 +123,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (nonatomic) uint16_t port;
 
-/*!
+/**
  * @brief Whether the HTTP server uses TLS.
  *
  * Setting this after @ref start has been called raises an
@@ -131,7 +131,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (nonatomic) bool usesTLS;
 
-/*!
+/**
  * @brief The path to the X.509 certificate file to use for TLS.
  *
  * Setting this after @ref start has been called raises an
@@ -139,7 +139,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
 
-/*!
+/**
  * @brief The path to the PKCS#8 private key file to use for TLS.
  *
  * Setting this after @ref start has been called raises an
@@ -147,7 +147,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
 
-/*!
+/**
  * @brief The passphrase to decrypt the PKCS#8 private key file for TLS.
  *
  * @warning You have to ensure that this is in secure memory protected from
@@ -159,14 +159,14 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     const char *privateKeyPassphrase;
 
-/*!
+/**
  * @brief The delegate for the HTTP server.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFHTTPServerDelegate> delegate;
 
 #ifdef OF_HAVE_THREADS
-/*!
+/**
  * @brief The number of threads the OFHTTPServer should use.
  *
  * If this is larger than 1 (the default), one thread will be used to accept
@@ -180,7 +180,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (nonatomic) size_t numberOfThreads;
 #endif
 
-/*!
+/**
  * @brief The server name the server presents to clients.
  *
  * Setting it to `nil` means no `Server` header will be sent, unless one is
@@ -188,19 +188,19 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
 
-/*!
+/**
  * @brief Creates a new HTTP server.
  *
  * @return A new HTTP server
  */
 + (instancetype)server;
 
-/*!
+/**
  * @brief Starts the HTTP server in the current thread's run loop.
  */
 - (void)start;
 
-/*!
+/**
  * @brief Stops the HTTP server, meaning it will not accept any new incoming
  *	  connections, but still handle existing connections until they are
  *	  finished or timed out.

@@ -411,9 +411,9 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
     of_stat_t *s)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-	[attributes setObject: [NSNumber numberWithUInt16: s->st_uid]
+	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_uid]
 		       forKey: of_file_attribute_key_posix_uid];
-	[attributes setObject: [NSNumber numberWithUInt16: s->st_gid]
+	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_gid]
 		       forKey: of_file_attribute_key_posix_gid];
 
 # ifdef OF_HAVE_THREADS
@@ -620,12 +620,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (s.st_size < 0)
 		@throw [OFOutOfRangeException exception];
 
-	[ret setObject: [NSNumber numberWithUIntMax: s.st_size]
+	[ret setObject: [NSNumber numberWithUnsignedLongLong: s.st_size]
 		forKey: of_file_attribute_key_size];
 
 	setTypeAttribute(ret, &s);
 
-	[ret setObject: [NSNumber numberWithUInt16: s.st_mode & 07777]
+	[ret setObject: [NSNumber numberWithUnsignedLong: s.st_mode]
 		forKey: of_file_attribute_key_posix_permissions];
 
 	setOwnerAndGroupAttributes(ret, &s);
@@ -760,7 +760,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    attributes: (of_file_attributes_t)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	uint16_t mode = permissions.uInt16Value & 0777;
+	mode_t mode = (mode_t)permissions.unsignedLongValue;
 	OFString *path = URL.fileSystemRepresentation;
 	int status;
 

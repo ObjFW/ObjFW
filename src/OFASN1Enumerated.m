@@ -23,22 +23,22 @@
 
 #import "OFInvalidArgumentException.h"
 
-extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
+extern long long of_asn1_der_integer_parse(const unsigned char *buffer,
     size_t length);
 
 @implementation OFASN1Enumerated
-@synthesize integerValue = _integerValue;
+@synthesize longLongValue = _longLongValue;
 
-+ (instancetype)enumeratedWithIntegerValue: (intmax_t)integerValue
++ (instancetype)enumeratedWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithIntegerValue: integerValue] autorelease];
+	return [[[self alloc] initWithLongLong: value] autorelease];
 }
 
-- (instancetype)initWithIntegerValue: (intmax_t)integerValue
+- (instancetype)initWithLongLong: (long long)value
 {
 	self = [super init];
 
-	_integerValue = integerValue;
+	_longLongValue = value;
 
 	return self;
 }
@@ -48,7 +48,7 @@ extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	intmax_t integerValue;
+	long long value;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -58,14 +58,14 @@ extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		integerValue = of_asn1_der_integer_parse(
+		value = of_asn1_der_integer_parse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	return [self initWithIntegerValue: integerValue];
+	return [self initWithLongLong: value];
 }
 
 - (instancetype)init
@@ -85,7 +85,7 @@ extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
 
 	enumerated = object;
 
-	if (enumerated->_integerValue != _integerValue)
+	if (enumerated->_longLongValue != _longLongValue)
 		return false;
 
 	return true;
@@ -93,12 +93,12 @@ extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
 
 - (uint32_t)hash
 {
-	return (uint32_t)_integerValue;
+	return (uint32_t)_longLongValue;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1Enumerated: %jd>",
-					   _integerValue];
+	return [OFString stringWithFormat: @"<OFASN1Enumerated: %lld>",
+					   _longLongValue];
 }
 @end

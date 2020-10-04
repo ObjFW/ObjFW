@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFReadOrWriteFailedException \
  *	  OFReadOrWriteFailedException.h ObjFW/OFReadOrWriteFailedException.h
  *
@@ -33,24 +33,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The stream which caused the read or write failed exception.
  */
 @property (readonly, nonatomic) id object;
 
-/*!
+/**
  * @brief The requested length of the data that could not be read / written.
  */
 @property (readonly, nonatomic) size_t requestedLength;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed

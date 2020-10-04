@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFSecureData;
 
-/*!
+/**
  * @class OFSHA224Or256Hash OFSHA224Or256Hash.h ObjFW/OFSHA224Or256Hash.h
  *
  * @brief A base class for SHA-224 and SHA-256.
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 @private
 	bool _allowsSwappableMemory;
 	bool _calculated;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSHA224Or256Hash, 4)
 }
 @end
 

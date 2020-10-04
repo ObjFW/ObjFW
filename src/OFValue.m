@@ -168,6 +168,7 @@ static struct {
 	const char *objCType;
 	size_t size;
 	void *value, *otherValue;
+	bool ret;
 
 	if (object == self)
 		return true;
@@ -198,11 +199,13 @@ static struct {
 		[object getValue: otherValue
 			    size: size];
 
-		return (memcmp(value, otherValue, size) == 0);
+		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
 		free(value);
 		free(otherValue);
 	}
+
+	return ret;
 }
 
 - (uint32_t)hash

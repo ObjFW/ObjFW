@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFData;
 
-/*!
+/**
  * @protocol OFASN1DERRepresentation \
  *	     OFASN1DERRepresentation.h ObjFW/OFASN1DERRepresentation.h
  *
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	  representation.
  */
 @protocol OFASN1DERRepresentation
-/*!
+/**
  * @brief The object in ASN.1 DER representation.
  */
 @property (readonly, nonatomic) OFData *ASN1DERRepresentation;

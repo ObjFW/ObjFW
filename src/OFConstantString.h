@@ -34,7 +34,7 @@ extern void *_OFConstantStringClassReference;
 #endif
 
 #ifdef __OBJC__
-/*!
+/**
  * @class OFConstantString OFConstantString.h ObjFW/OFConstantString.h
  *
  * @brief A class for storing constant strings using the `@""` literal.

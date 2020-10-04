@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFUndefinedKeyException \
  *	  OFUndefinedKeyException.h ObjFW/OFUndefinedKeyException.h
  *
@@ -33,24 +33,24 @@ OF_ASSUME_NONNULL_BEGIN
 	id _Nullable _value;
 }
 
-/*!
+/**
  * @brief The object on which the key is undefined.
  */
 @property (readonly, nonatomic) id object;
 
-/*!
+/**
  * @brief The key which is undefined.
  */
 @property (readonly, nonatomic) OFString *key;
 
-/*!
+/**
  * @brief The value for the undefined key
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased undefined key exception.
  *
  * @param object The object on which the key is undefined
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithObject: (id)object
 				key: (OFString *)key;
 
-/*!
+/**
  * @brief Creates a new, autoreleased undefined key exception.
  *
  * @param object The object on which the key is undefined
@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated undefined key exception.
  *
  * @param object The object on which the key is undefined
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithObject: (id)object
 			   key: (OFString *)key;
 
-/*!
+/**
  * @brief Initializes an already allocated undefined key exception.
  *
  * @param object The object on which the key is undefined

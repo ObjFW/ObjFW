@@ -723,3 +723,39 @@ objc_hashtable_free(struct objc_hashtable *table)
 {
 	glue_objc_hashtable_free(table);
 }
+
+void
+objc_setTaggedPointerSecret(uintptr_t secret)
+{
+	glue_objc_setTaggedPointerSecret(secret);
+}
+
+int
+objc_registerTaggedPointerClass(Class class)
+{
+	return glue_objc_registerTaggedPointerClass(class);
+}
+
+bool
+object_isTaggedPointer(id object)
+{
+	return glue_object_isTaggedPointer(object);
+}
+
+Class
+object_getTaggedPointerClass(id object)
+{
+	return glue_object_getTaggedPointerClass(object);
+}
+
+uintptr_t
+object_getTaggedPointerValue(id object)
+{
+	return glue_object_getTaggedPointerValue(object);
+}
+
+id
+objc_createTaggedPointer(int class, uintptr_t value)
+{
+	return objc_createTaggedPointer(class, value);
+}

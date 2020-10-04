@@ -27,14 +27,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @protocol OFBridging OFBridging.h ObjFWBridge/OFBridging.h
  *
  * @brief A protocol implemented by classes supporting bridging ObjFW objects
  *	  to Foundation objects.
  */
 @protocol OFBridging
-/*!
+/**
  * @brief An instance of a Foundation object corresponding to the object.
  *
  * If possible, the original object is wrapped. If this is not possible, an

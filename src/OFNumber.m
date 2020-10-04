@@ -15,6 +15,8 @@
  * file.
  */
 
+#define OF_NUMBER_M
+
 #include "config.h"
 
 #include <math.h>
@@ -29,214 +31,551 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#define RETURN_AS(t)							\
-	switch (_type) {						\
-	case OF_NUMBER_TYPE_BOOL:					\
-		return (t)_value.bool_;					\
-	case OF_NUMBER_TYPE_CHAR:					\
-		return (t)_value.sChar;					\
-	case OF_NUMBER_TYPE_SHORT:					\
-		return (t)_value.sShort;				\
-	case OF_NUMBER_TYPE_INT:					\
-		return (t)_value.sInt;					\
-	case OF_NUMBER_TYPE_LONG:					\
-		return (t)_value.sLong;					\
-	case OF_NUMBER_TYPE_LONGLONG:					\
-		return (t)_value.sLongLong;				\
-	case OF_NUMBER_TYPE_UCHAR:					\
-		return (t)_value.uChar;					\
-	case OF_NUMBER_TYPE_USHORT:					\
-		return (t)_value.uShort;				\
-	case OF_NUMBER_TYPE_UINT:					\
-		return (t)_value.uInt;					\
-	case OF_NUMBER_TYPE_ULONG:					\
-		return (t)_value.uLong;					\
-	case OF_NUMBER_TYPE_ULONGLONG:					\
-		return (t)_value.uLongLong;				\
-	case OF_NUMBER_TYPE_INT8:					\
-		return (t)_value.int8;					\
-	case OF_NUMBER_TYPE_INT16:					\
-		return (t)_value.int16;					\
-	case OF_NUMBER_TYPE_INT32:					\
-		return (t)_value.int32;					\
-	case OF_NUMBER_TYPE_INT64:					\
-		return (t)_value.int64;					\
-	case OF_NUMBER_TYPE_UINT8:					\
-		return (t)_value.uInt8;					\
-	case OF_NUMBER_TYPE_UINT16:					\
-		return (t)_value.uInt16;				\
-	case OF_NUMBER_TYPE_UINT32:					\
-		return (t)_value.uInt32;				\
-	case OF_NUMBER_TYPE_UINT64:					\
-		return (t)_value.uInt64;				\
-	case OF_NUMBER_TYPE_SIZE:					\
-		return (t)_value.size;					\
-	case OF_NUMBER_TYPE_SSIZE:					\
-		return (t)_value.sSize;					\
-	case OF_NUMBER_TYPE_INTMAX:					\
-		return (t)_value.intMax;				\
-	case OF_NUMBER_TYPE_UINTMAX:					\
-		return (t)_value.uIntMax;				\
-	case OF_NUMBER_TYPE_PTRDIFF:					\
-		return (t)_value.ptrDiff;				\
-	case OF_NUMBER_TYPE_INTPTR:					\
-		return (t)_value.intPtr;				\
-	case OF_NUMBER_TYPE_UINTPTR:					\
-		return (t)_value.uIntPtr;				\
-	case OF_NUMBER_TYPE_FLOAT:					\
-		return (t)_value.float_;				\
-	case OF_NUMBER_TYPE_DOUBLE:					\
-		return (t)_value.double_;				\
-	default:							\
-		@throw [OFInvalidFormatException exception];		\
-	}
-
 @interface OFNumber ()
++ (instancetype)of_alloc;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
+@interface OFNumberPlaceholder: OFNumber
+@end
+
+@interface OFNumberSingleton: OFNumber
+@end
+
+#ifdef OF_OBJFW_RUNTIME
+enum {
+	TAG_CHAR,
+	TAG_SHORT,
+	TAG_INT,
+	TAG_LONG,
+	TAG_LONG_LONG,
+	TAG_UNSIGNED_CHAR,
+	TAG_UNSIGNED_SHORT,
+	TAG_UNSIGNED_INT,
+	TAG_UNSIGNED_LONG,
+	TAG_UNSIGNED_LONG_LONG,
+};
+# define TAG_BITS 4
+# define TAG_MASK 0xF
+
+@interface OFTaggedPointerNumber: OFNumberSingleton
+@end
+#endif
+
+static struct {
+	Class isa;
+} placeholder;
+
+#define SINGLETON(var, sel, val)				\
+	static OFNumberSingleton *var;				\
+								\
+	static void						\
+	var##Init(void)						\
+	{							\
+		var = [[OFNumberSingleton alloc] sel val];	\
+	}
+SINGLETON(falseNumber, initWithBool:, false)
+SINGLETON(trueNumber, initWithBool:, true)
+SINGLETON(charZeroNumber, initWithChar:, 0)
+SINGLETON(shortZeroNumber, initWithShort:, 0)
+SINGLETON(intZeroNumber, initWithInt:, 0)
+SINGLETON(longZeroNumber, initWithLong:, 0)
+SINGLETON(longLongZeroNumber, initWithLongLong:, 0)
+SINGLETON(unsignedCharZeroNumber, initWithUnsignedChar:, 0)
+SINGLETON(unsignedShortZeroNumber, initWithUnsignedShort:, 0)
+SINGLETON(unsignedIntZeroNumber, initWithUnsignedInt:, 0)
+SINGLETON(unsignedLongZeroNumber, initWithUnsignedLong:, 0)
+SINGLETON(unsignedLongLongZeroNumber, initWithUnsignedLongLong:, 0)
+SINGLETON(floatZeroNumber, initWithFloat:, 0)
+SINGLETON(doubleZeroNumber, initWithDouble:, 0)
+#undef SINGLETON
+
+#ifdef OF_OBJFW_RUNTIME
+static int numberTag;
+#endif
+
+static bool
+isUnsigned(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'B':
+		return true;
+	case 'C':
+		return true;
+	case 'S':
+		return true;
+	case 'I':
+		return true;
+	case 'L':
+		return true;
+	case 'Q':
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool
+isSigned(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'c':
+		return true;
+	case 's':
+		return true;
+	case 'i':
+		return true;
+	case 'l':
+		return true;
+	case 'q':
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool
+isFloat(OFNumber *number)
+{
+	switch (*number.objCType) {
+	case 'f':
+		return true;
+	case 'd':
+		return true;
+	default:
+		return false;
+	}
+}
+
+@implementation OFNumberPlaceholder
+- (instancetype)initWithBool: (bool)value
+{
+	if (value) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, trueNumberInit);
+		return (id)trueNumber;
+	} else {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, falseNumberInit);
+		return (id)falseNumber;
+	}
+}
+
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#endif
+- (instancetype)initWithChar: (signed char)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, charZeroNumberInit);
+		return (id)charZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if ((unsigned char)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned char)value << TAG_BITS) | TAG_CHAR);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithChar: value];
+}
+
+- (instancetype)initWithShort: (short)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, shortZeroNumberInit);
+		return (id)shortZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if ((unsigned short)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned short)value << TAG_BITS) | TAG_SHORT);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithShort: value];
+}
+
+- (instancetype)initWithInt: (int)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, intZeroNumberInit);
+		return (id)intZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if ((unsigned int)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned int)value << TAG_BITS) | TAG_INT);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithInt: value];
+}
+
+- (instancetype)initWithLong: (long)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longZeroNumberInit);
+		return (id)longZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if ((unsigned long)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned long)value << TAG_BITS) | TAG_LONG);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithLong: value];
+}
+
+- (instancetype)initWithLongLong: (long long)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, longLongZeroNumberInit);
+		return (id)longLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if ((unsigned long long)value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)(unsigned long long)value << TAG_BITS) |
+		    TAG_LONG_LONG);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithLongLong: value];
+}
+
+- (instancetype)initWithUnsignedChar: (unsigned char)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedCharZeroNumberInit);
+		return (id)unsignedCharZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_CHAR);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
+}
+
+- (instancetype)initWithUnsignedShort: (unsigned short)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedShortZeroNumberInit);
+		return (id)unsignedShortZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_SHORT);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
+}
+
+- (instancetype)initWithUnsignedInt: (unsigned int)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedIntZeroNumberInit);
+		return (id)unsignedIntZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_INT);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
+}
+
+- (instancetype)initWithUnsignedLong: (unsigned long)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongZeroNumberInit);
+		return (id)unsignedLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
+}
+
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, unsignedLongLongZeroNumberInit);
+		return (id)unsignedLongLongZeroNumber;
+#ifdef OF_OBJFW_RUNTIME
+	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
+		id ret = objc_createTaggedPointer(numberTag,
+		    ((uintptr_t)value << TAG_BITS) | TAG_UNSIGNED_LONG_LONG);
+
+		if (ret != nil)
+			return ret;
+#endif
+	}
+
+	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
+}
+
+- (instancetype)initWithFloat: (float)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, floatZeroNumberInit);
+		return (id)floatZeroNumber;
+	}
+
+	return (id)[[OFNumber of_alloc] initWithFloat: value];
+}
+
+- (instancetype)initWithDouble: (double)value
+{
+	if (value == 0) {
+		static of_once_t once = OF_ONCE_INIT;
+		of_once(&once, doubleZeroNumberInit);
+		return (id)doubleZeroNumber;
+	}
+
+	return (id)[[OFNumber of_alloc] initWithDouble: value];
+}
+
+- (instancetype)initWithSerialization: (OFXMLElement *)element
+{
+	return (id)[[OFNumber of_alloc] initWithSerialization: element];
+}
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+@end
+
+@implementation OFNumberSingleton
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+@end
+
+#ifdef OF_OBJFW_RUNTIME
+@implementation OFTaggedPointerNumber
+- (const char *)objCType
+{
+	uintptr_t value = object_getTaggedPointerValue(self);
+
+	switch (value & TAG_MASK) {
+	case TAG_CHAR:
+		return @encode(signed char);
+	case TAG_SHORT:
+		return @encode(short);
+	case TAG_INT:
+		return @encode(int);
+	case TAG_LONG:
+		return @encode(long);
+	case TAG_LONG_LONG:
+		return @encode(long long);
+	case TAG_UNSIGNED_CHAR:
+		return @encode(unsigned char);
+	case TAG_UNSIGNED_SHORT:
+		return @encode(unsigned short);
+	case TAG_UNSIGNED_INT:
+		return @encode(unsigned int);
+	case TAG_UNSIGNED_LONG:
+		return @encode(unsigned long);
+	case TAG_UNSIGNED_LONG_LONG:
+		return @encode(unsigned long long);
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}
+
+# define RETURN_VALUE							   \
+	uintptr_t value = object_getTaggedPointerValue(self);		   \
+									   \
+	switch (value & TAG_MASK) {					   \
+	case TAG_CHAR:							   \
+		return (signed char)(unsigned char)(value >> TAG_BITS);	   \
+	case TAG_SHORT:							   \
+		return (short)(unsigned short)(value >> TAG_BITS);	   \
+	case TAG_INT:							   \
+		return (int)(unsigned int)(value >> TAG_BITS);		   \
+	case TAG_LONG:							   \
+		return (long)(unsigned long)(value >> TAG_BITS);	   \
+	case TAG_LONG_LONG:						   \
+		return (long long)(unsigned long long)(value >> TAG_BITS); \
+	case TAG_UNSIGNED_CHAR:						   \
+		return (unsigned char)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_SHORT:					   \
+		return (unsigned short)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_INT:						   \
+		return (unsigned int)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_LONG:						   \
+		return (unsigned long)(value >> TAG_BITS);		   \
+	case TAG_UNSIGNED_LONG_LONG:					   \
+		return (unsigned long long)(value >> TAG_BITS);		   \
+	default:							   \
+		@throw [OFInvalidArgumentException exception];		   \
+	}
+- (long long)longLongValue
+{
+	RETURN_VALUE
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	RETURN_VALUE
+}
+
+- (double)doubleValue
+{
+	RETURN_VALUE
+}
+@end
+# undef RETURN_VALUE
+#endif
+
 @implementation OFNumber
-@synthesize type = _type;
-
-+ (instancetype)numberWithBool: (bool)bool_
++ (void)initialize
 {
-	return [[[self alloc] initWithBool: bool_] autorelease];
+	if (self != [OFNumber class])
+		return;
+
+	placeholder.isa = [OFNumberPlaceholder class];
+
+#ifdef OF_OBJFW_RUNTIME
+	numberTag =
+	    objc_registerTaggedPointerClass([OFTaggedPointerNumber class]);
+#endif
 }
 
-+ (instancetype)numberWithChar: (signed char)sChar
++ (instancetype)of_alloc
 {
-	return [[[self alloc] initWithChar: sChar] autorelease];
+	return [super alloc];
 }
 
-+ (instancetype)numberWithShort: (signed short)sShort
++ (instancetype)alloc
 {
-	return [[[self alloc] initWithShort: sShort] autorelease];
+	if (self == [OFNumber class])
+		return (id)&placeholder;
+
+	return [super alloc];
 }
 
-+ (instancetype)numberWithInt: (signed int)sInt
++ (instancetype)numberWithBool: (bool)value
 {
-	return [[[self alloc] initWithInt: sInt] autorelease];
+	return [[[self alloc] initWithBool: value] autorelease];
 }
 
-+ (instancetype)numberWithLong: (signed long)sLong
++ (instancetype)numberWithChar: (signed char)value
 {
-	return [[[self alloc] initWithLong: sLong] autorelease];
+	return [[[self alloc] initWithChar: value] autorelease];
 }
 
-+ (instancetype)numberWithLongLong: (signed long long)sLongLong
++ (instancetype)numberWithShort: (short)value
 {
-	return [[[self alloc] initWithLongLong: sLongLong] autorelease];
+	return [[[self alloc] initWithShort: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedChar: (unsigned char)uChar
++ (instancetype)numberWithInt: (int)value
 {
-	return [[[self alloc] initWithUnsignedChar: uChar] autorelease];
+	return [[[self alloc] initWithInt: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedShort: (unsigned short)uShort
++ (instancetype)numberWithLong: (long)value
 {
-	return [[[self alloc] initWithUnsignedShort: uShort] autorelease];
+	return [[[self alloc] initWithLong: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedInt: (unsigned int)uInt
++ (instancetype)numberWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithUnsignedInt: uInt] autorelease];
+	return [[[self alloc] initWithLongLong: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLong: (unsigned long)uLong
++ (instancetype)numberWithUnsignedChar: (unsigned char)value
 {
-	return [[[self alloc] initWithUnsignedLong: uLong] autorelease];
+	return [[[self alloc] initWithUnsignedChar: value] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLongLong: (unsigned long long)uLongLong
++ (instancetype)numberWithUnsignedShort: (unsigned short)value
 {
-	return [[[self alloc] initWithUnsignedLongLong: uLongLong] autorelease];
+	return [[[self alloc] initWithUnsignedShort: value] autorelease];
 }
 
-+ (instancetype)numberWithInt8: (int8_t)int8
++ (instancetype)numberWithUnsignedInt: (unsigned int)value
 {
-	return [[[self alloc] initWithInt8: int8] autorelease];
+	return [[[self alloc] initWithUnsignedInt: value] autorelease];
 }
 
-+ (instancetype)numberWithInt16: (int16_t)int16
++ (instancetype)numberWithUnsignedLong: (unsigned long)value
 {
-	return [[[self alloc] initWithInt16: int16] autorelease];
+	return [[[self alloc] initWithUnsignedLong: value] autorelease];
 }
 
-+ (instancetype)numberWithInt32: (int32_t)int32
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)value
 {
-	return [[[self alloc] initWithInt32: int32] autorelease];
+	return [[[self alloc] initWithUnsignedLongLong: value] autorelease];
 }
 
-+ (instancetype)numberWithInt64: (int64_t)int64
++ (instancetype)numberWithFloat: (float)value
 {
-	return [[[self alloc] initWithInt64: int64] autorelease];
+	return [[[self alloc] initWithFloat: value] autorelease];
 }
 
-+ (instancetype)numberWithUInt8: (uint8_t)uInt8
++ (instancetype)numberWithDouble: (double)value
 {
-	return [[[self alloc] initWithUInt8: uInt8] autorelease];
-}
-
-+ (instancetype)numberWithUInt16: (uint16_t)uInt16
-{
-	return [[[self alloc] initWithUInt16: uInt16] autorelease];
-}
-
-+ (instancetype)numberWithUInt32: (uint32_t)uInt32
-{
-	return [[[self alloc] initWithUInt32: uInt32] autorelease];
-}
-
-+ (instancetype)numberWithUInt64: (uint64_t)uInt64
-{
-	return [[[self alloc] initWithUInt64: uInt64] autorelease];
-}
-
-+ (instancetype)numberWithSize: (size_t)size
-{
-	return [[[self alloc] initWithSize: size] autorelease];
-}
-
-+ (instancetype)numberWithSSize: (ssize_t)sSize
-{
-	return [[[self alloc] initWithSSize: sSize] autorelease];
-}
-
-+ (instancetype)numberWithIntMax: (intmax_t)intMax
-{
-	return [[[self alloc] initWithIntMax: intMax] autorelease];
-}
-
-+ (instancetype)numberWithUIntMax: (uintmax_t)uIntMax
-{
-	return [[[self alloc] initWithUIntMax: uIntMax] autorelease];
-}
-
-+ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrDiff
-{
-	return [[[self alloc] initWithPtrDiff: ptrDiff] autorelease];
-}
-
-+ (instancetype)numberWithIntPtr: (intptr_t)intPtr
-{
-	return [[[self alloc] initWithIntPtr: intPtr] autorelease];
-}
-
-+ (instancetype)numberWithUIntPtr: (uintptr_t)uIntPtr
-{
-	return [[[self alloc] initWithUIntPtr: uIntPtr] autorelease];
-}
-
-+ (instancetype)numberWithFloat: (float)float_
-{
-	return [[[self alloc] initWithFloat: float_] autorelease];
-}
-
-+ (instancetype)numberWithDouble: (double)double_
-{
-	return [[[self alloc] initWithDouble: double_] autorelease];
+	return [[[self alloc] initWithDouble: value] autorelease];
 }
 
 - (instancetype)init
@@ -244,282 +583,162 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithBool: (bool)bool_
+- (instancetype)initWithBool: (bool)value
 {
 	self = [super init];
 
-	_value.bool_ = bool_;
-	_type = OF_NUMBER_TYPE_BOOL;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(bool);
 
 	return self;
 }
 
-- (instancetype)initWithChar: (signed char)sChar
+- (instancetype)initWithChar: (signed char)value
 {
 	self = [super init];
 
-	_value.sChar = sChar;
-	_type = OF_NUMBER_TYPE_CHAR;
+	_value.signed_ = value;
+	_typeEncoding = @encode(signed char);
 
 	return self;
 }
 
-- (instancetype)initWithShort: (signed short)sShort
+- (instancetype)initWithShort: (short)value
 {
 	self = [super init];
 
-	_value.sShort = sShort;
-	_type = OF_NUMBER_TYPE_SHORT;
+	_value.signed_ = value;
+	_typeEncoding = @encode(short);
 
 	return self;
 }
 
-- (instancetype)initWithInt: (signed int)sInt
+- (instancetype)initWithInt: (int)value
 {
 	self = [super init];
 
-	_value.sInt = sInt;
-	_type = OF_NUMBER_TYPE_INT;
+	_value.signed_ = value;
+	_typeEncoding = @encode(int);
 
 	return self;
 }
 
-- (instancetype)initWithLong: (signed long)sLong
+- (instancetype)initWithLong: (long)value
 {
 	self = [super init];
 
-	_value.sLong = sLong;
-	_type = OF_NUMBER_TYPE_LONG;
+	_value.signed_ = value;
+	_typeEncoding = @encode(long);
 
 	return self;
 }
 
-- (instancetype)initWithLongLong: (signed long long)sLongLong
+- (instancetype)initWithLongLong: (long long)value
 {
 	self = [super init];
 
-	_value.sLongLong = sLongLong;
-	_type = OF_NUMBER_TYPE_LONGLONG;
+	_value.signed_ = value;
+	_typeEncoding = @encode(long long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedChar: (unsigned char)uChar
+- (instancetype)initWithUnsignedChar: (unsigned char)value
 {
 	self = [super init];
 
-	_value.uChar = uChar;
-	_type = OF_NUMBER_TYPE_UCHAR;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedShort: (unsigned short)uShort
+- (instancetype)initWithUnsignedShort: (unsigned short)value
 {
 	self = [super init];
 
-	_value.uShort = uShort;
-	_type = OF_NUMBER_TYPE_USHORT;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(unsigned short);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedInt: (unsigned int)uInt
+- (instancetype)initWithUnsignedInt: (unsigned int)value
 {
 	self = [super init];
 
-	_value.uInt = uInt;
-	_type = OF_NUMBER_TYPE_UINT;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(unsigned int);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLong: (unsigned long)uLong
+- (instancetype)initWithUnsignedLong: (unsigned long)value
 {
 	self = [super init];
 
-	_value.uLong = uLong;
-	_type = OF_NUMBER_TYPE_ULONG;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(unsigned long);
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
 	self = [super init];
 
-	_value.uLongLong = uLongLong;
-	_type = OF_NUMBER_TYPE_ULONGLONG;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(unsigned long long);
 
 	return self;
 }
 
-- (instancetype)initWithInt8: (int8_t)int8
+- (instancetype)initWithPtrDiff: (ptrdiff_t)value
 {
 	self = [super init];
 
-	_value.int8 = int8;
-	_type = OF_NUMBER_TYPE_INT8;
+	_value.signed_ = value;
+	_typeEncoding = @encode(ptrdiff_t);
 
 	return self;
 }
 
-- (instancetype)initWithInt16: (int16_t)int16
+- (instancetype)initWithIntPtr: (intptr_t)value
 {
 	self = [super init];
 
-	_value.int16 = int16;
-	_type = OF_NUMBER_TYPE_INT16;
+	_value.signed_ = value;
+	_typeEncoding = @encode(intptr_t);
 
 	return self;
 }
 
-- (instancetype)initWithInt32: (int32_t)int32
+- (instancetype)initWithUIntPtr: (uintptr_t)value
 {
 	self = [super init];
 
-	_value.int32 = int32;
-	_type = OF_NUMBER_TYPE_INT32;
+	_value.unsigned_ = value;
+	_typeEncoding = @encode(uintptr_t);
 
 	return self;
 }
 
-- (instancetype)initWithInt64: (int64_t)int64
+- (instancetype)initWithFloat: (float)value
 {
 	self = [super init];
 
-	_value.int64 = int64;
-	_type = OF_NUMBER_TYPE_INT64;
+	_value.float_ = value;
+	_typeEncoding = @encode(float);
 
 	return self;
 }
 
-- (instancetype)initWithUInt8: (uint8_t)uInt8
+- (instancetype)initWithDouble: (double)value
 {
 	self = [super init];
 
-	_value.uInt8 = uInt8;
-	_type = OF_NUMBER_TYPE_UINT8;
-
-	return self;
-}
-
-- (instancetype)initWithUInt16: (uint16_t)uInt16
-{
-	self = [super init];
-
-	_value.uInt16 = uInt16;
-	_type = OF_NUMBER_TYPE_UINT16;
-
-	return self;
-}
-
-- (instancetype)initWithUInt32: (uint32_t)uInt32
-{
-	self = [super init];
-
-	_value.uInt32 = uInt32;
-	_type = OF_NUMBER_TYPE_UINT32;
-
-	return self;
-}
-
-- (instancetype)initWithUInt64: (uint64_t)uInt64
-{
-	self = [super init];
-
-	_value.uInt64 = uInt64;
-	_type = OF_NUMBER_TYPE_UINT64;
-
-	return self;
-}
-
-- (instancetype)initWithSize: (size_t)size
-{
-	self = [super init];
-
-	_value.size = size;
-	_type = OF_NUMBER_TYPE_SIZE;
-
-	return self;
-}
-
-- (instancetype)initWithSSize: (ssize_t)sSize
-{
-	self = [super init];
-
-	_value.sSize = sSize;
-	_type = OF_NUMBER_TYPE_SSIZE;
-
-	return self;
-}
-
-- (instancetype)initWithIntMax: (intmax_t)intMax
-{
-	self = [super init];
-
-	_value.intMax = intMax;
-	_type = OF_NUMBER_TYPE_INTMAX;
-
-	return self;
-}
-
-- (instancetype)initWithUIntMax: (uintmax_t)uIntMax
-{
-	self = [super init];
-
-	_value.uIntMax = uIntMax;
-	_type = OF_NUMBER_TYPE_UINTMAX;
-
-	return self;
-}
-
-- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
-{
-	self = [super init];
-
-	_value.ptrDiff = ptrDiff;
-	_type = OF_NUMBER_TYPE_PTRDIFF;
-
-	return self;
-}
-
-- (instancetype)initWithIntPtr: (intptr_t)intPtr
-{
-	self = [super init];
-
-	_value.intPtr = intPtr;
-	_type = OF_NUMBER_TYPE_INTPTR;
-
-	return self;
-}
-
-- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
-{
-	self = [super init];
-
-	_value.uIntPtr = uIntPtr;
-	_type = OF_NUMBER_TYPE_UINTPTR;
-
-	return self;
-}
-
-- (instancetype)initWithFloat: (float)float_
-{
-	self = [super init];
-
-	_value.float_ = float_;
-	_type = OF_NUMBER_TYPE_FLOAT;
-
-	return self;
-}
-
-- (instancetype)initWithDouble: (double)double_
-{
-	self = [super init];
-
-	_value.double_ = double_;
-	_type = OF_NUMBER_TYPE_DOUBLE;
+	_value.float_ = value;
+	_typeEncoding = @encode(double);
 
 	return self;
 }
@@ -532,42 +751,35 @@
 		void *pool = objc_autoreleasePoolPush();
 		OFString *typeString;
 
-		if (![element.name isEqual: self.className] ||
+		if (![element.name isEqual: @"OFNumber"] ||
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		typeString = [element attributeForName: @"type"].stringValue;
 
-		if ([typeString isEqual: @"boolean"]) {
-			_type = OF_NUMBER_TYPE_BOOL;
-
-			if ([[element stringValue] isEqual: @"true"])
-				_value.bool_ = true;
-			else if ([[element stringValue] isEqual: @"false"])
-				_value.bool_ = false;
+		if ([typeString isEqual: @"bool"]) {
+			OFString *stringValue = element.stringValue;
+			if ([stringValue isEqual: @"true"])
+				self = [self initWithBool: true];
+			else if ([stringValue isEqual: @"false"])
+				self = [self initWithBool: false];
 			else
 				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"unsigned"]) {
-			/*
-			 * FIXME: This will fail if the value is bigger than
-			 *	  INTMAX_MAX!
-			 */
-			_type = OF_NUMBER_TYPE_UINTMAX;
-			_value.uIntMax = element.decimalValue;
-		} else if ([typeString isEqual: @"signed"]) {
-			_type = OF_NUMBER_TYPE_INTMAX;
-			_value.intMax = element.decimalValue;
 		} else if ([typeString isEqual: @"float"]) {
-			_type = OF_NUMBER_TYPE_FLOAT;
-			_value.float_ = OF_BSWAP_FLOAT_IF_LE(
-			    OF_INT_TO_FLOAT_RAW(OF_BSWAP32_IF_LE(
-			    (uint32_t)element.hexadecimalValue)));
-		} else if ([typeString isEqual: @"double"]) {
-			_type = OF_NUMBER_TYPE_DOUBLE;
-			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(
-			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
-			    (uint64_t)element.hexadecimalValue)));
-		} else
+			unsigned long long value =
+			    [element unsignedLongLongValueWithBase: 16];
+
+			if (value > UINT64_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			self = [self initWithDouble: OF_BSWAP_DOUBLE_IF_LE(
+			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(value)))];
+		} else if ([typeString isEqual: @"signed"])
+			self = [self initWithLongLong: element.longLongValue];
+		else if ([typeString isEqual: @"unsigned"])
+			self = [self initWithUnsignedLongLong:
+			    element.unsignedLongLongValue];
+		else
 			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
@@ -581,383 +793,126 @@
 
 - (const char *)objCType
 {
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		return @encode(bool);
-	case OF_NUMBER_TYPE_CHAR:
-		return @encode(signed char);
-	case OF_NUMBER_TYPE_SHORT:
-		return @encode(signed short);
-	case OF_NUMBER_TYPE_INT:
-		return @encode(signed int);
-	case OF_NUMBER_TYPE_LONG:
-		return @encode(signed long);
-	case OF_NUMBER_TYPE_LONGLONG:
-		return @encode(signed long long);
-	case OF_NUMBER_TYPE_UCHAR:
-		return @encode(unsigned char);
-	case OF_NUMBER_TYPE_USHORT:
-		return @encode(unsigned short);
-	case OF_NUMBER_TYPE_UINT:
-		return @encode(unsigned int);
-	case OF_NUMBER_TYPE_ULONG:
-		return @encode(unsigned long);
-	case OF_NUMBER_TYPE_ULONGLONG:
-		return @encode(unsigned long long);
-	case OF_NUMBER_TYPE_INT8:
-		return @encode(int8_t);
-	case OF_NUMBER_TYPE_INT16:
-		return @encode(int16_t);
-	case OF_NUMBER_TYPE_INT32:
-		return @encode(int32_t);
-	case OF_NUMBER_TYPE_INT64:
-		return @encode(int64_t);
-	case OF_NUMBER_TYPE_UINT8:
-		return @encode(uint8_t);
-	case OF_NUMBER_TYPE_UINT16:
-		return @encode(uint16_t);
-	case OF_NUMBER_TYPE_UINT32:
-		return @encode(uint32_t);
-	case OF_NUMBER_TYPE_UINT64:
-		return @encode(uint64_t);
-	case OF_NUMBER_TYPE_SIZE:
-		return @encode(size_t);
-	case OF_NUMBER_TYPE_SSIZE:
-		return @encode(ssize_t);
-	case OF_NUMBER_TYPE_INTMAX:
-		return @encode(intmax_t);
-	case OF_NUMBER_TYPE_UINTMAX:
-		return @encode(uintmax_t);
-	case OF_NUMBER_TYPE_PTRDIFF:
-		return @encode(ptrdiff_t);
-	case OF_NUMBER_TYPE_INTPTR:
-		return @encode(intptr_t);
-	case OF_NUMBER_TYPE_UINTPTR:
-		return @encode(uintptr_t);
-	case OF_NUMBER_TYPE_FLOAT:
-		return @encode(float);
-	case OF_NUMBER_TYPE_DOUBLE:
-		return @encode(double);
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	return _typeEncoding;
 }
 
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		if (size != sizeof(bool))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.bool_, sizeof(bool));
-		break;
-	case OF_NUMBER_TYPE_CHAR:
-		if (size != sizeof(signed char))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sChar, sizeof(signed char));
-		break;
-	case OF_NUMBER_TYPE_SHORT:
-		if (size != sizeof(signed short))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sShort, sizeof(signed short));
-		break;
-	case OF_NUMBER_TYPE_INT:
-		if (size != sizeof(signed int))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sInt, sizeof(signed int));
-		break;
-	case OF_NUMBER_TYPE_LONG:
-		if (size != sizeof(signed long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sLong, sizeof(signed long));
-		break;
-	case OF_NUMBER_TYPE_LONGLONG:
-		if (size != sizeof(signed long long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sLongLong, sizeof(signed long long));
-		break;
-	case OF_NUMBER_TYPE_UCHAR:
-		if (size != sizeof(unsigned char))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uChar, sizeof(unsigned char));
-		break;
-	case OF_NUMBER_TYPE_USHORT:
-		if (size != sizeof(unsigned short))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uShort, sizeof(unsigned short));
-		break;
-	case OF_NUMBER_TYPE_UINT:
-		if (size != sizeof(unsigned int))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt, sizeof(unsigned int));
-		break;
-	case OF_NUMBER_TYPE_ULONG:
-		if (size != sizeof(unsigned long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uLong, sizeof(unsigned long));
-		break;
-	case OF_NUMBER_TYPE_ULONGLONG:
-		if (size != sizeof(unsigned long long))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uLongLong, sizeof(unsigned long long));
-		break;
-	case OF_NUMBER_TYPE_INT8:
-		if (size != sizeof(int8_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int8, sizeof(int8_t));
-		break;
-	case OF_NUMBER_TYPE_INT16:
-		if (size != sizeof(int16_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int16, sizeof(int16_t));
-		break;
-	case OF_NUMBER_TYPE_INT32:
-		if (size != sizeof(int32_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int32, sizeof(int32_t));
-		break;
-	case OF_NUMBER_TYPE_INT64:
-		if (size != sizeof(int64_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.int64, sizeof(int64_t));
-		break;
-	case OF_NUMBER_TYPE_UINT8:
-		if (size != sizeof(uint8_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt8, sizeof(uint8_t));
-		break;
-	case OF_NUMBER_TYPE_UINT16:
-		if (size != sizeof(uint16_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt16, sizeof(uint16_t));
-		break;
-	case OF_NUMBER_TYPE_UINT32:
-		if (size != sizeof(uint32_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt32, sizeof(uint32_t));
-		break;
-	case OF_NUMBER_TYPE_UINT64:
-		if (size != sizeof(uint64_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uInt64, sizeof(uint64_t));
-		break;
-	case OF_NUMBER_TYPE_SIZE:
-		if (size != sizeof(size_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.size, sizeof(size_t));
-		break;
-	case OF_NUMBER_TYPE_SSIZE:
-		if (size != sizeof(ssize_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.sSize, sizeof(ssize_t));
-		break;
-	case OF_NUMBER_TYPE_INTMAX:
-		if (size != sizeof(intmax_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.intMax, sizeof(intmax_t));
-		break;
-	case OF_NUMBER_TYPE_UINTMAX:
-		if (size != sizeof(uintmax_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uIntMax, sizeof(uintmax_t));
-		break;
-	case OF_NUMBER_TYPE_PTRDIFF:
-		if (size != sizeof(ptrdiff_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.ptrDiff, sizeof(ptrdiff_t));
-		break;
-	case OF_NUMBER_TYPE_INTPTR:
-		if (size != sizeof(intptr_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.intPtr, sizeof(intptr_t));
-		break;
-	case OF_NUMBER_TYPE_UINTPTR:
-		if (size != sizeof(uintptr_t))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.uIntPtr, sizeof(uintptr_t));
-		break;
-	case OF_NUMBER_TYPE_FLOAT:
-		if (size != sizeof(float))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.float_, sizeof(float));
-		break;
-	case OF_NUMBER_TYPE_DOUBLE:
-		if (size != sizeof(double))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(value, &_value.double_, sizeof(double));
-		break;
+	switch (*self.objCType) {
+#define CASE(enc, type, property)					\
+	case enc: {							\
+		type tmp = (type)self.property;				\
+									\
+		if (size != sizeof(type))				\
+			@throw [OFOutOfRangeException exception];	\
+									\
+		memcpy(value, &tmp, size);				\
+		break;							\
+	}
+	CASE('B', bool, unsignedLongLongValue)
+	CASE('c', signed char, longLongValue)
+	CASE('s', short, longLongValue)
+	CASE('i', int, longLongValue)
+	CASE('l', long, longLongValue)
+	CASE('q', long long, longLongValue)
+	CASE('C', unsigned char, unsignedLongLongValue)
+	CASE('S', unsigned short, unsignedLongLongValue)
+	CASE('I', unsigned int, unsignedLongLongValue)
+	CASE('L', unsigned long, unsignedLongLongValue)
+	CASE('Q', unsigned long long, unsignedLongLongValue)
+	CASE('f', float, doubleValue)
+	CASE('d', double, doubleValue)
+#undef CASE
 	default:
 		@throw [OFInvalidFormatException exception];
 	}
 }
 
-- (bool)boolValue
+- (long long)longLongValue
 {
-	RETURN_AS(bool)
-}
-
-- (signed char)charValue
-{
-	RETURN_AS(signed char)
-}
-
-- (signed short)shortValue
-{
-	RETURN_AS(signed short)
-}
-
-- (signed int)intValue
-{
-	RETURN_AS(signed int)
-}
-
-- (signed long)longValue
-{
-	RETURN_AS(signed long)
-}
-
-- (signed long long)longLongValue
-{
-	RETURN_AS(signed long long)
-}
-
-- (unsigned char)unsignedCharValue
-{
-	RETURN_AS(unsigned char)
-}
-
-- (unsigned short)unsignedShortValue
-{
-	RETURN_AS(unsigned short)
-}
-
-- (unsigned int)unsignedIntValue
-{
-	RETURN_AS(unsigned int)
-}
-
-- (unsigned long)unsignedLongValue
-{
-	RETURN_AS(unsigned long)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
 }
 
 - (unsigned long long)unsignedLongLongValue
 {
-	RETURN_AS(unsigned long long)
-}
-
-- (int8_t)int8Value
-{
-	RETURN_AS(int8_t)
-}
-
-- (int16_t)int16Value
-{
-	RETURN_AS(int16_t)
-}
-
-- (int32_t)int32Value
-{
-	RETURN_AS(int32_t)
-}
-
-- (int64_t)int64Value
-{
-	RETURN_AS(int64_t)
-}
-
-- (uint8_t)uInt8Value
-{
-	RETURN_AS(uint8_t)
-}
-
-- (uint16_t)uInt16Value
-{
-	RETURN_AS(uint16_t)
-}
-
-- (uint32_t)uInt32Value
-{
-	RETURN_AS(uint32_t)
-}
-
-- (uint64_t)uInt64Value
-{
-	RETURN_AS(uint64_t)
-}
-
-- (size_t)sizeValue
-{
-	RETURN_AS(size_t)
-}
-
-- (ssize_t)sSizeValue
-{
-	RETURN_AS(ssize_t)
-}
-
-- (intmax_t)intMaxValue
-{
-	RETURN_AS(intmax_t)
-}
-
-- (uintmax_t)uIntMaxValue
-{
-	RETURN_AS(uintmax_t)
-}
-
-- (ptrdiff_t)ptrDiffValue
-{
-	RETURN_AS(ptrdiff_t)
-}
-
-- (intptr_t)intPtrValue
-{
-	RETURN_AS(intptr_t)
-}
-
-- (uintptr_t)uIntPtrValue
-{
-	RETURN_AS(uintptr_t)
-}
-
-- (float)floatValue
-{
-	RETURN_AS(float)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
 }
 
 - (double)doubleValue
 {
-	RETURN_AS(double)
+	if (isFloat(self))
+		return _value.float_;
+	else if (isSigned(self))
+		return _value.signed_;
+	else if (isUnsigned(self))
+		return _value.unsigned_;
+	else
+		@throw [OFInvalidFormatException exception];
+}
+
+- (bool)boolValue
+{
+	return (bool)self.unsignedLongLongValue;
+}
+
+- (signed char)charValue
+{
+	return (signed char)self.longLongValue;
+}
+
+- (short)shortValue
+{
+	return (short)self.longLongValue;
+}
+
+- (int)intValue
+{
+	return (int)self.longLongValue;
+}
+
+- (long)longValue
+{
+	return (long)self.longLongValue;
+}
+
+- (unsigned char)unsignedCharValue
+{
+	return (unsigned char)self.unsignedLongLongValue;
+}
+
+- (unsigned short)unsignedShortValue
+{
+	return (unsigned short)self.unsignedLongLongValue;
+}
+
+- (unsigned int)unsignedIntValue
+{
+	return (unsigned int)self.unsignedLongLongValue;
+}
+
+- (unsigned long)unsignedLongValue
+{
+	return (unsigned long)self.unsignedLongLongValue;
+}
+
+- (float)floatValue
+{
+	return (float)self.doubleValue;
 }
 
 - (bool)isEqual: (id)object
@@ -972,8 +927,7 @@
 
 	number = object;
 
-	if (_type & OF_NUMBER_TYPE_FLOAT ||
-	    number->_type & OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self) || isFloat(number)) {
 		double value1 = number.doubleValue;
 		double value2 = self.doubleValue;
 
@@ -985,11 +939,10 @@
 		return (value1 == value2);
 	}
 
-	if (_type & OF_NUMBER_TYPE_SIGNED ||
-	    number->_type & OF_NUMBER_TYPE_SIGNED)
-		return (number.intMaxValue == self.intMaxValue);
+	if (isSigned(self) || isSigned(number))
+		return (number.longLongValue == self.longLongValue);
 
-	return (number.uIntMaxValue == self.uIntMaxValue);
+	return (number.unsignedLongLongValue == self.unsignedLongLongValue);
 }
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object
@@ -1001,8 +954,7 @@
 
 	number = (OFNumber *)object;
 
-	if (_type & OF_NUMBER_TYPE_FLOAT ||
-	    number->_type & OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self) || isFloat(number)) {
 		double double1 = self.doubleValue;
 		double double2 = number.doubleValue;
 
@@ -1012,10 +964,9 @@
 			return OF_ORDERED_ASCENDING;
 
 		return OF_ORDERED_SAME;
-	} else if (_type & OF_NUMBER_TYPE_SIGNED ||
-	    number->_type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t int1 = self.intMaxValue;
-		intmax_t int2 = number.intMaxValue;
+	} else if (isSigned(self) || isSigned(number)) {
+		long long int1 = self.longLongValue;
+		long long int2 = number.longLongValue;
 
 		if (int1 > int2)
 			return OF_ORDERED_DESCENDING;
@@ -1024,8 +975,8 @@
 
 		return OF_ORDERED_SAME;
 	} else {
-		uintmax_t uint1 = self.uIntMaxValue;
-		uintmax_t uint2 = number.uIntMaxValue;
+		unsigned long long uint1 = self.unsignedLongLongValue;
+		unsigned long long uint2 = number.unsignedLongLongValue;
 
 		if (uint1 > uint2)
 			return OF_ORDERED_DESCENDING;
@@ -1038,31 +989,11 @@
 
 - (uint32_t)hash
 {
-	of_number_type_t type = _type;
 	uint32_t hash;
-
-	/* Do we really need signed to represent this number? */
-	if (type & OF_NUMBER_TYPE_SIGNED && self.intMaxValue >= 0)
-		type &= ~OF_NUMBER_TYPE_SIGNED;
-
-	/* Do we really need floating point to represent this number? */
-	if (type & OF_NUMBER_TYPE_FLOAT) {
-		double v = self.doubleValue;
-
-		if (v < 0) {
-			if (v == self.intMaxValue) {
-				type &= ~OF_NUMBER_TYPE_FLOAT;
-				type |= OF_NUMBER_TYPE_SIGNED;
-			}
-		} else {
-			if (v == self.uIntMaxValue)
-				type &= ~OF_NUMBER_TYPE_FLOAT;
-		}
-	}
 
 	OF_HASH_INIT(hash);
 
-	if (type & OF_NUMBER_TYPE_FLOAT) {
+	if (isFloat(self)) {
 		double d;
 
 		if (isnan(self.doubleValue))
@@ -1072,23 +1003,15 @@
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, ((char *)&d)[i]);
-	} else if (type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t v = self.intMaxValue * -1;
+	} else if (isSigned(self) || isUnsigned(self)) {
+		unsigned long long value = self.unsignedLongLongValue;
 
-		while (v != 0) {
-			OF_HASH_ADD(hash, v & 0xFF);
-			v >>= 8;
+		while (value != 0) {
+			OF_HASH_ADD(hash, value & 0xFF);
+			value >>= 8;
 		}
-
-		OF_HASH_ADD(hash, 1);
-	} else {
-		uintmax_t v = self.uIntMaxValue;
-
-		while (v != 0) {
-			OF_HASH_ADD(hash, v & 0xFF);
-			v >>= 8;
-		}
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1107,59 +1030,17 @@
 
 - (OFString *)stringValue
 {
-	OFMutableString *ret;
+	if (*self.objCType == 'B')
+		return (self.boolValue ? @"true" : @"false");
+	if (isFloat(self))
+		return [OFString stringWithFormat: @"%g", self.doubleValue];
+	if (isSigned(self))
+		return [OFString stringWithFormat: @"%lld", self.longLongValue];
+	if (isUnsigned(self))
+		return [OFString stringWithFormat: @"%llu",
+						   self.unsignedLongLongValue];
 
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
-		return (_value.bool_ ? @"true" : @"false");
-	case OF_NUMBER_TYPE_UCHAR:
-	case OF_NUMBER_TYPE_USHORT:
-	case OF_NUMBER_TYPE_UINT:
-	case OF_NUMBER_TYPE_ULONG:
-	case OF_NUMBER_TYPE_ULONGLONG:
-	case OF_NUMBER_TYPE_UINT8:
-	case OF_NUMBER_TYPE_UINT16:
-	case OF_NUMBER_TYPE_UINT32:
-	case OF_NUMBER_TYPE_UINT64:
-	case OF_NUMBER_TYPE_SIZE:
-	case OF_NUMBER_TYPE_UINTMAX:
-	case OF_NUMBER_TYPE_UINTPTR:
-		return [OFString stringWithFormat: @"%ju", self.uIntMaxValue];
-	case OF_NUMBER_TYPE_CHAR:
-	case OF_NUMBER_TYPE_SHORT:
-	case OF_NUMBER_TYPE_INT:
-	case OF_NUMBER_TYPE_LONG:
-	case OF_NUMBER_TYPE_LONGLONG:
-	case OF_NUMBER_TYPE_INT8:
-	case OF_NUMBER_TYPE_INT16:
-	case OF_NUMBER_TYPE_INT32:
-	case OF_NUMBER_TYPE_INT64:
-	case OF_NUMBER_TYPE_SSIZE:
-	case OF_NUMBER_TYPE_INTMAX:
-	case OF_NUMBER_TYPE_PTRDIFF:
-	case OF_NUMBER_TYPE_INTPTR:
-		return [OFString stringWithFormat: @"%jd", self.intMaxValue];
-	case OF_NUMBER_TYPE_FLOAT:
-		ret = [OFMutableString stringWithFormat: @"%g", _value.float_];
-
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
-
-		[ret makeImmutable];
-
-		return ret;
-	case OF_NUMBER_TYPE_DOUBLE:
-		ret = [OFMutableString stringWithFormat: @"%g", _value.double_];
-
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
-
-		[ret makeImmutable];
-
-		return ret;
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	@throw [OFInvalidFormatException exception];
 }
 
 - (OFXMLElement *)XMLElementBySerializing
@@ -1167,66 +1048,28 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: self.className
+	element = [OFXMLElement elementWithName: @"OFNumber"
 				      namespace: OF_SERIALIZATION_NS
 				    stringValue: self.description];
 
-	switch (_type) {
-	case OF_NUMBER_TYPE_BOOL:
+	if (*self.objCType == 'B')
 		[element addAttributeWithName: @"type"
-				  stringValue: @"boolean"];
-		break;
-	case OF_NUMBER_TYPE_UCHAR:
-	case OF_NUMBER_TYPE_USHORT:
-	case OF_NUMBER_TYPE_UINT:
-	case OF_NUMBER_TYPE_ULONG:
-	case OF_NUMBER_TYPE_ULONGLONG:
-	case OF_NUMBER_TYPE_UINT8:
-	case OF_NUMBER_TYPE_UINT16:
-	case OF_NUMBER_TYPE_UINT32:
-	case OF_NUMBER_TYPE_UINT64:
-	case OF_NUMBER_TYPE_SIZE:
-	case OF_NUMBER_TYPE_UINTMAX:
-	case OF_NUMBER_TYPE_UINTPTR:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"unsigned"];
-		break;
-	case OF_NUMBER_TYPE_CHAR:
-	case OF_NUMBER_TYPE_SHORT:
-	case OF_NUMBER_TYPE_INT:
-	case OF_NUMBER_TYPE_LONG:
-	case OF_NUMBER_TYPE_LONGLONG:
-	case OF_NUMBER_TYPE_INT8:
-	case OF_NUMBER_TYPE_INT16:
-	case OF_NUMBER_TYPE_INT32:
-	case OF_NUMBER_TYPE_INT64:
-	case OF_NUMBER_TYPE_SSIZE:
-	case OF_NUMBER_TYPE_INTMAX:
-	case OF_NUMBER_TYPE_PTRDIFF:
-	case OF_NUMBER_TYPE_INTPTR:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"signed"];
-		break;
-	case OF_NUMBER_TYPE_FLOAT:
+				  stringValue: @"bool"];
+	else if (isFloat(self)) {
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
-		element.stringValue = [OFString stringWithFormat: @"%08" PRIx32,
-		    OF_BSWAP32_IF_LE(OF_FLOAT_TO_INT_RAW(OF_BSWAP_FLOAT_IF_LE(
-		    _value.float_)))];
-
-		break;
-	case OF_NUMBER_TYPE_DOUBLE:
-		[element addAttributeWithName: @"type"
-				  stringValue: @"double"];
 		element.stringValue = [OFString
 		    stringWithFormat: @"%016" PRIx64,
 		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
-		    _value.double_)))];
-
-		break;
-	default:
+		    self.doubleValue)))];
+	} else if (isSigned(self))
+		[element addAttributeWithName: @"type"
+				  stringValue: @"signed"];
+	else if (isUnsigned(self))
+		[element addAttributeWithName: @"type"
+				  stringValue: @"unsigned"];
+	else
 		@throw [OFInvalidFormatException exception];
-	}
 
 	[element retain];
 
@@ -1252,8 +1095,8 @@
 {
 	double doubleValue;
 
-	if (_type == OF_NUMBER_TYPE_BOOL)
-		return (_value.bool_ ? @"true" : @"false");
+	if (*self.objCType == 'B')
+		return (self.boolValue ? @"true" : @"false");
 
 	doubleValue = self.doubleValue;
 	if (isinf(doubleValue)) {
@@ -1272,15 +1115,16 @@
 - (OFData *)messagePackRepresentation
 {
 	OFMutableData *data;
+	const char *typeEncoding = self.objCType;
 
-	if (_type == OF_NUMBER_TYPE_BOOL) {
-		uint8_t type = (_value.bool_ ? 0xC3 : 0xC2);
+	if (*typeEncoding == 'B') {
+		uint8_t type = (self.boolValue ? 0xC3 : 0xC2);
 
 		data = [OFMutableData dataWithItems: &type
 					      count: 1];
-	} else if (_type == OF_NUMBER_TYPE_FLOAT) {
+	} else if (*typeEncoding == 'f') {
 		uint8_t type = 0xCA;
-		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
+		float tmp = OF_BSWAP_FLOAT_IF_LE(self.floatValue);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 5];
@@ -1288,9 +1132,9 @@
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type == OF_NUMBER_TYPE_DOUBLE) {
+	} else if (*typeEncoding == 'd') {
 		uint8_t type = 0xCB;
-		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
+		double tmp = OF_BSWAP_DOUBLE_IF_LE(self.doubleValue);
 
 		data = [OFMutableData dataWithItemSize: 1
 					      capacity: 9];
@@ -1298,8 +1142,8 @@
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t value = self.intMaxValue;
+	} else if (isSigned(self)) {
+		long long value = self.longLongValue;
 
 		if (value >= -32 && value < 0) {
 			uint8_t tmp = 0xE0 | ((uint8_t)(value - 32) & 0x1F);
@@ -1347,8 +1191,8 @@
 				 count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
-	} else {
-		uintmax_t value = self.uIntMaxValue;
+	} else if (isUnsigned(self)) {
+		unsigned long long value = self.unsignedLongLongValue;
 
 		if (value <= 127) {
 			uint8_t tmp = ((uint8_t)value & 0x7F);
@@ -1396,7 +1240,8 @@
 				 count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	[data makeImmutable];
 

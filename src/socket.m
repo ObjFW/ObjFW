@@ -44,7 +44,7 @@
 #  import "tlskey.h"
 # endif
 #endif
-#include "once.h"
+#import "once.h"
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
@@ -376,7 +376,7 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 	addr = 0;
 
 	for (OFString *component in components) {
-		intmax_t number;
+		unsigned long long number;
 
 		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
@@ -385,12 +385,12 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 		    whitespaceCharacterSet] != OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
-		number = component.decimalValue;
+		number = component.unsignedLongLongValue;
 
-		if (number < 0 || number > UINT8_MAX)
+		if (number > UINT8_MAX)
 			@throw [OFInvalidFormatException exception];
 
-		addr = (addr << 8) | (number & 0xFF);
+		addr = (addr << 8) | ((uint32_t)number & 0xFF);
 	}
 
 	addrIn->sin_addr.s_addr = OF_BSWAP32_IF_LE(addr);
@@ -403,13 +403,13 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 static uint16_t
 parseIPv6Component(OFString *component)
 {
-	uintmax_t number;
+	unsigned long long number;
 
 	if ([component indexOfCharacterFromSet:
 	    [OFCharacterSet whitespaceCharacterSet]] != OF_NOT_FOUND)
 		@throw [OFInvalidFormatException exception];
 
-	number = component.hexadecimalValue;
+	number = [component unsignedLongLongValueWithBase: 16];
 
 	if (number > UINT16_MAX)
 		@throw [OFInvalidFormatException exception];
@@ -501,11 +501,15 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 of_socket_address_t
 of_socket_address_parse_ip(OFString *IP, uint16_t port)
 {
+	of_socket_address_t ret;
+
 	@try {
-		return of_socket_address_parse_ipv6(IP, port);
+		ret = of_socket_address_parse_ipv6(IP, port);
 	} @catch (OFInvalidFormatException *e) {
-		return of_socket_address_parse_ipv4(IP, port);
+		ret = of_socket_address_parse_ipv4(IP, port);
 	}
+
+	return ret;
 }
 
 of_socket_address_t

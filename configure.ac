@@ -431,6 +431,7 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
+	AC_CONFIG_FILES(tests/plugin/Info.plist)
 
 	AS_IF([test x"$build_framework" = x"yes"], [
 		TESTPLUGIN_LIBS="-F../../src -F../../src/runtime"
@@ -545,6 +546,7 @@ case "$objc_runtime" in
 		])
 
 		AC_SUBST(RUNTIME, "runtime")
+		AC_CONFIG_FILES(src/runtime/Info.plist)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWRT_SHARED_LIB,
@@ -653,14 +655,17 @@ case "$objc_runtime" in
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
+
+		AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
+			AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
+		])
+		AC_CHECK_FUNC(objc_constructInstance, [], [
+			AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
+		])
 		;;
 esac
 
 AC_CHECK_FUNCS(_Unwind_Backtrace)
-
-AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-	AC_SUBST(AUTORELEASE_M, "autorelease.m")
-])
 
 case "$host_os" in
 	darwin*)
@@ -840,7 +845,7 @@ case "$host_cpu" in
 			#if !defined(__arm64__) && !defined(__aarch64__) && \
 			    !defined(__ARM64_ARCH_8__)
 			__asm__ __volatile__ (
-			    "fstmfdd sp!, {d0-d7}"
+			    "vstmdb	sp!, {d0-d7}"
 			);
 			#endif
 		], [
@@ -926,13 +931,7 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 	])
 ])
 
-AC_CHECK_FUNC(arc4random, [
-	AC_DEFINE(OF_HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
-], [
-	AC_CHECK_FUNC(random, [
-		AC_DEFINE(OF_HAVE_RANDOM, 1, [Whether we have random()])
-	])
-])
+AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
 	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
@@ -1605,6 +1604,7 @@ AC_CHECK_FUNC(pledge, [
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(BRIDGE, "bridge")
+		AC_CONFIG_FILES(src/bridge/Info.plist)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWBRIDGE_SHARED_LIB,
@@ -1808,7 +1808,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_TRY_COMPILE([
-		/*!
+		/**
 		 * @class Test conftest.m conftest.m
 		 */
 		#ifdef __has_attribute
@@ -1940,9 +1940,7 @@ AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
 	src/Info.plist
-	src/bridge/Info.plist
 	tests/Info.plist
-	tests/plugin/Info.plist
 	utils/objfw-config
 ])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])

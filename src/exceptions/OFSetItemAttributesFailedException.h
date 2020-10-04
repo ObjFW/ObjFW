@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFSetItemAttributesFailedException \
  *	  OFSetItemAttributesFailedException.h \
  *	  ObjFW/OFSetItemAttributesFailedException.h
@@ -37,29 +37,29 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The URL of the item whose attributes could not be set.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-/*!
+/**
  * @brief The attributes that should have been set.
  */
 @property (readonly, nonatomic) of_file_attributes_t attributes;
 
-/*!
+/**
  * @brief The first attribute that could not be set.
  */
 @property (readonly, nonatomic) of_file_attribute_key_t failedAttribute;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased set item attributes failed exception.
  *
  * @param URL The URL of the item whose attributes could not be set
@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated set item attributes failed exception.
  *
  * @param URL The URL of the item whose attributes could not be set

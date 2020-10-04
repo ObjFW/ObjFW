@@ -19,10 +19,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for a job which should be executed in a thread pool.
  */
 typedef void (^of_thread_pool_block_t)(void);
@@ -33,7 +33,7 @@ typedef void (^of_thread_pool_block_t)(void);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFThreadPoolJob;
 
-/*!
+/**
  * @class OFThreadPool OFThreadPool.h ObjFW/OFThreadPool.h
  *
  * @brief A class providing a pool of reusable threads.
@@ -56,12 +56,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFCondition *_countCondition;
 }
 
-/*!
+/**
  * @brief The size of the thread pool.
  */
 @property (readonly, nonatomic) size_t size;
 
-/*!
+/**
  * @brief Returns a new thread pool with one thread for each core in the system.
  *
  * @warning If for some reason the number of cores in the system could not be
@@ -71,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)threadPool;
 
-/*!
+/**
  * @brief Returns a new thread pool with the specified number of threads.
  *
  * @param size The number of threads for the pool
@@ -79,7 +79,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)threadPoolWithSize: (size_t)size;
 
-/*!
+/**
  * @brief Initializes an already allocated OFThreadPool with the specified
  *	  number of threads.
  *
@@ -88,7 +88,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithSize: (size_t)size OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Execute the specified selector on the specified target with the
  *	  specified object as soon as a thread is ready.
  *
@@ -101,7 +101,7 @@ OF_SUBCLASSING_RESTRICTED
 		    object: (nullable id)object;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Executes the specified block as soon as a thread is ready.
  *
  * @param block The block to execute
@@ -109,7 +109,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Waits until all jobs are done.
  */
 - (void)waitUntilDone;

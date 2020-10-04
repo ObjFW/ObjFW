@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMemoryNotPartOfObjectException \
  *	  OFMemoryNotPartOfObjectException.h \
  *	  ObjFW/OFMemoryNotPartOfObjectException.h
@@ -32,19 +32,19 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-/*!
+/**
  * @brief A pointer to the memory which is not part of the object.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *pointer;
 
-/*!
+/**
  * @brief The object which the memory is not part of.
  */
 @property (readonly, nonatomic) id object;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased memory not part of object exception.
  *
  * @param pointer A pointer to the memory that is not part of the object
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated memory not part of object exception.
  *
  * @param pointer A pointer to the memory that is not part of the object

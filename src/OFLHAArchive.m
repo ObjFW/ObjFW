@@ -205,7 +205,7 @@ OF_DIRECT_MEMBERS
 	return entry;
 }
 
-- (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
+- (OFStream *)streamForReadingCurrentEntry
 {
 	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
@@ -217,8 +217,7 @@ OF_DIRECT_MEMBERS
 	    retain] autorelease];
 }
 
-- (OFStream <OFReadyForWritingObserving> *)
-    streamForWritingEntry: (OFLHAArchiveEntry *)entry
+- (OFStream *)streamForWritingEntry: (OFLHAArchiveEntry *)entry
 {
 	OFString *compressionMethod;
 

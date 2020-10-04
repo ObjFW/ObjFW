@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFThread;
 
-/*!
+/**
  * @class OFThreadStillRunningException \
  *	  OFThreadStillRunningException.h ObjFW/OFThreadStillRunningException.h
  *
@@ -36,12 +36,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OFThread *_thread;
 }
 
-/*!
+/**
  * @brief The thread which is still running.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 
-/*!
+/**
  * @brief Creates a new, autoreleased thread still running exception.
  *
  * @param thread The thread which is still running
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithThread: (nullable OFThread *)thread;
 
-/*!
+/**
  * @brief Initializes an already allocated thread still running exception.
  *
  * @param thread The thread which is still running

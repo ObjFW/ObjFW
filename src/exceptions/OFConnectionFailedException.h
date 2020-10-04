@@ -25,7 +25,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFConnectionFailedException \
  *	  OFConnectionFailedException.h ObjFW/OFConnectionFailedException.h
  *
@@ -41,39 +41,39 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The socket which could not connect.
  */
 @property (readonly, nonatomic) id socket;
 
-/*!
+/**
  * @brief The host to which the connection failed.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The port on the host to which the connection failed.
  */
 @property (readonly, nonatomic) uint16_t port;
 
-/*!
+/**
  * @brief The IPX node to which the connection failed.
  */
 @property (readonly, nonatomic) unsigned char *node;
 
-/*!
+/**
  * @brief The IPX network of the node to which the connection failed.
  */
 @property (readonly, nonatomic) uint32_t network;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased connection failed exception.
  *
  * @param host The host to which the connection failed
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased connection failed exception.
  *
  * @param node The node to which the connection failed
@@ -105,7 +105,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated connection failed exception.
  *
  * @param host The host to which the connection failed
@@ -119,7 +119,7 @@ OF_ASSUME_NONNULL_BEGIN
 		      socket: (id)socket
 		       errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated connection failed exception.
  *
  * @param node The node to which the connection failed

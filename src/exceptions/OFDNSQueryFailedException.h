@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFDNSQueryFailedException \
  *	  OFDNSQueryFailedException.h ObjFW/OFDNSQueryFailedException.h
  *
@@ -34,17 +34,17 @@ OF_ASSUME_NONNULL_BEGIN
 	of_dns_resolver_error_t _error;
 }
 
-/*!
+/**
  * @brief The query which could not be performed.
  */
 @property (readonly, nonatomic) OFDNSQuery *query;
 
-/*!
+/**
  * @brief The error from the resolver.
  */
 @property (readonly, nonatomic) of_dns_resolver_error_t error;
 
-/*!
+/**
  * @brief Creates a new, autoreleased DNS query failed exception.
  *
  * @param query The query which could not be performed
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
 			     error: (of_dns_resolver_error_t)error;
 
-/*!
+/**
  * @brief Initializes an already allocated DNS query failed exception.
  *
  * @param query The query which could not be performed

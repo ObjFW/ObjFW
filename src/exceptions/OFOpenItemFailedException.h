@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFOpenItemFailedException \
  *	  OFOpenItemFailedException.h ObjFW/OFOpenItemFailedException.h
  *
@@ -35,29 +35,29 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The URL of the item which could not be opened.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFURL *URL;
 
-/*!
+/**
  * @brief The path of the item which could not be opened.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The mode in which the item should have been opened.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *mode;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased open item failed exception.
  *
  * @param URL The URL of the item which could not be opened
@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
 			    mode: (nullable OFString *)mode
 			   errNo: (int)errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased open item failed exception.
  *
  * @param path The path of the item which could not be opened
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated open item failed exception.
  *
  * @param URL The URL of the item which could not be opened
@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
 		       mode: (nullable OFString *)mode
 		      errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated open item failed exception.
  *
  * @param path The path of the item which could not be opened

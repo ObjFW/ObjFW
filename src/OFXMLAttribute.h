@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @class OFXMLAttribute OFXMLAttribute.h ObjFW/OFXMLAttribute.h
  *
  * @brief A representation of an attribute of an XML element as an object.
@@ -33,15 +33,15 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFString *_name, *_Nullable _namespace, *_stringValue;
 	bool _useDoubleQuotes;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLAttribute, 4)
 }
 
-/*!
+/**
  * @brief The name of the attribute.
  */
 @property (readonly, nonatomic) OFString *name;
 
-/*!
+/**
  * @brief The namespace of the attribute.
  */
 #ifndef __cplusplus
@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *namespace_;
 #endif
 
-/*!
+/**
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)attributeWithName: (OFString *)name
 		      stringValue: (OFString *)stringValue;
 
-/*!
+/**
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
@@ -73,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
 			namespace: (nullable OFString *)namespace_
 		      stringValue: (OFString *)stringValue;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithName: (OFString *)name
 		 stringValue: (OFString *)stringValue;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute

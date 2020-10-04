@@ -27,8 +27,11 @@
 .section .text
 .macro generate_lookup name not_found
 \name:
-	test	%rcx, %rcx
+	test	rcx, rcx
 	jz	short ret_nil
+
+	bt	ecx, 0
+	jc	short .Ltagged_pointer_\name
 
 	mov	r8, [rcx]
 	mov	r8, [r8+56]
@@ -57,6 +60,16 @@
 	mov	rcx, r10
 	mov	rdx, r11
 	jmp	\not_found
+
+.Ltagged_pointer_\name:
+	xor	rcx, objc_tagged_pointer_secret
+	and	cl, 0xE
+	movzx	r8, cl
+
+	mov	r8, [objc_tagged_pointer_classes+r8*4]
+	mov	r8, [r8+56]
+
+	jmp	short .Lmain_\name
 .endm
 
 .macro generate_lookup_super name lookup

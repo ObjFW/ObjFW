@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFGZIPStream OFGZIPStream.h ObjFW/OFGZIPStream.h
  *
  * @brief A class that handles GZIP compression and decompression transparently
@@ -82,7 +82,7 @@ OF_SUBCLASSING_RESTRICTED
 	uint32_t _CRC32, _uncompressedSize;
 }
 
-/*!
+/**
  * @brief The operating system on which the data was compressed.
  *
  * This property is only guaranteed to be available once @ref atEndOfStream is
@@ -91,7 +91,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic)
     enum of_gzip_stream_operating_system operatingSystemMadeOn;
 
-/*!
+/**
  * @brief The modification date of the original file.
  *
  * This property is only guaranteed to be available once @ref atEndOfStream is
@@ -99,7 +99,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFDate *modificationDate;
 
-/*!
+/**
  * @brief Creates a new OFGZIPStream with the specified underlying stream.
  *
  * @param stream The underlying stream for the OFGZIPStream
@@ -112,7 +112,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFGZIPStream with the specified
  *	  underlying stream.
  *

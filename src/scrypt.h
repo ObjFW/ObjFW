@@ -26,37 +26,37 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFHMAC;
 
-/*!
+/**
  * @brief The parameters for @ref of_scrypt.
  */
 typedef struct of_scrypt_parameters_t {
-	/*! @brief The block size to use. */
+	/** @brief The block size to use. */
 	size_t blockSize;
-	/*! @brief The CPU/memory cost factor to use. */
+	/** @brief The CPU/memory cost factor to use. */
 	size_t costFactor;
-	/*! @brief The parallelization to use. */
+	/** @brief The parallelization to use. */
 	size_t parallelization;
-	/*! @brief The salt to derive a key with. */
+	/** @brief The salt to derive a key with. */
 	const unsigned char *salt;
-	/*! @brief The length of the salt. */
+	/** @brief The length of the salt. */
 	size_t saltLength;
-	/*! @brief The password to derive a key from. */
+	/** @brief The password to derive a key from. */
 	const char *password;
-	/*! @brief The length of the password. */
+	/** @brief The length of the password. */
 	size_t passwordLength;
-	/*! @brief The buffer to write the key to. */
+	/** @brief The buffer to write the key to. */
 	unsigned char *key;
-	/*!
+	/**
 	 * @brief The desired length for the derived key.
 	 *
 	 * @ref key needs to have enough storage.
 	 */
 	size_t keyLength;
-	/*! @brief Whether data may be stored in swappable memory. */
+	/** @brief Whether data may be stored in swappable memory. */
 	bool allowsSwappableMemory;
 } of_scrypt_parameters_t;
 
@@ -69,7 +69,7 @@ extern void of_scrypt_block_mix(uint32_t *output, const uint32_t *input,
 extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
     size_t costFactor, uint32_t *tmp);
 
-/*!
+/**
  * @brief Derives a key from a password and a salt using scrypt.
  *
  * @param param The parameters to use

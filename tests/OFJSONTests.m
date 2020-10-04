@@ -38,7 +38,7 @@ static OFString *module = @"OFJSON";
 	    nil],
 	    nil];
 
-	TEST(@"-[JSONValue] #1", [s.JSONValue isEqual: d])
+	TEST(@"-[objectByParsingJSON] #1", [s.objectByParsingJSON isEqual: d])
 
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
 	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"b\\na\\r\"}"])
@@ -52,18 +52,18 @@ static OFString *module = @"OFJSON";
 	    [[d JSONRepresentationWithOptions: OF_JSON_REPRESENTATION_JSON5]
 	    isEqual: @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}"])
 
-	EXPECT_EXCEPTION(@"-[JSONValue] #2", OFInvalidJSONException,
-	    [@"{" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue] #3", OFInvalidJSONException,
-	    [@"]" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue] #4", OFInvalidJSONException,
-	    [@"bar" JSONValue])
-	EXPECT_EXCEPTION(@"-[JSONValue] #5", OFInvalidJSONException,
-	    [@"[\"a\" \"b\"]" JSONValue])
+	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #2", OFInvalidJSONException,
+	    [@"{" objectByParsingJSON])
+	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #3", OFInvalidJSONException,
+	    [@"]" objectByParsingJSON])
+	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #4", OFInvalidJSONException,
+	    [@"bar" objectByParsingJSON])
+	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #5", OFInvalidJSONException,
+	    [@"[\"a\" \"b\"]" objectByParsingJSON])
 
-	TEST(@"-[JSONValue] #6",
+	TEST(@"-[objectByParsingJSON] #6",
 	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
-	    .JSONValue isEqual: [OFArray arrayWithObject:
+	    .objectByParsingJSON isEqual: [OFArray arrayWithObject:
 	    [OFArray arrayWithObject: [OFArray arrayWithObject:
 	    [OFArray arrayWithObject: [OFArray arrayWithObject:
 	    [OFArray arrayWithObject: [OFArray arrayWithObject:
@@ -81,9 +81,9 @@ static OFString *module = @"OFJSON";
 	    [OFArray arrayWithObject:
 	    [OFDictionary dictionary]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]])
 
-	EXPECT_EXCEPTION(@"-[JSONValue] #7", OFInvalidJSONException,
+	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #7", OFInvalidJSONException,
 	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
-	    JSONValue])
+	    objectByParsingJSON])
 
 	objc_autoreleasePoolPop(pool);
 }

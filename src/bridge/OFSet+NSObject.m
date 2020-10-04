@@ -22,7 +22,7 @@
 int _OFSet_NSObject_reference;
 
 @implementation OFSet (NSObject)
-- (id)NSObject
+- (NSSet *)NSObject
 {
 	return [[[NSOFSet alloc] initWithOFSet: self] autorelease];
 }

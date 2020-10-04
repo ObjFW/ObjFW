@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFTimer;
 @class OFDate;
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block to execute when a timer fires.
  *
  * @param timer The timer which fired
@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_timer_block_t)(OFTimer *timer);
 #endif
 
-/*!
+/**
  * @class OFTimer OFTimer.h ObjFW/OFTimer.h
  *
  * @brief A class for creating and firing timers.
@@ -64,23 +64,23 @@ OF_SUBCLASSING_RESTRICTED
 	of_run_loop_mode_t _Nullable _inRunLoopMode;
 }
 
-/*!
+/**
  * @brief The time interval in which the timer will repeat, if it is a
  *	  repeating timer.
  */
 @property (readonly, nonatomic) of_time_interval_t timeInterval;
 
-/*!
+/**
  * @brief Whether the timer is repeating.
  */
 @property (readonly, nonatomic, getter=isRepeating) bool repeating;
 
-/*!
+/**
  * @brief Whether the timer is valid.
  */
 @property (readonly, nonatomic, getter=isValid) bool valid;
 
-/*!
+/**
  * @brief The next date at which the timer will fire.
  *
  * If the timer is already scheduled in a run loop, it will be rescheduled.
@@ -90,7 +90,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (copy, nonatomic) OFDate *fireDate;
 
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -104,7 +104,7 @@ OF_SUBCLASSING_RESTRICTED
 				      selector: (SEL)selector
 				       repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -120,7 +120,7 @@ OF_SUBCLASSING_RESTRICTED
 					object: (nullable id)object
 				       repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -140,7 +140,7 @@ OF_SUBCLASSING_RESTRICTED
 					object: (nullable id)object2
 				       repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -163,7 +163,7 @@ OF_SUBCLASSING_RESTRICTED
 					object: (nullable id)object3
 				       repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -190,7 +190,7 @@ OF_SUBCLASSING_RESTRICTED
 				       repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -203,7 +203,7 @@ OF_SUBCLASSING_RESTRICTED
 					 block: (of_timer_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -217,7 +217,7 @@ OF_SUBCLASSING_RESTRICTED
 			     selector: (SEL)selector
 			      repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -233,7 +233,7 @@ OF_SUBCLASSING_RESTRICTED
 			       object: (nullable id)object
 			      repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -253,7 +253,7 @@ OF_SUBCLASSING_RESTRICTED
 			       object: (nullable id)object2
 			      repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -276,7 +276,7 @@ OF_SUBCLASSING_RESTRICTED
 			       object: (nullable id)object3
 			      repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -303,7 +303,7 @@ OF_SUBCLASSING_RESTRICTED
 			      repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Creates a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -318,7 +318,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -336,7 +336,7 @@ OF_SUBCLASSING_RESTRICTED
 			selector: (SEL)selector
 			 repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -356,7 +356,7 @@ OF_SUBCLASSING_RESTRICTED
 			  object: (nullable id)object
 			 repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -380,7 +380,7 @@ OF_SUBCLASSING_RESTRICTED
 			  object: (nullable id)object2
 			 repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -407,7 +407,7 @@ OF_SUBCLASSING_RESTRICTED
 			  object: (nullable id)object3
 			 repeats: (bool)repeats;
 
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -438,7 +438,7 @@ OF_SUBCLASSING_RESTRICTED
 			 repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.
  *
@@ -455,19 +455,19 @@ OF_SUBCLASSING_RESTRICTED
 			   block: (of_timer_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Fires the timer, meaning it will execute the specified selector on the
  *	  target.
  */
 - (void)fire;
 
-/*!
+/**
  * @brief Invalidates the timer, preventing it from firing.
  */
 - (void)invalidate;
 
 #ifdef OF_HAVE_THREADS
-/*!
+/**
  * @brief Waits until the timer fired.
  */
 - (void)waitUntilDone;

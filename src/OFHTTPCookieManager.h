@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFURL;
 
-/*!
+/**
  * @class OFHTTPCookieManager OFHTTPCookieManager.h ObjFW/OFHTTPCookieManager.h
  *
  * @brief A class for managing cookies for multiple domains.
@@ -35,19 +35,19 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *_cookies;
 }
 
-/*!
+/**
  * @brief All cookies known to the cookie manager.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
-/*!
+/**
  * @brief Create a new cookie manager.
  *
  * @return A new, autoreleased OFHTTPCookieManager
  */
 + (instancetype)manager;
 
-/*!
+/**
  * @brief Adds the specified cookie for the specified URL.
  *
  * @warning This modifies the cookie (e.g. it sets the domain if it is unset)!
@@ -59,7 +59,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)addCookie: (OFHTTPCookie *)cookie
 	   forURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Adds the specified cookies for the specified URL.
  *
  * @warning This modifies the cookies (e.g. it sets the domain if it is unset)!
@@ -71,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)addCookies: (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
 	    forURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Returns the cookies for the specified URL.
  *
  * @param URL The URL for which the cookies should be returned
@@ -79,7 +79,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURL: (OFURL *)URL;
 
-/*!
+/**
  * @brief Purges all expired cookies.
  */
 - (void)purgeExpiredCookies;

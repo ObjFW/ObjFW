@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutableSet OFSet.h ObjFW/OFSet.h
  *
  * @brief An abstract class for a mutable unordered set of unique objects.
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief Creates a new OFMutableSet with enough memory to hold the specified
  *	  number of objects.
  *
@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)setWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMutableSet with enough memory to
  *	  hold the specified number of objects.
  *
@@ -49,28 +49,28 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithCapacity: (size_t)capacity;
 
-/*!
+/**
  * @brief Adds the specified object to the set.
  *
  * @param object The object to add to the set
  */
 - (void)addObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Removes the specified object from the set.
  *
  * @param object The object to remove from the set
  */
 - (void)removeObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Removes all objects from the receiver which are in the specified set.
  *
  * @param set The set whose objects will be removed from the receiver
  */
 - (void)minusSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Removes all objects from the receiver which are not in the specified
  *	  set.
  *
@@ -78,19 +78,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)intersectSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Creates a union of the receiver and the specified set.
  *
  * @param set The set to create the union with
  */
 - (void)unionSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
-/*!
+/**
  * @brief Removes all objects from the set.
  */
 - (void)removeAllObjects;
 
-/*!
+/**
  * @brief Converts the mutable set to an immutable set.
  */
 - (void)makeImmutable;

@@ -19,6 +19,7 @@
 
 #import "OFMutableURL.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
 #endif
@@ -32,7 +33,8 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 @implementation OFMutableURL
 @dynamic scheme, URLEncodedScheme, host, URLEncodedHost, port, user;
 @dynamic URLEncodedUser, password, URLEncodedPassword, path, URLEncodedPath;
-@dynamic pathComponents, query, URLEncodedQuery, fragment, URLEncodedFragment;
+@dynamic pathComponents, query, URLEncodedQuery, queryDictionary, fragment;
+@dynamic URLEncodedFragment;
 
 + (instancetype)URL
 {
@@ -231,6 +233,47 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	old = _URLEncodedQuery;
 	_URLEncodedQuery = [URLEncodedQuery copy];
 	[old release];
+}
+
+- (void)setQueryDictionary:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)dictionary
+{
+	void *pool;
+	OFMutableString *URLEncodedQuery;
+	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
+	OFCharacterSet *characterSet;
+	OFString *key, *object, *old;
+
+	if (dictionary == nil) {
+		[_URLEncodedQuery release];
+		_URLEncodedQuery = nil;
+		return;
+	}
+
+	pool = objc_autoreleasePoolPush();
+	URLEncodedQuery = [OFMutableString string];
+	keyEnumerator = [dictionary keyEnumerator];
+	objectEnumerator = [dictionary objectEnumerator];
+	characterSet = [OFCharacterSet URLQueryKeyValueAllowedCharacterSet];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		key = [key
+		    stringByURLEncodingWithAllowedCharacters: characterSet];
+		object = [object
+		    stringByURLEncodingWithAllowedCharacters: characterSet];
+
+		if (URLEncodedQuery.length > 0)
+			[URLEncodedQuery appendString: @"&"];
+
+		[URLEncodedQuery appendFormat: @"%@=%@", key, object];
+	}
+
+	old = _URLEncodedQuery;
+	_URLEncodedQuery = [URLEncodedQuery copy];
+	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setFragment: (OFString *)fragment

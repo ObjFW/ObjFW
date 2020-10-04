@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFEnumerationMutationException \
  *	  OFEnumerationMutationException.h \
  *	  ObjFW/OFEnumerationMutationException.h
@@ -32,14 +32,14 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-/*!
+/**
  * @brief The object which was mutated during enumeration.
  */
 @property (readonly, nonatomic) id object;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased enumeration mutation exception.
  *
  * @param object The object which was mutated during enumeration
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated enumeration mutation exception.
  *
  * @param object The object which was mutated during enumeration

@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 @class OFString;
 
-/*!
+/**
  * @class OFLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/OFLHAArchiveEntry.h
  *
  * @brief A class which represents an entry in an LHA archive.
@@ -44,92 +44,92 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _owner, *_Nullable _group;
 	OFDate *_Nullable _modificationDate;
 	OFMutableArray OF_GENERIC(OFData *) *_extensions;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFLHAArchiveEntry, 4)
 }
 
-/*!
+/**
  * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
 
-/*!
+/**
  * @brief The compression method of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *compressionMethod;
 
-/*!
+/**
  * @brief The compressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint32_t compressedSize;
 
-/*!
+/**
  * @brief The uncompressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint32_t uncompressedSize;
 
-/*!
+/**
  * @brief The date of the file.
  */
 @property (readonly, retain, nonatomic) OFDate *date;
 
-/*!
+/**
  * @brief The LHA level of the file.
  */
 @property (readonly, nonatomic) uint8_t headerLevel;
 
-/*!
+/**
  * @brief The CRC16 of the file.
  */
 @property (readonly, nonatomic) uint16_t CRC16;
 
-/*!
+/**
  * @brief The operating system identifier of the file.
  */
 @property (readonly, nonatomic) uint8_t operatingSystemIdentifier;
 
-/*!
+/**
  * @brief The comment of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *fileComment;
 
-/*!
+/**
  * @brief The mode of the entry.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *mode;
 
-/*!
+/**
  * @brief The UID of the owner.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *UID;
 
-/*!
+/**
  * @brief The GID of the group.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *GID;
 
-/*!
+/**
  * @brief The owner of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
 
-/*!
+/**
  * @brief The group of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
 
-/*!
+/**
  * @brief The date of the last modification of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
     OFDate *modificationDate;
 
-/*!
+/**
  * @brief The LHA extensions of the file.
  */
 @property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
 
-/*!
+/**
  * @brief Creates a new OFLHAArchiveEntry with the specified file name.
  *
  * @param fileName The file name for the OFLHAArchiveEntry
@@ -139,7 +139,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFLHAArchiveEntry with the specified
  *	  file name.
  *

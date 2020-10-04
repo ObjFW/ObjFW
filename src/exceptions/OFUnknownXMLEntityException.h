@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFUnknownXMLEntityException \
  *	  OFUnknownXMLEntityException.h ObjFW/OFUnknownXMLEntityException.h
  *
@@ -31,12 +31,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_entityName;
 }
 
-/*!
+/**
  * @brief The name of the unknown XML entity.
  */
 @property (readonly, nonatomic) OFString *entityName;
 
-/*!
+/**
  * @brief Creates a new, autoreleased unknown XML entity exception.
  *
  * @param entityName The name of the unknown XML entity
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated unknown XML entity exception.
  *
  * @param entityName The name of the unknown XML entity

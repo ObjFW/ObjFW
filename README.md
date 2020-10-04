@@ -121,12 +121,19 @@ other place, you are most likely using a mirror.
   you have multiple working directories all backed by the same local
   repository.
 
+  In order to verify the signature of the currently checked out checkin, you
+  can use:
+
+    $ fossil artifact current | gpg --verify
+
 <h2 id="cloning-git">Git</h2>
 
   To clone the Git repository, use the following:
 
     $ git clone https://github.com/ObjFW/ObjFW
 
+  Git commits are not signed, so if you want to check the signature of an
+  individual commit, branch head or tag, please use Fossil.
 
 <h1 id="installation">Installation</h1>
 
@@ -188,7 +195,7 @@ other place, you are most likely using a mirror.
 
   In particular, Xcode 11 Beta 1 to Beta 3 are known to be affected. While
   Xcode 11 Beta 4 to Xcode 11.3 work, the bug was unfortunately reintroduced in
-  Xcode 11.4.1 and a fix is not expected before Xcode 11.6.
+  Xcode 11.4.1 and was only fixed in Xcode 12 Beta 1.
 
   You can get older versions of Xcode
   [here](https://developer.apple.com/download) by clicking on "More" in the
@@ -350,8 +357,9 @@ other place, you are most likely using a mirror.
 
    * The [forum](https://objfw.nil.im/forum)
    * A [Matrix](https://matrix.to/#/%23objfw:nil.im) room
-   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`),
-     bridged to the Matrix room above
+   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`,
+     [web chat](https://webchat.freenode.net/?channels=objfw)), bridged to the
+     Matrix room above
 
   Please don't hesitate to join any or all of those!
 

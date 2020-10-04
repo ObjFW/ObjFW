@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
     OF_KINDOF(OFDNSResourceRecord *)) *) *of_dns_response_records_t;
 
-/*!
+/**
  * @class OFDNSResponse OFDNSResponse.h ObjFW/OFDNSResponse.h
  *
  * @brief A class storing a response from @ref OFDNSResolver.
@@ -37,15 +37,15 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 	of_dns_response_records_t _answerRecords;
 	of_dns_response_records_t _authorityRecords;
 	of_dns_response_records_t _additionalRecords;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDNSResponse, 4)
 }
 
-/*!
+/**
  * @brief The domain name of the response.
  */
 @property (readonly, nonatomic) OFString *domainName;
 
-/*!
+/**
  * @brief The answer records of the response.
  *
  * This is a dictionary with the key being the domain name and the value being
@@ -53,7 +53,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  */
 @property (readonly, nonatomic) of_dns_response_records_t answerRecords;
 
-/*!
+/**
  * @brief The authority records of the response.
  *
  * This is a dictionary with the key being the domain name and the value being
@@ -61,7 +61,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  */
 @property (readonly, nonatomic) of_dns_response_records_t authorityRecords;
 
-/*!
+/**
  * @brief The additional records of the response.
  *
  * This is a dictionary with the key being the domain name and the value being
@@ -69,7 +69,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  */
 @property (readonly, nonatomic) of_dns_response_records_t additionalRecords;
 
-/*!
+/**
  * @brief Creates a new, autoreleased OFDNSResponse.
  *
  * @param domainName The domain name the response is for
@@ -84,7 +84,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 	  authorityRecords: (of_dns_response_records_t)authorityRecords
 	 additionalRecords: (of_dns_response_records_t)additionalRecords;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDNSResponse.
  *
  * @param domainName The domain name the response is for

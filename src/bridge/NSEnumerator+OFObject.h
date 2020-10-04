@@ -31,7 +31,7 @@ extern int _NSEnumerator_OFObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category NSEnumerator (OFObject) \
  *	     NSEnumerator+OFObject.h ObjFWBridge/NSEnumerator+OFObject.h
  *
