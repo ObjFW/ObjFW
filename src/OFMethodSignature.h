@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableData;
 
-/*!
+/**
  * @class OFMethodSignature OFMethodSignature.h ObjFW/OFMethodSignature.h
  *
  * @brief A class for parsing type encodings and accessing them.
@@ -30,27 +30,27 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	char *_types;
 	OFMutableData *_typesPointers, *_offsets;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMethodSignature, 4)
 }
 
-/*!
+/**
  * @brief The number of arguments of the method.
  */
 @property (readonly, nonatomic) size_t numberOfArguments;
 
-/*!
+/**
  * @brief The return type of the method.
  */
 @property (readonly, nonatomic) const char *methodReturnType;
 
-/*!
+/**
  * @brief The size of the arguments on the stack frame.
  *
  * @note This is platform-dependent!
  */
 @property (readonly, nonatomic) size_t frameLength;
 
-/*!
+/**
  * @brief Creates a new OFMethodSignature with the specified ObjC types.
  *
  * @param types The ObjC types of the method
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)signatureWithObjCTypes: (const char *)types;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMethodSignature with the specified
  *	  ObjC types.
  *
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithObjCTypes: (const char *)types;
 
-/*!
+/**
  * @brief Returns the ObjC type for the argument at the specified index.
  *
  * @param index The index of the argument for which to return the ObjC type
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (const char *)argumentTypeAtIndex: (size_t)index;
 
-/*!
+/**
  * @brief Returns the offset on the stack frame of the argument at the
  *	  specified index.
  *
@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief Returns the size for the specified type encoding.
  *
  * @param type The type encoding to return the size for
@@ -98,7 +98,7 @@ extern "C" {
  */
 extern size_t of_sizeof_type_encoding(const char *type);
 
-/*!
+/**
  * @brief Returns the alignment for the specified type encoding.
  *
  * @param type The type encoding to return the alignment for

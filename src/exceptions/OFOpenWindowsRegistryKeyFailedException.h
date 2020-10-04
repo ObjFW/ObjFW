@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFOpenWindowsRegistryKeyFailedException \
  *	  OFOpenWindowsRegistryKeyFailedException.h \
  *	  ObjFW/OFOpenWindowsRegistryKeyFailedException.h
@@ -39,33 +39,33 @@ OF_ASSUME_NONNULL_BEGIN
 	LSTATUS _status;
 }
 
-/*!
+/**
  * @brief The registry key on which opening the subkey failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
-/*!
+/**
  * @brief The path for the subkey that could not be opened.
  */
 @property (readonly, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The options for the subkey that could not be opened.
  */
 @property (readonly, nonatomic) DWORD options;
 
-/*!
+/**
  * @brief The security and access rights for the subkey that could not be
  *	  opened.
  */
 @property (readonly, nonatomic) REGSAM securityAndAccessRights;
 
-/*!
+/**
  * @brief The status returned by RegOpenKeyEx().
  */
 @property (readonly, nonatomic) LSTATUS status;
 
-/*!
+/**
  * @brief Creates a new, autoreleased open Windows registry key failed
  *	  exception.
  *
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated open Windows registry key failed
  *	  exception.
  *

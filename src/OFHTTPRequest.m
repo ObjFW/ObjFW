@@ -127,12 +127,18 @@ of_http_request_method_from_string(OFString *string)
 
 - (void)setRemoteAddress: (const of_socket_address_t *)remoteAddress
 {
-	_remoteAddress = *remoteAddress;
+	_hasRemoteAddress = (remoteAddress != NULL);
+
+	if (_hasRemoteAddress)
+		_remoteAddress = *remoteAddress;
 }
 
 - (const of_socket_address_t *)remoteAddress
 {
-	return &_remoteAddress;
+	if (_hasRemoteAddress)
+		return &_remoteAddress;
+
+	return NULL;
 }
 
 - (id)copy
@@ -144,7 +150,7 @@ of_http_request_method_from_string(OFString *string)
 		copy->_protocolVersion = _protocolVersion;
 		copy.URL = _URL;
 		copy.headers = _headers;
-		copy.remoteAddress = &_remoteAddress;
+		copy.remoteAddress = self.remoteAddress;
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -169,8 +175,11 @@ of_http_request_method_from_string(OFString *string)
 	    request->_protocolVersion.major != _protocolVersion.major ||
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
 	    ![request->_URL isEqual: _URL] ||
-	    ![request->_headers isEqual: _headers] ||
-	    !of_socket_address_equal(&request->_remoteAddress, &_remoteAddress))
+	    ![request->_headers isEqual: _headers])
+		return false;
+
+	if (request.remoteAddress != self.remoteAddress &&
+	    !of_socket_address_equal(request.remoteAddress, self.remoteAddress))
 		return false;
 
 	return true;
@@ -187,7 +196,8 @@ of_http_request_method_from_string(OFString *string)
 	OF_HASH_ADD(hash, _protocolVersion.minor);
 	OF_HASH_ADD_HASH(hash, _URL.hash);
 	OF_HASH_ADD_HASH(hash, _headers.hash);
-	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
+	if (_hasRemoteAddress)
+		OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -214,16 +224,16 @@ of_http_request_method_from_string(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	intmax_t major, minor;
+	unsigned long long major, minor;
 	of_http_request_protocol_version_t protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject decimalValue];
-	minor = [components.lastObject decimalValue];
+	major = [components.firstObject unsignedLongLongValue];
+	minor = [components.lastObject unsignedLongLongValue];
 
-	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
+	if (major > UINT8_MAX || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	protocolVersion.major = (uint8_t)major;
@@ -245,11 +255,17 @@ of_http_request_method_from_string(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *method = of_http_request_method_to_string(_method);
-	OFString *indentedHeaders, *ret;
+	OFString *indentedHeaders, *remoteAddress, *ret;
 
 	indentedHeaders = [_headers.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
+
+	if (_hasRemoteAddress)
+		remoteAddress =
+		    of_socket_address_ip_string(&_remoteAddress, NULL);
+	else
+		remoteAddress = nil;
 
 	ret = [[OFString alloc] initWithFormat:
 	    @"<%@:\n\tURL = %@\n"
@@ -257,8 +273,7 @@ of_http_request_method_from_string(OFString *string)
 	    @"\tHeaders = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    self.class, _URL, method, indentedHeaders,
-	    of_socket_address_ip_string(&_remoteAddress, NULL)];
+	    self.class, _URL, method, indentedHeaders, remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -31,13 +31,13 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTCPSocket;
 @class OFURL;
 
-/*!
+/**
  * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
  *
  * @brief A delegate for OFHTTPClient.
  */
 @protocol OFHTTPClientDelegate <OFObject>
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient performed a request.
  *
  * @param client The OFHTTPClient which performed the request
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response;
 
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient encountered an
  *	  exception while performing a request.
  *
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 	       request: (OFHTTPRequest *)request;
 
 @optional
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient creates a socket.
  *
  * This is useful if the connection is using HTTPS and the server requires a
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
   didCreateSocket: (OFTCPSocket *)socket
 	  request: (OFHTTPRequest *)request;
 
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient wants to send the
  *	  body for a request.
  *
@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
   wantsRequestBody: (OFStream *)requestBody
 	   request: (OFHTTPRequest *)request;
 
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient received headers.
  *
  * @param client The OFHTTPClient which received the headers
@@ -104,7 +104,7 @@ OF_ASSUME_NONNULL_BEGIN
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest *)request;
 
-/*!
+/**
  * @brief A callback which is called when an OFHTTPClient wants to follow a
  *	  redirect.
  *
@@ -135,7 +135,7 @@ OF_ASSUME_NONNULL_BEGIN
 	      response: (OFHTTPResponse *)response;
 @end
 
-/*!
+/**
  * @class OFHTTPClient OFHTTPClient.h ObjFW/OFHTTPClient.h
  *
  * @brief A class for performing HTTP requests.
@@ -154,25 +154,25 @@ OF_SUBCLASSING_RESTRICTED
 	OFHTTPResponse *_Nullable _lastResponse;
 }
 
-/*!
+/**
  * @brief The delegate of the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     OFObject <OFHTTPClientDelegate> *delegate;
 
-/*!
+/**
  * @brief Whether the HTTP client allows redirects from HTTPS to HTTP.
  */
 @property (nonatomic) bool allowsInsecureRedirects;
 
-/*!
+/**
  * @brief Creates a new OFHTTPClient.
  *
  * @return A new, autoreleased OFHTTPClient
  */
 + (instancetype)client;
 
-/*!
+/**
  * @brief Synchronously performs the specified HTTP request.
  *
  * @note You must not change the delegate while a synchronous request is
@@ -184,7 +184,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
 
-/*!
+/**
  * @brief Synchronously performs the specified HTTP request.
  *
  * @note You must not change the delegate while a synchronous request is
@@ -200,14 +200,14 @@ OF_SUBCLASSING_RESTRICTED
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects;
 
-/*!
+/**
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
-/*!
+/**
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
@@ -218,7 +218,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;
 
-/*!
+/**
  * @brief Closes connections that are still open due to keep-alive.
  */
 - (void)close;

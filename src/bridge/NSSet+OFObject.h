@@ -31,7 +31,7 @@ extern int _NSSet_OFObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category NSSet (OFObject)
  *	     NSSet+OFObject.h ObjFWBridge/NSSet+OFObject.h
  *

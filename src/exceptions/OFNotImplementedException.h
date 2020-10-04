@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFNotImplementedException \
  *	  OFNotImplementedException.h ObjFW/OFNotImplementedException.h
  *
@@ -32,19 +32,19 @@ OF_ASSUME_NONNULL_BEGIN
 	id _Nullable _object;
 }
 
-/*!
+/**
  * @brief The selector which is not or not fully implemented.
  */
 @property (readonly, nonatomic) SEL selector;
 
-/*!
+/**
  * @brief The object which does not (fully) implement the selector.
  */
 @property (readonly, nonatomic) id object;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased not implemented exception.
  *
  * @param selector The selector which is not or not fully implemented
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated not implemented exception.
  *
  * @param selector The selector which is not or not fully implemented

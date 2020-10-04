@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFXMLElement;
 
-/*!
+/**
  * @class OFUnboundNamespaceException \
  *	  OFUnboundNamespaceException.h ObjFW/OFUnboundNamespaceException.h
  *
@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFXMLElement *_element;
 }
 
-/*!
+/**
  * @brief The unbound namespace.
  */
 #ifndef __cplusplus
@@ -42,14 +42,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic, getter=namespace) OFString *namespace_;
 #endif
 
-/*!
+/**
  * @brief The element in which the namespace was not bound.
  */
 @property (readonly, nonatomic) OFXMLElement *element;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
  * @param namespace_ The namespace which is unbound
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated unbound namespace exception.
  *
  * @param namespace_ The namespace which is unbound

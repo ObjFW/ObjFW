@@ -22,7 +22,7 @@
 int _OFArray_NSObject_reference;
 
 @implementation OFArray (NSObject)
-- (id)NSObject
+- (NSArray *)NSObject
 {
 	return [[[NSOFArray alloc] initWithOFArray: self] autorelease];
 }

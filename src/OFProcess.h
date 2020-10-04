@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
-/*!
+/**
  * @class OFProcess OFProcess.h ObjFW/OFProcess.h
  *
  * @brief A class for stream-like communication with a newly created process.
@@ -62,7 +62,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 }
 
-/*!
+/**
  * @brief Creates a new OFProcess with the specified program and invokes the
  *	  program.
  *
@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)processWithProgram: (OFString *)program;
 
-/*!
+/**
  * @brief Creates a new OFProcess with the specified program and arguments and
  *	  invokes the program.
  *
@@ -85,7 +85,7 @@ OF_SUBCLASSING_RESTRICTED
     processWithProgram: (OFString *)program
 	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
-/*!
+/**
  * @brief Creates a new OFProcess with the specified program, program name and
  *	  arguments and invokes the program.
  *
@@ -101,7 +101,7 @@ OF_SUBCLASSING_RESTRICTED
 	   programName: (OFString *)programName
 	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
-/*!
+/**
  * @brief Creates a new OFProcess with the specified program, program name,
  *	  arguments and environment and invokes the program.
  *
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFProcess with the specified program
  *	  and invokes the program.
  *
@@ -136,7 +136,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithProgram: (OFString *)program;
 
-/*!
+/**
  * @brief Initializes an already allocated OFProcess with the specified program
  *	  and arguments and invokes the program.
  *
@@ -149,7 +149,7 @@ OF_SUBCLASSING_RESTRICTED
     initWithProgram: (OFString *)program
 	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
-/*!
+/**
  * @brief Initializes an already allocated OFProcess with the specified program,
  *	  program name and arguments and invokes the program.
  *
@@ -165,7 +165,7 @@ OF_SUBCLASSING_RESTRICTED
 	programName: (OFString *)programName
 	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
-/*!
+/**
  * @brief Initializes an already allocated OFProcess with the specified program,
  *	  program name, arguments and environment and invokes the program.
  *
@@ -189,7 +189,7 @@ OF_SUBCLASSING_RESTRICTED
 			 OF_GENERIC(OFString *, OFString *) *)environment
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Closes the write direction of the process.
  *
  * This method needs to be called for some programs before data can be read,
@@ -198,7 +198,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)closeForWriting;
 
-/*!
+/**
  * @brief Waits for the process to terminate and returns the exit status.
  *
  * If the process has already exited, this returns the exit status immediately.

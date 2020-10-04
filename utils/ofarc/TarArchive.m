@@ -35,8 +35,9 @@ static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
 	of_file_attributes_t attributes = [OFDictionary
-	    dictionaryWithObject: [OFNumber numberWithUInt16: entry.mode]
+	    dictionaryWithObject: mode
 			  forKey: of_file_attribute_key_posix_permissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -126,13 +127,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_size",
-			    [@"["
-			     @"    'Size: ',"
-			     @"    ["
-			     @"        {'size == 1': '1 byte'},"
-			     @"        {'': '%[size] bytes'}"
-			     @"    ]"
-			     @"]" JSONValue],
+			    @"["
+			    @"    'Size: ',"
+			    @"    ["
+			    @"        {'size == 1': '1 byte'},"
+			    @"        {'': '%[size] bytes'}"
+			    @"    ]"
+			    @"]".objectByParsingJSON,
 			    @"size", size)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_mode",

@@ -214,7 +214,7 @@ OF_DIRECT_MEMBERS
 	return entry;
 }
 
-- (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
+- (OFStream *)streamForReadingCurrentEntry
 {
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
@@ -226,8 +226,7 @@ OF_DIRECT_MEMBERS
 	    retain] autorelease];
 }
 
-- (OFStream <OFReadyForWritingObserving> *)
-    streamForWritingEntry: (OFTarArchiveEntry *)entry
+- (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
 	void *pool;
 

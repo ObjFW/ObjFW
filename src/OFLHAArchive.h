@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
-/*!
+/**
  * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
  *
  * @brief A class for accessing and manipulating LHA files.
@@ -42,23 +42,22 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _lastReturnedStream;
 }
 
-/*!
+/**
  * @brief The encoding to use for the archive. Defaults to ISO 8859-1.
  */
 @property (nonatomic) of_string_encoding_t encoding;
 
-/*!
+/**
  * @brief A stream for reading the current entry.
  *
  * @note This is only available in read mode.
  *
- * @note The returned stream only conforms to @ref OFReadyForReadingObserving if
- *	 the underlying stream does so, too.
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
  */
-@property (readonly, nonatomic)
-    OFStream <OFReadyForReadingObserving> *streamForReadingCurrentEntry;
+@property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
 
-/*!
+/**
  * @brief Creates a new OFLHAArchive object with the specified stream.
  *
  * @param stream A stream from which the LHA archive will be read.
@@ -72,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a new OFLHAArchive object with the specified file.
  *
  * @param path The path to the LHA file
@@ -87,7 +86,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified stream.
  *
@@ -102,7 +101,7 @@ OF_SUBCLASSING_RESTRICTED
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified file.
  *
@@ -116,7 +115,7 @@ OF_SUBCLASSING_RESTRICTED
 			mode: (OFString *)mode;
 #endif
 
-/*!
+/**
  * @brief Returns the next entry from the LHA archive or `nil` if all entries
  *	  have been read.
  *
@@ -133,7 +132,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (nullable OFLHAArchiveEntry *)nextEntry;
 
-/*!
+/**
  * @brief Returns a stream for writing the specified entry.
  *
  * @note This is only available in write and append mode.
@@ -141,8 +140,8 @@ OF_SUBCLASSING_RESTRICTED
  * @note The uncompressed size, compressed size and CRC16 of the specified
  *	 entry are ignored.
  *
- * @note The returned stream only conforms to @ref OFReadyForWritingObserving if
- *	 the underlying stream does so, too.
+ * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
+ *	 underlying stream does so, too.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
  *	    @ref streamForReadingCurrentEntry or
@@ -153,10 +152,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param entry The entry for which a stream for writing should be returned
  * @return A stream for writing the specified entry
  */
-- (OFStream <OFReadyForWritingObserving> *)
-    streamForWritingEntry: (OFLHAArchiveEntry *)entry;
+- (OFStream *)streamForWritingEntry: (OFLHAArchiveEntry *)entry;
 
-/*!
+/**
  * @brief Closes the OFLHAArchive.
  */
 - (void)close;

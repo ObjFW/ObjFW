@@ -53,10 +53,11 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
 		buffer[i] = '\0';
 }
 
-static uintmax_t
-octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
+static unsigned long long
+octalValueFromBuffer(const unsigned char *buffer, size_t length,
+    unsigned long long max)
 {
-	uintmax_t value = 0;
+	unsigned long long value = 0;
 
 	if (length == 0)
 		return 0;
@@ -65,8 +66,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		for (size_t i = 1; i < length; i++)
 			value = (value << 8) | buffer[i];
 	} else
-		value = stringFromBuffer(buffer, length,
-		    OF_STRING_ENCODING_ASCII).octalValue;
+		value = [stringFromBuffer(buffer, length,
+		    OF_STRING_ENCODING_ASCII) unsignedLongLongValueWithBase: 8];
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
@@ -95,18 +96,18 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
-		_mode = (uint32_t)octalValueFromBuffer(
-		    header + 100, 8, UINT32_MAX);
-		_UID = (uint32_t)octalValueFromBuffer(
-		    header + 108, 8, UINT32_MAX);
-		_GID = (uint32_t)octalValueFromBuffer(
-		    header + 116, 8, UINT32_MAX);
-		_size = (uint64_t)octalValueFromBuffer(
-		    header + 124, 12, UINT64_MAX);
+		_mode = (unsigned long)octalValueFromBuffer(
+		    header + 100, 8, ULONG_MAX);
+		_UID = (unsigned long)octalValueFromBuffer(
+		    header + 108, 8, ULONG_MAX);
+		_GID = (unsigned long)octalValueFromBuffer(
+		    header + 116, 8, ULONG_MAX);
+		_size = (unsigned long long)octalValueFromBuffer(
+		    header + 124, 12, ULLONG_MAX);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (of_time_interval_t)octalValueFromBuffer(
-		    header + 136, 12, UINTMAX_MAX)];
+		    header + 136, 12, ULLONG_MAX)];
 		_type = header[156];
 
 		targetFileName = stringFromBuffer(header + 157, 100, encoding);
@@ -124,10 +125,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 			_group = [stringFromBuffer(header + 297, 32, encoding)
 			    copy];
 
-			_deviceMajor = (uint32_t)octalValueFromBuffer(
-			    header + 329, 8, UINT32_MAX);
-			_deviceMinor = (uint32_t)octalValueFromBuffer(
-			    header + 337, 8, UINT32_MAX);
+			_deviceMajor = (unsigned long)octalValueFromBuffer(
+			    header + 329, 8, ULONG_MAX);
+			_deviceMinor = (unsigned long)octalValueFromBuffer(
+			    header + 337, 8, ULONG_MAX);
 
 			prefix = stringFromBuffer(header + 345, 155, encoding);
 			if (prefix.length > 0) {
@@ -208,22 +209,22 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	return _fileName;
 }
 
-- (uint32_t)mode
+- (unsigned long)mode
 {
 	return _mode;
 }
 
-- (uint32_t)UID
+- (unsigned long)UID
 {
 	return _UID;
 }
 
-- (uint32_t)GID
+- (unsigned long)GID
 {
 	return _GID;
 }
 
-- (uint64_t)size
+- (unsigned long long)size
 {
 	return _size;
 }
@@ -253,12 +254,12 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	return _group;
 }
 
-- (uint32_t)deviceMajor
+- (unsigned long)deviceMajor
 {
 	return _deviceMajor;
 }
 
-- (uint32_t)deviceMinor
+- (unsigned long)deviceMinor
 {
 	return _deviceMinor;
 }
@@ -294,7 +295,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		encoding: (of_string_encoding_t)encoding
 {
 	unsigned char buffer[512];
-	uint64_t modificationDate;
+	unsigned long long modificationDate;
 	uint16_t checksum = 0;
 
 	stringToBuffer(buffer, _fileName, 100, encoding);
@@ -312,7 +313,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	    OF_STRING_ENCODING_ASCII);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", modificationDate],
+	    [OFString stringWithFormat: @"%011llo", modificationDate],
 	    12, OF_STRING_ENCODING_ASCII);
 
 	/*

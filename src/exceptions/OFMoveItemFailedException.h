@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFMoveItemFailedException \
  *	  OFMoveItemFailedException.h ObjFW/OFMoveItemFailedException.h
  *
@@ -33,24 +33,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The original URL.
  */
 @property (readonly, nonatomic) OFURL *sourceURL;
 
-/*!
+/**
  * @brief The new URL.
  */
 @property (readonly, nonatomic) OFURL *destinationURL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased move item failed exception.
  *
  * @param sourceURL The original URL
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated move item failed exception.
  *
  * @param sourceURL The original URL

@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-#import "OFString+JSONValue.h"
+#import "OFString+JSONParsing.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
@@ -32,7 +32,7 @@
 
 #import "OFInvalidJSONException.h"
 
-int _OFString_JSONValue_reference;
+int _OFString_JSONParsing_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,
     size_t depthLimit);
@@ -528,7 +528,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 static inline OFNumber *
 parseNumber(const char **pointer, const char *stop, size_t *line)
 {
-	bool isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
+	bool isNegative = (*pointer < stop && (*pointer)[0] == '-');
 	bool hasDecimal = false;
 	size_t i;
 	OFString *string;
@@ -557,16 +557,16 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		if (hasDecimal)
 			number = [OFNumber numberWithDouble:
 			    string.doubleValue];
-		else if (isHex)
-			number = [OFNumber numberWithIntMax:
-			    string.hexadecimalValue];
 		else if ([string isEqual: @"Infinity"])
 			number = [OFNumber numberWithDouble: INFINITY];
 		else if ([string isEqual: @"-Infinity"])
 			number = [OFNumber numberWithDouble: -INFINITY];
+		else if (isNegative)
+			number = [OFNumber numberWithLongLong:
+			    [string longLongValueWithBase: 0]];
 		else
-			number = [OFNumber numberWithIntMax:
-			    string.decimalValue];
+			number = [OFNumber numberWithUnsignedLongLong:
+			    [string unsignedLongLongValueWithBase: 0]];
 	} @finally {
 		[string release];
 	}
@@ -641,13 +641,13 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	}
 }
 
-@implementation OFString (JSONValue)
-- (id)JSONValue
+@implementation OFString (JSONParsing)
+- (id)objectByParsingJSON
 {
-	return [self JSONValueWithDepthLimit: 32];
+	return [self objectByParsingJSONWithDepthLimit: 32];
 }
 
-- (id)JSONValueWithDepthLimit: (size_t)depthLimit
+- (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *pointer = self.UTF8String;

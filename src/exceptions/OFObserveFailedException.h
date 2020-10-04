@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFKernelEventObserver;
 
-/*!
+/**
  * @class OFObserveFailedException \
  *	  OFObserveFailedException.h ObjFW/OFObserveFailedException.h
  *
@@ -33,19 +33,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The observer which failed to observe.
  */
 @property (readonly, nonatomic) OFKernelEventObserver *observer;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased observe failed exception.
  *
  * @param observer The observer which failed to observe
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated observe failed exception.
  *
  * @param observer The observer which failed to observe

@@ -470,7 +470,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	Class iter, rootclass = Nil;
 
 	if (extraBytes > LONG_MAX)
-		OBJC_ERROR("extra_bytes out of range!")
+		OBJC_ERROR("extraBytes out of range!")
 
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)
@@ -845,6 +845,9 @@ object_getClass(id object_)
 
 	if (object_ == nil)
 		return Nil;
+
+	if (object_isTaggedPointer(object_))
+		return object_getTaggedPointerClass(object_);
 
 	object = (struct objc_object *)object_;
 

@@ -33,6 +33,9 @@
 	test	edx, edx
 	jz	short ret_nil
 
+	bt	edx, 0
+	jc	short .Ltagged_pointer_\name
+
 	mov	edx, [edx]
 	mov	edx, [edx+32]
 
@@ -58,6 +61,21 @@
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
 	lea	eax, [eax+\not_found@GOTOFF]
 	jmp	eax
+
+.Ltagged_pointer_\name:
+	call	get_eip
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
+
+	lea	ecx, [eax+objc_tagged_pointer_secret@GOTOFF]
+	xor	edx, [ecx]
+	and	dl, 0xE
+	movzx	edx, dl
+
+	lea	eax, [eax+objc_tagged_pointer_classes@GOTOFF]
+	mov	edx, [eax+edx*2]
+	mov	edx, [edx+32]
+
+	jmp	short .Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm

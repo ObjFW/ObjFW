@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLElement;
 @class OFXMLElementBuilder;
 
-/*!
+/**
  * @protocol OFXMLElementBuilderDelegate
  *	     OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
  *
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  * OFXMLElementBuilder.
  */
 @protocol OFXMLElementBuilderDelegate <OFObject>
-/*!
+/**
  * @brief This callback is called when the OFXMLElementBuilder built an element.
  *
  * If the OFXMLElementBuilder was used as a delegate for the OFXMLParser since
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
        didBuildElement: (OFXMLElement *)element;
 
 @optional
-/*!
+/**
  * @brief This callback is called when the OFXMLElementBuilder built an
  *	  OFXMLNode which is not inside an element.
  *
@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
 -   (void)elementBuilder: (OFXMLElementBuilder *)builder
   didBuildParentlessNode: (OFXMLNode *)node;
 
-/*!
+/**
  * @brief This callback is called when the OFXMLElementBuilder gets a close tag
  *	  which does not belong there.
  *
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
 		prefix: (nullable OFString *)prefix
 	     namespace: (nullable OFString *)namespace_;
 
-/*!
+/**
  * @brief This callback is called when the XML parser for the element builder
  *	  found an unknown entity.
  *
@@ -94,7 +94,7 @@ OF_ASSUME_NONNULL_BEGIN
      foundUnknownEntityNamed: (OFString *)entity;
 @end
 
-/*!
+/**
  * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
  *
  * @brief A class implementing the OFXMLParserDelegate protocol that can build
@@ -108,16 +108,16 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLElementBuilder, 4)
 }
 
-/*!
+/**
  * @brief The delegate for the OFXMLElementBuilder.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFXMLElementBuilderDelegate> delegate;
 
-/*!
+/**
  * @brief Creates a new element builder.
  *
  * @return A new, autoreleased OFXMLElementBuilder

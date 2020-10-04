@@ -59,6 +59,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"A lock of type %@ could not be locked: %s",
-	    _lock.class, strerror(_errNo)];
+	    [_lock class], strerror(_errNo)];
 }
 @end

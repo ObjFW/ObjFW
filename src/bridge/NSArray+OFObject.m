@@ -21,7 +21,7 @@
 int _NSArray_OFObject_reference;
 
 @implementation NSArray (OFObject)
-- (id)OFObject
+- (OFArray *)OFObject
 {
 	return [[[OFNSArray alloc] initWithNSArray: self] autorelease];
 }

@@ -37,7 +37,7 @@ extern int _OFString_NSObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category OFString (NSObject) \
  *	     OFString+NSObject.h ObjFWBridge/OFString+NSObject.h
  *

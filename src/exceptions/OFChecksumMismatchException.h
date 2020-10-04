@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFChecksumMismatchException \
  *	  OFChecksumMismatchException.h ObjFW/OFChecksumMismatchException.h
  *
@@ -30,19 +30,19 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_actualChecksum, *_expectedChecksum;
 }
 
-/*!
+/**
  * @brief The actual checksum calculated.
  */
 @property (readonly, nonatomic) OFString *actualChecksum;
 
-/*!
+/**
  * @brief The expected checksum.
  */
 @property (readonly, nonatomic) OFString *expectedChecksum;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased checksum mismatch exception.
  *
  * @param actualChecksum The actual checksum calculated
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated checksum mismatch exception.
  *
  * @param actualChecksum The actual checksum calculated

@@ -19,7 +19,7 @@ SRCS = OFApplication.m			\
        OFCountedSet.m			\
        OFData.m				\
        OFData+CryptoHashing.m		\
-       OFData+MessagePackValue.m	\
+       OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
@@ -74,8 +74,8 @@ SRCS = OFApplication.m			\
        OFStream.m			\
        OFString.m			\
        OFString+CryptoHashing.m		\
-       OFString+JSONValue.m		\
-       OFString+PropertyListValue.m	\
+       OFString+JSONParsing.m		\
+       OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
@@ -198,7 +198,9 @@ SRCS += OFAdjacentArray.m		\
 	OFRectangleValue.m		\
 	OFSubarray.m			\
 	OFUTF8String.m			\
-	${LIBBASES_M}
+	${LIBBASES_M}			\
+	${RUNTIME_AUTORELEASE_M}	\
+	${RUNTIME_INSTANCE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\

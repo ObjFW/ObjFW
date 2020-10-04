@@ -19,18 +19,18 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @protocol OFCollection OFCollection.h ObjFW/OFCollection.h
  *
  * @brief A protocol with methods common for all collections.
  */
 @protocol OFCollection <OFEnumerating, OFFastEnumeration>
-/*!
+/**
  * @brief The number of objects in the collection
  */
 @property (readonly, nonatomic) size_t count;
 
-/*!
+/**
  * @brief Checks whether the collection contains an object equal to the
  *	  specified object.
  *

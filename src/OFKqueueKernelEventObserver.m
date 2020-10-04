@@ -165,7 +165,7 @@
 		return;
 
 	timeout.tv_sec = (time_t)timeInterval;
-	timeout.tv_nsec = (timeInterval - timeout.tv_sec) * 1000000000;
+	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
 
 	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
 	    (timeInterval != -1 ? &timeout : NULL));

@@ -26,42 +26,42 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFHMAC;
 
-/*!
+/**
  * @brief The parameters for @ref of_pbkdf2.
  */
 typedef struct of_pbkdf2_parameters_t {
-	/*! @brief The HMAC to use to derive a key. */
+	/** @brief The HMAC to use to derive a key. */
 	OFHMAC *HMAC;
-	/*! @brief The number of iterations to perform. */
+	/** @brief The number of iterations to perform. */
 	size_t iterations;
-	/*! @brief The salt to derive a key with. */
+	/** @brief The salt to derive a key with. */
 	const unsigned char *salt;
-	/*! @brief The length of the salt. */
+	/** @brief The length of the salt. */
 	size_t saltLength;
-	/*! @brief The password to derive a key from. */
+	/** @brief The password to derive a key from. */
 	const char *password;
-	/*! @brief The length of the password. */
+	/** @brief The length of the password. */
 	size_t passwordLength;
-	/*! @brief The buffer to write the key to. */
+	/** @brief The buffer to write the key to. */
 	unsigned char *key;
-	/*!
+	/**
 	 * @brief The desired length for the derived key.
 	 *
 	 * @ref key needs to have enough storage.
 	 */
 	size_t keyLength;
-	/*! @brief Whether data may be stored in swappable memory. */
+	/** @brief Whether data may be stored in swappable memory. */
 	bool allowsSwappableMemory;
 } of_pbkdf2_parameters_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief Derives a key from a password and a salt using PBKDF2.
  *
  * @note This will call @ref OFHMAC::reset on the `HMAC` first, making it

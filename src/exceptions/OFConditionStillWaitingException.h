@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFCondition;
 
-/*!
+/**
  * @class OFConditionStillWaitingException \
  *	  OFConditionStillWaitingException.h \
  *	  ObjFW/OFConditionStillWaitingException.h
@@ -38,12 +38,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OFCondition *_condition;
 }
 
-/*!
+/**
  * @brief The condition for which is still being waited.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 
-/*!
+/**
  * @brief Creates a new, autoreleased condition still waiting exception.
  *
  * @param condition The condition for which is still being waited
@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithCondition: (nullable OFCondition *)condition;
 
-/*!
+/**
  * @brief Initializes an already allocated condition still waiting exception.
  *
  * @param condition The condition for which is still being waited

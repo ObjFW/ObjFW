@@ -37,7 +37,7 @@ extern int _OFEnumerator_NSObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category OFEnumerator (NSObject) \
  *	     OFEnumerator+NSObject.h ObjFWBridge/OFEnumerator+NSObject.h
  * @brief Support for bridging OFEnumerators to NSEnumerators.

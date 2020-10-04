@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFMutableTriple OFMutableTriple.h ObjFW/OFMutableTriple.h
  *
  * @brief A class for storing a triple of three objects.
@@ -32,25 +32,25 @@ OF_ASSUME_NONNULL_BEGIN
 # define ThirdType id
 #endif
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFMutableTriple, 4)
 }
 
-/*!
+/**
  * @brief The first object of the triple.
  */
 @property (readwrite, nonatomic, retain) FirstType firstObject;
 
-/*!
+/**
  * @brief The second object of the triple.
  */
 @property (readwrite, nonatomic, retain) SecondType secondObject;
 
-/*!
+/**
  * @brief The third object of the triple.
  */
 @property (readwrite, nonatomic, retain) ThirdType thirdObject;
 
-/*!
+/**
  * @brief Converts the mutable triple to an immutable triple.
  */
 - (void)makeImmutable;

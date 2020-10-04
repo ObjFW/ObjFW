@@ -127,7 +127,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	[entry->_mode release];
 	entry->_mode = nil;
 
-	entry->_mode = [[OFNumber alloc] initWithUInt16: mode];
+	entry->_mode = [[OFNumber alloc] initWithUnsignedShort: mode];
 }
 
 static void
@@ -151,8 +151,8 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	[entry->_UID release];
 	entry->_UID = nil;
 
-	entry->_GID = [[OFNumber alloc] initWithUInt16: GID];
-	entry->_UID = [[OFNumber alloc] initWithUInt16: UID];
+	entry->_GID = [[OFNumber alloc] initWithUnsignedShort: GID];
+	entry->_UID = [[OFNumber alloc] initWithUnsignedShort: UID];
 }
 
 static void
@@ -655,7 +655,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			 count: sizeof(tmp16)];
 		[data addItem: "\x50"];
 
-		tmp16 = OF_BSWAP16_IF_BE(_mode.uInt16Value);
+		tmp16 = OF_BSWAP16_IF_BE(_mode.unsignedShortValue);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 	}
@@ -669,11 +669,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			 count: sizeof(tmp16)];
 		[data addItem: "\x51"];
 
-		tmp16 = OF_BSWAP16_IF_BE(_GID.uInt16Value);
+		tmp16 = OF_BSWAP16_IF_BE(_GID.unsignedShortValue);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 
-		tmp16 = OF_BSWAP16_IF_BE(_UID.uInt16Value);
+		tmp16 = OF_BSWAP16_IF_BE(_UID.unsignedShortValue);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 	}
@@ -761,7 +761,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *mode = (_mode == nil ? nil
-	    : [OFString stringWithFormat: @"%" PRIo16, _mode.uInt16Value]);
+	    : [OFString stringWithFormat: @"%ho", _mode.unsignedShortValue]);
 	OFString *extensions = [_extensions.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFHashAlreadyCalculatedException \
  *	  OFHashAlreadyCalculatedException.h \
  *	  ObjFW/OFHashAlreadyCalculatedException.h
@@ -31,14 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-/*!
+/**
  * @brief The hash which has already been calculated.
  */
 @property (readonly, nonatomic) id object;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased hash already calculated exception.
  *
  * @param object The hash which has already been calculated
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated hash already calculated exception.
  *
  * @param object The hash which has already been calculated

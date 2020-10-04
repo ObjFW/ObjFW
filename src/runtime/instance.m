@@ -17,8 +17,14 @@
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
+#include <stdbool.h>
+
+#ifdef OF_OBJFW_RUNTIME
+# import "ObjFWRT.h"
+# import "private.h"
+#else
+# import <objc/runtime.h>
+#endif
 
 static SEL constructSelector = NULL;
 static SEL destructSelector = NULL;

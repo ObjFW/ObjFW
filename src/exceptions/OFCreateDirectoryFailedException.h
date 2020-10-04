@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFCreateDirectoryFailedException \
  *	  OFCreateDirectoryFailedException.h \
  *	  ObjFW/OFCreateDirectoryFailedException.h
@@ -34,19 +34,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The URL of the directory which couldn't be created.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased create directory failed exception.
  *
  * @param URL The URL of the directory which could not be created
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated create directory failed exception.
  *
  * @param URL The URL of the directory which could not be created

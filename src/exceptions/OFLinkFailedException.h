@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFLinkFailedException \
  *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
  *
@@ -33,24 +33,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief A URL with the source for the link.
  */
 @property (readonly, nonatomic) OFURL *sourceURL;
 
-/*!
+/**
  * @brief A URL with the destination for the link.
  */
 @property (readonly, nonatomic) OFURL *destinationURL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased link failed exception.
  *
  * @param sourceURL The source for the link
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated link failed exception.
  *
  * @param sourceURL The source for the link

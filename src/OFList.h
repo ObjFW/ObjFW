@@ -23,7 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 typedef struct of_list_object_t of_list_object_t;
-/*!
+/**
  * @struct of_list_object_t OFList.h ObjFW/OFList.h
  *
  * @brief A list object.
@@ -32,15 +32,15 @@ typedef struct of_list_object_t of_list_object_t;
  * object and the object.
  */
 struct of_list_object_t {
-	/*! A pointer to the next list object in the list */
+	/** A pointer to the next list object in the list */
 	of_list_object_t *_Nullable next;
-	/*! A pointer to the previous list object in the list */
+	/** A pointer to the previous list object in the list */
 	of_list_object_t *_Nullable previous;
-	/*! The object for the list object */
+	/** The object for the list object */
 	id __unsafe_unretained object;
 };
 
-/*!
+/**
  * @class OFList OFList.h ObjFW/OFList.h
  *
  * @brief A class which provides easy to use double-linked lists.
@@ -55,16 +55,16 @@ struct of_list_object_t {
 	of_list_object_t *_Nullable _lastListObject;
 	size_t _count;
 	unsigned long  _mutations;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFList, 4)
 }
 
-/*!
+/**
  * @brief The first list object of the list.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_list_object_t *firstListObject;
 
-/*!
+/**
  * @brief The first object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -72,13 +72,13 @@ struct of_list_object_t {
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
 
-/*!
+/**
  * @brief The last list object of the list.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_list_object_t *lastListObject;
 
-/*!
+/**
  * @brief The last object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -86,14 +86,14 @@ struct of_list_object_t {
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
 
-/*!
+/**
  * @brief Creates a new OFList.
  *
  * @return A new autoreleased OFList
  */
 + (instancetype)list;
 
-/*!
+/**
  * @brief Appends an object to the list.
  *
  * @param object The object to append
@@ -103,7 +103,7 @@ struct of_list_object_t {
  */
 - (of_list_object_t *)appendObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Prepends an object to the list.
  *
  * @param object The object to prepend
@@ -113,7 +113,7 @@ struct of_list_object_t {
  */
 - (of_list_object_t *)prependObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Inserts an object before another list object.
  *
  * @param object The object to insert
@@ -126,7 +126,7 @@ struct of_list_object_t {
 - (of_list_object_t *)insertObject: (ObjectType)object
 		  beforeListObject: (of_list_object_t *)listObject;
 
-/*!
+/**
  * @brief Inserts an object after another list object.
  *
  * @param object The object to insert
@@ -139,14 +139,14 @@ struct of_list_object_t {
 - (of_list_object_t *)insertObject: (ObjectType)object
 		   afterListObject: (of_list_object_t *)listObject;
 
-/*!
+/**
  * @brief Removes the object with the specified list object from the list.
  *
  * @param listObject The list object returned by append / prepend
  */
 - (void)removeListObject: (of_list_object_t *)listObject;
 
-/*!
+/**
  * @brief Checks whether the list contains an object equal to the specified
  *	  object.
  *
@@ -155,7 +155,7 @@ struct of_list_object_t {
  */
 - (bool)containsObject: (ObjectType)object;
 
-/*!
+/**
  * @brief Checks whether the list contains an object with the specified address.
  *
  * @param object The object which is checked for being in the list
@@ -164,7 +164,7 @@ struct of_list_object_t {
  */
 - (bool)containsObjectIdenticalTo: (ObjectType)object;
 
-/*!
+/**
  * @brief Removes all objects from the list.
  */
 - (void)removeAllObjects;

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFLoadPluginFailedException \
  *	  OFLoadPluginFailedException.h ObjFW/OFLoadPluginFailedException.h
  *
@@ -30,19 +30,19 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_path, *_Nullable _error;
 }
 
-/*!
+/**
  * @brief The path of the plugin which could not be loaded
  */
 @property (readonly, nonatomic) OFString *path;
 
-/*!
+/**
  * @brief The error why the plugin could not be loaded, as a string
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *error;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased load plugin failed exception.
  *
  * @param path The path of the plugin which could not be loaded
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated load plugin failed exception.
  *
  * @param path The path of the plugin which could not be loaded

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFXMLCDATA OFXMLCDATA.h ObjFW/OFXMLCDATA.h
  *
  * @brief A class representing XML CDATA.
@@ -27,10 +27,10 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLCDATA: OFXMLNode
 {
 	OFString *_CDATA;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLCDATA, 4)
 }
 
-/*!
+/**
  * @brief Creates a new OFXMLCDATA with the specified string.
  *
  * @param string The string value for the CDATA
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)CDATAWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLCDATA with the specified string.
  *
  * @param string The string value for the CDATA

@@ -256,7 +256,7 @@ callMain(id object)
 	struct timespec rqtp;
 
 	rqtp.tv_sec = (time_t)timeInterval;
-	rqtp.tv_nsec = (timeInterval - rqtp.tv_sec) * 1000000000;
+	rqtp.tv_nsec = (long)((timeInterval - rqtp.tv_sec) * 1000000000);
 
 	if (rqtp.tv_sec != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
@@ -336,7 +336,7 @@ callMain(id object)
 		of_thread_set_name(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(class_getName(self.class));
+		of_thread_set_name(class_getName([self class]));
 }
 
 + (OFString *)name

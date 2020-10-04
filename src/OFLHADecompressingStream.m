@@ -140,7 +140,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 			  length: (size_t)length
 {
 	unsigned char *buffer = buffer_;
-	uint16_t bits, value;
+	uint16_t bits = 0, value = 0;
 	size_t bytesWritten = 0;
 
 	if (_stream == nil)

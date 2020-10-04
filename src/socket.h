@@ -48,7 +48,7 @@
 # endif
 #endif
 
-/*! @file */
+/** @file */
 
 #ifdef OF_WII
 # include <network.h>
@@ -85,7 +85,7 @@ typedef u_short in_port_t;
 typedef int socklen_t;
 #endif
 
-/*!
+/**
  * @brief A socket address family.
  */
 typedef enum {
@@ -131,7 +131,7 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
-/*!
+/**
  * @struct of_socket_address_t socket.h ObjFW/socket.h
  *
  * @brief A struct which represents a host / port pair for a socket.
@@ -158,7 +158,7 @@ typedef struct of_socket_address_t of_socket_address_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief Parses the specified IP and port into an of_socket_address_t.
  *
  * @param IP The IP to parse
@@ -168,7 +168,7 @@ extern "C" {
 extern of_socket_address_t of_socket_address_parse_ip(
     OFString *IP, uint16_t port);
 
-/*!
+/**
  * @brief Parses the specified IPv4 and port into an of_socket_address_t.
  *
  * @param IP The IPv4 to parse
@@ -178,7 +178,7 @@ extern of_socket_address_t of_socket_address_parse_ip(
 extern of_socket_address_t of_socket_address_parse_ipv4(
     OFString *IP, uint16_t port);
 
-/*!
+/**
  * @brief Parses the specified IPv6 and port into an of_socket_address_t.
  *
  * @param IP The IPv6 to parse
@@ -188,7 +188,7 @@ extern of_socket_address_t of_socket_address_parse_ipv4(
 extern of_socket_address_t of_socket_address_parse_ipv6(
     OFString *IP, uint16_t port);
 
-/*!
+/**
  * @brief Creates an IPX address for the specified network, node and port.
  *
  * @param node The node in the IPX network
@@ -199,7 +199,7 @@ extern of_socket_address_t of_socket_address_ipx(
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
     uint16_t port);
 
-/*!
+/**
  * @brief Compares two of_socket_address_t for equality.
  *
  * @param address1 The address to compare with the second address
@@ -210,7 +210,7 @@ extern bool of_socket_address_equal(
     const of_socket_address_t *_Nonnull address1,
     const of_socket_address_t *_Nonnull address2);
 
-/*!
+/**
  * @brief Returns the hash for the specified of_socket_address_t.
  *
  * @param address The address to hash
@@ -219,7 +219,7 @@ extern bool of_socket_address_equal(
 extern uint32_t of_socket_address_hash(
     const of_socket_address_t *_Nonnull address);
 
-/*!
+/**
  * @brief Converts the specified of_socket_address_t to an IP string and port.
  *
  * @param address The address to convert to a string
@@ -230,7 +230,7 @@ extern uint32_t of_socket_address_hash(
 extern OFString *_Nonnull of_socket_address_ip_string(
     const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port);
 
-/*!
+/**
  * @brief Sets the port of the specified of_socket_address_t, independent of
  *	  the address family used.
  *
@@ -240,7 +240,7 @@ extern OFString *_Nonnull of_socket_address_ip_string(
 extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
     uint16_t port);
 
-/*!
+/**
  * @brief Returns the port of the specified of_socket_address_t, independent of
  *	  the address family used.
  *
@@ -250,7 +250,7 @@ extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
 extern uint16_t of_socket_address_get_port(
     const of_socket_address_t *_Nonnull address);
 
-/*!
+/**
  * @brief Sets the IPX network of the specified of_socket_address_t.
  *
  * @param address The address on which to set the IPX network
@@ -259,7 +259,7 @@ extern uint16_t of_socket_address_get_port(
 extern void of_socket_address_set_ipx_network(
     of_socket_address_t *_Nonnull address, uint32_t network);
 
-/*!
+/**
  * @brief Returns the IPX network of the specified of_socket_address_t.
  *
  * @param address The address on which to get the IPX network
@@ -268,7 +268,7 @@ extern void of_socket_address_set_ipx_network(
 extern uint32_t of_socket_address_get_ipx_network(
     const of_socket_address_t *_Nonnull address);
 
-/*!
+/**
  * @brief Sets the IPX node of the specified of_socket_address_t.
  *
  * @param address The address on which to set the IPX node
@@ -278,7 +278,7 @@ extern void of_socket_address_set_ipx_node(
     of_socket_address_t *_Nonnull address,
     const unsigned char node[_Nonnull IPX_NODE_LEN]);
 
-/*!
+/**
  * @brief Gets the IPX node of the specified of_socket_address_t.
  *
  * @param address The address on which to get the IPX node

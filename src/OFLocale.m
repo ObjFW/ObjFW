@@ -215,8 +215,9 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				var = [OFNumber numberWithDouble:
 				    [first doubleValue] + [second doubleValue]];
 			else if ([token isEqual: @"%"])
-				var = [OFNumber numberWithIntMax:
-				    [first intMaxValue] % [second intMaxValue]];
+				var = [OFNumber numberWithLongLong:
+				    [first longLongValue] %
+				    [second longLongValue]];
 			else if ([token isEqual: @"&&"])
 				var = [OFNumber numberWithBool:
 				    [first boolValue] && [second boolValue]];
@@ -238,7 +239,8 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				    ![first boolValue]];
 			else if ([token isEqual: @"is_real"])
 				var = [OFNumber numberWithBool:
-				    [first doubleValue] != [first intMaxValue]];
+				    ([first doubleValue] !=
+				    [first longLongValue])];
 			else
 				OF_ENSURE(0);
 
@@ -510,7 +512,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
 	@try {
-		map = [[OFString stringWithContentsOfFile: mapPath] JSONValue];
+		map = [[OFString stringWithContentsOfFile: mapPath]
+		     objectByParsingJSON];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -534,8 +537,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	languageFile = [path stringByAppendingPathComponent:
 	    [languageFile stringByAppendingString: @".json"]];
 
-	[_localizedStrings addObject:
-	    [[OFString stringWithContentsOfFile: languageFile] JSONValue]];
+	[_localizedStrings addObject: [[OFString stringWithContentsOfFile:
+	    languageFile] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }

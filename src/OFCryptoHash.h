@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @protocol OFCryptoHash OFCryptoHash.h ObjFW/OFCryptoHash.h
  *
  * @brief A protocol for classes providing cryptographic hash functions.
@@ -34,27 +34,27 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) size_t blockSize;
 #endif
 
-/*!
+/**
  * @brief The digest size of the cryptographic hash, in bytes.
  */
 @property (readonly, nonatomic) size_t digestSize;
 
-/*!
+/**
  * @brief The block size of the cryptographic hash, in bytes.
  */
 @property (readonly, nonatomic) size_t blockSize;
 
-/*!
+/**
  * @brief Whether data may be stored in swappable memory.
  */
 @property (readonly, nonatomic) bool allowsSwappableMemory;
 
-/*!
+/**
  * @brief A boolean whether the hash has already been calculated.
  */
 @property (readonly, nonatomic, getter=isCalculated) bool calculated;
 
-/*!
+/**
  * @brief A buffer containing the cryptographic hash.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) const unsigned char *digest
     OF_RETURNS_INNER_POINTER;
 
-/*!
+/**
  * @brief Creates a new cryptographic hash.
  *
  * @return A new autoreleased cryptographic hash
@@ -71,21 +71,21 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)cryptoHashWithAllowsSwappableMemory:
     (bool)allowsSwappableMemory;
 
-/*!
+/**
  * @brief Returns the digest size of the cryptographic hash, in bytes.
  *
  * @return The digest size of the cryptographic hash, in bytes
  */
 + (size_t)digestSize;
 
-/*!
+/**
  * @brief Returns the block size of the cryptographic hash, in bytes.
  *
  * @return The block size of the cryptographic hash, in bytes
  */
 + (size_t)blockSize;
 
-/*!
+/**
  * @brief Initializes an already allocated cryptographic hash.
  *
  * @return An initialized cryptographic hash
@@ -94,7 +94,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Adds a buffer to the cryptographic hash to be calculated.
  *
  * @param buffer The buffer which should be included into the calculation
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length;
 
-/*!
+/**
  * @brief Resets all state so that a new hash can be calculated.
  *
  * @warning This invalidates any pointer previously returned by @ref digest. If

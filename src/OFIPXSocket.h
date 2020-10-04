@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-/*!
+/**
  * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/OFIPXSocket.h
  *
  * @brief A delegate for OFIPXSocket.
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFIPXSocketDelegate <OFDatagramSocketDelegate>
 @end
 
-/*!
+/**
  * @class OFIPXSocket OFIPXSocket.h ObjFW/OFIPXSocket.h
  *
  * @brief A class which provides methods to create and use IPX sockets.
@@ -53,10 +53,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifndef OF_WINDOWS
 	uint8_t _packetType;
 #endif
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFIPXSocket, 4)
 }
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFIPXSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Bind the socket to the specified network, node and port with the
  *	  specified packet type.
  *

@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFInitializationFailedException \
  *	  OFInitializationFailedException.h \
  *	  ObjFW/OFInitializationFailedException.h
@@ -31,12 +31,12 @@ OF_ASSUME_NONNULL_BEGIN
 	Class _inClass;
 }
 
-/*!
+/**
  * @brief The class for which initialization failed.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class inClass;
 
-/*!
+/**
  * @brief Creates a new, autoreleased initialization failed exception.
  *
  * @param class_ The class for which initialization failed
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithClass: (nullable Class)class_;
 
-/*!
+/**
  * @brief Initializes an already allocated initialization failed exception.
  *
  * @param class_ The class for which initialization failed

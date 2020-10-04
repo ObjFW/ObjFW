@@ -31,6 +31,9 @@
 	test	edx, edx
 	jz	short ret_nil
 
+	bt	edx, 0
+	jc	short .Ltagged_pointer_\name
+
 	mov	edx, [edx]
 	mov	edx, [edx+32]
 
@@ -47,12 +50,19 @@
 	mov	eax, [edx+ecx*4]
 
 	test	eax, eax
-	jz	short 0f
+	jz	\not_found
 
 	ret
 
-0:
-	jmp	\not_found
+.Ltagged_pointer_\name:
+	xor	edx, _objc_tagged_pointer_secret
+	and	dl, 0xE
+	movzx	edx, dl
+
+	mov	edx, [_objc_tagged_pointer_classes+edx*2]
+	mov	edx, [edx+32]
+
+	jmp	short .Lmain_\name
 .endm
 
 .macro generate_lookup_super name lookup

@@ -138,8 +138,7 @@
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
 			OFXMLAttribute *countAttribute;
-			intmax_t signedCount;
-			uintmax_t count;
+			unsigned long long count;
 
 			object = [objectElement elementsForNamespace:
 			    OF_SERIALIZATION_NS].firstObject;
@@ -149,11 +148,7 @@
 			if (object == nil || countAttribute == nil)
 				@throw [OFInvalidFormatException exception];
 
-			signedCount = countAttribute.decimalValue;
-			if (signedCount < 0)
-			       @throw [OFOutOfRangeException exception];
-
-			count = signedCount;
+			count = countAttribute.unsignedLongLongValue;
 			if (count > SIZE_MAX || count > UINTPTR_MAX)
 				@throw [OFOutOfRangeException exception];
 

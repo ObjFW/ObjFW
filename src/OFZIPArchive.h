@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFStream;
 
-/*!
+/**
  * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
  *
  * @brief A class for accessing and manipulating ZIP files.
@@ -52,12 +52,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _lastReturnedStream;
 }
 
-/*!
+/**
  * @brief The archive comment.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *archiveComment;
 
-/*!
+/**
  * @brief The entries in the central directory of the archive as an array of
  *	  objects of class @ref OFZIPArchiveEntry.
  *
@@ -68,7 +68,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFZIPArchiveEntry *) *entries;
 
-/*!
+/**
  * @brief Creates a new OFZIPArchive object with the specified stream.
  *
  * @param stream A stream from which the ZIP archive will be read.
@@ -82,7 +82,7 @@ OF_SUBCLASSING_RESTRICTED
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
  * @param path The path to the ZIP file
@@ -97,7 +97,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified stream.
  *
@@ -112,7 +112,7 @@ OF_SUBCLASSING_RESTRICTED
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
@@ -126,10 +126,13 @@ OF_SUBCLASSING_RESTRICTED
 			mode: (OFString *)mode;
 #endif
 
-/*!
+/**
  * @brief Returns a stream for reading the specified file from the archive.
  *
  * @note This method is only available in read mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
  *
  * @warning Calling @ref streamForReadingFile: will invalidate all streams
  *	    previously returned by @ref streamForReadingFile: or
@@ -142,10 +145,13 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFStream *)streamForReadingFile: (OFString *)path;
 
-/*!
+/**
  * @brief Returns a stream for writing the specified entry to the archive.
  *
  * @note This method is only available in write and append mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
+ *	 underlying stream does so, too.
  *
  * @warning Calling @ref streamForWritingEntry: will invalidate all streams
  *	    previously returned by @ref streamForReadingFile: or
@@ -165,7 +171,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry;
 
-/*!
+/**
  * @brief Closes the OFZIPArchive.
  */
 - (void)close;

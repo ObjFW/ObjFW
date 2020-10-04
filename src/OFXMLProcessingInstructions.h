@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFXMLProcessingInstructions \
  *	  OFXMLProcessingInstructions.h ObjFW/OFXMLProcessingInstructions.h
  *
@@ -28,10 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLProcessingInstructions: OFXMLNode
 {
 	OFString *_processingInstructions;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFXMLProcessingInstructions, 4)
 }
 
-/*!
+/**
  * @brief Creates a new OFXMLProcessingInstructions with the specified string.
  *
  * @param string The string for the processing instructions
@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)processingInstructionsWithString: (OFString *)string;
 
-/*!
+/**
  * @brief Initializes an already allocated OFXMLProcessingInstructions with the
  *	  specified string.
  *

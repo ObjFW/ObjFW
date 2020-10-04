@@ -20,7 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
  * @brief A class for querying information about the system.
@@ -63,14 +63,14 @@ OF_SUBCLASSING_RESTRICTED
 # endif
 #endif
 
-/*!
+/**
  * @brief Returns the size of a page.
  *
  * @return The size of a page
  */
 + (size_t)pageSize;
 
-/*!
+/**
  * @brief Returns the number of CPUs installed in the system.
  *
  * A CPU with multiple cores counts as multiple CPUs.
@@ -79,28 +79,28 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (size_t)numberOfCPUs;
 
-/*!
+/**
  * @brief The version of ObjFW.
  *
  * @return The version of ObjFW
  */
 + (OFString *)ObjFWVersion;
 
-/*!
+/**
  * @brief The major version of ObjFW.
  *
  * @return The major version of ObjFW
  */
 + (unsigned int)ObjFWVersionMajor;
 
-/*!
+/**
  * @brief The minor version of ObjFW.
  *
  * @return The minor version of ObjFW
  */
 + (unsigned int)ObjFWVersionMinor;
 
-/*!
+/**
  * @brief Returns the name of the operating system the application is running
  *	  on.
  *
@@ -108,7 +108,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)operatingSystemName;
 
-/*!
+/**
  * @brief Returns the version of the operating system the application is
  *	  running on.
  *
@@ -117,7 +117,7 @@ OF_SUBCLASSING_RESTRICTED
 + (nullable OFString *)operatingSystemVersion;
 
 #ifdef OF_HAVE_FILES
-/*!
+/**
  * @brief Returns the path where user data for the application can be stored.
  *
  * On Unix systems, this adheres to the XDG Base Directory specification.@n
@@ -129,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)userDataPath;
 
-/*!
+/**
  * @brief Returns the path where user configuration for the application can be
  *	  stored.
  *
@@ -144,7 +144,7 @@ OF_SUBCLASSING_RESTRICTED
 + (nullable OFString *)userConfigPath;
 #endif
 
-/*!
+/**
  * @brief Returns the vendor of the CPU.
  *
  * If the vendor could not be determined, `nil` is returned instead.
@@ -153,7 +153,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)CPUVendor;
 
-/*!
+/**
  * @brief Returns the model of the CPU.
  *
  * If the model could not be determined, `nil` is returned instead.
@@ -163,7 +163,7 @@ OF_SUBCLASSING_RESTRICTED
 + (nullable OFString *)CPUModel;
 
 #if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
-/*!
+/**
  * @brief Returns whether the CPU supports MMX.
  *
  * @note This method is only available on x86 and x86_64.
@@ -172,7 +172,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsMMX;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSE.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -183,7 +183,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSE;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSE2.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -194,7 +194,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSE2;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSE3.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -205,7 +205,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSE3;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSSE3.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -216,7 +216,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSSE3;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSE4.1.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -227,7 +227,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSE41;
 
-/*!
+/**
  * @brief Returns whether the CPU supports SSE4.2.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -238,7 +238,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsSSE42;
 
-/*!
+/**
  * @brief Returns whether the CPU supports AVX.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -249,7 +249,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsAVX;
 
-/*!
+/**
  * @brief Returns whether the CPU supports AVX2.
  *
  * @warning This method only checks CPU support and assumes OS support!
@@ -260,7 +260,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsAVX2;
 
-/*!
+/**
  * @brief Returns whether the CPU supports AES-NI.
  *
  * @note This method is only available on x86 and x86_64.
@@ -269,7 +269,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsAESNI;
 
-/*!
+/**
  * @brief Returns whether the CPU supports Intel SHA Extensions.
  *
  * @note This method is only available on x86 and x86_64.
@@ -280,7 +280,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 #if defined(OF_POWERPC) || defined(OF_POWERPC64)
-/*!
+/**
  * @brief Returns whether the CPU and OS support AltiVec.
  *
  * @note This method is only available on PowerPC and PowerPC 64.
@@ -291,7 +291,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 #ifdef OF_WINDOWS
-/*!
+/**
  * @brief Returns whether the application is running on Windows NT.
  *
  * @note This method is only available on Windows.

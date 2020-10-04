@@ -799,3 +799,52 @@ glue_objc_hashtable_free PPC_PARAMS(struct objc_hashtable *table)
 
 	objc_hashtable_free(table);
 }
+
+void __saveds
+glue_objc_setTaggedPointerSecret PPC_PARAMS(uintptr_t secret)
+{
+	M68K_ARG(uintptr_t, secret, d0)
+
+	objc_setTaggedPointerSecret(secret);
+}
+
+int __saveds
+glue_objc_registerTaggedPointerClass PPC_PARAMS(Class class)
+{
+	M68K_ARG(Class, class, a0)
+
+	return objc_registerTaggedPointerClass(class);
+}
+
+bool __saveds
+glue_object_isTaggedPointer PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return object_isTaggedPointer(object);
+}
+
+Class __saveds
+glue_object_getTaggedPointerClass PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return object_getTaggedPointerClass(object);
+}
+
+uintptr_t __saveds
+glue_object_getTaggedPointerValue PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return object_getTaggedPointerValue(object);
+}
+
+id __saveds
+glue_objc_createTaggedPointer PPC_PARAMS(int class, uintptr_t value)
+{
+	M68K_ARG(int, class, d0)
+	M68K_ARG(uintptr_t, value, d1)
+
+	return objc_createTaggedPointer(class, value);
+}

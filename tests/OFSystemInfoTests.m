@@ -27,7 +27,7 @@
 	OFString *userConfigPath, *userDataPath;
 #endif
 
-	of_stdout.foregroundColor = [OFColor lime];
+	[of_stdout setForegroundColor: [OFColor lime]];
 
 	[of_stdout writeFormat: @"[OFSystemInfo] Page size: %zd\n",
 	    [OFSystemInfo pageSize]];

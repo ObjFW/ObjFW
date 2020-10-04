@@ -34,42 +34,42 @@ extern int _OFString_PathAdditions_reference;
 #endif
 
 @interface OFString (PathAdditions)
-/*!
+/**
  * @brief Whether the path is an absolute path.
  */
 @property (readonly, nonatomic, getter=isAbsolutePath) bool absolutePath;
 
-/*!
+/**
  * @brief The components of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *pathComponents;
 
-/*!
+/**
  * @brief The last path component of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *lastPathComponent;
 
-/*!
+/**
  * @brief The file extension of string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *pathExtension;
 
-/*!
+/**
  * @brief The directory name of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingLastPathComponent;
 
-/*!
+/**
  * @brief The string with the file extension of the path removed.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingPathExtension;
 
-/*!
+/**
  * @brief The string interpreted as a path with relative sub paths resolved.
  */
 @property (readonly, nonatomic) OFString *stringByStandardizingPath;
 
-/*!
+/**
  * @brief Creates a path from the specified path components.
  *
  * @param components An array of components for the path
@@ -77,7 +77,7 @@ extern int _OFString_PathAdditions_reference;
  */
 + (OFString *)pathWithComponents: (OFArray OF_GENERIC(OFString *) *)components;
 
-/*!
+/**
  * @brief Creates a new string by appending a path component.
  *
  * @param component The path component to append

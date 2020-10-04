@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFArray OF_GENERIC(ObjectType);
 
-/*!
+/**
  * @class OFSettings OFSettings.h ObjFW/OFSettings.h
  *
  * Paths are delimited by dots, for example `category.subcategory.key`.
@@ -36,16 +36,16 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSettings: OFObject
 {
 	OFString *_applicationName;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSettings, 4)
 }
 
-/*!
+/**
  * @brief The name of the application whose settings are accessed by the
  *	  instance.
  */
 @property (readonly, nonatomic) OFString *applicationName;
 
-/*!
+/**
  * @brief Create a new OFSettings instance for the application with the
  *	  specified name.
  *
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFSettings instance with the
  *	  specified application name.
  *
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithApplicationName: (OFString *)applicationName
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Sets the specified path to the specified string.
  *
  * @param string The string to set
@@ -77,16 +77,16 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setString: (OFString *)string
 	  forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Sets the specified path to the specified integer.
  *
  * @param integer The integer to set
  * @param path The path to store the integer at
  */
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	   forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Sets the specified path to the specified bool.
  *
  * @param bool_ The bool to set
@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setBool: (bool)bool_
 	forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Sets the specified path to the specified float.
  *
  * @param float_ The float to set
@@ -104,7 +104,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setFloat: (float)float_
 	 forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Sets the specified path to the specified double.
  *
  * @param double_ The double to set
@@ -113,7 +113,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setDouble: (double)double_
 	  forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Sets the specified path to the specified array of strings.
  *
  * @param array The array of strings to set
@@ -122,7 +122,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
 	 forPath: (OFString *)path;
 
-/*!
+/**
  * @brief Returns the string for the specified path, or `nil` if the path does
  *	  not exist.
  *
@@ -131,7 +131,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable OFString *)stringForPath: (OFString *)path;
 
-/*!
+/**
  * @brief Returns the string for the specified path, or the default value if
  *	  the path does not exist.
  *
@@ -142,7 +142,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (nullable OFString *)stringForPath: (OFString *)path
 			defaultValue: (nullable OFString *)defaultValue;
 
-/*!
+/**
  * @brief Returns the integer for the specified path, or the default value if
  *	  the path does not exist.
  *
@@ -150,10 +150,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The integer value of the specified path
  */
-- (intmax_t)integerForPath: (OFString *)path
-	      defaultValue: (intmax_t)defaultValue;
+- (long long)integerForPath: (OFString *)path
+	       defaultValue: (long long)defaultValue;
 
-/*!
+/**
  * @brief Returns the bool for the specified path, or the default value if the
  *	  path does not exist.
  *
@@ -164,7 +164,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (bool)boolForPath: (OFString *)path
        defaultValue: (bool)defaultValue;
 
-/*!
+/**
  * @brief Returns the float for the specified path, or the default value if the
  *	  path does not exist.
  *
@@ -175,7 +175,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (float)floatForPath: (OFString *)path
 	 defaultValue: (float)defaultValue;
 
-/*!
+/**
  * @brief Returns the double for the specified path, or the default value if
  *	  the path does not exist.
  *
@@ -186,7 +186,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (double)doubleForPath: (OFString *)path
 	   defaultValue: (double)defaultValue;
 
-/*!
+/**
  * @brief Returns the array of strings for the specified path, or an empty
  *	  array if the path does not exist.
  *
@@ -195,14 +195,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFArray OF_GENERIC(OFString *) *)arrayForPath: (OFString *)path;
 
-/*!
+/**
  * @brief Removes the value for the specified path.
  *
  * @param path The path for which the value should be removed
  */
 - (void)removeValueForPath: (OFString *)path;
 
-/*!
+/**
  * @brief Saves the settings to disk.
  *
  * @warning Some backends might save the settings instantly, others might not

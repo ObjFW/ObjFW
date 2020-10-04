@@ -15,25 +15,33 @@
  * file.
  */
 
-#import "OFString.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_PropertyListValue_reference;
+extern int _OFData_MessagePackParsing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (PropertyListValue)
-/*!
- * @brief The string interpreted as a property list and parsed as an object.
- *
- * @note This only supports XML property lists!
+@interface OFData (MessagePackParsing)
+/**
+ * @brief The data interpreted as MessagePack representation and parsed as an
+ *	  object.
  */
-@property (readonly, nonatomic) id propertyListValue;
+@property (readonly, nonatomic) id objectByParsingMessagePack;
+
+/**
+ * @brief Parses the MessagePack representation and returns it as an object.
+ *
+ * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ *		     if not specified, 0 means no limit (insecure!))
+ * @return The MessagePack representation as an object
+ */
+- (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 
-/*!
+/**
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
  *
  * @brief A class for reading, creating and modifying INI files.
@@ -34,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;
 }
 
-/*!
+/**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
  * @param path The path to the file whose contents the OFINIFile should contain
@@ -43,7 +43,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)fileWithPath: (OFString *)path;
 
-/*!
+/**
  * @brief Creates a new OFINIFile with the contents of the specified file in
  *	  the specified encoding.
  *
@@ -57,7 +57,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.
  *
@@ -67,7 +67,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithPath: (OFString *)path;
 
-/*!
+/**
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file in the specified encoding.
  *
@@ -80,7 +80,7 @@ OF_SUBCLASSING_RESTRICTED
 		    encoding: (of_string_encoding_t)encoding
     OF_DESIGNATED_INITIALIZER;
 
-/*!
+/**
  * @brief Returns an @ref OFINICategory for the category with the specified
  *	  name.
  *
@@ -91,14 +91,14 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFINICategory *)categoryForName: (OFString *)name;
 
-/*!
+/**
  * @brief Writes the contents of the OFINIFile to a file.
  *
  * @param path The path of the file to write to
  */
 - (void)writeToFile: (OFString *)path;
 
-/*!
+/**
  * @brief Writes the contents of the OFINIFile to a file in the specified
  *	  encoding.
  *

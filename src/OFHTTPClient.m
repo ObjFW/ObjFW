@@ -79,7 +79,7 @@ OF_DIRECT_MEMBERS
 	OFHTTPClientRequestHandler *_handler;
 	OFTCPSocket *_socket;
 	bool _chunked;
-	uintmax_t _toWrite;
+	unsigned long long _toWrite;
 	bool _atEndOfStream;
 }
 
@@ -93,7 +93,7 @@ OF_DIRECT_MEMBERS
 	OFTCPSocket *_socket;
 	bool _hasContentLength, _chunked, _keepAlive;
 	bool _atEndOfStream, _setAtEndOfStream;
-	intmax_t _toRead;
+	long long _toRead;
 }
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
@@ -445,6 +445,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (bool)handleFirstLine: (OFString *)line
 {
+	long long status;
+
 	/*
 	 * It's possible that the write succeeds on a connection that is
 	 * keep-alive, but the connection has already been closed by the remote
@@ -464,7 +466,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	_status = (int)[line substringWithRange: of_range(9, 3)].decimalValue;
+	status = [line substringWithRange: of_range(9, 3)].longLongValue;
+
+	if (status < 0 || status > 599)
+		@throw [OFInvalidServerReplyException exception];
+
+	_status = (int)status;
 
 	return true;
 }
@@ -713,7 +720,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		URLPort = URL.port;
 		if (URLPort != nil)
-			port = URLPort.uInt16Value;
+			port = URLPort.unsignedShortValue;
 
 		sock.delegate = self;
 		[sock asyncConnectToHost: URL.host
@@ -732,7 +739,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-		intmax_t contentLength;
 		OFString *transferEncoding, *contentLengthString;
 
 		_handler = [handler retain];
@@ -749,11 +755,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				@throw [OFInvalidArgumentException
 				    exception];
 
-			contentLength = contentLengthString.decimalValue;
-			if (contentLength < 0)
-				@throw [OFOutOfRangeException exception];
-
-			_toWrite = contentLength;
+			_toWrite = contentLengthString.unsignedLongLongValue;
 		} else if (!_chunked)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
@@ -895,11 +897,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_hasContentLength = true;
 
 		@try {
-			_toRead = contentLength.decimalValue;
+			unsigned long long toRead =
+			    contentLength.unsignedLongLongValue;
 
-			if (_toRead < 0)
-				@throw [OFInvalidServerReplyException
-				    exception];
+			if (toRead > LLONG_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_toRead = (long long)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -926,7 +930,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (!_chunked) {
 		size_t ret;
 
-		if (length > (uintmax_t)_toRead)
+		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
 		ret = [_socket readIntoBuffer: buffer
@@ -981,7 +985,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		return 0;
 	} else if (_toRead > 0) {
-		if (length > (uintmax_t)_toRead)
+		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
 		length = [_socket readIntoBuffer: buffer
@@ -1026,8 +1030,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		}
 
 		@try {
-			if ((_toRead = line.hexadecimalValue) < 0)
+			unsigned long long toRead =
+			    [line unsignedLongLongValueWithBase: 16];
+
+			if (toRead > LLONG_MAX)
 				@throw [OFOutOfRangeException exception];
+
+			_toRead = (long long)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}

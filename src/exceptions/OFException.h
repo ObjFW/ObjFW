@@ -137,7 +137,7 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 #endif
 
-/*!
+/**
  * @class OFException OFException.h ObjFW/OFException.h
  *
  * @brief The base class for all exceptions in ObjFW
@@ -150,21 +150,21 @@ OF_ASSUME_NONNULL_BEGIN
 	void *_backtrace[OF_BACKTRACE_SIZE];
 }
 
-/*!
+/**
  * @brief Creates a new, autoreleased exception.
  *
  * @return A new, autoreleased exception
  */
 + (instancetype)exception;
 
-/*!
+/**
  * @brief Returns a description of the exception.
  *
  * @return A description of the exception
  */
 - (OFString *)description;
 
-/*!
+/**
  * @brief Returns a backtrace of when the exception was created or nil if no
  *	  backtrace is available.
  *

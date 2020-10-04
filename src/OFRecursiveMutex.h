@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFRecursiveMutex OFRecursiveMutex.h ObjFW/OFRecursiveMutex.h
  *
  * @brief A class for creating mutual exclusions which can be entered
@@ -36,7 +36,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_Nullable _name;
 }
 
-/*!
+/**
  * @brief Creates a new recursive mutex.
  *
  * @return A new autoreleased recursive mutex.

@@ -422,10 +422,10 @@ static OFString *c_ary[] = {
 	TEST(@"-[valueForKey:]",
 	    [[[arrayClass arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
 	    valueForKey: @"length"] isEqual:
-	    [arrayClass arrayWithObjects: [OFNumber numberWithSize: 3],
-	    [OFNumber numberWithSize: 3], [OFNumber numberWithSize: 6], nil]] &&
+	    [arrayClass arrayWithObjects: [OFNumber numberWithInt: 3],
+	    [OFNumber numberWithInt: 3], [OFNumber numberWithInt: 6], nil]] &&
 	    [[[arrayClass arrayWithObjects: @"1", @"2", nil]
-	    valueForKey: @"@count"] isEqual: [OFNumber numberWithSize: 2]])
+	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
 
 	m[0] = [mutableArrayClass arrayWithObjects:
 	    [OFMutableURL URLWithString: @"http://foo.bar/"],

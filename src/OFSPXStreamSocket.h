@@ -20,13 +20,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFSPXStreamSocket;
 @class OFString;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called when the socket connected.
  *
  * @param exception An exception which occurred while connecting the socket or
@@ -36,7 +36,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
     id _Nullable exception);
 #endif
 
-/*!
+/**
  * @protocol OFSPXStreamSocketDelegate OFSPXStreamSocket.h \
  *	     ObjFW/OFSPXStreamSocket.h
  *
@@ -44,7 +44,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
  */
 @protocol OFSPXStreamSocketDelegate <OFStreamSocketDelegate>
 @optional
-/*!
+/**
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
@@ -61,7 +61,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 	 exception: (nullable id)exception;
 @end
 
-/*!
+/**
  * @class OFSPXStreamSocket OFSPXStreamSocket.h ObjFW/OFSPXStreamSocket.h
  *
  * @brief A class which provides methods to create and use SPX stream sockets.
@@ -74,10 +74,10 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
  */
 @interface OFSPXStreamSocket: OFStreamSocket
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSPXStreamSocket, 4)
 }
 
-/*!
+/**
  * @brief The delegate for asynchronous operations on the socket.
  *
  * @note The delegate is retained for as long as asynchronous operations are
@@ -86,7 +86,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFSPXStreamSocketDelegate> delegate;
 
-/*!
+/**
  * @brief Connect the OFSPXStreamSocket to the specified destination.
  *
  * @param node The node to connect to
@@ -98,7 +98,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 	      network: (uint32_t)network
 		 port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
  *
@@ -111,7 +111,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 		   network: (uint32_t)network
 		      port: (uint16_t)port;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
  *
@@ -127,7 +127,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
  *
@@ -142,7 +142,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 		      port: (uint16_t)port
 		     block: (of_spx_stream_socket_async_connect_block_t)block;
 
-/*!
+/**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
  *
@@ -160,7 +160,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 		     block: (of_spx_stream_socket_async_connect_block_t)block;
 #endif
 
-/*!
+/**
  * @brief Bind the socket to the specified network, node and port.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to

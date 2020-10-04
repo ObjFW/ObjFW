@@ -37,7 +37,7 @@ extern int _OFArray_NSObject_reference;
 }
 #endif
 
-/*!
+/**
  * @category OFArray (NSObject) \
  *	     OFArray+NSObject.h ObjFWBridge/OFArray+NSObject.h
  * @brief Support for bridging OFArrays to NSArrays.

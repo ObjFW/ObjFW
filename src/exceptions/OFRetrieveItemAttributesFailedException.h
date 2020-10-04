@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFRetrieveItemAttributesFailedException \
  *	  OFRetrieveItemAttributesFailedException.h \
  *	  ObjFW/OFRetrieveItemAttributesFailedException.h
@@ -34,19 +34,19 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The URL of the item whose attributes could not be retrieved.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased retrieve item attributes failed exception.
  *
  * @param URL The URL of the item whose attributes could not be retrieved
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated retrieve item attributes failed
  *	  exception.
  *

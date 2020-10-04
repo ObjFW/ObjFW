@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFUnsupportedVersionException \
  *	  OFUnsupportedVersionException.h ObjFW/OFUnsupportedVersionException.h
  *
@@ -31,14 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_version;
 }
 
-/*!
+/**
  * @brief The version which is unsupported.
  */
 @property (readonly, nonatomic) OFString *version;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased unsupported version exception.
  *
  * @param version The version which is unsupported
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated unsupported protocol exception.
  *
  * @param version The version which is unsupported

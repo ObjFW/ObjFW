@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSandbox;
 @class OFString;
 
-/*!
+/**
  * @brief Specify the class to be used as the application delegate.
  *
  * An instance of this class will be created and act as the application
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 # define OF_HAVE_SANDBOX
 #endif
 
-/*!
+/**
  * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
  *
  * @brief A protocol for delegates of OFApplication.
@@ -74,19 +74,19 @@ OF_ASSUME_NONNULL_BEGIN
  * @note Signals are not available on AmigaOS!
  */
 @protocol OFApplicationDelegate <OFObject>
-/*!
+/**
  * @brief A method which is called when the application was initialized and is
  *	  running now.
  */
 - (void)applicationDidFinishLaunching;
 
 @optional
-/*!
+/**
  * @brief A method which is called when the application will terminate.
  */
 - (void)applicationWillTerminate;
 
-/*!
+/**
  * @brief A method which is called when the application received a SIGINT.
  *
  * @warning You are not allowed to send any messages inside this method, as
@@ -97,7 +97,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)applicationDidReceiveSIGINT;
 
 #ifdef SIGHUP
-/*!
+/**
  * @brief A method which is called when the application received a SIGHUP.
  *
  * This signal is not available on Windows.
@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 #ifdef SIGUSR1
-/*!
+/**
  * @brief A method which is called when the application received a SIGUSR1.
  *
  * This signal is not available on Windows.
@@ -125,7 +125,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 #ifdef SIGUSR2
-/*!
+/**
  * @brief A method which is called when the application received a SIGUSR2.
  *
  * This signal is not available on Windows.
@@ -139,7 +139,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 @end
 
-/*!
+/**
  * @class OFApplication OFApplication.h ObjFW/OFApplication.h
  *
  * @brief A class which represents the application as an object.
@@ -179,75 +179,75 @@ OF_SUBCLASSING_RESTRICTED
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
 #endif
 
-/*!
+/**
  * @brief The name of the program (argv[0]).
  */
 @property (readonly, nonatomic) OFString *programName;
 
-/*!
+/**
  * @brief The arguments passed to the application.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *arguments;
 
-/*!
+/**
  * @brief The environment of the application.
  */
 @property (readonly, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
 
-/*!
+/**
  * @brief The delegate of the application.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFApplicationDelegate> delegate;
 
 #ifdef OF_HAVE_SANDBOX
-/*!
+/**
  * @brief The sandbox currently active for this application.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFSandbox *activeSandbox;
 
-/*!
+/**
  * @brief The sandbox currently active for child processes of this application.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFSandbox *activeSandboxForChildProcesses;
 #endif
 
-/*!
+/**
  * @brief Returns the only OFApplication instance in the application.
  *
  * @return The only OFApplication instance in the application
  */
 + (nullable OFApplication *)sharedApplication;
 
-/*!
+/**
  * @brief Returns the name of the program (argv[0]).
  *
  * @return The name of the program (argv[0])
  */
 + (nullable OFString *)programName;
 
-/*!
+/**
  * @brief Returns the arguments passed to the application.
  *
  * @return The arguments passed to the application
  */
 + (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
-/*!
+/**
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
 + (nullable OFDictionary OF_GENERIC(OFString *, OFString *) *)environment;
 
-/*!
+/**
  * @brief Terminates the application with the EXIT_SUCCESS status.
  */
 + (void)terminate OF_NO_RETURN;
 
-/*!
+/**
  * @brief Terminates the application with the specified status.
  *
  * @param status The status with which the application will terminate
@@ -255,7 +255,7 @@ OF_SUBCLASSING_RESTRICTED
 + (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 #ifdef OF_HAVE_SANDBOX
-/*!
+/**
  * @brief Activates the specified sandbox for the application.
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
@@ -271,7 +271,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (void)activateSandbox: (OFSandbox *)sandbox;
 
-/*!
+/**
  * @brief Activates the specified sandbox for child processes of the
  *	  application.
  *
@@ -290,7 +290,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Gets argc and argv.
  *
  * @param argc A pointer where a pointer to argc should be stored
@@ -299,12 +299,12 @@ OF_SUBCLASSING_RESTRICTED
 - (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
        andArgumentValues: (char *_Nullable *_Nonnull *_Nonnull[_Nonnull])argv;
 
-/*!
+/**
  * @brief Terminates the application.
  */
 - (void)terminate OF_NO_RETURN;
 
-/*!
+/**
  * @brief Terminates the application with the specified status.
  *
  * @param status The status with which the application will terminate
@@ -312,7 +312,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 #ifdef OF_HAVE_SANDBOX
-/*!
+/**
  * @brief Activates the specified sandbox for the application.
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
@@ -328,7 +328,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)activateSandbox: (OFSandbox *)sandbox;
 
-/*!
+/**
  * @brief Activates the specified sandbox for child processes of the
  *	  application.
  *

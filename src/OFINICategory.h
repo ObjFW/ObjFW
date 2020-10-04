@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFString;
 
-/*!
+/**
  * @class OFINICategory OFINICategory.h ObjFW/OFINICategory.h
  *
  * @brief A class for representing a category of an INI file.
@@ -35,14 +35,14 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableArray *_lines;
 }
 
-/*!
+/**
  * @brief The name of the INI category
  */
 @property (copy, nonatomic) OFString *name;
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Returns the string value for the specified key, or `nil` if it does
  *	  not exist.
  *
@@ -54,7 +54,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (nullable OFString *)stringForKey: (OFString *)key;
 
-/*!
+/**
  * @brief Returns the string value for the specified key or the specified
  *	  default value if it does not exist.
  *
@@ -69,7 +69,7 @@ OF_SUBCLASSING_RESTRICTED
 - (nullable OFString *)stringForKey: (OFString *)key
 		       defaultValue: (nullable OFString *)defaultValue;
 
-/*!
+/**
  * @brief Returns the integer value for the specified key or the specified
  *	  default value if it does not exist.
  *
@@ -81,10 +81,10 @@ OF_SUBCLASSING_RESTRICTED
  * @return The integer value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (intmax_t)integerForKey: (OFString *)key
-	     defaultValue: (intmax_t)defaultValue;
+- (long long)integerForKey: (OFString *)key
+	      defaultValue: (long long)defaultValue;
 
-/*!
+/**
  * @brief Returns the bool value for the specified key or the specified default
  *	  value if it does not exist.
  *
@@ -99,7 +99,7 @@ OF_SUBCLASSING_RESTRICTED
 - (bool)boolForKey: (OFString *)key
       defaultValue: (bool)defaultValue;
 
-/*!
+/**
  * @brief Returns the float value for the specified key or the specified
  *	  default value if it does not exist.
  *
@@ -114,7 +114,7 @@ OF_SUBCLASSING_RESTRICTED
 - (float)floatForKey: (OFString *)key
 	defaultValue: (float)defaultValue;
 
-/*!
+/**
  * @brief Returns the double value for the specified key or the specified
  *	  default value if it does not exist.
  *
@@ -129,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
 - (double)doubleForKey: (OFString *)key
 	  defaultValue: (double)defaultValue;
 
-/*!
+/**
  * @brief Returns an array of string values for the specified multi-key, or an
  *	  empty array if the key does not exist.
  *
@@ -142,7 +142,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFArray OF_GENERIC(OFString *) *)arrayForKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the value of the specified key to the specified string.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
@@ -154,7 +154,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setString: (OFString *)string
 	   forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the value of the specified key to the specified integer.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
@@ -163,10 +163,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param integer The integer to which the value of the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setInteger: (intmax_t)integer
+- (void)setInteger: (long long)integer
 	    forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the value of the specified key to the specified bool.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
@@ -178,7 +178,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setBool: (bool)bool_
 	 forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the value of the specified key to the specified float.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
@@ -190,7 +190,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setFloat: (float)float_
 	  forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the value of the specified key to the specified double.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
@@ -202,7 +202,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setDouble: (double)double_
 	   forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Sets the specified multi-key to the specified array of strings.
  *
  * It replaces the first occurrence of the multi-key with several key/value
@@ -217,7 +217,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
 	  forKey: (OFString *)key;
 
-/*!
+/**
  * @brief Removes the value for the specified key
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), all key/value

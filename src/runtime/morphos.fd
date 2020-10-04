@@ -87,4 +87,11 @@ glue_objc_hashtable_set(table,key,object)(sysv,r12base)
 glue_objc_hashtable_get(table,key)(sysv,r12base)
 glue_objc_hashtable_delete(table,key)(sysv,r12base)
 glue_objc_hashtable_free(table)(sysv,r12base)
+* Public functions again
+glue_objc_setTaggedPointerSecret(secret)(sysv,r12base)
+glue_objc_registerTaggedPointerClass(class_)(sysv,r12base)
+glue_object_isTaggedPointer(object)(sysv,r12base)
+glue_object_getTaggedPointerClass(object)(sysv,r12base)
+glue_object_getTaggedPointerValue(object)(sysv,r12base)
+glue_objc_createTaggedPointer(class_,value)(sysv,r12base)
 ##end

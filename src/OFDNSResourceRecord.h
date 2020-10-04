@@ -22,52 +22,52 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFData;
 
-/*!
+/**
  * @brief The DNS class.
  */
 typedef enum {
-	/*! IN */
+	/** IN */
 	OF_DNS_CLASS_IN	 =   1,
-	/*! Any class. Only for queries. */
+	/** Any class. Only for queries. */
 	OF_DNS_CLASS_ANY = 255,
 } of_dns_class_t;
 
-/*!
+/**
  * @brief The type of a DNS resource record.
  */
 typedef enum {
-	/*! A */
+	/** A */
 	OF_DNS_RECORD_TYPE_A	 =   1,
-	/*! NS */
+	/** NS */
 	OF_DNS_RECORD_TYPE_NS	 =   2,
-	/*! CNAME */
+	/** CNAME */
 	OF_DNS_RECORD_TYPE_CNAME =   5,
-	/*! SOA */
+	/** SOA */
 	OF_DNS_RECORD_TYPE_SOA	 =   6,
-	/*! PTR */
+	/** PTR */
 	OF_DNS_RECORD_TYPE_PTR	 =  12,
-	/*! HINFO */
+	/** HINFO */
 	OF_DNS_RECORD_TYPE_HINFO =  13,
-	/*! MX */
+	/** MX */
 	OF_DNS_RECORD_TYPE_MX	 =  15,
-	/*! TXT */
+	/** TXT */
 	OF_DNS_RECORD_TYPE_TXT	 =  16,
-	/*! RP */
+	/** RP */
 	OF_DNS_RECORD_TYPE_RP	 =  17,
-	/*! AAAA */
+	/** AAAA */
 	OF_DNS_RECORD_TYPE_AAAA	 =  28,
-	/*! SRV */
+	/** SRV */
 	OF_DNS_RECORD_TYPE_SRV	 =  33,
-	/*! All types. Only for queries. */
+	/** All types. Only for queries. */
 	OF_DNS_RECORD_TYPE_ALL	 = 255,
 } of_dns_record_type_t;
 
-/*!
+/**
  * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
  * @brief A class representing a DNS resource record.
@@ -78,7 +78,7 @@ typedef enum {
 	of_dns_class_t _DNSClass;
 	of_dns_record_type_t _recordType;
 	uint32_t _TTL;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFDNSResourceRecord, 4)
 }
 
 /**
@@ -86,23 +86,23 @@ typedef enum {
  */
 @property (readonly, nonatomic) OFString *name;
 
-/*!
+/**
  * @brief The DNS class.
  */
 @property (readonly, nonatomic) of_dns_class_t DNSClass;
 
-/*!
+/**
  * @brief The resource record type code.
  */
 @property (readonly, nonatomic) of_dns_record_type_t recordType;
 
-/*!
+/**
  * @brief The number of seconds after which the resource record should be
  *	  discarded from the cache.
  */
 @property (readonly, nonatomic) uint32_t TTL;
 
-/*!
+/**
  * @brief Initializes an already allocated OFDNSResourceRecord with the
  *	  specified name, class, type, data and time to live.
  *
@@ -118,7 +118,7 @@ typedef enum {
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFADNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
  * @brief A class representing an A DNS resource record.
@@ -129,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
 	of_socket_address_t _address;
 }
 
-/*!
+/**
  * @brief The IPv4 address of the resource record.
  */
 @property (readonly, nonatomic) const of_socket_address_t *address;
@@ -139,7 +139,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFADNSResourceRecord with the
  *	  specified name, class, address and time to live.
  *
@@ -153,7 +153,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFAAAADNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -165,7 +165,7 @@ OF_SUBCLASSING_RESTRICTED
 	of_socket_address_t _address;
 }
 
-/*!
+/**
  * @brief The IPv6 address of the resource record.
  */
 @property (readonly, nonatomic) const of_socket_address_t *address;
@@ -175,7 +175,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFAAAADNSResourceRecord with the
  *	  specified name, class, address and time to live.
  *
@@ -189,7 +189,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFCNAMEDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -201,7 +201,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_alias;
 }
 
-/*!
+/**
  * @brief The alias of the resource record.
  */
 @property (readonly, nonatomic) OFString *alias;
@@ -211,7 +211,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFCNAMEDNSResourceRecord with the
  *	  specified name, class, alias and time to live.
  *
@@ -227,7 +227,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFHINFODNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -239,12 +239,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_CPU, *_OS;
 }
 
-/*!
+/**
  * @brief The CPU of the host info of the resource record.
  */
 @property (readonly, nonatomic) OFString *CPU;
 
-/*!
+/**
  * @brief The OS of the host info of the resource record.
  */
 @property (readonly, nonatomic) OFString *OS;
@@ -254,7 +254,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFHINFODNSResourceRecord with the
  *	  specified name, class, domain name and time to live.
  *
@@ -272,7 +272,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFMXDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -285,12 +285,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_mailExchange;
 }
 
-/*!
+/**
  * @brief The preference of the resource record.
  */
 @property (readonly, nonatomic) uint16_t preference;
 
-/*!
+/**
  * @brief The mail exchange of the resource record.
  */
 @property (readonly, nonatomic) OFString *mailExchange;
@@ -300,7 +300,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFMXDNSResourceRecord with the
  *	  specified name, class, preference, mail exchange and time to live.
  *
@@ -318,7 +318,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFNSDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -330,7 +330,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_authoritativeHost;
 }
 
-/*!
+/**
  * @brief The authoritative host of the resource record.
  */
 @property (readonly, nonatomic) OFString *authoritativeHost;
@@ -340,7 +340,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFNSDNSResourceRecord with the
  *	  specified name, class, authoritative host and time to live.
  *
@@ -356,7 +356,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFPTRDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -368,7 +368,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_domainName;
 }
 
-/*!
+/**
  * @brief The domain name of the resource record.
  */
 @property (readonly, nonatomic) OFString *domainName;
@@ -378,7 +378,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFPTRDNSResourceRecord with the
  *	  specified name, class, domain name and time to live.
  *
@@ -394,7 +394,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFRPNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -406,12 +406,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_mailbox, *_TXTDomainName;
 }
 
-/*!
+/**
  * @brief The mailbox of the responsible person of the resource record.
  */
 @property (readonly, nonatomic) OFString *mailbox;
 
-/*!
+/**
  * @brief A domain name that contains a TXT resource record for the responsible
  *	  person of the resource record.
  */
@@ -422,7 +422,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFRPDNSResourceRecord with the
  *	  specified name, class, alias and time to live.
  *
@@ -441,7 +441,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFSOADNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -455,37 +455,37 @@ OF_SUBCLASSING_RESTRICTED
 	uint32_t _expirationInterval, _minTTL;
 }
 
-/*!
+/**
  * @brief The the primary name server for the zone.
  */
 @property (readonly, nonatomic) OFString *primaryNameServer;
 
-/*!
+/**
  * @brief The mailbox of the person responsible for the zone.
  */
 @property (readonly, nonatomic) OFString *responsiblePerson;
 
-/*!
+/**
  * @brief The serial number of the original copy of the zone.
  */
 @property (readonly, nonatomic) uint32_t serialNumber;
 
-/*!
+/**
  * @brief The refresh interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t refreshInterval;
 
-/*!
+/**
  * @brief The retry interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t retryInterval;
 
-/*!
+/**
  * @brief The expiration interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t expirationInterval;
 
-/*!
+/**
  * @brief The minimum TTL of the zone.
  */
 @property (readonly, nonatomic) uint32_t minTTL;
@@ -495,7 +495,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFSOADNSResourceRecord with the
  *	  specified name, class, text data and time to live.
  *
@@ -523,7 +523,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFSRVDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -537,22 +537,22 @@ OF_SUBCLASSING_RESTRICTED
 	uint16_t _port;
 }
 
-/*!
+/**
  * @brief The priority of the resource record.
  */
 @property (readonly, nonatomic) uint16_t priority;
 
-/*!
+/**
  * @brief The weight of the resource record.
  */
 @property (readonly, nonatomic) uint16_t weight;
 
-/*!
+/**
  * @brief The target of the resource record.
  */
 @property (readonly, nonatomic) OFString *target;
 
-/*!
+/**
  * @brief The port on the target of the resource record.
  */
 @property (readonly, nonatomic) uint16_t port;
@@ -562,7 +562,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFSRVDNSResourceRecord with the
  *	  specified name, class, preference, mail exchange and time to live.
  *
@@ -582,7 +582,7 @@ OF_SUBCLASSING_RESTRICTED
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
-/*!
+/**
  * @class OFTXTDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
@@ -594,7 +594,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFArray OF_GENERIC(OFData *) *_textStrings;
 }
 
-/*!
+/**
  * @brief The text of the resource record.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFData *) *textStrings;
@@ -604,7 +604,7 @@ OF_SUBCLASSING_RESTRICTED
 		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFTXTDNSResourceRecord with the
  *	  specified name, class, text data and time to live.
  *

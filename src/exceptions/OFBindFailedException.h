@@ -25,7 +25,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
+/**
  * @class OFBindFailedException \
  *	  OFBindFailedException.h ObjFW/OFBindFailedException.h
  *
@@ -42,34 +42,34 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The host on which binding failed.
  */
 @property (readonly, nonatomic) OFString *host;
 
-/*!
+/**
  * @brief The port on which binding failed.
  */
 @property (readonly, nonatomic) uint16_t port;
 
-/*!
+/**
  * @brief The IPX packet type for which binding failed.
  */
 @property (readonly, nonatomic) uint8_t packetType;
 
-/*!
+/**
  * @brief The socket which could not be bound.
  */
 @property (readonly, nonatomic) id socket;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased bind failed exception.
  *
  * @param host The host on which binding failed
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
-/*!
+/**
  * @brief Creates a new, autoreleased bind failed exception.
  *
  * @param port The IPX port to which binding failed
@@ -99,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated bind failed exception.
  *
  * @param host The host on which binding failed
@@ -113,7 +113,7 @@ OF_ASSUME_NONNULL_BEGIN
 		      socket: (id)socket
 		       errNo: (int)errNo;
 
-/*!
+/**
  * @brief Initializes an already allocated bind failed exception.
  *
  * @param port The IPX port to which binding failed

@@ -19,10 +19,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block for enumerating an OFCountedSet.
  *
  * @param object The current object
@@ -34,7 +34,7 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
     bool *stop);
 #endif
 
-/*!
+/**
  * @class OFCountedSet OFCountedSet.h ObjFW/OFCountedSet.h
  *
  * @brief An abstract class for a mutable unordered set of objects, counting how
@@ -48,7 +48,7 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-/*!
+/**
  * @brief Returns how often the object is in the set.
  *
  * @return How often the object is in the set
@@ -56,7 +56,7 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 - (size_t)countForObject: (ObjectType)object;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Executes a block for each object in the set.
  *
  * @param block The block to execute for each object in the set

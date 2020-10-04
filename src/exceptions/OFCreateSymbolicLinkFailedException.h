@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 
-/*!
+/**
  * @class OFCreateSymbolicLinkFailedException \
  *	  OFCreateSymbolicLinkFailedException.h \
  *	  ObjFW/OFCreateSymbolicLinkFailedException.h
@@ -35,24 +35,24 @@ OF_ASSUME_NONNULL_BEGIN
 	int _errNo;
 }
 
-/*!
+/**
  * @brief The URL at which the symlink should have been created.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
-/*!
+/**
  * @brief The target for the symlink.
  */
 @property (readonly, nonatomic) OFString *target;
 
-/*!
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
  * @param URL The URL where the symlink should have been created
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated create symbolic link failed
  *	  exception.
  *

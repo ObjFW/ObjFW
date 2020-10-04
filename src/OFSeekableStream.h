@@ -44,7 +44,7 @@ typedef off64_t of_offset_t;
 typedef off_t of_offset_t;
 #endif
 
-/*!
+/**
  * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
  *
  * @brief A stream that supports seeking.
@@ -57,10 +57,10 @@ typedef off_t of_offset_t;
  */
 @interface OFSeekableStream: OFStream
 {
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFSeekableStream, 4)
 }
 
-/*!
+/**
  * @brief Seeks to the specified absolute offset.
  *
  * @param offset The offset in bytes
@@ -76,7 +76,7 @@ typedef off_t of_offset_t;
 - (of_offset_t)seekToOffset: (of_offset_t)offset
 		     whence: (int)whence;
 
-/*!
+/**
  * @brief Seek the stream on the lowlevel.
  *
  * @warning Do not call this directly!

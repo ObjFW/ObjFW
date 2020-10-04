@@ -3,6 +3,7 @@ include ../../extra.mk
 SUBDIRS = lookup-asm
 SUBDIRS_AFTER = ${LINKLIB}
 CLEAN = amiga-library-functable.inc inline.h
+DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
 STATIC_LIB = ${OBJFWRT_STATIC_LIB}
@@ -30,6 +31,7 @@ SRCS = arc.m			\
        sparsearray.m		\
        static-instances.m	\
        synchronized.m		\
+       tagged-pointer.m		\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
 	       ../mutex.m	\

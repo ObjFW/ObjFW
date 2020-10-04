@@ -23,18 +23,18 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFXMLElement;
 
-/*!
+/**
  * @protocol OFSerialization OFSerialization.h ObjFW/OFSerialization.h
  *
  * @brief A protocol for serializing objects.
  */
 @protocol OFSerialization
-/*!
+/**
  * @brief The object serialized into an XML element.
  */
 @property (readonly, nonatomic) OFXMLElement *XMLElementBySerializing;
 
-/*!
+/**
  * @brief Initializes the object with the specified XML element serialization.
  *
  * @param element An OFXMLElement with the serialized object

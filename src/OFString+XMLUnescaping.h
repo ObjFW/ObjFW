@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +30,7 @@ extern int _OFString_XMLUnescaping_reference;
 #endif
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief A block which is called to replace unknown XML entities in an XML
  *	  string.
  *
@@ -42,14 +42,14 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
     OFString *string, OFString *entity);
 #endif
 
-/*!
+/**
  * @protocol OFStringXMLUnescapingDelegate OFString.h ObjFW/OFString.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  *	  stringByXMLUnescapingWithHandler:.
  */
 @protocol OFStringXMLUnescapingDelegate <OFObject>
-/*!
+/**
  * @brief This callback is called when an unknown entity was found while trying
  *	  to unescape XML.
  *
@@ -66,12 +66,12 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
 @end
 
 @interface OFString (XMLUnescaping)
-/*!
+/**
  * @brief The string with XML entities unescapted.
  */
 @property (readonly, nonatomic) OFString *stringByXMLUnescaping;
 
-/*!
+/**
  * @brief Unescapes XML in the string and uses the specified delegate for
  *	  unknown entities.
  *
@@ -81,7 +81,7 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
     (nullable id <OFStringXMLUnescapingDelegate>)delegate;
 
 #ifdef OF_HAVE_BLOCKS
-/*!
+/**
  * @brief Unescapes XML in the string and uses the specified block for unknown
  *	  entities.
  *

@@ -23,14 +23,14 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @protocol OFTLSSocket;
 
-/*!
+/**
  * @protocol OFTLSSocketDelegate OFTLSSocket.h ObjFW/OFTLSSocket.h
  *
  * @brief A delegate for classes implementing the OFTLSSocket protocol.
  */
 @protocol OFTLSSocketDelegate <OFTCPSocketDelegate>
 @optional
-/*!
+/**
  * @brief This callback is called when the TLS socket wants to know if it
  *	  should accept the received certificate.
  *
@@ -48,30 +48,30 @@ OF_ASSUME_NONNULL_BEGIN
   shouldAcceptCertificate: (OFDictionary *)certificate;
 @end
 
-/*!
+/**
  * @protocol OFTLSSocket OFTLSSocket.h ObjFW/OFTLSSocket.h
  *
  * @brief A protocol that should be implemented by 3rd-party libraries
  *	  implementing TLS.
  */
 @protocol OFTLSSocket
-/*!
+/**
  * @brief The delegate for the TLS socket.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFTLSSocketDelegate> delegate;
 
-/*!
+/**
  * @brief The path to the X.509 certificate file to use.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
 
-/*!
+/**
  * @brief The path to the PKCS#8 private key file to use.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
 
-/*!
+/**
  * @brief The passphrase to decrypt the PKCS#8 private key file.
  *
  * @warning You have to ensure that this is in secure memory protected from
@@ -80,14 +80,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     const char *privateKeyPassphrase;
 
-/*!
+/**
  * @brief Whether certificates are verified.
  *
  * The default is enabled.
  */
 @property (nonatomic) bool verifiesCertificates;
 
-/*!
+/**
  * @brief Initializes the TLS socket with the specified TCP socket as its
  *	  underlying socket.
  *
@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSocket: (OFTCPSocket *)socket;
 
-/*!
+/**
  * @brief Initiates the TLS handshake.
  *
  * @note This is only useful if you used @ref initWithSocket: to start TLS on
@@ -106,7 +106,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)startTLSWithExpectedHost: (nullable OFString *)host;
 
-/*!
+/**
  * @brief Sets the path to the X.509 certificate file to use for the specified
  *	  SNI host.
  *
@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setCertificateFile: (OFString *)certificateFile
 		forSNIHost: (OFString *)SNIHost;
 
-/*!
+/**
  * @brief Returns the path of the X.509 certificate file used by the TLS socket
  *	  for the specified SNI host.
  *
@@ -130,7 +130,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable OFString *)certificateFileForSNIHost: (OFString *)SNIHost;
 
-/*!
+/**
  * @brief Sets the path to the PKCS#8 private key file to use for the specified
  *	  SNI host.
  *
@@ -141,7 +141,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setPrivateKeyFile: (OFString *)privateKeyFile
 	       forSNIHost: (OFString *)SNIHost;
 
-/*!
+/**
  * @brief Returns the path of the PKCS#8 private key file used by the TLS
  *	  socket for the specified SNI host.
  *
@@ -153,7 +153,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (nullable OFString *)privateKeyFileForSNIHost: (OFString *)SNIHost;
 
-/*!
+/**
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file for the
  *	  specified SNI host.
  *
@@ -168,7 +168,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setPrivateKeyPassphrase: (const char *)privateKeyPassphrase
 		     forSNIHost: (OFString *)SNIHost;
 
-/*!
+/**
  * @brief Returns the passphrase to decrypt the PKCS#8 private key file for the
  *	  specified SNI host.
  *

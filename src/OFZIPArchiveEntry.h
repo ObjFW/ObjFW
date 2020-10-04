@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*! @file */
+/** @file */
 
 enum {
 	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE		=  0,
@@ -37,49 +37,49 @@ enum {
 	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_PPMD		= 98
 };
 
-/*!
+/**
  * @brief Attribute compatibility part of ZIP versions.
  */
 enum of_zip_archive_entry_attribute_compatibility {
-	/*! MS-DOS and OS/2 */
+	/** MS-DOS and OS/2 */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS	       =  0,
-	/*! Amiga */
+	/** Amiga */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA	       =  1,
-	/*! OpenVMS */
+	/** OpenVMS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS       =  2,
-	/*! UNIX */
+	/** UNIX */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX	       =  3,
-	/*! VM/CMS */
+	/** VM/CMS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS	       =  4,
-	/*! Atari ST */
+	/** Atari ST */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST      =  5,
-	/*! OS/2 HPFS */
+	/** OS/2 HPFS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS      =  6,
-	/*! Macintosh */
+	/** Macintosh */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH     =  7,
-	/*! Z-System */
+	/** Z-System */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM      =  8,
-	/*! CP/M */
+	/** CP/M */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M	       =  9,
-	/*! Windows NTFS */
+	/** Windows NTFS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS  = 10,
-	/*! MVS (OS/390 - Z/OS) */
+	/** MVS (OS/390 - Z/OS) */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS	       = 11,
-	/*! VSE */
+	/** VSE */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE	       = 12,
-	/*! Acorn RISC OS */
+	/** Acorn RISC OS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC_OS = 13,
-	/*! VFAT */
+	/** VFAT */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT	       = 14,
-	/*! Alternate MVS */
+	/** Alternate MVS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS = 15,
-	/*! BeOS */
+	/** BeOS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS	       = 16,
-	/*! Tandem */
+	/** Tandem */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM	       = 17,
-	/*! OS/400 */
+	/** OS/400 */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400	       = 18,
-	/*! OS X (Darwin) */
+	/** OS X (Darwin) */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X	       = 19
 };
 
@@ -92,7 +92,7 @@ enum {
 @class OFFile;
 @class OFDate;
 
-/*!
+/**
  * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/OFZIPArchiveEntry.h
  *
  * @brief A class which represents an entry in the central directory of a ZIP
@@ -112,28 +112,28 @@ enum {
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
 	int64_t _localFileHeaderOffset;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
 }
 
-/*!
+/**
  * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
 
-/*!
+/**
  * @brief The comment of the entry's file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *fileComment;
 
-/*!
+/**
  * @brief The extra field of the entry.
  *
  * The item size *must* be 1!
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFData *extraField;
 
-/*!
+/**
  * @brief The version which made the entry.
  *
  * The lower 8 bits are the ZIP specification version.@n
@@ -142,7 +142,7 @@ enum {
  */
 @property (readonly, nonatomic) uint16_t versionMadeBy;
 
-/*!
+/**
  * @brief The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
@@ -151,14 +151,14 @@ enum {
  */
 @property (readonly, nonatomic) uint16_t minVersionNeeded;
 
-/*!
+/**
  * @brief The last modification date of the entry's file.
  *
  * @note Due to limitations of the ZIP format, this has only 2 second precision.
  */
 @property (readonly, retain, nonatomic) OFDate *modificationDate;
 
-/*!
+/**
  * @brief The compression method of the entry.
  *
  * Supported values are:
@@ -172,22 +172,22 @@ enum {
  */
 @property (readonly, nonatomic) uint16_t compressionMethod;
 
-/*!
+/**
  * @brief The compressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint64_t compressedSize;
 
-/*!
+/**
  * @brief The uncompressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint64_t uncompressedSize;
 
-/*!
+/**
  * @brief The CRC32 checksum of the entry's file.
  */
 @property (readonly, nonatomic) uint32_t CRC32;
 
-/*!
+/**
  * @brief The version specific attributes.
  *
  * The meaning of the version specific attributes depends on the attribute
@@ -195,14 +195,14 @@ enum {
  */
 @property (readonly, nonatomic) uint32_t versionSpecificAttributes;
 
-/*!
+/**
  * @brief The general purpose bit flag of the entry.
  *
  * See the ZIP specification for details.
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
-/*!
+/**
  * @brief Creates a new OFZIPArchiveEntry with the specified file name.
  *
  * @param fileName The file name for the OFZIPArchiveEntry
@@ -212,7 +212,7 @@ enum {
 
 - (instancetype)init OF_UNAVAILABLE;
 
-/*!
+/**
  * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
  *	  file name.
  *
@@ -225,7 +225,7 @@ enum {
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
+/**
  * @brief Converts the ZIP entry version to a string.
  *
  * @param version The ZIP entry version to convert to a string
@@ -233,7 +233,7 @@ extern "C" {
  */
 extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
 
-/*!
+/**
  * @brief Convers the ZIP entry compression method to a string.
  *
  * @param compressionMethod The ZIP entry compression method to convert to a
@@ -243,7 +243,7 @@ extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
 extern OFString *of_zip_archive_entry_compression_method_to_string(
     uint16_t compressionMethod);
 
-/*!
+/**
  * @brief Gets a pointer to and the size of the extensible data field with the
  *	  specified tag.
  *

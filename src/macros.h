@@ -136,11 +136,11 @@
 #endif
 
 #ifdef OF_HAVE_NONFRAGILE_IVARS
-# define OF_RESERVE_IVARS(num)
+# define OF_RESERVE_IVARS(cls, num)
 #else
-# define OF_RESERVE_IVARS(num)						   \
+# define OF_RESERVE_IVARS(cls, num)					   \
 	@private							   \
-		void *OF_PREPROCESSOR_CONCAT(_reserved, __COUNTER__)[num];
+		void *OF_PREPROCESSOR_CONCAT(_reserved_, cls)[num];
 #endif
 
 #ifdef __GNUC__
@@ -417,13 +417,13 @@
 	abort();
 #endif
 #ifdef __clang__
-# define OF_DEALLOC_UNSUPPORTED						\
-	[self doesNotRecognizeSelector: _cmd];				\
-									\
-	abort();							\
-									\
-	_Pragma("clang diagnostic push ignore \"-Wunreachable-code\"");	\
-	[super dealloc];	/* Get rid of a stupid warning */	\
+# define OF_DEALLOC_UNSUPPORTED						 \
+	[self doesNotRecognizeSelector: _cmd];				 \
+									 \
+	abort();							 \
+									 \
+	_Pragma("clang diagnostic push ignored \"-Wunreachable-code\""); \
+	[super dealloc];	/* Get rid of a stupid warning */	 \
 	_Pragma("clang diagnostic pop");
 #else
 # define OF_DEALLOC_UNSUPPORTED						\
@@ -898,25 +898,4 @@ of_ascii_tolower(char c)
 {
 	return (c >= 'A' && c <= 'Z' ? 'a' + (c - 'A') : c);
 }
-
-/* This does *NOT* provide cryptographically secure randomness! */
-static OF_INLINE uint32_t
-of_random(void) {
-#if defined(OF_HAVE_ARC4RANDOM)
-	return arc4random();
-#elif defined(OF_HAVE_RANDOM)
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	srandom((unsigned)(tv.tv_sec ^ tv.tv_usec));
-	return (((uint32_t)(random()) << 16) | ((uint32_t)(random()) & 0xFFFF));
-#else
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	srand((unsigned)(tv.tv_sec ^ tv.tv_usec));
-	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
-#endif
-}
-
 #endif

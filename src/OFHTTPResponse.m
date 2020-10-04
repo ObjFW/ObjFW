@@ -271,16 +271,16 @@ encodingForContentType(OFString *contentType)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	intmax_t major, minor;
+	unsigned long long major, minor;
 	of_http_request_protocol_version_t protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject decimalValue];
-	minor = [components.lastObject decimalValue];
+	major = [components.firstObject unsignedLongLongValue];
+	minor = [components.lastObject unsignedLongLongValue];
 
-	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
+	if (major > UINT8_MAX || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	protocolVersion.major = (uint8_t)major;
@@ -306,7 +306,7 @@ encodingForContentType(OFString *contentType)
 - (OFString *)stringWithEncoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *contentType, *contentLength, *ret;
+	OFString *contentType, *contentLengthString, *ret;
 	OFData *data;
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
@@ -318,9 +318,17 @@ encodingForContentType(OFString *contentType)
 
 	data = [self readDataUntilEndOfStream];
 
-	if ((contentLength = [_headers objectForKey: @"Content-Length"]) != nil)
-		if (data.count != (size_t)contentLength.decimalValue)
+	contentLengthString = [_headers objectForKey: @"Content-Length"];
+	if (contentLengthString != nil) {
+		unsigned long long contentLength =
+		    contentLengthString.unsignedLongLongValue;
+
+		if (contentLength > SIZE_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		if (data.count != (size_t)contentLength)
 			@throw [OFTruncatedDataException exception];
+	}
 
 	ret = [[OFString alloc] initWithCString: (char *)data.items
 				       encoding: encoding

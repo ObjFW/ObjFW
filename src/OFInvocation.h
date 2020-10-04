@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableData;
 
-/*!
+/**
  * @class OFInvocation OFInvocation.h ObjFW/OFInvocation.h
  *
  * @brief A class for storing and accessing invocations, and invoking them.
@@ -33,15 +33,15 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMethodSignature *_methodSignature;
 	OFMutableArray OF_GENERIC(OFMutableData *) *_arguments;
 	OFMutableData *_returnValue;
-	OF_RESERVE_IVARS(4)
+	OF_RESERVE_IVARS(OFInvocation, 4)
 }
 
-/*!
+/**
  * @brief The method signature for the invocation.
  */
 @property (readonly, nonatomic) OFMethodSignature *methodSignature;
 
-/*!
+/**
  * @brief Creates a new invocation with the specified method signature.
  *
  * @param signature The method signature for the invocation
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)invocationWithMethodSignature: (OFMethodSignature *)signature;
 
-/*!
+/**
  * @brief Initializes an already allocated invocation with the specified method
  *	  signature.
  *
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithMethodSignature: (OFMethodSignature *)signature;
 
-/*!
+/**
  * @brief Sets the argument for the specified index.
  *
  * @param buffer The buffer in which the argument is stored
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setArgument: (const void *)buffer
 	    atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Gets the argument for the specified index.
  *
  * @param buffer The buffer in which the argument is stored
@@ -76,14 +76,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)getArgument: (void *)buffer
 	    atIndex: (size_t)index;
 
-/*!
+/**
  * @brief Sets the return value.
  *
  * @param buffer The buffer in which the return value is stored
  */
 - (void)setReturnValue: (const void *)buffer;
 
-/*!
+/**
  * @brief Gets the return value.
  *
  * @param buffer The buffer in which the return value is stored

@@ -28,9 +28,10 @@ static OFString *module = @"OFValue";
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_range_t range = of_range(1, 64), range2;
-	of_point_t point = of_point(1.5, 3), point2;
-	of_dimension_t dimension = of_dimension(4.5, 5), dimension2;
-	of_rectangle_t rectangle = of_rectangle(1.5, 3, 4.5, 6), rectangle2;
+	of_point_t point = of_point(1.5f, 3.0f), point2;
+	of_dimension_t dimension = of_dimension(4.5f, 5.0f), dimension2;
+	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
+	of_rectangle_t rectangle2;
 	OFValue *value;
 	void *pointer = &value;
 
