@@ -344,10 +344,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
     defined(OF_SPARC64) || defined(OF_SPARC)
 #  define OF_ASM_LOOKUP
 # endif
-#elif defined(OF_MACH_O)
-# if defined(OF_X86_64)
-#  define OF_ASM_LOOKUP
-# endif
 #elif defined(OF_WINDOWS)
 # if defined(OF_X86_64) || defined(OF_X86)
 #  define OF_ASM_LOOKUP

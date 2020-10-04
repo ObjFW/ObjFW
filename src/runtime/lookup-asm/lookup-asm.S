@@ -39,10 +39,6 @@
 # elif defined(OF_SPARC)
 #  include "lookup-asm-sparc-elf.S"
 # endif
-#elif defined(OF_MACH_O)
-# if defined(OF_X86_64)
-#  include "lookup-asm-x86_64-macho.S"
-# endif
 #elif defined(OF_WINDOWS)
 # if defined(OF_X86_64)
 #  include "lookup-asm-x86_64-win64.S"
