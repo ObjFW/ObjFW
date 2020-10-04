@@ -1038,10 +1038,16 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFDictionary OF_GENERIC(OFString *, OFString *) *)queryDictionary
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFArray *pairs = [_URLEncodedQuery componentsSeparatedByString: @"&"];
-	OFMutableDictionary *ret = [OFMutableDictionary
-	    dictionaryWithCapacity: pairs.count];
+	void *pool;
+	OFArray OF_GENERIC(OFString *) *pairs;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *ret;
+
+	if (_URLEncodedQuery == nil)
+		return nil;
+
+	pool = objc_autoreleasePoolPush();
+	pairs = [_URLEncodedQuery componentsSeparatedByString: @"&"];
+	ret = [OFMutableDictionary dictionaryWithCapacity: pairs.count];
 
 	for (OFString *pair in pairs) {
 		OFArray *parts = [pair componentsSeparatedByString: @"="];

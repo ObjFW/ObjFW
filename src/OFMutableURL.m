@@ -237,13 +237,23 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 - (void)setQueryDictionary:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)dictionary
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableString *URLEncodedQuery = [OFMutableString string];
-	OFEnumerator *keyEnumerator = [dictionary keyEnumerator];
-	OFEnumerator *objectEnumerator = [dictionary objectEnumerator];
-	OFCharacterSet *characterSet =
-	    [OFCharacterSet URLQueryKeyValueAllowedCharacterSet];
+	void *pool;
+	OFMutableString *URLEncodedQuery;
+	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
+	OFCharacterSet *characterSet;
 	OFString *key, *object, *old;
+
+	if (dictionary == nil) {
+		[_URLEncodedQuery release];
+		_URLEncodedQuery = nil;
+		return;
+	}
+
+	pool = objc_autoreleasePoolPush();
+	URLEncodedQuery = [OFMutableString string];
+	keyEnumerator = [dictionary keyEnumerator];
+	objectEnumerator = [dictionary objectEnumerator];
+	characterSet = [OFCharacterSet URLQueryKeyValueAllowedCharacterSet];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
