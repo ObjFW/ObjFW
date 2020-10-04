@@ -19,6 +19,7 @@
 
 #import "OFMutableURL.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
 #endif

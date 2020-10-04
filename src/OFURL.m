@@ -22,6 +22,7 @@
 
 #import "OFURL.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
