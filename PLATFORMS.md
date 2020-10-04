@@ -108,6 +108,7 @@ MorphOS
 NetBSD
 ------
 
+  * OS Versions: 5.1-9.0
   * Architectures: ARM, ARM (big endian, BE8 mode), MIPS (O32), PowerPC, SPARC,
                    SPARC64, x86, x86_64
   * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3 & 7.4.0
