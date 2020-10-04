@@ -447,25 +447,21 @@ esac
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
-AC_ARG_ENABLE(runtime,
-	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
 AC_ARG_ENABLE(seluid24,
 	AS_HELP_STRING([--enable-seluid24],
 		[use 24 bit instead of 16 bit for selector UIDs]))
-AS_IF([test x"$enable_runtime" != x"yes"], [
-	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-		AC_EGREP_CPP(egrep_cpp_yes, [
-			#import <objc/objc.h>
+AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
+	AC_EGREP_CPP(egrep_cpp_yes, [
+		#import <objc/objc.h>
 
-			#ifdef OBJC_BOOL_DEFINED
-			egrep_cpp_yes
-			#endif
-		], [
-			objc_runtime="Apple runtime"
-		], [
-			dnl We don't want the GNU runtime
-			:
-		])
+		#ifdef OBJC_BOOL_DEFINED
+		egrep_cpp_yes
+		#endif
+	], [
+		objc_runtime="Apple runtime"
+	], [
+		dnl We don't want the GNU runtime
+		:
 	])
 ])
 AC_MSG_RESULT($objc_runtime)
