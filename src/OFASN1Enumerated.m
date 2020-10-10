@@ -91,9 +91,9 @@ extern long long of_asn1_der_integer_parse(const unsigned char *buffer,
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
-	return (uint32_t)_longLongValue;
+	return (unsigned long)_longLongValue;
 }
 
 - (OFString *)description

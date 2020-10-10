@@ -308,7 +308,7 @@
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;

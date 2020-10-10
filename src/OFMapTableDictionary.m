@@ -49,7 +49,7 @@ release(void *object)
 	[(id)object release];
 }
 
-static uint32_t
+static unsigned long
 hash(void *object)
 {
 	return [(id)object hash];
@@ -446,7 +446,7 @@ static const of_map_table_functions_t objectFunctions = {
 }
 #endif
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _mapTable.hash;
 }

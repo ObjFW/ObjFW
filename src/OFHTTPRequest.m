@@ -185,7 +185,7 @@ of_http_request_method_from_string(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

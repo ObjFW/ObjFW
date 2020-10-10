@@ -322,7 +322,7 @@ OF_DIRECT_MEMBERS
 	return copy;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

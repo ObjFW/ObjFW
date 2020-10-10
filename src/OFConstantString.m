@@ -260,7 +260,7 @@ struct {
 	return [self isEqual: object];
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	[self finishInitialization];
 

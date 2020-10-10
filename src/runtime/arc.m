@@ -34,7 +34,7 @@ static struct objc_hashtable *hashtable;
 static of_spinlock_t spinlock;
 #endif
 
-static uint32_t
+static unsigned long
 hash(const void *object)
 {
 	return (uint32_t)(uintptr_t)object;

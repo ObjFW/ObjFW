@@ -90,7 +90,7 @@
 	return ([comment->_comment isEqual: _comment]);
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _comment.hash;
 }

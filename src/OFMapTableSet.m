@@ -41,7 +41,7 @@ release(void *object)
 	[(id)object release];
 }
 
-static uint32_t
+static unsigned long
 hash(void *object)
 {
 	return [(id)object hash];

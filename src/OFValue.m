@@ -208,7 +208,7 @@ static struct {
 	return ret;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;

@@ -814,7 +814,7 @@ of_le_double_ptr_write(void *_Nonnull ptr, double value)
 	}
 #define OF_HASH_ADD_HASH(hash, other)				\
 	{							\
-		uint32_t otherCopy = other;			\
+		uint32_t otherCopy = (uint32_t)other;		\
 		OF_HASH_ADD(hash, (otherCopy >> 24) & 0xFF);	\
 		OF_HASH_ADD(hash, (otherCopy >> 16) & 0xFF);	\
 		OF_HASH_ADD(hash, (otherCopy >>  8) & 0xFF);	\

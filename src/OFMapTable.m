@@ -34,7 +34,7 @@
 
 struct of_map_table_bucket {
 	void *key, *object;
-	uint32_t hash;
+	unsigned long hash;
 };
 static struct of_map_table_bucket deleted = { 0 };
 
@@ -49,10 +49,10 @@ defaultRelease(void *object)
 {
 }
 
-static uint32_t
+static unsigned long
 defaultHash(void *object)
 {
-	return (uint32_t)(uintptr_t)object;
+	return (unsigned long)(uintptr_t)object;
 }
 
 static bool
@@ -65,14 +65,14 @@ OF_DIRECT_MEMBERS
 @interface OFMapTable ()
 - (void)of_setObject: (void *)object
 	      forKey: (void *)key
-		hash: (uint32_t)hash;
+		hash: (unsigned long)hash;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFMapTableEnumerator ()
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct of_map_table_bucket **)buckets
-			   capacity: (uint32_t)capacity
+			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
     OF_METHOD_FAMILY(init);
 @end
@@ -145,19 +145,19 @@ OF_DIRECT_MEMBERS
 
 #undef SET_DEFAULT
 
-		if (capacity > UINT32_MAX / sizeof(*_buckets) ||
-		    capacity > UINT32_MAX / 8)
+		if (capacity > ULONG_MAX / sizeof(*_buckets) ||
+		    capacity > ULONG_MAX / 8)
 			@throw [OFOutOfRangeException exception];
 
 		for (_capacity = 1; _capacity < capacity;) {
-			if (_capacity > UINT32_MAX / 2)
+			if (_capacity > ULONG_MAX / 2)
 				@throw [OFOutOfRangeException exception];
 
 			_capacity *= 2;
 		}
 
 		if (capacity * 8 / _capacity >= 6)
-			if (_capacity <= UINT32_MAX / 2)
+			if (_capacity <= ULONG_MAX / 2)
 				_capacity *= 2;
 
 		if (_capacity < MIN_CAPACITY)
@@ -178,7 +178,7 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	for (uint32_t i = 0; i < _capacity; i++) {
+	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
@@ -205,7 +205,7 @@ OF_DIRECT_MEMBERS
 	    mapTable->_objectFunctions.equal != _objectFunctions.equal)
 		return false;
 
-	for (uint32_t i = 0; i < _capacity; i++) {
+	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			void *objectIter =
 			    [mapTable objectForKey: _buckets[i]->key];
@@ -219,14 +219,14 @@ OF_DIRECT_MEMBERS
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
-	uint32_t hash = 0;
+	unsigned long hash = 0;
 
-	for (uint32_t i = 0; i < _capacity; i++) {
+	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			hash += OF_ROR(_buckets[i]->hash, _rotate);
-			hash += _objectFunctions.hash(_buckets[i]->object);
+			hash ^= OF_ROR(_buckets[i]->hash, _rotate);
+			hash ^= _objectFunctions.hash(_buckets[i]->object);
 		}
 	}
 
@@ -241,7 +241,7 @@ OF_DIRECT_MEMBERS
 			capacity: _capacity];
 
 	@try {
-		for (uint32_t i = 0; i < _capacity; i++)
+		for (unsigned long i = 0; i < _capacity; i++)
 			if (_buckets[i] != NULL && _buckets[i] != &deleted)
 				[copy of_setObject: _buckets[i]->object
 					    forKey: _buckets[i]->key
@@ -262,7 +262,7 @@ OF_DIRECT_MEMBERS
 
 - (void *)objectForKey: (void *)key
 {
-	uint32_t i, hash, last;
+	unsigned long i, hash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
@@ -295,18 +295,18 @@ OF_DIRECT_MEMBERS
 	return NULL;
 }
 
-- (void)of_resizeForCount: (uint32_t)count OF_DIRECT
+- (void)of_resizeForCount: (unsigned long)count OF_DIRECT
 {
-	uint32_t fullness, capacity;
+	unsigned long fullness, capacity;
 	struct of_map_table_bucket **buckets;
 
-	if (count > UINT32_MAX / sizeof(*_buckets) || count > UINT32_MAX / 8)
+	if (count > ULONG_MAX / sizeof(*_buckets) || count > ULONG_MAX / 8)
 		@throw [OFOutOfRangeException exception];
 
 	fullness = count * 8 / _capacity;
 
 	if (fullness >= 6) {
-		if (_capacity > UINT32_MAX / 2)
+		if (_capacity > ULONG_MAX / 2)
 			return;
 
 		capacity = _capacity * 2;
@@ -325,9 +325,9 @@ OF_DIRECT_MEMBERS
 	buckets = [self allocZeroedMemoryWithSize: sizeof(*buckets)
 					    count: capacity];
 
-	for (uint32_t i = 0; i < _capacity; i++) {
+	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			uint32_t j, last;
+			unsigned long j, last;
 
 			last = capacity;
 
@@ -356,9 +356,9 @@ OF_DIRECT_MEMBERS
 
 - (void)of_setObject: (void *)object
 	      forKey: (void *)key
-		hash: (uint32_t)hash
+		hash: (unsigned long)hash
 {
-	uint32_t i, last;
+	unsigned long i, last;
 	void *old;
 
 	if (key == NULL || object == NULL)
@@ -452,7 +452,7 @@ OF_DIRECT_MEMBERS
 
 - (void)removeObjectForKey: (void *)key
 {
-	uint32_t i, hash, last;
+	unsigned long i, hash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
@@ -508,7 +508,7 @@ OF_DIRECT_MEMBERS
 
 - (void)removeAllObjects
 {
-	for (uint32_t i = 0; i < _capacity; i++) {
+	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL) {
 			if (_buckets[i] == &deleted) {
 				_buckets[i] = NULL;
@@ -542,7 +542,7 @@ OF_DIRECT_MEMBERS
 	if (object == NULL || _count == 0)
 		return false;
 
-	for (uint32_t i = 0; i < _capacity; i++)
+	for (unsigned long i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_objectFunctions.equal(_buckets[i]->object, object))
 				return true;
@@ -555,7 +555,7 @@ OF_DIRECT_MEMBERS
 	if (object == NULL || _count == 0)
 		return false;
 
-	for (uint32_t i = 0; i < _capacity; i++)
+	for (unsigned long i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_buckets[i]->object == object)
 				return true;
@@ -585,7 +585,7 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
-	uint32_t j = (uint32_t)state->state;
+	unsigned long j = state->state;
 	int i;
 
 	for (i = 0; i < count; i++) {
@@ -658,7 +658,7 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct of_map_table_bucket **)buckets
-			   capacity: (uint32_t)capacity
+			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
 {
 	self = [super init];

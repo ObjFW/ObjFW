@@ -24,7 +24,7 @@
 
 #import "OFInvalidArgumentException.h"
 
-static uint32_t
+static unsigned long
 stringHash(void *object)
 {
 	return ((OFString *)object).hash;

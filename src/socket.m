@@ -608,7 +608,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 	return true;
 }
 
-uint32_t
+unsigned long
 of_socket_address_hash(const of_socket_address_t *address)
 {
 	uint32_t hash;

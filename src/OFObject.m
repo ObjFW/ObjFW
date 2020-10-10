@@ -1025,7 +1025,7 @@ _references_to_categories_of_OFObject(void)
 	return (object == self);
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uintptr_t ptr = (uintptr_t)self;
 	uint32_t hash;

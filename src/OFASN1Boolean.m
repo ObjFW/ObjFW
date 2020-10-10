@@ -104,9 +104,9 @@
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
-	return (uint32_t)_booleanValue;
+	return _booleanValue;
 }
 
 - (OFString *)description

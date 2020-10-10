@@ -929,7 +929,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return OF_ORDERED_SAME;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

@@ -322,7 +322,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  *
  * @return A 32 bit hash for the object
  */
-- (uint32_t)hash;
+- (unsigned long)hash;
 
 /**
  * @brief Returns the retain count.
@@ -545,7 +545,7 @@ OF_ROOT_CLASS
 @property (readonly, nonatomic, getter=class) Class class_;
 #endif
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
-@property (readonly, nonatomic) uint32_t hash;
+@property (readonly, nonatomic) unsigned long hash;
 @property (readonly, nonatomic) unsigned int retainCount;
 @property (readonly, nonatomic) bool isProxy;
 @property (readonly, nonatomic) bool allowsWeakReference;

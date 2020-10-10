@@ -298,13 +298,13 @@ static struct {
 	return [set isSubsetOfSet: self];
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	void *pool = objc_autoreleasePoolPush();
-	uint32_t hash = 0;
+	unsigned long hash = 0;
 
 	for (id object in self)
-		hash += [object hash];
+		hash ^= [object hash];
 
 	objc_autoreleasePoolPop(pool);
 

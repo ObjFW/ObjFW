@@ -489,7 +489,7 @@ _references_to_categories_of_OFData(void)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

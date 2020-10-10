@@ -91,7 +91,7 @@
 	    isEqual: _processingInstructions];
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _processingInstructions.hash;
 }

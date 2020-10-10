@@ -1662,7 +1662,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return OF_ORDERED_SAME;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	const of_unichar_t *characters = self.characters;
 	size_t length = self.length;
