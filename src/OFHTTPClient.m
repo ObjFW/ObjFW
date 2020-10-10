@@ -62,7 +62,7 @@ OF_DIRECT_MEMBERS
 	unsigned int _redirects;
 	bool _firstLine;
 	OFString *_version;
-	int _status;
+	short _status;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
 }
 
@@ -241,7 +241,7 @@ normalizeKey(char *str_)
 }
 
 static bool
-defaultShouldFollow(of_http_request_method_t method, int statusCode)
+defaultShouldFollow(of_http_request_method_t method, short statusCode)
 {
 	bool follow;
 
@@ -471,7 +471,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (status < 0 || status > 599)
 		@throw [OFInvalidServerReplyException exception];
 
-	_status = (int)status;
+	_status = (short)status;
 
 	return true;
 }
@@ -1182,7 +1182,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (int)statusCode
+	 statusCode: (short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if ([_delegate respondsToSelector:
@@ -1195,7 +1195,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 -	  (bool)client: (OFHTTPClient *)client
   shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (int)statusCode
+	    statusCode: (short)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
 {

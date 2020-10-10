@@ -606,7 +606,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -	  (bool)client: (OFHTTPClient *)client
   shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (int)statusCode
+	    statusCode: (short)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
 {
@@ -707,7 +707,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"exception", e)];
 	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
 		short statusCode = [[e response] statusCode];
-		OFString *codeString = [OFString stringWithFormat: @"%d %@",
+		OFString *codeString = [OFString stringWithFormat: @"%hd %@",
 		    statusCode, of_http_status_code_to_string(statusCode)];
 		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
@@ -786,7 +786,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (int)statusCode
+	 statusCode: (short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if (statusCode != 206)
@@ -797,7 +797,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    [headers objectForKey: @"Content-Length"];
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
-		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
+		[of_stdout writeFormat: @" ➜ %hd\n", statusCode];
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");

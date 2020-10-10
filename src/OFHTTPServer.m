@@ -184,7 +184,7 @@ normalizedKey(OFString *key)
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_socket writeFormat: @"HTTP/%@ %d %@\r\n",
+	[_socket writeFormat: @"HTTP/%@ %hd %@\r\n",
 			      self.protocolVersionString, _statusCode,
 			      of_http_status_code_to_string(_statusCode)];
 
@@ -505,7 +505,7 @@ normalizedKey(OFString *key)
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
 
-	[_socket writeFormat: @"HTTP/1.1 %d %@\r\n"
+	[_socket writeFormat: @"HTTP/1.1 %hd %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
