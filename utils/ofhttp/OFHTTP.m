@@ -65,7 +65,7 @@
 	int _errorCode;
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
-	bool _detectedFileName, _quiet, _verbose, _insecure;
+	bool _detectedFileName, _quiet, _verbose, _insecure, _ignoreStatus;
 	OFStream *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -118,7 +118,9 @@ help(OFStream *stream, bool full, int status)
 		    @"-v  --verbose        "
 		    @"  Verbose mode (print headers)\n    "
 		    @"    --insecure       "
-		    @"  Ignore TLS errors and allow insecure redirects")];
+		    @"  Ignore TLS errors and allow insecure redirects\n    "
+		    @"    --ignore-status  "
+		    @"  Ignore HTTP status code")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -429,6 +431,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		{ 'q', @"quiet", 0, &_quiet, NULL },
 		{ 'v', @"verbose", 0, &_verbose, NULL },
 		{ '\0', @"insecure", 0, &_insecure, NULL },
+		{ '\0', @"ignore-status", 0, &_ignoreStatus, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -706,8 +709,18 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"error", error,
 		    @"exception", e)];
 	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
-		short statusCode = [[e response] statusCode];
-		OFString *codeString = [OFString stringWithFormat: @"%hd %@",
+		short statusCode;
+		OFString *codeString;
+
+		if (_ignoreStatus) {
+			[self	       client: client
+			    didPerformRequest: [e request]
+				     response: [e response]];
+			return;
+		}
+
+		statusCode = [[e response] statusCode];
+		codeString = [OFString stringWithFormat: @"%hd %@",
 		    statusCode, of_http_status_code_to_string(statusCode)];
 		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
