@@ -46,82 +46,82 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The microsecond of the date.
  */
-@property (readonly, nonatomic) uint32_t microsecond;
+@property (readonly, nonatomic) unsigned long microsecond;
 
 /**
  * @brief The second of the date.
  */
-@property (readonly, nonatomic) uint8_t second;
+@property (readonly, nonatomic) unsigned char second;
 
 /**
  * @brief The minute of the date.
  */
-@property (readonly, nonatomic) uint8_t minute;
+@property (readonly, nonatomic) unsigned char minute;
 
 /**
  * @brief The minute of the date in local time.
  */
-@property (readonly, nonatomic) uint8_t localMinute;
+@property (readonly, nonatomic) unsigned char localMinute;
 
 /**
  * @brief The hour of the date.
  */
-@property (readonly, nonatomic) uint8_t hour;
+@property (readonly, nonatomic) unsigned char hour;
 
 /**
  * @brief The hour of the date in local time.
  */
-@property (readonly, nonatomic) uint8_t localHour;
+@property (readonly, nonatomic) unsigned char localHour;
 
 /**
  * @brief The day of the month of the date.
  */
-@property (readonly, nonatomic) uint8_t dayOfMonth;
+@property (readonly, nonatomic) unsigned char dayOfMonth;
 
 /**
  * @brief The day of the month of the date in local time.
  */
-@property (readonly, nonatomic) uint8_t localDayOfMonth;
+@property (readonly, nonatomic) unsigned char localDayOfMonth;
 
 /**
  * @brief The month of the year of the date.
  */
-@property (readonly, nonatomic) uint8_t monthOfYear;
+@property (readonly, nonatomic) unsigned char monthOfYear;
 
 /**
  * @brief The month of the year of the date in local time.
  */
-@property (readonly, nonatomic) uint8_t localMonthOfYear;
+@property (readonly, nonatomic) unsigned char localMonthOfYear;
 
 /**
  * @brief The year of the date.
  */
-@property (readonly, nonatomic) uint16_t year;
+@property (readonly, nonatomic) unsigned short year;
 
 /**
  * @brief The year of the date in local time.
  */
-@property (readonly, nonatomic) uint16_t localYear;
+@property (readonly, nonatomic) unsigned short localYear;
 
 /**
  * @brief The day of the week of the date.
  */
-@property (readonly, nonatomic) uint8_t dayOfWeek;
+@property (readonly, nonatomic) unsigned char dayOfWeek;
 
 /**
  * @brief The day of the week of the date in local time.
  */
-@property (readonly, nonatomic) uint8_t localDayOfWeek;
+@property (readonly, nonatomic) unsigned char localDayOfWeek;
 
 /**
  * @brief The day of the year of the date.
  */
-@property (readonly, nonatomic) uint16_t dayOfYear;
+@property (readonly, nonatomic) unsigned short dayOfYear;
 
 /**
  * @brief The day of the year of the date in local time.
  */
-@property (readonly, nonatomic) uint16_t localDayOfYear;
+@property (readonly, nonatomic) unsigned short localDayOfYear;
 
 /**
  * @brief The seconds since 1970-01-01T00:00:00Z.

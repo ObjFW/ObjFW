@@ -41,7 +41,7 @@ typedef struct {
 	id object;
 	struct SignalSemaphore semaphore;
 	struct Task *joinTask;
-	uint8_t joinSigBit;
+	unsigned char joinSigBit;
 	bool detached, done;
 } *of_thread_t;
 #endif

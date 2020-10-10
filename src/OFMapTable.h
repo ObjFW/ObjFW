@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
 	of_map_table_functions_t _keyFunctions, _objectFunctions;
 	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
 	unsigned long _count, _capacity;
-	uint8_t _rotate;
+	unsigned char _rotate;
 	unsigned long _mutations;
 }
 

@@ -24,7 +24,7 @@
 #import "macros.h"
 
 const char *
-of_strptime(const char *buffer, const char *format, struct tm *tm, int16_t *tz)
+of_strptime(const char *buffer, const char *format, struct tm *tm, short *tz)
 {
 	enum {
 		SEARCH_CONVERSION_SPECIFIER,
@@ -181,10 +181,10 @@ of_strptime(const char *buffer, const char *format, struct tm *tm, int16_t *tz)
 					if (tz == NULL)
 						break;
 
-					*tz = (((int16_t)b[1] - '0') * 600 +
-					    ((int16_t)b[2] - '0') * 60 +
-					    ((int16_t)b[3] - '0') * 10 +
-					    ((int16_t)b[4] - '0')) *
+					*tz = (((short)b[1] - '0') * 600 +
+					    ((short)b[2] - '0') * 60 +
+					    ((short)b[3] - '0') * 10 +
+					    ((short)b[4] - '0')) *
 					    (b[0] == '-' ? -1 : 1);
 
 					j += 5;

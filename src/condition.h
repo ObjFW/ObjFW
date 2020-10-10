@@ -43,7 +43,7 @@ typedef struct {
 typedef struct {
 	struct of_condition_waiting_task {
 		struct Task *task;
-		uint8_t sigBit;
+		unsigned char sigBit;
 		struct of_condition_waiting_task *next;
 	} *waitingTasks;
 } of_condition_t;
