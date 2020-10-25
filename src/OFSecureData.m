@@ -128,7 +128,7 @@ addPage(bool allowPreallocated)
 			page = preallocatedPages[numPreallocatedPages];
 
 			if (numPreallocatedPages == 0) {
-				free(preallocatedPages);
+				of_free(preallocatedPages);
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
@@ -140,14 +140,8 @@ addPage(bool allowPreallocated)
 		}
 	}
 
-	if ((page = malloc(sizeof(*page))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: sizeof(*page)];
-
-	if ((page->map = calloc(1, mapSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: mapSize];
-
+	page = of_malloc(1, sizeof(*page));
+	page->map = of_calloc(1, mapSize);
 	page->page = mapPages(1);
 	of_explicit_memset(page->page, 0, pageSize);
 
@@ -188,7 +182,7 @@ removePageIfEmpty(struct page *page)
 			return;
 
 	unmapPages(page->page, 1);
-	free(page->map);
+	of_free(page->map);
 
 	if (page->previous != NULL)
 		page->previous->next = page->next;
@@ -207,7 +201,7 @@ removePageIfEmpty(struct page *page)
 		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous));
 # endif
 
-	free(page);
+	of_free(page);
 }
 
 static void *
@@ -288,11 +282,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	preallocatedPages = calloc(numPages, sizeof(struct page));
-	if (preallocatedPages == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: numPages * sizeof(struct page)];
-
+	preallocatedPages = of_calloc(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
 # endif

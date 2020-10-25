@@ -183,14 +183,12 @@ static struct {
 
 	size = of_sizeof_type_encoding(objCType);
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	if ((otherValue = malloc(size)) == NULL) {
-		free(value);
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+	value = of_malloc(1, size);
+	@try {
+		otherValue = of_malloc(1, size);
+	} @catch (id e) {
+		of_free(value);
+		@throw e;
 	}
 
 	@try {
@@ -201,8 +199,8 @@ static struct {
 
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		free(value);
-		free(otherValue);
+		of_free(value);
+		of_free(otherValue);
 	}
 
 	return ret;
@@ -214,10 +212,7 @@ static struct {
 	unsigned char *value;
 	uint32_t hash;
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
+	value = of_malloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];
@@ -229,7 +224,7 @@ static struct {
 
 		OF_HASH_FINALIZE(hash);
 	} @finally {
-		free(value);
+		of_free(value);
 	}
 
 	return hash;
@@ -318,10 +313,7 @@ static struct {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
+	value = of_malloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];
@@ -333,7 +325,7 @@ static struct {
 			[ret appendFormat: @"%02x", value[i]];
 		}
 	} @finally {
-		free(value);
+		of_free(value);
 	}
 
 	[ret appendString: @">"];

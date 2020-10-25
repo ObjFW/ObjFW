@@ -510,10 +510,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	if ((tmp = strchr(lineC, ':')) == NULL)
 		@throw [OFInvalidServerReplyException exception];
 
-	if ((keyC = malloc(tmp - lineC + 1)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: tmp - lineC + 1];
-
+	keyC = of_malloc(1, tmp - lineC + 1);
 	memcpy(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);
@@ -522,7 +519,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		key = [OFString stringWithUTF8StringNoCopy: keyC
 					      freeWhenDone: true];
 	} @catch (id e) {
-		free(keyC);
+		of_free(keyC);
 		@throw e;
 	}
 

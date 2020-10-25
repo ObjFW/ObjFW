@@ -665,10 +665,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		if ((buffer = malloc(pageSize)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: pageSize];
-
+		buffer = of_malloc(1, pageSize);
 		@try {
 			sourceStream = [[OFURLHandler handlerForURL: source]
 			    openItemAtURL: source
@@ -721,7 +718,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		} @finally {
 			[sourceStream close];
 			[destinationStream close];
-			free(buffer);
+			of_free(buffer);
 		}
 	} else if ([type isEqual: of_file_type_symbolic_link]) {
 		@try {

@@ -842,7 +842,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		ret = [self initWithUTF8String: UTF8String];
 	} @finally {
 		if (freeWhenDone)
-			free(UTF8String);
+			of_free(UTF8String);
 	}
 
 	return ret;
@@ -859,7 +859,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					length: UTF8StringLength];
 	} @finally {
 		if (freeWhenDone)
-			free(UTF8String);
+			of_free(UTF8String);
 	}
 
 	return ret;
@@ -1029,10 +1029,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		if ((tmp = malloc((size_t)fileSize + 1)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: (size_t)fileSize];
-
+		tmp = of_malloc(1, (size_t)fileSize + 1);
 		@try {
 			file = [[OFFile alloc] initWithPath: path
 						       mode: @"r"];
@@ -1040,7 +1037,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			[file readIntoBuffer: tmp
 				 exactLength: (size_t)fileSize];
 		} @catch (id e) {
-			free(tmp);
+			of_free(tmp);
 			@throw e;
 		} @finally {
 			[file release];
@@ -1062,7 +1059,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					    encoding: encoding
 					      length: (size_t)fileSize];
 		} @finally {
-			free(tmp);
+			of_free(tmp);
 		}
 	}
 
@@ -1860,10 +1857,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	searchCharacters = string.characters;
 
-	if ((characters = malloc(range.length * sizeof(of_unichar_t))) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    range.length * sizeof(of_unichar_t)];
-
+	characters = of_malloc(range.length, sizeof(of_unichar_t));
 	@try {
 		[self getCharacters: characters
 			    inRange: range];
@@ -1893,7 +1887,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			}
 		}
 	} @finally {
-		free(characters);
+		of_free(characters);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -1931,10 +1925,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exception];
 
-	if ((characters = malloc(range.length * sizeof(of_unichar_t))) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    range.length * sizeof(of_unichar_t)];
-
+	characters = of_malloc(range.length, sizeof(of_unichar_t));
 	@try {
 		[self getCharacters: characters
 			    inRange: range];
@@ -1958,7 +1949,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					return range.location + i;
 		}
 	} @finally {
-		free(characters);
+		of_free(characters);
 	}
 
 	return OF_NOT_FOUND;

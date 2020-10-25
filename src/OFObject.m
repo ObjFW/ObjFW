@@ -108,6 +108,65 @@ static struct {
 
 uint32_t of_hash_seed;
 
+void *
+of_malloc(size_t count, size_t size)
+{
+	void *pointer;
+
+	if OF_UNLIKELY (count == 0 || size == 0)
+		return NULL;
+
+	if OF_UNLIKELY (count > SIZE_MAX / size)
+		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	return pointer;
+}
+
+void *
+of_calloc(size_t count, size_t size)
+{
+	void *pointer;
+
+	if OF_UNLIKELY (count == 0 || size == 0)
+		return NULL;
+
+	/* Not all calloc implementations check for overflow. */
+	if OF_UNLIKELY (count > SIZE_MAX / size)
+		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY ((pointer = calloc(count, size)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	return pointer;
+}
+
+void *
+of_realloc(void *pointer, size_t count, size_t size)
+{
+	if OF_UNLIKELY (count == 0 || size == 0)
+		return NULL;
+
+	if OF_UNLIKELY (count > SIZE_MAX / size)
+		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY ((pointer = realloc(pointer, count * size)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	return pointer;
+}
+
+void
+of_free(void *pointer)
+{
+	free(pointer);
+}
+
 #if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
 static void
 initRandom(void)

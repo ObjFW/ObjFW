@@ -98,7 +98,7 @@ closeHandle(of_file_handle_t handle)
 	if (firstHandle == handle)
 		firstHandle = handle->next;
 
-	free(handle);
+	of_free(handle);
 }
 
 OF_DESTRUCTOR()
@@ -243,10 +243,7 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		if ((handle = malloc(sizeof(*handle))) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: sizeof(*handle)];
-
+		handle = of_malloc(1, sizeof(*handle));
 		@try {
 			if ((flags = parseMode(mode.UTF8String,
 			    &handle->append)) == -1)
@@ -308,7 +305,7 @@ parseMode(const char *mode, bool *append)
 
 			firstHandle = handle;
 		} @catch (id e) {
-			free(handle);
+			of_free(handle);
 			@throw e;
 		}
 #endif

@@ -50,10 +50,7 @@ int _OFObject_KeyValueCoding_reference;
 			return [self valueForUndefinedKey: key];
 		}
 
-		if ((name = malloc(keyLength + 3)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: keyLength + 3];
-
+		name = of_malloc(1, keyLength + 3);
 		@try {
 			memcpy(name, "is", 2);
 			memcpy(name + 2, key.UTF8String, keyLength);
@@ -63,7 +60,7 @@ int _OFObject_KeyValueCoding_reference;
 
 			selector = sel_registerName(name);
 		} @finally {
-			free(name);
+			of_free(name);
 		}
 
 		methodSignature = [self methodSignatureForSelector: selector];
@@ -165,10 +162,7 @@ int _OFObject_KeyValueCoding_reference;
 		return;
 	}
 
-	if ((name = malloc(keyLength + 5)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: keyLength + 5];
-
+	name = of_malloc(1, keyLength + 5);
 	@try {
 		memcpy(name, "set", 3);
 		memcpy(name + 3, key.UTF8String, keyLength);
@@ -178,7 +172,7 @@ int _OFObject_KeyValueCoding_reference;
 
 		selector = sel_registerName(name);
 	} @finally {
-		free(name);
+		of_free(name);
 	}
 
 	methodSignature = [self methodSignatureForSelector: selector];

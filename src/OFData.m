@@ -197,10 +197,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		if ((buffer = malloc((size_t)size)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: (size_t)size];
-
+		buffer = of_malloc(1, (size_t)size);
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"r"];
 		@try {
@@ -210,7 +207,7 @@ _references_to_categories_of_OFData(void)
 			[file release];
 		}
 	} @catch (id e) {
-		free(buffer);
+		of_free(buffer);
 		[self release];
 
 		@throw e;
@@ -221,7 +218,7 @@ _references_to_categories_of_OFData(void)
 					   count: (size_t)size
 				    freeWhenDone: true];
 	} @catch (id e) {
-		free(buffer);
+		of_free(buffer);
 		@throw e;
 	}
 
@@ -383,7 +380,7 @@ _references_to_categories_of_OFData(void)
 - (void)dealloc
 {
 	if (_freeWhenDone)
-		free(_items);
+		of_free(_items);
 
 	[_parentData release];
 

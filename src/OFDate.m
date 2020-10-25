@@ -779,10 +779,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
+	buffer = of_malloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -797,7 +794,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		free(buffer);
+		of_free(buffer);
 	}
 
 	return ret;
@@ -842,10 +839,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
+	buffer = of_malloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -860,7 +854,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		free(buffer);
+		of_free(buffer);
 	}
 
 	return ret;

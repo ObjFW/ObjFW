@@ -636,10 +636,7 @@
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	if OF_UNLIKELY ((buffer = malloc(count * itemSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: count * itemSize];
-
+	buffer = of_malloc(count, itemSize);
 	@try {
 		[self readIntoBuffer: buffer
 			 exactLength: count * itemSize];
@@ -649,7 +646,7 @@
 					    count: count
 				     freeWhenDone: true];
 	} @catch (id e) {
-		free(buffer);
+		of_free(buffer);
 		@throw e;
 	}
 
