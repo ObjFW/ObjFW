@@ -141,8 +141,19 @@ addPage(bool allowPreallocated)
 	}
 
 	page = of_malloc(1, sizeof(*page));
-	page->map = of_calloc(1, mapSize);
-	page->page = mapPages(1);
+	@try {
+		page->map = of_calloc(1, mapSize);
+	} @catch (id e) {
+		of_free(page);
+		@throw e;
+	}
+	@try {
+		page->page = mapPages(1);
+	} @catch (id e) {
+		of_free(page->map);
+		of_free(page);
+		@throw e;
+	}
 	of_explicit_memset(page->page, 0, pageSize);
 
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -278,6 +289,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	struct page **preallocatedPages = of_tlskey_get(preallocatedPagesKey);
 	size_t numPreallocatedPages;
 # endif
+	size_t i;
 
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
@@ -287,8 +299,18 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
 # endif
 
-	for (size_t i = 0; i < numPages; i++)
-		preallocatedPages[i] = addPage(false);
+	@try {
+		for (i = 0; i < numPages; i++)
+			preallocatedPages[i] = addPage(false);
+	} @catch (id e) {
+		for (size_t j = 0; j < i; j++)
+			removePageIfEmpty(preallocatedPages[j]);
+
+		of_free(preallocatedPages);
+		preallocatedPages = NULL;
+
+		@throw e;
+	}
 
 	numPreallocatedPages = numPages;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
