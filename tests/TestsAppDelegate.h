@@ -178,6 +178,10 @@
 - (void)runtimeTests;
 @end
 
+@interface TestsAppDelegate (RuntimeARCTests)
+- (void)runtimeARCTests;
+@end
+
 @interface TestsAppDelegate (OFRIPEMD160HashTests)
 - (void)RIPEMD160HashTests;
 @end
