@@ -42,23 +42,13 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param client The OFHTTPClient which performed the request
  * @param request The request the OFHTTPClient performed
- * @param response The response to the request performed
+ * @param response The response to the request performed, or nil on error
+ * @param exception An exception if the request failed, or nil on success
  */
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response;
-
-/**
- * @brief A callback which is called when an OFHTTPClient encountered an
- *	  exception while performing a request.
- *
- * @param client The client which encountered an exception
- * @param exception The exception the client encountered
- * @param request The request during which the client encountered the exception
- */
--	  (void)client: (OFHTTPClient *)client
-  didFailWithException: (id)exception
-	       request: (OFHTTPRequest *)request;
+	   response: (nullable OFHTTPResponse *)response
+	  exception: (nullable id)exception;
 
 @optional
 /**

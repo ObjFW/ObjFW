@@ -298,8 +298,9 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	_client->_inProgress = false;
 
 	[_client->_delegate client: _client
-	      didFailWithException: exception
-			   request: _request];
+		 didPerformRequest: _request
+			  response: nil
+			 exception: exception];
 }
 
 - (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
@@ -309,6 +310,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	OFString *connectionHeader;
 	bool keepAlive;
 	OFString *location;
+	id exception;
 
 	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
@@ -422,15 +424,18 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	_client->_inProgress = false;
 
 	if (_status / 100 != 2)
-		@throw [OFHTTPRequestFailedException
+		exception = [OFHTTPRequestFailedException
 		    exceptionWithRequest: _request
 				response: response];
+	else
+		exception = nil;
 
 	[_client->_delegate performSelector: @selector(client:didPerformRequest:
-						 response:)
+						 response:exception:)
 				 withObject: _client
 				 withObject: _request
 				 withObject: response
+				 withObject: exception
 				 afterDelay: 0];
 }
 
@@ -1130,7 +1135,19 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
+	  exception: (id)exception
 {
+	if (exception != nil) {
+		/*
+		 * Restore the delegate - we're giving up, but not reaching the
+		 * release of the autorelease pool that contains us, so
+		 * resetting it via -[dealloc] might be too late.
+		 */
+		_client.delegate = _delegate;
+
+		@throw exception;
+	}
+
 	[[OFRunLoop currentRunLoop] stop];
 
 	[_response release];
@@ -1138,21 +1155,8 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 
 	[_delegate     client: client
 	    didPerformRequest: request
-		     response: response];
-}
-
--	  (void)client: (OFHTTPClient *)client
-  didFailWithException: (id)exception
-	       request: (OFHTTPRequest *)request
-{
-	/*
-	 * Restore the delegate - we're giving up, but not reaching the release
-	 * of the autorelease pool that contains us, so resetting it via
-	 * -[dealloc] might be too late.
-	 */
-	_client.delegate = _delegate;
-
-	@throw exception;
+		     response: response
+		    exception: nil];
 }
 
 -    (void)client: (OFHTTPClient *)client

@@ -637,105 +637,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	return true;
 }
 
--	  (void)client: (OFHTTPClient *)client
-  didFailWithException: (id)e
-	       request: (OFHTTPRequest *)request
-{
-	if ([e isKindOfClass: [OFResolveHostFailedException class]]) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_resolve_host_failed",
-		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  Failed to resolve host: %[exception]",
-		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string,
-		    @"exception", e)];
-	} else if ([e isKindOfClass: [OFConnectionFailedException class]]) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_connection_failed",
-		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  Connection failed: %[exception]",
-		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string,
-		    @"exception", e)];
-	} else if ([e isKindOfClass: [OFInvalidServerReplyException class]]) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_invalid_server_reply",
-		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  Invalid server reply!",
-		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string)];
-	} else if ([e isKindOfClass: [OFUnsupportedProtocolException class]]) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeLine: OF_LOCALIZED(@"no_ssl_library",
-		    @"%[prog]: No TLS library loaded!\n"
-		    @"  In order to download via https, you need to preload an "
-		    @"TLS library for ObjFW\n"
-		    @"  such as ObjOpenSSL!",
-		    @"prog", [OFApplication programName])];
-	} else if ([e isKindOfClass: [OFReadOrWriteFailedException class]]) {
-		OFString *error = OF_LOCALIZED(
-		    @"download_failed_read_or_write_failed_any",
-		    @"Read or write failed");
-
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		if ([e isKindOfClass: [OFReadFailedException class]])
-			error = OF_LOCALIZED(
-			    @"download_failed_read_or_write_failed_read",
-			    @"Read failed");
-		else if ([e isKindOfClass: [OFWriteFailedException class]])
-			error = OF_LOCALIZED(
-			    @"download_failed_read_or_write_failed_write",
-			    @"Write failed");
-
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_read_or_write_failed",
-		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  %[error]: %[exception]",
-		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string,
-		    @"error", error,
-		    @"exception", e)];
-	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
-		short statusCode;
-		OFString *codeString;
-
-		if (_ignoreStatus) {
-			[self	       client: client
-			    didPerformRequest: [e request]
-				     response: [e response]];
-			return;
-		}
-
-		statusCode = [[e response] statusCode];
-		codeString = [OFString stringWithFormat: @"%hd %@",
-		    statusCode, of_http_status_code_to_string(statusCode)];
-		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
-		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  HTTP status code: %[code]",
-		    @"prog", [OFApplication programName],
-		    @"url", request.URL.string,
-		    @"code", codeString)];
-	} else
-		@throw e;
-
-	_errorCode = 1;
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
-}
-
 -      (bool)stream: (OFStream *)response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
@@ -897,7 +798,115 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
+	  exception: (id)exception
 {
+	if (exception != nil) {
+		if ([exception isKindOfClass:
+		    [OFResolveHostFailedException class]]) {
+			if (!_quiet)
+				[of_stdout writeString: @"\n"];
+
+			[of_stderr writeLine:
+			    OF_LOCALIZED(@"download_resolve_host_failed",
+			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"  Failed to resolve host: %[exception]",
+			    @"prog", [OFApplication programName],
+			    @"url", request.URL.string,
+			    @"exception", exception)];
+		} else if ([exception isKindOfClass:
+		    [OFConnectionFailedException class]]) {
+			if (!_quiet)
+				[of_stdout writeString: @"\n"];
+
+			[of_stderr writeLine:
+			    OF_LOCALIZED(@"download_failed_connection_failed",
+			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"  Connection failed: %[exception]",
+			    @"prog", [OFApplication programName],
+			    @"url", request.URL.string,
+			    @"exception", exception)];
+		} else if ([exception isKindOfClass:
+		    [OFInvalidServerReplyException class]]) {
+			if (!_quiet)
+				[of_stdout writeString: @"\n"];
+
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"download_failed_invalid_server_reply",
+			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"  Invalid server reply!",
+			    @"prog", [OFApplication programName],
+			    @"url", request.URL.string)];
+		} else if ([exception isKindOfClass:
+		    [OFUnsupportedProtocolException class]]) {
+			if (!_quiet)
+				[of_stdout writeString: @"\n"];
+
+			[of_stderr writeLine: OF_LOCALIZED(@"no_ssl_library",
+			    @"%[prog]: No TLS library loaded!\n"
+			    @"  In order to download via https, you need to "
+			    @"preload an TLS library for ObjFW\n"
+			    @"  such as ObjOpenSSL!",
+			    @"prog", [OFApplication programName])];
+		} else if ([exception isKindOfClass:
+		    [OFReadOrWriteFailedException class]]) {
+			OFString *error = OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed_any",
+			    @"Read or write failed");
+
+			if (!_quiet)
+				[of_stdout writeString: @"\n"];
+
+			if ([exception isKindOfClass:
+			    [OFReadFailedException class]])
+				error = OF_LOCALIZED(
+				    @"download_failed_read_or_write_failed_"
+				    @"read",
+				    @"Read failed");
+			else if ([exception isKindOfClass:
+			    [OFWriteFailedException class]])
+				error = OF_LOCALIZED(
+				    @"download_failed_read_or_write_failed_"
+				    @"write",
+				    @"Write failed");
+
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed",
+			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"  %[error]: %[exception]",
+			    @"prog", [OFApplication programName],
+			    @"url", request.URL.string,
+			    @"error", error,
+			    @"exception", exception)];
+		} else if ([exception isKindOfClass:
+		    [OFHTTPRequestFailedException class]]) {
+			short statusCode;
+			OFString *codeString;
+
+			if (_ignoreStatus) {
+				exception = nil;
+				goto after_exception_handling;
+			}
+
+			statusCode = response.statusCode;
+			codeString = [OFString stringWithFormat: @"%hd %@",
+			    statusCode,
+			    of_http_status_code_to_string(statusCode)];
+			[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
+			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"  HTTP status code: %[code]",
+			    @"prog", [OFApplication programName],
+			    @"url", request.URL.string,
+			    @"code", codeString)];
+		} else
+			@throw exception;
+
+		_errorCode = 1;
+		[self performSelector: @selector(downloadNextURL)
+			   afterDelay: 0];
+		return;
+	}
+
+after_exception_handling:
 	if (_method == OF_HTTP_REQUEST_METHOD_HEAD)
 		goto next;
 
