@@ -95,8 +95,7 @@ domainFromHostname(void)
 		if (pos == OF_NOT_FOUND)
 			return nil;
 
-		ret = [domain substringWithRange:
-		    of_range(pos + 1, domain.length - pos - 1)];
+		ret = [domain substringFromIndex: pos + 1];
 	}
 
 	return ret;
@@ -194,7 +193,7 @@ domainFromHostname(void)
 
 		pos = [line rangeOfString: @"#"].location;
 		if (pos != OF_NOT_FOUND)
-			line = [line substringWithRange: of_range(0, pos)];
+			line = [line substringToIndex: pos];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -243,8 +242,7 @@ domainFromHostname(void)
 		if ([option hasPrefix: @"ndots:"]) {
 			unsigned long long number;
 
-			option = [option substringWithRange:
-			    of_range(6, option.length - 6)];
+			option = [option substringFromIndex: 6];
 			number = option.unsignedLongLongValue;
 
 			if (number > UINT_MAX)
@@ -252,15 +250,13 @@ domainFromHostname(void)
 
 			_minNumberOfDotsInAbsoluteName = (unsigned int)number;
 		} else if ([option hasPrefix: @"timeout:"]) {
-			option = [option substringWithRange:
-			    of_range(8, option.length - 8)];
+			option = [option substringFromIndex: 8];
 
 			_timeout = option.unsignedLongLongValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
 			unsigned long long number;
 
-			option = [option substringWithRange:
-			    of_range(9, option.length - 9)];
+			option = [option substringFromIndex: 9];
 			number = option.unsignedLongLongValue;
 
 			if (number > UINT_MAX)
@@ -268,8 +264,7 @@ domainFromHostname(void)
 
 			_maxAttempts = (unsigned int)number;
 		} else if ([option hasPrefix: @"reload-period:"]) {
-			option = [option substringWithRange:
-			    of_range(14, option.length - 14)];
+			option = [option substringFromIndex: 14];
 
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
@@ -308,7 +303,7 @@ domainFromHostname(void)
 
 		pos = [line indexOfCharacterFromSet: commentCharacters];
 		if (pos != OF_NOT_FOUND)
-			line = [line substringWithRange: of_range(0, pos)];
+			line = [line substringToIndex: pos];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet

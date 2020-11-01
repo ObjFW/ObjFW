@@ -1005,7 +1005,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	}
 
 	if ([path hasSuffix: @"/"])
-		path = [path substringWithRange: of_range(0, path.length - 1)];
+		path = [path substringToIndex: path.length - 1];
 
 	UTF8String = lastComponent = path.UTF8String;
 	length = path.UTF8StringLength;

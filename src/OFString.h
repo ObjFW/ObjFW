@@ -1005,6 +1005,22 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (bool)containsString: (OFString *)string;
 
 /**
+ * @brief Creates a substring from the specified index to the end.
+ *
+ * @param idx The index from where the substring should start, inclusive
+ * @return The substring from the specified index to the end
+ */
+- (OFString *)substringFromIndex: (size_t)idx;
+
+/**
+ * @brief Creates a substring from the beginning to the specified index.
+ *
+ * @param idx The index at which the substring should end, exclusive
+ * @return The subtring from the beginning to the specified index
+ */
+- (OFString *)substringToIndex: (size_t)idx;
+
+/**
  * @brief Creates a substring with the specified range.
  *
  * @param range The range of the substring

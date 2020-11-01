@@ -405,6 +405,20 @@ struct {
 	return [self containsString: string];
 }
 
+- (OFString *)substringFromIndex: (size_t)idx
+{
+	[self finishInitialization];
+
+	return [self substringFromIndex: idx];
+}
+
+- (OFString *)substringToIndex: (size_t)idx
+{
+	[self finishInitialization];
+
+	return [self substringToIndex: idx];
+}
+
 - (OFString *)substringWithRange: (of_range_t)range
 {
 	[self finishInitialization];

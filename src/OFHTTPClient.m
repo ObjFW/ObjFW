@@ -1002,7 +1002,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	} else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *line;
-		of_range_t range;
+		size_t pos;
 
 		@try {
 			line = [_socket tryReadLine];
@@ -1013,18 +1013,16 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		if (line == nil)
 			return 0;
 
-		range = [line rangeOfString: @";"];
-		if (range.location != OF_NOT_FOUND)
-			line = [line substringWithRange:
-			    of_range(0, range.location)];
+		pos = [line rangeOfString: @";"].location;
+		if (pos != OF_NOT_FOUND)
+			line = [line substringToIndex: pos];
 
 		if (line.length < 1) {
 			/*
 			 * We have read the empty string because the socket is
 			 * at end of stream.
 			 */
-			if (_socket.atEndOfStream &&
-			    range.location == OF_NOT_FOUND)
+			if (_socket.atEndOfStream && pos == OF_NOT_FOUND)
 				@throw [OFTruncatedDataException exception];
 			else
 				@throw [OFInvalidServerReplyException

@@ -161,8 +161,7 @@ int _OFString_PathAdditions_reference;
 		return @"";
 	}
 
-	ret = [fileName substringWithRange:
-	    of_range(pos + 1, fileName.length - pos - 1)];
+	ret = [fileName substringWithFromIndex: pos + 1];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -232,7 +231,7 @@ int _OFString_PathAdditions_reference;
 		return [[self copy] autorelease];
 	}
 
-	fileName = [fileName substringWithRange: of_range(0, pos)];
+	fileName = [fileName substringToIndex: pos];
 	[components replaceObjectAtIndex: components.count - 1
 			      withObject: fileName];
 
@@ -334,9 +333,9 @@ int _OFString_PathAdditions_reference;
 	OFString *path = self;
 
 	if (path.length > 1 && [path hasSuffix: @"/"])
-		path = [path substringWithRange: of_range(0, path.length - 1)];
+		path = [path substringToIndex: path.length - 1];
 
-	return [path substringWithRange: of_range(1, path.length - 1)];
+	return [path substringFromIndex: 1];
 }
 
 - (OFString *)of_pathComponentToURLPathComponent

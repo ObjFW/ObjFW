@@ -197,12 +197,10 @@ stringEqual(void *object1, void *object2)
 			_index++;
 
 			if ((pos = [argument rangeOfString: @"="].location) !=
-			    OF_NOT_FOUND) {
-				of_range_t range = of_range(pos + 1,
-				    argument.length - pos - 1);
+			    OF_NOT_FOUND)
 				_argument = [[argument
-				    substringWithRange: range] copy];
-			} else
+				    substringFromIndex: pos + 1] copy];
+			else
 				pos = argument.length;
 
 			_lastLongOption = [[argument substringWithRange:
@@ -255,8 +253,7 @@ stringEqual(void *object1, void *object2)
 				return ':';
 
 			argument = [_arguments objectAtIndex: _index];
-			argument = [argument substringWithRange:
-			    of_range(_subIndex, argument.length - _subIndex)];
+			argument = [argument substringFromIndex: _subIndex];
 
 			_argument = [argument copy];
 

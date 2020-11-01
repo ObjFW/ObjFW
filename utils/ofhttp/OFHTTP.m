@@ -325,12 +325,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	name = [header substringWithRange: of_range(0, pos)];
-	name = name.stringByDeletingEnclosingWhitespaces;
+	name = [header substringToIndex: pos]
+	    .stringByDeletingEnclosingWhitespaces;
 
-	value = [header substringWithRange:
-	    of_range(pos + 1, header.length - pos - 1)];
-	value = value.stringByDeletingEnclosingWhitespaces;
+	value = [header substringFromIndex: pos + 1]
+	    .stringByDeletingEnclosingWhitespaces;
 
 	[_clientHeaders setObject: value
 			   forKey: name];
@@ -398,9 +397,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		if (pos == OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
-		host = [proxy substringWithRange: of_range(0, pos)];
-		port = [proxy substringWithRange: of_range(pos + 1,
-		    proxy.length - pos - 1)].unsignedLongLongValue;
+		host = [proxy substringToIndex: pos];
+		port = [proxy substringFromIndex: pos + 1]
+		    .unsignedLongLongValue;
 
 		if (port > UINT16_MAX)
 			@throw [OFOutOfRangeException exception];

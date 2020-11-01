@@ -416,7 +416,7 @@ parseXMLProcessingInstructions(OFXMLParser *self, OFString *pi)
 
 	self->_acceptProlog = false;
 
-	pi = [pi substringWithRange: of_range(3, pi.length - 3)];
+	pi = [pi substringFromIndex: 3];
 	pi = pi.stringByDeletingEnclosingWhitespaces;
 
 	cString = pi.UTF8String;

@@ -1985,6 +1985,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return false;
 }
 
+- (OFString *)substringFromIndex: (size_t)idx
+{
+	return [self substringWithRange: of_range(idx, self.length - idx)];
+}
+
+- (OFString *)substringToIndex: (size_t)idx
+{
+	return [self substringWithRange: of_range(0, idx)];
+}
+
 - (OFString *)substringWithRange: (of_range_t)range
 {
 	void *pool;
