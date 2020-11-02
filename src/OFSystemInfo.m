@@ -534,16 +534,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 #if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	struct x86_regs regs = x86_cpuid(0, 0);
-	char buffer[12];
+	uint32_t buffer[3];
 
 	if (regs.eax == 0)
 		return nil;
 
-	memcpy(buffer, &regs.ebx, 4);
-	memcpy(buffer + 4, &regs.edx, 4);
-	memcpy(buffer + 8, &regs.ecx, 4);
+	buffer[0] = regs.ebx;
+	buffer[1] = regs.edx;
+	buffer[2] = regs.ecx;
 
-	return [OFString stringWithCString: buffer
+	return [OFString stringWithCString: (char *)buffer
 				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 12];
 #else
