@@ -161,7 +161,7 @@ int _OFString_PathAdditions_reference;
 		return @"";
 	}
 
-	ret = [fileName substringWithFromIndex: pos + 1];
+	ret = [fileName substringFromIndex: pos + 1];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
