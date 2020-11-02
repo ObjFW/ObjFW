@@ -569,20 +569,6 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	return [OFString stringWithCString: (char *)buffer
 				  encoding: OF_STRING_ENCODING_ASCII];
-#elif defined(OF_MACOS) || defined(OF_NETBSD)
-	char value[256];
-	size_t length = sizeof(value);
-
-# if defined(OF_MACOS)
-	if (sysctlbyname("machdep.cpu.brand_string",
-# elif defined(OF_NETBSD)
-	if (sysctlbyname("machdep.cpu_brand",
-# endif
-	    &value, &length, NULL, 0) != 0)
-		return nil;
-
-	return [OFString stringWithCString: value
-				  encoding: OF_STRING_ENCODING_ASCII];
 #elif defined(OF_AMIGAOS4)
 	CONST_STRPTR model, version;
 
