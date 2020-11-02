@@ -553,7 +553,23 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if defined(OF_MACOS) || defined(OF_NETBSD)
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+	uint32_t buffer[12];
+	size_t i;
+
+	i = 0;
+	for (uint32_t eax = 0x80000002; eax <= 0x80000004; eax++) {
+		struct x86_regs regs = x86_cpuid(eax, 0);
+
+		buffer[i++] = regs.eax;
+		buffer[i++] = regs.ebx;
+		buffer[i++] = regs.ecx;
+		buffer[i++] = regs.edx;
+	}
+
+	return [OFString stringWithCString: (char *)buffer
+				  encoding: OF_STRING_ENCODING_ASCII];
+#elif defined(OF_MACOS) || defined(OF_NETBSD)
 	char value[256];
 	size_t length = sizeof(value);
 
