@@ -112,7 +112,7 @@ int _OFString_URLEncoding_reference;
 			else if (c >= 'a' && c <= 'f')
 				byte += (c - 'a' + 10) << shift;
 			else {
-				of_free(retCString);
+				free(retCString);
 				@throw [OFInvalidFormatException exception];
 			}
 
@@ -130,7 +130,7 @@ int _OFString_URLEncoding_reference;
 	objc_autoreleasePoolPop(pool);
 
 	if (state != 0) {
-		of_free(retCString);
+		free(retCString);
 		@throw [OFInvalidFormatException exception];
 	}
 

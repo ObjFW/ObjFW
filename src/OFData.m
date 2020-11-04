@@ -207,7 +207,7 @@ _references_to_categories_of_OFData(void)
 			[file release];
 		}
 	} @catch (id e) {
-		of_free(buffer);
+		free(buffer);
 		[self release];
 
 		@throw e;
@@ -218,7 +218,7 @@ _references_to_categories_of_OFData(void)
 					   count: (size_t)size
 				    freeWhenDone: true];
 	} @catch (id e) {
-		of_free(buffer);
+		free(buffer);
 		@throw e;
 	}
 
@@ -266,7 +266,7 @@ _references_to_categories_of_OFData(void)
 				_count += length;
 			}
 		} @finally {
-			of_free(buffer);
+			free(buffer);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -386,7 +386,7 @@ _references_to_categories_of_OFData(void)
 - (void)dealloc
 {
 	if (_freeWhenDone)
-		of_free(_items);
+		free(_items);
 
 	[_parentData release];
 

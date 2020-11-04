@@ -104,8 +104,8 @@ of_huffman_tree_construct(uint8_t lengths[], uint16_t count)
 				insertTree(tree, nextCode[length]++, length, i);
 		}
 	} @finally {
-		of_free(lengthCount);
-		of_free(nextCode);
+		free(lengthCount);
+		free(nextCode);
 	}
 
 	return tree;
@@ -128,5 +128,5 @@ of_huffman_tree_release(struct of_huffman_tree *tree)
 		if OF_LIKELY (tree->leaves[i] != NULL)
 			of_huffman_tree_release(tree->leaves[i]);
 
-	of_free(tree);
+	free(tree);
 }

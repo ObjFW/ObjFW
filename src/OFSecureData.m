@@ -128,7 +128,7 @@ addPage(bool allowPreallocated)
 			page = preallocatedPages[numPreallocatedPages];
 
 			if (numPreallocatedPages == 0) {
-				of_free(preallocatedPages);
+				free(preallocatedPages);
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
@@ -144,14 +144,14 @@ addPage(bool allowPreallocated)
 	@try {
 		page->map = of_calloc(1, mapSize);
 	} @catch (id e) {
-		of_free(page);
+		free(page);
 		@throw e;
 	}
 	@try {
 		page->page = mapPages(1);
 	} @catch (id e) {
-		of_free(page->map);
-		of_free(page);
+		free(page->map);
+		free(page);
 		@throw e;
 	}
 	of_explicit_memset(page->page, 0, pageSize);
@@ -193,7 +193,7 @@ removePageIfEmpty(struct page *page)
 			return;
 
 	unmapPages(page->page, 1);
-	of_free(page->map);
+	free(page->map);
 
 	if (page->previous != NULL)
 		page->previous->next = page->next;
@@ -212,7 +212,7 @@ removePageIfEmpty(struct page *page)
 		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous));
 # endif
 
-	of_free(page);
+	free(page);
 }
 
 static void *
@@ -306,7 +306,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		for (size_t j = 0; j < i; j++)
 			removePageIfEmpty(preallocatedPages[j]);
 
-		of_free(preallocatedPages);
+		free(preallocatedPages);
 		preallocatedPages = NULL;
 
 		@throw e;

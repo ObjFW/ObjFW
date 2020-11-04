@@ -161,12 +161,6 @@ of_realloc(void *pointer, size_t count, size_t size)
 	return pointer;
 }
 
-void
-of_free(void *pointer)
-{
-	free(pointer);
-}
-
 #if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
 static void
 initRandom(void)

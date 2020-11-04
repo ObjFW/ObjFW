@@ -187,7 +187,7 @@ static struct {
 	@try {
 		otherValue = of_malloc(1, size);
 	} @catch (id e) {
-		of_free(value);
+		free(value);
 		@throw e;
 	}
 
@@ -199,8 +199,8 @@ static struct {
 
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		of_free(value);
-		of_free(otherValue);
+		free(value);
+		free(otherValue);
 	}
 
 	return ret;
@@ -224,7 +224,7 @@ static struct {
 
 		OF_HASH_FINALIZE(hash);
 	} @finally {
-		of_free(value);
+		free(value);
 	}
 
 	return hash;
@@ -325,7 +325,7 @@ static struct {
 			[ret appendFormat: @"%02x", value[i]];
 		}
 	} @finally {
-		of_free(value);
+		free(value);
 	}
 
 	[ret appendString: @">"];

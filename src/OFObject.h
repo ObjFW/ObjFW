@@ -1332,6 +1332,8 @@ extern "C" {
 /**
  * @brief Allocates memory for the specified number of items.
  *
+ * To free the allocated memory, use `free()`.
+ *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
  *
@@ -1347,6 +1349,8 @@ extern void *_Nullable of_malloc(size_t count, size_t size)
  * @brief Allocates memory for the specified number of items and initializes it
  *	  with zeros.
  *
+ * To free the allocated memory, use `free()`.
+ *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
  *
@@ -1361,6 +1365,8 @@ extern void *_Nullable of_calloc(size_t count, size_t size)
 /**
  * @brief Resizes memory to the specific number of items of the specified size.
  *
+ * To free the allocated memory, use `free()`.
+ *
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
  *
@@ -1374,15 +1380,6 @@ extern void *_Nullable of_calloc(size_t count, size_t size)
  */
 extern void *_Nullable of_realloc(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Frees allocated memory.
- *
- * Does nothing if the pointer is NULL.
- *
- * @param pointer A pointer to the allocated memory
- */
-extern void of_free(void *_Nullable pointer);
 
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);

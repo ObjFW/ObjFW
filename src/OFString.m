@@ -842,7 +842,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		ret = [self initWithUTF8String: UTF8String];
 	} @finally {
 		if (freeWhenDone)
-			of_free(UTF8String);
+			free(UTF8String);
 	}
 
 	return ret;
@@ -859,7 +859,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					length: UTF8StringLength];
 	} @finally {
 		if (freeWhenDone)
-			of_free(UTF8String);
+			free(UTF8String);
 	}
 
 	return ret;
@@ -1037,7 +1037,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			[file readIntoBuffer: tmp
 				 exactLength: (size_t)fileSize];
 		} @catch (id e) {
-			of_free(tmp);
+			free(tmp);
 			@throw e;
 		} @finally {
 			[file release];
@@ -1059,7 +1059,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					    encoding: encoding
 					      length: (size_t)fileSize];
 		} @finally {
-			of_free(tmp);
+			free(tmp);
 		}
 	}
 
@@ -1887,7 +1887,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			}
 		}
 	} @finally {
-		of_free(characters);
+		free(characters);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -1949,7 +1949,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					return range.location + i;
 		}
 	} @finally {
-		of_free(characters);
+		free(characters);
 	}
 
 	return OF_NOT_FOUND;

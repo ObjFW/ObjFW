@@ -718,7 +718,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		} @finally {
 			[sourceStream close];
 			[destinationStream close];
-			of_free(buffer);
+			free(buffer);
 		}
 	} else if ([type isEqual: of_file_type_symbolic_link]) {
 		@try {

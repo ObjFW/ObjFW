@@ -154,7 +154,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		/* Parse escape codes */
 		if (**pointer == '\\') {
 			if (++(*pointer) >= stop) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
@@ -193,13 +193,13 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				c1 = parseUnicodeEscape(*pointer - 1, stop);
 				if (c1 == 0xFFFF) {
-					of_free(buffer);
+					free(buffer);
 					return nil;
 				}
 
 				/* Low surrogate */
 				if ((c1 & 0xFC00) == 0xDC00) {
-					of_free(buffer);
+					free(buffer);
 					return nil;
 				}
 
@@ -208,7 +208,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 					l = of_string_utf8_encode(c1,
 					    buffer + i);
 					if (l == 0) {
-						of_free(buffer);
+						free(buffer);
 						return nil;
 					}
 
@@ -225,7 +225,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				 */
 				c2 = parseUnicodeEscape(*pointer + 5, stop);
 				if (c2 == 0xFFFF) {
-					of_free(buffer);
+					free(buffer);
 					return nil;
 				}
 
@@ -234,7 +234,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				l = of_string_utf8_encode(c, buffer + i);
 				if (l == 0) {
-					of_free(buffer);
+					free(buffer);
 					return nil;
 				}
 
@@ -256,7 +256,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				(*line)++;
 				break;
 			default:
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 		/* End of string found */
@@ -267,7 +267,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				ret = [OFString stringWithUTF8String: buffer
 							      length: i];
 			} @finally {
-				of_free(buffer);
+				free(buffer);
 			}
 
 			(*pointer)++;
@@ -276,7 +276,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		/* Newlines in strings are disallowed */
 		} else if (**pointer == '\n' || **pointer == '\r') {
 			(*line)++;
-			of_free(buffer);
+			free(buffer);
 			return nil;
 		} else {
 			buffer[i++] = **pointer;
@@ -284,7 +284,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		}
 	}
 
-	of_free(buffer);
+	free(buffer);
 	return nil;
 }
 
@@ -310,19 +310,19 @@ parseIdentifier(const char **pointer, const char *stop)
 			size_t l;
 
 			if (++(*pointer) >= stop || **pointer != 'u') {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
 			c1 = parseUnicodeEscape(*pointer - 1, stop);
 			if (c1 == 0xFFFF) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
 			/* Low surrogate */
 			if ((c1 & 0xFC00) == 0xDC00) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
@@ -330,7 +330,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			if ((c1 & 0xFC00) != 0xD800) {
 				l = of_string_utf8_encode(c1, buffer + i);
 				if (l == 0) {
-					of_free(buffer);
+					free(buffer);
 					return nil;
 				}
 
@@ -347,7 +347,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			 */
 			c2 = parseUnicodeEscape(*pointer + 5, stop);
 			if (c2 == 0xFFFF) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
@@ -355,7 +355,7 @@ parseIdentifier(const char **pointer, const char *stop)
 
 			l = of_string_utf8_encode(c, buffer + i);
 			if (l == 0) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
@@ -365,7 +365,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			OFString *ret;
 
 			if (i == 0 || (buffer[0] >= '0' && buffer[0] <= '9')) {
-				of_free(buffer);
+				free(buffer);
 				return nil;
 			}
 
@@ -373,7 +373,7 @@ parseIdentifier(const char **pointer, const char *stop)
 				ret = [OFString stringWithUTF8String: buffer
 							      length: i];
 			} @finally {
-				of_free(buffer);
+				free(buffer);
 			}
 
 			return ret;
@@ -384,7 +384,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	 * It is never possible to end with an identifier, thus we should never
 	 * reach stop.
 	 */
-	of_free(buffer);
+	free(buffer);
 	return nil;
 }
 

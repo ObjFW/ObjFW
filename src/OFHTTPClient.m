@@ -524,7 +524,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		key = [OFString stringWithUTF8StringNoCopy: keyC
 					      freeWhenDone: true];
 	} @catch (id e) {
-		of_free(keyC);
+		free(keyC);
 		@throw e;
 	}
 

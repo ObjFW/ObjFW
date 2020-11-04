@@ -60,7 +60,7 @@ int _OFObject_KeyValueCoding_reference;
 
 			selector = sel_registerName(name);
 		} @finally {
-			of_free(name);
+			free(name);
 		}
 
 		methodSignature = [self methodSignatureForSelector: selector];
@@ -172,7 +172,7 @@ int _OFObject_KeyValueCoding_reference;
 
 		selector = sel_registerName(name);
 	} @finally {
-		of_free(name);
+		free(name);
 	}
 
 	methodSignature = [self methodSignatureForSelector: selector];

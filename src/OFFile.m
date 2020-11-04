@@ -98,7 +98,7 @@ closeHandle(of_file_handle_t handle)
 	if (firstHandle == handle)
 		firstHandle = handle->next;
 
-	of_free(handle);
+	free(handle);
 }
 
 OF_DESTRUCTOR()
@@ -305,7 +305,7 @@ parseMode(const char *mode, bool *append)
 
 			firstHandle = handle;
 		} @catch (id e) {
-			of_free(handle);
+			free(handle);
 			@throw e;
 		}
 #endif

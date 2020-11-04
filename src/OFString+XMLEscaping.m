@@ -84,7 +84,7 @@ int _OFString_XMLEscaping_reference;
 				retCString = of_realloc(retCString, 1,
 				    retLength + appendLen);
 			} @catch (id e) {
-				of_free(retCString);
+				free(retCString);
 				@throw e;
 			}
 			retLength += appendLen - 1;
@@ -102,7 +102,7 @@ int _OFString_XMLEscaping_reference;
 		ret = [OFString stringWithUTF8String: retCString
 					      length: retLength];
 	} @finally {
-		of_free(retCString);
+		free(retCString);
 	}
 	return ret;
 }

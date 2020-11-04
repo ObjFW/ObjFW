@@ -646,7 +646,7 @@
 					    count: count
 				     freeWhenDone: true];
 	} @catch (id e) {
-		of_free(buffer);
+		free(buffer);
 		@throw e;
 	}
 

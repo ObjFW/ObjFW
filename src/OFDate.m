@@ -794,7 +794,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		of_free(buffer);
+		free(buffer);
 	}
 
 	return ret;
@@ -854,7 +854,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		of_free(buffer);
+		free(buffer);
 	}
 
 	return ret;
