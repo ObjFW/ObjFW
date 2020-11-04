@@ -248,19 +248,25 @@ _references_to_categories_of_OFData(void)
 		_count = 0;
 
 		pageSize = [OFSystemInfo pageSize];
-		buffer = [self allocMemoryWithSize: pageSize];
+		buffer = of_malloc(1, pageSize);
 
-		while (!stream.atEndOfStream) {
-			size_t length = [stream readIntoBuffer: buffer
-							length: pageSize];
+		@try {
+			while (!stream.atEndOfStream) {
+				size_t length = [stream
+				    readIntoBuffer: buffer
+					    length: pageSize];
 
-			if (SIZE_MAX - _count < length)
-				@throw [OFOutOfRangeException exception];
+				if (SIZE_MAX - _count < length)
+					@throw [OFOutOfRangeException
+					    exception];
 
-			_items = [self resizeMemory: _items
-					       size: _count + length];
-			memcpy(_items + _count, buffer, length);
-			_count += length;
+				_items = [self resizeMemory: _items
+						       size: _count + length];
+				memcpy(_items + _count, buffer, length);
+				_count += length;
+			}
+		} @finally {
+			of_free(buffer);
 		}
 
 		objc_autoreleasePoolPop(pool);
