@@ -50,7 +50,7 @@ int _OFObject_KeyValueCoding_reference;
 			return [self valueForUndefinedKey: key];
 		}
 
-		name = of_malloc(1, keyLength + 3);
+		name = of_malloc(keyLength + 3, 1);
 		@try {
 			memcpy(name, "is", 2);
 			memcpy(name + 2, key.UTF8String, keyLength);
@@ -162,7 +162,7 @@ int _OFObject_KeyValueCoding_reference;
 		return;
 	}
 
-	name = of_malloc(1, keyLength + 5);
+	name = of_malloc(keyLength + 5, 1);
 	@try {
 		memcpy(name, "set", 3);
 		memcpy(name + 3, key.UTF8String, keyLength);

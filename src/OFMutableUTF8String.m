@@ -105,8 +105,7 @@
 	}
 
 	unicodeLen = self.length;
-	unicodeString = [self allocMemoryWithSize: sizeof(of_unichar_t)
-					    count: unicodeLen];
+	unicodeString = of_malloc(unicodeLen, sizeof(of_unichar_t));
 
 	i = j = 0;
 	newCStringLength = 0;
@@ -129,7 +128,7 @@
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
-			[self freeMemory: unicodeString];
+			free(unicodeString);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -152,7 +151,7 @@
 		else if (c < 0x110000)
 			newCStringLength += 4;
 		else {
-			[self freeMemory: unicodeString];
+			free(unicodeString);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -162,7 +161,7 @@
 	@try {
 		newCString = [self allocMemoryWithSize: newCStringLength + 1];
 	} @catch (id e) {
-		[self freeMemory: unicodeString];
+		free(unicodeString);
 		@throw e;
 	}
 
@@ -173,7 +172,7 @@
 
 		if ((d = of_string_utf8_encode(unicodeString[i],
 		    newCString + j)) == 0) {
-			[self freeMemory: unicodeString];
+			free(unicodeString);
 			[self freeMemory: newCString];
 			@throw [OFInvalidEncodingException exception];
 		}
@@ -182,7 +181,7 @@
 
 	assert(j == newCStringLength);
 	newCString[j] = 0;
-	[self freeMemory: unicodeString];
+	free(unicodeString);
 
 	[self freeMemory: _s->cString];
 	_s->hashed = false;
@@ -385,9 +384,8 @@
 - (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length
 {
-	char *tmp;
+	char *tmp = of_malloc((length * 4) + 1, 1);
 
-	tmp = [self allocMemoryWithSize: (length * 4) + 1];
 	@try {
 		size_t j = 0;
 		bool isUTF8 = false;
@@ -418,7 +416,7 @@
 		if (isUTF8)
 			_s->isUTF8 = true;
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 }
 

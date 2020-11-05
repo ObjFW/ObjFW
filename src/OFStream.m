@@ -657,7 +657,7 @@
 {
 	OFMutableData *data = [OFMutableData data];
 	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = [self allocMemoryWithSize: pageSize];
+	char *buffer = of_malloc(1, pageSize);
 
 	@try {
 		while (!self.atEndOfStream) {
@@ -669,7 +669,7 @@
 				 count: length];
 		}
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	[data makeImmutable];
@@ -687,7 +687,7 @@
 			  encoding: (of_string_encoding_t)encoding
 {
 	OFString *ret;
-	char *buffer = [self allocMemoryWithSize: length + 1];
+	char *buffer = of_malloc(length + 1, 1);
 	buffer[length] = 0;
 
 	@try {
@@ -697,7 +697,7 @@
 		ret = [OFString stringWithCString: buffer
 					 encoding: encoding];
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	return ret;
@@ -705,8 +705,8 @@
 
 - (OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
-	size_t pageSize, bufferLength, retLength;
-	char *retCString, *buffer, *readBuffer;
+	size_t pageSize, bufferLength;
+	char *buffer, *readBuffer;
 	OFString *ret;
 
 	/* Look if there's a line or \0 in our buffer */
@@ -714,7 +714,7 @@
 		for (size_t i = 0; i < _readBufferLength; i++) {
 			if OF_UNLIKELY (_readBuffer[i] == '\n' ||
 			    _readBuffer[i] == '\0') {
-				retLength = i;
+				size_t retLength = i;
 
 				if (i > 0 && _readBuffer[i - 1] == '\r')
 					retLength--;
@@ -734,10 +734,12 @@
 
 	/* Read and see if we got a newline or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
+	buffer = of_malloc(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
+			size_t retLength;
+
 			if (_readBuffer == NULL) {
 				_waitingForDelimiter = false;
 				return nil;
@@ -767,9 +769,8 @@
 		for (size_t i = 0; i < bufferLength; i++) {
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
-				retLength = _readBufferLength + i;
-				retCString = [self
-				    allocMemoryWithSize: retLength];
+				size_t retLength = _readBufferLength + i;
+				char *retCString = of_malloc(retLength, 1);
 
 				if (_readBuffer != NULL)
 					memcpy(retCString, _readBuffer,
@@ -782,13 +783,10 @@
 					retLength--;
 
 				@try {
-					char *rcs = retCString;
-					size_t rl = retLength;
-
 					ret = [OFString
-					    stringWithCString: rcs
+					    stringWithCString: retCString
 						     encoding: encoding
-						       length: rl];
+						       length: retLength];
 				} @catch (id e) {
 					if (bufferLength > 0) {
 						/*
@@ -816,7 +814,7 @@
 
 					@throw e;
 				} @finally {
-					[self freeMemory: retCString];
+					free(retCString);
 				}
 
 				readBuffer = [self
@@ -848,7 +846,7 @@
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -940,8 +938,8 @@
 			  encoding: (of_string_encoding_t)encoding
 {
 	const char *delimiterCString;
-	size_t j, delimiterLength, pageSize, bufferLength, retLength;
-	char *retCString, *buffer, *readBuffer;
+	size_t j, delimiterLength, pageSize, bufferLength;
+	char *buffer, *readBuffer;
 	OFString *ret;
 
 	delimiterCString = [delimiter cStringWithEncoding: encoding];
@@ -977,7 +975,7 @@
 
 	/* Read and see if we got a delimiter or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
+	buffer = of_malloc(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -1007,13 +1005,15 @@
 				j = 0;
 
 			if (j == delimiterLength || buffer[i] == '\0') {
+				size_t retLength;
+				char *retCString;
+
 				if (buffer[i] == '\0')
 					delimiterLength = 1;
 
 				retLength = _readBufferLength + i + 1 -
 				    delimiterLength;
-				retCString = [self
-				    allocMemoryWithSize: retLength];
+				retCString = of_malloc(retLength, 1);
 
 				if (_readBuffer != NULL &&
 				    _readBufferLength <= retLength)
@@ -1027,13 +1027,10 @@
 					    buffer, i + 1 - delimiterLength);
 
 				@try {
-					char *rcs = retCString;
-					size_t rl = retLength;
-
 					ret = [OFString
-					    stringWithCString: rcs
+					    stringWithCString: retCString
 						     encoding: encoding
-						       length: rl];
+						       length: retLength];
 				} @catch (id e) {
 					if (bufferLength > 0) {
 						/*
@@ -1061,7 +1058,7 @@
 
 					@throw e;
 				} @finally {
-					[self freeMemory: retCString];
+					free(retCString);
 				}
 
 				readBuffer = [self allocMemoryWithSize:
@@ -1093,7 +1090,7 @@
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -1338,8 +1335,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-					    count: count];
+	uint16_t *tmp = of_malloc(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1348,7 +1344,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1369,8 +1365,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-					    count: count];
+	uint32_t *tmp = of_malloc(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1379,7 +1374,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1400,8 +1395,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-					    count: count];
+	uint64_t *tmp = of_malloc(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1410,7 +1404,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1431,8 +1425,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp = [self allocMemoryWithSize: sizeof(float)
-					 count: count];
+	float *tmp = of_malloc(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1441,7 +1434,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1462,8 +1455,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp = [self allocMemoryWithSize: sizeof(double)
-					  count: count];
+	double *tmp = of_malloc(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1472,7 +1464,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1533,8 +1525,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-					    count: count];
+	uint16_t *tmp = of_malloc(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1543,7 +1534,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1564,8 +1555,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-					    count: count];
+	uint32_t *tmp = of_malloc(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1574,7 +1564,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1595,8 +1585,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-					    count: count];
+	uint64_t *tmp = of_malloc(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1605,7 +1594,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1626,8 +1615,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp = [self allocMemoryWithSize: sizeof(float)
-					 count: count];
+	float *tmp = of_malloc(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1636,7 +1624,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1657,8 +1645,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp = [self allocMemoryWithSize: sizeof(double)
-					  count: count];
+	double *tmp = of_malloc(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1667,7 +1654,7 @@
 		[self writeBuffer: tmp
 			   length: size];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 #endif
 
@@ -1731,7 +1718,7 @@
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
 
-	buffer = [self allocMemoryWithSize: stringLength + 1];
+	buffer = of_malloc(stringLength + 1, 1);
 
 	@try {
 		memcpy(buffer, [string cStringWithEncoding: encoding],
@@ -1741,7 +1728,7 @@
 		[self writeBuffer: buffer
 			   length: stringLength + 1];
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	return stringLength + 1;

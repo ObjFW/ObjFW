@@ -243,8 +243,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = [self allocMemoryWithSize: sizeof(*copy)
-				   count: range.length];
+	copy = of_malloc(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
@@ -254,7 +253,7 @@
 		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
-		[self freeMemory: copy];
+		free(copy);
 	}
 }
 

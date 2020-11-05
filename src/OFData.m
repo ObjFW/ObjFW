@@ -197,7 +197,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		buffer = of_malloc(1, (size_t)size);
+		buffer = of_malloc((size_t)size, 1);
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"r"];
 		@try {

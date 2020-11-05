@@ -42,11 +42,7 @@ int _OFString_XMLEscaping_reference;
 
 	j = 0;
 	retLength = length;
-
-	/*
-	 * We can't use allocMemoryWithSize: here as it might be a @"" literal
-	 */
-	retCString = of_malloc(1, retLength);
+	retCString = of_malloc(retLength, 1);
 
 	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {

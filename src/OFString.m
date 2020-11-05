@@ -1029,7 +1029,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		tmp = of_malloc(1, (size_t)fileSize + 1);
+		tmp = of_malloc((size_t)fileSize + 1, 1);
 		@try {
 			file = [[OFFile alloc] initWithPath: path
 						       mode: @"r"];
@@ -2168,8 +2168,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ((prefixLength = prefix.length) > self.length)
 		return false;
 
-	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
-				  count: prefixLength];
+	tmp = of_malloc(prefixLength, sizeof(of_unichar_t));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2181,7 +2180,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 
 	return hasPrefix;
@@ -2199,8 +2198,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	length = self.length;
 
-	tmp = [self allocMemoryWithSize: sizeof(of_unichar_t)
-				  count: suffixLength];
+	tmp = of_malloc(suffixLength, sizeof(of_unichar_t));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2214,7 +2212,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 
 	return hasSuffix;

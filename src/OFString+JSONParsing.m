@@ -148,7 +148,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	if (++(*pointer) + 1 >= stop)
 		return nil;
 
-	buffer = of_malloc(1, stop - *pointer);
+	buffer = of_malloc(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		/* Parse escape codes */
@@ -294,7 +294,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	char *buffer;
 	size_t i = 0;
 
-	buffer = of_malloc(1, stop - *pointer);
+	buffer = of_malloc(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		if ((**pointer >= 'a' && **pointer <= 'z') ||
