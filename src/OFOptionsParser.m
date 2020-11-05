@@ -86,12 +86,10 @@ stringEqual(void *object1, void *object2)
 			count++;
 		}
 
+		_options = of_malloc(count + 1, sizeof(*_options));
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions];
-		_options = [self
-		    allocMemoryWithSize: sizeof(*_options)
-				  count: count + 1];
 
 		for (iter = options, iter2 = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
@@ -146,6 +144,7 @@ stringEqual(void *object1, void *object2)
 {
 	of_options_parser_option_t *iter;
 
+	free(_options);
 	[_longOptions release];
 
 	if (_options != NULL)

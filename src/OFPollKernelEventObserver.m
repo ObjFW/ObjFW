@@ -52,8 +52,7 @@
 		[_FDs addItem: &p];
 
 		_maxFD = _cancelFD[0];
-		_FDToObject = [self allocMemoryWithSize: sizeof(id)
-						  count: (size_t)_maxFD + 1];
+		_FDToObject = of_malloc((size_t)_maxFD + 1, sizeof(id));
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -65,6 +64,7 @@
 - (void)dealloc
 {
 	[_FDs release];
+	free(_FDToObject);
 
 	[super dealloc];
 }
@@ -98,9 +98,8 @@
 
 		if (fd > _maxFD) {
 			_maxFD = fd;
-			_FDToObject = [self resizeMemory: _FDToObject
-						    size: sizeof(id)
-						   count: (size_t)_maxFD + 1];
+			_FDToObject = of_realloc(_FDToObject,
+			    (size_t)_maxFD + 1, sizeof(id));
 		}
 
 		_FDToObject[fd] = object;

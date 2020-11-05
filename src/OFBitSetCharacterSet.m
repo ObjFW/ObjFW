@@ -49,8 +49,7 @@
 
 				newSize = OF_ROUND_UP_POW2(8, c + 1) / 8;
 
-				_bitset = [self resizeMemory: _bitset
-							size: newSize];
+				_bitset = of_realloc(_bitset, newSize, 1);
 				memset(_bitset + _size, '\0', newSize - _size);
 
 				_size = newSize;
@@ -66,6 +65,13 @@
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	free(_bitset);
+
+	[super dealloc];
 }
 
 - (bool)characterIsMember: (of_unichar_t)character

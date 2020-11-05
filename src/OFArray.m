@@ -240,15 +240,13 @@ static struct {
 
 - (id const *)objects
 {
-	OFObject *container;
-	size_t count;
+	size_t count = self.count;
+	OFMutableData *data = [OFMutableData dataWithItemSize: sizeof(id)
+						     capacity: count];
 	id *buffer;
 
-	container = [[[OFObject alloc] init] autorelease];
-	count = self.count;
-	buffer = [container allocMemoryWithSize: sizeof(*buffer)
-					  count: count];
-
+	[data increaseCountBy: count];
+	buffer = data.mutableItems;
 	[self getObjects: buffer
 		 inRange: of_range(0, count)];
 

@@ -163,8 +163,7 @@ OF_DIRECT_MEMBERS
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
 
-		_buckets = [self allocZeroedMemoryWithSize: sizeof(*_buckets)
-						     count: _capacity];
+		_buckets = of_calloc(_capacity, sizeof(*_buckets));
 
 		if (of_hash_seed != 0)
 			_rotate = of_random16() & 31;
@@ -182,8 +181,12 @@ OF_DIRECT_MEMBERS
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
+
+			free(_buckets[i]);
 		}
 	}
+
+	free(_buckets);
 
 	[super dealloc];
 }
@@ -322,8 +325,7 @@ OF_DIRECT_MEMBERS
 	if ((capacity < _capacity && count > _count) || capacity < MIN_CAPACITY)
 		return;
 
-	buckets = [self allocZeroedMemoryWithSize: sizeof(*buckets)
-					    count: capacity];
+	buckets = of_calloc(capacity, sizeof(*buckets));
 
 	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
@@ -349,7 +351,7 @@ OF_DIRECT_MEMBERS
 		}
 	}
 
-	[self freeMemory: _buckets];
+	free(_buckets);
 	_buckets = buckets;
 	_capacity = capacity;
 }
@@ -412,12 +414,12 @@ OF_DIRECT_MEMBERS
 		if (i >= last)
 			@throw [OFOutOfRangeException exception];
 
-		bucket = [self allocMemoryWithSize: sizeof(*bucket)];
+		bucket = of_malloc(1, sizeof(*bucket));
 
 		@try {
 			bucket->key = _keyFunctions.retain(key);
 		} @catch (id e) {
-			[self freeMemory: bucket];
+			free(bucket);
 			@throw e;
 		}
 
@@ -425,7 +427,7 @@ OF_DIRECT_MEMBERS
 			bucket->object = _objectFunctions.retain(object);
 		} @catch (id e) {
 			_keyFunctions.release(bucket->key);
-			[self freeMemory: bucket];
+			free(bucket);
 			@throw e;
 		}
 
@@ -470,7 +472,7 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			[self freeMemory: _buckets[i]];
+			free(_buckets[i]);
 			_buckets[i] = &deleted;
 
 			_count--;
@@ -494,7 +496,7 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			[self freeMemory: _buckets[i]];
+			free(_buckets[i]);
 			_buckets[i] = &deleted;
 
 			_count--;
@@ -518,16 +520,14 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			[self freeMemory: _buckets[i]];
+			free(_buckets[i]);
 			_buckets[i] = NULL;
 		}
 	}
 
 	_count = 0;
 	_capacity = MIN_CAPACITY;
-	_buckets = [self resizeMemory: _buckets
-				 size: sizeof(*_buckets)
-				count: _capacity];
+	_buckets = of_realloc(_buckets, _capacity, sizeof(*_buckets));
 
 	/*
 	 * Get a new random value for _rotate, so that it is not less secure

@@ -93,6 +93,14 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	free(_readBufferMemory);
+	free(_writeBuffer);
+
+	[super dealloc];
+}
+
 - (bool)lowlevelIsAtEndOfStream
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -143,8 +151,7 @@
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
 
-				readBuffer = [self allocMemoryWithSize:
-				    bytesRead - length];
+				readBuffer = of_malloc(bytesRead - length, 1);
 				memcpy(readBuffer, tmp + length,
 				    bytesRead - length);
 
@@ -166,7 +173,7 @@
 		size_t ret = _readBufferLength;
 		memcpy(buffer, _readBuffer, _readBufferLength);
 
-		[self freeMemory: _readBufferMemory];
+		free(_readBufferMemory);
 		_readBuffer = _readBufferMemory = NULL;
 		_readBufferLength = 0;
 
@@ -754,7 +761,7 @@
 						 encoding: encoding
 						   length: retLength];
 
-			[self freeMemory: _readBufferMemory];
+			free(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -793,10 +800,9 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = [self
-						    allocMemoryWithSize:
+						readBuffer = of_malloc(
 						    _readBufferLength +
-						    bufferLength];
+						    bufferLength, 1);
 
 						memcpy(readBuffer, _readBuffer,
 						    _readBufferLength);
@@ -804,8 +810,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						[self freeMemory:
-						    _readBufferMemory];
+						free(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -817,13 +822,12 @@
 					free(retCString);
 				}
 
-				readBuffer = [self
-				    allocMemoryWithSize: bufferLength - i - 1];
+				readBuffer = of_malloc(bufferLength - i - 1, 1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _readBufferMemory];
+				free(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -834,14 +838,14 @@
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
-			readBuffer = [self allocMemoryWithSize:
-			    _readBufferLength + bufferLength];
+			readBuffer = of_malloc(_readBufferLength + bufferLength,
+			    1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			[self freeMemory: _readBufferMemory];
+			free(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
@@ -988,7 +992,7 @@
 						 encoding: encoding
 						   length: _readBufferLength];
 
-			[self freeMemory: _readBufferMemory];
+			free(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -1037,10 +1041,9 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = [self
-						    allocMemoryWithSize:
+						readBuffer = of_malloc(
 						    _readBufferLength +
-						    bufferLength];
+						    bufferLength, 1);
 
 						memcpy(readBuffer, _readBuffer,
 						    _readBufferLength);
@@ -1048,8 +1051,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						[self freeMemory:
-						    _readBufferMemory];
+						free(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -1061,13 +1063,12 @@
 					free(retCString);
 				}
 
-				readBuffer = [self allocMemoryWithSize:
-				    bufferLength - i - 1];
+				readBuffer = of_malloc(bufferLength - i - 1, 1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _readBufferMemory];
+				free(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -1078,14 +1079,14 @@
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
-			readBuffer = [self allocMemoryWithSize:
-			    _readBufferLength + bufferLength];
+			readBuffer = of_malloc(_readBufferLength + bufferLength,
+			    1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			[self freeMemory: _readBufferMemory];
+			free(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
@@ -1131,7 +1132,7 @@
 	[self lowlevelWriteBuffer: _writeBuffer
 			   length: _writeBufferLength];
 
-	[self freeMemory: _writeBuffer];
+	free(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 }
@@ -1152,8 +1153,8 @@
 
 		return bytesWritten;
 	} else {
-		_writeBuffer = [self resizeMemory: _writeBuffer
-					     size: _writeBufferLength + length];
+		_writeBuffer = of_realloc(_writeBuffer,
+		    _writeBufferLength + length, 1);
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
 
@@ -1873,22 +1874,22 @@
 	if (length > SIZE_MAX - _readBufferLength)
 		@throw [OFOutOfRangeException exception];
 
-	readBuffer = [self allocMemoryWithSize: _readBufferLength + length];
+	readBuffer = of_malloc(_readBufferLength + length, 1);
 	memcpy(readBuffer, buffer, length);
 	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 
-	[self freeMemory: _readBufferMemory];
+	free(_readBufferMemory);
 	_readBuffer = _readBufferMemory = readBuffer;
 	_readBufferLength += length;
 }
 
 - (void)close
 {
-	[self freeMemory: _readBufferMemory];
+	free(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;
 
-	[self freeMemory: _writeBuffer];
+	free(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 	_buffersWrites = false;
