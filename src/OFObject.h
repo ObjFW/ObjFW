@@ -832,34 +832,6 @@ OF_ROOT_CLASS
 				 count: (size_t)count OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Allocates memory, initializes it with zeros and stores it in the
- *	  object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-    OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory for the specified number of items, initializes it
- *	  with zeros and stores it in the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of each item to allocate
- * @param count The number of items to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size or count is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-				       count: (size_t)count
-    OF_WARN_UNUSED_RESULT;
-
-/**
  * @brief Resizes memory in the object's memory pool to the specified size.
  *
  * If the pointer is NULL, this is equivalent to allocating memory.

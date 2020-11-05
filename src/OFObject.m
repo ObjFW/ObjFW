@@ -1142,45 +1142,6 @@ _references_to_categories_of_OFObject(void)
 	return [self allocMemoryWithSize: size * count];
 }
 
-- (void *)allocZeroedMemoryWithSize: (size_t)size
-{
-	void *pointer;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (size == 0)
-		return NULL;
-
-	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
-		@throw [OFOutOfRangeException exception];
-
-	if OF_UNLIKELY ((pointer = calloc(1, PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	preMem = pointer;
-	preMem->owner = self;
-	preMem->prev = PRE_IVARS->lastMem;
-
-	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
-		PRE_IVARS->lastMem->next = preMem;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
-		PRE_IVARS->firstMem = preMem;
-
-	PRE_IVARS->lastMem = preMem;
-
-	return (char *)pointer + PRE_MEM_ALIGN;
-}
-
-- (void *)allocZeroedMemoryWithSize: (size_t)size
-			      count: (size_t)count
-{
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self allocZeroedMemoryWithSize: size * count];
-}
-
 - (void *)resizeMemory: (void *)pointer
 		  size: (size_t)size
 {
