@@ -241,16 +241,20 @@ static struct {
 - (id const *)objects
 {
 	size_t count = self.count;
-	OFMutableData *data = [OFMutableData dataWithItemSize: sizeof(id)
-						     capacity: count];
-	id *buffer;
+	id *buffer = of_malloc(count, sizeof(id));
 
-	[data increaseCountBy: count];
-	buffer = data.mutableItems;
-	[self getObjects: buffer
-		 inRange: of_range(0, count)];
+	@try {
+		[self getObjects: buffer
+			 inRange: of_range(0, count)];
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
 
-	return buffer;
+	return [OFData dataWithItemsNoCopy: buffer
+				  itemSize: sizeof(id)
+				     count: count
+			      freeWhenDone: true].items;
 }
 
 - (id)copy
