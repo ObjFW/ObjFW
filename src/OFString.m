@@ -836,14 +836,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
-	id ret;
+	id ret = [self initWithUTF8String: UTF8String];
 
-	@try {
-		ret = [self initWithUTF8String: UTF8String];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	if (freeWhenDone)
+		free(UTF8String);
 
 	return ret;
 }
@@ -852,15 +848,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	id ret;
+	id ret = [self initWithUTF8String: UTF8String
+				   length: UTF8StringLength];
 
-	@try {
-		ret = [self initWithUTF8String: UTF8String
-					length: UTF8StringLength];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	if (freeWhenDone)
+		free(UTF8String);
 
 	return ret;
 }

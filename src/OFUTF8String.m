@@ -404,28 +404,16 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	@try {
-		self = [super init];
-	} @catch (id e) {
-		if (freeWhenDone)
-			free(UTF8String);
-		@throw e;
-	}
+	self = [super init];
 
 	@try {
 		_s = &_storage;
-
-		if (freeWhenDone)
-			_s->freeWhenDone = UTF8String;
 
 		if (UTF8StringLength >= 3 &&
 		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 			UTF8String += 3;
 			UTF8StringLength -= 3;
 		}
-
-		_s->cString = (char *)UTF8String;
-		_s->cStringLength = UTF8StringLength;
 
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &_s->length)) {
@@ -435,6 +423,12 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		_s->cString = (char *)UTF8String;
+		_s->cStringLength = UTF8StringLength;
+
+		if (freeWhenDone)
+			_s->freeWhenDone = UTF8String;
 	} @catch (id e) {
 		[self release];
 		@throw e;
