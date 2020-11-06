@@ -1049,11 +1049,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@throw e;
 	}
 
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		self = [self initWithUTF8StringNoCopy: tmp
-					       length: (size_t)fileSize
-					 freeWhenDone: true];
-	else {
+	if (encoding == OF_STRING_ENCODING_UTF_8) {
+		@try {
+			self = [self initWithUTF8StringNoCopy: tmp
+						       length: (size_t)fileSize
+						 freeWhenDone: true];
+		} @catch (id e) {
+			free(tmp);
+			@throw e;
+		}
+	} else {
 		@try {
 			self = [self initWithCString: tmp
 					    encoding: encoding
@@ -1435,9 +1440,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	return [OFData dataWithItemsNoCopy: cString
-				     count: cStringLength + 1
-			      freeWhenDone: true].items;
+	@try {
+		return [OFData dataWithItemsNoCopy: cString
+					     count: cStringLength + 1
+				      freeWhenDone: true].items;
+	} @catch (id e) {
+		free(cString);
+		@throw e;
+	}
 }
 
 - (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
@@ -2505,15 +2515,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		[self getCharacters: buffer
 			    inRange: of_range(0, length)];
+
+		return [OFData dataWithItemsNoCopy: buffer
+					     count: length
+					  itemSize: sizeof(of_unichar_t)
+				      freeWhenDone: true].items;
 	} @catch (id e) {
 		free(buffer);
 		@throw e;
 	}
-
-	return [OFData dataWithItemsNoCopy: buffer
-				     count: length
-				  itemSize: sizeof(of_unichar_t)
-			      freeWhenDone: true].items;
 }
 
 - (const of_char16_t *)UTF16String
@@ -2568,10 +2578,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [OFData dataWithItemsNoCopy: buffer
-				     count: j + 1
-				  itemSize: sizeof(of_char16_t)
-			      freeWhenDone: true].items;
+	@try {
+		return [OFData dataWithItemsNoCopy: buffer
+					     count: j + 1
+					  itemSize: sizeof(of_char16_t)
+				      freeWhenDone: true].items;
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
 }
 
 - (size_t)UTF16StringLength
@@ -2603,19 +2618,19 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		[self getCharacters: buffer
 			    inRange: of_range(0, length)];
 		buffer[length] = 0;
+
+		if (byteOrder != OF_BYTE_ORDER_NATIVE)
+			for (size_t i = 0; i < length; i++)
+				buffer[i] = OF_BSWAP32(buffer[i]);
+
+		return [OFData dataWithItemsNoCopy: buffer
+					     count: length + 1
+					  itemSize: sizeof(of_char32_t)
+				      freeWhenDone: true].items;
 	} @catch (id e) {
 		free(buffer);
 		@throw e;
 	}
-
-	if (byteOrder != OF_BYTE_ORDER_NATIVE)
-		for (size_t i = 0; i < length; i++)
-			buffer[i] = OF_BSWAP32(buffer[i]);
-
-	return [OFData dataWithItemsNoCopy: buffer
-				     count: length + 1
-				  itemSize: sizeof(of_char32_t)
-			      freeWhenDone: true].items;
 }
 
 - (OFData *)dataWithEncoding: (of_string_encoding_t)encoding

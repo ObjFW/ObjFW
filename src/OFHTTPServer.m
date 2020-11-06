@@ -147,8 +147,13 @@ normalizedKey(OFString *key)
 		tmp++;
 	}
 
-	return [OFString stringWithUTF8StringNoCopy: cString
-				       freeWhenDone: true];
+	@try {
+		return [OFString stringWithUTF8StringNoCopy: cString
+					       freeWhenDone: true];
+	} @catch (id e) {
+		free(cString);
+		@throw e;
+	}
 }
 
 @implementation OFHTTPServerResponse

@@ -140,8 +140,13 @@ int _OFString_URLEncoding_reference;
 		/* We don't care if it fails, as we only made it smaller. */
 	}
 
-	return [OFString stringWithUTF8StringNoCopy: retCString
-					     length: i
-				       freeWhenDone: true];
+	@try {
+		return [OFString stringWithUTF8StringNoCopy: retCString
+						     length: i
+					       freeWhenDone: true];
+	} @catch (id e) {
+		free(retCString);
+		@throw e;
+	}
 }
 @end
