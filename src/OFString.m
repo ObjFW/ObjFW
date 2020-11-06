@@ -1379,24 +1379,27 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
 				 lossy: (bool)lossy
 {
-	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = self.length;
 	char *cString;
+	size_t cStringLength;
 
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:;
-		size_t cStringLength;
-
-		cString = [object allocMemoryWithSize: (length * 4) + 1];
-
-		cStringLength = [self of_getCString: cString
-					  maxLength: (length * 4) + 1
-					   encoding: OF_STRING_ENCODING_UTF_8
-					      lossy: lossy];
+	case OF_STRING_ENCODING_UTF_8:
+		cString = of_malloc((length * 4) + 1, 1);
 
 		@try {
-			cString = [object resizeMemory: cString
-						  size: cStringLength + 1];
+			cStringLength = [self
+			    of_getCString: cString
+				maxLength: (length * 4) + 1
+				 encoding: OF_STRING_ENCODING_UTF_8
+				    lossy: lossy];
+		} @catch (id e) {
+			free(cString);
+			@throw e;
+		}
+
+		@try {
+			cString = of_realloc(cString, cStringLength + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -1415,19 +1418,26 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	case OF_STRING_ENCODING_MAC_ROMAN:
 	case OF_STRING_ENCODING_KOI8_R:
 	case OF_STRING_ENCODING_KOI8_U:
-		cString = [object allocMemoryWithSize: length + 1];
+		cString = of_malloc(length + 1, 1);
 
-		[self of_getCString: cString
-			  maxLength: length + 1
-			   encoding: encoding
-			      lossy: lossy];
+		@try {
+			cStringLength = [self of_getCString: cString
+						  maxLength: length + 1
+						   encoding: encoding
+						      lossy: lossy];
+		} @catch (id e) {
+			free(cString);
+			@throw e;
+		}
 
 		break;
 	default:
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	return cString;
+	return [OFData dataWithItemsNoCopy: cString
+				     count: cStringLength + 1
+			      freeWhenDone: true].items;
 }
 
 - (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
@@ -2488,16 +2498,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (const of_unichar_t *)characters
 {
-	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = self.length;
-	of_unichar_t *ret;
+	of_unichar_t *buffer;
 
-	ret = [object allocMemoryWithSize: sizeof(of_unichar_t)
-				    count: length];
-	[self getCharacters: ret
-		    inRange: of_range(0, length)];
+	buffer = of_malloc(length, sizeof(of_unichar_t));
+	@try {
+		[self getCharacters: buffer
+			    inRange: of_range(0, length)];
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
 
-	return ret;
+	return [OFData dataWithItemsNoCopy: buffer
+				  itemSize: sizeof(of_unichar_t)
+				     count: length
+			      freeWhenDone: true].items;
 }
 
 - (const of_char16_t *)UTF16String
@@ -2507,54 +2523,55 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
 {
-	OFObject *object = [[[OFObject alloc] init] autorelease];
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = self.characters;
 	size_t length = self.length;
-	of_char16_t *ret;
+	of_char16_t *buffer;
 	size_t j;
 	bool swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
-	ret = [object allocMemoryWithSize: sizeof(of_char16_t)
-				    count: (length + 1) * 2];
+	buffer = of_malloc((length + 1) * 2, sizeof(of_char16_t));
 
 	j = 0;
 	for (size_t i = 0; i < length; i++) {
 		of_unichar_t c = characters[i];
 
-		if (c > 0x10FFFF)
+		if (c > 0x10FFFF) {
+			free(buffer);
 			@throw [OFInvalidEncodingException exception];
+		}
 
 		if (swap) {
 			if (c > 0xFFFF) {
 				c -= 0x10000;
-				ret[j++] = OF_BSWAP16(0xD800 | (c >> 10));
-				ret[j++] = OF_BSWAP16(0xDC00 | (c & 0x3FF));
+				buffer[j++] = OF_BSWAP16(0xD800 | (c >> 10));
+				buffer[j++] = OF_BSWAP16(0xDC00 | (c & 0x3FF));
 			} else
-				ret[j++] = OF_BSWAP16(c);
+				buffer[j++] = OF_BSWAP16(c);
 		} else {
 			if (c > 0xFFFF) {
 				c -= 0x10000;
-				ret[j++] = 0xD800 | (c >> 10);
-				ret[j++] = 0xDC00 | (c & 0x3FF);
+				buffer[j++] = 0xD800 | (c >> 10);
+				buffer[j++] = 0xDC00 | (c & 0x3FF);
 			} else
-				ret[j++] = c;
+				buffer[j++] = c;
 		}
 	}
-	ret[j] = 0;
+	buffer[j] = 0;
 
 	@try {
-		ret = [object resizeMemory: ret
-				      size: sizeof(of_char16_t)
-				     count: j + 1];
+		buffer = of_realloc(buffer, j + 1, sizeof(of_char16_t));
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return ret;
+	return [OFData dataWithItemsNoCopy: buffer
+				  itemSize: sizeof(of_char16_t)
+				     count: j + 1
+			      freeWhenDone: true].items;
 }
 
 - (size_t)UTF16StringLength
@@ -2578,21 +2595,27 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
-	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = self.length;
-	of_char32_t *ret;
+	of_char32_t *buffer;
 
-	ret = [object allocMemoryWithSize: sizeof(of_char32_t)
-				    count: length + 1];
-	[self getCharacters: ret
-		    inRange: of_range(0, length)];
-	ret[length] = 0;
+	buffer = of_malloc(length + 1, sizeof(of_char32_t));
+	@try {
+		[self getCharacters: buffer
+			    inRange: of_range(0, length)];
+		buffer[length] = 0;
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
 
 	if (byteOrder != OF_BYTE_ORDER_NATIVE)
 		for (size_t i = 0; i < length; i++)
-			ret[i] = OF_BSWAP32(ret[i]);
+			buffer[i] = OF_BSWAP32(buffer[i]);
 
-	return ret;
+	return [OFData dataWithItemsNoCopy: buffer
+				  itemSize: sizeof(of_char32_t)
+				     count: length + 1
+			      freeWhenDone: true].items;
 }
 
 - (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
