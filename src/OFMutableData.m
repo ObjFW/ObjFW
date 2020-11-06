@@ -107,12 +107,12 @@
 }
 
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
 	self = [super initWithItems: items
-			   itemSize: itemSize
-			      count: count];
+			      count: count
+			   itemSize: itemSize];
 
 	_capacity = _count;
 
@@ -120,13 +120,13 @@
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
 	self = [self initWithItems: items
-			  itemSize: itemSize
-			     count: count];
+			     count: count
+			  itemSize: itemSize];
 
 	if (freeWhenDone)
 		free(items);
@@ -179,8 +179,8 @@
 		@throw [OFOutOfRangeException exception];
 
 	return [OFData dataWithItems: _items + (range.location * _itemSize)
-			    itemSize: _itemSize
-			       count: range.length];
+			       count: range.length
+			    itemSize: _itemSize];
 }
 
 - (void)addItem: (const void *)item
@@ -303,8 +303,8 @@
 - (id)copy
 {
 	return [[OFData alloc] initWithItems: _items
-				    itemSize: _itemSize
-				       count: _count];
+				       count: _count
+				    itemSize: _itemSize];
 }
 
 - (void)makeImmutable

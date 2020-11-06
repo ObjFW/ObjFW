@@ -252,8 +252,8 @@ static struct {
 	}
 
 	return [OFData dataWithItemsNoCopy: buffer
-				  itemSize: sizeof(id)
 				     count: count
+				  itemSize: sizeof(id)
 			      freeWhenDone: true].items;
 }
 

@@ -649,8 +649,8 @@
 			 exactLength: count * itemSize];
 
 		ret = [OFData dataWithItemsNoCopy: buffer
-					 itemSize: itemSize
 					    count: count
+					 itemSize: itemSize
 				     freeWhenDone: true];
 	} @catch (id e) {
 		free(buffer);

@@ -2511,8 +2511,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 
 	return [OFData dataWithItemsNoCopy: buffer
-				  itemSize: sizeof(of_unichar_t)
 				     count: length
+				  itemSize: sizeof(of_unichar_t)
 			      freeWhenDone: true].items;
 }
 
@@ -2569,8 +2569,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 
 	return [OFData dataWithItemsNoCopy: buffer
-				  itemSize: sizeof(of_char16_t)
 				     count: j + 1
+				  itemSize: sizeof(of_char16_t)
 			      freeWhenDone: true].items;
 }
 
@@ -2613,8 +2613,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			buffer[i] = OF_BSWAP32(buffer[i]);
 
 	return [OFData dataWithItemsNoCopy: buffer
-				  itemSize: sizeof(of_char32_t)
 				     count: length + 1
+				  itemSize: sizeof(of_char32_t)
 			      freeWhenDone: true].items;
 }
 

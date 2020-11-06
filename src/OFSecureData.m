@@ -331,13 +331,13 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	    autorelease];
 }
 
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			   count: (size_t)count
++ (instancetype)dataWithCount: (size_t)count
+		     itemSize: (size_t)itemSize
 	   allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithItemSize: itemSize
-					 count: count
-			 allowsSwappableMemory: allowsSwappableMemory]
+	return [[[self alloc] initWithCount: count
+				   itemSize: itemSize
+		      allowsSwappableMemory: allowsSwappableMemory]
 	    autorelease];
 }
 
@@ -348,8 +348,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 + (instancetype)dataWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -362,8 +362,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 + (instancetype)dataWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -395,14 +395,14 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 - (instancetype)initWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [self initWithItemSize: 1
-				count: count
-		allowsSwappableMemory: allowsSwappableMemory];
+	return [self initWithCount: count
+			  itemSize: 1
+	     allowsSwappableMemory: allowsSwappableMemory];
 }
 
-- (instancetype)initWithItemSize: (size_t)itemSize
-			   count: (size_t)count
-	   allowsSwappableMemory: (bool)allowsSwappableMemory
+- (instancetype)initWithCount: (size_t)count
+		     itemSize: (size_t)itemSize
+	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	self = [super init];
 
@@ -455,8 +455,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 					   object: nil];
 #endif
 
-		_itemSize = itemSize;
 		_count = count;
+		_itemSize = itemSize;
 		_allowsSwappableMemory = allowsSwappableMemory;
 	} @catch (id e) {
 		[self release];
@@ -473,8 +473,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -487,8 +487,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
 	OF_INVALID_INIT_METHOD
@@ -566,8 +566,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 - (id)copy
 {
 	OFSecureData *copy = [[OFSecureData alloc]
-		 initWithItemSize: _itemSize
-			    count: _count
+		    initWithCount: _count
+			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
 	memcpy(copy.mutableItems, _items, _count * _itemSize);
@@ -578,8 +578,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 - (id)mutableCopy
 {
 	OFSecureData *copy = [[OFSecureData alloc]
-		 initWithItemSize: _itemSize
-			    count: _count
+		    initWithCount: _count
+			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
 	memcpy(copy.mutableItems, _items, _count * _itemSize);
