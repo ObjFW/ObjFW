@@ -309,6 +309,15 @@
 
 - (void)makeImmutable
 {
+	if (_capacity != _count) {
+		@try {
+			_items = of_realloc(_items, _count, _itemSize);
+			_capacity = _count;
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only made it smaller */
+		}
+	}
+
 	object_setClass(self, [OFData class]);
 }
 @end
