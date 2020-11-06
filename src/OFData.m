@@ -133,10 +133,10 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = [self allocMemoryWithSize: itemSize
-					     count: count];
+		_items = of_malloc(count, itemSize);
 		_itemSize = itemSize;
 		_count = count;
+		_freeWhenDone = true;
 
 		memcpy(_items, items, count * itemSize);
 	} @catch (id e) {
@@ -246,6 +246,7 @@ _references_to_categories_of_OFData(void)
 
 		_itemSize = 1;
 		_count = 0;
+		_freeWhenDone = true;
 
 		pageSize = [OFSystemInfo pageSize];
 		buffer = of_malloc(1, pageSize);
@@ -260,8 +261,7 @@ _references_to_categories_of_OFData(void)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				_items = [self resizeMemory: _items
-						       size: _count + length];
+				_items = of_realloc(_items, _count + length, 1);
 				memcpy(_items + _count, buffer, length);
 				_count += length;
 			}
@@ -292,9 +292,10 @@ _references_to_categories_of_OFData(void)
 
 		count /= 2;
 
-		_items = [self allocMemoryWithSize: count];
+		_items = of_malloc(count, 1);
 		_itemSize = 1;
 		_count = count;
+		_freeWhenDone = true;
 
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];

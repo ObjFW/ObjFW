@@ -56,6 +56,7 @@
 	self = [super init];
 
 	_itemSize = 1;
+	_freeWhenDone = true;
 
 	return self;
 }
@@ -69,6 +70,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		_itemSize = itemSize;
+		_freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -92,11 +94,10 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = [self allocMemoryWithSize: itemSize
-					     count: capacity];
-
+		_items = of_malloc(capacity, itemSize);
 		_itemSize = itemSize;
 		_capacity = capacity;
+		_freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -188,9 +189,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + 1 > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + 1];
+		_items = of_realloc(_items, _count + 1, _itemSize);
 		_capacity = _count + 1;
 	}
 
@@ -214,9 +213,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = of_realloc(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -232,9 +229,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = of_realloc(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -251,9 +246,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = of_realloc(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -278,9 +271,7 @@
 
 	_count -= range.length;
 	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
+		_items = of_realloc(_items, _count, _itemSize);;
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
@@ -294,9 +285,7 @@
 
 	_count--;
 	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
+		_items = of_realloc(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
@@ -305,8 +294,7 @@
 
 - (void)removeAllItems
 {
-	[self freeMemory: _items];
-
+	free(_items);
 	_items = NULL;
 	_count = 0;
 	_capacity = 0;
