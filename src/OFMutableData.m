@@ -271,7 +271,7 @@
 
 	_count -= range.length;
 	@try {
-		_items = of_realloc(_items, _count, _itemSize);;
+		_items = of_realloc(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */

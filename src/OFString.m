@@ -1433,9 +1433,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 
 	@try {
-		return [OFData dataWithItemsNoCopy: cString
-					     count: cStringLength + 1
-				      freeWhenDone: true].items;
+		return [[OFData dataWithItemsNoCopy: cString
+					      count: cStringLength + 1
+				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(cString);
 		@throw e;
@@ -2508,10 +2508,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		[self getCharacters: buffer
 			    inRange: of_range(0, length)];
 
-		return [OFData dataWithItemsNoCopy: buffer
-					     count: length
-					  itemSize: sizeof(of_unichar_t)
-				      freeWhenDone: true].items;
+		return [[OFData dataWithItemsNoCopy: buffer
+					      count: length
+					   itemSize: sizeof(of_unichar_t)
+				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);
 		@throw e;
@@ -2571,10 +2571,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 
 	@try {
-		return [OFData dataWithItemsNoCopy: buffer
-					     count: j + 1
-					  itemSize: sizeof(of_char16_t)
-				      freeWhenDone: true].items;
+		return [[OFData dataWithItemsNoCopy: buffer
+					      count: j + 1
+					   itemSize: sizeof(of_char16_t)
+				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);
 		@throw e;
@@ -2615,10 +2615,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			for (size_t i = 0; i < length; i++)
 				buffer[i] = OF_BSWAP32(buffer[i]);
 
-		return [OFData dataWithItemsNoCopy: buffer
-					     count: length + 1
-					  itemSize: sizeof(of_char32_t)
-				      freeWhenDone: true].items;
+		return [[OFData dataWithItemsNoCopy: buffer
+					      count: length + 1
+					   itemSize: sizeof(of_char32_t)
+				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);
 		@throw e;

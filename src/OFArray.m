@@ -247,10 +247,10 @@ static struct {
 		[self getObjects: buffer
 			 inRange: of_range(0, count)];
 
-		return [OFData dataWithItemsNoCopy: buffer
-					     count: count
-					  itemSize: sizeof(id)
-				      freeWhenDone: true].items;
+		return [[OFData dataWithItemsNoCopy: buffer
+					      count: count
+					   itemSize: sizeof(id)
+				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);
 		@throw e;
