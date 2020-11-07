@@ -36,35 +36,6 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryForNItems: (size_t)nitems
-		      withSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-		toSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-	      toNItems: (size_t)nitems
-	      withSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)freeMemory: (void *)ptr
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)retain
 {
 	return self;

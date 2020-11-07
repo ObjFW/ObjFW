@@ -439,35 +439,6 @@ _Block_object_dispose(const void *object_, const int flags_)
 	OF_INVALID_INIT_METHOD
 }
 
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-		  size: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)freeMemory: (void *)ptr
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)retain
 {
 	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])

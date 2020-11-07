@@ -86,21 +86,11 @@ struct pre_ivar {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	of_spinlock_t retainCountSpinlock;
 #endif
-	struct pre_mem *firstMem, *lastMem;
-};
-
-struct pre_mem {
-	struct pre_mem *prev, *next;
-	id owner;
 };
 
 #define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
     (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
 #define PRE_IVARS ((struct pre_ivar *)(void *)((char *)self - PRE_IVARS_ALIGN))
-
-#define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
-    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_MEM(mem) ((struct pre_mem *)(void *)((char *)mem - PRE_MEM_ALIGN))
 
 static struct {
 	Class isa;
@@ -1102,132 +1092,6 @@ _references_to_categories_of_OFObject(void)
 	return [OFString stringWithFormat: @"<%@>", self.className];
 }
 
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	void *pointer;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (size == 0)
-		return NULL;
-
-	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
-		@throw [OFOutOfRangeException exception];
-
-	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	preMem = pointer;
-	preMem->owner = self;
-	preMem->prev = PRE_IVARS->lastMem;
-	preMem->next = NULL;
-
-	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
-		PRE_IVARS->lastMem->next = preMem;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
-		PRE_IVARS->firstMem = preMem;
-
-	PRE_IVARS->lastMem = preMem;
-
-	return (char *)pointer + PRE_MEM_ALIGN;
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count
-{
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self allocMemoryWithSize: size * count];
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	void *new;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (pointer == NULL)
-		return [self allocMemoryWithSize: size];
-
-	if OF_UNLIKELY (size == 0) {
-		[self freeMemory: pointer];
-		return NULL;
-	}
-
-	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
-		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithPointer: pointer
-				  object: self];
-
-	if OF_UNLIKELY ((new = realloc(PRE_MEM(pointer),
-	    PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-	preMem = new;
-
-	if OF_UNLIKELY (preMem != PRE_MEM(pointer)) {
-		if OF_LIKELY (preMem->prev != NULL)
-			preMem->prev->next = preMem;
-		if OF_LIKELY (preMem->next != NULL)
-			preMem->next->prev = preMem;
-
-		if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
-			PRE_IVARS->firstMem = preMem;
-		if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
-			PRE_IVARS->lastMem = preMem;
-	}
-
-	return (char *)new + PRE_MEM_ALIGN;
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	if OF_UNLIKELY (pointer == NULL)
-		return [self allocMemoryWithSize: size
-					   count: count];
-
-	if OF_UNLIKELY (size == 0 || count == 0) {
-		[self freeMemory: pointer];
-		return NULL;
-	}
-
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self resizeMemory: pointer
-			     size: size * count];
-}
-
-- (void)freeMemory: (void *)pointer
-{
-	if OF_UNLIKELY (pointer == NULL)
-		return;
-
-	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
-		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithPointer: pointer
-				  object: self];
-
-	if OF_LIKELY (PRE_MEM(pointer)->prev != NULL)
-		PRE_MEM(pointer)->prev->next = PRE_MEM(pointer)->next;
-	if OF_LIKELY (PRE_MEM(pointer)->next != NULL)
-		PRE_MEM(pointer)->next->prev = PRE_MEM(pointer)->prev;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
-		PRE_IVARS->firstMem = PRE_MEM(pointer)->next;
-	if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
-		PRE_IVARS->lastMem = PRE_MEM(pointer)->prev;
-
-	/* To detect double-free */
-	PRE_MEM(pointer)->owner = nil;
-
-	free(PRE_MEM(pointer));
-}
-
 - (id)forwardingTargetForSelector: (SEL)selector
 {
 	return nil;
@@ -1331,24 +1195,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)dealloc
 {
-	struct pre_mem *iter;
-
 	objc_destructInstance(self);
-
-	iter = PRE_IVARS->firstMem;
-	while (iter != NULL) {
-		struct pre_mem *next = iter->next;
-
-		/*
-		 * We can use owner as a sentinel to prevent exploitation in
-		 * case there is a buffer underflow somewhere.
-		 */
-		OF_ENSURE(iter->owner == self);
-
-		free(iter);
-
-		iter = next;
-	}
 
 	free((char *)self - PRE_IVARS_ALIGN);
 }
@@ -1375,37 +1222,10 @@ _references_to_categories_of_OFObject(void)
 }
 
 /*
- * Those are needed as the root class is the superclass of the root class's
- * metaclass and thus instance methods can be sent to class objects as well.
+ * The following are needed as the root class is the superclass of the root
+ * class's metaclass and thus instance methods can be sent to class objects as
+ * well.
  */
-+ (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void)freeMemory: (void *)pointer
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
 
 + (id)retain
 {

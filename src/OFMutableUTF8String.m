@@ -45,12 +45,10 @@
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
-	@try {
-		self = [self initWithUTF8String: UTF8String];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	self = [self initWithUTF8String: UTF8String];
+
+	if (freeWhenDone)
+		free(UTF8String);
 
 	return self;
 }
@@ -59,13 +57,11 @@
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	@try {
-		self = [self initWithUTF8String: UTF8String
-					 length: UTF8StringLength];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	self = [self initWithUTF8String: UTF8String
+				 length: UTF8StringLength];
+
+	if (freeWhenDone)
+		free(UTF8String);
 
 	return self;
 }
@@ -159,7 +155,7 @@
 	}
 
 	@try {
-		newCString = [self allocMemoryWithSize: newCStringLength + 1];
+		newCString = of_malloc(newCStringLength + 1, 1);
 	} @catch (id e) {
 		free(unicodeString);
 		@throw e;
@@ -173,7 +169,7 @@
 		if ((d = of_string_utf8_encode(unicodeString[i],
 		    newCString + j)) == 0) {
 			free(unicodeString);
-			[self freeMemory: newCString];
+			free(newCString);
 			@throw [OFInvalidEncodingException exception];
 		}
 		j += d;
@@ -183,7 +179,7 @@
 	newCString[j] = 0;
 	free(unicodeString);
 
-	[self freeMemory: _s->cString];
+	free(_s->cString);
 	_s->hashed = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
@@ -228,9 +224,8 @@
 	if (lenNew == (size_t)lenOld)
 		memcpy(_s->cString + idx, buffer, lenNew);
 	else if (lenNew > (size_t)lenOld) {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength -
-						  lenOld + lenNew + 1];
+		_s->cString = of_realloc(_s->cString,
+		    _s->cStringLength - lenOld + lenNew + 1, 1);
 
 		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
 		    _s->cStringLength - idx - lenOld);
@@ -255,9 +250,8 @@
 			_s->isUTF8 = true;
 
 		@try {
-			_s->cString = [self
-			    resizeMemory: _s->cString
-				    size: _s->cStringLength + 1];
+			_s->cString = of_realloc(_s->cString,
+			    _s->cStringLength + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't really care, as we only made it smaller */
 		}
@@ -284,9 +278,8 @@
 	}
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = of_realloc(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String,
 	    UTF8StringLength + 1);
 
@@ -314,9 +307,8 @@
 	}
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = of_realloc(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
@@ -362,9 +354,8 @@
 	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = of_realloc(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, string.UTF8String,
 	    UTF8StringLength);
 
@@ -406,8 +397,8 @@
 		tmp[j] = '\0';
 
 		_s->hashed = false;
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + j + 1];
+		_s->cString = of_realloc(_s->cString,
+		    _s->cStringLength + j + 1, 1);
 		memcpy(_s->cString + _s->cStringLength, tmp, j + 1);
 
 		_s->cStringLength += j;
@@ -535,8 +526,7 @@
 
 	newCStringLength = _s->cStringLength + string.UTF8StringLength;
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: newCStringLength + 1];
+	_s->cString = of_realloc(_s->cString, newCStringLength + 1, 1);
 
 	memmove(_s->cString + idx + string.UTF8StringLength,
 	    _s->cString + idx, _s->cStringLength - idx);
@@ -578,8 +568,7 @@
 	_s->cString[_s->cStringLength] = 0;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = of_realloc(_s->cString, _s->cStringLength + 1, 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -620,8 +609,7 @@
 	 * lost due to the resize!
 	 */
 	if (newCStringLength > _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = of_realloc(_s->cString, newCStringLength + 1, 1);
 
 	memmove(_s->cString + start + replacement.UTF8StringLength,
 	    _s->cString + end, _s->cStringLength - end);
@@ -634,8 +622,7 @@
 	 * done with memmove().
 	 */
 	if (newCStringLength < _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = of_realloc(_s->cString, newCStringLength + 1, 1);
 
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
@@ -688,12 +675,11 @@
 			continue;
 
 		@try {
-			newCString = [self resizeMemory: newCString
-						   size: newCStringLength +
-							 i - last +
-							 replacementLength + 1];
+			newCString = of_realloc(newCString,
+			    newCStringLength + i - last + replacementLength + 1,
+			    1);
 		} @catch (id e) {
-			[self freeMemory: newCString];
+			free(newCString);
 			@throw e;
 		}
 		memcpy(newCString + newCStringLength, _s->cString + last,
@@ -709,11 +695,10 @@
 	}
 
 	@try {
-		newCString = [self resizeMemory: newCString
-					   size: newCStringLength +
-						 _s->cStringLength - last + 1];
+		newCString = of_realloc(newCString,
+		    newCStringLength + _s->cStringLength - last + 1, 1);
 	} @catch (id e) {
-		[self freeMemory: newCString];
+		free(newCString);
 		@throw e;
 	}
 	memcpy(newCString + newCStringLength, _s->cString + last,
@@ -721,7 +706,7 @@
 	newCStringLength += _s->cStringLength - last;
 	newCString[newCStringLength] = 0;
 
-	[self freeMemory: _s->cString];
+	free(_s->cString);
 	_s->hashed = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
@@ -751,8 +736,7 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = of_realloc(_s->cString, _s->cStringLength + 1, 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -778,8 +762,7 @@
 	_s->length -= d;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = of_realloc(_s->cString, _s->cStringLength + 1, 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -815,8 +798,7 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = of_realloc(_s->cString, _s->cStringLength + 1, 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}

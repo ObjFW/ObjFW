@@ -36,9 +36,8 @@ const char *str = "Hello!";
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
 
-	OFObject *tmp = [[[OFObject alloc] init] autorelease];
-	raw[0] = [tmp allocMemoryWithSize: 4096];
-	raw[1] = [tmp allocMemoryWithSize: 4096];
+	raw[0] = of_malloc(1, 4096);
+	raw[1] = of_malloc(1, 4096);
 	memset(raw[0], 0xFF, 4096);
 	memset(raw[1], 0x42, 4096);
 
@@ -207,6 +206,9 @@ const char *str = "Hello!";
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
 	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
+
+	free(raw[0]);
+	free(raw[1]);
 
 	objc_autoreleasePoolPop(pool);
 }
