@@ -214,10 +214,11 @@ enum {
 
 - (bool)of_processReadBuffers
 {
+	void *pool = objc_autoreleasePoolPush();
 	bool foundInReadBuffer = false;
 
-	for (id object in _readObjects) {
-		void *pool = objc_autoreleasePoolPush();
+	for (id object in [[_readObjects copy] autorelease]) {
+		void *pool2 = objc_autoreleasePoolPush();
 
 		if ([object isKindOfClass: [OFStream class]] &&
 		    [object hasDataInReadBuffer] &&
@@ -229,8 +230,10 @@ enum {
 			foundInReadBuffer = true;
 		}
 
-		objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool2);
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	/*
 	 * As long as we have data in the read buffer for any stream, we don't

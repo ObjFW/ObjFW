@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef struct of_pbkdf2_parameters_t {
 	/** @brief The HMAC to use to derive a key. */
-	OFHMAC *HMAC;
+	__unsafe_unretained OFHMAC *HMAC;
 	/** @brief The number of iterations to perform. */
 	size_t iterations;
 	/** @brief The salt to derive a key with. */

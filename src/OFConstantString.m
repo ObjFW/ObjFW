@@ -54,35 +54,6 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)freeMemory: (void *)pointer
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)retain
 {
 	return self;
@@ -142,22 +113,18 @@ struct {
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
 
-		if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: sizeof(*ivars)];
-
+		ivars = of_calloc(1, sizeof(*ivars));
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 
 		switch (of_string_utf8_check(ivars->cString,
-		    ivars->cStringLength,
-			&ivars->length)) {
-			case 1:
-				ivars->isUTF8 = true;
-				break;
-			case -1:
-				free(ivars);
-				@throw [OFInvalidEncodingException exception];
+		    ivars->cStringLength, &ivars->length)) {
+		case 1:
+			ivars->isUTF8 = true;
+			break;
+		case -1:
+			free(ivars);
+			@throw [OFInvalidEncodingException exception];
 		}
 
 		_cString = (char *)ivars;
@@ -166,35 +133,6 @@ struct {
 }
 
 + (instancetype)alloc
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)freeMemory: (void *)pointer
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -260,7 +198,7 @@ struct {
 	return [self isEqual: object];
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	[self finishInitialization];
 
@@ -403,6 +341,20 @@ struct {
 	[self finishInitialization];
 
 	return [self containsString: string];
+}
+
+- (OFString *)substringFromIndex: (size_t)idx
+{
+	[self finishInitialization];
+
+	return [self substringFromIndex: idx];
+}
+
+- (OFString *)substringToIndex: (size_t)idx
+{
+	[self finishInitialization];
+
+	return [self substringToIndex: idx];
 }
 
 - (OFString *)substringWithRange: (of_range_t)range

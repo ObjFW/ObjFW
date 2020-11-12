@@ -129,7 +129,7 @@ extern char **environ;
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		const char *path;
-		char **argv;
+		char **argv, **env = NULL;
 
 		_pid = -1;
 		_readPipe[0] = _writePipe[1] = -1;
@@ -144,8 +144,7 @@ extern char **environ;
 		    andArguments: arguments];
 
 		@try {
-			char **env = [self
-			    of_environmentForDictionary: environment];
+			env = [self of_environmentForDictionary: environment];
 #ifdef HAVE_POSIX_SPAWNP
 			posix_spawn_file_actions_t actions;
 			posix_spawnattr_t attr;
@@ -206,9 +205,16 @@ extern char **environ;
 				    exceptionWithClass: self.class];
 #endif
 		} @finally {
+			char **iter;
+
 			close(_readPipe[1]);
 			close(_writePipe[0]);
-			[self freeMemory: argv];
+			free(argv);
+
+			for (iter = env; *iter != NULL; iter++)
+				free(*iter);
+
+			free(env);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -236,8 +242,7 @@ extern char **environ;
 	size_t i, count = arguments.count;
 	of_string_encoding_t encoding;
 
-	*argv = [self allocMemoryWithSize: sizeof(char *)
-				    count: count + 2];
+	*argv = of_malloc(count + 2, sizeof(char *));
 
 	encoding = [OFLocale encoding];
 
@@ -252,9 +257,8 @@ extern char **environ;
 
 - (char **)of_environmentForDictionary: (OFDictionary *)environment
 {
-	OFEnumerator *keyEnumerator, *objectEnumerator;
 	char **envp;
-	size_t i, count;
+	size_t count;
 	of_string_encoding_t encoding;
 
 	if (environment == nil)
@@ -263,33 +267,41 @@ extern char **environ;
 	encoding = [OFLocale encoding];
 
 	count = environment.count;
-	envp = [self allocMemoryWithSize: sizeof(char *)
-				   count: count + 1];
+	envp = of_calloc(count + 1, sizeof(char *));
 
-	keyEnumerator = [environment keyEnumerator];
-	objectEnumerator = [environment objectEnumerator];
+	@try {
+		OFEnumerator *keyEnumerator = [environment keyEnumerator];
+		OFEnumerator *objectEnumerator = [environment objectEnumerator];
 
-	for (i = 0; i < count; i++) {
-		OFString *key;
-		OFString *object;
-		size_t keyLen, objectLen;
+		for (size_t i = 0; i < count; i++) {
+			OFString *key;
+			OFString *object;
+			size_t keyLen, objectLen;
 
-		key = [keyEnumerator nextObject];
-		object = [objectEnumerator nextObject];
+			key = [keyEnumerator nextObject];
+			object = [objectEnumerator nextObject];
 
-		keyLen = [key cStringLengthWithEncoding: encoding];
-		objectLen = [object cStringLengthWithEncoding: encoding];
+			keyLen = [key cStringLengthWithEncoding: encoding];
+			objectLen = [object
+			    cStringLengthWithEncoding: encoding];
 
-		envp[i] = [self allocMemoryWithSize: keyLen + objectLen + 2];
+			envp[i] = of_malloc(keyLen + objectLen + 2, 1);
 
-		memcpy(envp[i], [key cStringWithEncoding: encoding], keyLen);
-		envp[i][keyLen] = '=';
-		memcpy(envp[i] + keyLen + 1,
-		    [object cStringWithEncoding: encoding], objectLen);
-		envp[i][keyLen + objectLen + 1] = '\0';
+			memcpy(envp[i],
+			    [key cStringWithEncoding: encoding], keyLen);
+			envp[i][keyLen] = '=';
+			memcpy(envp[i] + keyLen + 1,
+			    [object cStringWithEncoding: encoding], objectLen);
+			envp[i][keyLen + objectLen + 1] = '\0';
+		}
+	} @catch (id e) {
+		for (size_t i = 0; i < count; i++)
+			free(envp[i]);
+
+		free(envp);
+
+		@throw e;
 	}
-
-	envp[i] = NULL;
 
 	return envp;
 }

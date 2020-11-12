@@ -238,8 +238,8 @@
 
 		_socketAddresses = [[OFData alloc]
 		    initWithItems: &address
-			 itemSize: sizeof(address)
-			    count: 1];
+			    count: 1
+			 itemSize: sizeof(address)];
 
 		[self tryNextAddressWithRunLoopMode: runLoopMode];
 		return;

@@ -122,7 +122,7 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 	float tmp;

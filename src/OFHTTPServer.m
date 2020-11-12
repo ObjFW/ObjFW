@@ -147,8 +147,13 @@ normalizedKey(OFString *key)
 		tmp++;
 	}
 
-	return [OFString stringWithUTF8StringNoCopy: cString
-				       freeWhenDone: true];
+	@try {
+		return [OFString stringWithUTF8StringNoCopy: cString
+					       freeWhenDone: true];
+	} @catch (id e) {
+		free(cString);
+		@throw e;
+	}
 }
 
 @implementation OFHTTPServerResponse
@@ -184,7 +189,7 @@ normalizedKey(OFString *key)
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_socket writeFormat: @"HTTP/%@ %d %@\r\n",
+	[_socket writeFormat: @"HTTP/%@ %hd %@\r\n",
 			      self.protocolVersionString, _statusCode,
 			      of_http_status_code_to_string(_statusCode)];
 
@@ -376,7 +381,7 @@ normalizedKey(OFString *key)
 	if (pos == OF_NOT_FOUND)
 		return [self sendErrorAndClose: 400];
 
-	method = [line substringWithRange: of_range(0, pos)];
+	method = [line substringToIndex: pos];
 	@try {
 		_method = of_http_request_method_from_string(method);
 	} @catch (OFInvalidArgumentException *e) {
@@ -452,9 +457,8 @@ normalizedKey(OFString *key)
 	if (pos == OF_NOT_FOUND)
 		return [self sendErrorAndClose: 400];
 
-	key = [line substringWithRange: of_range(0, pos)];
-	value = [line substringWithRange:
-	    of_range(pos + 1, line.length - pos - 1)];
+	key = [line substringToIndex: pos];
+	value = [line substringFromIndex: pos + 1];
 
 	key = normalizedKey(key.stringByDeletingTrailingWhitespaces);
 	value = value.stringByDeletingLeadingWhitespaces;
@@ -473,14 +477,11 @@ normalizedKey(OFString *key)
 
 		if (pos != OF_NOT_FOUND) {
 			[_host release];
-			_host = [[value substringWithRange:
-			    of_range(0, pos)] retain];
+			_host = [[value substringToIndex: pos] retain];
 
 			@try {
-				of_range_t range =
-				    of_range(pos + 1, value.length - pos - 1);
 				unsigned long long portTmp =
-				    [value substringWithRange: range]
+				    [value substringFromIndex: pos + 1]
 				    .unsignedLongLongValue;
 
 				if (portTmp < 1 || portTmp > UINT16_MAX)
@@ -505,7 +506,7 @@ normalizedKey(OFString *key)
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
 
-	[_socket writeFormat: @"HTTP/1.1 %d %@\r\n"
+	[_socket writeFormat: @"HTTP/1.1 %hd %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
@@ -548,9 +549,8 @@ normalizedKey(OFString *key)
 	if ((pos = [_path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
 		OFString *path, *query;
 
-		path = [_path substringWithRange: of_range(0, pos)];
-		query = [_path substringWithRange:
-		    of_range(pos + 1, _path.length - pos - 1)];
+		path = [_path substringToIndex: pos];
+		query = [_path substringFromIndex: pos + 1];
 
 		URL.URLEncodedPath = path;
 		URL.URLEncodedQuery = query;
@@ -698,7 +698,7 @@ normalizedKey(OFString *key)
 	} else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *line;
-		of_range_t range;
+		size_t pos;
 		unsigned long long toRead;
 
 		@try {
@@ -710,18 +710,16 @@ normalizedKey(OFString *key)
 		if (line == nil)
 			return 0;
 
-		range = [line rangeOfString: @";"];
-		if (range.location != OF_NOT_FOUND)
-			line = [line substringWithRange:
-			    of_range(0, range.location)];
+		pos = [line rangeOfString: @";"].location;
+		if (pos != OF_NOT_FOUND)
+			line = [line substringToIndex: pos];
 
 		if (line.length < 1) {
 			/*
 			 * We have read the empty string because the socket is
 			 * at end of stream.
 			 */
-			if (_socket.atEndOfStream &&
-			    range.location == OF_NOT_FOUND)
+			if (_socket.atEndOfStream && pos == OF_NOT_FOUND)
 				@throw [OFTruncatedDataException exception];
 			else
 				@throw [OFInvalidFormatException exception];

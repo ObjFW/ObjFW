@@ -243,10 +243,7 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		if ((handle = malloc(sizeof(*handle))) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: sizeof(*handle)];
-
+		handle = of_malloc(1, sizeof(*handle));
 		@try {
 			if ((flags = parseMode(mode.UTF8String,
 			    &handle->append)) == -1)

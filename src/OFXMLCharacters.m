@@ -88,7 +88,7 @@
 	return ([characters->_characters isEqual: _characters]);
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _characters.hash;
 }

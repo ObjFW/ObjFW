@@ -223,7 +223,7 @@ static int monthToDayOfYear[12] = {
 };
 
 static double
-tmAndTzToTime(struct tm *tm, int16_t *tz)
+tmAndTzToTime(const struct tm *tm, short tz)
 {
 	double seconds;
 
@@ -251,7 +251,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	/* Seconds */
 	seconds += tm->tm_sec;
 	/* Time zone */
-	seconds += -(double)*tz * 60;
+	seconds += -(double)tz * 60;
 
 	return seconds;
 }
@@ -442,7 +442,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
-	int16_t tz = 0;
+	short tz = 0;
 
 	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
@@ -450,7 +450,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [self initWithTimeIntervalSince1970: tmAndTzToTime(&tm, &tz)];
+	return [self initWithTimeIntervalSince1970: tmAndTzToTime(&tm, tz)];
 }
 
 - (instancetype)initWithLocalDateString: (OFString *)string
@@ -460,18 +460,18 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
 	/*
-	 * of_strptime() can never set this to INT16_MAX, no matter what is
+	 * of_strptime() can never set this to SHRT_MAX, no matter what is
 	 * passed to it, so this is a safe way to figure out if the date
 	 * contains a time zone.
 	 */
-	int16_t tz = INT16_MAX;
+	short tz = SHRT_MAX;
 	of_time_interval_t seconds;
 
 	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 
-	if (tz == INT16_MAX) {
+	if (tz == SHRT_MAX) {
 #ifdef OF_WINDOWS
 		if (func__mktime64 != NULL) {
 			if ((seconds = func__mktime64(&tm)) == -1)
@@ -484,7 +484,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		}
 #endif
 	} else
-		seconds = tmAndTzToTime(&tm, &tz);
+		seconds = tmAndTzToTime(&tm, tz);
 
 	objc_autoreleasePoolPop(pool);
 
@@ -538,7 +538,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 	double tmp;
@@ -658,84 +658,84 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return [ret autorelease];
 }
 
-- (uint32_t)microsecond
+- (unsigned long)microsecond
 {
 	of_time_interval_t timeInterval = self.timeIntervalSince1970;
 
-	return (uint32_t)((timeInterval - trunc(timeInterval)) * 1000000);
+	return (unsigned long)((timeInterval - trunc(timeInterval)) * 1000000);
 }
 
-- (uint8_t)second
+- (unsigned char)second
 {
 	GMTIME_RET(tm_sec)
 }
 
-- (uint8_t)minute
+- (unsigned char)minute
 {
 	GMTIME_RET(tm_min)
 }
 
-- (uint8_t)localMinute
+- (unsigned char)localMinute
 {
 	LOCALTIME_RET(tm_min)
 }
 
-- (uint8_t)hour
+- (unsigned char)hour
 {
 	GMTIME_RET(tm_hour)
 }
 
-- (uint8_t)localHour
+- (unsigned char)localHour
 {
 	LOCALTIME_RET(tm_hour)
 }
 
-- (uint8_t)dayOfMonth
+- (unsigned char)dayOfMonth
 {
 	GMTIME_RET(tm_mday)
 }
 
-- (uint8_t)localDayOfMonth
+- (unsigned char)localDayOfMonth
 {
 	LOCALTIME_RET(tm_mday)
 }
 
-- (uint8_t)monthOfYear
+- (unsigned char)monthOfYear
 {
 	GMTIME_RET(tm_mon + 1)
 }
 
-- (uint8_t)localMonthOfYear
+- (unsigned char)localMonthOfYear
 {
 	LOCALTIME_RET(tm_mon + 1)
 }
 
-- (uint16_t)year
+- (unsigned short)year
 {
 	GMTIME_RET(tm_year + 1900)
 }
 
-- (uint16_t)localYear
+- (unsigned short)localYear
 {
 	LOCALTIME_RET(tm_year + 1900)
 }
 
-- (uint8_t)dayOfWeek
+- (unsigned char)dayOfWeek
 {
 	GMTIME_RET(tm_wday)
 }
 
-- (uint8_t)localDayOfWeek
+- (unsigned char)localDayOfWeek
 {
 	LOCALTIME_RET(tm_wday)
 }
 
-- (uint16_t)dayOfYear
+- (unsigned short)dayOfYear
 {
 	GMTIME_RET(tm_yday + 1)
 }
 
-- (uint16_t)localDayOfYear
+- (unsigned short)localDayOfYear
 {
 	LOCALTIME_RET(tm_yday + 1)
 }
@@ -779,10 +779,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
+	buffer = of_malloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -842,10 +839,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
+	buffer = of_malloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)

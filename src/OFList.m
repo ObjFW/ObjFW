@@ -81,9 +81,14 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
+	of_list_object_t *next;
+
 	for (of_list_object_t *iter = _firstListObject;
-	    iter != NULL; iter = iter->next)
+	    iter != NULL; iter = next) {
 		[iter->object release];
+		next = iter->next;
+		free(iter);
+	}
 
 	[super dealloc];
 }
@@ -92,7 +97,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *listObject;
 
-	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	listObject = of_malloc(1, sizeof(of_list_object_t));
 	listObject->object = [object retain];
 	listObject->next = NULL;
 	listObject->previous = _lastListObject;
@@ -115,7 +120,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *listObject;
 
-	listObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	listObject = of_malloc(1, sizeof(of_list_object_t));
 	listObject->object = [object retain];
 	listObject->next = _firstListObject;
 	listObject->previous = NULL;
@@ -138,7 +143,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *newListObject;
 
-	newListObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	newListObject = of_malloc(1, sizeof(of_list_object_t));
 	newListObject->object = [object retain];
 	newListObject->next = listObject;
 	newListObject->previous = listObject->previous;
@@ -162,7 +167,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *newListObject;
 
-	newListObject = [self allocMemoryWithSize: sizeof(of_list_object_t)];
+	newListObject = of_malloc(1, sizeof(of_list_object_t));
 	newListObject->object = [object retain];
 	newListObject->next = listObject->next;
 	newListObject->previous = listObject;
@@ -197,8 +202,7 @@ OF_DIRECT_MEMBERS
 	_mutations++;
 
 	[listObject->object release];
-
-	[self freeMemory: listObject];
+	free(listObject);
 }
 
 - (id)firstObject
@@ -272,15 +276,15 @@ OF_DIRECT_MEMBERS
 
 - (void)removeAllObjects
 {
-	of_list_object_t *iter, *next;
+	of_list_object_t *next;
 
 	_mutations++;
 
-	for (iter = _firstListObject; iter != NULL; iter = next) {
-		next = iter->next;
-
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = next) {
 		[iter->object release];
-		[self freeMemory: iter];
+		next = iter->next;
+		free(iter);
 	}
 
 	_firstListObject = _lastListObject = NULL;
@@ -297,8 +301,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		for (of_list_object_t *iter = _firstListObject;
 		    iter != NULL; iter = iter->next) {
-			listObject = [copy allocMemoryWithSize:
-			    sizeof(of_list_object_t)];
+			listObject = of_malloc(1, sizeof(of_list_object_t));
 			listObject->object = [iter->object retain];
 			listObject->next = NULL;
 			listObject->previous = previous;
@@ -322,7 +325,7 @@ OF_DIRECT_MEMBERS
 	return copy;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

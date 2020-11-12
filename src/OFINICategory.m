@@ -161,15 +161,10 @@ unescapeString(OFString *string)
 		if ((pos = [line rangeOfString: @"="].location) == OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
-		key = [line substringWithRange: of_range(0, pos)];
-		value = [line substringWithRange:
-		    of_range(pos + 1, line.length - pos - 1)];
-
-		key = key.stringByDeletingEnclosingWhitespaces;
-		value = value.stringByDeletingEnclosingWhitespaces;
-
-		key = unescapeString(key);
-		value = unescapeString(value);
+		key = unescapeString([line substringToIndex: pos]
+		    .stringByDeletingEnclosingWhitespaces);
+		value = unescapeString([line substringFromIndex: pos + 1]
+		    .stringByDeletingEnclosingWhitespaces);
 
 		pair->_key = [key copy];
 		pair->_value = [value copy];

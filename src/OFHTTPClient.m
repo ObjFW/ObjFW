@@ -62,7 +62,7 @@ OF_DIRECT_MEMBERS
 	unsigned int _redirects;
 	bool _firstLine;
 	OFString *_version;
-	int _status;
+	short _status;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
 }
 
@@ -241,7 +241,7 @@ normalizeKey(char *str_)
 }
 
 static bool
-defaultShouldFollow(of_http_request_method_t method, int statusCode)
+defaultShouldFollow(of_http_request_method_t method, short statusCode)
 {
 	bool follow;
 
@@ -298,8 +298,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	_client->_inProgress = false;
 
 	[_client->_delegate client: _client
-	      didFailWithException: exception
-			   request: _request];
+		 didPerformRequest: _request
+			  response: nil
+			 exception: exception];
 }
 
 - (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
@@ -309,6 +310,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	OFString *connectionHeader;
 	bool keepAlive;
 	OFString *location;
+	id exception;
 
 	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
@@ -422,15 +424,18 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	_client->_inProgress = false;
 
 	if (_status / 100 != 2)
-		@throw [OFHTTPRequestFailedException
+		exception = [OFHTTPRequestFailedException
 		    exceptionWithRequest: _request
 				response: response];
+	else
+		exception = nil;
 
 	[_client->_delegate performSelector: @selector(client:didPerformRequest:
-						 response:)
+						 response:exception:)
 				 withObject: _client
 				 withObject: _request
 				 withObject: response
+				 withObject: exception
 				 afterDelay: 0];
 }
 
@@ -471,7 +476,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (status < 0 || status > 599)
 		@throw [OFInvalidServerReplyException exception];
 
-	_status = (int)status;
+	_status = (short)status;
 
 	return true;
 }
@@ -510,10 +515,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if ((tmp = strchr(lineC, ':')) == NULL)
 		@throw [OFInvalidServerReplyException exception];
 
-	if ((keyC = malloc(tmp - lineC + 1)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: tmp - lineC + 1];
-
+	keyC = of_malloc(tmp - lineC + 1, 1);
 	memcpy(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);
@@ -1000,7 +1002,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	} else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *line;
-		of_range_t range;
+		size_t pos;
 
 		@try {
 			line = [_socket tryReadLine];
@@ -1011,18 +1013,16 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		if (line == nil)
 			return 0;
 
-		range = [line rangeOfString: @";"];
-		if (range.location != OF_NOT_FOUND)
-			line = [line substringWithRange:
-			    of_range(0, range.location)];
+		pos = [line rangeOfString: @";"].location;
+		if (pos != OF_NOT_FOUND)
+			line = [line substringToIndex: pos];
 
 		if (line.length < 1) {
 			/*
 			 * We have read the empty string because the socket is
 			 * at end of stream.
 			 */
-			if (_socket.atEndOfStream &&
-			    range.location == OF_NOT_FOUND)
+			if (_socket.atEndOfStream && pos == OF_NOT_FOUND)
 				@throw [OFTruncatedDataException exception];
 			else
 				@throw [OFInvalidServerReplyException
@@ -1133,7 +1133,19 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
+	  exception: (id)exception
 {
+	if (exception != nil) {
+		/*
+		 * Restore the delegate - we're giving up, but not reaching the
+		 * release of the autorelease pool that contains us, so
+		 * resetting it via -[dealloc] might be too late.
+		 */
+		_client.delegate = _delegate;
+
+		@throw exception;
+	}
+
 	[[OFRunLoop currentRunLoop] stop];
 
 	[_response release];
@@ -1141,21 +1153,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	[_delegate     client: client
 	    didPerformRequest: request
-		     response: response];
-}
-
--	  (void)client: (OFHTTPClient *)client
-  didFailWithException: (id)exception
-	       request: (OFHTTPRequest *)request
-{
-	/*
-	 * Restore the delegate - we're giving up, but not reaching the release
-	 * of the autorelease pool that contains us, so resetting it via
-	 * -[dealloc] might be too late.
-	 */
-	_client.delegate = _delegate;
-
-	@throw exception;
+		     response: response
+		    exception: nil];
 }
 
 -    (void)client: (OFHTTPClient *)client
@@ -1182,7 +1181,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (int)statusCode
+	 statusCode: (short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if ([_delegate respondsToSelector:
@@ -1195,7 +1194,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 -	  (bool)client: (OFHTTPClient *)client
   shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (int)statusCode
+	    statusCode: (short)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
 {

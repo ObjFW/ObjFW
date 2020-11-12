@@ -88,7 +88,7 @@
 	return ([CDATA->_CDATA isEqual: _CDATA]);
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _CDATA.hash;
 }

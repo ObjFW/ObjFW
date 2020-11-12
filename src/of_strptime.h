@@ -31,8 +31,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const char *of_strptime(const char *buf, const char *fmt,
-    struct tm *tm, int16_t *tz);
+extern const char *of_strptime(const char *buf, const char *fmt, struct tm *tm,
+    short *tz);
 #ifdef __cplusplus
 }
 #endif

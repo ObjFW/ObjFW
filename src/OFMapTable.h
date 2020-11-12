@@ -33,7 +33,7 @@ struct of_map_table_functions_t {
 	/** The function to release keys / objects */
 	void (*_Nullable release)(void *_Nullable object);
 	/** The function to hash keys */
-	uint32_t (*_Nullable hash)(void *_Nullable object);
+	unsigned long (*_Nullable hash)(void *_Nullable object);
 	/** The function to compare keys / objects */
 	bool (*_Nullable equal)(void *_Nullable object1,
 	    void *_Nullable object2);
@@ -76,8 +76,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	of_map_table_functions_t _keyFunctions, _objectFunctions;
 	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
-	uint32_t _count, _capacity;
-	uint8_t _rotate;
+	unsigned long _count, _capacity;
+	unsigned char _rotate;
 	unsigned long _mutations;
 }
 
@@ -242,10 +242,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMapTable *_mapTable;
 	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
-	uint32_t _capacity;
-	unsigned long _mutations;
-	unsigned long *_Nullable _mutationsPtr;
-	uint32_t _position;
+	unsigned long _capacity, _mutations, *_Nullable _mutationsPtr;
+	unsigned long _position;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

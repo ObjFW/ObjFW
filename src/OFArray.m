@@ -240,19 +240,21 @@ static struct {
 
 - (id const *)objects
 {
-	OFObject *container;
-	size_t count;
-	id *buffer;
+	size_t count = self.count;
+	id *buffer = of_malloc(count, sizeof(id));
 
-	container = [[[OFObject alloc] init] autorelease];
-	count = self.count;
-	buffer = [container allocMemoryWithSize: sizeof(*buffer)
-					  count: count];
+	@try {
+		[self getObjects: buffer
+			 inRange: of_range(0, count)];
 
-	[self getObjects: buffer
-		 inRange: of_range(0, count)];
-
-	return buffer;
+		return [[OFData dataWithItemsNoCopy: buffer
+					      count: count
+					   itemSize: sizeof(id)
+				       freeWhenDone: true] items];
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
 }
 
 - (id)copy
@@ -381,9 +383,7 @@ static struct {
 		return [OFSubarray arrayWithArray: self
 					    range: range];
 
-	buffer = [self allocMemoryWithSize: sizeof(*buffer)
-				     count: range.length];
-
+	buffer = of_malloc(range.length, sizeof(*buffer));
 	@try {
 		[self getObjects: buffer
 			 inRange: range];
@@ -391,7 +391,7 @@ static struct {
 		ret = [OFArray arrayWithObjects: buffer
 					  count: range.length];
 	} @finally {
-		[self freeMemory: buffer];
+		free(buffer);
 	}
 
 	return ret;
@@ -515,7 +515,7 @@ static struct {
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -858,8 +858,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = [self allocMemoryWithSize: sizeof(id)
-				      count: count];
+	id *tmp = of_malloc(count, sizeof(id));
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
@@ -870,7 +869,7 @@ static struct {
 		ret = [OFArray arrayWithObjects: tmp
 					  count: count];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 
 	return ret;
@@ -880,8 +879,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = [self allocMemoryWithSize: sizeof(id)
-				      count: count];
+	id *tmp = of_malloc(count, sizeof(id));
 
 	@try {
 		__block size_t i = 0;
@@ -895,7 +893,7 @@ static struct {
 		ret = [OFArray arrayWithObjects: tmp
 					  count: i];
 	} @finally {
-		[self freeMemory: tmp];
+		free(tmp);
 	}
 
 	return ret;

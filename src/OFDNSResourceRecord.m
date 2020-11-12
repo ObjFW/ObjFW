@@ -243,7 +243,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -329,7 +329,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -425,7 +425,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -528,7 +528,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -633,7 +633,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -734,7 +734,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -832,7 +832,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -937,7 +937,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -1073,7 +1073,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -1214,7 +1214,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -1319,7 +1319,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

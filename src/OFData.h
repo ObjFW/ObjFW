@@ -104,13 +104,13 @@ enum {
  *	  specified size.
  *
  * @param items The items to store in the OFData
- * @param itemSize The item size of a single item in bytes
  * @param count The number of items
+ * @param itemSize The item size of a single item in bytes
  * @return A new autoreleased OFData
  */
 + (instancetype)dataWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
-			count: (size_t)count;
+			count: (size_t)count
+		     itemSize: (size_t)itemSize;
 
 /**
  * @brief Creates a new OFData with the specified `count` items of size 1 by
@@ -131,15 +131,15 @@ enum {
  *	  specified size by taking ownership of the specified items pointer.
  *
  * @param items The items to store in the OFData
- * @param itemSize The item size of a single item in bytes
  * @param count The number of items
+ * @param itemSize The item size of a single item in bytes
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
  *		       by the OFData
  * @return A new autoreleased OFData
  */
 + (instancetype)dataWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone;
 
 #ifdef OF_HAVE_FILES
@@ -196,13 +196,13 @@ enum {
  *	  items of the specified size.
  *
  * @param items The items to store in the OFData
- * @param itemSize The item size of a single item in bytes
  * @param count The number of items
+ * @param itemSize The item size of a single item in bytes
  * @return An initialized OFData
  */
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
-			count: (size_t)count;
+			count: (size_t)count
+		     itemSize: (size_t)itemSize;
 
 /**
  * @brief Initializes an already allocated OFData with the specified `count`
@@ -225,15 +225,15 @@ enum {
  *	  items pointer.
  *
  * @param items The items to store in the OFData
- * @param itemSize The item size of a single item in bytes
  * @param count The number of items
+ * @param itemSize The item size of a single item in bytes
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
  *		       by the OFData
  * @return An initialized OFData
  */
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone;
 
 #ifdef OF_HAVE_FILES

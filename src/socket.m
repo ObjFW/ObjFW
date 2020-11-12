@@ -439,10 +439,8 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
 
 	if (doubleColon != OF_NOT_FOUND) {
-		OFString *left = [IPv6 substringWithRange:
-		    of_range(0, doubleColon)];
-		OFString *right = [IPv6 substringWithRange:
-		    of_range(doubleColon + 2, IPv6.length - doubleColon - 2)];
+		OFString *left = [IPv6 substringToIndex: doubleColon];
+		OFString *right = [IPv6 substringFromIndex: doubleColon + 2];
 		OFArray OF_GENERIC(OFString *) *leftComponents;
 		OFArray OF_GENERIC(OFString *) *rightComponents;
 		size_t i;
@@ -608,7 +606,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 	return true;
 }
 
-uint32_t
+unsigned long
 of_socket_address_hash(const of_socket_address_t *address)
 {
 	uint32_t hash;

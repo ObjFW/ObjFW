@@ -534,16 +534,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 #if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	struct x86_regs regs = x86_cpuid(0, 0);
-	char buffer[12];
+	uint32_t buffer[3];
 
 	if (regs.eax == 0)
 		return nil;
 
-	memcpy(buffer, &regs.ebx, 4);
-	memcpy(buffer + 4, &regs.edx, 4);
-	memcpy(buffer + 8, &regs.ecx, 4);
+	buffer[0] = regs.ebx;
+	buffer[1] = regs.edx;
+	buffer[2] = regs.ecx;
 
-	return [OFString stringWithCString: buffer
+	return [OFString stringWithCString: (char *)buffer
 				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 12];
 #else
@@ -553,19 +553,21 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if defined(OF_MACOS) || defined(OF_NETBSD)
-	char value[256];
-	size_t length = sizeof(value);
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+	uint32_t buffer[12];
+	size_t i;
 
-# if defined(OF_MACOS)
-	if (sysctlbyname("machdep.cpu.brand_string",
-# elif defined(OF_NETBSD)
-	if (sysctlbyname("machdep.cpu_brand",
-# endif
-	    &value, &length, NULL, 0) != 0)
-		return nil;
+	i = 0;
+	for (uint32_t eax = 0x80000002; eax <= 0x80000004; eax++) {
+		struct x86_regs regs = x86_cpuid(eax, 0);
 
-	return [OFString stringWithCString: value
+		buffer[i++] = regs.eax;
+		buffer[i++] = regs.ebx;
+		buffer[i++] = regs.ecx;
+		buffer[i++] = regs.edx;
+	}
+
+	return [OFString stringWithCString: (char *)buffer
 				  encoding: OF_STRING_ENCODING_ASCII];
 #elif defined(OF_AMIGAOS4)
 	CONST_STRPTR model, version;

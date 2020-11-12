@@ -84,14 +84,12 @@ int _OFString_URLEncoding_reference;
 	void *pool = objc_autoreleasePoolPush();
 	const char *string = self.UTF8String;
 	size_t length = self.UTF8StringLength;
-	char *retCString, *retCString2;
+	char *retCString;
 	char byte = 0;
 	int state = 0;
 	size_t i = 0;
 
-	if ((retCString = malloc(length + 1)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: length + 1];
+	retCString = of_malloc(length + 1, 1);
 
 	while (length--) {
 		char c = *string++;
@@ -136,12 +134,19 @@ int _OFString_URLEncoding_reference;
 		@throw [OFInvalidFormatException exception];
 	}
 
-	/* We don't care if it fails, as we only made it smaller. */
-	if ((retCString2 = realloc(retCString, i + 1)) == NULL)
-		retCString2 = retCString;
+	@try {
+		retCString = of_realloc(retCString, 1, i + 1);
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care if it fails, as we only made it smaller. */
+	}
 
-	return [OFString stringWithUTF8StringNoCopy: retCString2
-					     length: i
-				       freeWhenDone: true];
+	@try {
+		return [OFString stringWithUTF8StringNoCopy: retCString
+						     length: i
+					       freeWhenDone: true];
+	} @catch (id e) {
+		free(retCString);
+		@throw e;
+	}
 }
 @end

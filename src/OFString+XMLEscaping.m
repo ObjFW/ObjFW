@@ -42,13 +42,7 @@ int _OFString_XMLEscaping_reference;
 
 	j = 0;
 	retLength = length;
-
-	/*
-	 * We can't use allocMemoryWithSize: here as it might be a @"" literal
-	 */
-	if ((retCString = malloc(retLength)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: retLength];
+	retCString = of_malloc(retLength, 1);
 
 	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {
@@ -82,16 +76,13 @@ int _OFString_XMLEscaping_reference;
 		}
 
 		if (append != NULL) {
-			char *newRetCString;
-
-			if ((newRetCString = realloc(retCString,
-			    retLength + appendLen)) == NULL) {
+			@try {
+				retCString = of_realloc(retCString, 1,
+				    retLength + appendLen);
+			} @catch (id e) {
 				free(retCString);
-				@throw [OFOutOfMemoryException
-				     exceptionWithRequestedSize: retLength +
-								 appendLen];
+				@throw e;
 			}
-			retCString = newRetCString;
 			retLength += appendLen - 1;
 
 			memcpy(retCString + j, append, appendLen);

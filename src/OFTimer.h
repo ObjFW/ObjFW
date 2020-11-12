@@ -50,7 +50,7 @@ OF_SUBCLASSING_RESTRICTED
 	id _target;
 	id _Nullable _object1, _object2, _object3, _object4;
 	SEL _selector;
-	uint8_t _arguments;
+	unsigned char _arguments;
 	bool _repeats;
 #ifdef OF_HAVE_BLOCKS
 	of_timer_block_t _block;

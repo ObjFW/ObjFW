@@ -138,8 +138,8 @@
 			if ([URLHost hasSuffix: cookieDomain])
 				match = true;
 			else {
-				cookieDomain = [cookieDomain substringWithRange:
-				    of_range(1, cookieDomain.length - 1)];
+				cookieDomain =
+				    [cookieDomain substringFromIndex: 1];
 
 				match = [cookieDomain isEqual: URLHost];
 			}

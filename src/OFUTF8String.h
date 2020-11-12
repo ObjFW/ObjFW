@@ -29,13 +29,13 @@ OF_ASSUME_NONNULL_BEGIN
 	 * pointer to `&_storage`.
 	 */
 	struct of_string_utf8_ivars {
-		char	 *cString;
-		size_t	 cStringLength;
-		bool	 isUTF8;
-		size_t	 length;
-		bool	 hashed;
-		uint32_t hash;
-		char	 *_Nullable freeWhenDone;
+		char          *cString;
+		size_t        cStringLength;
+		bool          isUTF8;
+		size_t        length;
+		bool          hashed;
+		unsigned long hash;
+		bool          freeWhenDone;
 	} *restrict _s;
 	struct of_string_utf8_ivars _storage;
 }

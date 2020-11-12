@@ -81,27 +81,27 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new, autoreleased OFSecureData with count items of the
  *	  specified item size, all set to zero.
  *
- * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
+ * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param allowsSwappableMemory Whether the data may be stored in swappable
  *			       memory
  * @return A new, autoreleased OFSecureData
  */
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			   count: (size_t)count
-	   allowsSwappableMemory: (bool)allowsSwappableMemory;
++ (instancetype)dataWithCount: (size_t)count
+		     itemSize: (size_t)itemSize
+	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 + (instancetype)dataWithItems: (const void *)items
 			count: (size_t)count OF_UNAVAILABLE;
 + (instancetype)dataWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
-			count: (size_t)count OF_UNAVAILABLE;
+			count: (size_t)count
+		     itemSize: (size_t)itemSize OF_UNAVAILABLE;
 + (instancetype)dataWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 + (instancetype)dataWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
@@ -132,22 +132,22 @@ OF_SUBCLASSING_RESTRICTED
  *				memory
  * @return An initialized OFSecureData
  */
-- (instancetype)initWithItemSize: (size_t)itemSize
-			   count: (size_t)count
-	   allowsSwappableMemory: (bool)allowsSwappableMemory
+- (instancetype)initWithCount: (size_t)count
+		     itemSize: (size_t)itemSize
+	allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
-			count: (size_t)count OF_UNAVAILABLE;
+			count: (size_t)count
+		     itemSize: (size_t)itemSize OF_UNAVAILABLE;
 - (instancetype)initWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;

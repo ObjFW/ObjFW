@@ -63,12 +63,12 @@ _references_to_categories_of_OFData(void)
 }
 
 + (instancetype)dataWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
 	return [[[self alloc] initWithItems: items
-				   itemSize: itemSize
-				      count: count] autorelease];
+				      count: count
+				   itemSize: itemSize] autorelease];
 }
 
 + (instancetype)dataWithItemsNoCopy: (void *)items
@@ -81,13 +81,13 @@ _references_to_categories_of_OFData(void)
 }
 
 + (instancetype)dataWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
 	return [[[self alloc] initWithItemsNoCopy: items
-					 itemSize: itemSize
 					    count: count
+					 itemSize: itemSize
 				     freeWhenDone: freeWhenDone] autorelease];
 }
 
@@ -118,13 +118,13 @@ _references_to_categories_of_OFData(void)
 			count: (size_t)count
 {
 	return [self initWithItems: items
-			  itemSize: 1
-			     count: count];
+			     count: count
+			  itemSize: 1];
 }
 
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
 	self = [super init];
 
@@ -132,10 +132,10 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = [self allocMemoryWithSize: itemSize
-					     count: count];
-		_itemSize = itemSize;
+		_items = of_malloc(count, itemSize);
 		_count = count;
+		_itemSize = itemSize;
+		_freeWhenDone = true;
 
 		memcpy(_items, items, count * itemSize);
 	} @catch (id e) {
@@ -151,14 +151,14 @@ _references_to_categories_of_OFData(void)
 		       freeWhenDone: (bool)freeWhenDone
 {
 	return [self initWithItemsNoCopy: items
-				itemSize: 1
 				   count: count
+				itemSize: 1
 			    freeWhenDone: freeWhenDone];
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
 	self = [super init];
@@ -168,8 +168,8 @@ _references_to_categories_of_OFData(void)
 			@throw [OFInvalidArgumentException exception];
 
 		_items = (unsigned char *)items;
-		_itemSize = itemSize;
 		_count = count;
+		_itemSize = itemSize;
 		_freeWhenDone = freeWhenDone;
 	} @catch (id e) {
 		[self release];
@@ -196,10 +196,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		if ((buffer = malloc((size_t)size)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: (size_t)size];
-
+		buffer = of_malloc((size_t)size, 1);
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"r"];
 		@try {
@@ -246,23 +243,29 @@ _references_to_categories_of_OFData(void)
 		stream = [URLHandler openItemAtURL: URL
 					      mode: @"r"];
 
-		_itemSize = 1;
 		_count = 0;
+		_itemSize = 1;
+		_freeWhenDone = true;
 
 		pageSize = [OFSystemInfo pageSize];
-		buffer = [self allocMemoryWithSize: pageSize];
+		buffer = of_malloc(1, pageSize);
 
-		while (!stream.atEndOfStream) {
-			size_t length = [stream readIntoBuffer: buffer
-							length: pageSize];
+		@try {
+			while (!stream.atEndOfStream) {
+				size_t length = [stream
+				    readIntoBuffer: buffer
+					    length: pageSize];
 
-			if (SIZE_MAX - _count < length)
-				@throw [OFOutOfRangeException exception];
+				if (SIZE_MAX - _count < length)
+					@throw [OFOutOfRangeException
+					    exception];
 
-			_items = [self resizeMemory: _items
-					       size: _count + length];
-			memcpy(_items + _count, buffer, length);
-			_count += length;
+				_items = of_realloc(_items, _count + length, 1);
+				memcpy(_items + _count, buffer, length);
+				_count += length;
+			}
+		} @finally {
+			free(buffer);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -288,9 +291,10 @@ _references_to_categories_of_OFData(void)
 
 		count /= 2;
 
-		_items = [self allocMemoryWithSize: count];
-		_itemSize = 1;
+		_items = of_malloc(count, 1);
 		_count = count;
+		_itemSize = 1;
+		_freeWhenDone = true;
 
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
@@ -431,8 +435,8 @@ _references_to_categories_of_OFData(void)
 - (id)mutableCopy
 {
 	return [[OFMutableData alloc] initWithItems: _items
-					   itemSize: _itemSize
-					      count: _count];
+					      count: _count
+					   itemSize: _itemSize];
 }
 
 - (bool)isEqual: (id)object
@@ -488,7 +492,7 @@ _references_to_categories_of_OFData(void)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -511,8 +515,8 @@ _references_to_categories_of_OFData(void)
 		@throw [OFOutOfRangeException exception];
 
 	ret = [OFData dataWithItemsNoCopy: _items + (range.location * _itemSize)
-				 itemSize: _itemSize
 				    count: range.length
+				 itemSize: _itemSize
 			     freeWhenDone: false];
 	ret->_parentData = [(_parentData != nil ? _parentData : self) copy];
 

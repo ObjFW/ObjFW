@@ -167,7 +167,6 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
-	id const *objects;
 	fd_set readFDs;
 	fd_set writeFDs;
 	struct timeval timeout;
@@ -175,7 +174,7 @@
 #ifdef OF_AMIGAOS
 	ULONG execSignalMask, cancelSignal;
 #endif
-	size_t count;
+	void *pool;
 
 	if ([self of_processReadBuffers])
 		return;
@@ -249,34 +248,34 @@
 	}
 #endif
 
-	objects = _readObjects.objects;
-	count = _readObjects.count;
+	pool = objc_autoreleasePoolPush();
 
-	for (size_t i = 0; i < count; i++) {
-		void *pool = objc_autoreleasePoolPush();
-		int fd = [objects[i] fileDescriptorForReading];
+	for (id <OFReadyForReadingObserving> object in
+	    [[_readObjects copy] autorelease]) {
+		void *pool2 = objc_autoreleasePoolPush();
+		int fd = object.fileDescriptorForReading;
 
 		if (FD_ISSET((of_socket_t)fd, &readFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
-			[_delegate objectIsReadyForReading: objects[i]];
+			[_delegate objectIsReadyForReading: object];
 
-		objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool2);
 	}
 
-	objects = _writeObjects.objects;
-	count = _writeObjects.count;
-
-	for (size_t i = 0; i < count; i++) {
-		void *pool = objc_autoreleasePoolPush();
-		int fd = [objects[i] fileDescriptorForWriting];
+	for (id <OFReadyForWritingObserving> object in
+	    [[_writeObjects copy] autorelease]) {
+		void *pool2 = objc_autoreleasePoolPush();
+		int fd = object.fileDescriptorForWriting;
 
 		if (FD_ISSET((of_socket_t)fd, &writeFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
-			[_delegate objectIsReadyForWriting: objects[i]];
+			[_delegate objectIsReadyForWriting: object];
 
-		objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool2);
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end
