@@ -636,12 +636,17 @@ case "$objc_runtime" in
 			AC_MSG_ERROR([libobjc not found!])
 		])
 
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -lobjc"
+
 		AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 			AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
 		])
 		AC_CHECK_FUNC(objc_constructInstance, [], [
 			AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
 		])
+
+		OBJCFLAGS="$old_OBJCFLAGS"
 		;;
 esac
 
