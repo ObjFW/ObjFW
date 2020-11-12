@@ -39,8 +39,16 @@ static OFString *module = @"Runtime (ARC)";
 - (void)runtimeARCTests
 {
 	id object;
+	__weak id weak;
 
 	EXPECT_EXCEPTION(@"Exceptions in init", OFException,
 	    object = [[RuntimeARCTest alloc] init])
+
+	object = [[OFObject alloc] init];
+	weak = object;
+	TEST(@"weakly referencing an object", weak == object)
+
+	object = nil;
+	TEST(@"weak references becoming nil", weak == nil)
 }
 @end
