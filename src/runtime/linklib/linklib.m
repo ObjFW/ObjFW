@@ -757,5 +757,5 @@ object_getTaggedPointerValue(id object)
 id
 objc_createTaggedPointer(int class, uintptr_t value)
 {
-	return objc_createTaggedPointer(class, value);
+	return glue_objc_createTaggedPointer(class, value);
 }
