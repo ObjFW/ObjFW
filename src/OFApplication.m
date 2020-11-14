@@ -259,10 +259,8 @@ SIGNAL_HANDLER(SIGUSR2)
 					continue;
 				}
 
-				key = [tmp substringWithRange:
-				    of_range(0, pos)];
-				value = [tmp substringWithRange:
-				    of_range(pos + 1, tmp.length - pos - 1)];
+				key = [tmp substringToIndex: pos];
+				value = [tmp substringFromRange: pos + 1];
 
 				[_environment setObject: value
 						 forKey: key];
@@ -305,10 +303,8 @@ SIGNAL_HANDLER(SIGUSR2)
 					continue;
 				}
 
-				key = [tmp substringWithRange:
-				    of_range(0, pos)];
-				value = [tmp substringWithRange:
-				    of_range(pos + 1, tmp.length - pos - 1)];
+				key = [tmp substringToIndex: pos];
+				value = [tmp substringFromIndex: pos + 1];
 
 				[_environment setObject: value
 						 forKey: key];

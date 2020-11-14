@@ -87,49 +87,8 @@ static OFString *module = @"OFObject";
 - (void)objectTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFObject *obj = [[[OFObject alloc] init] autorelease];
-	void *p, *q, *r;
 	OFObject *o;
 	MyObj *m;
-	char *tmp;
-
-	TEST(@"Allocating 4096 bytes",
-	    (p = [obj allocMemoryWithSize: 4096]) != NULL)
-
-	TEST(@"Freeing memory", R([obj freeMemory: p]))
-
-	TEST(@"Allocating and freeing 4096 bytes 3 times",
-	    (p = [obj allocMemoryWithSize: 4096]) != NULL &&
-	    (q = [obj allocMemoryWithSize: 4096]) != NULL &&
-	    (r = [obj allocMemoryWithSize: 4096]) != NULL &&
-	    R([obj freeMemory: p]) && R([obj freeMemory: q]) &&
-	    R([obj freeMemory: r]))
-
-	tmp = [self allocMemoryWithSize: 1024];
-	EXPECT_EXCEPTION(@"Detect freeing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, [obj freeMemory: tmp])
-
-	EXPECT_EXCEPTION(@"Detect out of memory on alloc",
-	    OFOutOfMemoryException, tmp = [obj allocMemoryWithSize: TOO_BIG])
-
-	EXPECT_EXCEPTION(@"Detect out of memory on resize",
-	    OFOutOfMemoryException,
-	    {
-		p = [obj allocMemoryWithSize: 1];
-		p = [obj resizeMemory: p
-				 size: TOO_BIG];
-	    })
-	[obj freeMemory: p];
-
-	TEST(@"Allocate when trying to resize NULL",
-	    (p = [obj resizeMemory: NULL
-			      size: 1024]) != NULL)
-	[obj freeMemory: p];
-
-	EXPECT_EXCEPTION(@"Detect resizing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, tmp = [obj resizeMemory: tmp
-								 size: 2048])
-	[self freeMemory: tmp];
 
 	TEST(@"+[description]",
 	    [[OFObject description] isEqual: @"OFObject"] &&

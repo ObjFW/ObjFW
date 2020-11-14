@@ -36,9 +36,8 @@ const char *str = "Hello!";
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
 
-	OFObject *tmp = [[[OFObject alloc] init] autorelease];
-	raw[0] = [tmp allocMemoryWithSize: 4096];
-	raw[1] = [tmp allocMemoryWithSize: 4096];
+	raw[0] = of_malloc(1, 4096);
+	raw[1] = of_malloc(1, 4096);
 	memset(raw[0], 0xFF, 4096);
 	memset(raw[1], 0x42, 4096);
 
@@ -55,8 +54,8 @@ const char *str = "Hello!";
 
 	TEST(@"-[isEqual:]",
 	    (immutable = [OFData dataWithItems: mutable.items
-				      itemSize: mutable.itemSize
-					 count: mutable.count]) &&
+					 count: mutable.count
+				      itemSize: mutable.itemSize]) &&
 	    [immutable isEqual: mutable] &&
 	    R([mutable removeLastItem]) && ![mutable isEqual: immutable])
 
@@ -92,42 +91,42 @@ const char *str = "Hello!";
 	    memcmp(mutable.items, "abcde", 5) == 0)
 
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
-				 itemSize: 2
-				    count: 7];
+				    count: 7
+				 itemSize: 2];
 	TEST(@"-[rangeOfString:options:range:]",
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
+							      count: 1
+							   itemSize: 2]
 				     options: 0
 				       range: of_range(0, 7)]) &&
 	    range.location == 0 && range.length == 1 &&
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
+							      count: 1
+							   itemSize: 2]
 				     options: OF_DATA_SEARCH_BACKWARDS
 				       range: of_range(0, 7)]) &&
 	    range.location == 5 && range.length == 1 &&
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "ac"
-							   itemSize: 2
-							      count: 1]
+							      count: 1
+							   itemSize: 2]
 				     options: 0
 				       range: of_range(0, 7)]) &&
 	    range.location == 2 && range.length == 1 &&
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
-							   itemSize: 2
-							      count: 2]
+							      count: 2
+							   itemSize: 2]
 				     options: 0
 				       range: of_range(0, 7)]) &&
 	    range.location == 5 && range.length == 2 &&
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
+							      count: 1
+							   itemSize: 2]
 				     options: 0
 				       range: of_range(1, 6)]) &&
 	    range.location == 5 && range.length == 1 &&
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
+							      count: 1
+							   itemSize: 2]
 				     options: OF_DATA_SEARCH_BACKWARDS
 				       range: of_range(0, 5)]) &&
 	    range.location == 0 && range.length == 1)
@@ -136,8 +135,8 @@ const char *str = "Hello!";
 	    @"-[rangeOfString:options:range:] failing on different itemSize",
 	    OFInvalidArgumentException,
 	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
-						 itemSize: 3
-						    count: 1]
+						    count: 1
+						 itemSize: 3]
 			   options: 0
 			     range: of_range(0, 1)])
 
@@ -145,16 +144,16 @@ const char *str = "Hello!";
 	    @"-[rangeOfData:options:range:] failing on out of range",
 	    OFOutOfRangeException,
 	    [immutable rangeOfData: [OFData dataWithItems: ""
-						 itemSize: 2
-						    count: 0]
+						    count: 0
+						 itemSize: 2]
 			   options: 0
 			     range: of_range(8, 1)])
 
 	TEST(@"-[subdataWithRange:]",
 	    [[immutable subdataWithRange: of_range(2, 4)]
 	    isEqual: [OFData dataWithItems: "accdacaa"
-				  itemSize: 2
-				     count: 4]] &&
+				     count: 4
+				  itemSize: 2]] &&
 	    [[mutable subdataWithRange: of_range(2, 3)]
 	    isEqual: [OFData dataWithItems: "cde"
 				     count: 3]])
@@ -207,6 +206,9 @@ const char *str = "Hello!";
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
 	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
+
+	free(raw[0]);
+	free(raw[1]);
 
 	objc_autoreleasePoolPop(pool);
 }

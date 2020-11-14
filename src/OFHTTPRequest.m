@@ -185,7 +185,7 @@ of_http_request_method_from_string(OFString *string)
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 
@@ -208,7 +208,7 @@ of_http_request_method_from_string(OFString *string)
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
-		    [OFString stringWithFormat: @"%u.%u",
+		    [OFString stringWithFormat: @"%hhu.%hhu",
 						protocolVersion.major,
 						protocolVersion.minor]];
 
@@ -233,11 +233,11 @@ of_http_request_method_from_string(OFString *string)
 	major = [components.firstObject unsignedLongLongValue];
 	minor = [components.lastObject unsignedLongLongValue];
 
-	if (major > UINT8_MAX || minor > UINT8_MAX)
+	if (major > UCHAR_MAX || minor > UCHAR_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	protocolVersion.major = (uint8_t)major;
-	protocolVersion.minor = (uint8_t)minor;
+	protocolVersion.major = (unsigned char)major;
+	protocolVersion.minor = (unsigned char)minor;
 
 	self.protocolVersion = protocolVersion;
 
@@ -246,7 +246,7 @@ of_http_request_method_from_string(OFString *string)
 
 - (OFString *)protocolVersionString
 {
-	return [OFString stringWithFormat: @"%u.%u",
+	return [OFString stringWithFormat: @"%hhu.%hhu",
 					   _protocolVersion.major,
 					   _protocolVersion.minor];
 }

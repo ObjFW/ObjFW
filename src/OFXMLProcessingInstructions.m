@@ -91,7 +91,7 @@
 	    isEqual: _processingInstructions];
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _processingInstructions.hash;
 }
@@ -117,8 +117,7 @@
 	OFString *ret;
 
 	if (indentation > 0 && level > 0) {
-		char *whitespaces = [self allocMemoryWithSize:
-		    (level * indentation) + 1];
+		char *whitespaces = of_malloc((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 
@@ -126,7 +125,7 @@
 			ret = [OFString stringWithFormat:
 			    @"%s<?%@?>", whitespaces, _processingInstructions];
 		} @finally {
-			[self freeMemory: whitespaces];
+			free(whitespaces);
 		}
 	} else
 		ret = [OFString stringWithFormat: @"<?%@?>",

@@ -656,12 +656,17 @@ case "$objc_runtime" in
 			AC_MSG_ERROR([libobjc not found!])
 		])
 
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -lobjc"
+
 		AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 			AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
 		])
 		AC_CHECK_FUNC(objc_constructInstance, [], [
 			AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
 		])
+
+		OBJCFLAGS="$old_OBJCFLAGS"
 		;;
 esac
 
@@ -698,6 +703,41 @@ case "$host_os" in
 		])
 		;;
 esac
+
+AC_MSG_CHECKING(whether Objective C compiler supports ARC)
+old_OBJCFLAGS="$OBJCFLAGS"
+OBJCFLAGS="$OBJCFLAGS -fobjc-arc -fobjc-arc-exceptions"
+AC_TRY_COMPILE([
+	#ifdef __has_attribute
+	# if __has_attribute(objc_root_class)
+	__attribute__((__objc_root_class__))
+	# endif
+	#endif
+	@interface Foo
+	{
+		struct objc_class *_isa;
+	}
+
+	+ (id)alloc;
+	@end
+
+	@implementation Foo
+	+ (id)alloc
+	{
+		return (id)0;
+	}
+	@end
+], [
+	__weak id foo = [Foo alloc];
+	(void)foo;
+], [
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
+	AC_SUBST(RUNTIME_ARC_TESTS_M, RuntimeARCTests.m)
+], [
+	AC_MSG_RESULT(no)
+])
+OBJCFLAGS="$old_OBJCFLAGS"
 
 AC_C_BIGENDIAN([
 	AC_DEFINE(OF_BIG_ENDIAN, 1, [Whether we are big endian])

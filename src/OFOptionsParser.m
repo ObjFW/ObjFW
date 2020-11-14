@@ -24,7 +24,7 @@
 
 #import "OFInvalidArgumentException.h"
 
-static uint32_t
+static unsigned long
 stringHash(void *object)
 {
 	return ((OFString *)object).hash;
@@ -86,12 +86,10 @@ stringEqual(void *object1, void *object2)
 			count++;
 		}
 
+		_options = of_malloc(count + 1, sizeof(*_options));
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions];
-		_options = [self
-		    allocMemoryWithSize: sizeof(*_options)
-				  count: count + 1];
 
 		for (iter = options, iter2 = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
@@ -146,6 +144,7 @@ stringEqual(void *object1, void *object2)
 {
 	of_options_parser_option_t *iter;
 
+	free(_options);
 	[_longOptions release];
 
 	if (_options != NULL)
@@ -197,12 +196,10 @@ stringEqual(void *object1, void *object2)
 			_index++;
 
 			if ((pos = [argument rangeOfString: @"="].location) !=
-			    OF_NOT_FOUND) {
-				of_range_t range = of_range(pos + 1,
-				    argument.length - pos - 1);
+			    OF_NOT_FOUND)
 				_argument = [[argument
-				    substringWithRange: range] copy];
-			} else
+				    substringFromIndex: pos + 1] copy];
+			else
 				pos = argument.length;
 
 			_lastLongOption = [[argument substringWithRange:
@@ -255,8 +252,7 @@ stringEqual(void *object1, void *object2)
 				return ':';
 
 			argument = [_arguments objectAtIndex: _index];
-			argument = [argument substringWithRange:
-			    of_range(_subIndex, argument.length - _subIndex)];
+			argument = [argument substringFromIndex: _subIndex];
 
 			_argument = [argument copy];
 

@@ -279,8 +279,8 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		if (_addressFamily == address.family ||
 		    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
 			addresses = [OFData dataWithItems: &address
-						 itemSize: sizeof(address)
-						    count: 1];
+						    count: 1
+						 itemSize: sizeof(address)];
 		else
 			exception = [OFInvalidArgumentException exception];
 

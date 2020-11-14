@@ -30,10 +30,7 @@ newTree(void)
 {
 	struct of_huffman_tree *tree;
 
-	if ((tree = malloc(sizeof(*tree))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: sizeof(*tree)];
-
+	tree = of_malloc(1, sizeof(*tree));
 	tree->leaves[0] = tree->leaves[1] = NULL;
 	tree->value = 0xFFFF;
 
@@ -72,20 +69,10 @@ of_huffman_tree_construct(uint8_t lengths[], uint16_t count)
 			uint_fast8_t length = lengths[i];
 
 			if OF_UNLIKELY (length > maxBit) {
-				size_t size = (length + 1) * sizeof(uint16_t);
-				uint16_t *new;
-
-				if ((new = realloc(lengthCount, size)) == NULL)
-					@throw [OFOutOfMemoryException
-					    exceptionWithRequestedSize: size];
-
-				lengthCount = new;
-
-				if ((new = realloc(nextCode, size)) == NULL)
-					@throw [OFOutOfMemoryException
-					    exceptionWithRequestedSize: size];
-
-				nextCode = new;
+				lengthCount = of_realloc(lengthCount,
+				    length + 1, sizeof(uint16_t));
+				nextCode = of_realloc(nextCode,
+				    length + 1, sizeof(uint16_t));
 
 				for (uint_fast8_t j = maxBit + 1; j <= length;
 				    j++) {

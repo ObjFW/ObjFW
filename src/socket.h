@@ -219,7 +219,7 @@ extern bool of_socket_address_equal(
  * @param address The address to hash
  * @return The hash for the specified of_socket_address_t
  */
-extern uint32_t of_socket_address_hash(
+extern unsigned long of_socket_address_hash(
     const of_socket_address_t *_Nonnull address);
 
 /**

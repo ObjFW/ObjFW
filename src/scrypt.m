@@ -166,8 +166,8 @@ of_scrypt(of_scrypt_parameters_t param)
 			@throw [OFOutOfRangeException exception];
 
 		tmp = [[OFSecureData alloc]
-			 initWithItemSize: param.blockSize
-				    count: (param.costFactor + 1) * 128
+			    initWithCount: (param.costFactor + 1) * 128
+				 itemSize: param.blockSize
 		    allowsSwappableMemory: param.allowsSwappableMemory];
 		tmpItems = tmp.mutableItems;
 
@@ -175,8 +175,8 @@ of_scrypt(of_scrypt_parameters_t param)
 			@throw [OFOutOfRangeException exception];
 
 		buffer = [[OFSecureData alloc]
-			 initWithItemSize: param.blockSize
-				    count: param.parallelization * 128
+			    initWithCount: param.parallelization * 128
+				 itemSize: param.blockSize
 		    allowsSwappableMemory: param.allowsSwappableMemory];
 		bufferItems = buffer.mutableItems;
 

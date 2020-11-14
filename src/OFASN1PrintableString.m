@@ -144,7 +144,7 @@
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _printableStringValue.hash;
 }

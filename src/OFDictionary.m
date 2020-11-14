@@ -597,18 +597,18 @@ OF_DIRECT_MEMBERS
 }
 #endif
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *keyEnumerator = [self keyEnumerator];
 	OFEnumerator *objectEnumerator = [self objectEnumerator];
 	id key, object;
-	uint32_t hash = 0;
+	unsigned long hash = 0;
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		hash += [key hash];
-		hash += [object hash];
+		hash ^= [key hash];
+		hash ^= [object hash];
 	}
 
 	objc_autoreleasePoolPop(pool);

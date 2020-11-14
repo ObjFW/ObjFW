@@ -38,6 +38,7 @@ SRCS = ForwardingTests.m		\
        OFXMLParserTests.m		\
        PBKDF2Tests.m			\
        RuntimeTests.m			\
+       ${RUNTIME_ARC_TESTS_M}		\
        ScryptTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
@@ -203,6 +204,7 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
+OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

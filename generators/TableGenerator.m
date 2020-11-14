@@ -78,7 +78,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
+	  exception: (id)exception
 {
+	if (exception != nil)
+		@throw exception;
+
 	[of_stdout writeLine: @" done"];
 
 	switch (_state) {
@@ -89,13 +93,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		[self parseCaseFolding: response];
 		break;
 	}
-}
-
--	  (void)client: (OFHTTPClient *)client
-  didFailWithException: (id)exception
-	       request: (OFHTTPRequest *)request
-{
-	@throw exception;
 }
 
 - (void)parseUnicodeData: (OFHTTPResponse *)response

@@ -172,9 +172,7 @@ static struct {
 	size_t count = self.count;
 	id *cArray;
 
-	cArray = [self allocMemoryWithSize: sizeof(id)
-				     count: count];
-
+	cArray = of_malloc(count, sizeof(id));
 	@try {
 		size_t i;
 
@@ -188,7 +186,7 @@ static struct {
 			if (![set containsObject: cArray[i]])
 			      [self removeObject: cArray[i]];
 	} @finally {
-		[self freeMemory: cArray];
+		free(cArray);
 	}
 
 	objc_autoreleasePoolPop(pool);

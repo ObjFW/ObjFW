@@ -255,7 +255,7 @@ encodingForContentType(OFString *contentType)
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
-		    [OFString stringWithFormat: @"%u.%u",
+		    [OFString stringWithFormat: @"%hhu.%hhu",
 						protocolVersion.major,
 						protocolVersion.minor]];
 
@@ -280,11 +280,11 @@ encodingForContentType(OFString *contentType)
 	major = [components.firstObject unsignedLongLongValue];
 	minor = [components.lastObject unsignedLongLongValue];
 
-	if (major > UINT8_MAX || minor > UINT8_MAX)
+	if (major > UCHAR_MAX || minor > UCHAR_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	protocolVersion.major = (uint8_t)major;
-	protocolVersion.minor = (uint8_t)minor;
+	protocolVersion.major = (unsigned char)major;
+	protocolVersion.minor = (unsigned char)minor;
 
 	self.protocolVersion = protocolVersion;
 
@@ -293,7 +293,7 @@ encodingForContentType(OFString *contentType)
 
 - (OFString *)protocolVersionString
 {
-	return [OFString stringWithFormat: @"%u.%u",
+	return [OFString stringWithFormat: @"%hhu.%hhu",
 					   _protocolVersion.major,
 					   _protocolVersion.minor];
 }
@@ -350,7 +350,7 @@ encodingForContentType(OFString *contentType)
 
 	ret = [[OFString alloc] initWithFormat:
 	    @"<%@:\n"
-	    @"\tStatus code = %d\n"
+	    @"\tStatus code = %hd\n"
 	    @"\tHeaders = %@\n"
 	    @">",
 	    self.class, _statusCode, indentedHeaders];

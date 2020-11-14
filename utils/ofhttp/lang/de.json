@@ -17,7 +17,8 @@
         "\n",
         "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",
         "        --insecure         TLS-Fehler ignorieren und unsichere\n",
-        "                           Weiterleitungen erlauben"
+        "                           Weiterleitungen erlauben\n",
+        "        --ignore-status    HTTP Status-Code ignorieren"
     ],
     "invalid_input_header": "%[prog]: Header müssen im Format Name:Wert sein!",
     "invalid_input_method": "%[prog]: Ungültige Request-Methode %[method]!",

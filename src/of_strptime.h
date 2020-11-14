@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern const char *_Nullable of_strptime(const char *buf, const char *fmt,
-    struct tm *tm, int16_t *_Nullable tz);
+    struct tm *tm, short *_Nullable tz);
 #ifdef __cplusplus
 }
 #endif

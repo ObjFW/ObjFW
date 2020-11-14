@@ -101,7 +101,10 @@ static OFHTTPResponse *response = nil;
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response_
+	  exception: (id)exception
 {
+	OF_ENSURE(exception == nil);
+
 	response = [response_ retain];
 
 	[[OFRunLoop mainRunLoop] stop];

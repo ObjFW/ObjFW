@@ -183,14 +183,12 @@ static struct {
 
 	size = of_sizeof_type_encoding(objCType);
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	if ((otherValue = malloc(size)) == NULL) {
+	value = of_malloc(1, size);
+	@try {
+		otherValue = of_malloc(1, size);
+	} @catch (id e) {
 		free(value);
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		@throw e;
 	}
 
 	@try {
@@ -208,16 +206,13 @@ static struct {
 	return ret;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 	uint32_t hash;
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
+	value = of_malloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];
@@ -318,10 +313,7 @@ static struct {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 
-	if ((value = malloc(size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
+	value = of_malloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];

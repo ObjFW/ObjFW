@@ -17,51 +17,38 @@
 
 #include "config.h"
 
-#import "OFAllocFailedException.h"
-#import "OFString.h"
+#import "TestsAppDelegate.h"
 
-@implementation OFAllocFailedException
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
+static OFString *module = @"Runtime (ARC)";
 
-+ (instancetype)alloc
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
+@interface RuntimeARCTest: OFObject
+@end
 
+@implementation RuntimeARCTest
 - (instancetype)init
 {
-	OF_INVALID_INIT_METHOD
-}
+	self = [super init];
 
-- (instancetype)retain
-{
+	@throw [OFException exception];
+
 	return self;
 }
+@end
 
-- (instancetype)autorelease
+@implementation TestsAppDelegate (RuntimeARCTests)
+- (void)runtimeARCTests
 {
-	return self;
-}
+	id object;
+	__weak id weak;
 
-- (unsigned int)retainCount
-{
-	return OF_RETAIN_COUNT_MAX;
-}
+	EXPECT_EXCEPTION(@"Exceptions in init", OFException,
+	    object = [[RuntimeARCTest alloc] init])
 
-- (void)release
-{
-}
+	object = [[OFObject alloc] init];
+	weak = object;
+	TEST(@"weakly referencing an object", weak == object)
 
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
-
-- (OFString *)description
-{
-	return @"Allocating an object failed!";
+	object = nil;
+	TEST(@"weak references becoming nil", weak == nil)
 }
 @end

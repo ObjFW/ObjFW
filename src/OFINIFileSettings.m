@@ -67,9 +67,8 @@
 		return;
 	}
 
-	*category = [path substringWithRange: of_range(0, pos)];
-	*key = [path substringWithRange:
-	    of_range(pos + 1, path.length - pos - 1)];
+	*category = [path substringToIndex: pos];
+	*key = [path substringFromIndex: pos + 1];
 }
 
 - (void)setString: (OFString *)string

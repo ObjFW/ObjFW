@@ -172,9 +172,9 @@
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
-	return _bitStringValue.hash + (uint32_t)_bitStringLength;
+	return _bitStringValue.hash + (unsigned long)_bitStringLength;
 }
 
 - (OFString *)description

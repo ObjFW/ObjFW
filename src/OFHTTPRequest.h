@@ -59,9 +59,9 @@ typedef enum {
  */
 struct OF_BOXABLE of_http_request_protocol_version_t {
 	/** The major of the HTTP version */
-	uint8_t major;
+	unsigned char major;
 	/** The minor of the HTTP version */
-	uint8_t minor;
+	unsigned char minor;
 };
 typedef struct of_http_request_protocol_version_t
     of_http_request_protocol_version_t;

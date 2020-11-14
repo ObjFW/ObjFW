@@ -49,7 +49,7 @@ release(void *object)
 	[(id)object release];
 }
 
-static uint32_t
+static unsigned long
 hash(void *object)
 {
 	return [(id)object hash];
@@ -344,8 +344,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	keys = [self allocMemoryWithSize: sizeof(*keys)
-				   count: count];
+	keys = of_malloc(count, sizeof(*keys));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -366,7 +365,7 @@ static const of_map_table_functions_t objectFunctions = {
 		ret = [OFArray arrayWithObjects: keys
 					  count: count];
 	} @finally {
-		[self freeMemory: keys];
+		free(keys);
 	}
 
 	return ret;
@@ -379,8 +378,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	objects = [self allocMemoryWithSize: sizeof(*objects)
-				      count: count];
+	objects = of_malloc(count, sizeof(*objects));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -401,7 +399,7 @@ static const of_map_table_functions_t objectFunctions = {
 		ret = [OFArray arrayWithObjects: objects
 					  count: count];
 	} @finally {
-		[self freeMemory: objects];
+		free(objects);
 	}
 
 	return ret;
@@ -446,7 +444,7 @@ static const of_map_table_functions_t objectFunctions = {
 }
 #endif
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	return _mapTable.hash;
 }

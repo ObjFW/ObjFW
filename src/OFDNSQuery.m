@@ -93,7 +93,7 @@
 	return true;
 }
 
-- (uint32_t)hash
+- (unsigned long)hash
 {
 	uint32_t hash;
 

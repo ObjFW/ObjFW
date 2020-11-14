@@ -71,13 +71,15 @@ static OFString *module = @"OFStream";
 	OFString *str;
 	char *cstr;
 
-	cstr = [t allocMemoryWithSize: pageSize - 2];
+	cstr = of_malloc(pageSize - 2, 1);
 	memset(cstr, 'X', pageSize - 3);
 	cstr[pageSize - 3] = '\0';
 
 	TEST(@"-[readLine]", [[t readLine] isEqual: @"foo"] &&
 	    [(str = [t readLine]) length] == pageSize - 3 &&
 	    !strcmp(str.UTF8String, cstr))
+
+	free(cstr);
 
 	objc_autoreleasePoolPop(pool);
 }

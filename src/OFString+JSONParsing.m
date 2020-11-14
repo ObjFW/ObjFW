@@ -148,8 +148,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	if (++(*pointer) + 1 >= stop)
 		return nil;
 
-	if ((buffer = malloc(stop - *pointer)) == NULL)
-		return nil;
+	buffer = of_malloc(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		/* Parse escape codes */
@@ -295,8 +294,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	char *buffer;
 	size_t i = 0;
 
-	if ((buffer = malloc(stop - *pointer)) == NULL)
-		return nil;
+	buffer = of_malloc(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		if ((**pointer >= 'a' && **pointer <= 'z') ||
@@ -386,6 +384,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	 * It is never possible to end with an identifier, thus we should never
 	 * reach stop.
 	 */
+	free(buffer);
 	return nil;
 }
 

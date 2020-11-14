@@ -31,7 +31,7 @@
 	@try {
 		_size = of_sizeof_type_encoding(objCType);
 		_objCType = objCType;
-		_bytes = [self allocMemoryWithSize: _size];
+		_bytes = of_malloc(1, _size);
 
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
@@ -40,6 +40,13 @@
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	free(_bytes);
+
+	[super dealloc];
 }
 
 - (void)getValue: (void *)value

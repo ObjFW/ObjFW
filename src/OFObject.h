@@ -322,7 +322,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  *
  * @return A 32 bit hash for the object
  */
-- (uint32_t)hash;
+- (unsigned long)hash;
 
 /**
  * @brief Returns the retain count.
@@ -545,7 +545,7 @@ OF_ROOT_CLASS
 @property (readonly, nonatomic, getter=class) Class class_;
 #endif
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
-@property (readonly, nonatomic) uint32_t hash;
+@property (readonly, nonatomic) unsigned long hash;
 @property (readonly, nonatomic) unsigned int retainCount;
 @property (readonly, nonatomic) bool isProxy;
 @property (readonly, nonatomic) bool allowsWeakReference;
@@ -805,97 +805,6 @@ OF_ROOT_CLASS
  * @return The method signature for the specified selector
  */
 - (nullable OFMethodSignature *)methodSignatureForSelector: (SEL)selector;
-
-/**
- * @brief Allocates memory and stores it in the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size is 0.
- */
-- (nullable void *)allocMemoryWithSize: (size_t)size OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory for the specified number of items and stores it in
- *	  the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of each item to allocate
- * @param count The number of items to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size or count is 0.
- */
-- (nullable void *)allocMemoryWithSize: (size_t)size
-				 count: (size_t)count OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory, initializes it with zeros and stores it in the
- *	  object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-    OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory for the specified number of items, initializes it
- *	  with zeros and stores it in the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of each item to allocate
- * @param count The number of items to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size or count is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-				       count: (size_t)count
-    OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Resizes memory in the object's memory pool to the specified size.
- *
- * If the pointer is NULL, this is equivalent to allocating memory.
- * If the size is 0, this is equivalent to freeing memory.
- *
- * @param pointer A pointer to the already allocated memory
- * @param size The new size for the memory chunk
- * @return A pointer to the resized memory chunk
- */
-- (nullable void *)resizeMemory: (nullable void *)pointer
-			   size: (size_t)size OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Resizes memory in the object's memory pool to the specific number of
- *	  items of the specified size.
- *
- * If the pointer is NULL, this is equivalent to allocating memory.
- * If the size or number of items is 0, this is equivalent to freeing memory.
- *
- * @param pointer A pointer to the already allocated memory
- * @param size The size of each item to resize to
- * @param count The number of items to resize to
- * @return A pointer to the resized memory chunk
- */
-- (nullable void *)resizeMemory: (nullable void *)pointer
-			   size: (size_t)size
-			  count: (size_t)count OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Frees allocated memory and removes it from the object's memory pool.
- *
- * Does nothing if the pointer is NULL.
- *
- * @param pointer A pointer to the allocated memory
- */
-- (void)freeMemory: (nullable void *)pointer;
 
 /**
  * @brief Deallocates the object.
@@ -1329,6 +1238,58 @@ typedef void OFObject;
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Allocates memory for the specified number of items.
+ *
+ * To free the allocated memory, use `free()`.
+ *
+ * Throws @ref OFOutOfMemoryException if allocating failed and
+ * @ref OFOutOfRangeException if the requested size exceeds the address space.
+ *
+ * @param count The number of items to allocate
+ * @param size The size of each item to allocate
+ * @return A pointer to the allocated memory. May return NULL if the specified
+ *	   size or count is 0.
+ */
+extern void *_Nullable of_malloc(size_t count, size_t size)
+    OF_WARN_UNUSED_RESULT;
+
+/**
+ * @brief Allocates memory for the specified number of items and initializes it
+ *	  with zeros.
+ *
+ * To free the allocated memory, use `free()`.
+ *
+ * Throws @ref OFOutOfMemoryException if allocating failed and
+ * @ref OFOutOfRangeException if the requested size exceeds the address space.
+ *
+ * @param size The size of each item to allocate
+ * @param count The number of items to allocate
+ * @return A pointer to the allocated memory. May return NULL if the specified
+ *	   size or count is 0.
+ */
+extern void *_Nullable of_calloc(size_t count, size_t size)
+    OF_WARN_UNUSED_RESULT;
+
+/**
+ * @brief Resizes memory to the specific number of items of the specified size.
+ *
+ * To free the allocated memory, use `free()`.
+ *
+ * If the pointer is NULL, this is equivalent to allocating memory.
+ * If the size or number of items is 0, this is equivalent to freeing memory.
+ *
+ * Throws @ref OFOutOfMemoryException if allocating failed and
+ * @ref OFOutOfRangeException if the requested size exceeds the address space.
+ *
+ * @param pointer A pointer to the already allocated memory
+ * @param size The size of each item to resize to
+ * @param count The number of items to resize to
+ * @return A pointer to the resized memory chunk
+ */
+extern void *_Nullable of_realloc(void *_Nullable pointer, size_t count,
+    size_t size) OF_WARN_UNUSED_RESULT;
+
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
