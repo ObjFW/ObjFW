@@ -70,17 +70,20 @@ void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
+extern void *glue_of_malloc(void);
+extern void *glue_of_calloc(void);
+extern void *glue_of_realloc(void);
+extern uint32_t *glue_of_hash_seed_ref(void);
+extern OFStdIOStream **glue_of_stdin_ref(void);
+extern OFStdIOStream **glue_of_stdout_ref(void);
+extern OFStdIOStream **glue_of_stderr_ref(void);
+extern void glue_of_logv(void);
 extern int glue_of_application_main(void);
 extern const char *glue_of_http_request_method_to_string(void);
 extern of_http_request_method_t glue_of_http_request_method_from_string(void);
 extern OFString *glue_of_http_status_code_to_string(void);
 extern size_t glue_of_sizeof_type_encoding(void);
 extern size_t glue_of_alignof_type_encoding(void);
-extern uint32_t *glue_of_hash_seed_ref(void);
-extern OFStdIOStream **glue_of_stdin_ref(void);
-extern OFStdIOStream **glue_of_stdout_ref(void);
-extern OFStdIOStream **glue_of_stderr_ref(void);
-extern void glue_of_logv(void);
 extern of_string_encoding_t glue_of_string_parse_encoding(void);
 extern OFString *glue_of_string_name_of_encoding(void);
 extern size_t glue_of_string_utf8_encode(void);
@@ -627,17 +630,20 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
 	(CONST_APTR)glue_of_init,
+	(CONST_APTR)glue_of_malloc,
+	(CONST_APTR)glue_of_calloc,
+	(CONST_APTR)glue_of_realloc,
+	(CONST_APTR)glue_of_hash_seed_ref,
+	(CONST_APTR)glue_of_stdin_ref,
+	(CONST_APTR)glue_of_stdout_ref,
+	(CONST_APTR)glue_of_stderr_ref,
+	(CONST_APTR)glue_of_logv,
 	(CONST_APTR)glue_of_application_main,
 	(CONST_APTR)glue_of_http_request_method_to_string,
 	(CONST_APTR)glue_of_http_request_method_from_string,
 	(CONST_APTR)glue_of_http_status_code_to_string,
 	(CONST_APTR)glue_of_sizeof_type_encoding,
 	(CONST_APTR)glue_of_alignof_type_encoding,
-	(CONST_APTR)of_hash_seed_ref,
-	(CONST_APTR)glue_of_stdin_ref,
-	(CONST_APTR)glue_of_stdout_ref,
-	(CONST_APTR)glue_of_stderr_ref,
-	(CONST_APTR)glue_of_logv,
 	(CONST_APTR)glue_of_string_parse_encoding,
 	(CONST_APTR)glue_of_string_name_of_encoding,
 	(CONST_APTR)glue_of_string_utf8_encode,

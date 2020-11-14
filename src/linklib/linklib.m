@@ -369,41 +369,22 @@ DESTRUCTOR_P(ObjFW, 4000)
 }
 #endif
 
-int
-of_application_main(int *argc, char ***argv,
-    id <OFApplicationDelegate> delegate)
+void *
+of_malloc(size_t count, size_t size)
 {
-	return glue_of_application_main(argc, argv, delegate);
+	return glue_of_malloc(count, size);
 }
 
-const char *
-of_http_request_method_to_string(of_http_request_method_t method)
+void *
+of_calloc(size_t count, size_t size)
 {
-	return glue_of_http_request_method_to_string(method);
+	return glue_of_calloc(count, size);
 }
 
-of_http_request_method_t
-of_http_request_method_from_string(OFString *string)
+void *
+of_realloc(void *pointer, size_t count, size_t size)
 {
-	return glue_of_http_request_method_from_string(string);
-}
-
-OFString *
-of_http_status_code_to_string(short code)
-{
-	return glue_of_http_status_code_to_string(code);
-}
-
-size_t
-of_sizeof_type_encoding(const char *type)
-{
-	return glue_of_sizeof_type_encoding(type);
-}
-
-size_t
-of_alignof_type_encoding(const char *type)
-{
-	return glue_of_alignof_type_encoding(type);
+	return glue_of_realloc(pointer, count, size);
 }
 
 uint32_t *
@@ -444,6 +425,43 @@ void
 of_logv(OFConstantString *format, va_list arguments)
 {
 	glue_of_logv(format, arguments);
+}
+
+int
+of_application_main(int *argc, char ***argv,
+    id <OFApplicationDelegate> delegate)
+{
+	return glue_of_application_main(argc, argv, delegate);
+}
+
+const char *
+of_http_request_method_to_string(of_http_request_method_t method)
+{
+	return glue_of_http_request_method_to_string(method);
+}
+
+of_http_request_method_t
+of_http_request_method_from_string(OFString *string)
+{
+	return glue_of_http_request_method_from_string(string);
+}
+
+OFString *
+of_http_status_code_to_string(short code)
+{
+	return glue_of_http_status_code_to_string(code);
+}
+
+size_t
+of_sizeof_type_encoding(const char *type)
+{
+	return glue_of_sizeof_type_encoding(type);
+}
+
+size_t
+of_alignof_type_encoding(const char *type)
+{
+	return glue_of_alignof_type_encoding(type);
 }
 
 of_string_encoding_t

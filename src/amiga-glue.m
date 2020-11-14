@@ -73,6 +73,67 @@ glue_of_application_main PPC_PARAMS(int *argc, char ***argv,
 	return of_application_main(argc, argv, delegate);
 }
 
+void *__saveds
+glue_of_malloc PPC_PARAMS(size_t count, size_t size)
+{
+	M68K_ARG(size_t, count, d0)
+	M68K_ARG(size_t, size, d1)
+
+	return of_malloc(count, size);
+}
+
+void *__saveds
+glue_of_calloc PPC_PARAMS(size_t count, size_t size)
+{
+	M68K_ARG(size_t, count, d0)
+	M68K_ARG(size_t, size, d1)
+
+	return of_calloc(count, size);
+}
+
+void *__saveds
+glue_of_realloc PPC_PARAMS(void *pointer, size_t count, size_t size)
+{
+	M68K_ARG(void *, pointer, a0)
+	M68K_ARG(size_t, count, d0)
+	M68K_ARG(size_t, size, d1)
+
+	return of_realloc(pointer, count, size);
+}
+
+uint32_t *__saveds
+glue_of_hash_seed_ref(void)
+{
+	return of_hash_seed_ref();
+}
+
+OFStdIOStream **__saveds
+glue_of_stdin_ref(void)
+{
+	return of_stdin_ref();
+}
+
+OFStdIOStream **__saveds
+glue_of_stdout_ref(void)
+{
+	return of_stdout_ref();
+}
+
+OFStdIOStream **__saveds
+glue_of_stderr_ref(void)
+{
+	return of_stderr_ref();
+}
+
+void __saveds
+glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments)
+{
+	M68K_ARG(OFConstantString *, format, a0)
+	M68K_ARG(va_list, arguments, a1)
+
+	of_logv(format, arguments);
+}
+
 const char *__saveds
 glue_of_http_request_method_to_string PPC_PARAMS(
     of_http_request_method_t method)
@@ -112,39 +173,6 @@ glue_of_alignof_type_encoding PPC_PARAMS(const char *type)
 	M68K_ARG(const char *, type, a0)
 
 	return of_alignof_type_encoding(type);
-}
-
-uint32_t *__saveds
-glue_of_hash_seed_ref(void)
-{
-	return of_hash_seed_ref();
-}
-
-OFStdIOStream **__saveds
-glue_of_stdin_ref(void)
-{
-	return of_stdin_ref();
-}
-
-OFStdIOStream **__saveds
-glue_of_stdout_ref(void)
-{
-	return of_stdout_ref();
-}
-
-OFStdIOStream **__saveds
-glue_of_stderr_ref(void)
-{
-	return of_stderr_ref();
-}
-
-void __saveds
-glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments)
-{
-	M68K_ARG(OFConstantString *, format, a0)
-	M68K_ARG(va_list, arguments, a1)
-
-	of_logv(format, arguments);
 }
 
 of_string_encoding_t __saveds
