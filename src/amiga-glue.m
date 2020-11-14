@@ -74,21 +74,21 @@ glue_of_application_main PPC_PARAMS(int *argc, char ***argv,
 }
 
 void *__saveds
-glue_of_malloc PPC_PARAMS(size_t count, size_t size)
+glue_of_alloc PPC_PARAMS(size_t count, size_t size)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
 
-	return of_malloc(count, size);
+	return of_alloc(count, size);
 }
 
 void *__saveds
-glue_of_calloc PPC_PARAMS(size_t count, size_t size)
+glue_of_alloc_zeroed PPC_PARAMS(size_t count, size_t size)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
 
-	return of_calloc(count, size);
+	return of_alloc_zeroed(count, size);
 }
 
 void *__saveds

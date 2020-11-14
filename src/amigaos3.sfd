@@ -5,8 +5,8 @@
 ==public
 * The following function is only for the linklib.
 bool glue_of_init(unsigned int version, struct of_libc *_Nonnull libc, FILE *_Nonnull *_Nonnull sF)(d0,a0,a1)
-void *_Nullable glue_of_malloc(size_t count, size_t size)(d0,d1)
-void *_Nullable glue_of_calloc(size_t count, size_t size)(d0,d1)
+void *_Nullable glue_of_alloc(size_t count, size_t size)(d0,d1)
+void *_Nullable glue_of_alloc_zeroed(size_t count, size_t size)(d0,d1)
 void *_Nullable glue_of_realloc(void *_Nullable pointer, size_t count, size_t size)(a0,d0,d1)
 uint32_t *_Nonnull glue_of_hash_seed_ref(void)()
 OFStdIOStream *_Nonnull *_Nullable glue_of_stdin_ref(void)()

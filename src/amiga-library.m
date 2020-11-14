@@ -70,8 +70,8 @@ void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
-extern void *glue_of_malloc(void);
-extern void *glue_of_calloc(void);
+extern void *glue_of_alloc(void);
+extern void *glue_of_alloc_zeroed(void);
 extern void *glue_of_realloc(void);
 extern uint32_t *glue_of_hash_seed_ref(void);
 extern OFStdIOStream **glue_of_stdin_ref(void);
@@ -630,8 +630,8 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
 	(CONST_APTR)glue_of_init,
-	(CONST_APTR)glue_of_malloc,
-	(CONST_APTR)glue_of_calloc,
+	(CONST_APTR)glue_of_alloc,
+	(CONST_APTR)glue_of_alloc_zeroed,
 	(CONST_APTR)glue_of_realloc,
 	(CONST_APTR)glue_of_hash_seed_ref,
 	(CONST_APTR)glue_of_stdin_ref,

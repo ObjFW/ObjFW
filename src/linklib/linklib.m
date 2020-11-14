@@ -370,15 +370,15 @@ DESTRUCTOR_P(ObjFW, 4000)
 #endif
 
 void *
-of_malloc(size_t count, size_t size)
+of_alloc(size_t count, size_t size)
 {
-	return glue_of_malloc(count, size);
+	return glue_of_alloc(count, size);
 }
 
 void *
-of_calloc(size_t count, size_t size)
+of_alloc_zeroed(size_t count, size_t size)
 {
-	return glue_of_calloc(count, size);
+	return glue_of_alloc_zeroed(count, size);
 }
 
 void *
