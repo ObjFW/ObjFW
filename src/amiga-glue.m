@@ -370,7 +370,7 @@ glue_of_socket_address_equal PPC_PARAMS(const of_socket_address_t *address1,
 	return of_socket_address_equal(address1, address2);
 }
 
-uint32_t __saveds
+unsigned long __saveds
 glue_of_socket_address_hash PPC_PARAMS(const of_socket_address_t *address)
 {
 	M68K_ARG(const of_socket_address_t *, address, a0)

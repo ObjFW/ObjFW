@@ -606,7 +606,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 	return glue_of_socket_address_equal(address1, address2);
 }
 
-uint32_t
+unsigned long
 of_socket_address_hash(const of_socket_address_t *address)
 {
 	return glue_of_socket_address_hash(address);

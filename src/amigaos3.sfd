@@ -39,7 +39,7 @@ void glue_of_socket_address_parse_ipv4(of_socket_address_t *_Nonnull address, OF
 void glue_of_socket_address_parse_ipv6(of_socket_address_t *_Nonnull address, OFString *IP, uint16_t port)(a0,a1,d0)
 void glue_of_socket_address_ipx(of_socket_address_t *_Nonnull address, const unsigned char *_Nonnull node, uint32_t network, uint16_t port)(a0,a1,d0,d1)
 bool glue_of_socket_address_equal(const of_socket_address_t *_Nonnull address1, const of_socket_address_t *_Nonnull address2)(a0,a1)
-uint32_t glue_of_socket_address_hash(const of_socket_address_t *_Nonnull address)(a0)
+unsigned long glue_of_socket_address_hash(const of_socket_address_t *_Nonnull address)(a0)
 OFString *_Nonnull glue_of_socket_address_ip_string(const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port)(a0,a1)
 void glue_of_socket_address_set_port(of_socket_address_t *_Nonnull address, uint16_t port)(a0,d0)
 uint16_t glue_of_socket_address_get_port(const of_socket_address_t *_Nonnull address)(a0)

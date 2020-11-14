@@ -104,7 +104,7 @@ extern of_socket_address_t glue_of_socket_address_parse_ipv4(void);
 extern of_socket_address_t glue_of_socket_address_parse_ipv6(void);
 extern of_socket_address_t glue_of_socket_address_ipx(void);
 extern bool glue_of_socket_address_equal(void);
-extern uint32_t glue_of_socket_address_hash(void);
+extern unsigned long glue_of_socket_address_hash(void);
 extern OFString *glue_of_socket_address_ip_string(void);
 extern void glue_of_socket_address_set_port(void);
 extern uint16_t glue_of_socket_address_get_port(void);
