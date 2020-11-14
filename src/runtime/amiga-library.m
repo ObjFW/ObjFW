@@ -331,8 +331,9 @@ lib_open(void)
 }
 
 static void *
-expunge(struct ObjFWRTBase *base)
+expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 {
+#define SysBase sysBase
 	void *segList;
 
 	if (base->parent != NULL) {
@@ -352,6 +353,7 @@ expunge(struct ObjFWRTBase *base)
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
 	return segList;
+#undef SysBase
 }
 
 static void *__saveds
@@ -359,12 +361,19 @@ lib_expunge(void)
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
-	return expunge(base);
+	return expunge(base, SysBase);
 }
 
 static void *__saveds
 lib_close(void)
 {
+	/*
+	 * SysBase becomes invalid during this function, so we store it in
+	 * sysBase and add a define to make the inlines use the right one.
+	 */
+	struct ExecBase *sysBase = SysBase;
+#define SysBase sysBase
+
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
 	if (base->parent != NULL) {
@@ -388,9 +397,10 @@ lib_close(void)
 
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
-		return expunge(base);
+		return expunge(base, sysBase);
 
 	return NULL;
+#undef SysBase
 }
 
 static void *
