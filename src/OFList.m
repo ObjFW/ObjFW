@@ -97,7 +97,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *listObject;
 
-	listObject = of_malloc(1, sizeof(of_list_object_t));
+	listObject = of_alloc(1, sizeof(of_list_object_t));
 	listObject->object = [object retain];
 	listObject->next = NULL;
 	listObject->previous = _lastListObject;
@@ -120,7 +120,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *listObject;
 
-	listObject = of_malloc(1, sizeof(of_list_object_t));
+	listObject = of_alloc(1, sizeof(of_list_object_t));
 	listObject->object = [object retain];
 	listObject->next = _firstListObject;
 	listObject->previous = NULL;
@@ -143,7 +143,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *newListObject;
 
-	newListObject = of_malloc(1, sizeof(of_list_object_t));
+	newListObject = of_alloc(1, sizeof(of_list_object_t));
 	newListObject->object = [object retain];
 	newListObject->next = listObject;
 	newListObject->previous = listObject->previous;
@@ -167,7 +167,7 @@ OF_DIRECT_MEMBERS
 {
 	of_list_object_t *newListObject;
 
-	newListObject = of_malloc(1, sizeof(of_list_object_t));
+	newListObject = of_alloc(1, sizeof(of_list_object_t));
 	newListObject->object = [object retain];
 	newListObject->next = listObject->next;
 	newListObject->previous = listObject;
@@ -301,7 +301,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		for (of_list_object_t *iter = _firstListObject;
 		    iter != NULL; iter = iter->next) {
-			listObject = of_malloc(1, sizeof(of_list_object_t));
+			listObject = of_alloc(1, sizeof(of_list_object_t));
 			listObject->object = [iter->object retain];
 			listObject->next = NULL;
 			listObject->previous = previous;

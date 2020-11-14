@@ -196,7 +196,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 #else
 		_slidingWindowMask = 0x7FFF;
 #endif
-		_slidingWindow = of_calloc(_slidingWindowMask + 1, 1);
+		_slidingWindow = of_alloc_zeroed(_slidingWindowMask + 1, 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -380,7 +380,7 @@ start:
 			}
 
 			if OF_LIKELY (CTX.lengths == NULL)
-				CTX.lengths = of_calloc(19, 1);
+				CTX.lengths = of_alloc_zeroed(19, 1);
 
 			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
@@ -403,7 +403,7 @@ start:
 		}
 
 		if OF_LIKELY (CTX.lengths == NULL)
-			CTX.lengths = of_malloc(
+			CTX.lengths = of_alloc(
 			    CTX.litLenCodesCount + CTX.distCodesCount + 258, 1);
 
 		for (uint16_t i = CTX.receivedCount;

@@ -151,7 +151,7 @@
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
 
-				readBuffer = of_malloc(bytesRead - length, 1);
+				readBuffer = of_alloc(bytesRead - length, 1);
 				memcpy(readBuffer, tmp + length,
 				    bytesRead - length);
 
@@ -643,7 +643,7 @@
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	buffer = of_malloc(count, itemSize);
+	buffer = of_alloc(count, itemSize);
 	@try {
 		[self readIntoBuffer: buffer
 			 exactLength: count * itemSize];
@@ -664,7 +664,7 @@
 {
 	OFMutableData *data = [OFMutableData data];
 	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = of_malloc(1, pageSize);
+	char *buffer = of_alloc(1, pageSize);
 
 	@try {
 		while (!self.atEndOfStream) {
@@ -694,7 +694,7 @@
 			  encoding: (of_string_encoding_t)encoding
 {
 	OFString *ret;
-	char *buffer = of_malloc(length + 1, 1);
+	char *buffer = of_alloc(length + 1, 1);
 	buffer[length] = 0;
 
 	@try {
@@ -741,7 +741,7 @@
 
 	/* Read and see if we got a newline or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_malloc(1, pageSize);
+	buffer = of_alloc(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -777,7 +777,7 @@
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
 				size_t retLength = _readBufferLength + i;
-				char *retCString = of_malloc(retLength, 1);
+				char *retCString = of_alloc(retLength, 1);
 
 				if (_readBuffer != NULL)
 					memcpy(retCString, _readBuffer,
@@ -800,7 +800,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_malloc(
+						readBuffer = of_alloc(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -822,7 +822,7 @@
 					free(retCString);
 				}
 
-				readBuffer = of_malloc(bufferLength - i - 1, 1);
+				readBuffer = of_alloc(bufferLength - i - 1, 1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
@@ -838,7 +838,7 @@
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
-			readBuffer = of_malloc(_readBufferLength + bufferLength,
+			readBuffer = of_alloc(_readBufferLength + bufferLength,
 			    1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
@@ -979,7 +979,7 @@
 
 	/* Read and see if we got a delimiter or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_malloc(1, pageSize);
+	buffer = of_alloc(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -1017,7 +1017,7 @@
 
 				retLength = _readBufferLength + i + 1 -
 				    delimiterLength;
-				retCString = of_malloc(retLength, 1);
+				retCString = of_alloc(retLength, 1);
 
 				if (_readBuffer != NULL &&
 				    _readBufferLength <= retLength)
@@ -1041,7 +1041,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_malloc(
+						readBuffer = of_alloc(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -1063,7 +1063,7 @@
 					free(retCString);
 				}
 
-				readBuffer = of_malloc(bufferLength - i - 1, 1);
+				readBuffer = of_alloc(bufferLength - i - 1, 1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
@@ -1079,7 +1079,7 @@
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
-			readBuffer = of_malloc(_readBufferLength + bufferLength,
+			readBuffer = of_alloc(_readBufferLength + bufferLength,
 			    1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
@@ -1336,7 +1336,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp = of_malloc(count, sizeof(uint16_t));
+	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1366,7 +1366,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp = of_malloc(count, sizeof(uint32_t));
+	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1396,7 +1396,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp = of_malloc(count, sizeof(uint64_t));
+	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1426,7 +1426,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp = of_malloc(count, sizeof(float));
+	float *tmp = of_alloc(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1456,7 +1456,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp = of_malloc(count, sizeof(double));
+	double *tmp = of_alloc(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1526,7 +1526,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp = of_malloc(count, sizeof(uint16_t));
+	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1556,7 +1556,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp = of_malloc(count, sizeof(uint32_t));
+	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1586,7 +1586,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp = of_malloc(count, sizeof(uint64_t));
+	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1616,7 +1616,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp = of_malloc(count, sizeof(float));
+	float *tmp = of_alloc(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1646,7 +1646,7 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp = of_malloc(count, sizeof(double));
+	double *tmp = of_alloc(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1719,7 +1719,7 @@
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
 
-	buffer = of_malloc(stringLength + 1, 1);
+	buffer = of_alloc(stringLength + 1, 1);
 
 	@try {
 		memcpy(buffer, [string cStringWithEncoding: encoding],
@@ -1874,7 +1874,7 @@
 	if (length > SIZE_MAX - _readBufferLength)
 		@throw [OFOutOfRangeException exception];
 
-	readBuffer = of_malloc(_readBufferLength + length, 1);
+	readBuffer = of_alloc(_readBufferLength + length, 1);
 	memcpy(readBuffer, buffer, length);
 	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 

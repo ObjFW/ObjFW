@@ -101,7 +101,7 @@
 	}
 
 	unicodeLen = self.length;
-	unicodeString = of_malloc(unicodeLen, sizeof(of_unichar_t));
+	unicodeString = of_alloc(unicodeLen, sizeof(of_unichar_t));
 
 	i = j = 0;
 	newCStringLength = 0;
@@ -155,7 +155,7 @@
 	}
 
 	@try {
-		newCString = of_malloc(newCStringLength + 1, 1);
+		newCString = of_alloc(newCStringLength + 1, 1);
 	} @catch (id e) {
 		free(unicodeString);
 		@throw e;
@@ -375,7 +375,7 @@
 - (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length
 {
-	char *tmp = of_malloc((length * 4) + 1, 1);
+	char *tmp = of_alloc((length * 4) + 1, 1);
 
 	@try {
 		size_t j = 0;

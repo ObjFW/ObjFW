@@ -36,8 +36,8 @@ const char *str = "Hello!";
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
 
-	raw[0] = of_malloc(1, 4096);
-	raw[1] = of_malloc(1, 4096);
+	raw[0] = of_alloc(1, 4096);
+	raw[1] = of_alloc(1, 4096);
 	memset(raw[0], 0xFF, 4096);
 	memset(raw[1], 0x42, 4096);
 

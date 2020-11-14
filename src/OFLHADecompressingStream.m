@@ -110,7 +110,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		_dictionaryBits = dictionaryBits;
 
 		_slidingWindowMask = (1u << dictionaryBits) - 1;
-		_slidingWindow = of_malloc(_slidingWindowMask + 1, 1);
+		_slidingWindow = of_alloc(_slidingWindowMask + 1, 1);
 		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
 		[self release];
@@ -177,7 +177,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_calloc(bits, 1);
+		_codesLengths = of_alloc_zeroed(bits, 1);
 		_skip = true;
 
 		_state = STATE_CODE_LEN_TREE;
@@ -258,7 +258,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_calloc(bits, 1);
+		_codesLengths = of_alloc_zeroed(bits, 1);
 		_skip = false;
 
 		_treeIter = _codeLenTree;
@@ -348,7 +348,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_calloc(bits, 1);
+		_codesLengths = of_alloc_zeroed(bits, 1);
 
 		_treeIter = _codeLenTree;
 		_state = STATE_DIST_TREE;

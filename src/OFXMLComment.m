@@ -116,7 +116,7 @@
 	OFString *ret;
 
 	if (indentation > 0 && level > 0) {
-		char *whitespaces = of_malloc((level * indentation) + 1, 1);
+		char *whitespaces = of_alloc((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 

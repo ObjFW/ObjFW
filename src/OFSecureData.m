@@ -140,9 +140,9 @@ addPage(bool allowPreallocated)
 		}
 	}
 
-	page = of_malloc(1, sizeof(*page));
+	page = of_alloc(1, sizeof(*page));
 	@try {
-		page->map = of_calloc(1, mapSize);
+		page->map = of_alloc_zeroed(1, mapSize);
 	} @catch (id e) {
 		free(page);
 		@throw e;
@@ -294,7 +294,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	preallocatedPages = of_calloc(numPages, sizeof(struct page));
+	preallocatedPages = of_alloc_zeroed(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
 # endif
@@ -415,7 +415,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			@throw [OFOutOfRangeException exception];
 
 		if (allowsSwappableMemory) {
-			_items = of_malloc(count, itemSize);
+			_items = of_alloc(count, itemSize);
 			_freeWhenDone = true;
 			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)

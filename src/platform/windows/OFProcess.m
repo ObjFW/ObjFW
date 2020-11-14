@@ -195,7 +195,8 @@
 			si.dwFlags |= STARTF_USESTDHANDLES;
 
 			length = argumentsString.UTF16StringLength;
-			argumentsCopy = of_malloc(length + 1, sizeof(of_char16_t));
+			argumentsCopy = of_alloc(length + 1,
+			    sizeof(of_char16_t));
 			memcpy(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
 			@try {

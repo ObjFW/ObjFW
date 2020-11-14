@@ -183,9 +183,9 @@ static struct {
 
 	size = of_sizeof_type_encoding(objCType);
 
-	value = of_malloc(1, size);
+	value = of_alloc(1, size);
 	@try {
-		otherValue = of_malloc(1, size);
+		otherValue = of_alloc(1, size);
 	} @catch (id e) {
 		free(value);
 		@throw e;
@@ -212,7 +212,7 @@ static struct {
 	unsigned char *value;
 	uint32_t hash;
 
-	value = of_malloc(1, size);
+	value = of_alloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];
@@ -313,7 +313,7 @@ static struct {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 
-	value = of_malloc(1, size);
+	value = of_alloc(1, size);
 	@try {
 		[self getValue: value
 			  size: size];

@@ -243,7 +243,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = of_malloc(range.length, sizeof(*copy));
+	copy = of_alloc(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {

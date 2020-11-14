@@ -1239,7 +1239,8 @@ typedef void OFObject;
 extern "C" {
 #endif
 /**
- * @brief Allocates memory for the specified number of items.
+ * @brief Allocates memory for the specified number of items of the specified
+ *	  size.
  *
  * To free the allocated memory, use `free()`.
  *
@@ -1251,12 +1252,12 @@ extern "C" {
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_malloc(size_t count, size_t size)
+extern void *_Nullable of_alloc(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Allocates memory for the specified number of items and initializes it
- *	  with zeros.
+ * @brief Allocates memory for the specified number of items of the specified
+ *	  size and initializes it with zeros.
  *
  * To free the allocated memory, use `free()`.
  *
@@ -1268,11 +1269,11 @@ extern void *_Nullable of_malloc(size_t count, size_t size)
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_calloc(size_t count, size_t size)
+extern void *_Nullable of_alloc_zeroed(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Resizes memory to the specific number of items of the specified size.
+ * @brief Resizes memory to the specified number of items of the specified size.
  *
  * To free the allocated memory, use `free()`.
  *

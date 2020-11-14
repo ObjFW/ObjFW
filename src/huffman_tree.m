@@ -30,7 +30,7 @@ newTree(void)
 {
 	struct of_huffman_tree *tree;
 
-	tree = of_malloc(1, sizeof(*tree));
+	tree = of_alloc(1, sizeof(*tree));
 	tree->leaves[0] = tree->leaves[1] = NULL;
 	tree->value = 0xFFFF;
 

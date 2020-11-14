@@ -113,7 +113,7 @@ struct {
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
 
-		ivars = of_calloc(1, sizeof(*ivars));
+		ivars = of_alloc_zeroed(1, sizeof(*ivars));
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 

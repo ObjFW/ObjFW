@@ -42,7 +42,7 @@ int _OFString_XMLEscaping_reference;
 
 	j = 0;
 	retLength = length;
-	retCString = of_malloc(retLength, 1);
+	retCString = of_alloc(retLength, 1);
 
 	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {
