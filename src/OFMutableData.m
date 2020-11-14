@@ -94,7 +94,7 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = of_malloc(capacity, itemSize);
+		_items = of_alloc(capacity, itemSize);
 		_itemSize = itemSize;
 		_capacity = capacity;
 		_freeWhenDone = true;

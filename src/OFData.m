@@ -133,7 +133,7 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = of_malloc(count, itemSize);
+		_items = of_alloc(count, itemSize);
 		_count = count;
 		_itemSize = itemSize;
 		_freeWhenDone = true;
@@ -197,7 +197,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		buffer = of_malloc((size_t)size, 1);
+		buffer = of_alloc((size_t)size, 1);
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"r"];
 		@try {
@@ -249,7 +249,7 @@ _references_to_categories_of_OFData(void)
 		_freeWhenDone = true;
 
 		pageSize = [OFSystemInfo pageSize];
-		buffer = of_malloc(1, pageSize);
+		buffer = of_alloc(1, pageSize);
 
 		@try {
 			while (!stream.atEndOfStream) {
@@ -292,7 +292,7 @@ _references_to_categories_of_OFData(void)
 
 		count /= 2;
 
-		_items = of_malloc(count, 1);
+		_items = of_alloc(count, 1);
 		_count = count;
 		_itemSize = 1;
 		_freeWhenDone = true;

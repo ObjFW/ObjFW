@@ -1138,7 +1138,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	}
 
 	if (context->_TCPBuffer == nil)
-		context->_TCPBuffer = of_malloc(MAX_DNS_RESPONSE_LENGTH, 1);
+		context->_TCPBuffer = of_alloc(MAX_DNS_RESPONSE_LENGTH, 1);
 
 	[sock asyncReadIntoBuffer: context->_TCPBuffer
 		      exactLength: 2];

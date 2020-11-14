@@ -344,7 +344,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	keys = of_malloc(count, sizeof(*keys));
+	keys = of_alloc(count, sizeof(*keys));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -378,7 +378,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	objects = of_malloc(count, sizeof(*objects));
+	objects = of_alloc(count, sizeof(*objects));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

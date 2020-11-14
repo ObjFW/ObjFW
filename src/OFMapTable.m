@@ -163,7 +163,7 @@ OF_DIRECT_MEMBERS
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
 
-		_buckets = of_calloc(_capacity, sizeof(*_buckets));
+		_buckets = of_alloc_zeroed(_capacity, sizeof(*_buckets));
 
 		if (of_hash_seed != 0)
 			_rotate = of_random16() & 31;
@@ -325,7 +325,7 @@ OF_DIRECT_MEMBERS
 	if ((capacity < _capacity && count > _count) || capacity < MIN_CAPACITY)
 		return;
 
-	buckets = of_calloc(capacity, sizeof(*buckets));
+	buckets = of_alloc_zeroed(capacity, sizeof(*buckets));
 
 	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
@@ -414,7 +414,7 @@ OF_DIRECT_MEMBERS
 		if (i >= last)
 			@throw [OFOutOfRangeException exception];
 
-		bucket = of_malloc(1, sizeof(*bucket));
+		bucket = of_alloc(1, sizeof(*bucket));
 
 		@try {
 			bucket->key = _keyFunctions.retain(key);

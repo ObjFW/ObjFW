@@ -242,7 +242,7 @@ extern char **environ;
 	size_t i, count = arguments.count;
 	of_string_encoding_t encoding;
 
-	*argv = of_malloc(count + 2, sizeof(char *));
+	*argv = of_alloc(count + 2, sizeof(char *));
 
 	encoding = [OFLocale encoding];
 
@@ -267,7 +267,7 @@ extern char **environ;
 	encoding = [OFLocale encoding];
 
 	count = environment.count;
-	envp = of_calloc(count + 1, sizeof(char *));
+	envp = of_alloc_zeroed(count + 1, sizeof(char *));
 
 	@try {
 		OFEnumerator *keyEnumerator = [environment keyEnumerator];
@@ -285,7 +285,7 @@ extern char **environ;
 			objectLen = [object
 			    cStringLengthWithEncoding: encoding];
 
-			envp[i] = of_malloc(keyLen + objectLen + 2, 1);
+			envp[i] = of_alloc(keyLen + objectLen + 2, 1);
 
 			memcpy(envp[i],
 			    [key cStringWithEncoding: encoding], keyLen);

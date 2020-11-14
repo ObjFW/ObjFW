@@ -71,7 +71,7 @@ static OFString *module = @"OFStream";
 	OFString *str;
 	char *cstr;
 
-	cstr = of_malloc(pageSize - 2, 1);
+	cstr = of_alloc(pageSize - 2, 1);
 	memset(cstr, 'X', pageSize - 3);
 	cstr[pageSize - 3] = '\0';
 

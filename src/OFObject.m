@@ -111,7 +111,7 @@ of_hash_seed_ref(void)
 #endif
 
 void *
-of_malloc(size_t count, size_t size)
+of_alloc(size_t count, size_t size)
 {
 	void *pointer;
 
@@ -129,7 +129,7 @@ of_malloc(size_t count, size_t size)
 }
 
 void *
-of_calloc(size_t count, size_t size)
+of_alloc_zeroed(size_t count, size_t size)
 {
 	void *pointer;
 

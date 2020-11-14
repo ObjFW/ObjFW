@@ -515,7 +515,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	if ((tmp = strchr(lineC, ':')) == NULL)
 		@throw [OFInvalidServerReplyException exception];
 
-	keyC = of_malloc(tmp - lineC + 1, 1);
+	keyC = of_alloc(tmp - lineC + 1, 1);
 	memcpy(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);

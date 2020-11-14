@@ -86,7 +86,7 @@ stringEqual(void *object1, void *object2)
 			count++;
 		}
 
-		_options = of_malloc(count + 1, sizeof(*_options));
+		_options = of_alloc(count + 1, sizeof(*_options));
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions];

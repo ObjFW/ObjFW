@@ -779,7 +779,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_malloc(1, pageSize);
+	buffer = of_alloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -839,7 +839,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_malloc(1, pageSize);
+	buffer = of_alloc(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
