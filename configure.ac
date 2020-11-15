@@ -376,18 +376,27 @@ AS_IF([test x"$enable_shared" != x"no"], [
 		build_framework="yes"
 	])
 ], [
-	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
-	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
-	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFW_LIBS, "-lobjfw.library")
+		tmp="../src/linklib/libobjfw.library.a"
+		AC_SUBST(LIBOBJFW_DEP, "$tmp")
+		AC_SUBST(LIBOBJFW_DEP_LVL2, "../$tmp")
+	], [
+		AC_SUBST(OBJFW_LIBS, "-lobjfw")
+		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
+		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+
+		AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library is built])
+	])
 ])
 
 AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="\${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="\${OBJFW_LIBS} \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
-	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
+	TESTS_LIBS="-L../src -L../src/linklib $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(amiga-lib,
