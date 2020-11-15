@@ -375,6 +375,8 @@ AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
 		build_framework="yes"
 	])
+
+	AC_SUBST(OBJFW_LIBS, "-lobjfw")
 ], [
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_LIBS, "-lobjfw.library")
