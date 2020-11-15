@@ -726,12 +726,6 @@ object_isTaggedPointer(id object)
 	return glue_object_isTaggedPointer(object);
 }
 
-Class
-object_getTaggedPointerClass(id object)
-{
-	return glue_object_getTaggedPointerClass(object);
-}
-
 uintptr_t
 object_getTaggedPointerValue(id object)
 {
