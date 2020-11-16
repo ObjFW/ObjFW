@@ -357,6 +357,10 @@ AC_TRY_COMPILE([
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 
+AC_ARG_ENABLE(amiga-lib,
+	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
+AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
@@ -400,10 +404,6 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
 	TESTS_LIBS="-L../src -L../src/linklib $TESTS_LIBS"
 ])
-
-AC_ARG_ENABLE(amiga-lib,
-	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
-AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
 
 AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
