@@ -338,7 +338,7 @@ other place, you are most likely using a mirror.
   installed. Once installed, you can build the documentation from the root
   directory of the repository:
 
-    $ doxygen >/dev/null
+    $ make docs
 
 
 <h1 id="bugs">Bugs and feature requests</h1>
@@ -356,10 +356,14 @@ other place, you are most likely using a mirror.
   users, the following venues are available:
 
    * The [forum](https://objfw.nil.im/forum)
-   * A [Matrix](https://matrix.to/#/%23objfw:nil.im) room
-   * An [IRC channel](irc://chat.freenode.net/#objfw) on Freenode (`#objfw`,
-     [web chat](https://webchat.freenode.net/?channels=objfw)), bridged to the
-     Matrix room above
+   * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
+   * A [Slack channel](https://objfw.nil.im/slack), bridged to the Matrix room
+     above
+   * A [Discord channel](https://objfw.nil.im/discord), bridged to the Matrix
+     room above
+   * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
+   * A [Gitter room](https://gitter.im/ObjFW/ObjFW), bridged to the Matrix room
+     above
 
   Please don't hesitate to join any or all of those!
 
