@@ -150,7 +150,16 @@ AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
 ])
 
 AC_LANG([Objective C])
-AC_PROG_OBJC([clang egcc gcc])
+case "$host_os" in
+	morphos*)
+		dnl Don't use clang on MorphOS - it does not support baserel,
+		dnl which is required for the .library.
+		AC_PROG_OBJC(gcc)
+		;;
+	*)
+		AC_PROG_OBJC([clang egcc gcc])
+		;;
+esac
 AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
