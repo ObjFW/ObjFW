@@ -27,6 +27,7 @@ struct ObjFWRTBase;
 
 #import "inline.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,6 +64,12 @@ extern void *__deregister_frame_info(const void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
+static int *
+get_errno(void)
+{
+	return &errno;
+}
+
 static void __attribute__((__used__))
 ctor(void)
 {
@@ -97,6 +104,7 @@ ctor(void)
 #endif
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
+		.get_errno = get_errno,
 	};
 
 	if (initialized)

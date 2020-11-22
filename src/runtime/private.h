@@ -251,6 +251,7 @@ struct objc_libc {
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
+	int *_Nonnull (*_Nonnull get_errno)(void);
 };
 #endif
 
@@ -265,7 +266,10 @@ struct objc_libc {
 # endif
 # undef stdout
 # undef stderr
-extern FILE *stdout, *stderr;
+# undef errno
+extern FILE *_Nonnull stdout, *_Nonnull stderr;
+extern int *_Nonnull objc_get_errno(void);
+# define errno (*objc_get_errno())
 #endif
 
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);

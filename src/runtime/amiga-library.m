@@ -589,6 +589,12 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
+int *
+objc_get_errno(void)
+{
+	return libc.get_errno();
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
