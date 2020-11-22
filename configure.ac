@@ -154,16 +154,13 @@ case "$host_os" in
 	morphos*)
 		dnl Don't use clang on MorphOS - it does not support baserel,
 		dnl which is required for the .library.
-		disable_clang="yes"
+		potential_compilers="gcc"
 		;;
 	*)
+		potential_compilers="clang egcc gcc"
 		;;
 esac
-AS_IF([test x"$disable_clang" != x"yes"], [
-	AC_PROG_OBJC([clang egcc gcc])
-], [
-	AC_PROG_OBJC(gcc)
-])
+AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
