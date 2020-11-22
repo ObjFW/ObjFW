@@ -66,7 +66,7 @@ of_forward:
 	bl	object_getClass
 
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 	bl	class_respondsToSelector
 #endif
 
@@ -79,7 +79,7 @@ of_forward:
 	bl	objc_msg_lookup+0x8000@plt
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -89,7 +89,7 @@ of_forward:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 #endif
 	lwz	%r5, 12(%r1)
 	bctrl
@@ -145,7 +145,7 @@ of_forward:
 	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
 #else
 	lis	%r0, of_method_not_found@ha
-	ori	%r0, %r0, of_method_not_found@l
+	addi	%r0, %r0, of_method_not_found@l
 #endif
 	mtctr	%r0
 
@@ -204,7 +204,7 @@ of_forward_stret:
 	bl	object_getClass
 
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 	bl	class_respondsToSelector
 #endif
 
@@ -217,7 +217,7 @@ of_forward_stret:
 	bl	objc_msg_lookup+0x8000@plt
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -227,7 +227,7 @@ of_forward_stret:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
+	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
 #endif
 	lwz	%r5, 16(%r1)
 	bctrl
@@ -281,7 +281,7 @@ of_forward_stret:
 	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
 #else
 	lis	%r4, of_method_not_found_stret@ha
-	ori	%r4, %r4, objc_msg_lookup_stret@l
+	addi	%r4, %r4, objc_msg_lookup_stret@l
 #endif
 	mtctr	%r0
 
@@ -315,7 +315,7 @@ init:
 	bl	__objc_exec_class+0x8000@plt
 #else
 	lis	%r3, module@ha
-	ori	%r3, %r3, module@l
+	addi	%r3, %r3, module@l
 	bl	__objc_exec_class
 #endif
 
