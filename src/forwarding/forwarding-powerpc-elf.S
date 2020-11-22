@@ -139,15 +139,16 @@ of_forward:
 	bctr
 
 0:
+#ifdef OF_PIC
+	lwz	%r3, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
+#else
+	lis	%r3, of_method_not_found@ha
+	addi	%r3, %r3, of_method_not_found@l
+#endif
+	mtctr	%r3
+
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
-#ifdef OF_PIC
-	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
-#else
-	lis	%r0, of_method_not_found@ha
-	addi	%r0, %r0, of_method_not_found@l
-#endif
-	mtctr	%r0
 
 #ifdef OF_PIC
 	lwz	%r30, 104(%r1)
@@ -274,16 +275,17 @@ of_forward_stret:
 	bctr
 
 0:
+#ifdef OF_PIC
+	lwz	%r3, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
+#else
+	lis	%r3, of_method_not_found_stret@ha
+	addi	%r3, %r3, objc_msg_lookup_stret@l
+#endif
+	mtctr	%r3
+
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 	lwz	%r5, 16(%r1)
-#ifdef OF_PIC
-	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
-#else
-	lis	%r4, of_method_not_found_stret@ha
-	addi	%r4, %r4, objc_msg_lookup_stret@l
-#endif
-	mtctr	%r0
 
 #ifdef OF_PIC
 	lwz	%r30, 104(%r1)
