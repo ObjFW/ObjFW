@@ -103,7 +103,6 @@ case "$host" in
 		])
 
 		enable_shared="no"
-		enable_threads="no"
 		;;
 	*-msdosdjgpp*)
 		enable_shared="no"
@@ -1055,10 +1054,14 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			# Compiler TLS is broken on AArch64 Android with Clang
 			enable_compiler_tls="no"
 			;;
-		m68k-*-amigaos | powerpc-*-amigaos)
+		m68k-*-amigaos* | powerpc-*-amigaos*)
 			# Compiler TLS is broken on AmigaOS
 			enable_compiler_tls="no"
 			;;
+		*-*-morphos*)
+			# Compiler TLS needs helpers that we don't want in the
+			# .library
+			enable_compiler_tls="no"
 	esac
 
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
