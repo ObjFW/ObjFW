@@ -33,10 +33,10 @@ SRCS = arc.m			\
        synchronized.m		\
        tagged-pointer.m		\
        ${USE_SRCS_THREADS}
-SRCS_THREADS = threading.m	\
-	       ../mutex.m	\
-	       ../once.m	\
-	       ../tlskey.m
+SRCS_THREADS = mutex.m		\
+	       once.m		\
+	       threading.m	\
+	       tlskey.m
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 
