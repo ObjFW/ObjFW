@@ -226,8 +226,8 @@ of_forward_stret:
 #ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
-	lis	%r4, sel_forwardingTargetForSelector_
-	ori	%r4, %r4, sel_forwardingTargetForSelector_
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	ori	%r4, %r4, sel_forwardingTargetForSelector_@l
 #endif
 	lwz	%r5, 16(%r1)
 	bctrl
