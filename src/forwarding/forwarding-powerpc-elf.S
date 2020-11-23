@@ -139,25 +139,24 @@ of_forward:
 	bctr
 
 0:
-#ifdef OF_PIC
-	lwz	%r3, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
-#else
-	lis	%r3, of_method_not_found@ha
-	addi	%r3, %r3, of_method_not_found@l
-#endif
-	mtctr	%r3
-
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 
 #ifdef OF_PIC
+	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
+	mtctr	%r0
 	lwz	%r30, 104(%r1)
 #endif
+
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
+#ifdef OF_PIC
 	bctr
+#else
+	b	of_method_not_found
+#endif
 .type of_forward, @function
 .size of_forward, .-of_forward
 
@@ -269,32 +268,34 @@ of_forward_stret:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
-	lwz	%r0, 116(%r1)
-	mtlr	%r0
-	addi	%r1, %r1, 112
-	bctr
-
-0:
-#ifdef OF_PIC
-	lwz	%r3, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
-#else
-	lis	%r3, of_method_not_found_stret@ha
-	addi	%r3, %r3, objc_msg_lookup_stret@l
-#endif
-	mtctr	%r3
-
-	lwz	%r3, 8(%r1)
-	lwz	%r4, 12(%r1)
-	lwz	%r5, 16(%r1)
-
 #ifdef OF_PIC
 	lwz	%r30, 104(%r1)
 #endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
-
 	bctr
+
+0:
+	lwz	%r3, 8(%r1)
+	lwz	%r4, 12(%r1)
+	lwz	%r5, 16(%r1)
+
+#ifdef OF_PIC
+	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
+	mtctr	%r0
+	lwz	%r30, 104(%r1)
+#endif
+
+	lwz	%r0, 116(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 112
+
+#ifdef OF_PIC
+	bctr
+#else
+	b	of_method_not_found_stret
+#endif
 .type of_forward_stret, @function
 .size of_forward_stret, .-of_forward_stret
 
@@ -310,20 +311,17 @@ init:
 	mflr	%r30
 	addis	%r30, %r30, .Lbiased_got2-0b@ha
 	addi	%r30, %r30, .Lbiased_got2-0b@l
-#endif
 
-#ifdef OF_PIC
 	lwz	%r3, .Lgot_module-.Lbiased_got2(%r30)
 	bl	__objc_exec_class+0x8000@plt
+
+	lwz	%r30, 8(%r1)
 #else
 	lis	%r3, module@ha
 	addi	%r3, %r3, module@l
 	bl	__objc_exec_class
 #endif
 
-#ifdef OF_PIC
-	lwz	%r30, 8(%r1)
-#endif
 	lwz	%r0, 20(%r1)
 	addi	%r1, %r1, 16
 	mtlr	%r0
