@@ -51,11 +51,16 @@
 	lwzx	%r5, %r5, %r8
 
 	cmpwi	%r5, 0
+#ifdef OF_PIC
 	beq-	0f
+#else
+	beq-	\not_found
+#endif
 
 	mr	%r3, %r5
 	blr
 
+#ifdef OF_PIC
 0:
 	stwu	%r1, -16(%r1)
 	mflr	%r0	
@@ -77,8 +82,10 @@
 	mtlr	%r0
 
 	bctr
+#endif
 
 .Ltagged_pointer_\name:
+#ifdef OF_PIC
 	mflr	%r7
 	bl	0f
 0:
@@ -88,11 +95,20 @@
 	addi	%r6, %r6, .Lbiased_got2-0b@l
 
 	lwz	%r5, .Lgot_objc_tagged_pointer_secret-.Lbiased_got2(%r6)
+#else
+	lis	%r5, objc_tagged_pointer_secret@ha
+	addi	%r5, %r5, objc_tagged_pointer_secret@l
+#endif
 	lwz	%r5, 0(%r5)
 	xor	%r5, %r3, %r5
 	rlwinm	%r5, %r5, 1, 0x1C
 
+#ifdef OF_PIC
 	lwz	%r6, .Lgot_objc_tagged_pointer_classes-.Lbiased_got2(%r6)
+#else
+	lis	%r6, objc_tagged_pointer_classes@ha
+	addi	%r6, %r6, objc_tagged_pointer_classes@l
+#endif
 	lwzx	%r5, %r6, %r5
 	lwz	%r5, 32(%r5)
 
@@ -137,6 +153,7 @@ get_pc:
 	mflr	%r3
 	blr
 
+#ifdef OF_PIC
 .section .got2, "aw"
 .Lbiased_got2 = .+0x8000
 .Lgot_objc_method_not_found:
@@ -147,6 +164,7 @@ get_pc:
 	.long objc_tagged_pointer_secret
 .Lgot_objc_tagged_pointer_classes:
 	.long objc_tagged_pointer_classes
+#endif
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", @progbits
