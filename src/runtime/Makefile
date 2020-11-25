@@ -40,11 +40,11 @@ SRCS_THREADS = mutex.m		\
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 
-OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
-LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
+OBJS_EXTRA = lookup-asm/lookup-asm.a
+LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
-		       ${LOOKUP_ASM_LOOKUP_ASM_A}	\
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o	\
+		       lookup-asm/lookup-asm.a	\
 		       amiga-end.amigalib.o
 
 include ../../buildsys.mk

@@ -370,13 +370,9 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(FORWARDING_FORWARDING_LIB_A, "forwarding/forwarding.lib.a")
 	AC_SUBST(INVOCATION_LIB_A, "invocation.lib.a")
-	AC_SUBST(INVOCATION_INVOCATION_LIB_A, "invocation/invocation.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
 
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
@@ -409,13 +405,9 @@ AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(FORWARDING_FORWARDING_A, "forwarding/forwarding.a")
 	AC_SUBST(INVOCATION_A, "invocation.a")
-	AC_SUBST(INVOCATION_INVOCATION_A, "invocation/invocation.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
