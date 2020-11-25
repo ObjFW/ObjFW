@@ -396,13 +396,19 @@ AS_IF([test x"$build_framework" = x"yes"], [
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
 AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
-
-AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
-	enable_static="yes"
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
+	AC_SUBST(FORWARDING_A, "forwarding.a")
+	AC_SUBST(INVOCATION_A, "invocation.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+	enable_static="yes"
+])
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")

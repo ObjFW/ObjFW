@@ -43,8 +43,8 @@ includesubdir = ObjFWRT
 OBJS_EXTRA = lookup-asm/lookup-asm.a
 LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o	\
-		       lookup-asm/lookup-asm.a	\
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+		       lookup-asm/lookup-asm.amigalib.a	\
 		       amiga-end.amigalib.o
 
 include ../../buildsys.mk
