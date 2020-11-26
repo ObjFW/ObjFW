@@ -1579,14 +1579,27 @@ CHECK_BUILTIN_BSWAP(16)
 CHECK_BUILTIN_BSWAP(32)
 CHECK_BUILTIN_BSWAP(64)
 
-case "$host" in
-	arm*-apple-darwin*)
-		have_processes="no"
+case "$host_os" in
+	darwin*)
+		AC_MSG_CHECKING(whether we are compiling for macOS)
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#include <TargetConditionals.h>
+
+			#if defined(TARGET_OS_MAC) && TARGET_OS_MAC
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_MSG_RESULT(yes)
+			have_processes="yes"
+		], [
+			AC_MSG_RESULT(no)
+			have_processes="no"
+		])
 		;;
-	*-*-mingw*)
+	mingw*)
 		have_processes="yes"
 		;;
-	*-*-msdosdjgpp*)
+	msdosdjgpp*)
 		have_processes="no"
 		;;
 	*)
