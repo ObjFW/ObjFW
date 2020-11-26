@@ -248,9 +248,15 @@ struct objc_libc {
 # else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
+# ifdef OF_AMIGAOS_M68K
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
+# endif
+# ifdef OF_MORPHOS
+	void (*_Nonnull __register_frame)(void *_Nonnull);
+	void (*_Nonnull __deregister_frame)(void *_Nonnull);
+# endif
 	int *_Nonnull (*_Nonnull get_errno)(void);
 };
 #endif
