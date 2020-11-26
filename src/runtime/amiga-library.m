@@ -752,11 +752,11 @@ struct Resident resident = {
 
 #ifdef OF_MORPHOS
 __asm__ (
-    ".section .eh_frame, \"aw\", @progbits\n"
+    ".section .eh_frame, \"aw\"\n"
     ".globl __EH_FRAME_BEGIN__\n"
     ".type __EH_FRAME_BEGIN__, @object\n"
     "__EH_FRAME_BEGIN__:\n"
-    ".section .ctors, \"aw\", @progbits\n"
+    ".section .ctors, \"aw\"\n"
     ".globl __CTOR_LIST__\n"
     ".type __CTOR_LIST__, @object\n"
     "__CTOR_LIST__:\n"

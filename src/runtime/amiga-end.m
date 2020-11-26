@@ -21,8 +21,10 @@
 
 #ifdef OF_MORPHOS
 __asm__ (
-    ".section .ctors, \"aw\", @progbits\n"
+    ".section .eh_frame, \"aw\"\n"
     "	.long 0\n"
+    ".section .ctors, \"aw\"\n"
+    "	.long 0"
 );
 #else
 __asm__ (
