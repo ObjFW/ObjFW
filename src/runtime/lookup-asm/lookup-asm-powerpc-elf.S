@@ -51,17 +51,13 @@
 	lwzx	%r5, %r5, %r8
 
 	cmpwi	%r5, 0
-#ifdef OF_PIC
 	beq-	0f
-#else
-	beq-	\not_found
-#endif
 
 	mr	%r3, %r5
 	blr
 
-#ifdef OF_PIC
 0:
+#ifdef OF_PIC
 	stwu	%r1, -16(%r1)
 	mflr	%r0	
 	stw	%r0, 20(%r1)
@@ -82,6 +78,8 @@
 	mtlr	%r0
 
 	bctr
+#else
+	b	\not_found
 #endif
 
 .Ltagged_pointer_\name:
