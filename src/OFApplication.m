@@ -260,7 +260,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				key = [tmp substringToIndex: pos];
-				value = [tmp substringFromRange: pos + 1];
+				value = [tmp substringFromIndex: pos + 1];
 
 				[_environment setObject: value
 						 forKey: key];
