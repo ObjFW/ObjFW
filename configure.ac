@@ -1579,7 +1579,10 @@ case "$host_os" in
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#include <TargetConditionals.h>
 
-			#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+			#if (!defined(TARGET_OS_IPHONE) || \
+			    !TARGET_OS_IPHONE) && \
+			    (!defined(TARGET_OS_SIMULATOR) || \
+			    !TARGET_OS_SIMULATOR)
 			egrep_cpp_yes
 			#endif
 		], [
