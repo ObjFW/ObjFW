@@ -1326,15 +1326,9 @@ AC_CHECK_FUNCS(strerror_r, [
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
 
-case "$host_os" in
-	amigaos*)
-		;;
-	*)
-		AC_CHECK_FUNC(pipe, [
-			AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
-		])
-		;;
-esac
+AC_CHECK_FUNC(pipe, [
+	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
+])
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
