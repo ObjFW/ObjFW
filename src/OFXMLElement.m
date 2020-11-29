@@ -462,7 +462,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 	i = 0;
 	length = _name.UTF8StringLength + 3 + (level * indentation);
-	cString = of_malloc(length, 1);
+	cString = of_alloc(length, 1);
 
 	@try {
 		memset(cString + i, ' ', level * indentation);

@@ -361,8 +361,8 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		data = [OFData dataWithItems: string.UTF16String
-				    itemSize: sizeof(of_char16_t)
-				       count: string.UTF16StringLength + 1];
+				       count: string.UTF16StringLength + 1
+				    itemSize: sizeof(of_char16_t)];
 	else {
 		of_string_encoding_t encoding = [OFLocale encoding];
 		const char *cString = [string cStringWithEncoding: encoding];

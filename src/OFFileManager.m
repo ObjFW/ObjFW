@@ -665,7 +665,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		buffer = of_malloc(1, pageSize);
+		buffer = of_alloc(1, pageSize);
 		@try {
 			sourceStream = [[OFURLHandler handlerForURL: source]
 			    openItemAtURL: source

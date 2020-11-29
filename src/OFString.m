@@ -1021,7 +1021,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		tmp = of_malloc((size_t)fileSize + 1, 1);
+		tmp = of_alloc((size_t)fileSize + 1, 1);
 		@try {
 			file = [[OFFile alloc] initWithPath: path
 						       mode: @"r"];
@@ -1382,7 +1382,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:
-		cString = of_malloc((length * 4) + 1, 1);
+		cString = of_alloc((length * 4) + 1, 1);
 
 		@try {
 			cStringLength = [self
@@ -1415,7 +1415,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	case OF_STRING_ENCODING_MAC_ROMAN:
 	case OF_STRING_ENCODING_KOI8_R:
 	case OF_STRING_ENCODING_KOI8_U:
-		cString = of_malloc(length + 1, 1);
+		cString = of_alloc(length + 1, 1);
 
 		@try {
 			cStringLength = [self of_getCString: cString
@@ -1869,7 +1869,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	searchCharacters = string.characters;
 
-	characters = of_malloc(range.length, sizeof(of_unichar_t));
+	characters = of_alloc(range.length, sizeof(of_unichar_t));
 	@try {
 		[self getCharacters: characters
 			    inRange: range];
@@ -1937,7 +1937,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exception];
 
-	characters = of_malloc(range.length, sizeof(of_unichar_t));
+	characters = of_alloc(range.length, sizeof(of_unichar_t));
 	@try {
 		[self getCharacters: characters
 			    inRange: range];
@@ -2180,7 +2180,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ((prefixLength = prefix.length) > self.length)
 		return false;
 
-	tmp = of_malloc(prefixLength, sizeof(of_unichar_t));
+	tmp = of_alloc(prefixLength, sizeof(of_unichar_t));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2210,7 +2210,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	length = self.length;
 
-	tmp = of_malloc(suffixLength, sizeof(of_unichar_t));
+	tmp = of_alloc(suffixLength, sizeof(of_unichar_t));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2503,7 +2503,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t length = self.length;
 	of_unichar_t *buffer;
 
-	buffer = of_malloc(length, sizeof(of_unichar_t));
+	buffer = of_alloc(length, sizeof(of_unichar_t));
 	@try {
 		[self getCharacters: buffer
 			    inRange: of_range(0, length)];
@@ -2533,7 +2533,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	bool swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
-	buffer = of_malloc((length + 1) * 2, sizeof(of_char16_t));
+	buffer = of_alloc((length + 1) * 2, sizeof(of_char16_t));
 
 	j = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -2605,7 +2605,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t length = self.length;
 	of_char32_t *buffer;
 
-	buffer = of_malloc(length + 1, sizeof(of_char32_t));
+	buffer = of_alloc(length + 1, sizeof(of_char32_t));
 	@try {
 		[self getCharacters: buffer
 			    inRange: of_range(0, length)];

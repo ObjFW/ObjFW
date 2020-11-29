@@ -50,6 +50,9 @@
 	self = [super init];
 
 	@try {
+		FD_ZERO(&_readFDs);
+		FD_ZERO(&_writeFDs);
+
 #ifdef OF_AMIGAOS
 		_maxFD = 0;
 #else
@@ -59,8 +62,6 @@
 			    exceptionWithClass: self.class];
 # endif
 
-		FD_ZERO(&_readFDs);
-		FD_ZERO(&_writeFDs);
 		FD_SET(_cancelFD[0], &_readFDs);
 
 		if (_cancelFD[0] > INT_MAX)
@@ -172,7 +173,8 @@
 	struct timeval timeout;
 	int events;
 #ifdef OF_AMIGAOS
-	ULONG execSignalMask, cancelSignal;
+	BYTE cancelSignal;
+	ULONG execSignalMask;
 #endif
 	void *pool;
 
@@ -198,10 +200,10 @@
 #else
 	timeout.tv_sec = (long)timeInterval;
 #endif
-	timeout.tv_usec = (int)((timeInterval - timeout.tv_sec) * 1000);
+	timeout.tv_usec = (int)((timeInterval - timeout.tv_sec) * 1000000);
 
 #ifdef OF_AMIGAOS
-	if ((cancelSignal = AllocSignal(-1)) == (ULONG)-1)
+	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: EAGAIN];
 

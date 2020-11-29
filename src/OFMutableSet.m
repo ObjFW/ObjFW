@@ -172,7 +172,7 @@ static struct {
 	size_t count = self.count;
 	id *cArray;
 
-	cArray = of_malloc(count, sizeof(id));
+	cArray = of_alloc(count, sizeof(id));
 	@try {
 		size_t i;
 

@@ -105,7 +105,8 @@
 # if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
     (defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR)
 #  define OF_IOS
-# else
+# endif
+# if defined(TARGET_OS_OSX) && TARGET_OS_OSX
 #  define OF_MACOS
 # endif
 #elif defined(__linux__)

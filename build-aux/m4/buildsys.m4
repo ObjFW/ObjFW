@@ -49,7 +49,18 @@ AC_DEFUN([BUILDSYS_INIT], [
 		AC_SUBST(AMIGA_LIB_CFLAGS)
 		AC_SUBST(AMIGA_LIB_LDFLAGS)
 
-		AC_PATH_PROG(TPUT, tput)
+		case "$build_os" in
+			morphos*)
+				dnl Don't use tput on MorphOS: The colored
+				dnl output is quite unreadable and in some
+				dnl MorphOS versions, the output from tput is
+				dnl not 8-bit safe, with awk (for AC_SUBST)
+				dnl failing as a result.
+				;;
+			*)
+				AC_PATH_PROG(TPUT, tput)
+				;;
+		esac
 
 		AS_IF([test x"$TPUT" != x""], [
 			if x=$($TPUT el 2>/dev/null); then
@@ -309,6 +320,7 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 
 			AC_SUBST(FRAMEWORK_LDFLAGS)
 			AC_SUBST(FRAMEWORK_LDFLAGS_INSTALL_NAME)
+			AC_SUBST(FRAMEWORK_LIBS)
 
 			$1
 			;;

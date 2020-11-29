@@ -241,7 +241,7 @@ static struct {
 - (id const *)objects
 {
 	size_t count = self.count;
-	id *buffer = of_malloc(count, sizeof(id));
+	id *buffer = of_alloc(count, sizeof(id));
 
 	@try {
 		[self getObjects: buffer
@@ -383,7 +383,7 @@ static struct {
 		return [OFSubarray arrayWithArray: self
 					    range: range];
 
-	buffer = of_malloc(range.length, sizeof(*buffer));
+	buffer = of_alloc(range.length, sizeof(*buffer));
 	@try {
 		[self getObjects: buffer
 			 inRange: range];
@@ -858,7 +858,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_malloc(count, sizeof(id));
+	id *tmp = of_alloc(count, sizeof(id));
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
@@ -879,7 +879,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_malloc(count, sizeof(id));
+	id *tmp = of_alloc(count, sizeof(id));
 
 	@try {
 		__block size_t i = 0;

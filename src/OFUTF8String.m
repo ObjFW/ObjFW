@@ -181,7 +181,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	@try {
 		_s = &_storage;
 
-		_s->cString = of_calloc(1, 1);
+		_s->cString = of_alloc_zeroed(1, 1);
 		_s->freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
@@ -247,7 +247,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_malloc(cStringLength + 1, 1);
+		_s->cString = of_alloc(cStringLength + 1, 1);
 		_s->cStringLength = cStringLength;
 		_s->freeWhenDone = true;
 
@@ -452,7 +452,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s->length = string.length;
 
-		_s->cString = of_malloc(_s->cStringLength + 1, 1);
+		_s->cString = of_alloc(_s->cStringLength + 1, 1);
 		memcpy(_s->cString, string.UTF8String, _s->cStringLength + 1);
 		_s->freeWhenDone = true;
 	} @catch (id e) {
@@ -473,7 +473,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_malloc((length * 4) + 1, 1);
+		_s->cString = of_alloc((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -529,7 +529,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_malloc((length * 4) + 1, 1);
+		_s->cString = of_alloc((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -614,7 +614,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_malloc((length * 4) + 1, 1);
+		_s->cString = of_alloc((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -689,7 +689,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				@throw [OFInvalidEncodingException exception];
 			}
 
-			_s->cString = of_malloc(cStringLength + 1, 1);
+			_s->cString = of_alloc(cStringLength + 1, 1);
 			memcpy(_s->cString, tmp, cStringLength + 1);
 			_s->freeWhenDone = true;
 		} @finally {
@@ -1155,7 +1155,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (const of_unichar_t *)characters
 {
-	of_unichar_t *buffer = of_malloc(_s->length, sizeof(of_unichar_t));
+	of_unichar_t *buffer = of_alloc(_s->length, sizeof(of_unichar_t));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {
@@ -1182,7 +1182,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
-	of_char32_t *buffer = of_malloc(_s->length + 1, sizeof(of_char32_t));
+	of_char32_t *buffer = of_alloc(_s->length + 1, sizeof(of_char32_t));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {

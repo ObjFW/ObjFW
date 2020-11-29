@@ -89,7 +89,7 @@ int _OFString_URLEncoding_reference;
 	int state = 0;
 	size_t i = 0;
 
-	retCString = of_malloc(length + 1, 1);
+	retCString = of_alloc(length + 1, 1);
 
 	while (length--) {
 		char c = *string++;

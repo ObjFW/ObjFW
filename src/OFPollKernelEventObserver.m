@@ -52,7 +52,7 @@
 		[_FDs addItem: &p];
 
 		_maxFD = _cancelFD[0];
-		_FDToObject = of_malloc((size_t)_maxFD + 1, sizeof(id));
+		_FDToObject = of_alloc((size_t)_maxFD + 1, sizeof(id));
 	} @catch (id e) {
 		[self release];
 		@throw e;

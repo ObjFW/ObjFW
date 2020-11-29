@@ -137,7 +137,7 @@ codepageToEncoding(UINT codepage)
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	UTF16 = of_malloc(length, sizeof(of_char16_t));
+	UTF16 = of_alloc(length, sizeof(of_char16_t));
 	@try {
 		DWORD UTF16Len;
 		OFMutableData *rest = nil;
@@ -364,7 +364,7 @@ codepageToEncoding(UINT codepage)
 		i += toCopy;
 	}
 
-	tmp = of_malloc(length * 2, sizeof(of_char16_t));
+	tmp = of_alloc(length * 2, sizeof(of_char16_t));
 	@try {
 		DWORD bytesWritten;
 

@@ -278,7 +278,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 - (void)parseStream: (OFStream *)stream
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = of_malloc(1, pageSize);
+	char *buffer = of_alloc(1, pageSize);
 
 	@try {
 		while (!stream.atEndOfStream) {

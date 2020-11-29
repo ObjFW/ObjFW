@@ -40,14 +40,15 @@
 		for (size_t i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
 
-			if (c / 8 >= _size) {
+			if (c / CHAR_BIT >= _size) {
 				size_t newSize;
 
 				if (UINT32_MAX - c < 1)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OF_ROUND_UP_POW2(8, c + 1) / 8;
+				newSize = OF_ROUND_UP_POW2(CHAR_BIT, c + 1) /
+				    CHAR_BIT;
 
 				_bitset = of_realloc(_bitset, newSize, 1);
 				memset(_bitset + _size, '\0', newSize - _size);
@@ -76,7 +77,7 @@
 
 - (bool)characterIsMember: (of_unichar_t)character
 {
-	if (character / 8 >= _size)
+	if (character / CHAR_BIT >= _size)
 		return false;
 
 	return of_bitset_isset(_bitset, character);

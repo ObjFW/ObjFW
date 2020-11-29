@@ -60,7 +60,9 @@ static of_mutex_t mutex;
 #endif
 #if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
-#else
+#endif
+
+#ifdef OF_AMIGAOS
 # ifdef OF_HAVE_THREADS
 of_tlskey_t of_socket_base_key;
 #  ifdef OF_AMIGAOS4

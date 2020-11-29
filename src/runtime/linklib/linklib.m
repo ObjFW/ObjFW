@@ -27,6 +27,7 @@ struct ObjFWRTBase;
 
 #import "inline.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -57,11 +58,23 @@ extern void _Unwind_SjLj_Resume(void *);
 #else
 extern void _Unwind_Resume(void *);
 #endif
+#ifdef OF_AMIGAOS_M68K
 extern void __register_frame_info(const void *, void *);
 extern void *__deregister_frame_info(const void *);
+#endif
+#ifdef OF_MORPHOS
+extern void __register_frame(void *);
+extern void __deregister_frame(void *);
+#endif
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
+
+static int *
+get_errno(void)
+{
+	return &errno;
+}
 
 static void __attribute__((__used__))
 ctor(void)
@@ -95,8 +108,15 @@ ctor(void)
 #else
 		._Unwind_Resume = _Unwind_Resume,
 #endif
+#ifdef OF_AMIGAOS_M68K
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
+#endif
+#ifdef OF_MORPHOS
+		.__register_frame = __register_frame,
+		.__deregister_frame = __deregister_frame,
+#endif
+		.get_errno = get_errno,
 	};
 
 	if (initialized)
@@ -726,12 +746,6 @@ object_isTaggedPointer(id object)
 	return glue_object_isTaggedPointer(object);
 }
 
-Class
-object_getTaggedPointerClass(id object)
-{
-	return glue_object_getTaggedPointerClass(object);
-}
-
 uintptr_t
 object_getTaggedPointerValue(id object)
 {
@@ -741,5 +755,5 @@ object_getTaggedPointerValue(id object)
 id
 objc_createTaggedPointer(int class, uintptr_t value)
 {
-	return objc_createTaggedPointer(class, value);
+	return glue_objc_createTaggedPointer(class, value);
 }

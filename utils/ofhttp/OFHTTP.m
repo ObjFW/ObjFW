@@ -304,7 +304,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
 
-		_buffer = of_malloc(1, [OFSystemInfo pageSize]);
+		_buffer = of_alloc(1, [OFSystemInfo pageSize]);
 	} @catch (id e) {
 		[self release];
 		@throw e;
