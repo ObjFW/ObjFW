@@ -357,6 +357,9 @@ other place, you are most likely using a mirror.
 
    * The [forum](https://objfw.nil.im/forum)
    * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
+   * An IRC channel named `#objfw` on `irc.oftc.net`
+     ([Web chat](https://webchat.oftc.net/?channels=%23objfw)), bridged to the
+     Matrix room above
    * A [Slack channel](https://objfw.nil.im/slack), bridged to the Matrix room
      above
    * A [Discord channel](https://objfw.nil.im/discord), bridged to the Matrix
