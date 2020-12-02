@@ -365,8 +365,6 @@ other place, you are most likely using a mirror.
    * A [Discord channel](https://objfw.nil.im/discord), bridged to the Matrix
      room above
    * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
-   * A [Gitter room](https://gitter.im/ObjFW/ObjFW), bridged to the Matrix room
-     above
 
   Please don't hesitate to join any or all of those!
 
