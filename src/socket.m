@@ -38,7 +38,7 @@
 #import "socket.h"
 #import "socket_helpers.h"
 #ifdef OF_HAVE_THREADS
-# ifndef OF_AMIGAOS
+# if !defined(OF_AMIGAOS) || defined(OF_MORPHOS)
 #  import "mutex.h"
 # else
 #  import "tlskey.h"
@@ -55,15 +55,15 @@
 # include <3ds/services/soc.h>
 #endif
 
-#if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 static of_mutex_t mutex;
 #endif
-#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
 #endif
 
 #ifdef OF_AMIGAOS
-# ifdef OF_HAVE_THREADS
+# if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
 of_tlskey_t of_socket_base_key;
 #  ifdef OF_AMIGAOS4
 of_tlskey_t of_socket_interface_key;
@@ -76,7 +76,7 @@ struct SocketIFace *ISocket = NULL;
 # endif
 #endif
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
 	if (!of_tlskey_new(&of_socket_base_key))
@@ -89,7 +89,7 @@ OF_CONSTRUCTOR()
 }
 #endif
 
-#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 static void
 init(void)
 {
@@ -124,7 +124,7 @@ init(void)
 	atexit((void (*)(void))socExit);
 # endif
 
-# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
+# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	if (!of_mutex_new(&mutex))
 		return;
 
@@ -154,7 +154,7 @@ OF_DESTRUCTOR()
 bool
 of_socket_init(void)
 {
-#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 	static of_once_t onceControl = OF_ONCE_INIT;
 	of_once(&onceControl, init);
 
@@ -203,7 +203,7 @@ of_socket_init(void)
 #endif
 }
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 void
 of_socket_deinit(void)
 {
@@ -328,7 +328,7 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 {
 	int ret;
 
-# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
+# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exception];
 
@@ -336,7 +336,7 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 
 	ret = getsockname(sock, addr, addrLen);
 
-# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
+# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	if (!of_mutex_unlock(&mutex))
 		@throw [OFUnlockFailedException exception];
 # endif
