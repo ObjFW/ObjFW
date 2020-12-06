@@ -98,11 +98,10 @@ macOS
 MorphOS
 -------
 
-  * OS Versions: 3.9-3.11
+  * OS Versions: 3.14
   * Architectures: PowerPC
-  * Compilers: GCC 5.3.0, GCC 5.4.0
+  * Compilers: GCC 9.3.0
   * Runtimes: ObjFW
-  * Notes: libnix and ixemul are both supported
 
 
 NetBSD
