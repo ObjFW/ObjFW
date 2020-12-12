@@ -98,6 +98,8 @@
 # define OF_S390X
 #elif defined(__s390__)
 # define OF_S390
+#elif defined(__e2k__)
+# define OF_ELBRUS_2000
 #endif
 
 #if defined(__APPLE__)
