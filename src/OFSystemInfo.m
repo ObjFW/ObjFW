@@ -244,13 +244,13 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 	struct x86_regs regs;
 
-# if defined(OF_X86_64_ASM)
+# if defined(OF_X86_64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
-# elif defined(OF_X86_ASM)
+# elif defined(OF_X86) && defined(__GNUC__)
 	/*
 	 * This workaround is required by older GCC versions when using -fPIC,
 	 * as ebx is a special register in PIC code. Yes, GCC is indeed not
@@ -532,7 +532,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUVendor
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
 	struct x86_regs regs = x86_cpuid(0, 0);
 	uint32_t buffer[3];
 
@@ -553,7 +553,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
 	uint32_t buffer[12];
 	size_t i;
 
