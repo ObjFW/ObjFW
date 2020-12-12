@@ -922,35 +922,33 @@ AC_DEFUN([ENCODING_FLAG], [
 		AS_HELP_STRING([--disable-$1],
 			[Disables support for $3]))
 	AS_IF([test x"$enable_$2" != x"no"], [
-		AC_DEFINE($4, 1,
-			[Whether we have support for $3])
-		ENCODINGS_SRCS="$ENCODINGS_SRCS $2.m"
+		AC_DEFINE($4, 1, [Whether we have support for $3])
+		ENCODINGS_SRCS="$ENCODINGS_SRCS $1.m"
 	])
 ])
 ENCODING_FLAG(codepage-437, codepage_437, [Codepage 437], HAVE_CODEPAGE_437)
 ENCODING_FLAG(codepage-850, codepage_850, [Codepage 850], HAVE_CODEPAGE_850)
 ENCODING_FLAG(codepage-858, codepage_858, [Codepage 858], HAVE_CODEPAGE_858)
-ENCODING_FLAG(iso-8859-2, iso_8859-2, [ISO 8859-2], HAVE_ISO_8859_2)
-ENCODING_FLAG(iso-8859-3, iso_8859-3, [ISO 8859-3], HAVE_ISO_8859_3)
-ENCODING_FLAG(iso-8859-15, iso_8859-15, [ISO 8859-15], HAVE_ISO_8859_15)
-ENCODING_FLAG(koi8-r, koi8-r, [KOI8-R], HAVE_KOI8_R)
-ENCODING_FLAG(koi8-u, koi8-u, [KOI8-U], HAVE_KOI8_U)
+ENCODING_FLAG(iso-8859-2, iso_8859_2, [ISO 8859-2], HAVE_ISO_8859_2)
+ENCODING_FLAG(iso-8859-3, iso_8859_3, [ISO 8859-3], HAVE_ISO_8859_3)
+ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
+ENCODING_FLAG(koi8-r, koi8_r, [KOI8-R], HAVE_KOI8_R)
+ENCODING_FLAG(koi8-u, koi8_u, [KOI8-U], HAVE_KOI8_U)
 ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
-ENCODING_FLAG(windows-1251, windows-1251, [Windows-1251], HAVE_WINDOWS_1251)
-ENCODING_FLAG(windows-1252, windows-1252, [Windows-1252], HAVE_WINDOWS_1252)
+ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
+ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
 
+AS_IF([test x"$ENCODINGS_SRCS" = x""], [
+	ENCODINGS_SRCS="dummy.m"
+])
 AC_SUBST(ENCODINGS_SRCS)
-AS_IF([test x"$ENCODINGS_SRCS" != x""], [
-	AC_SUBST(ENCODINGS, "encodings")
-
-	AS_IF([test x"$enable_shared" != x"no"], [
-		AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
-		AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
-	])
-	AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
-		AC_SUBST(ENCODINGS_A, "encodings.a")
-		AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
-	])
+AS_IF([test x"$enable_shared" != x"no"], [
+	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
+	AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
+])
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+	AC_SUBST(ENCODINGS_A, "encodings.a")
+	AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
 ])
 
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
