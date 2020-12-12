@@ -383,6 +383,9 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 	register struct ObjFWBase *r12 __asm__("r12");
 	struct ObjFWBase *base = r12;
 #endif
+#ifdef OF_MORPHOS
+	void *frame;
+#endif
 	uintptr_t *iter, *iter0;
 
 	if (version > 1)
@@ -405,10 +408,14 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
 	__asm__ (
-	    "lis	%0, ctors+4@ha\n\t"
-	    "la		%0, ctors+4@l(%0)\n\t"
-	    : "=r"(iter0)
+	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
+	    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
+	    "lis	%1, __CTOR_LIST__@ha\n\t"
+	    "la		%1, __CTOR_LIST__@l(%1)\n\t"
+	    : "=r"(frame), "=r"(iter0)
 	);
+
+	libc.__register_frame(frame);
 #endif
 
 	for (iter = iter0; *iter != 0; iter++);
@@ -734,9 +741,14 @@ struct Resident resident = {
 
 #ifdef OF_MORPHOS
 __asm__ (
+    ".section .eh_frame, \"aw\", @progbits\n"
+    ".globl __EH_FRAME_BEGIN__\n"
+    ".type __EH_FRAME_BEGIN__, @object\n"
+    "__EH_FRAME_BEGIN__:\n"
     ".section .ctors, \"aw\", @progbits\n"
-    "ctors:\n"
-    "	.long -1\n"
+    ".globl __CTOR_LIST__\n"
+    ".type __CTOR_LIST__, @object\n"
+    "__CTOR_LIST__:\n"
     ".section .text"
 );
 #endif
