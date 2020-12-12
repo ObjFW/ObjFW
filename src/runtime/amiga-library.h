@@ -31,15 +31,14 @@ struct objc_libc {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-	int (*_Nonnull vfprintf)(FILE *_Nonnull restrict,
-	    const char *_Nonnull restrict, va_list);
+	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
 	int (*_Nonnull fflush)(FILE *_Nonnull);
 	void (*_Nonnull abort)(void);
-#ifdef HAVE_SJLJ_EXCEPTIONS
+# ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
-#else
+# else
 	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
-#endif
+# endif
 	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
 	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
 	    void *_Nonnull);
@@ -50,17 +49,21 @@ struct objc_libc {
 	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
 	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
 	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
-#ifdef HAVE_SJLJ_EXCEPTIONS
+# ifdef HAVE_SJLJ_EXCEPTIONS
 	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
-#else
+# else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
-#endif
-#ifdef OF_AMIGAOS_M68K
+# endif
+# ifdef OF_AMIGAOS_M68K
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
-	void *_Nullable (*_Nonnull __deregister_frame_info)(
-	    const void *_Nonnull);
-#endif
+	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
+# endif
+# ifdef OF_MORPHOS
+	void (*_Nonnull __register_frame)(void *_Nonnull);
+	void (*_Nonnull __deregister_frame)(void *_Nonnull);
+# endif
+	int *_Nonnull (*_Nonnull get_errno)(void);
 };
 
 extern bool objc_init(unsigned int, struct objc_libc *_Nonnull,

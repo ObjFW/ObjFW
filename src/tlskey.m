@@ -23,6 +23,8 @@
 # include "platform/posix/tlskey.m"
 #elif defined(OF_WINDOWS)
 # include "platform/windows/tlskey.m"
+#elif defined(OF_MORPHOS)
+# include "platform/morphos/tlskey.m"
 #elif defined(OF_AMIGAOS)
 # include "platform/amiga/tlskey.m"
 #endif

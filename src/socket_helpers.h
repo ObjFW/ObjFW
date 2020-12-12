@@ -59,7 +59,7 @@
 # define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)
 # define hstrerror(err) "unknown (no hstrerror)"
 # define SOCKET_ERROR -1
-# ifdef OF_HAVE_THREADS
+# if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
 #  define SocketBase ((struct Library *)of_tlskey_get(of_socket_base_key))
 #  ifdef OF_AMIGAOS4
 #   define ISocket \

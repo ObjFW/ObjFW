@@ -17,17 +17,16 @@
 
 #include "config.h"
 
-#import "platform.h"
+#import "tlskey.h"
 
-#ifdef OF_MORPHOS
-__asm__ (
-    ".section .eh_frame, \"aw\"\n"
-    "	.long 0\n"
-    ".section .ctors, \"aw\"\n"
-    "	.long 0"
-);
-#else
-__asm__ (
-    ""
-);
-#endif
+bool
+of_tlskey_new(of_tlskey_t *key)
+{
+	return ((*key = TLSAllocA(NULL)) != TLS_INVALID_INDEX);
+}
+
+bool
+of_tlskey_free(of_tlskey_t key)
+{
+	return TLSFree(key);
+}

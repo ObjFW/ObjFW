@@ -96,7 +96,8 @@ atexitHandler(void)
 
 	[delegate release];
 
-#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
+    defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 	of_socket_deinit();
 #endif
 }
@@ -260,7 +261,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				key = [tmp substringToIndex: pos];
-				value = [tmp substringFromRange: pos + 1];
+				value = [tmp substringFromIndex: pos + 1];
 
 				[_environment setObject: value
 						 forKey: key];

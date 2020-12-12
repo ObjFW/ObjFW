@@ -101,7 +101,8 @@ static struct page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
+	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	    CHAR_BIT;
 	struct page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct page *lastPage;
@@ -186,7 +187,8 @@ removePageIfEmpty(struct page *page)
 {
 	unsigned char *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
+	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	    CHAR_BIT;
 
 	for (size_t i = 0; i < mapSize; i++)
 		if (map[i] != 0)

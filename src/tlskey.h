@@ -32,6 +32,9 @@ typedef pthread_key_t of_tlskey_t;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
 typedef DWORD of_tlskey_t;
+#elif defined(OF_MORPHOS)
+# include <proto/exec.h>
+typedef ULONG of_tlskey_t;
 #elif defined(OF_AMIGAOS)
 typedef struct of_tlskey {
 	struct objc_hashtable *table;
@@ -73,6 +76,18 @@ static OF_INLINE bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
 	return TlsSetValue(key, ptr);
+}
+#elif defined(OF_MORPHOS)
+static OF_INLINE void *
+of_tlskey_get(of_tlskey_t key)
+{
+	return (void *)TLSGetValue(key);
+}
+
+static OF_INLINE bool
+of_tlskey_set(of_tlskey_t key, void *ptr)
+{
+	return TLSSetValue(key, (APTR)ptr);
 }
 #elif defined(OF_AMIGAOS)
 /* Those are too big too inline. */

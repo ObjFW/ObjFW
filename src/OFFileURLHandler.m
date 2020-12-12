@@ -737,12 +737,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		{
 			.tv_sec = (time_t)lastAccessTime,
 			.tv_usec =
-			    (int)((lastAccessTime - times[0].tv_sec) * 1000)
+			    (int)((lastAccessTime - times[0].tv_sec) * 1000000)
 		},
 		{
 			.tv_sec = (time_t)modificationTime,
-			.tv_usec =
-			    (int)((modificationTime - times[1].tv_sec) * 1000)
+			.tv_usec = (int)((modificationTime - times[1].tv_sec) *
+			    1000000)
 		},
 	};
 

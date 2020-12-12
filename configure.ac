@@ -105,7 +105,6 @@ case "$host" in
 		])
 
 		enable_shared="no"
-		enable_threads="no"
 		;;
 	*-msdosdjgpp*)
 		enable_shared="no"
@@ -152,7 +151,17 @@ AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
 ])
 
 AC_LANG([Objective C])
-AC_PROG_OBJC([clang egcc gcc])
+case "$host_os" in
+	morphos*)
+		dnl Don't use clang on MorphOS - it does not support baserel,
+		dnl which is required for the .library.
+		potential_compilers="gcc"
+		;;
+	*)
+		potential_compilers="clang egcc gcc"
+		;;
+esac
+AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
@@ -367,13 +376,9 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(FORWARDING_FORWARDING_LIB_A, "forwarding/forwarding.lib.a")
 	AC_SUBST(INVOCATION_LIB_A, "invocation.lib.a")
-	AC_SUBST(INVOCATION_INVOCATION_LIB_A, "invocation/invocation.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
 
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
@@ -405,21 +410,27 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src -L../src/linklib $TESTS_LIBS"
 ])
 
-AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
-	enable_static="yes"
+AC_ARG_ENABLE(amiga-lib,
+	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
+AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
+	AC_SUBST(FORWARDING_A, "forwarding.a")
+	AC_SUBST(INVOCATION_A, "invocation.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+	enable_static="yes"
+])
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(FORWARDING_FORWARDING_A, "forwarding/forwarding.a")
 	AC_SUBST(INVOCATION_A, "invocation.a")
-	AC_SUBST(INVOCATION_INVOCATION_A, "invocation/invocation.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
@@ -1081,10 +1092,14 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			# Compiler TLS is broken on AArch64 Android with Clang
 			enable_compiler_tls="no"
 			;;
-		m68k-*-amigaos | powerpc-*-amigaos)
+		m68k-*-amigaos* | powerpc-*-amigaos*)
 			# Compiler TLS is broken on AmigaOS
 			enable_compiler_tls="no"
 			;;
+		*-*-morphos*)
+			# Compiler TLS needs helpers that we don't want in the
+			# .library
+			enable_compiler_tls="no"
 	esac
 
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
@@ -1351,15 +1366,9 @@ AC_CHECK_FUNCS(strerror_r, [
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
 
-case "$host_os" in
-	amigaos*)
-		;;
-	*)
-		AC_CHECK_FUNC(pipe, [
-			AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
-		])
-		;;
-esac
+AC_CHECK_FUNC(pipe, [
+	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
+])
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
@@ -1604,14 +1613,30 @@ CHECK_BUILTIN_BSWAP(16)
 CHECK_BUILTIN_BSWAP(32)
 CHECK_BUILTIN_BSWAP(64)
 
-case "$host" in
-	arm*-apple-darwin*)
-		have_processes="no"
+case "$host_os" in
+	darwin*)
+		AC_MSG_CHECKING(whether we are compiling for macOS)
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#include <TargetConditionals.h>
+
+			#if (!defined(TARGET_OS_IPHONE) || \
+			    !TARGET_OS_IPHONE) && \
+			    (!defined(TARGET_OS_SIMULATOR) || \
+			    !TARGET_OS_SIMULATOR)
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_MSG_RESULT(yes)
+			have_processes="yes"
+		], [
+			AC_MSG_RESULT(no)
+			have_processes="no"
+		])
 		;;
-	*-*-mingw*)
+	mingw*)
 		have_processes="yes"
 		;;
-	*-*-msdosdjgpp*)
+	msdosdjgpp*)
 		have_processes="no"
 		;;
 	*)

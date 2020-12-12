@@ -17,17 +17,7 @@
 
 #include "config.h"
 
-#import "platform.h"
+#import "ObjFWRT.h"
+#import "private.h"
 
-#ifdef OF_MORPHOS
-__asm__ (
-    ".section .eh_frame, \"aw\"\n"
-    "	.long 0\n"
-    ".section .ctors, \"aw\"\n"
-    "	.long 0"
-);
-#else
-__asm__ (
-    ""
-);
-#endif
+#include "../mutex.m"

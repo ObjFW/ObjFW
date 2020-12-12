@@ -29,7 +29,9 @@
 #include <proto/dos.h>
 #include <proto/exec.h>
 
+#ifndef OF_MORPHOS
 extern void of_tlskey_thread_exited(void);
+#endif
 static of_tlskey_t threadKey;
 
 OF_CONSTRUCTOR()
@@ -51,7 +53,9 @@ functionWrapper(void)
 	@try {
 		thread->done = true;
 
+#ifndef OF_MORPHOS
 		of_tlskey_thread_exited();
+#endif
 
 		if (thread->detached)
 			detached = true;

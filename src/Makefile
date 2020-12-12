@@ -239,22 +239,20 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
 
-OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\
-	     ${EXCEPTIONS_EXCEPTIONS_A} \
-	     ${ENCODINGS_ENCODINGS_A}	\
-	     ${FORWARDING_FORWARDING_A}	\
-	     ${INVOCATION_INVOCATION_A}
-LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
-		 ${EXCEPTIONS_EXCEPTIONS_LIB_A}	\
-		 ${ENCODINGS_ENCODINGS_LIB_A}	\
-		 ${FORWARDING_FORWARDING_LIB_A}	\
-		 ${INVOCATION_INVOCATION_LIB_A}
+OBJS_EXTRA = exceptions/exceptions.a	\
+	     encodings/encodings.a	\
+	     forwarding/forwarding.a	\
+	     invocation/invocation.a
+LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
+		 encodings/encodings.lib.a	\
+		 forwarding/forwarding.lib.a	\
+		 invocation/invocation.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o			\
-		       ${EXCEPTIONS_EXCEPTIONS_AMIGALIB_A}	\
-		       ${ENCODINGS_ENCODINGS_AMIGALIB_A}	\
-		       ${FORWARDING_FORWARDING_AMIGALIB_A}	\
-		       ${INVOCATION_INVOCATION_AMIGALIB_A}	\
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+		       exceptions/exceptions.amigalib.a	\
+		       encodings/encodings.amigalib.a	\
+		       forwarding/forwarding.amigalib.a	\
+		       invocation/invocation.amigalib.a	\
 		       amiga-end.amigalib.o
 
 include ../buildsys.mk

@@ -822,14 +822,6 @@ glue_object_isTaggedPointer PPC_PARAMS(id object)
 	return object_isTaggedPointer(object);
 }
 
-Class __saveds
-glue_object_getTaggedPointerClass PPC_PARAMS(id object)
-{
-	M68K_ARG(id, object, a0)
-
-	return object_getTaggedPointerClass(object);
-}
-
 uintptr_t __saveds
 glue_object_getTaggedPointerValue PPC_PARAMS(id object)
 {

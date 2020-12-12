@@ -216,6 +216,12 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# undef errno
+extern int *_Nonnull objc_get_errno(void);
+# define errno (*objc_get_errno())
+#endif
+
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);
 extern struct objc_category *_Nullable *_Nullable
     objc_categories_for_class(Class _Nonnull);

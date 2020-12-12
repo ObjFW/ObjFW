@@ -151,7 +151,6 @@ extern void glue_objc_hashtable_free(void);
 extern void glue_objc_setTaggedPointerSecret(void);
 extern int glue_objc_registerTaggedPointerClass(void);
 extern bool glue_object_isTaggedPointer(void);
-extern Class glue_object_getTaggedPointerClass(void);
 extern uintptr_t glue_object_getTaggedPointerValue(void);
 extern id glue_objc_createTaggedPointer(void);
 
@@ -418,6 +417,9 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE **sF)
 	register struct ObjFWRTBase *r12 __asm__("r12");
 	struct ObjFWRTBase *base = r12;
 #endif
+#ifdef OF_MORPHOS
+	void *frame;
+#endif
 	uintptr_t *iter, *iter0;
 
 	if (version > 1)
@@ -440,10 +442,14 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE **sF)
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
 	__asm__ (
-	    "lis	%0, ctors+4@ha\n\t"
-	    "la		%0, ctors+4@l(%0)\n\t"
-	    : "=r"(iter0)
+	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
+	    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
+	    "lis	%1, __CTOR_LIST__@ha\n\t"
+	    "la		%1, __CTOR_LIST__@l(%1)\n\t"
+	    : "=r"(frame), "=r"(iter0)
 	);
+
+	libc.__register_frame(frame);
 #endif
 
 	for (iter = iter0; *iter != 0; iter++);
@@ -591,6 +597,12 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
+int *
+objc_get_errno(void)
+{
+	return libc.get_errno();
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
@@ -693,7 +705,6 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_setTaggedPointerSecret,
 	(CONST_APTR)glue_objc_registerTaggedPointerClass,
 	(CONST_APTR)glue_object_isTaggedPointer,
-	(CONST_APTR)glue_object_getTaggedPointerClass,
 	(CONST_APTR)glue_object_getTaggedPointerValue,
 	(CONST_APTR)glue_objc_createTaggedPointer,
 	(CONST_APTR)-1,
@@ -742,9 +753,14 @@ struct Resident resident = {
 
 #ifdef OF_MORPHOS
 __asm__ (
-    ".section .ctors, \"aw\", @progbits\n"
-    "ctors:\n"
-    "	.long -1\n"
+    ".section .eh_frame, \"aw\"\n"
+    ".globl __EH_FRAME_BEGIN__\n"
+    ".type __EH_FRAME_BEGIN__, @object\n"
+    "__EH_FRAME_BEGIN__:\n"
+    ".section .ctors, \"aw\"\n"
+    ".globl __CTOR_LIST__\n"
+    ".type __CTOR_LIST__, @object\n"
+    "__CTOR_LIST__:\n"
     ".section .text"
 );
 #endif

@@ -124,11 +124,11 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
-#if defined(OF_HAVE_PIPE)
-	int _cancelFD[2];
-#elif defined(OF_AMIGAOS)
+#if defined(OF_AMIGAOS)
 	struct Task *_waitingTask;
 	ULONG _cancelSignal;
+#elif defined(OF_HAVE_PIPE)
+	int _cancelFD[2];
 #else
 	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;

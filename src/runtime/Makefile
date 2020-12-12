@@ -40,18 +40,18 @@ SRCS = arc.m			\
        synchronized.m		\
        tagged-pointer.m		\
        ${USE_SRCS_THREADS}
-SRCS_THREADS = threading.m	\
-	       ../mutex.m	\
-	       ../once.m	\
-	       ../tlskey.m
+SRCS_THREADS = mutex.m		\
+	       once.m		\
+	       threading.m	\
+	       tlskey.m
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 
-OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
-LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
+OBJS_EXTRA = lookup-asm/lookup-asm.a
+LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o			\
-		       ${LOOKUP_ASM_LOOKUP_ASM_AMIGALIB_A}	\
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+		       lookup-asm/lookup-asm.amigalib.a	\
 		       amiga-end.amigalib.o
 
 include ../../buildsys.mk

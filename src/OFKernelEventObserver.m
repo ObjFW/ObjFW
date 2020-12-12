@@ -115,7 +115,7 @@ enum {
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
 
-#if defined(OF_HAVE_PIPE)
+#if defined(OF_HAVE_PIPE) && !defined(OF_AMIGAOS)
 		if (pipe(_cancelFD))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -176,7 +176,7 @@ enum {
 
 - (void)dealloc
 {
-#if defined(OF_HAVE_PIPE)
+#if defined(OF_HAVE_PIPE) && !defined(OF_AMIGAOS)
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
@@ -259,9 +259,7 @@ enum {
 
 - (void)cancel
 {
-#if defined(OF_HAVE_PIPE)
-	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
-#elif defined(OF_AMIGAOS)
+#if defined(OF_AMIGAOS)
 	Forbid();
 
 	if (_waitingTask != NULL) {
@@ -270,6 +268,8 @@ enum {
 	}
 
 	Permit();
+#elif defined(OF_HAVE_PIPE)
+	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
 #elif defined(OF_WII)
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, 8) > 0);
