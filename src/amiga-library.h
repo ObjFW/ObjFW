@@ -67,6 +67,7 @@ struct of_libc {
 	void *_Nullable (*_Nonnull __deregister_frame_info)(
 	    const void *_Nonnull);
 #endif
+	int *_Nonnull (*_Nonnull get_errno)(void);
 
 	/* Needed only by ObjFW. */
 	int (*_Nonnull vsnprintf)(char *_Nonnull restrict, size_t,

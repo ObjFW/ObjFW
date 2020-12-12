@@ -321,6 +321,12 @@
 # define OF_DIRECT_MEMBERS
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+# undef errno
+extern int *_Nonnull of_get_errno(void);
+# define errno (*of_get_errno())
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM

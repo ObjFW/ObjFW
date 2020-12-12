@@ -576,6 +576,12 @@ void
 }
 #endif
 
+int *
+of_get_errno(void)
+{
+	return libc.get_errno();
+}
+
 int
 vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
     va_list args)

@@ -27,6 +27,7 @@ struct ObjFWBase;
 
 #import "inline.h"
 
+#include <errno.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -273,6 +274,12 @@ void *__objc_class_name_OFRangeCharacterSet;
 void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
+static int *
+get_errno(void)
+{
+	return &errno;
+}
+
 static void __attribute__((__used__))
 ctor(void)
 {
@@ -309,6 +316,7 @@ ctor(void)
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
 #endif
+		.get_errno = get_errno,
 		.vsnprintf = vsnprintf,
 #ifdef OF_AMIGAOS_M68K
 		.vsscanf = vsscanf,
