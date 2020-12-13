@@ -262,6 +262,9 @@ ${OBJFW_AMIGA_LIB}: inline.h
 ${SFDC_INLINE_H}: ${SFD_FILE}
 	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<; \
 
+${CVINCLUDE_INLINE_H}: morphos.fd morphos-clib.h
+	cvinclude.pl --quiet --fd=morphos.fd --clib=morphos-clib.h --inlines=$@
+
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime		\
 	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
 	    -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}	\
