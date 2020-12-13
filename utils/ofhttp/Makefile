@@ -17,7 +17,7 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/exceptions			\
 	    -I../..					\
 	    -DLANGUAGE_DIR=\"${datadir}/ofhttp/lang\"
-LIBS := -L../../src -lobjfw						\
+LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}
 LD = ${OBJC}
