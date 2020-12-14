@@ -672,3 +672,27 @@ of_socket_address_get_ipx_node(const of_socket_address_t *address,
 {
 	glue_of_socket_address_get_ipx_node(address, node);
 }
+
+OFString *
+of_dns_class_to_string(of_dns_class_t DNSClass)
+{
+	return glue_of_dns_class_to_string(DNSClass);
+}
+
+OFString *
+of_dns_record_type_to_string(of_dns_record_type_t recordType)
+{
+	return glue_of_dns_record_type_to_string(recordType);
+}
+
+of_dns_class_t
+of_dns_class_parse(OFString *string)
+{
+	return glue_of_dns_class_parse(string);
+}
+
+of_dns_record_type_t
+of_dns_record_type_parse(OFString *string)
+{
+	return glue_of_dns_record_type_parse(string);
+}

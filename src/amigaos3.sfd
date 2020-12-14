@@ -47,3 +47,7 @@ void glue_of_socket_address_set_ipx_network(of_socket_address_t *_Nonnull addres
 uint32_t glue_of_socket_address_get_ipx_network(const of_socket_address_t *_Nonnull address)(a0)
 void glue_of_socket_address_set_ipx_node(of_socket_address_t *_Nonnull address, const unsigned char *_Nonnull node)(a0,a1)
 void glue_of_socket_address_get_ipx_node(const of_socket_address_t *_Nonnull address, unsigned char *_Nonnull node)(a0,a1)
+OFString *_Nonnull glue_of_dns_class_to_string(of_dns_class_t DNSClass)(d0)
+OFString *_Nonnull glue_of_dns_record_type_to_string(of_dns_record_type_t recordType)(d0)
+of_dns_class_t glue_of_dns_class_parse(OFString *_Nonnull string)(a0)
+of_dns_record_type_t glue_of_dns_record_type_parse(OFString *_Nonnull string)(a0)

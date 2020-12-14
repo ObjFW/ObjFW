@@ -22,6 +22,7 @@
 #include <exec/resident.h>
 #include <proto/exec.h>
 
+#import "OFDNSResourceRecord.h"
 #import "OFHTTPRequest.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -112,6 +113,10 @@ extern void glue_of_socket_address_set_ipx_network(void);
 extern uint32_t glue_of_socket_address_get_ipx_network(void);
 extern void glue_of_socket_address_set_ipx_node(void);
 extern void glue_of_socket_address_get_ipx_node(void);
+extern OFString *glue_of_dns_class_to_string(void);
+extern OFString *glue_of_dns_record_type_to_string(void);
+extern of_dns_class_t glue_of_dns_class_parse(void);
+extern of_dns_record_type_t glue_of_dns_record_type_parse(void);
 
 #ifdef OF_AMIGAOS_M68K
 void
@@ -695,6 +700,10 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_of_socket_address_get_ipx_network,
 	(CONST_APTR)glue_of_socket_address_set_ipx_node,
 	(CONST_APTR)glue_of_socket_address_get_ipx_node,
+	(CONST_APTR)glue_of_dns_class_to_string,
+	(CONST_APTR)glue_of_dns_record_type_to_string,
+	(CONST_APTR)glue_of_dns_class_parse,
+	(CONST_APTR)glue_of_dns_record_type_parse,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFApplication.h"
+#import "OFDNSResourceRecord.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFMethodSignature.h"
@@ -443,4 +444,36 @@ glue_of_socket_address_get_ipx_node PPC_PARAMS(
 	M68K_ARG(unsigned char *, node, a1)
 
 	of_socket_address_get_ipx_node(address, node);
+}
+
+OFString *__saveds
+glue_of_dns_class_to_string PPC_PARAMS(of_dns_class_t DNSClass)
+{
+	M68K_ARG(of_dns_class_t, DNSClass, d0)
+
+	return of_dns_class_to_string(DNSClass);
+}
+
+OFString *__saveds
+glue_of_dns_record_type_to_string PPC_PARAMS(of_dns_record_type_t recordType)
+{
+	M68K_ARG(of_dns_record_type_t, recordType, d0)
+
+	return of_dns_record_type_to_string(recordType);
+}
+
+of_dns_class_t __saveds
+glue_of_dns_class_parse PPC_PARAMS(OFString *string)
+{
+	M68K_ARG(OFString *, string, a0)
+
+	return of_dns_class_parse(string);
+}
+
+of_dns_record_type_t __saveds
+glue_of_dns_record_type_parse PPC_PARAMS(OFString *string)
+{
+	M68K_ARG(OFString *, string, a0)
+
+	return of_dns_record_type_parse(string);
 }
