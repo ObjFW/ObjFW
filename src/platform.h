@@ -98,6 +98,8 @@
 # define OF_S390X
 #elif defined(__s390__)
 # define OF_S390
+#elif defined(__e2k__)
+# define OF_ELBRUS_2000
 #endif
 
 #if defined(__APPLE__)
@@ -127,12 +129,8 @@
 #elif defined(_AIX)
 # define OF_AIX
 #elif defined(__MORPHOS__)
-# ifndef __ixemul__
-#  define OF_MORPHOS
-#  define OF_AMIGAOS
-# else
-#  define OF_MORPHOS_IXEMUL
-# endif
+# define OF_MORPHOS
+# define OF_AMIGAOS
 #elif defined(__amigaos4__)
 # define OF_AMIGAOS4
 # define OF_AMIGAOS

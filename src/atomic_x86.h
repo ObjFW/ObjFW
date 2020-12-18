@@ -28,7 +28,7 @@ of_atomic_int_add(volatile int *_Nonnull p, int i)
 		    : "+&r"(i)
 		    : "r"(i), "m"(*p)
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "lock\n\t"
@@ -61,7 +61,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 static OF_INLINE void *_Nullable
 of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
-#if defined(OF_X86_64_ASM)
+#if defined(OF_X86_64)
 	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddq	%0, %2\n\t"
@@ -71,7 +71,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	);
 
 	return (void *)i;
-#elif defined(OF_X86_ASM)
+#elif defined(OF_X86)
 	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddl	%0, %2\n\t"
@@ -96,7 +96,7 @@ of_atomic_int_sub(volatile int *_Nonnull p, int i)
 		    : "+&r"(i)
 		    : "r"(i), "m"(*p)
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "negq	%0\n\t"
@@ -131,7 +131,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 static OF_INLINE void *_Nullable
 of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
-#if defined(OF_X86_64_ASM)
+#if defined(OF_X86_64)
 	__asm__ __volatile__ (
 	    "negq	%0\n\t"
 	    "lock\n\t"
@@ -142,7 +142,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	);
 
 	return (void *)i;
-#elif defined(OF_X86_ASM)
+#elif defined(OF_X86)
 	__asm__ __volatile__ (
 	    "negl	%0\n\t"
 	    "lock\n\t"
@@ -171,7 +171,7 @@ of_atomic_int_inc(volatile int *_Nonnull p)
 		    : "=&r"(i)
 		    : "m"(*p)
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
@@ -222,7 +222,7 @@ of_atomic_int_dec(volatile int *_Nonnull p)
 		    : "=&r"(i)
 		    : "m"(*p)
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
@@ -274,7 +274,7 @@ of_atomic_int_or(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
@@ -330,7 +330,7 @@ of_atomic_int_and(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
@@ -386,7 +386,7 @@ of_atomic_int_xor(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64_ASM
+#ifdef OF_X86_64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"

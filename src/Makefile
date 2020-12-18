@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions ${ENCODINGS} forwarding invocation
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding invocation
 SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE}
 CLEAN = amiga-end.amigalib.dep		\
 	amiga-end.amigalib.o		\

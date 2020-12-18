@@ -327,42 +327,6 @@ extern int *_Nonnull of_get_errno(void);
 # define errno (*of_get_errno())
 #endif
 
-#ifdef __GNUC__
-# ifdef OF_X86_64
-#  define OF_X86_64_ASM
-# endif
-# ifdef OF_X86
-#  define OF_X86_ASM
-# endif
-# ifdef OF_POWERPC
-#  define OF_POWERPC_ASM
-# endif
-# ifdef OF_ARM64
-#  define OF_ARM64_ASM
-# endif
-# ifdef OF_ARM
-#  define OF_ARM_ASM
-# endif
-# ifdef OF_ARMV7
-#  define OF_ARMV7_ASM
-# endif
-# ifdef OF_ARMV6
-#  define OF_ARMV6_ASM
-# endif
-# ifdef OF_MIPS64
-#  define OF_MIPS64_ASM
-# endif
-# ifdef OF_MIPS
-#  define OF_MIPS_ASM
-# endif
-# ifdef OF_PA_RISC
-#  define OF_PA_RISC_ASM
-# endif
-# ifdef OF_ITANIUM
-#  define OF_ITANIUM_ASM
-# endif
-#endif
-
 #ifdef OF_APPLE_RUNTIME
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_ARM64) || \
     defined(OF_ARM) || defined(OF_POWERPC)
@@ -475,19 +439,19 @@ OF_BSWAP16_NONCONST(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
-#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "xchgb	%h0, %b0"
 	    : "=Q"(i)
 	    : "0"(i)
 	);
-#elif defined(OF_POWERPC_ASM)
+#elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lhbrx	%0, 0, %1"
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARMV6_ASM)
+#elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev16	%0, %0"
 	    : "=r"(i)
@@ -505,19 +469,19 @@ OF_BSWAP32_NONCONST(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
-#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
 	    : "=q"(i)
 	    : "0"(i)
 	);
-#elif defined(OF_POWERPC_ASM)
+#elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lwbrx	%0, 0, %1"
 	    : "=r"(i)
 	    : "r"(&i), "m"(i)
 	);
-#elif defined(OF_ARMV6_ASM)
+#elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev	%0, %0"
 	    : "=r"(i)
@@ -537,13 +501,13 @@ OF_BSWAP64_NONCONST(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
-#elif defined(OF_X86_64_ASM)
+#elif defined(OF_X86_64) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
 	    : "=r"(i)
 	    : "0"(i)
 	);
-#elif defined(OF_X86_ASM)
+#elif defined(OF_X86) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%%eax\n\t"
 	    "bswap	%%edx\n\t"
