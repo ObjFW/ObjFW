@@ -955,11 +955,9 @@ AS_IF([test x"$ENCODINGS_SRCS" = x""], [
 AC_SUBST(ENCODINGS_SRCS)
 AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
-	AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
 ])
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
-	AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
 ])
 
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
