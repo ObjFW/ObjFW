@@ -1816,9 +1816,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
 			#include <stdlib.h>
-	
-			typedef void *SEL;
-	
+
+			struct objc_selector;
+			typedef const struct objc_selector *SEL;
+
 			#ifdef __has_attribute
 			# if __has_attribute(objc_root_class)
 			__attribute__((__objc_root_class__))
@@ -1832,10 +1833,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			    ;
 			- (void)dealloc;
 			@end
-	
+
 			@interface Foo: Object
 			@end
-	
+
 			void
 			test(void)
 			{
@@ -1846,7 +1847,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 				else
 					abort();
 			}
-	
+
 			/*
 			 * Unfortunately, this cannot be shorter, as it only
 			 * works when it is used inside a macro.
@@ -1869,7 +1870,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 									\
 				[super dealloc];
 			#endif
-	
+
 			@implementation Foo
 			- (void)dealloc
 			{
