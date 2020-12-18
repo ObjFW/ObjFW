@@ -47,6 +47,8 @@
 # define OF_M68K_REG(reg)
 #endif
 
+struct Library *DOSBase;
+
 /* This always needs to be the first thing in the file. */
 int
 _start()
@@ -379,7 +381,7 @@ lib_null(void)
 	return NULL;
 }
 
-bool
+bool __saveds
 of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 {
 #ifdef OF_AMIGAOS_M68K
@@ -398,6 +400,9 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 
 	if (base->initialized)
 		return true;
+
+	if ((DOSBase = OpenLibrary("dos.library", 0)) == NULL)
+		return false;
 
 	memcpy(&libc, libc_, sizeof(libc));
 	__sF = sF;
