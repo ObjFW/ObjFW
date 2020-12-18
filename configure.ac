@@ -337,23 +337,25 @@ case "$host" in
 esac
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
-AC_TRY_COMPILE([
-	#ifdef __has_attribute
-	# if __has_attribute(objc_root_class)
-	__attribute__((__objc_root_class__))
-	# endif
-	#endif
-	@interface Foo
-	{
-		id bar;
-	}
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			id bar;
+		}
 
-	@property (nonatomic, retain) id bar;
-	@end
-], [
-	Foo *foo = (id)0;
-	[foo setBar: (id)0];
-	foo = [foo bar];
+		@property (nonatomic, retain) id bar;
+		@end
+	], [[
+		Foo *foo = (id)0;
+		[foo setBar: (id)0];
+		foo = [foo bar];
+	]])
 ], [
 	AC_MSG_RESULT(yes)
 ], [
@@ -491,34 +493,36 @@ case "$objc_runtime" in
 
 		old_OBJCFLAGS="$OBJCFLAGS"
 		OBJCFLAGS="$OBJCFLAGS -Xclang -fobjc-runtime=objfw"
-		AC_TRY_LINK([
-			#ifdef __has_attribute
-			# if __has_attribute(objc_root_class)
-			__attribute__((__objc_root_class__))
-			# endif
-			#endif
-			@interface Test
-			+ (void)test;
-			@end
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#ifdef __has_attribute
+				# if __has_attribute(objc_root_class)
+				__attribute__((__objc_root_class__))
+				# endif
+				#endif
+				@interface Test
+				+ (void)test;
+				@end
 
-			@implementation Test
-			+ (void)test
-			{
-			}
-			@end
+				@implementation Test
+				+ (void)test
+				{
+				}
+				@end
 
-			void *
-			objc_msg_lookup(void *obj, void *sel)
-			{
-				return (void *)0;
-			}
+				void *
+				objc_msg_lookup(void *obj, void *sel)
+				{
+					return (void *)0;
+				}
 
-			void
-			__objc_exec_class(void *module)
-			{
-			}
-		], [
-			[Test test];
+				void
+				__objc_exec_class(void *module)
+				{
+				}
+			], [[
+				[Test test];
+			]])
 		], [
 			flag="-Xclang -fobjc-runtime=objfw"
 			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
@@ -571,14 +575,16 @@ case "$objc_runtime" in
 		])
 
 		AC_MSG_CHECKING(for exception type)
-		AC_TRY_COMPILE([
-			extern void foo();
-		], [
-			@try {
-				foo();
-			} @finally {
-				foo();
-			}
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				extern void foo();
+			], [
+				@try {
+					foo();
+				} @finally {
+					foo();
+				}
+			])
 		], [
 			AS_IF([$EGREP __gnu_objc_personality_v0 \
 					conftest.$ac_objext >/dev/null], [
@@ -694,29 +700,31 @@ esac
 AC_MSG_CHECKING(whether Objective C compiler supports ARC)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -fobjc-arc -fobjc-arc-exceptions"
-AC_TRY_COMPILE([
-	#ifdef __has_attribute
-	# if __has_attribute(objc_root_class)
-	__attribute__((__objc_root_class__))
-	# endif
-	#endif
-	@interface Foo
-	{
-		struct objc_class *_isa;
-	}
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			struct objc_class *_isa;
+		}
 
-	+ (id)alloc;
-	@end
+		+ (id)alloc;
+		@end
 
-	@implementation Foo
-	+ (id)alloc
-	{
-		return (id)0;
-	}
-	@end
-], [
-	__weak id foo = [Foo alloc];
-	(void)foo;
+		@implementation Foo
+		+ (id)alloc
+		{
+			return (id)0;
+		}
+		@end
+	], [[
+		__weak id foo = [Foo alloc];
+		(void)foo;
+	]])
 ], [
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
@@ -816,9 +824,10 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 AC_MSG_CHECKING(for floating point endianess)
 fp_endianess="unknown"
 AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
-	AC_TRY_COMPILE([
-		double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
-	], [
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
+		])
 	], [
 		AS_IF([$EGREP BigEnd conftest.$ac_objext >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
@@ -839,21 +848,25 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 		[Floating point implementation does not conform to IEEE 754!])])
 
 AC_MSG_CHECKING(for INFINITY)
-AC_TRY_COMPILE([
-	#include <stdio.h>
-	#include <math.h>
-], [
-	printf("%f", INFINITY);
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([
+		#include <stdio.h>
+		#include <math.h>
+	], [
+		printf("%f", INFINITY);
+	])
 ], [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
 
 	AC_MSG_CHECKING(for __builtin_inf)
-	AC_TRY_COMPILE([
-		#include <stdio.h>
-	], [
-		printf("%f", __builtin_inf());
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+		], [
+			printf("%f", __builtin_inf());
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(INFINITY, [(__builtin_inf())],
@@ -868,13 +881,16 @@ AC_TRY_COMPILE([
 case "$host_cpu" in
 	arm* | earm*)
 		AC_MSG_CHECKING(for VFP2 or above)
-		AC_TRY_COMPILE([], [
-			#if !defined(__arm64__) && !defined(__aarch64__) && \
-			    !defined(__ARM64_ARCH_8__)
-			__asm__ __volatile__ (
-			    "vstmdb	sp!, {d0-d7}"
-			);
-			#endif
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([], [
+				#if !defined(__arm64__) && \
+				    !defined(__aarch64__) && \
+				    !defined(__ARM64_ARCH_8__)
+				__asm__ __volatile__ (
+				    "vstmdb	sp!, {d0-d7}"
+				);
+				#endif
+			])
 		], [
 			AC_DEFINE(HAVE_VFP2, 1, [Whether we have VFP2 or above])
 			AC_MSG_RESULT(yes)
@@ -998,22 +1014,26 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 		AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread")
 
-		AC_TRY_LINK([
-			#include <pthread.h>
-		], [
-			pthread_create(NULL, NULL, NULL, NULL);
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <pthread.h>
+			], [
+				pthread_create(NULL, NULL, NULL, NULL);
+			])
 		], [], [
 			AC_MSG_ERROR(No supported threads found!)
 		])
 
 		AC_DEFINE(OF_HAVE_PTHREADS, 1, [Whether we have pthreads])
 
-		AC_TRY_COMPILE([
-			#include <pthread.h>
-		], [
-			pthread_mutexattr_t attr;
-			pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <pthread.h>
+			], [
+				pthread_mutexattr_t attr;
+				pthread_mutexattr_settype(&attr,
+				    PTHREAD_MUTEX_RECURSIVE);
+			])
 		], [
 			AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
 				[If pthread mutexes can be recursive])
@@ -1067,18 +1087,22 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		])
 
 		AC_MSG_CHECKING(whether _Thread_local works)
-		AC_TRY_LINK([
-			static _Thread_local int x = 0;
-		], [
-			x++;
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				static _Thread_local int x = 0;
+			], [
+				x++;
+			])
 		], [
 			AS_IF([test x"$enable_shared" != x"no"], [
 				old_OBJCFLAGS="$OBJCFLAGS"
 				OBJCFLAGS="$OBJCFLAGS -fPIC"
-				AC_TRY_COMPILE([
-					static _Thread_local int x = 0;
-				], [
-					x++;
+				AC_COMPILE_IFELSE([
+					AC_LANG_PROGRAM([
+						static _Thread_local int x = 0;
+					], [
+						x++;
+					])
 				], [
 					AC_MSG_RESULT(yes)
 					AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
@@ -1100,23 +1124,29 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 		AS_IF([test x"$have_thread_local" != x"yes"], [
 			AC_MSG_CHECKING(whether __thread works)
-			AC_TRY_LINK([
-				/* It seems __thread is buggy with GCC 4.1 */
-				#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
-				# error buggy
-				#endif
+			AC_LINK_IFELSE([
+				AC_LANG_PROGRAM([
+					/*
+					 * It seems __thread is buggy with
+					 * GCC 4.1 */
+					#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
+					# error buggy
+					#endif
 
-				__thread int x = 0;
-			], [
-				x++;
+					__thread int x = 0;
+				], [
+					x++;
+				])
 			], [
 				AS_IF([test x"$enable_shared" != x"no"], [
 					old_OBJCFLAGS="$OBJCFLAGS"
 					OBJCFLAGS="$OBJCFLAGS -fPIC"
-					AC_TRY_COMPILE([
-						__thread int x = 0;
-					], [
-						x++;
+					AC_COMPILE_IFELSE([
+						AC_LANG_PROGRAM([
+							__thread int x = 0;
+						], [
+							x++;
+						])
 					], [
 						AC_MSG_RESULT(yes)
 						AC_DEFINE(OF_HAVE___THREAD, 1,
@@ -1155,16 +1185,18 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	])
 
 	AC_MSG_CHECKING(whether __atomic_* works)
-	AC_TRY_LINK([
-		#include <stdbool.h>
-		#include <stdint.h>
-	], [
-		int32_t i, j;
-		if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
-			j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
-		while (!__atomic_compare_exchange_n(&i, &j, 1, false,
-		    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
-		__atomic_thread_fence(__ATOMIC_SEQ_CST);
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdbool.h>
+			#include <stdint.h>
+		], [
+			int32_t i, j;
+			if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
+				j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
+			while (!__atomic_compare_exchange_n(&i, &j, 1, false,
+			    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
+			__atomic_thread_fence(__ATOMIC_SEQ_CST);
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		test x"$atomic_ops" = x"none" && \
@@ -1176,11 +1208,15 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	])
 
 	AC_MSG_CHECKING(whether __sync_* works)
-	AC_TRY_LINK([#include <stdint.h>], [
-		int32_t i, j;
-		if (__sync_add_and_fetch(&i, 1))
-			j = __sync_sub_and_fetch(&i, 1);
-		while (!__sync_bool_compare_and_swap(&i, 0, 1));
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdint.h>
+		], [
+			int32_t i, j;
+			if (__sync_add_and_fetch(&i, 1))
+				j = __sync_sub_and_fetch(&i, 1);
+			while (!__sync_bool_compare_and_swap(&i, 0, 1));
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		test x"$atomic_ops" = x"none" && \
@@ -1250,13 +1286,15 @@ AS_IF([test x"$enable_files" != x"no"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(for readdir_r)
-	AC_TRY_COMPILE([
-		#include <dirent.h>
-	], [
-		DIR *dir = 0;
-		struct dirent entry, *result;
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <dirent.h>
+		], [
+			DIR *dir = 0;
+			struct dirent entry, *result;
 
-		readdir_r(dir, &entry, &result);
+			readdir_r(dir, &entry, &result);
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(HAVE_READDIR_R, 1, [Whether we have readdir_r()])
@@ -1275,24 +1313,26 @@ AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
 	AC_MSG_CHECKING(whether *_l functions need _GNU_SOURCE)
-	AC_TRY_COMPILE([
-		#include <stdlib.h>
-		#include <stdio.h>
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdlib.h>
+			#include <stdio.h>
 
-		#include <locale.h>
-		#ifdef HAVE_XLOCALE_H
-		# include <xlocale.h>
-		#endif
-	], [
-		#ifdef HAVE_STRTOD_L
-		(void)strtod_l;
-		#endif
-		#ifdef HAVE_STRTOF_L
-		(void)strtof_l;
-		#endif
-		#ifdef HAVE_ASPRINTF_L
-		(void)asprintf_l;
-		#endif
+			#include <locale.h>
+			#ifdef HAVE_XLOCALE_H
+			# include <xlocale.h>
+			#endif
+		], [
+			#ifdef HAVE_STRTOD_L
+			(void)strtod_l;
+			#endif
+			#ifdef HAVE_STRTOF_L
+			(void)strtof_l;
+			#endif
+			#ifdef HAVE_ASPRINTF_L
+			(void)asprintf_l;
+			#endif
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1305,13 +1345,15 @@ dnl This check needs to happen after the above, as _GNU_SOURCE can change the
 dnl return type.
 AC_CHECK_FUNCS(strerror_r, [
 	AC_MSG_CHECKING(for return type of strerror_r)
-	AC_TRY_COMPILE([
-		#include <stdio.h>
-		#include <string.h>
-	], [
-		switch (strerror_r(0, NULL, 0)) {
-		case 0:;
-		}
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+			#include <string.h>
+		], [
+			switch (strerror_r(0, NULL, 0)) {
+			case 0:;
+			}
+		])
 	], [
 		AC_MSG_RESULT(int)
 	], [
@@ -1552,13 +1594,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 AC_DEFUN([CHECK_BUILTIN_BSWAP], [
 	AC_MSG_CHECKING(for __builtin_bswap$1)
-	AC_TRY_LINK([
-		#include <stdint.h>
-		#include <stdio.h>
-		#include <errno.h>
-	], [
-		uint$1_t i = errno;
-		printf("%d", (int)__builtin_bswap$1(i));
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdint.h>
+			#include <stdio.h>
+			#include <errno.h>
+		], [
+			uint$1_t i = errno;
+			printf("%d", (int)__builtin_bswap$1(i));
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(OF_HAVE_BUILTIN_BSWAP$1, 1,
@@ -1661,9 +1705,11 @@ dnl by providing a wrapper for unistd.h which takes care of this.
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Xclang -fblocks"
-AC_TRY_COMPILE([], [
-	int (^foo)(int bar);
-	foo = ^ (int bar) { return 0; }
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([], [
+		int (^foo)(int bar);
+		foo = ^ (int bar) { return 0; }
+	])
 ], [
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fblocks"
 	AC_SUBST(OF_BLOCK_TESTS_M, "OFBlockTests.m")
@@ -1677,24 +1723,26 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-		}
-		@end
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+			}
+			@end
 
-		static struct {
-			struct objc_class *_isa;
-		} object;
-	], [
-		Foo *test = (Foo *)&object;
-		(void)test; /* Get rid of unused variable warning */
+			static struct {
+				struct objc_class *_isa;
+			} object;
+		], [
+			Foo *test = (Foo *)&object;
+			(void)test; /* Get rid of unused variable warning */
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1704,32 +1752,33 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(
 	    whether we need -Wno-unused-property-ivar due to Clang bugs)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-			Foo *_foo;
-		}
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+				Foo *_foo;
+			}
 
-		@property (readonly, nonatomic) Foo *foo;
+			@property (readonly, nonatomic) Foo *foo;
 
-		+ (Foo *)foo;
-		@end
+			+ (Foo *)foo;
+			@end
 
-		@implementation Foo
-		@synthesize foo = _foo;
+			@implementation Foo
+			@synthesize foo = _foo;
 
-		+ (Foo *)foo
-		{
-			return (Foo *)0;
-		}
-		@end
-	], [
+			+ (Foo *)foo
+			{
+				return (Foo *)0;
+			}
+			@end
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1740,26 +1789,27 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-		}
-		@end
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+			}
+			@end
 
-		@implementation Foo
-		- (void)foo
-		{
-			struct objc_class *c = _isa;
-			(void)c;
-		}
-		@end
-	], [
+			@implementation Foo
+			- (void)foo
+			{
+				struct objc_class *c = _isa;
+				(void)c;
+			}
+			@end
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1770,68 +1820,71 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
 	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
-	AC_TRY_COMPILE([
-		#include <stdlib.h>
-
-		typedef void *SEL;
-
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Object
-		- (void)doesNotRecognizeSelector: (SEL)selector
-		#ifdef __clang__
-		    __attribute__((__noreturn__))
-		#endif
-		    ;
-		- (void)dealloc;
-		@end
-
-		@interface Foo: Object
-		@end
-
-		void
-		test(void)
-		{
-			if (sizeof(int) == 4)
-				__asm__ ("");
-			else if (sizeof(int) == 8)
-				__asm__ ("");
-			else
-				abort();
-		}
-
-		/*
-		 * Unfortunately, this cannot be shorter, as it only works when
-		 * it is used inside a macro.
-		 */
-		#ifdef __clang__
-		# define OF_DEALLOC_UNSUPPORTED				\
-			[self doesNotRecognizeSelector: _cmd];		\
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([[
+			#include <stdlib.h>
+	
+			typedef void *SEL;
+	
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Object
+			- (void)doesNotRecognizeSelector: (SEL)selector
+			#ifdef __clang__
+			    __attribute__((__noreturn__))
+			#endif
+			    ;
+			- (void)dealloc;
+			@end
+	
+			@interface Foo: Object
+			@end
+	
+			void
+			test(void)
+			{
+				if (sizeof(int) == 4)
+					__asm__ ("");
+				else if (sizeof(int) == 8)
+					__asm__ ("");
+				else
+					abort();
+			}
+	
+			/*
+			 * Unfortunately, this cannot be shorter, as it only
+			 * works when it is used inside a macro.
+			 */
+			#ifdef __clang__
+			# define OF_DEALLOC_UNSUPPORTED			\
+				[self doesNotRecognizeSelector: _cmd];	\
 									\
-			abort();					\
+				abort();				\
 									\
-			_Pragma("clang diagnostic push ignore \"-Wunreachable-code\"");	\
-			[super dealloc];				\
-			_Pragma("clang diagnostic pop");
-		#else
-		# define OF_DEALLOC_UNSUPPORTED				\
-			[self doesNotRecognizeSelector: _cmd];		\
+				_Pragma("clang diagnostic push ignore	\
+				    \"-Wunreachable-code\"");		\
+				[super dealloc];			\
+				_Pragma("clang diagnostic pop");
+			#else
+			# define OF_DEALLOC_UNSUPPORTED			\
+				[self doesNotRecognizeSelector: _cmd];	\
 									\
-			abort();					\
+				abort();				\
 									\
-			[super dealloc];
-		#endif
-
-		@implementation Foo
-		- (void)dealloc
-		{
-			OF_DEALLOC_UNSUPPORTED
-		}
-		@end
-	], [], [
+				[super dealloc];
+			#endif
+	
+			@implementation Foo
+			- (void)dealloc
+			{
+				OF_DEALLOC_UNSUPPORTED
+			}
+			@end
+		]])
+	], [
 		AC_MSG_RESULT(yes)
 	], [
 		AC_MSG_RESULT(no)
@@ -1841,18 +1894,19 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
-	AC_TRY_COMPILE([
-		/**
-		 * @class Test conftest.m conftest.m
-		 */
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Test
-		@end
-	], [
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			/**
+			 * @class Test conftest.m conftest.m
+			 */
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Test
+			@end
+		])
 	], [
 		AC_MSG_RESULT(yes)
 	], [
@@ -1864,37 +1918,39 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		old_OBJCFLAGS="$OBJCFLAGS"
 		OBJCFLAGS="$OBJCFLAGS -pedantic"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
-		AC_TRY_COMPILE([
-			#include <stdlib.h>
+		AC_COMPILE_IFELSE([
+			AC_LANG_SOURCE([
+				#include <stdlib.h>
 
-			#include <assert.h>
+				#include <assert.h>
 
-			#ifdef __has_attribute
-			# if __has_attribute(objc_root_class)
-			__attribute__((__objc_root_class__))
-			# endif
-			#endif
-			@interface Foo
-			{
-				void *foo;
-			}
-			@end
+				#ifdef __has_attribute
+				# if __has_attribute(objc_root_class)
+				__attribute__((__objc_root_class__))
+				# endif
+				#endif
+				@interface Foo
+				{
+					void *foo;
+				}
+				@end
 
-			@interface Bar: Foo
-			- (void)assert;
-			@end
+				@interface Bar: Foo
+				- (void)assert;
+				@end
 
-			@implementation Bar
-			- (void)assert
-			{
-				/*
-				 * Some versions of glibc break with -pedantic
-				 * when using assert.
-				 */
-				assert(1);
-			}
-			@end
-		], [], [
+				@implementation Bar
+				- (void)assert
+				{
+					/*
+					 * Some versions of glibc break with
+					 * -pedantic when using assert.
+					 */
+					assert(1);
+				}
+				@end
+			])
+		], [
 			AC_MSG_RESULT(no)
 		], [
 			AC_MSG_RESULT(yes)
@@ -1904,11 +1960,13 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
-		AC_TRY_COMPILE([
-			#include <complex.h>
-		], [
-			complex float f = 0.5 + 0.5 * I;
-			(void)f;
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <complex.h>
+			], [
+				complex float f = 0.5 + 0.5 * I;
+				(void)f;
+			])
 		], [
 			AC_MSG_RESULT(no)
 		], [
