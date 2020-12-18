@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions ${ENCODINGS} forwarding
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding
 SUBDIRS_AFTER = ${BRIDGE}
 DISTCLEAN = Info.plist objfw-defs.h
 

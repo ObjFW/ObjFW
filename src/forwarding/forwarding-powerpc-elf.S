@@ -66,7 +66,7 @@ of_forward:
 	bl	object_getClass
 
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	class_respondsToSelector
 #endif
 
@@ -79,7 +79,7 @@ of_forward:
 	bl	objc_msg_lookup+0x8000@plt
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -89,7 +89,7 @@ of_forward:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 #endif
 	lwz	%r5, 12(%r1)
 	bctrl
@@ -204,7 +204,7 @@ of_forward_stret:
 	bl	object_getClass
 
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	class_respondsToSelector
 #endif
 
@@ -217,7 +217,7 @@ of_forward_stret:
 	bl	objc_msg_lookup+0x8000@plt
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -227,7 +227,7 @@ of_forward_stret:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
 	lis	%r4, sel_forwardingTargetForSelector_@ha
-	addi	%r4, %r4, sel_forwardingTargetForSelector_@l
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 #endif
 	lwz	%r5, 16(%r1)
 	bctrl
@@ -318,7 +318,7 @@ init:
 	lwz	%r30, 8(%r1)
 #else
 	lis	%r3, module@ha
-	addi	%r3, %r3, module@l
+	la	%r3, module@l(%r3)
 	bl	__objc_exec_class
 #endif
 

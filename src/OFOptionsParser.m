@@ -142,16 +142,14 @@ stringEqual(void *object1, void *object2)
 
 - (void)dealloc
 {
-	of_options_parser_option_t *iter;
-
-	free(_options);
-	[_longOptions release];
-
 	if (_options != NULL)
-		for (iter = _options;
+		for (of_options_parser_option_t *iter = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++)
 			[iter->longOption release];
+
+	free(_options);
+	[_longOptions release];
 
 	[_arguments release];
 	[_argument release];

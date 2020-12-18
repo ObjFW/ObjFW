@@ -54,7 +54,7 @@
 		FD_ZERO(&_writeFDs);
 
 #ifdef OF_AMIGAOS
-		_maxFD = 0;
+		_maxFD = -1;
 #else
 # ifndef OF_WINDOWS
 		if (_cancelFD[0] >= (int)FD_SETSIZE)

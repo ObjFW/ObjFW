@@ -98,6 +98,8 @@
 # define OF_S390X
 #elif defined(__s390__)
 # define OF_S390
+#elif defined(__e2k__)
+# define OF_ELBRUS_2000
 #endif
 
 #if defined(__APPLE__)
@@ -105,8 +107,7 @@
 # if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
     (defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR)
 #  define OF_IOS
-# endif
-# if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+# else
 #  define OF_MACOS
 # endif
 #elif defined(__linux__)

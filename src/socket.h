@@ -289,7 +289,7 @@ extern void of_socket_address_get_ipx_node(
     unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 extern bool of_socket_init(void);
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 extern void of_socket_deinit(void);
 #endif
 extern int of_socket_errno(void);
@@ -298,7 +298,7 @@ extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen);
 #endif
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 extern of_tlskey_t of_socket_base_key;
 # ifdef OF_AMIGAOS4
 extern of_tlskey_t of_socket_interface_key;

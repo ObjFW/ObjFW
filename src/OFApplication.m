@@ -96,7 +96,8 @@ atexitHandler(void)
 
 	[delegate release];
 
-#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && defined(OF_AMIGAOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
+    defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 	of_socket_deinit();
 #endif
 }

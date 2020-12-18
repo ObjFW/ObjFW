@@ -779,9 +779,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
 			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
-			    @"Name: %[name]",
-			    @"name", _currentFileName)];
+
+			if (_currentFileName != nil)
+				[of_stdout writeLine: OF_LOCALIZED(@"info_name",
+				    @"Name: %[name]",
+				    @"name", _currentFileName)];
+
 			[of_stdout writeString: @"  "];
 			[of_stdout writeLine: OF_LOCALIZED(@"info_type",
 			    @"Type: %[type]",

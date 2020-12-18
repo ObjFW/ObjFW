@@ -146,7 +146,7 @@ callMain(id object)
 	objc_autoreleasePoolPop(thread->_pool);
 #endif
 
-#if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
+#if defined(OF_AMIGAOS) && !defined(OF_MORPHOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
 		of_socket_deinit();
 #endif
