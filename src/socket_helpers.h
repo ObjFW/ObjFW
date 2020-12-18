@@ -73,10 +73,6 @@ typedef uint32_t in_addr_t;
 # define closesocket(sock) close(sock)
 #endif
 
-#ifdef OF_MORPHOS_IXEMUL
-typedef uint32_t in_addr_t;
-#endif
-
 #ifdef OF_WII
 # define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)

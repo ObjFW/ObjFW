@@ -84,10 +84,6 @@ typedef u_char sa_family_t;
 typedef u_short in_port_t;
 #endif
 
-#ifdef OF_MORPHOS_IXEMUL
-typedef int socklen_t;
-#endif
-
 /**
  * @brief A socket address family.
  */

@@ -19,9 +19,6 @@ BUILDSYS_INIT
 
 AC_CANONICAL_HOST
 
-AC_ARG_WITH(ixemul,
-	AS_HELP_STRING([--with-ixemul], [build with ixemul]))
-
 dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
@@ -78,31 +75,29 @@ case "$host" in
 		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	*-morphos*)
-		AS_IF([test x"$with_ixemul" != x"yes"], [
-			AS_IF([test x"$OBJCFLAGS" = x""], [
-				OBJCFLAGS="-O2 -g"
-			])
-			OBJCFLAGS="$OBJCFLAGS -noixemul"
-			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
-			LDFLAGS="$LDFLAGS -noixemul"
-			enable_files="yes"	# Required for reading ENV:
-			supports_amiga_lib="yes"
-			check_pedantic="no"	# Breaks generated inlines
+		AS_IF([test x"$OBJCFLAGS" = x""], [
+			OBJCFLAGS="-O2 -g"
+		])
+		OBJCFLAGS="$OBJCFLAGS -noixemul"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
+		LDFLAGS="$LDFLAGS -noixemul"
 
-			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
-				t="-mresident32 -ffreestanding -noixemul"
-				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-				t="-mresident32 -nostartfiles -nodefaultlibs"
-				t="$t -noixemul -lc"
-				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-			])
+		enable_files="yes"	# Required for reading ENV:
+		enable_shared="no"
+		supports_amiga_lib="yes"
+		check_pedantic="no"	# Breaks generated inlines
 
-			AC_SUBST(LIBBASES_M, libbases.m)
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+			AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
+			t="-mresident32 -ffreestanding -noixemul"
+			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+			t="-mresident32 -nostartfiles -nodefaultlibs"
+			t="$t -noixemul -lc"
+			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
-		enable_shared="no"
+		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	*-msdosdjgpp*)
 		enable_shared="no"
