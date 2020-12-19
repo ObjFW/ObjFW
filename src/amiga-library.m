@@ -639,6 +639,12 @@ exit(int status)
 	OF_UNREACHABLE
 }
 
+int
+atexit(void (*function)(void))
+{
+	return libc.atexit(function);
+}
+
 of_sig_t
 signal(int sig, of_sig_t func)
 {

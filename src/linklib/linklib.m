@@ -330,6 +330,7 @@ ctor(void)
 		.vsscanf = vsscanf,
 #endif
 		.exit = exit,
+		.atexit = atexit,
 		.signal = signal,
 		.setlocale = setlocale,
 		._Unwind_Backtrace = _Unwind_Backtrace

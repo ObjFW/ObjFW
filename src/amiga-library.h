@@ -82,6 +82,7 @@ struct of_libc {
 	    const char *_Nonnull restrict, va_list);
 #endif
 	void (*_Nonnull exit)(int);
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	of_sig_t _Nullable (*_Nonnull signal)(int, of_sig_t _Nullable);
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
