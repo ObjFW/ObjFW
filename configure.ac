@@ -1011,6 +1011,9 @@ case "$host_os" in
 		dnl When disabling __thread, it doesn't freeze, but all symbols
 		dnl are wrong.
 		;;
+	morphos*)
+		dnl MorphOS has a dladdr symbol, but it doesn't work.
+		;;
 	*)
 		AC_CHECK_FUNCS(dladdr)
 		;;
