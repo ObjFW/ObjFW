@@ -993,7 +993,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(ENCODINGS_AMIGALIB_A, "encodings.amigalib.a")
 ])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
 ])
 
