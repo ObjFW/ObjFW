@@ -66,6 +66,7 @@
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
 	bool _detectedFileName, _quiet, _verbose, _insecure, _ignoreStatus;
+	bool _useUnicode;
 	OFStream *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -577,6 +578,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (_insecure)
 		_HTTPClient.allowsInsecureRedirects = true;
 
+	_useUnicode = ([OFLocale encoding] == OF_STRING_ENCODING_UTF_8);
+
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
 }
@@ -628,8 +631,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		objc_autoreleasePoolPop(pool);
 	}
 
-	if (!_quiet)
-		[of_stdout writeFormat: @"☇ %@", URL.string];
+	if (!_quiet) {
+		if (_useUnicode)
+			[of_stdout writeFormat: @"☇ %@", URL.string];
+		else
+			[of_stdout writeFormat: @"< %@", URL.string];
+	}
 
 	_length = 0;
 
@@ -710,7 +717,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    [headers objectForKey: @"Content-Length"];
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
-		[of_stdout writeFormat: @" ➜ %hd\n", statusCode];
+		if (_useUnicode)
+			[of_stdout writeFormat: @" ➜ %hd\n", statusCode];
+		else
+			[of_stdout writeFormat: @" -> %hd\n", statusCode];
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -963,7 +973,8 @@ after_exception_handling:
 	if (!_quiet) {
 		_progressBar = [[ProgressBar alloc]
 		    initWithLength: _length
-		       resumedFrom: _resumedFrom];
+		       resumedFrom: _resumedFrom
+			useUnicode: _useUnicode];
 		[_progressBar setReceived: _received];
 		[_progressBar draw];
 	}
@@ -1026,8 +1037,12 @@ next:
 	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
 
 	if (_detectFileName && !_detectedFileName) {
-		if (!_quiet)
-			[of_stdout writeFormat: @"⠒ %@", URL.string];
+		if (!_quiet) {
+			if (_useUnicode)
+				[of_stdout writeFormat: @"⠒ %@", URL.string];
+			else
+				[of_stdout writeFormat: @"? %@", URL.string];
+		}
 
 		request = [OFHTTPRequest requestWithURL: URL];
 		request.headers = clientHeaders;
@@ -1070,8 +1085,12 @@ next:
 		}
 	}
 
-	if (!_quiet)
-		[of_stdout writeFormat: @"⇣ %@", URL.string];
+	if (!_quiet) {
+		if (_useUnicode)
+			[of_stdout writeFormat: @"⇣ %@", URL.string];
+		else
+			[of_stdout writeFormat: @"< %@", URL.string];
+	}
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	request.headers = clientHeaders;
