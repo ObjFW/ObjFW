@@ -94,8 +94,8 @@ case "$host" in
 			AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 			t="-mresident32 -ffreestanding -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-			t="-mresident32 -nostartfiles -nodefaultlibs"
-			t="$t -noixemul -lc"
+			t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
+			t="$t -lmath -lc"
 			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
