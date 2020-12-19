@@ -68,8 +68,6 @@ struct ObjFWBase {
 extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
-void __register_frame_info(const void *, void *);
-void *__deregister_frame_info(const void *);
 #endif
 
 extern bool glue_of_init(void);
@@ -354,7 +352,7 @@ lib_close(void)
 #ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				__deregister_frame_info(
+				libc.__deregister_frame_info(
 				    (&_EH_FRAME_BEGINS__)[i]);
 #endif
 
@@ -412,7 +410,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 		return false;
 
 	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
 		    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
@@ -590,6 +588,18 @@ void
 *__deregister_frame_info(const void *begin)
 {
 	return libc.__deregister_frame_info(begin);
+}
+#endif
+
+#ifdef OF_MORPHOS
+void __register_frame(void *frame)
+{
+	libc.__register_frame(frame);
+}
+
+void __deregister_frame(void *frame)
+{
+	libc.__deregister_frame(frame);
 }
 #endif
 
