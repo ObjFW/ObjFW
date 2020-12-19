@@ -95,7 +95,7 @@ case "$host" in
 			t="-mresident32 -ffreestanding -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 			t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-			t="$t -lmath -lc"
+			t="$t -laboxstubs -labox -lmath -lc"
 			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
