@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,7 +29,9 @@
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
 # define __NOLIBBASE__
+# define Class IntuitionClass
 # include <proto/intuition.h>
+# undef Class
 # undef __NOLIBBASE__
 #endif
 
@@ -59,6 +62,10 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 	int status;
 	va_list args;
 	struct Library *IntuitionBase;
+# ifdef OF_AMIGAOS4
+	struct IntuitionIFace *IIntuition;
+# endif
+	struct EasyStruct easy;
 
 	status = snprintf(title, BUF_LEN, "ObjFWRT @ %s:%u", file, line);
 	if (status <= 0 || status >= BUF_LEN)
@@ -70,22 +77,32 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 		message[0] = '\0';
 	va_end(args);
 
+# ifndef OF_AMIGAOS4
 	kprintf("[%s] %s\n", title, message);
+# endif
 
-	IntuitionBase = OpenLibrary("intuition.library", 0);
-	if (IntuitionBase != NULL) {
-		struct EasyStruct easy = {
-			.es_StructSize = sizeof(easy),
-			.es_Flags = 0,
-			.es_Title = (UBYTE *)title,
-			.es_TextFormat = (UBYTE *)"%s",
-			(UBYTE *)"OK"
-		};
+	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
+		exit(EXIT_FAILURE);
 
-		EasyRequest(NULL, &easy, NULL, (ULONG)message);
+# ifdef OF_AMIGAOS4
+	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
+	    "main", 1, NULL)) == NULL)
+		exit(EXIT_FAILURE);
+# endif
 
-		CloseLibrary(IntuitionBase);
-	}
+	easy.es_StructSize = sizeof(easy);
+	easy.es_Flags = 0;
+	easy.es_Title = (void *)title;
+	easy.es_TextFormat = (void *)"%s";
+	easy.es_GadgetFormat = (void *)"OK";
+
+	EasyRequest(NULL, &easy, NULL, (ULONG)message);
+
+# ifdef OF_AMIGAOS4
+	DropInterface((struct Interface *)IIntuition);
+# endif
+
+	CloseLibrary(IntuitionBase);
 
 	exit(EXIT_FAILURE);
 # undef BUF_LEN

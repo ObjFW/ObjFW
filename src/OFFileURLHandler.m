@@ -718,8 +718,13 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
 	date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
 
+# ifdef OF_AMIGAOS4
+	if (!SetDate([path cStringWithEncoding: [OFLocale encoding]],
+	    &date) != 0) {
+# else
 	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
 	    &date) != 0) {
+# endif
 		setErrno();
 
 		@throw [OFSetItemAttributesFailedException

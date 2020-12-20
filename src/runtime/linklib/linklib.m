@@ -86,9 +86,9 @@ error(const char *string, ULONG arg)
 		struct EasyStruct easy = {
 			.es_StructSize = sizeof(easy),
 			.es_Flags = 0,
-			.es_Title = (UBYTE *)NULL,
-			.es_TextFormat = (UBYTE *)string,
-			(UBYTE *)"OK"
+			.es_Title = (void *)NULL,
+			.es_TextFormat = (void *)string,
+			(void *)"OK"
 		};
 
 		EasyRequest(NULL, &easy, NULL, arg);
