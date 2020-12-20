@@ -27,6 +27,10 @@
 #import "OFMutableUTF8String.h"
 #import "OFUTF8String.h"
 
+#ifndef INFINITY
+# define INFINITY __builtin_inf()
+#endif
+
 static OFString *module = nil;
 static OFString *whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",

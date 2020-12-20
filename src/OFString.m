@@ -77,6 +77,10 @@
 # define strtof strtod
 #endif
 
+#ifndef INFINITY
+# define INFINITY __builtin_inf()
+#endif
+
 static struct {
 	Class isa;
 } placeholder;
