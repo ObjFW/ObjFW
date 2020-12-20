@@ -61,8 +61,9 @@ case "$host" in
 			dnl do not work properly in a library.
 			t="-mcpu=68020 -fbaserel -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
-			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident -nostartfiles -ldebug -lc")
+			t="$t -resident -nostartfiles -nodefaultlibs"
+			t="$t -ldebug -lc"
+			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)

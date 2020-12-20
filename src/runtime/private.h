@@ -259,7 +259,8 @@ struct objc_libc {
 	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
 	    const char *_Nonnull restrict fmt, va_list args);
 # endif
-	void (*_Nonnull abort)(void);
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
+	void (*_Nonnull exit)(int);
 };
 #endif
 

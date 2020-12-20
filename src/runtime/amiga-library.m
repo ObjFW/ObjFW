@@ -48,6 +48,13 @@ _start()
 	return -1;
 }
 
+#ifdef OF_AMIGAOS_M68K
+void
+__init_eh(void)
+{
+}
+#endif
+
 struct ObjFWRTBase {
 	struct Library library;
 	void *segList;
@@ -597,10 +604,16 @@ vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
 }
 #endif
 
-void
-abort(void)
+int
+atexit(void (*function)(void))
 {
-	libc.abort();
+	return libc.atexit(function);
+}
+
+void
+exit(int status)
+{
+	libc.exit(status);
 
 	OF_UNREACHABLE
 }

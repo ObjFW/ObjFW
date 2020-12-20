@@ -117,7 +117,8 @@ ctor(void)
 #ifdef OF_AMIGAOS_M68K
 		.vsnprintf = vsnprintf,
 #endif
-		.abort = abort,
+		.atexit = atexit,
+		.exit = exit,
 	};
 
 	if (initialized)

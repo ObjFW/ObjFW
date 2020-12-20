@@ -86,6 +86,8 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 
 		CloseLibrary(IntuitionBase);
 	}
+
+	exit(EXIT_FAILURE);
 # undef BUF_LEN
 #else
 	va_list args;
@@ -98,8 +100,9 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 	fflush(stderr);
 
 	va_end(args);
-#endif
+
 	abort();
+#endif
 
 	OF_UNREACHABLE
 }
