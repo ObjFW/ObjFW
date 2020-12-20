@@ -249,7 +249,7 @@ static of_spinlock_t emergencyExceptionsSpinlock;
 OF_CONSTRUCTOR()
 {
 	if (!of_spinlock_new(&emergencyExceptionsSpinlock))
-		OBJC_ERROR("Cannot create spinlock!")
+		OBJC_ERROR("Cannot create spinlock!");
 }
 #endif
 
@@ -310,7 +310,7 @@ getBase(struct _Unwind_Context *ctx, uint8_t enc)
 #endif
 	}
 
-	OBJC_ERROR("Unknown encoding!")
+	OBJC_ERROR("Unknown encoding!");
 }
 
 static size_t
@@ -330,7 +330,7 @@ sizeForEncoding(uint8_t enc)
 		return 8;
 	}
 
-	OBJC_ERROR("Unknown encoding!")
+	OBJC_ERROR("Unknown encoding!");
 }
 
 static uint64_t
@@ -339,7 +339,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 	uint64_t value;
 
 	if (enc == DW_EH_PE_aligned)
-		OBJC_ERROR("DW_EH_PE_aligned is not implemented!")
+		OBJC_ERROR("DW_EH_PE_aligned is not implemented!");
 
 #define READ(type)					\
 	{						\
@@ -371,7 +371,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 	case DW_EH_PE_sdata8:
 		READ(int64_t)
 	default:
-		OBJC_ERROR("Unknown encoding!")
+		OBJC_ERROR("Unknown encoding!");
 	}
 #undef READ
 
@@ -560,7 +560,7 @@ findActionRecord(const uint8_t *actionRecords, struct lsda *LSDA, int actions,
 		} else if (filter == 0)
 			return CLEANUP_FOUND;
 		else if (filter < 0)
-			OBJC_ERROR("Invalid filter!")
+			OBJC_ERROR("Invalid filter!");
 	} while (displacement != 0);
 
 	return 0;
@@ -692,7 +692,8 @@ PERSONALITY_FUNC(PERSONALITY)
 		return _URC_INSTALL_CONTEXT;
 	}
 
-	OBJC_ERROR("Neither _UA_SEARCH_PHASE nor _UA_CLEANUP_PHASE in actions!")
+	OBJC_ERROR(
+	    "Neither _UA_SEARCH_PHASE nor _UA_CLEANUP_PHASE in actions!");
 }
 
 static void
@@ -747,7 +748,7 @@ objc_exception_throw(id object)
 	}
 
 	if (e == NULL)
-		OBJC_ERROR("Not enough memory to allocate exception!")
+		OBJC_ERROR("Not enough memory to allocate exception!");
 
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 	e->exception.cleanup = (emergency
@@ -759,7 +760,7 @@ objc_exception_throw(id object)
 	if (uncaughtExceptionHandler != NULL)
 		uncaughtExceptionHandler(object);
 
-	OBJC_ERROR("_Unwind_RaiseException() returned!")
+	OBJC_ERROR("_Unwind_RaiseException() returned!");
 }
 
 objc_uncaught_exception_handler_t

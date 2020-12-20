@@ -487,55 +487,6 @@ free(void *ptr)
 	libc.free(ptr);
 }
 
-int
-fprintf(FILE *restrict stream, const char *restrict fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	va_start(args, fmt);
-	ret = libc.vfprintf(stream, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-fflush(FILE *restrict stream)
-{
-	return libc.fflush(stream);
-}
-
-#ifdef OF_AMIGAOS_M68K
-int
-snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
-{
-	va_list args;
-	int ret;
-
-	va_start(args, fmt);
-	ret = vsnprintf(str, size, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
-    va_list args)
-{
-	return libc.vsnprintf(str, size, fmt, args);
-}
-#endif
-
-void
-abort(void)
-{
-	libc.abort();
-
-	OF_UNREACHABLE
-}
-
 #ifdef HAVE_SJLJ_EXCEPTIONS
 int
 _Unwind_SjLj_RaiseException(void *ex)
@@ -622,6 +573,36 @@ int *
 objc_get_errno(void)
 {
 	return libc.get_errno();
+}
+
+#ifdef OF_AMIGAOS_M68K
+int
+snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, size, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
+    va_list args)
+{
+	return libc.vsnprintf(str, size, fmt, args);
+}
+#endif
+
+void
+abort(void)
+{
+	libc.abort();
+
+	OF_UNREACHABLE
 }
 
 #pragma GCC diagnostic push

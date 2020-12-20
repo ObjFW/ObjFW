@@ -34,7 +34,7 @@ OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))
-			OBJC_ERROR("Failed to initialize spinlocks!")
+			OBJC_ERROR("Failed to initialize spinlocks!");
 }
 #endif
 

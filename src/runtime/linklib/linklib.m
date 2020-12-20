@@ -85,12 +85,6 @@ ctor(void)
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-		.vfprintf = vfprintf,
-		.fflush = fflush,
-#ifdef OF_AMIGAOS_M68K
-		.vsnprintf = vsnprintf,
-#endif
-		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
 #else
@@ -120,6 +114,10 @@ ctor(void)
 		.__deregister_frame = __deregister_frame,
 #endif
 		.get_errno = get_errno,
+#ifdef OF_AMIGAOS_M68K
+		.vsnprintf = vsnprintf,
+#endif
+		.abort = abort,
 	};
 
 	if (initialized)
