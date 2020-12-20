@@ -254,7 +254,6 @@ struct objc_libc {
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 # endif
-	int *_Nonnull (*_Nonnull get_errno)(void);
 # ifdef OF_AMIGAOS_M68K
 	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
 	    const char *_Nonnull restrict fmt, va_list args);
@@ -275,10 +274,7 @@ struct objc_libc {
 # endif
 # undef stdout
 # undef stderr
-# undef errno
 extern FILE *_Nonnull stdout, *_Nonnull stderr;
-extern int *_Nonnull objc_get_errno(void);
-# define errno (*objc_get_errno())
 #endif
 
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);

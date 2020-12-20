@@ -28,7 +28,6 @@ struct ObjFWRTBase;
 
 #import "inline.h"
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -70,12 +69,6 @@ extern void __deregister_frame(void *);
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
-
-static int *
-get_errno(void)
-{
-	return &errno;
-}
 
 static void
 error(const char *string, ULONG arg)
@@ -136,7 +129,6 @@ ctor(void)
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
 #endif
-		.get_errno = get_errno,
 #ifdef OF_AMIGAOS_M68K
 		.vsnprintf = vsnprintf,
 #endif
