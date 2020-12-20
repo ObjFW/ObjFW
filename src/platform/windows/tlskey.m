@@ -19,14 +19,19 @@
 
 #import "tlskey.h"
 
-bool
+int
 of_tlskey_new(of_tlskey_t *key)
 {
-	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+	*key = TlsAlloc();
+
+	if (*key == TLS_OUT_OF_INDEXES)
+		return EAGAIN;
+
+	return 0;
 }
 
-bool
+int
 of_tlskey_free(of_tlskey_t key)
 {
-	return TlsFree(key);
+	return (TlsFree(key) ? 0 : EINVAL);
 }

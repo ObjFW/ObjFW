@@ -23,74 +23,72 @@
 
 #include <windows.h>
 
-bool
+int
 of_mutex_new(of_mutex_t *mutex)
 {
 	InitializeCriticalSection(mutex);
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_mutex_lock(of_mutex_t *mutex)
 {
 	EnterCriticalSection(mutex);
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_mutex_trylock(of_mutex_t *mutex)
 {
-	if (!TryEnterCriticalSection(mutex)) {
-		errno = EBUSY;
-		return false;
-	}
+	if (!TryEnterCriticalSection(mutex))
+		return EBUSY;
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_mutex_unlock(of_mutex_t *mutex)
 {
 	LeaveCriticalSection(mutex);
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_mutex_free(of_mutex_t *mutex)
 {
 	DeleteCriticalSection(mutex);
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_rmutex_new(of_rmutex_t *rmutex)
 {
 	return of_mutex_new(rmutex);
 }
 
-bool
+int
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
 	return of_mutex_lock(rmutex);
 }
 
-bool
+int
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
 	return of_mutex_trylock(rmutex);
 }
 
-bool
+int
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
 	return of_mutex_unlock(rmutex);
 }
 
-bool
+int
 of_rmutex_free(of_rmutex_t *rmutex)
 {
 	return of_mutex_free(rmutex);

@@ -32,6 +32,10 @@
 
 #import "OFInvalidJSONException.h"
 
+#ifndef INFINITY
+# define INFINITY __builtin_inf()
+#endif
+
 int _OFString_JSONParsing_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,

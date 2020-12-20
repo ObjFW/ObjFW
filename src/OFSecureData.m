@@ -123,7 +123,7 @@ addPage(bool allowPreallocated)
 			numPreallocatedPages--;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
-			    (void *)numPreallocatedPages));
+			    (void *)numPreallocatedPages) == 0);
 # endif
 
 			page = preallocatedPages[numPreallocatedPages];
@@ -133,7 +133,7 @@ addPage(bool allowPreallocated)
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
-				    preallocatedPages));
+				    preallocatedPages) == 0);
 # endif
 			}
 
@@ -173,10 +173,10 @@ addPage(bool allowPreallocated)
 	if (firstPage == NULL)
 		firstPage = page;
 # else
-	OF_ENSURE(of_tlskey_set(lastPageKey, page));
+	OF_ENSURE(of_tlskey_set(lastPageKey, page) == 0);
 
 	if (of_tlskey_get(firstPageKey) == NULL)
-		OF_ENSURE(of_tlskey_set(firstPageKey, page));
+		OF_ENSURE(of_tlskey_set(firstPageKey, page) == 0);
 # endif
 
 	return page;
@@ -209,9 +209,9 @@ removePageIfEmpty(struct page *page)
 		lastPage = page->previous;
 # else
 	if (of_tlskey_get(firstPageKey) == page)
-		OF_ENSURE(of_tlskey_set(firstPageKey, page->next));
+		OF_ENSURE(of_tlskey_set(firstPageKey, page->next) == 0);
 	if (of_tlskey_get(lastPageKey) == page)
-		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous));
+		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous) == 0);
 # endif
 
 	free(page);
@@ -274,9 +274,10 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (self != [OFSecureData class])
 		return;
 
-	if (!of_tlskey_new(&firstPageKey) || !of_tlskey_new(&lastPageKey) ||
-	    !of_tlskey_new(&preallocatedPagesKey) ||
-	    !of_tlskey_new(&numPreallocatedPagesKey))
+	if (of_tlskey_new(&firstPageKey) != 0 ||
+	    of_tlskey_new(&lastPageKey) != 0 ||
+	    of_tlskey_new(&preallocatedPagesKey) != 0 ||
+	    of_tlskey_new(&numPreallocatedPagesKey) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -298,7 +299,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	preallocatedPages = of_alloc_zeroed(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
+	OF_ENSURE(of_tlskey_set(preallocatedPagesKey, preallocatedPages) == 0);
 # endif
 
 	@try {
@@ -316,8 +317,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	numPreallocatedPages = numPages;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	of_tlskey_set(numPreallocatedPagesKey,
-	    (void *)(uintptr_t)numPreallocatedPages);
+	OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
+	    (void *)(uintptr_t)numPreallocatedPages) == 0);
 # endif
 #else
 	@throw [OFNotImplementedException exceptionWithSelector: _cmd

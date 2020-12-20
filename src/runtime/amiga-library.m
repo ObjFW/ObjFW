@@ -577,12 +577,6 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
-int *
-objc_get_errno(void)
-{
-	return libc.get_errno();
-}
-
 #ifdef OF_AMIGAOS_M68K
 int
 snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)

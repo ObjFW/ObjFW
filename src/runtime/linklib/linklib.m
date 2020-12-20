@@ -29,7 +29,6 @@ struct ObjFWRTBase;
 
 #import "inline.h"
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -81,9 +80,9 @@ error(const char *string, ULONG arg)
 		struct EasyStruct easy = {
 			.es_StructSize = sizeof(easy),
 			.es_Flags = 0,
-			.es_Title = (UBYTE *)NULL,
-			.es_TextFormat = (UBYTE *)string,
-			(UBYTE *)"OK"
+			.es_Title = (void *)NULL,
+			.es_TextFormat = (void *)string,
+			(void *)"OK"
 		};
 
 		EasyRequest(NULL, &easy, NULL, arg);
@@ -92,12 +91,6 @@ error(const char *string, ULONG arg)
 	}
 
 	exit(EXIT_FAILURE);
-}
-
-static int *
-get_errno(void)
-{
-	return &errno;
 }
 
 static void __attribute__((__used__))
@@ -137,7 +130,6 @@ ctor(void)
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
 #endif
-		.get_errno = get_errno,
 #ifdef OF_AMIGAOS_M68K
 		.vsnprintf = vsnprintf,
 #endif

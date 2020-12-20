@@ -52,7 +52,7 @@ OF_CONSTRUCTOR()
 	}
 }
 
-bool
+int
 of_tlskey_new(of_tlskey_t *key)
 {
 	if (!semaphoreInitialized) {
@@ -66,7 +66,7 @@ of_tlskey_new(of_tlskey_t *key)
 	}
 
 	if ((*key = malloc(sizeof(**key))) == NULL)
-		return false;
+		return ENOMEM;
 
 	(*key)->table = NULL;
 
@@ -87,10 +87,10 @@ of_tlskey_new(of_tlskey_t *key)
 	}
 
 	/* We create the hash table lazily. */
-	return true;
+	return 0;
 }
 
-bool
+int
 of_tlskey_free(of_tlskey_t key)
 {
 	ObtainSemaphore(&semaphore);
@@ -111,7 +111,7 @@ of_tlskey_free(of_tlskey_t key)
 		ReleaseSemaphore(&semaphore);
 	}
 
-	return true;
+	return 0;
 }
 
 void *
@@ -132,7 +132,7 @@ of_tlskey_get(of_tlskey_t key)
 	return ret;
 }
 
-bool
+int
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
 	ObtainSemaphore(&semaphore);
@@ -146,13 +146,11 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 			objc_hashtable_delete(key->table, task);
 		else
 			objc_hashtable_set(key->table, task, ptr);
-	} @catch (id e) {
-		return false;
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}
 
-	return true;
+	return 0;
 }
 
 void

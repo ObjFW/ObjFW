@@ -87,35 +87,32 @@ functionWrapper(void *data)
 	return NULL;
 }
 
-bool
+int
 of_thread_attr_init(of_thread_attr_t *attr)
 {
+	int error;
 	pthread_attr_t pattr;
 
-	if (pthread_attr_init(&pattr) != 0)
-		return false;
+	if ((error = pthread_attr_init(&pattr)) != 0)
+		return error;
 
-	@try {
-		attr->priority = 0;
+	attr->priority = 0;
+	error = pthread_attr_getstacksize(&pattr, &attr->stackSize);
 
-		if (pthread_attr_getstacksize(&pattr, &attr->stackSize) != 0)
-			return false;
-	} @finally {
-		pthread_attr_destroy(&pattr);
-	}
+	pthread_attr_destroy(&pattr);
 
-	return true;
+	return error;
 }
 
-bool
+int
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
-	bool ret;
+	int error = 0;
 	pthread_attr_t pattr;
 
-	if (pthread_attr_init(&pattr) != 0)
-		return false;
+	if ((error = pthread_attr_init(&pattr)) != 0)
+		return error;
 
 	@try {
 		struct thread_ctx *ctx;
@@ -123,15 +120,13 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		if (attr != NULL) {
 			struct sched_param param;
 
-			if (attr->priority < -1 || attr->priority > 1) {
-				errno = EINVAL;
-				return false;
-			}
+			if (attr->priority < -1 || attr->priority > 1)
+				return EINVAL;
 
 #ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
-			if (pthread_attr_setinheritsched(&pattr,
-			    PTHREAD_EXPLICIT_SCHED) != 0)
-				return false;
+			if ((error = pthread_attr_setinheritsched(&pattr,
+			    PTHREAD_EXPLICIT_SCHED)) != 0)
+				return error;
 #endif
 
 			if (attr->priority < 0) {
@@ -142,46 +137,44 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 				param.sched_priority = normalPrio +
 				    attr->priority * (maxPrio - normalPrio);
 
-			if (pthread_attr_setschedparam(&pattr, &param) != 0)
-				return false;
+			if ((error = pthread_attr_setschedparam(&pattr,
+			    &param)) != 0)
+				return error;
 
 			if (attr->stackSize > 0) {
-				if (pthread_attr_setstacksize(&pattr,
-				    attr->stackSize) != 0)
-					return false;
+				if ((error = pthread_attr_setstacksize(&pattr,
+				    attr->stackSize)) != 0)
+					return error;
 			}
 		}
 
-		if ((ctx = malloc(sizeof(*ctx))) == NULL) {
-			errno = ENOMEM;
-			return false;
-		}
+		if ((ctx = malloc(sizeof(*ctx))) == NULL)
+			return ENOMEM;
 
 		ctx->function = function;
 		ctx->object = object;
 		ctx->name = name;
 
-		ret = (pthread_create(thread, &pattr,
-		    functionWrapper, ctx) == 0);
+		error = pthread_create(thread, &pattr, functionWrapper, ctx);
 	} @finally {
 		pthread_attr_destroy(&pattr);
 	}
 
-	return ret;
+	return error;
 }
 
-bool
+int
 of_thread_join(of_thread_t thread)
 {
 	void *ret;
 
-	return (pthread_join(thread, &ret) == 0);
+	return pthread_join(thread, &ret);
 }
 
-bool
+int
 of_thread_detach(of_thread_t thread)
 {
-	return (pthread_detach(thread) == 0);
+	return pthread_detach(thread);
 }
 
 void

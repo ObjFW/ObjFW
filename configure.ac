@@ -773,35 +773,6 @@ AS_IF([test x"$ac_cv_c_bigendian" = x"universal"], [
 	AC_DEFINE(OF_UNIVERSAL, 1, [Whether we are building a universal binary])
 ])
 
-AC_MSG_CHECKING(for SIZE_MAX)
-AC_EGREP_CPP(egrep_cpp_yes, [
-	#include <stdint.h>
-	#include <limits.h>
-
-	#ifdef SIZE_MAX
-	egrep_cpp_yes
-	#endif
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-	AC_MSG_CHECKING(for SIZE_T_MAX)
-	AC_EGREP_CPP(egrep_cpp_yes, [
-		#include <stdint.h>
-		#include <limits.h>
-
-		#ifdef SIZE_T_MAX
-		egrep_cpp_yes
-		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		size_max="SIZE_T_MAX"
-	], [
-		AC_MSG_RESULT(no)
-		size_max="(~(size_t)0)"
-	])
-	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
-])
 AC_MSG_CHECKING(for SSIZE_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
@@ -814,8 +785,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(SSIZE_MAX, [((ssize_t)(SIZE_MAX / 2))],
-		[Maximum value for ssize_t])
+	AC_DEFINE(SSIZE_MAX, [(SIZE_MAX / 2)], [Maximum value for ssize_t])
 ])
 AC_MSG_CHECKING(for UINTPTR_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
@@ -829,7 +799,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(UINTPTR_MAX, [(~(uintptr_t)0)], [Maximum value for uintptr_t])
+	AC_CHECK_SIZEOF(uintptr_t)
+	AC_DEFINE(UINTPTR_MAX,
+		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
@@ -878,37 +850,6 @@ AC_MSG_RESULT($fp_endianess)
 AS_IF([test x"$fp_endianess" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
-
-AC_MSG_CHECKING(for INFINITY)
-AC_COMPILE_IFELSE([
-	AC_LANG_PROGRAM([
-		#include <stdio.h>
-		#include <math.h>
-	], [
-		printf("%f", INFINITY);
-	])
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-
-	AC_MSG_CHECKING(for __builtin_inf)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <stdio.h>
-		], [
-			printf("%f", __builtin_inf());
-		])
-	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(INFINITY, [(__builtin_inf())],
-			[Workaround for missing INFINITY])
-	], [
-		AC_MSG_RESULT(no)
-
-		AC_MSG_ERROR([Neither INFINITY or __builtin_inf was found!])
-	])
-])
 
 case "$host_cpu" in
 	arm* | earm*)
