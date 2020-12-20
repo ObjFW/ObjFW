@@ -350,8 +350,8 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
-extern void OF_NO_RETURN_FUNC objc_error(const char *file, unsigned int line,
-    const char *format, ...);
+extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull file,
+    unsigned int line, const char *_Nonnull format, ...);
 #define OBJC_ERROR(...) objc_error(__FILE__, __LINE__, __VA_ARGS__)
 
 #if defined(OF_ELF)
