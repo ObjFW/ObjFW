@@ -22,6 +22,8 @@
 #import "macros.h"
 
 #include <proto/exec.h>
+#define USE_INLINE_STDARG
+#include <proto/intuition.h>
 
 struct ObjFWBase;
 
@@ -31,6 +33,7 @@ struct ObjFWBase;
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #if defined(OF_AMIGAOS_M68K)
 # include <stabs.h>
@@ -366,7 +369,7 @@ ctor(void)
 		    OBJFW_LIB_MINOR);
 
 	if (!glue_of_init(1, &libc, __sF))
-		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
+		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;
 }
@@ -442,14 +445,25 @@ of_log(OFConstantString *format, ...)
 	va_list arguments;
 
 	va_start(arguments, format);
-	glue_of_logv(format, arguments);
+	of_logv(format, arguments);
 	va_end(arguments);
 }
 
 void
 of_logv(OFConstantString *format, va_list arguments)
 {
+#ifdef OF_MORPHOS
+	/* The generated code does not work with va_list, so do it manually. */
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase)
+	);
+
+	((void (*)(OFConstantString *, va_list))*(void **)(ObjFWBase - 76))(
+	    format, arguments);
+#else
 	glue_of_logv(format, arguments);
+#endif
 }
 
 int

@@ -23,6 +23,7 @@
 #import "private.h"
 
 #include <proto/exec.h>
+#define USE_INLINE_STDARG
 #include <proto/intuition.h>
 
 struct ObjFWRTBase;

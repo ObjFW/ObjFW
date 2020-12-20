@@ -8,7 +8,7 @@ OFStdIOStream **glue_of_stdin_ref(void);
 OFStdIOStream **glue_of_stdout_ref(void);
 OFStdIOStream **glue_of_stderr_ref(void);
 void glue_of_logv(OFConstantString *format, va_list arguments);
-int glue_of_application_main(int *argc, char ***argv, id <OFApplicationDelegate> delegate);
+int glue_of_application_main(int *argc, char ***argv, id delegate);
 const char *glue_of_http_request_method_to_string(of_http_request_method_t method);
 of_http_request_method_t glue_of_http_request_method_from_string(OFString *string);
 OFString *glue_of_http_status_code_to_string(short code);
