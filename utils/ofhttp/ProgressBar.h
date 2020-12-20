@@ -24,6 +24,7 @@
 
 @interface ProgressBar: OFObject
 {
+	bool _useUnicode;
 	unsigned long long _received, _lastReceived, _length, _resumedFrom;
 	OFDate *_startDate, *_lastReceivedDate;
 	OFTimer *_drawTimer, *_BPSTimer;
@@ -35,7 +36,8 @@
 }
 
 - (instancetype)initWithLength: (unsigned long long)length
-		   resumedFrom: (unsigned long long)resumedFrom;
+		   resumedFrom: (unsigned long long)resumedFrom
+		    useUnicode: (bool)useUnicode OF_DESIGNATED_INITIALIZER;
 - (void)setReceived: (unsigned long long)received;
 - (void)draw;
 - (void)calculateBPSAndETA;

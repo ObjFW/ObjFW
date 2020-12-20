@@ -65,6 +65,7 @@ ${CVINCLUDE_INLINE_H}: morphos.fd morphos-clib.h
 	cvinclude.pl --quiet --fd=morphos.fd --clib=morphos-clib.h --inlines=$@
 
 CPPFLAGS += -I. -I.. -I../..					\
+	    -DOBJC_COMPILING_RUNTIME				\
 	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
 	    -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}		\
 	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}

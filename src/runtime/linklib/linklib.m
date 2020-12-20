@@ -23,6 +23,7 @@
 #import "private.h"
 
 #include <proto/exec.h>
+#include <proto/intuition.h>
 
 struct ObjFWRTBase;
 
@@ -77,6 +78,28 @@ get_errno(void)
 	return &errno;
 }
 
+static void
+error(const char *string, ULONG arg)
+{
+	struct Library *IntuitionBase = OpenLibrary("intuition.library", 0);
+
+	if (IntuitionBase != NULL) {
+		struct EasyStruct easy = {
+			.es_StructSize = sizeof(easy),
+			.es_Flags = 0,
+			.es_Title = (UBYTE *)NULL,
+			.es_TextFormat = (UBYTE *)string,
+			(UBYTE *)"OK"
+		};
+
+		EasyRequest(NULL, &easy, NULL, arg);
+
+		CloseLibrary(IntuitionBase);
+	}
+
+	exit(EXIT_FAILURE);
+}
+
 static void __attribute__((__used__))
 ctor(void)
 {
@@ -86,9 +109,6 @@ ctor(void)
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-		.vfprintf = vfprintf,
-		.fflush = fflush,
-		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
 #else
@@ -118,32 +138,23 @@ ctor(void)
 		.__deregister_frame = __deregister_frame,
 #endif
 		.get_errno = get_errno,
+#ifdef OF_AMIGAOS_M68K
+		.vsnprintf = vsnprintf,
+#endif
+		.atexit = atexit,
+		.exit = exit,
 	};
 
 	if (initialized)
 		return;
 
 	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
-	    OBJFWRT_LIB_MINOR)) == NULL) {
-		/*
-		 * The linklib is used by objfw(68k).library as well, so we
-		 * can't have the compiler optimize this to another function,
-		 * hence the use of an unnecessary format specifier.
-		 */
-		fprintf(stderr, "Failed to open %s!\n", OBJFWRT_AMIGA_LIB);
-		abort();
-	}
+	    OBJFWRT_LIB_MINOR)) == NULL)
+		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
+		    OBJFWRT_LIB_MINOR);
 
-	if (!glue_objc_init(1, &libc, __sF)) {
-		/*
-		 * The linklib is used by objfw(68k).library as well, so we
-		 * can't have the compiler optimize this to another function,
-		 * hence the use of an unnecessary format specifier.
-		 */
-		fprintf(stderr, "Failed to initialize %s!\n",
-		    OBJFWRT_AMIGA_LIB);
-		abort();
-	}
+	if (!glue_objc_init(1, &libc, __sF))
+		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
 }

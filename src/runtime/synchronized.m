@@ -38,7 +38,7 @@ static of_mutex_t mutex;
 OF_CONSTRUCTOR()
 {
 	if (!of_mutex_new(&mutex))
-		OBJC_ERROR("Failed to create mutex!")
+		OBJC_ERROR("Failed to create mutex!");
 }
 #endif
 

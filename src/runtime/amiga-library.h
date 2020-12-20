@@ -31,9 +31,6 @@ struct objc_libc {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
-	int (*_Nonnull fflush)(FILE *_Nonnull);
-	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
 # else
@@ -64,6 +61,12 @@ struct objc_libc {
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 # endif
 	int *_Nonnull (*_Nonnull get_errno)(void);
+# ifdef OF_AMIGAOS_M68K
+	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
+	    const char *_Nonnull restrict fmt, va_list args);
+# endif
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
+	void (*_Nonnull exit)(int);
 };
 
 extern bool objc_init(unsigned int, struct objc_libc *_Nonnull,

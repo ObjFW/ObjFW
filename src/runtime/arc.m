@@ -52,7 +52,7 @@ OF_CONSTRUCTOR()
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_new(&spinlock))
-		OBJC_ERROR("Failed to create spinlock!")
+		OBJC_ERROR("Failed to create spinlock!");
 #endif
 }
 
@@ -123,7 +123,7 @@ objc_storeWeak(id *object, id value)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*object != nil &&
@@ -170,7 +170,7 @@ objc_storeWeak(id *object, id value)
 		if ((ref->locations = realloc(ref->locations,
 		    (ref->count + 1) * sizeof(id *))) == NULL)
 			OBJC_ERROR("Not enough memory to allocate weak "
-			    "reference!")
+			    "reference!");
 
 		ref->locations[ref->count++] = object;
 	} else
@@ -180,7 +180,7 @@ objc_storeWeak(id *object, id value)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	return value;
@@ -194,7 +194,7 @@ objc_loadWeakRetained(id *object)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*object != nil &&
@@ -203,7 +203,7 @@ objc_loadWeakRetained(id *object)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	if (class_respondsToSelector(object_getClass(value),
@@ -245,7 +245,7 @@ objc_moveWeak(id *dest, id *src)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*src != nil &&
@@ -263,7 +263,7 @@ objc_moveWeak(id *dest, id *src)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
@@ -274,7 +274,7 @@ objc_zero_weak_references(id value)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if ((ref = objc_hashtable_get(hashtable, value)) != NULL) {
@@ -288,6 +288,6 @@ objc_zero_weak_references(id value)
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }

@@ -46,6 +46,7 @@ case "$host" in
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
@@ -61,8 +62,9 @@ case "$host" in
 			dnl do not work properly in a library.
 			t="-mcpu=68020 -fbaserel32 -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
-			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident32 -nostartfiles")
+			t="$t -resident32 -nostartfiles -nodefaultlibs"
+			t="$t -ldebug -lc"
+			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)
@@ -82,6 +84,7 @@ case "$host" in
 		OBJCFLAGS="$OBJCFLAGS -noixemul"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
@@ -95,7 +98,7 @@ case "$host" in
 			t="-mresident32 -ffreestanding -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 			t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-			t="$t -laboxstubs -labox -lmath -lc"
+			t="$t -laboxstubs -labox -lmath -ldebug -lc"
 			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
@@ -1856,9 +1859,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
 			#include <stdlib.h>
-	
-			typedef void *SEL;
-	
+
+			struct objc_selector;
+			typedef const struct objc_selector *SEL;
+
 			#ifdef __has_attribute
 			# if __has_attribute(objc_root_class)
 			__attribute__((__objc_root_class__))
@@ -1872,10 +1876,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			    ;
 			- (void)dealloc;
 			@end
-	
+
 			@interface Foo: Object
 			@end
-	
+
 			void
 			test(void)
 			{
@@ -1886,7 +1890,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 				else
 					abort();
 			}
-	
+
 			/*
 			 * Unfortunately, this cannot be shorter, as it only
 			 * works when it is used inside a macro.
@@ -1909,7 +1913,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 									\
 				[super dealloc];
 			#endif
-	
+
 			@implementation Foo
 			- (void)dealloc
 			{

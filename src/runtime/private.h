@@ -291,6 +291,10 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
+extern void OF_NO_RETURN_FUNC objc_error(const char *file, unsigned int line,
+    const char *format, ...);
+#define OBJC_ERROR(...) objc_error(__FILE__, __LINE__, __VA_ARGS__)
+
 #if defined(OF_ELF)
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
@@ -307,16 +311,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #endif
-
-#define OBJC_ERROR(...)							\
-	{								\
-		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
-		fprintf(stderr, __VA_ARGS__);				\
-		fprintf(stderr, "\n");					\
-		fflush(stderr);						\
-		abort();						\
-		OF_UNREACHABLE						\
-	}
 
 @interface DummyObject
 {
