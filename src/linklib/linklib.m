@@ -278,6 +278,28 @@ void *__objc_class_name_OFRangeCharacterSet;
 void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
+static void
+error(const char *string, ULONG arg)
+{
+	struct Library *IntuitionBase = OpenLibrary("intuition.library", 0);
+
+	if (IntuitionBase != NULL) {
+		struct EasyStruct easy = {
+			.es_StructSize = sizeof(easy),
+			.es_Flags = 0,
+			.es_Title = (UBYTE *)NULL,
+			.es_TextFormat = (UBYTE *)string,
+			(UBYTE *)"OK"
+		};
+
+		EasyRequest(NULL, &easy, NULL, arg);
+
+		CloseLibrary(IntuitionBase);
+	}
+
+	exit(EXIT_FAILURE);
+}
+
 static int *
 get_errno(void)
 {
@@ -339,26 +361,12 @@ ctor(void)
 	if (initialized)
 		return;
 
-	if ((ObjFWBase = OpenLibrary(OBJFW_AMIGA_LIB,
-	    OBJFW_LIB_MINOR)) == NULL) {
-		/*
-		 * The linklib can be used by other libraries as well, so we
-		 * can't have the compiler optimize this to another function,
-		 * hence the use of an unnecessary format specifier.
-		 */
-		fprintf(stderr, "Failed to open %s!\n", OBJFW_AMIGA_LIB);
-		abort();
-	}
+	if ((ObjFWBase = OpenLibrary(OBJFW_AMIGA_LIB, OBJFW_LIB_MINOR)) == NULL)
+		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
+		    OBJFW_LIB_MINOR);
 
-	if (!glue_of_init(1, &libc, __sF)) {
-		/*
-		 * The linklib can be used by other libraries as well, so we
-		 * can't have the compiler optimize this to another function,
-		 * hence the use of an unnecessary format specifier.
-		 */
-		fprintf(stderr, "Failed to initialize %s!\n", OBJFW_AMIGA_LIB);
-		abort();
-	}
+	if (!glue_of_init(1, &libc, __sF))
+		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
 }

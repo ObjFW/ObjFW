@@ -72,12 +72,6 @@ extern void __deregister_frame(void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
-static int *
-get_errno(void)
-{
-	return &errno;
-}
-
 static void
 error(const char *string, ULONG arg)
 {
@@ -98,6 +92,12 @@ error(const char *string, ULONG arg)
 	}
 
 	exit(EXIT_FAILURE);
+}
+
+static int *
+get_errno(void)
+{
+	return &errno;
 }
 
 static void __attribute__((__used__))
