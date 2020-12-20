@@ -227,6 +227,10 @@ struct objc_libc {
 	void (*_Nonnull free)(void *_Nullable);
 	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
 	int (*_Nonnull fflush)(FILE *_Nonnull);
+# ifdef OF_AMIGAOS_M68K
+	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
+	    const char *_Nonnull restrict fmt, va_list args);
+# endif
 	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
@@ -347,6 +351,10 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
+extern void OF_NO_RETURN_FUNC objc_error(const char *file, unsigned int line,
+    const char *format, ...);
+#define OBJC_ERROR(...) objc_error(__FILE__, __LINE__, __VA_ARGS__);
+
 #if defined(OF_ELF)
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
@@ -363,16 +371,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #endif
-
-#define OBJC_ERROR(...)							\
-	{								\
-		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
-		fprintf(stderr, __VA_ARGS__);				\
-		fprintf(stderr, "\n");					\
-		fflush(stderr);						\
-		abort();						\
-		OF_UNREACHABLE						\
-	}
 
 @interface DummyObject
 {

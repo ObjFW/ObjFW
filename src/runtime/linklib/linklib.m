@@ -87,6 +87,9 @@ ctor(void)
 		.free = free,
 		.vfprintf = vfprintf,
 		.fflush = fflush,
+#ifdef OF_AMIGAOS_M68K
+		.vsnprintf = vsnprintf,
+#endif
 		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,

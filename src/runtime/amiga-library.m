@@ -506,6 +506,28 @@ fflush(FILE *restrict stream)
 	return libc.fflush(stream);
 }
 
+#ifdef OF_AMIGAOS_M68K
+int
+snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, size, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
+    va_list args)
+{
+	return libc.vsnprintf(str, size, fmt, args);
+}
+#endif
+
 void
 abort(void)
 {

@@ -23,6 +23,15 @@
 #include "ObjFWRT.h"
 #include "private.h"
 
+#ifdef OF_AMIGAOS
+# define USE_INLINE_STDARG
+# include <proto/exec.h>
+# include <clib/debug_protos.h>
+# define __NOLIBBASE__
+# include <proto/intuition.h>
+# undef __NOLIBBASE__
+#endif
+
 static objc_enumeration_mutation_handler_t enumerationMutationHandler = NULL;
 
 void
@@ -38,4 +47,59 @@ void
 objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
 {
 	enumerationMutationHandler = handler;
+}
+
+void
+objc_error(const char *file, unsigned int line, const char *format, ...)
+{
+#ifdef OF_AMIGAOS
+# define BUF_LEN 256
+	char title[BUF_LEN];
+	char message[BUF_LEN];
+	int status;
+	va_list args;
+	struct Library *IntuitionBase;
+
+	status = snprintf(title, BUF_LEN, "ObjFWRT @ %s:%u", file, line);
+	if (status <= 0 || status >= BUF_LEN)
+		title[0] = '\0';
+
+	va_start(args, format);
+	status = vsnprintf(message, BUF_LEN, format, args);
+	if (status <= 0 || status >= BUF_LEN)
+		message[0] = '\0';
+	va_end(args);
+
+	kprintf("[%s] %s\n", title, message);
+
+	IntuitionBase = OpenLibrary("intuition.library", 0);
+	if (IntuitionBase != NULL) {
+		struct EasyStruct easy = {
+			.es_StructSize = sizeof(easy),
+			.es_Flags = 0,
+			.es_Title = (UBYTE *)title,
+			.es_TextFormat = (UBYTE *)"%s",
+			(UBYTE *)"OK"
+		};
+
+		EasyRequest(NULL, &easy, NULL, (ULONG)message);
+
+		CloseLibrary(IntuitionBase);
+	}
+# undef BUF_LEN
+#else
+	va_list args;
+
+	va_start(args, format);
+
+	vfprintf(stderr, "[ObjFWRT @ %s:%u] ", file, line);
+	vfprintf(stderr, format, args);
+	vfprintf(stderr, "\n");
+	fflush(stderr);
+
+	va_end(args);
+#endif
+	abort();
+
+	OF_UNREACHABLE
 }

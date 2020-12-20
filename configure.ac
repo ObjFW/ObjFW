@@ -46,6 +46,7 @@ case "$host" in
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
@@ -61,7 +62,7 @@ case "$host" in
 			t="-mcpu=68020 -fbaserel -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
 			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident -nostartfiles")
+				"$t -resident -nostartfiles -ldebug -lc")
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)
@@ -81,6 +82,7 @@ case "$host" in
 		OBJCFLAGS="$OBJCFLAGS -noixemul"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
@@ -93,7 +95,7 @@ case "$host" in
 			t="-mresident32 -ffreestanding -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 			t="-mresident32 -nostartfiles -nodefaultlibs"
-			t="$t -noixemul -lc"
+			t="$t -noixemul -ldebug -lc"
 			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
