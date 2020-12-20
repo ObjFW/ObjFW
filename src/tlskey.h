@@ -17,6 +17,8 @@
 
 #include "objfw-defs.h"
 
+#include <errno.h>
+
 #include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
@@ -45,8 +47,8 @@ typedef struct of_tlskey {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool of_tlskey_new(of_tlskey_t *key);
-extern bool of_tlskey_free(of_tlskey_t key);
+extern int of_tlskey_new(of_tlskey_t *key);
+extern int of_tlskey_free(of_tlskey_t key);
 #ifdef __cplusplus
 }
 #endif
@@ -60,10 +62,10 @@ of_tlskey_get(of_tlskey_t key)
 	return pthread_getspecific(key);
 }
 
-static OF_INLINE bool
+static OF_INLINE int
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	return (pthread_setspecific(key, ptr) == 0);
+	return pthread_setspecific(key, ptr);
 }
 #elif defined(OF_WINDOWS)
 static OF_INLINE void *
@@ -72,10 +74,10 @@ of_tlskey_get(of_tlskey_t key)
 	return TlsGetValue(key);
 }
 
-static OF_INLINE bool
+static OF_INLINE int
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	return TlsSetValue(key, ptr);
+	return (TlsSetValue(key, ptr) ? 0 : EINVAL);
 }
 #elif defined(OF_MORPHOS)
 static OF_INLINE void *
@@ -84,10 +86,10 @@ of_tlskey_get(of_tlskey_t key)
 	return (void *)TLSGetValue(key);
 }
 
-static OF_INLINE bool
+static OF_INLINE int
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	return TLSSetValue(key, (APTR)ptr);
+	return (TLSSetValue(key, (APTR)ptr) ? 0 : EINVAL);
 }
 #elif defined(OF_AMIGAOS)
 /* Those are too big too inline. */
@@ -95,7 +97,7 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 extern "C" {
 # endif
 extern void *of_tlskey_get(of_tlskey_t key);
-extern bool of_tlskey_set(of_tlskey_t key, void *ptr);
+extern int of_tlskey_set(of_tlskey_t key, void *ptr);
 # ifdef __cplusplus
 }
 # endif

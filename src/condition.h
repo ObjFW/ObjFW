@@ -52,19 +52,19 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool of_condition_new(of_condition_t *condition);
-extern bool of_condition_signal(of_condition_t *condition);
-extern bool of_condition_broadcast(of_condition_t *condition);
-extern bool of_condition_wait(of_condition_t *condition, of_mutex_t *mutex);
-extern bool of_condition_timed_wait(of_condition_t *condition,
+extern int of_condition_new(of_condition_t *condition);
+extern int of_condition_signal(of_condition_t *condition);
+extern int of_condition_broadcast(of_condition_t *condition);
+extern int of_condition_wait(of_condition_t *condition, of_mutex_t *mutex);
+extern int of_condition_timed_wait(of_condition_t *condition,
     of_mutex_t *mutex, of_time_interval_t timeout);
 #ifdef OF_AMIGAOS
-extern bool of_condition_wait_or_signal(of_condition_t *condition,
+extern int of_condition_wait_or_signal(of_condition_t *condition,
     of_mutex_t *mutex, ULONG *signalMask);
-extern bool of_condition_timed_wait_or_signal(of_condition_t *condition,
+extern int of_condition_timed_wait_or_signal(of_condition_t *condition,
     of_mutex_t *mutex, of_time_interval_t timeout, ULONG *signalMask);
 #endif
-extern bool of_condition_free(of_condition_t *condition);
+extern int of_condition_free(of_condition_t *condition);
 #ifdef __cplusplus
 }
 #endif

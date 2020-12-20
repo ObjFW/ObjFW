@@ -19,31 +19,31 @@
 
 #import "condition.h"
 
-bool
+int
 of_condition_new(of_condition_t *condition)
 {
-	return (pthread_cond_init(condition, NULL) == 0);
+	return pthread_cond_init(condition, NULL);
 }
 
-bool
+int
 of_condition_signal(of_condition_t *condition)
 {
-	return (pthread_cond_signal(condition) == 0);
+	return pthread_cond_signal(condition);
 }
 
-bool
+int
 of_condition_broadcast(of_condition_t *condition)
 {
-	return (pthread_cond_broadcast(condition) == 0);
+	return pthread_cond_broadcast(condition);
 }
 
-bool
+int
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
-	return (pthread_cond_wait(condition, mutex) == 0);
+	return pthread_cond_wait(condition, mutex);
 }
 
-bool
+int
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout)
 {
@@ -52,11 +52,11 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	ts.tv_sec = (time_t)timeout;
 	ts.tv_nsec = (long)((timeout - ts.tv_sec) * 1000000000);
 
-	return (pthread_cond_timedwait(condition, mutex, &ts) == 0);
+	return pthread_cond_timedwait(condition, mutex, &ts);
 }
 
-bool
+int
 of_condition_free(of_condition_t *condition)
 {
-	return (pthread_cond_destroy(condition) == 0);
+	return pthread_cond_destroy(condition);
 }

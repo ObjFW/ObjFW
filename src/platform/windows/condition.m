@@ -23,36 +23,33 @@
 
 #include <windows.h>
 
-bool
+int
 of_condition_new(of_condition_t *condition)
 {
 	condition->count = 0;
 
-	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL) {
-		errno = EAGAIN;
-		return false;
-	}
+	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL)
+		return EAGAIN;
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_signal(of_condition_t *condition)
 {
 	if (!SetEvent(condition->event)) {
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
-			errno = EINVAL;
-			return false;
+			return EINVAL;
 		default:
 			OF_ENSURE(0);
 		}
 	}
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_broadcast(of_condition_t *condition)
 {
 	int count = condition->count;
@@ -61,24 +58,24 @@ of_condition_broadcast(of_condition_t *condition)
 		if (!SetEvent(condition->event)) {
 			switch (GetLastError()) {
 			case ERROR_INVALID_HANDLE:
-				errno = EINVAL;
-				return false;
+				return EINVAL;
 			default:
 				OF_ENSURE(0);
 			}
 		}
 	}
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
+	int error;
 	DWORD status;
 
-	if (!of_mutex_unlock(mutex))
-		return false;
+	if ((error = of_mutex_unlock(mutex)) != 0)
+		return error;
 
 	of_atomic_int_inc(&condition->count);
 	status = WaitForSingleObject(condition->event, INFINITE);
@@ -90,8 +87,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	case WAIT_FAILED:
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
-			errno = EINVAL;
-			return false;
+			return EINVAL;
 		default:
 			OF_ENSURE(0);
 		}
@@ -100,14 +96,15 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	}
 }
 
-bool
+int
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout)
 {
+	int error;
 	DWORD status;
 
-	if (!of_mutex_unlock(mutex))
-		return false;
+	if ((error = of_mutex_unlock(mutex)) != 0)
+		return error;
 
 	of_atomic_int_inc(&condition->count);
 	status = WaitForSingleObject(condition->event, timeout * 1000);
@@ -117,13 +114,11 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	case WAIT_OBJECT_0:
 		return of_mutex_lock(mutex);
 	case WAIT_TIMEOUT:
-		errno = ETIMEDOUT;
-		return false;
+		return ETIMEDOUT;
 	case WAIT_FAILED:
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
-			errno = EINVAL;
-			return false;
+			return EINVAL;
 		default:
 			OF_ENSURE(0);
 		}
@@ -132,13 +127,11 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	}
 }
 
-bool
+int
 of_condition_free(of_condition_t *condition)
 {
-	if (condition->count != 0) {
-		errno = EBUSY;
-		return false;
-	}
+	if (condition->count != 0)
+		return EBUSY;
 
-	return CloseHandle(condition->event);
+	return (CloseHandle(condition->event) ? 0 : EINVAL);
 }

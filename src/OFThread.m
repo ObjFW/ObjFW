@@ -103,7 +103,7 @@ callMain(id object)
 	OFThread *thread = (OFThread *)object;
 	OFString *name;
 
-	if (!of_tlskey_set(threadSelfKey, thread))
+	if (of_tlskey_set(threadSelfKey, thread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: thread.class];
 
@@ -166,7 +166,7 @@ callMain(id object)
 	if (self != [OFThread class])
 		return;
 
-	if (!of_tlskey_new(&threadSelfKey))
+	if (of_tlskey_new(&threadSelfKey) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -350,7 +350,7 @@ callMain(id object)
 	mainThread->_thread = of_thread_current();
 	mainThread->_running = OF_THREAD_RUNNING;
 
-	if (!of_tlskey_set(threadSelfKey, mainThread))
+	if (of_tlskey_set(threadSelfKey, mainThread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -360,7 +360,7 @@ callMain(id object)
 	self = [super init];
 
 	@try {
-		if (!of_thread_attr_init(&_attr))
+		if (of_thread_attr_init(&_attr) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
@@ -411,6 +411,8 @@ callMain(id object)
 
 - (void)start
 {
+	int error;
+
 	if (_running == OF_THREAD_RUNNING)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
@@ -424,26 +426,27 @@ callMain(id object)
 
 	_running = OF_THREAD_RUNNING;
 
-	if (!of_thread_new(&_thread,
-	    [_name cStringWithEncoding: [OFLocale encoding]], callMain, self,
-	    &_attr)) {
+	if ((error = of_thread_new(&_thread, [_name cStringWithEncoding:
+	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
 		[self release];
 		@throw [OFThreadStartFailedException
 		    exceptionWithThread: self
-				  errNo: errno];
+				  errNo: error];
 	}
 }
 
 - (id)join
 {
+	int error;
+
 	if (_running == OF_THREAD_NOT_RUNNING)
 		@throw [OFThreadJoinFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
-	if (!of_thread_join(_thread))
+	if ((error = of_thread_join(_thread)) != 0)
 		@throw [OFThreadJoinFailedException exceptionWithThread: self
-								  errNo: errno];
+								  errNo: error];
 
 	_running = OF_THREAD_NOT_RUNNING;
 

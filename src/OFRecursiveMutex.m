@@ -39,7 +39,7 @@
 {
 	self = [super init];
 
-	if (!of_rmutex_new(&_rmutex)) {
+	if (of_rmutex_new(&_rmutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -53,8 +53,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		if (!of_rmutex_free(&_rmutex)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = of_rmutex_free(&_rmutex);
+
+		if (error != 0) {
+			OF_ENSURE(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,19 +69,23 @@
 
 - (void)lock
 {
-	if (!of_rmutex_lock(&_rmutex))
+	int error = of_rmutex_lock(&_rmutex);
+
+	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
-							  errNo: errno];
+							  errNo: error];
 }
 
 - (bool)tryLock
 {
-	if (!of_rmutex_trylock(&_rmutex)) {
-		if (errno == EBUSY)
+	int error = of_rmutex_trylock(&_rmutex);
+
+	if (error != 0) {
+		if (error == EBUSY)
 			return false;
 		else
 			@throw [OFLockFailedException exceptionWithLock: self
-								  errNo: errno];
+								  errNo: error];
 	}
 
 	return true;
@@ -87,9 +93,11 @@
 
 - (void)unlock
 {
-	if (!of_rmutex_unlock(&_rmutex))
+	int error = of_rmutex_unlock(&_rmutex);
+
+	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self
-							    errNo: errno];
+							    errNo: error];
 }
 
 - (OFString *)description

@@ -36,7 +36,7 @@ static of_tlskey_t threadKey;
 
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(of_tlskey_new(&threadKey));
+	OF_ENSURE(of_tlskey_new(&threadKey) == 0);
 }
 
 static void
@@ -45,7 +45,7 @@ functionWrapper(void)
 	bool detached = false;
 	of_thread_t thread =
 	    (of_thread_t)((struct Process *)FindTask(NULL))->pr_ExitData;
-	OF_ENSURE(of_tlskey_set(threadKey, thread));
+	OF_ENSURE(of_tlskey_set(threadKey, thread) == 0);
 
 	thread->function(thread->object);
 
@@ -69,25 +69,23 @@ functionWrapper(void)
 		free(thread);
 }
 
-bool
+int
 of_thread_attr_init(of_thread_attr_t *attr)
 {
 	attr->priority = 0;
 	attr->stackSize = 0;
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
 	OFMutableData *tags = nil;
 
-	if ((*thread = calloc(1, sizeof(**thread))) == NULL) {
-		errno = ENOMEM;
-		return false;
-	}
+	if ((*thread = calloc(1, sizeof(**thread))) == NULL)
+		return ENOMEM;
 
 	@try {
 		(*thread)->function = function;
@@ -124,10 +122,8 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		ADD_TAG(NP_CloseError, FALSE)
 
 		if (attr != NULL && attr->priority != 0) {
-			if (attr->priority < 1 || attr->priority > 1) {
-				errno = EINVAL;
-				return false;
-			}
+			if (attr->priority < 1 || attr->priority > 1)
+				return EINVAL;
 
 			/*
 			 * -1 should be -128 (lowest possible priority) while
@@ -149,8 +145,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		(*thread)->task = (struct Task *)CreateNewProc(tags.items);
 		if ((*thread)->task == NULL) {
 			free(*thread);
-			errno = EAGAIN;
-			return false;
+			return EAGAIN;
 		}
 	} @catch (id e) {
 		free(*thread);
@@ -159,7 +154,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		[tags release];
 	}
 
-	return true;
+	return 0;
 }
 
 of_thread_t
@@ -168,7 +163,7 @@ of_thread_current(void)
 	return of_tlskey_get(threadKey);
 }
 
-bool
+int
 of_thread_join(of_thread_t thread)
 {
 	ObtainSemaphore(&thread->semaphore);
@@ -177,19 +172,15 @@ of_thread_join(of_thread_t thread)
 		ReleaseSemaphore(&thread->semaphore);
 
 		free(thread);
-		return true;
+		return 0;
 	}
 
 	@try {
-		if (thread->detached || thread->joinTask != NULL) {
-			errno = EINVAL;
-			return false;
-		}
+		if (thread->detached || thread->joinTask != NULL)
+			return EINVAL;
 
-		if ((thread->joinSigBit = AllocSignal(-1)) == -1) {
-			errno = EAGAIN;
-			return false;
-		}
+		if ((thread->joinSigBit = AllocSignal(-1)) == -1)
+			return EAGAIN;
 
 		thread->joinTask = FindTask(NULL);
 	} @finally {
@@ -202,10 +193,10 @@ of_thread_join(of_thread_t thread)
 	assert(thread->done);
 	free(thread);
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_thread_detach(of_thread_t thread)
 {
 	ObtainSemaphore(&thread->semaphore);
@@ -217,7 +208,7 @@ of_thread_detach(of_thread_t thread)
 
 	ReleaseSemaphore(&thread->semaphore);
 
-	return true;
+	return 0;
 }
 
 void
