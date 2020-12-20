@@ -23,6 +23,9 @@
 
 #import "macros.h"
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+struct Library *DOSBase;
+#endif
 #ifdef OF_AMIGAOS4
 extern struct Library *DOSBase;
 extern struct DOSIFace *IDOS;
@@ -34,10 +37,12 @@ struct LocaleIFace *ILocale;
 
 OF_CONSTRUCTOR()
 {
-#ifdef OF_AMIGAOS4
+#if defined(OF_COMPILING_AMIGA_LIBRARY) || defined(OF_AMIGAOS4)
 	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
 		@throw [OFInitializationFailedException exception];
+#endif
 
+#ifdef OF_AMIGAOS4
 	if ((IDOS = (struct DOSIFace *)
 	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
 		@throw [OFInitializationFailedException exception];
@@ -64,10 +69,12 @@ OF_DESTRUCTOR()
 		CloseLibrary(LocaleBase);
 
 #ifdef OF_AMIGAOS4
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-
 	if (IDOS != NULL)
 		DropInterface((struct Interface *)IDOS);
+#endif
+
+#if defined(OF_COMPILING_AMIGA_LIBRARY) || defined(OF_AMIGAOS4)
+	if (DOSBase != NULL)
+		CloseLibrary(DOSBase);
 #endif
 }
