@@ -111,9 +111,9 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 
 	va_start(args, format);
 
-	vfprintf(stderr, "[ObjFWRT @ %s:%u] ", file, line);
+	fprintf(stderr, "[ObjFWRT @ %s:%u] ", file, line);
 	vfprintf(stderr, format, args);
-	vfprintf(stderr, "\n");
+	fprintf(stderr, "\n");
 	fflush(stderr);
 
 	va_end(args);
