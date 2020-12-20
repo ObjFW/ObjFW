@@ -22,6 +22,7 @@
 #import "macros.h"
 
 #include <proto/exec.h>
+#include <proto/intuition.h>
 
 struct ObjFWRTBase;
 
@@ -76,6 +77,28 @@ get_errno(void)
 	return &errno;
 }
 
+static void
+error(const char *string, ULONG arg)
+{
+	struct Library *IntuitionBase = OpenLibrary("intuition.library", 0);
+
+	if (IntuitionBase != NULL) {
+		struct EasyStruct easy = {
+			.es_StructSize = sizeof(easy),
+			.es_Flags = 0,
+			.es_Title = (UBYTE *)NULL,
+			.es_TextFormat = (UBYTE *)string,
+			(UBYTE *)"OK"
+		};
+
+		EasyRequest(NULL, &easy, NULL, arg);
+
+		CloseLibrary(IntuitionBase);
+	}
+
+	exit(EXIT_FAILURE);
+}
+
 static void __attribute__((__used__))
 ctor(void)
 {
@@ -125,15 +148,12 @@ ctor(void)
 		return;
 
 	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
-	    OBJFWRT_LIB_MINOR)) == NULL) {
-		fputs("Failed to open " OBJFWRT_AMIGA_LIB "!\n", stderr);
-		abort();
-	}
+	    OBJFWRT_LIB_MINOR)) == NULL)
+		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
+		    OBJFWRT_LIB_MINOR);
 
-	if (!glue_objc_init(1, &libc, stdout, stderr)) {
-		fputs("Failed to initialize " OBJFWRT_AMIGA_LIB "!\n", stderr);
-		abort();
-	}
+	if (!glue_objc_init(1, &libc, stdout, stderr))
+		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
 }
