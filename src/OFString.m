@@ -2346,21 +2346,64 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
-	char *endPointer = NULL;
-	long long value;
+	bool negative = false;
+	long long value = 0;
 
-	errno = 0;
-	value = strtoll(UTF8String, &endPointer, base);
+	while (of_ascii_isspace(*UTF8String))
+		UTF8String++;
 
-	if ((value == LLONG_MIN || value == LLONG_MAX) && errno == ERANGE)
-		@throw [OFOutOfRangeException exception];
+	switch (*UTF8String) {
+	case '-':
+		negative = true;
+	case '+':
+		UTF8String++;
+	}
 
-	/* Check if there are any invalid chars left */
-	if (endPointer != NULL)
-		for (; *endPointer != '\0'; endPointer++)
-			/* Use isspace since strtoll uses the same. */
-			if (!isspace((unsigned char)*endPointer))
+	if (UTF8String[0] == '0') {
+		if (UTF8String[1] == 'x') {
+			if (base == 0)
+				base = 16;
+
+			if (base != 16 || UTF8String[2] == '\0')
 				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
+		} else {
+			if (base == 0)
+				base = 8;
+
+			UTF8String++;
+		}
+	}
+
+	while (*UTF8String != '\0') {
+		unsigned char c = of_ascii_toupper(*UTF8String++);
+
+		if (c >= '0' && c <= '9')
+			c -= '0';
+		else if (c >= 'A' && c <= 'Z')
+			c -= ('A' - 10);
+		else if (of_ascii_isspace(c)) {
+			while (*UTF8String != '\0')
+				if (!of_ascii_isspace(*UTF8String++))
+					@throw [OFInvalidFormatException
+					    exception];
+
+			break;
+		} else
+			@throw [OFInvalidFormatException exception];
+
+		if (c >= base)
+			@throw [OFInvalidFormatException exception];
+
+		if (LLONG_MAX / base < value || LLONG_MAX - (value * base) < c)
+			@throw [OFOutOfRangeException exception];
+
+		value = (value * base) + c;
+	}
+
+	if (negative)
+		value *= -1;
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2376,28 +2419,61 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
-	char *endPointer = NULL;
-	unsigned long long value;
+	unsigned long long value = 0;
 
-	/* Use isspace since strtoull uses the same. */
-	while (isspace((unsigned char)*UTF8String))
+	while (of_ascii_isspace(*UTF8String))
 		UTF8String++;
 
-	if (*UTF8String == '-')
+	switch (*UTF8String) {
+	case '-':
 		@throw [OFInvalidFormatException exception];
+	case '+':
+		UTF8String++;
+	}
 
-	errno = 0;
-	value = strtoull(UTF8String, &endPointer, base);
+	if (UTF8String[0] == '0') {
+		if (UTF8String[1] == 'x') {
+			if (base == 0)
+				base = 16;
 
-	if (value == ULLONG_MAX && errno == ERANGE)
-		@throw [OFOutOfRangeException exception];
-
-	/* Check if there are any invalid chars left */
-	if (endPointer != NULL)
-		for (; *endPointer != '\0'; endPointer++)
-			/* Use isspace since strtoull uses the same. */
-			if (!isspace((unsigned char)*endPointer))
+			if (base != 16 || UTF8String[2] == '\0')
 				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
+		} else {
+			if (base == 0)
+				base = 8;
+
+			UTF8String++;
+		}
+	}
+
+	while (*UTF8String != '\0') {
+		unsigned char c = of_ascii_toupper(*UTF8String++);
+
+		if (c >= '0' && c <= '9')
+			c -= '0';
+		else if (c >= 'A' && c <= 'Z')
+			c -= ('A' - 10);
+		else if (of_ascii_isspace(c)) {
+			while (*UTF8String != '\0')
+				if (!of_ascii_isspace(*UTF8String++))
+					@throw [OFInvalidFormatException
+					    exception];
+
+			break;
+		} else
+			@throw [OFInvalidFormatException exception];
+
+		if (c >= base)
+			@throw [OFInvalidFormatException exception];
+
+		if (ULLONG_MAX / base < value ||
+		    ULLONG_MAX - (value * base) < c)
+			@throw [OFOutOfRangeException exception];
+
+		value = (value * base) + c;
+	}
 
 	objc_autoreleasePoolPop(pool);
 
