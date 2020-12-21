@@ -272,9 +272,6 @@ struct objc_libc {
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 # endif
-# undef stdout
-# undef stderr
-extern FILE *_Nonnull stdout, *_Nonnull stderr;
 #endif
 
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);

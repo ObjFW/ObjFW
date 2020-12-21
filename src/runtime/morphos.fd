@@ -2,7 +2,7 @@
 ##bias 30
 ##public
 * The following function is only for the linklib.
-glue_objc_init(version,libc,stdout,stderr)(sysv,r12base)
+glue_objc_init(version,libc)(sysv,r12base)
 glue___objc_exec_class(module)(sysv,r12base)
 glue_objc_msg_lookup(object,selector)(sysv,r12base)
 glue_objc_msg_lookup_stret(object,selector)(sysv,r12base)

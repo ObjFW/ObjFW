@@ -144,7 +144,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!glue_objc_init(1, &libc, stdout, stderr))
+	if (!glue_objc_init(1, &libc))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
