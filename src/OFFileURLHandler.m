@@ -275,7 +275,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 # endif
 		int error = retrieveError();
 		UnLock(lock);
-		return error();
+		return error;
 	}
 
 	UnLock(lock);
