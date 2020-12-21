@@ -53,11 +53,10 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
 }
 
 void
-objc_error(const char *file, unsigned int line, const char *format, ...)
+objc_error(const char *title, const char *format, ...)
 {
 #ifdef OF_AMIGAOS
-# define BUF_LEN 256
-	char title[BUF_LEN];
+# define BUF_LEN 512
 	char message[BUF_LEN];
 	int status;
 	va_list args;
@@ -66,10 +65,6 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 	struct IntuitionIFace *IIntuition;
 # endif
 	struct EasyStruct easy;
-
-	status = snprintf(title, BUF_LEN, "ObjFWRT @ %s:%u", file, line);
-	if (status <= 0 || status >= BUF_LEN)
-		title[0] = '\0';
 
 	va_start(args, format);
 	status = vsnprintf(message, BUF_LEN, format, args);
@@ -111,7 +106,7 @@ objc_error(const char *file, unsigned int line, const char *format, ...)
 
 	va_start(args, format);
 
-	fprintf(stderr, "[ObjFWRT @ %s:%u] ", file, line);
+	fprintf(stderr, "[%s] ", title);
 	vfprintf(stderr, format, args);
 	fprintf(stderr, "\n");
 	fflush(stderr);
