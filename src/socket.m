@@ -26,6 +26,9 @@
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFLocale.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 #import "OFString.h"
 
 #import "OFException.h"  /* For some E* -> WSAE* defines */
@@ -38,11 +41,7 @@
 #import "socket.h"
 #import "socket_helpers.h"
 #ifdef OF_HAVE_THREADS
-# if !defined(OF_AMIGAOS) || defined(OF_MORPHOS)
-#  import "mutex.h"
-# else
-#  import "tlskey.h"
-# endif
+# import "tlskey.h"
 #endif
 #import "once.h"
 
@@ -56,7 +55,7 @@
 #endif
 
 #if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-static of_mutex_t mutex;
+static OFMutex *mutex;
 #endif
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
@@ -125,8 +124,7 @@ init(void)
 # endif
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (of_mutex_new(&mutex) != 0)
-		return;
+	mutex = [[OFMutex alloc] init];
 
 #  ifdef OF_WII
 	if (of_spinlock_new(&spinlock) != 0)
@@ -137,9 +135,9 @@ init(void)
 	initSuccessful = true;
 }
 
-# ifdef OF_AMIGAOS
 OF_DESTRUCTOR()
 {
+# ifdef OF_AMIGAOS
 #  ifdef OF_AMIGAOS4
 	if (ISocket != NULL)
 		DropInterface((struct Interface *)ISocket);
@@ -147,8 +145,10 @@ OF_DESTRUCTOR()
 
 	if (SocketBase != NULL)
 		CloseLibrary(SocketBase);
-}
 # endif
+
+	[mutex release];
+}
 #endif
 
 bool
@@ -329,16 +329,11 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 	int ret;
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (of_mutex_lock(&mutex) != 0)
-		@throw [OFLockFailedException exception];
-
+	[mutex lock];
 # endif
-
 	ret = getsockname(sock, addr, addrLen);
-
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (of_mutex_unlock(&mutex) != 0)
-		@throw [OFUnlockFailedException exception];
+	[mutex unlock];
 # endif
 
 	return ret;

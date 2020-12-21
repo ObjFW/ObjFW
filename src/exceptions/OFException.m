@@ -29,16 +29,15 @@
 #import "OFException.h"
 #import "OFArray.h"
 #import "OFLocale.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
-
-#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-# import "mutex.h"
-#endif
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # include <winerror.h>
@@ -71,12 +70,16 @@ extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
 #endif
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-static of_mutex_t mutex;
+static OFMutex *mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (of_mutex_new(&mutex) != 0)
-		@throw [OFInitializationFailedException exception];
+	mutex = [[OFMutex alloc] init];
+}
+
+OF_DESTRUCTOR()
+{
+	[mutex release];
 }
 #endif
 
@@ -189,9 +192,7 @@ of_strerror(int errNo)
 				 encoding: [OFLocale encoding]];
 #else
 # ifdef OF_HAVE_THREADS
-	if (of_mutex_lock(&mutex) != 0)
-		@throw [OFLockFailedException exception];
-
+	[mutex lock];
 	@try {
 # endif
 		ret = [OFString
@@ -199,8 +200,7 @@ of_strerror(int errNo)
 			     encoding: [OFLocale encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (of_mutex_unlock(&mutex) != 0)
-			@throw [OFUnlockFailedException exception];
+		[mutex unlock];
 	}
 # endif
 #endif

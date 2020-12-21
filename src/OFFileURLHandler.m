@@ -109,9 +109,19 @@ typedef struct stat of_stat_t;
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
+
+OF_DESTRUCTOR()
+{
+	[passwdMutex release];
+}
 #endif
 #if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
+
+OF_DESTRUCTOR()
+{
+	[readdirMutex release];
+}
 #endif
 
 #ifdef OF_WINDOWS

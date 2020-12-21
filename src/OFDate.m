@@ -110,6 +110,11 @@ now(void)
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
+
+OF_DESTRUCTOR()
+{
+	[mutex release];
+}
 #endif
 
 #ifdef OF_WINDOWS
