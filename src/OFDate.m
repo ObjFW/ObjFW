@@ -111,7 +111,8 @@ now(void)
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
 
-OF_DESTRUCTOR()
+void
+releaseMutex(void)
 {
 	[mutex release];
 }
@@ -351,6 +352,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 	mutex = [[OFMutex alloc] init];
+	atexit(releaseMutex);
 #endif
 
 #ifdef OF_WINDOWS

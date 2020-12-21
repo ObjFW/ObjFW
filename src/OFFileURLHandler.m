@@ -110,7 +110,8 @@ typedef struct stat of_stat_t;
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 
-OF_DESTRUCTOR()
+void
+releasePasswdMutex(void)
 {
 	[passwdMutex release];
 }
@@ -118,7 +119,8 @@ OF_DESTRUCTOR()
 #if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
 
-OF_DESTRUCTOR()
+void
+releaseReaddirMutex(void)
 {
 	[readdirMutex release];
 }
@@ -545,9 +547,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 	passwdMutex = [[OFMutex alloc] init];
+	atexit(releasePasswdMutex);
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
 	readdirMutex = [[OFMutex alloc] init];
+	atexit(releaseReaddirMutex);
 #endif
 
 #ifdef OF_WINDOWS

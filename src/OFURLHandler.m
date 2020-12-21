@@ -37,7 +37,8 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
 
-OF_DESTRUCTOR()
+void
+releaseMutex(void)
 {
 	[mutex release];
 }
@@ -54,6 +55,7 @@ OF_DESTRUCTOR()
 	handlers = [[OFMutableDictionary alloc] init];
 #ifdef OF_HAVE_THREADS
 	mutex = [[OFMutex alloc] init];
+	atexit(releaseMutex);
 #endif
 
 #ifdef OF_HAVE_FILES

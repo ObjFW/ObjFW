@@ -56,6 +56,12 @@
 
 #if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 static OFMutex *mutex;
+
+static void
+releaseMutex(void)
+{
+	[mutex release];
+}
 #endif
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
@@ -125,6 +131,7 @@ init(void)
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	mutex = [[OFMutex alloc] init];
+	atexit(releaseMutex);
 
 #  ifdef OF_WII
 	if (of_spinlock_new(&spinlock) != 0)
@@ -146,8 +153,6 @@ OF_DESTRUCTOR()
 	if (SocketBase != NULL)
 		CloseLibrary(SocketBase);
 # endif
-
-	[mutex release];
 }
 #endif
 
