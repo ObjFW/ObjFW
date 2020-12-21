@@ -110,7 +110,7 @@ typedef struct stat of_stat_t;
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 
-void
+static void
 releasePasswdMutex(void)
 {
 	[passwdMutex release];
@@ -119,7 +119,7 @@ releasePasswdMutex(void)
 #if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
 
-void
+static void
 releaseReaddirMutex(void)
 {
 	[readdirMutex release];

@@ -37,7 +37,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
 
-void
+static void
 releaseMutex(void)
 {
 	[mutex release];
