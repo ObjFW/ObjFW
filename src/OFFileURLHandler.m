@@ -139,70 +139,56 @@ filetimeToTimeInterval(const FILETIME *filetime)
 	    filetime->dwLowDateTime) / 10000000.0 - 11644473600.0;
 }
 
-static void
-setErrno(void)
+static int
+retrieveError(void)
 {
 	switch (GetLastError()) {
 	case ERROR_FILE_NOT_FOUND:
 	case ERROR_PATH_NOT_FOUND:
 	case ERROR_NO_MORE_FILES:
-		errno = ENOENT;
-		return;
+		return ENOENT;
 	case ERROR_ACCESS_DENIED:
-		errno = EACCES;
-		return;
+		return EACCES;
 	case ERROR_DIRECTORY:
-		errno = ENOTDIR;
-		return;
+		return ENOTDIR;
 	case ERROR_NOT_READY:
-		errno = EBUSY;
-		return;
+		return EBUSY;
+	default:
+		return EIO;
 	}
-
-	errno = 0;
 }
 #endif
 
 #ifdef OF_AMIGAOS
-static void
-setErrno(void)
+static int
+retrieveError(void)
 {
 	switch (IoErr()) {
 	case ERROR_DELETE_PROTECTED:
 	case ERROR_READ_PROTECTED:
 	case ERROR_WRITE_PROTECTED:
-		errno = EACCES;
-		break;
+		return EACCES;
 	case ERROR_DISK_NOT_VALIDATED:
 	case ERROR_OBJECT_IN_USE:
-		errno = EBUSY;
-		break;
+		return EBUSY;
 	case ERROR_OBJECT_EXISTS:
-		errno = EEXIST;
-		break;
+		return EEXIST;
 	case ERROR_DIR_NOT_FOUND:
 	case ERROR_NO_MORE_ENTRIES:
 	case ERROR_OBJECT_NOT_FOUND:
-		errno = ENOENT;
-		break;
+		return ENOENT;
 	case ERROR_NO_FREE_STORE:
-		errno = ENOMEM;
-		break;
+		return ENOMEM;
 	case ERROR_DISK_FULL:
-		errno = ENOSPC;
-		break;
+		return ENOSPC;
 	case ERROR_DIRECTORY_NOT_EMPTY:
-		errno = ENOTEMPTY;
-		break;
+		return ENOTEMPTY;
 	case ERROR_DISK_WRITE_PROTECTED:
-		errno = EROFS;
-		break;
+		return EROFS;
 	case ERROR_RENAME_ACROSS_DEVICES:
-		errno = EXDEV;
-		break;
+		return EXDEV;
 	default:
-		errno = 0;
-		break;
+		return EIO;
 	}
 }
 #endif
@@ -222,10 +208,8 @@ of_stat(OFString *path, of_stat_t *buffer)
 		    [path cStringWithEncoding: [OFLocale encoding]],
 		    GetFileExInfoStandard, &data);
 
-	if (!success) {
-		setErrno();
-		return -1;
-	}
+	if (!success)
+		return retrieveError();
 
 	buffer->st_size = (uint64_t)data.nFileSizeHigh << 32 |
 	    data.nFileSizeLow;
@@ -241,18 +225,14 @@ of_stat(OFString *path, of_stat_t *buffer)
 		HANDLE findHandle;
 
 		if ((findHandle = FindFirstFileW(path.UTF16String,
-		    &findData)) == INVALID_HANDLE_VALUE) {
-			setErrno();
-			return -1;
-		}
+		    &findData)) == INVALID_HANDLE_VALUE)
+			return retrieveError();
 
 		@try {
 			if (!(findData.dwFileAttributes &
-			    FILE_ATTRIBUTE_REPARSE_POINT)) {
+			    FILE_ATTRIBUTE_REPARSE_POINT))
 				/* Race? Indicate to try again. */
-				errno = EAGAIN;
-				return -1;
-			}
+				return EAGAIN;
 
 			buffer->st_mode =
 			    (findData.dwReserved0 == IO_REPARSE_TAG_SYMLINK
@@ -285,20 +265,17 @@ of_stat(OFString *path, of_stat_t *buffer)
 	struct DateStamp *date;
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
-	    SHARED_LOCK)) == 0) {
-		setErrno();
-		return -1;
-	}
+	    SHARED_LOCK)) == 0)
+		return retrieveError();
 
 # ifdef OF_AMIGAOS4
 	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
 # else
 	if (!Examine(lock, &fib)) {
 # endif
+		int error = retrieveError();
 		UnLock(lock);
-
-		errno = 0;
-		return -1;
+		return error();
 	}
 
 	UnLock(lock);
@@ -339,9 +316,16 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	return 0;
 #elif defined(HAVE_STAT64)
-	return stat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
+	if (stat64([path cStringWithEncoding: [OFLocale encoding]],
+	    buffer) != 0)
+		return errno;
+
+	return 0;
 #else
-	return stat([path cStringWithEncoding: [OFLocale encoding]], buffer);
+	if (stat([path cStringWithEncoding: [OFLocale encoding]], buffer) != 0)
+		return errno;
+
+	return 0;
 #endif
 }
 
@@ -351,10 +335,15 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && \
     !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
 # ifdef HAVE_LSTAT64
-	return lstat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
+	if (lstat64([path cStringWithEncoding: [OFLocale encoding]],
+	    buffer) != 0)
+		return errno;
 # else
-	return lstat([path cStringWithEncoding: [OFLocale encoding]], buffer);
+	if (lstat([path cStringWithEncoding: [OFLocale encoding]], buffer) != 0)
+		return errno;
 # endif
+
+	return 0;
 #else
 	return of_stat(path, buffer);
 #endif
@@ -499,7 +488,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
 		@throw [OFRetrieveItemAttributesFailedException
 		    exceptionWithURL: URL
-			       errNo: 0];
+			       errNo: retrieveError()];
 
 	@try {
 		union {
@@ -515,12 +504,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    NULL))
 			@throw [OFRetrieveItemAttributesFailedException
 			    exceptionWithURL: URL
-				       errNo: 0];
+				       errNo: retrieveError()];
 
 		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
 			@throw [OFRetrieveItemAttributesFailedException
 			    exceptionWithURL: URL
-				       errNo: 0];
+				       errNo: retrieveError()];
 
 #  define slrb buffer.data.SymbolicLinkReparseBuffer
 		tmp = slrb.PathBuffer +
@@ -588,7 +577,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 {
 	of_stat_t s;
 
-	if (of_stat(path, &s) == -1)
+	if (of_stat(path, &s) != 0)
 		return false;
 
 	return S_ISDIR(s.st_mode);
@@ -612,6 +601,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	of_mutable_file_attributes_t ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
+	int error;
 	of_stat_t s;
 
 	if (URL == nil)
@@ -622,10 +612,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	path = URL.fileSystemRepresentation;
 
-	if (of_lstat(path, &s) == -1)
+	if ((error = of_lstat(path, &s)) != 0)
 		@throw [OFRetrieveItemAttributesFailedException
 		    exceptionWithURL: URL
-			       errNo: errno];
+			       errNo: error];
 
 	if (s.st_size < 0)
 		@throw [OFOutOfRangeException exception];
@@ -730,19 +720,16 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 # ifdef OF_AMIGAOS4
 	if (!SetDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0) {
+	    &date) != 0)
 # else
 	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0) {
+	    &date) != 0)
 # endif
-		setErrno();
-
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithURL: URL
 			  attributes: attributes
 		     failedAttribute: attributeKey
-			       errNo: errno];
-	}
+			       errNo: retrieveError()];
 #else
 	of_time_interval_t lastAccessTime =
 	    lastAccessDate.timeIntervalSince1970;
@@ -935,7 +922,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
+	if (of_stat(URL.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -959,7 +946,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
+	if (of_stat(URL.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -1001,13 +988,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	BPTR lock;
 
 	if ((lock = CreateDir(
-	    [path cStringWithEncoding: [OFLocale encoding]])) == 0) {
-		setErrno();
-
+	    [path cStringWithEncoding: [OFLocale encoding]])) == 0)
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
-			       errNo: errno];
-	}
+			       errNo: retrieveError()];
 
 	UnLock(lock);
 #else
@@ -1043,17 +1027,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		WIN32_FIND_DATAW fd;
 
 		if ((handle = FindFirstFileW(path.UTF16String,
-		    &fd)) == INVALID_HANDLE_VALUE) {
-			int errNo = 0;
-
-			if (GetLastError() == ERROR_FILE_NOT_FOUND)
-				errNo = ENOENT;
-
+		    &fd)) == INVALID_HANDLE_VALUE)
 			@throw [OFOpenItemFailedException
 			    exceptionWithURL: URL
 					mode: nil
-				       errNo: errNo];
-		}
+				       errNo: retrieveError()];
 
 		@try {
 			do {
@@ -1076,7 +1054,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: 0
-						  errNo: EIO];
+						  errNo: retrieveError()];
 		} @finally {
 			FindClose(handle);
 		}
@@ -1086,17 +1064,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 		if ((handle = FindFirstFileA(
 		    [path cStringWithEncoding: encoding], &fd)) ==
-		    INVALID_HANDLE_VALUE) {
-			int errNo = 0;
-
-			if (GetLastError() == ERROR_FILE_NOT_FOUND)
-				errNo = ENOENT;
-
+		    INVALID_HANDLE_VALUE)
 			@throw [OFOpenItemFailedException
 			    exceptionWithURL: URL
 					mode: nil
-				       errNo: errNo];
-		}
+				       errNo: retrieveError()];
 
 		@try {
 			do {
@@ -1120,7 +1092,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: 0
-						  errNo: EIO];
+						  errNo: retrieveError()];
 		} @finally {
 			FindClose(handle);
 		}
@@ -1130,13 +1102,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	BPTR lock;
 
 	if ((lock = Lock([path cStringWithEncoding: encoding],
-	    SHARED_LOCK)) == 0) {
-		setErrno();
-
-		@throw [OFOpenItemFailedException exceptionWithURL: URL
-							      mode: nil
-							     errNo: errno];
-	}
+	    SHARED_LOCK)) == 0)
+		@throw [OFOpenItemFailedException
+		    exceptionWithURL: URL
+				mode: nil
+			       errNo: retrieveError()];
 
 	@try {
 # ifdef OF_AMIGAOS4
@@ -1149,7 +1119,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			@throw [OFOpenItemFailedException
 			    exceptionWithURL: URL
 					mode: nil
-				       errNo: 0];
+				       errNo: retrieveError()];
 
 		@try {
 			while ((ed = ExamineDir(context)) != NULL) {
@@ -1173,7 +1143,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			@throw [OFOpenItemFailedException
 			    exceptionWithURL: URL
 					mode: nil
-				       errNo: 0];
+				       errNo: retrieveError()];
 
 		while (ExNext(lock, &fib)) {
 			OFString *file = [[OFString alloc]
@@ -1192,7 +1162,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: 0
-					  errNo: EIO];
+					  errNo: retrieveError()];
 	} @finally {
 		UnLock(lock);
 	}
@@ -1275,6 +1245,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
+	int error;
 	of_stat_t s;
 
 	if (URL == nil)
@@ -1285,9 +1256,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	path = URL.fileSystemRepresentation;
 
-	if (of_lstat(path, &s) != 0)
+	if ((error = of_lstat(path, &s)) != 0)
 		@throw [OFRemoveItemFailedException exceptionWithURL: URL
-							       errNo: errno];
+							       errNo: error];
 
 	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
@@ -1353,12 +1324,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	}
 
 #ifdef OF_AMIGAOS
-	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]])) {
-		setErrno();
-
-		@throw [OFRemoveItemFailedException exceptionWithURL: URL
-							       errNo: errno];
-	}
+	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]]))
+		@throw [OFRemoveItemFailedException
+		    exceptionWithURL: URL
+			       errNo: retrieveError()];
 #endif
 
 	objc_autoreleasePoolPop(pool);
@@ -1400,7 +1369,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		@throw [OFLinkFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
-				     errNo: 0];
+				     errNo: retrieveError()];
 # endif
 
 	objc_autoreleasePoolPop(pool);
@@ -1440,7 +1409,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithURL: URL
 			      target: target
-			       errNo: 0];
+			       errNo: retrieveError()];
 # endif
 
 	objc_autoreleasePoolPop(pool);
@@ -1470,14 +1439,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (!Rename([source.fileSystemRepresentation
 	    cStringWithEncoding: encoding],
 	    [destination.fileSystemRepresentation
-	    cStringWithEncoding: encoding])) {
-		setErrno();
-
+	    cStringWithEncoding: encoding]))
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
-				     errNo: errno];
-	}
+				     errNo: retrieveError()];
 #else
 	int status;
 
