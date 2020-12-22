@@ -70,6 +70,7 @@
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
 #endif
 
+#ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
 {
@@ -94,6 +95,7 @@ domainFromHostname(OFString *hostname)
 		return [hostname substringFromIndex: pos + 1];
 	}
 }
+#endif
 
 #if !defined(OF_WII) && !defined(OF_MORPHOS)
 static OFString *
