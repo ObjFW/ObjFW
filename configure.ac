@@ -1209,8 +1209,19 @@ AS_IF([test x"$enable_files" != x"no"], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
-AC_CHECK_HEADERS(fcntl.h dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
+AC_CHECK_HEADERS(dirent.h)
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep])
+
+case "$host_os" in
+amigaos* | morphos*)
+	dnl There is a symbol, but we cannot use fcntl() for sockets on
+	dnl AmigaOS / MorphOS.
+	;;
+*)
+	AC_CHECK_HEADERS(fcntl.h)
+	AC_CHECK_FUNCS(fcntl)
+	;;
+esac
 
 AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
