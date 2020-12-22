@@ -449,7 +449,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	/* Dropped after parsing options */
 	sandbox.allowsUnveil = true;
 
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -539,7 +539,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		permissions: @"r"];
 
 	sandbox.allowsUnveil = false;
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 	_outputPath = [outputPath copy];

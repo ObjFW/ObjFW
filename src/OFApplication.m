@@ -202,14 +202,14 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-+ (void)activateSandbox: (OFSandbox *)sandbox
++ (void)of_activateSandbox: (OFSandbox *)sandbox
 {
-	[app activateSandbox: sandbox];
+	[app of_activateSandbox: sandbox];
 }
 
-+ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
++ (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
-	[app activateSandboxForChildProcesses: sandbox];
+	[app of_activateSandboxForChildProcesses: sandbox];
 }
 #endif
 
@@ -627,7 +627,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-- (void)activateSandbox: (OFSandbox *)sandbox
+- (void)of_activateSandbox: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
@@ -672,7 +672,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 }
 
-- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
+- (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
