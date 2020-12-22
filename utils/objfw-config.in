@@ -98,10 +98,10 @@ package_depends_on() {
 parse_packages() {
 	while test x"$1" != "x"; do
 		case "$1" in
-			--package)
-				shift
-				package_depends_on "$1"
-				;;
+		--package)
+			shift
+			package_depends_on "$1"
+			;;
 		esac
 		shift
 	done
@@ -120,113 +120,109 @@ output_flag() {
 
 while test x"$1" != "x"; do
 	case "$1" in
-		--all)
-			output_flag "$CFLAGS $CPPFLAGS $CXXFLAGS $OBJCFLAGS"
-			output_flag "$LDFLAGS $LDFLAGS_REEXPORT $LDFLAGS_RPATH"
-			output_flag "$LIBS"
-			;;
-		--arc)
-			output_flag "-fobjc-arc -fobjc-arc-exceptions"
-			;;
-		--cflags)
-			output_flag "$CFLAGS"
-			;;
-		--cppflags)
-			output_flag "$CPPFLAGS"
-			;;
-		--cxxflags)
-			output_flag "$CXXFLAGS"
-			;;
-		--framework-libs)
-			output_flag "$FRAMEWORK_LIBS"
-			;;
-		--help)
-			show_help 0
-			;;
-		--objc)
-			output_flag "$OBJC"
-			;;
-		--objcflags)
-			output_flag "$OBJCFLAGS"
-			;;
-		--libs)
-			output_flag "$LIBS"
-			;;
-		--lib-cflags)
-			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
-				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
-					1>&2
-				exit 1
-			fi
-
-			output_flag "$LIB_CFLAGS"
-			;;
-		--lib-ldflags)
-			if test x"$SHARED_LIB" = x"" -o x"$LIB_MAJOR" = x"" \
-			-o x"$LIB_MINOR" = x""; then
-				printf "SHARED_LIB, LIB_MAJOR and " 2>&1
-				echo "LIB_MINOR need to be set!" 1>&2
-				exit 1
-			fi
-
-			output_flag "$LIB_LDFLAGS"
-			;;
-		--lib-prefix)
-			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
-				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
-					1>&2
-				exit 1
-			fi
-
-			output_flag "$LIB_PREFIX"
-			;;
-		--lib-suffix)
-			if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
-				echo "LIB_MAJOR and LIB_MINOR need to be set!" \
-					1>&2
-				exit 1
-			fi
-
-			output_flag "$LIB_SUFFIX"
-			;;
-		--ldflags)
-			output_flag "$LDFLAGS"
-			;;
-		--reexport)
-			output_flag "$LDFLAGS_REEXPORT"
-			;;
-		--rpath)
-			output_flag "$LDFLAGS_RPATH"
-			;;
-		--package)
-			# Already included into the flags.
-			shift
-			;;
-		--packages-dir)
-			output_flag "$packagesdir"
-			;;
-		--plugin-cflags)
-			output_flag "$PLUGIN_CFLAGS"
-			;;
-		--plugin-ldflags)
-			output_flag "$PLUGIN_LDFLAGS"
-			;;
-		--plugin-suffix)
-			output_flag "$PLUGIN_SUFFIX"
-			;;
-		--prog-suffix)
-			output_flag "$PROG_SUFFIX"
-			;;
-		--static-libs)
-			output_flag "$STATIC_LIBS"
-			;;
-		--version)
-			output_flag "$VERSION"
-			;;
-		*)
-			echo "Invalid option: $1" 1>&2
+	--all)
+		output_flag "$CFLAGS $CPPFLAGS $CXXFLAGS $OBJCFLAGS"
+		output_flag "$LDFLAGS $LDFLAGS_REEXPORT $LDFLAGS_RPATH $LIBS"
+		;;
+	--arc)
+		output_flag "-fobjc-arc -fobjc-arc-exceptions"
+		;;
+	--cflags)
+		output_flag "$CFLAGS"
+		;;
+	--cppflags)
+		output_flag "$CPPFLAGS"
+		;;
+	--cxxflags)
+		output_flag "$CXXFLAGS"
+		;;
+	--framework-libs)
+		output_flag "$FRAMEWORK_LIBS"
+		;;
+	--help)
+		show_help 0
+		;;
+	--objc)
+		output_flag "$OBJC"
+		;;
+	--objcflags)
+		output_flag "$OBJCFLAGS"
+		;;
+	--libs)
+		output_flag "$LIBS"
+		;;
+	--lib-cflags)
+		if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+			echo "LIB_MAJOR and LIB_MINOR need to be set!" 1>&2
 			exit 1
-			;;
+		fi
+
+		output_flag "$LIB_CFLAGS"
+		;;
+	--lib-ldflags)
+		if test x"$SHARED_LIB" = x"" -o x"$LIB_MAJOR" = x"" \
+		    -o x"$LIB_MINOR" = x""; then
+			printf "SHARED_LIB, LIB_MAJOR and " 2>&1
+			echo "LIB_MINOR need to be set!" 1>&2
+			exit 1
+		fi
+
+		output_flag "$LIB_LDFLAGS"
+		;;
+	--lib-prefix)
+		if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+			echo "LIB_MAJOR and LIB_MINOR need to be set!" 1>&2
+			exit 1
+		fi
+
+		output_flag "$LIB_PREFIX"
+		;;
+	--lib-suffix)
+		if test x"$LIB_MAJOR" = x"" -o x"$LIB_MINOR" = x""; then
+			echo "LIB_MAJOR and LIB_MINOR need to be set!" 1>&2
+			exit 1
+		fi
+
+		output_flag "$LIB_SUFFIX"
+		;;
+	--ldflags)
+		output_flag "$LDFLAGS"
+		;;
+	--reexport)
+		output_flag "$LDFLAGS_REEXPORT"
+		;;
+	--rpath)
+		output_flag "$LDFLAGS_RPATH"
+		;;
+	--package)
+		# Already included into the flags.
+		shift
+		;;
+	--packages-dir)
+		output_flag "$packagesdir"
+		;;
+	--plugin-cflags)
+		output_flag "$PLUGIN_CFLAGS"
+		;;
+	--plugin-ldflags)
+		output_flag "$PLUGIN_LDFLAGS"
+		;;
+	--plugin-suffix)
+		output_flag "$PLUGIN_SUFFIX"
+		;;
+	--prog-suffix)
+		output_flag "$PROG_SUFFIX"
+		;;
+	--static-libs)
+		output_flag "$STATIC_LIBS"
+		;;
+	--version)
+		output_flag "$VERSION"
+		;;
+	*)
+		echo "Invalid option: $1" 1>&2
+		exit 1
+		;;
 	esac
 	shift
 done

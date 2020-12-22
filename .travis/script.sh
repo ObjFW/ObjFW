@@ -14,14 +14,12 @@ if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
 		build OBJC="$CC" $@
 
 		case "$TRAVIS_CPU_ARCH" in
-			amd64)
-				build OBJC="$CC -m32" \
-					--host=i686-pc-linux-gnu $@
-				;;
-			s390x)
-				build OBJC="$CC -m31" \
-					--host=s390-pc-linux-gnu $@
-				;;
+		amd64)
+			build OBJC="$CC -m32" --host=i686-pc-linux-gnu $@
+			;;
+		s390x)
+			build OBJC="$CC -m31" --host=s390-pc-linux-gnu $@
+			;;
 		esac
 	}
 
