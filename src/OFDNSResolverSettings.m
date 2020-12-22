@@ -97,7 +97,7 @@ domainFromHostname(OFString *hostname)
 
 #if !defined(OF_WII) && !defined(OF_MORPHOS)
 static OFString *
-hostname(void)
+obtainHostname(void)
 {
 	char hostname[256];
 
@@ -665,7 +665,7 @@ parseNetStackArray(OFString *string)
 
 #if !defined(OF_WII) && !defined(OF_MORPHOS)
 	if (_localDomain == nil)
-		_localDomain = [domainFromHostname(hostname()) copy];
+		_localDomain = [domainFromHostname(obtainHostname()) copy];
 #endif
 
 	if (_searchDomains == nil) {
