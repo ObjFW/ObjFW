@@ -1113,14 +1113,22 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 {
 	void *pool;
 	OFMutableArray *array;
-	const char *cString = delimiter.UTF8String;
-	size_t cStringLength = delimiter.UTF8StringLength;
+	const char *cString;
+	size_t cStringLength;
 	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t last;
 	OFString *component;
 
+	if (delimiter == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (delimiter.length == 0)
+		return [OFArray arrayWithObject: self];
+
 	array = [OFMutableArray array];
 	pool = objc_autoreleasePoolPush();
+	cString = delimiter.UTF8String;
+	cStringLength = delimiter.UTF8StringLength;
 
 	if (cStringLength > _s->cStringLength) {
 		[array addObject: [[self copy] autorelease]];

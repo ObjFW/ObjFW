@@ -2244,7 +2244,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				 options: (int)options
 {
 	void *pool;
-	OFMutableArray *array = [OFMutableArray array];
+	OFMutableArray *array;
 	const of_unichar_t *characters, *delimiterCharacters;
 	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t length = self.length;
@@ -2252,6 +2252,13 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t last;
 	OFString *component;
 
+	if (delimiter == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (delimiter.length == 0)
+		return [OFArray arrayWithObject: self];
+
+	array = [OFMutableArray array];
 	pool = objc_autoreleasePoolPush();
 
 	characters = self.characters;
