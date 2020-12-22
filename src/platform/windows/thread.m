@@ -37,16 +37,16 @@ functionWrapper(struct thread_context *context)
 	free(context);
 }
 
-bool
+int
 of_thread_attr_init(of_thread_attr_t *attr)
 {
 	attr->priority = 0;
 	attr->stackSize = 0;
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
@@ -55,10 +55,8 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 	DWORD threadID;
 
 	if (attr != NULL && attr->priority != 0) {
-		if (attr->priority < -1 || attr->priority > 1) {
-			errno = EINVAL;
-			return false;
-		}
+		if (attr->priority < -1 || attr->priority > 1)
+			return EINVAL;
 
 		if (attr->priority < 0)
 			priority = THREAD_PRIORITY_LOWEST +
@@ -70,10 +68,8 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
 	}
 
-	if ((context = malloc(sizeof(*context))) == NULL) {
-		errno = ENOMEM;
-		return false;
-	}
+	if ((context = malloc(sizeof(*context))) == NULL)
+		return ENOMEM;
 
 	context->function = function;
 	context->object = object;
@@ -82,42 +78,40 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 	    (LPTHREAD_START_ROUTINE)functionWrapper, context, 0, &threadID);
 
 	if (thread == NULL) {
-		int errNo;
+		int error;
 
 		switch (GetLastError()) {
 		case ERROR_NOT_ENOUGH_MEMORY:
-			errNo = ENOMEM;
+			error = ENOMEM;
 			break;
 		case ERROR_ACCESS_DENIED:
-			errNo = EACCES;
+			error = EACCES;
 			break;
 		default:
 			OF_ENSURE(0);
 		}
 
 		free(context);
-		errno = errNo;
-		return false;
+		return error;
 	}
 
 	if (attr != NULL && attr->priority != 0)
 		OF_ENSURE(!SetThreadPriority(*thread, priority));
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_thread_join(of_thread_t thread)
 {
 	switch (WaitForSingleObject(thread, INFINITE)) {
 	case WAIT_OBJECT_0:
 		CloseHandle(thread);
-		return true;
+		return 0;
 	case WAIT_FAILED:
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
-			errno = EINVAL;
-			return false;
+			return EINVAL;
 		default:
 			OF_ENSURE(0);
 		}
@@ -126,12 +120,12 @@ of_thread_join(of_thread_t thread)
 	}
 }
 
-bool
+int
 of_thread_detach(of_thread_t thread)
 {
 	CloseHandle(thread);
 
-	return true;
+	return 0;
 }
 
 void

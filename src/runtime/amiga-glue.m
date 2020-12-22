@@ -29,7 +29,7 @@
 # define M68K_ARG(...)
 #endif
 
-extern bool objc_init(unsigned int, struct objc_libc *, FILE *, FILE *);
+extern bool objc_init(unsigned int, struct objc_libc *);
 
 #ifdef OF_MORPHOS
 /* All __saveds functions in this file need to use the SysV ABI */
@@ -43,15 +43,12 @@ __asm__ (
 #endif
 
 bool __saveds
-glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc,
-    FILE *stdout_, FILE *stderr_)
+glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc)
 {
 	M68K_ARG(unsigned int, version, d0)
 	M68K_ARG(struct objc_libc *, libc, a0)
-	M68K_ARG(FILE *, stdout_, a1)
-	M68K_ARG(FILE *, stderr_, a2)
 
-	return objc_init(version, libc, stdout_, stderr_);
+	return objc_init(version, libc);
 }
 
 void __saveds

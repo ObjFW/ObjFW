@@ -27,21 +27,21 @@
 # include <clib/alib_protos.h>
 #endif
 
-bool
+int
 of_condition_new(of_condition_t *condition)
 {
 	condition->waitingTasks = NULL;
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_signal(of_condition_t *condition)
 {
 	Forbid();
 	@try {
 		if (condition->waitingTasks == NULL)
-			return true;
+			return 0;
 
 		Signal(condition->waitingTasks->task,
 		    (1ul << condition->waitingTasks->sigBit));
@@ -51,16 +51,16 @@ of_condition_signal(of_condition_t *condition)
 		Permit();
 	}
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_broadcast(of_condition_t *condition)
 {
 	Forbid();
 	@try {
 		if (condition->waitingTasks == NULL)
-			return true;
+			return 0;
 
 		while (condition->waitingTasks != NULL) {
 			Signal(condition->waitingTasks->task,
@@ -72,10 +72,10 @@ of_condition_broadcast(of_condition_t *condition)
 		Permit();
 	}
 
-	return true;
+	return 0;
 }
 
-bool
+int
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
 	ULONG signalMask = 0;
@@ -83,7 +83,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	return of_condition_wait_or_signal(condition, mutex, &signalMask);
 }
 
-bool
+int
 of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
     ULONG *signalMask)
 {
@@ -91,19 +91,17 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
-	bool ret;
+	int error = 0;
 	ULONG mask;
 
-	if (waitingTask.sigBit == -1) {
-		errno = EAGAIN;
-		return false;
-	}
+	if (waitingTask.sigBit == -1)
+		return EAGAIN;
 
 	Forbid();
 
-	if (!of_mutex_unlock(mutex)) {
+	if ((error = of_mutex_unlock(mutex)) != 0) {
 		FreeSignal(waitingTask.sigBit);
-		return false;
+		return error;
 	}
 
 	waitingTask.next = condition->waitingTasks;
@@ -111,24 +109,22 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
 	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		ret = of_mutex_lock(mutex);
-	else {
+		error = of_mutex_lock(mutex);
+	else
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.
 		 */
-		ret = false;
-		errno = EINTR;
-	}
+		error = EINTR;
 
 	FreeSignal(waitingTask.sigBit);
 
 	Permit();
 
-	return ret;
+	return error;
 }
 
-bool
+int
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout)
 {
@@ -138,7 +134,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	    &signalMask);
 }
 
-bool
+int
 of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout, ULONG *signalMask)
 {
@@ -182,25 +178,25 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 #endif
 		}
 	};
+	int error = 0;
 	ULONG mask;
-	bool ret;
 
 	NewList(&port.mp_MsgList);
 
 	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
-		errno = EAGAIN;
+		error = EAGAIN;
 		goto fail;
 	}
 
 	if (OpenDevice("timer.device", UNIT_MICROHZ,
 	    (struct IORequest *)&request, 0) != 0) {
-		errno = EAGAIN;
+		error = EAGAIN;
 		goto fail;
 	}
 
 	Forbid();
 
-	if (!of_mutex_unlock(mutex)) {
+	if ((error = of_mutex_unlock(mutex)) != 0) {
 		Permit();
 		goto fail;
 	}
@@ -213,18 +209,15 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
 	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		ret = of_mutex_lock(mutex);
-	else if (mask & (1ul << port.mp_SigBit)) {
-		ret = false;
-		errno = ETIMEDOUT;
-	} else {
+		error = of_mutex_lock(mutex);
+	else if (mask & (1ul << port.mp_SigBit))
+		error = ETIMEDOUT;
+	else
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.
 		 */
-		ret = false;
-		errno = EINTR;
-	}
+		error = EINTR;
 
 	condition->waitingTasks = waitingTask.next;
 
@@ -236,32 +229,25 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	Permit();
 
-	FreeSignal(waitingTask.sigBit);
-	FreeSignal(port.mp_SigBit);
-
-	return ret;
-
 fail:
 	if (waitingTask.sigBit != -1)
 		FreeSignal(waitingTask.sigBit);
 	if (port.mp_SigBit != -1)
 		FreeSignal(port.mp_SigBit);
 
-	return false;
+	return error;
 }
 
-bool
+int
 of_condition_free(of_condition_t *condition)
 {
 	Forbid();
 	@try {
-		if (condition->waitingTasks != NULL) {
-			errno = EBUSY;
-			return false;
-		}
+		if (condition->waitingTasks != NULL)
+			return EBUSY;
 	} @finally {
 		Permit();
 	}
 
-	return true;
+	return 0;
 }

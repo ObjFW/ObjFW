@@ -129,12 +129,8 @@
 #elif defined(_AIX)
 # define OF_AIX
 #elif defined(__MORPHOS__)
-# ifndef __ixemul__
-#  define OF_MORPHOS
-#  define OF_AMIGAOS
-# else
-#  define OF_MORPHOS_IXEMUL
-# endif
+# define OF_MORPHOS
+# define OF_AMIGAOS
 #elif defined(__amigaos4__)
 # define OF_AMIGAOS4
 # define OF_AMIGAOS

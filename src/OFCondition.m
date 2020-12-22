@@ -38,7 +38,7 @@
 {
 	self = [super init];
 
-	if (!of_condition_new(&_condition)) {
+	if (of_condition_new(&_condition) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -52,8 +52,10 @@
 - (void)dealloc
 {
 	if (_conditionInitialized) {
-		if (!of_condition_free(&_condition)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = of_condition_free(&_condition);
+
+		if (error != 0) {
+			OF_ENSURE(error == EBUSY);
 
 			@throw [OFConditionStillWaitingException
 			    exceptionWithCondition: self];
@@ -65,32 +67,38 @@
 
 - (void)wait
 {
-	if (!of_condition_wait(&_condition, &_mutex))
+	int error = of_condition_wait(&_condition, &_mutex);
+
+	if (error != 0)
 		@throw [OFConditionWaitFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 
 #ifdef OF_AMIGAOS
 - (void)waitForConditionOrExecSignal: (ULONG *)signalMask
 {
-	if (!of_condition_wait_or_signal(&_condition, &_mutex, signalMask))
+	int error = of_condition_wait_or_signal(&_condition, &_mutex,
+	    signalMask);
+
+	if (error != 0)
 		@throw [OFConditionWaitFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 #endif
 
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
 {
-	if (!of_condition_timed_wait(&_condition, &_mutex, timeInterval)) {
-		if (errno == ETIMEDOUT)
-			return false;
-		else
-			@throw [OFConditionWaitFailedException
-			    exceptionWithCondition: self
-					     errNo: errno];
-	}
+	int error = of_condition_timed_wait(&_condition, &_mutex, timeInterval);
+
+	if (error == ETIMEDOUT)
+		return false;
+
+	if (error != 0)
+		@throw [OFConditionWaitFailedException
+		    exceptionWithCondition: self
+				     errNo: error];
 
 	return true;
 }
@@ -99,15 +107,16 @@
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
-	if (!of_condition_timed_wait_or_signal(&_condition, &_mutex,
-	    timeInterval, signalMask)) {
-		if (errno == ETIMEDOUT)
-			return false;
-		else
-			@throw [OFConditionWaitFailedException
-			    exceptionWithCondition: self
-					     errNo: errno];
-	}
+	int error = of_condition_timed_wait_or_signal(&_condition, &_mutex,
+	    timeInterval, signalMask);
+
+	if (error == ETIMEDOUT)
+		return false;
+
+	if (error != 0)
+		@throw [OFConditionWaitFailedException
+		    exceptionWithCondition: self
+				     errNo: error];
 
 	return true;
 }
@@ -129,17 +138,21 @@
 
 - (void)signal
 {
-	if (!of_condition_signal(&_condition))
+	int error = of_condition_signal(&_condition);
+
+	if (error != 0)
 		@throw [OFConditionSignalFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 
 - (void)broadcast
 {
-	if (!of_condition_broadcast(&_condition))
+	int error = of_condition_broadcast(&_condition);
+
+	if (error != 0)
 		@throw [OFConditionBroadcastFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 @end

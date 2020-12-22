@@ -22,12 +22,12 @@
 #import "macros.h"
 
 #include <proto/exec.h>
+#include <proto/intuition.h>
 
 struct ObjFWRTBase;
 
 #import "inline.h"
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -70,10 +70,26 @@ extern void __deregister_frame(void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
-static int *
-get_errno(void)
+static void
+error(const char *string, ULONG arg)
 {
-	return &errno;
+	struct Library *IntuitionBase = OpenLibrary("intuition.library", 0);
+
+	if (IntuitionBase != NULL) {
+		struct EasyStruct easy = {
+			.es_StructSize = sizeof(easy),
+			.es_Flags = 0,
+			.es_Title = (void *)NULL,
+			.es_TextFormat = (void *)string,
+			(void *)"OK"
+		};
+
+		EasyRequest(NULL, &easy, NULL, arg);
+
+		CloseLibrary(IntuitionBase);
+	}
+
+	exit(EXIT_FAILURE);
 }
 
 static void __attribute__((__used__))
@@ -85,9 +101,6 @@ ctor(void)
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-		.vfprintf = vfprintf,
-		.fflush = fflush,
-		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
 #else
@@ -116,22 +129,23 @@ ctor(void)
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
 #endif
-		.get_errno = get_errno,
+#ifdef OF_AMIGAOS_M68K
+		.vsnprintf = vsnprintf,
+#endif
+		.atexit = atexit,
+		.exit = exit,
 	};
 
 	if (initialized)
 		return;
 
 	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
-	    OBJFWRT_LIB_MINOR)) == NULL) {
-		fputs("Failed to open " OBJFWRT_AMIGA_LIB "!\n", stderr);
-		abort();
-	}
+	    OBJFWRT_LIB_MINOR)) == NULL)
+		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
+		    OBJFWRT_LIB_MINOR);
 
-	if (!glue_objc_init(1, &libc, stdout, stderr)) {
-		fputs("Failed to initialize " OBJFWRT_AMIGA_LIB "!\n", stderr);
-		abort();
-	}
+	if (!glue_objc_init(1, &libc))
+		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
 }

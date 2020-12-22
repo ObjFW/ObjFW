@@ -193,9 +193,9 @@ _Block_copy(const void *block_)
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
-		OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]) == 0);
 		block->flags++;
-		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]) == 0);
 #endif
 	}
 
@@ -220,9 +220,9 @@ _Block_release(const void *block_)
 #else
 	unsigned hash = SPINLOCK_HASH(block);
 
-	OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]));
+	OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]) == 0);
 	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]) == 0);
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
@@ -231,7 +231,7 @@ _Block_release(const void *block_)
 
 		return;
 	}
-	OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
+	OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]) == 0);
 #endif
 }
 
@@ -285,7 +285,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 #else
 			unsigned hash = SPINLOCK_HASH(src);
 
-			OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
+			OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]) == 0);
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
@@ -294,7 +294,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 				*dst = src->forwarding;
 			}
-			OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+			OF_ENSURE(
+			    of_spinlock_unlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		} else
 			*dst = src;
@@ -304,9 +305,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 #else
 		unsigned hash = SPINLOCK_HASH(*dst);
 
-		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]) == 0);
 		(*dst)->flags++;
-		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}
@@ -345,16 +346,17 @@ _Block_object_dispose(const void *object_, const int flags_)
 #else
 		unsigned hash = SPINLOCK_HASH(object);
 
-		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]) == 0);
 		if ((--object->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-			OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+			OF_ENSURE(
+			    of_spinlock_unlock(&byrefSpinlocks[hash]) == 0);
 
 			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				object->byref_dispose(object);
 
 			free(object);
 		}
-		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}
@@ -365,8 +367,8 @@ _Block_object_dispose(const void *object_, const int flags_)
 {
 #ifndef OF_HAVE_ATOMIC_OPS
 	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
-		if (!of_spinlock_new(&blockSpinlocks[i]) ||
-		    !of_spinlock_new(&byrefSpinlocks[i]))
+		if (of_spinlock_new(&blockSpinlocks[i]) != 0 ||
+		    of_spinlock_new(&byrefSpinlocks[i]) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self];
 #endif

@@ -150,6 +150,9 @@
 # define OF_GCC_VERSION 0
 #endif
 
+#define OF_STRINGIFY(s) OF_STRINGIFY2(s)
+#define OF_STRINGIFY2(s) #s
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -357,15 +360,25 @@
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
-#define OF_ENSURE(cond)							\
+#ifdef OBJC_COMPILING_RUNTIME
+# define OF_ENSURE(cond)						\
 	do {								\
-		if (!(cond)) {						\
+		if OF_UNLIKELY (!(cond))				\
+			objc_error("ObjFWRT @ " __FILE__ ":"		\
+			    OF_STRINGIFY(__LINE__),			\
+			    "Failed to ensure condition:\n" #cond);	\
+	} while(0)
+#else
+# define OF_ENSURE(cond)						\
+	do {								\
+		if OF_UNLIKELY (!(cond)) {				\
 			fprintf(stderr, "Failed to ensure condition "	\
 			    "in " __FILE__ ":%d:\n" #cond "\n",		\
 			    __LINE__);					\
 			abort();					\
 		}							\
 	} while (0)
+#endif
 
 #define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
 #if __has_feature(objc_arc)

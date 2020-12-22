@@ -27,6 +27,10 @@
 #import "OFMutableUTF8String.h"
 #import "OFUTF8String.h"
 
+#ifndef INFINITY
+# define INFINITY __builtin_inf()
+#endif
+
 static OFString *module = nil;
 static OFString *whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
@@ -601,7 +605,10 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    a.count == i)
+	    a.count == i &&
+	    (a = [C(@"foo") componentsSeparatedByString: @""]) &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    a.count == 1)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:options:]",

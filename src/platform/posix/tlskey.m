@@ -19,14 +19,14 @@
 
 #import "tlskey.h"
 
-bool
+int
 of_tlskey_new(of_tlskey_t *key)
 {
-	return (pthread_key_create(key, NULL) == 0);
+	return pthread_key_create(key, NULL);
 }
 
-bool
+int
 of_tlskey_free(of_tlskey_t key)
 {
-	return (pthread_key_delete(key) == 0);
+	return pthread_key_delete(key);
 }

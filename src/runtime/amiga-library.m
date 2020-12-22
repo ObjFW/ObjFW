@@ -48,6 +48,13 @@ _start()
 	return -1;
 }
 
+#ifdef OF_AMIGAOS_M68K
+void
+__init_eh(void)
+{
+}
+#endif
+
 struct ObjFWRTBase {
 	struct Library library;
 	void *segList;
@@ -158,8 +165,6 @@ const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct objc_libc libc;
-FILE *stdout;
-FILE *stderr;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -409,8 +414,7 @@ lib_null(void)
 }
 
 bool
-objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
-    FILE *stderr_)
+objc_init(unsigned int version, struct objc_libc *libc_)
 {
 #ifdef OF_AMIGAOS_M68K
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
@@ -427,8 +431,6 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
 		return false;
 
 	memcpy(&libc, libc_, sizeof(libc));
-	stdout = stdout_;
-	stderr = stderr_;
 
 #ifdef OF_AMIGAOS_M68K
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
@@ -485,33 +487,6 @@ void
 free(void *ptr)
 {
 	libc.free(ptr);
-}
-
-int
-fprintf(FILE *restrict stream, const char *restrict fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	va_start(args, fmt);
-	ret = libc.vfprintf(stream, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-fflush(FILE *restrict stream)
-{
-	return libc.fflush(stream);
-}
-
-void
-abort(void)
-{
-	libc.abort();
-
-	OF_UNREACHABLE
 }
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
@@ -596,10 +571,40 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
-int *
-objc_get_errno(void)
+#ifdef OF_AMIGAOS_M68K
+int
+snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
 {
-	return libc.get_errno();
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, size, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
+    va_list args)
+{
+	return libc.vsnprintf(str, size, fmt, args);
+}
+#endif
+
+int
+atexit(void (*function)(void))
+{
+	return libc.atexit(function);
+}
+
+void
+exit(int status)
+{
+	libc.exit(status);
+
+	OF_UNREACHABLE
 }
 
 #pragma GCC diagnostic push

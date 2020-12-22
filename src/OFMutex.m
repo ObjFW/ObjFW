@@ -39,7 +39,7 @@
 {
 	self = [super init];
 
-	if (!of_mutex_new(&_mutex)) {
+	if (of_mutex_new(&_mutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -53,8 +53,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		if (!of_mutex_free(&_mutex)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = of_mutex_free(&_mutex);
+
+		if (error != 0) {
+			OF_ENSURE(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,19 +69,23 @@
 
 - (void)lock
 {
-	if (!of_mutex_lock(&_mutex))
+	int error = of_mutex_lock(&_mutex);
+
+	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
-							  errNo: errno];
+							  errNo: error];
 }
 
 - (bool)tryLock
 {
-	if (!of_mutex_trylock(&_mutex)) {
-		if (errno == EBUSY)
+	int error = of_mutex_trylock(&_mutex);
+
+	if (error != 0) {
+		if (error == EBUSY)
 			return false;
 		else
 			@throw [OFLockFailedException exceptionWithLock: self
-								  errNo: errno];
+								  errNo: error];
 	}
 
 	return true;
@@ -87,9 +93,11 @@
 
 - (void)unlock
 {
-	if (!of_mutex_unlock(&_mutex))
+	int error = of_mutex_unlock(&_mutex);
+
+	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self
-							    errNo: errno];
+							    errNo: error];
 }
 
 - (OFString *)description

@@ -1,6 +1,3 @@
-#undef INFINITY
-#undef LLONG_MAX
-#undef LLONG_MIN
 #undef OF_APPLE_RUNTIME
 #undef OF_BIG_ENDIAN
 #undef OF_FLOAT_BIG_ENDIAN
@@ -47,7 +44,3 @@
 #undef OF_OBJFW_RUNTIME
 #undef OF_UNIVERSAL
 #undef OF_WII
-#undef SIZE_MAX
-#undef UINTPTR_MAX
-#undef ULLONG_MAX
-#undef __have_longlong64

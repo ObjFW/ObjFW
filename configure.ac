@@ -18,9 +18,6 @@ BUILDSYS_INIT
 
 AC_CANONICAL_HOST
 
-AC_ARG_WITH(ixemul,
-	AS_HELP_STRING([--with-ixemul], [build with ixemul]))
-
 dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
@@ -48,6 +45,7 @@ case "$host" in
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
 		enable_files="yes"	# Required for reading ENV:
 		enable_shared="no"
@@ -62,8 +60,9 @@ case "$host" in
 			dnl do not work properly in a library.
 			t="-mcpu=68020 -fbaserel -noixemul"
 			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
-			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident -nostartfiles")
+			t="$t -resident -nostartfiles -nodefaultlibs"
+			t="$t -ldebug -lc"
+			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
 		AC_SUBST(LIBBASES_M, libbases.m)
@@ -77,31 +76,30 @@ case "$host" in
 		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	*-morphos*)
-		AS_IF([test x"$with_ixemul" != x"yes"], [
-			AS_IF([test x"$OBJCFLAGS" = x""], [
-				OBJCFLAGS="-O2 -g"
-			])
-			OBJCFLAGS="$OBJCFLAGS -noixemul"
-			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
-			LDFLAGS="$LDFLAGS -noixemul"
-			enable_files="yes"	# Required for reading ENV:
-			supports_amiga_lib="yes"
-			check_pedantic="no"	# Breaks generated inlines
+		AS_IF([test x"$OBJCFLAGS" = x""], [
+			OBJCFLAGS="-O2 -g"
+		])
+		OBJCFLAGS="$OBJCFLAGS -noixemul"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
+		LDFLAGS="$LDFLAGS -noixemul"
+		LIBS="$LIBS -ldebug"
 
-			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
-				t="-mresident32 -ffreestanding -noixemul"
-				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-				t="-mresident32 -nostartfiles -nodefaultlibs"
-				t="$t -noixemul -lc"
-				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-			])
+		enable_files="yes"	# Required for reading ENV:
+		enable_shared="no"
+		supports_amiga_lib="yes"
+		check_pedantic="no"	# Breaks generated inlines
 
-			AC_SUBST(LIBBASES_M, libbases.m)
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+			AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
+			t="-mresident32 -ffreestanding -noixemul"
+			AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+			t="-mresident32 -nostartfiles -nodefaultlibs"
+			t="$t -noixemul -ldebug -lc"
+			AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 		])
 
-		enable_shared="no"
+		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	*-msdosdjgpp*)
 		enable_shared="no"
@@ -733,35 +731,6 @@ AS_IF([test x"$ac_cv_c_bigendian" = x"universal"], [
 	AC_DEFINE(OF_UNIVERSAL, 1, [Whether we are building a universal binary])
 ])
 
-AC_MSG_CHECKING(for SIZE_MAX)
-AC_EGREP_CPP(egrep_cpp_yes, [
-	#include <stdint.h>
-	#include <limits.h>
-
-	#ifdef SIZE_MAX
-	egrep_cpp_yes
-	#endif
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-	AC_MSG_CHECKING(for SIZE_T_MAX)
-	AC_EGREP_CPP(egrep_cpp_yes, [
-		#include <stdint.h>
-		#include <limits.h>
-
-		#ifdef SIZE_T_MAX
-		egrep_cpp_yes
-		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		size_max="SIZE_T_MAX"
-	], [
-		AC_MSG_RESULT(no)
-		size_max="(~(size_t)0)"
-	])
-	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
-])
 AC_MSG_CHECKING(for SSIZE_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
@@ -774,8 +743,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(SSIZE_MAX, [((ssize_t)(SIZE_MAX / 2))],
-		[Maximum value for ssize_t])
+	AC_DEFINE(SSIZE_MAX, [(SIZE_MAX / 2)], [Maximum value for ssize_t])
 ])
 AC_MSG_CHECKING(for UINTPTR_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
@@ -789,7 +757,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(UINTPTR_MAX, [(~(uintptr_t)0)], [Maximum value for uintptr_t])
+	AC_CHECK_SIZEOF(uintptr_t)
+	AC_DEFINE(UINTPTR_MAX,
+		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
@@ -838,37 +808,6 @@ AC_MSG_RESULT($fp_endianess)
 AS_IF([test x"$fp_endianess" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
-
-AC_MSG_CHECKING(for INFINITY)
-AC_COMPILE_IFELSE([
-	AC_LANG_PROGRAM([
-		#include <stdio.h>
-		#include <math.h>
-	], [
-		printf("%f", INFINITY);
-	])
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-
-	AC_MSG_CHECKING(for __builtin_inf)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <stdio.h>
-		], [
-			printf("%f", __builtin_inf());
-		])
-	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(INFINITY, [(__builtin_inf())],
-			[Workaround for missing INFINITY])
-	], [
-		AC_MSG_RESULT(no)
-
-		AC_MSG_ERROR([Neither INFINITY or __builtin_inf was found!])
-	])
-])
 
 case "$host_cpu" in
 	arm* | earm*)
@@ -952,11 +891,9 @@ AS_IF([test x"$ENCODINGS_SRCS" = x""], [
 AC_SUBST(ENCODINGS_SRCS)
 AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
-	AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
 ])
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
-	AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
 ])
 
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
@@ -1808,9 +1745,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
 			#include <stdlib.h>
-	
-			typedef void *SEL;
-	
+
+			struct objc_selector;
+			typedef const struct objc_selector *SEL;
+
 			#ifdef __has_attribute
 			# if __has_attribute(objc_root_class)
 			__attribute__((__objc_root_class__))
@@ -1824,10 +1762,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			    ;
 			- (void)dealloc;
 			@end
-	
+
 			@interface Foo: Object
 			@end
-	
+
 			void
 			test(void)
 			{
@@ -1838,7 +1776,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 				else
 					abort();
 			}
-	
+
 			/*
 			 * Unfortunately, this cannot be shorter, as it only
 			 * works when it is used inside a macro.
@@ -1861,7 +1799,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 									\
 				[super dealloc];
 			#endif
-	
+
 			@implementation Foo
 			- (void)dealloc
 			{

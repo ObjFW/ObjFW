@@ -35,12 +35,14 @@
 @implementation ProgressBar
 - (instancetype)initWithLength: (unsigned long long)length
 		   resumedFrom: (unsigned long long)resumedFrom
+		    useUnicode: (bool)useUnicode
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
+		_useUnicode = useUnicode;
 		_length = length;
 		_resumedFrom = resumedFrom;
 		_startDate = [[OFDate alloc] init];
@@ -101,35 +103,59 @@
 	percent = (float)(_resumedFrom + _received) /
 	    (float)(_resumedFrom + _length) * 100;
 
-	[of_stdout writeString: @"\r  ▕"];
+	if (_useUnicode) {
+		[of_stdout writeString: @"\r  ▕"];
 
-	for (size_t i = 0; i < (size_t)bars; i++)
-		[of_stdout writeString: @"█"];
-	if (bars < barWidth) {
-		float rem = bars - truncf(bars);
+		for (size_t i = 0; i < (size_t)bars; i++)
+			[of_stdout writeString: @"█"];
+		if (bars < barWidth) {
+			float rem = bars - truncf(bars);
 
-		if (rem >= 0.875)
-			[of_stdout writeString: @"▉"];
-		else if (rem >= 0.75)
-			[of_stdout writeString: @"▊"];
-		else if (rem >= 0.625)
-			[of_stdout writeString: @"▋"];
-		else if (rem >= 0.5)
-			[of_stdout writeString: @"▌"];
-		else if (rem >= 0.375)
-			[of_stdout writeString: @"▍"];
-		else if (rem >= 0.25)
-			[of_stdout writeString: @"▎"];
-		else if (rem >= 0.125)
-			[of_stdout writeString: @"▏"];
-		else
-			[of_stdout writeString: @" "];
+			if (rem >= 0.875)
+				[of_stdout writeString: @"▉"];
+			else if (rem >= 0.75)
+				[of_stdout writeString: @"▊"];
+			else if (rem >= 0.625)
+				[of_stdout writeString: @"▋"];
+			else if (rem >= 0.5)
+				[of_stdout writeString: @"▌"];
+			else if (rem >= 0.375)
+				[of_stdout writeString: @"▍"];
+			else if (rem >= 0.25)
+				[of_stdout writeString: @"▎"];
+			else if (rem >= 0.125)
+				[of_stdout writeString: @"▏"];
+			else
+				[of_stdout writeString: @" "];
 
-		for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
-			[of_stdout writeString: @" "];
+			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
+				[of_stdout writeString: @" "];
+		}
+
+		[of_stdout writeFormat: @"▏ %,6.2f%% ", percent];
+	} else {
+		[of_stdout writeString: @"\r  ["];
+
+		for (size_t i = 0; i < (size_t)bars; i++)
+			[of_stdout writeString: @"#"];
+		if (bars < barWidth) {
+			float rem = bars - truncf(bars);
+
+			if (rem >= 0.75)
+				[of_stdout writeString: @"O"];
+			else if (rem >= 0.5)
+				[of_stdout writeString: @"o"];
+			else if (rem >= 0.25)
+				[of_stdout writeString: @"."];
+			else
+				[of_stdout writeString: @" "];
+
+			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
+				[of_stdout writeString: @" "];
+		}
+
+		[of_stdout writeFormat: @"] %,6.2f%% ", percent];
 	}
-
-	[of_stdout writeFormat: @"▏ %,6.2f%% ", percent];
 
 	if (percent == 100) {
 		double timeInterval = -_startDate.timeIntervalSinceNow;

@@ -36,7 +36,7 @@
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
 
-#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
+#ifdef OF_HAVE_THREADS
 # import "mutex.h"
 #endif
 
@@ -75,8 +75,12 @@ static of_mutex_t mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (!of_mutex_new(&mutex))
-		@throw [OFInitializationFailedException exception];
+	OF_ENSURE(of_mutex_new(&mutex) == 0);
+}
+
+OF_DESTRUCTOR()
+{
+	of_mutex_free(&mutex);
 }
 #endif
 
@@ -189,7 +193,7 @@ of_strerror(int errNo)
 				 encoding: [OFLocale encoding]];
 #else
 # ifdef OF_HAVE_THREADS
-	if (!of_mutex_lock(&mutex))
+	if (of_mutex_lock(&mutex) != 0)
 		@throw [OFLockFailedException exception];
 
 	@try {
@@ -199,7 +203,7 @@ of_strerror(int errNo)
 			     encoding: [OFLocale encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (!of_mutex_unlock(&mutex))
+		if (of_mutex_unlock(&mutex) != 0)
 			@throw [OFUnlockFailedException exception];
 	}
 # endif

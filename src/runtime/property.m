@@ -33,8 +33,8 @@ static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
-		if (!of_spinlock_new(&spinlocks[i]))
-			OBJC_ERROR("Failed to initialize spinlocks!")
+		if (of_spinlock_new(&spinlocks[i]) != 0)
+			OBJC_ERROR("Failed to initialize spinlocks!");
 }
 #endif
 
@@ -46,11 +46,11 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]) == 0);
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]) == 0);
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -69,7 +69,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]) == 0);
 		@try {
 #endif
 			id old = *ptr;
@@ -88,7 +88,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]) == 0);
 		}
 #endif
 
@@ -121,11 +121,11 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]) == 0);
 #endif
 
 		return;
@@ -142,11 +142,11 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]) == 0);
 #endif
 
 		return;

@@ -343,6 +343,13 @@ initializeClass(Class class)
 	if (class->superclass)
 		initializeClass(class->superclass);
 
+	/*
+	 * Avoid double-initialization: One of the superclasses' +[initialize]
+	 * might have called this class and hence it already got initialized.
+	 */
+	if (class->info & OBJC_CLASS_INFO_INITIALIZED)
+		return;
+
 	class->info |= OBJC_CLASS_INFO_DTABLE;
 	class->isa->info |= OBJC_CLASS_INFO_DTABLE;
 
@@ -470,12 +477,12 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	Class iter, rootclass = Nil;
 
 	if (extraBytes > LONG_MAX)
-		OBJC_ERROR("extraBytes out of range!")
+		OBJC_ERROR("extraBytes out of range!");
 
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate class pair for class "
-		    "%s!", name)
+		    "%s!", name);
 
 	class->isa = metaclass;
 	class->superclass = superclass;

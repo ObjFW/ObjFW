@@ -26,6 +26,9 @@
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFLocale.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 #import "OFString.h"
 
 #import "OFException.h"  /* For some E* -> WSAE* defines */
@@ -38,11 +41,7 @@
 #import "socket.h"
 #import "socket_helpers.h"
 #ifdef OF_HAVE_THREADS
-# if !defined(OF_AMIGAOS) || defined(OF_MORPHOS)
-#  import "mutex.h"
-# else
-#  import "tlskey.h"
-# endif
+# import "tlskey.h"
 #endif
 #import "once.h"
 
@@ -56,7 +55,13 @@
 #endif
 
 #if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-static of_mutex_t mutex;
+static OFMutex *mutex;
+
+static void
+releaseMutex(void)
+{
+	[mutex release];
+}
 #endif
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
@@ -79,11 +84,11 @@ struct SocketIFace *ISocket = NULL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
-	if (!of_tlskey_new(&of_socket_base_key))
+	if (of_tlskey_new(&of_socket_base_key) != 0)
 		@throw [OFInitializationFailedException exception];
 
 # ifdef OF_AMIGAOS4
-	if (!of_tlskey_new(&of_socket_interface_key))
+	if (of_tlskey_new(&of_socket_interface_key) != 0)
 		@throw [OFInitializationFailedException exception];
 # endif
 }
@@ -125,11 +130,11 @@ init(void)
 # endif
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (!of_mutex_new(&mutex))
-		return;
+	mutex = [[OFMutex alloc] init];
+	atexit(releaseMutex);
 
 #  ifdef OF_WII
-	if (!of_spinlock_new(&spinlock))
+	if (of_spinlock_new(&spinlock) != 0)
 		return;
 #  endif
 # endif
@@ -137,9 +142,9 @@ init(void)
 	initSuccessful = true;
 }
 
-# ifdef OF_AMIGAOS
 OF_DESTRUCTOR()
 {
+# ifdef OF_AMIGAOS
 #  ifdef OF_AMIGAOS4
 	if (ISocket != NULL)
 		DropInterface((struct Interface *)ISocket);
@@ -147,8 +152,8 @@ OF_DESTRUCTOR()
 
 	if (SocketBase != NULL)
 		CloseLibrary(SocketBase);
-}
 # endif
+}
 #endif
 
 bool
@@ -183,7 +188,7 @@ of_socket_init(void)
 	}
 # endif
 
-	if (!of_tlskey_set(of_socket_base_key, socketBase)) {
+	if (of_tlskey_set(of_socket_base_key, socketBase) != 0) {
 		CloseLibrary(socketBase);
 # ifdef OF_AMIGAOS4
 		DropInterface((struct Interface *)socketInterface);
@@ -192,7 +197,7 @@ of_socket_init(void)
 	}
 
 # ifdef OF_AMIGAOS4
-	if (!of_tlskey_set(of_socket_interface_key, socketInterface)) {
+	if (of_tlskey_set(of_socket_interface_key, socketInterface) != 0) {
 		CloseLibrary(socketBase);
 		DropInterface((struct Interface *)socketInterface);
 		return false;
@@ -329,16 +334,11 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 	int ret;
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (!of_mutex_lock(&mutex))
-		@throw [OFLockFailedException exception];
-
+	[mutex lock];
 # endif
-
 	ret = getsockname(sock, addr, addrLen);
-
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
-	if (!of_mutex_unlock(&mutex))
-		@throw [OFUnlockFailedException exception];
+	[mutex unlock];
 # endif
 
 	return ret;

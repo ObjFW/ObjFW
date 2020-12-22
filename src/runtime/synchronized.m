@@ -37,8 +37,8 @@ static of_mutex_t mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (!of_mutex_new(&mutex))
-		OBJC_ERROR("Failed to create mutex!")
+	if (of_mutex_new(&mutex) != 0)
+		OBJC_ERROR("Failed to create mutex!");
 }
 #endif
 
@@ -51,7 +51,7 @@ objc_sync_enter(id object)
 #ifdef OF_HAVE_THREADS
 	struct lock_s *lock;
 
-	if (!of_mutex_lock(&mutex))
+	if (of_mutex_lock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 
 	/* Look if we already have a lock */
@@ -61,10 +61,10 @@ objc_sync_enter(id object)
 
 		lock->count++;
 
-		if (!of_mutex_unlock(&mutex))
+		if (of_mutex_unlock(&mutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
-		if (!of_rmutex_lock(&lock->rmutex))
+		if (of_rmutex_lock(&lock->rmutex) != 0)
 			OBJC_ERROR("Failed to lock mutex!");
 
 		return 0;
@@ -74,7 +74,7 @@ objc_sync_enter(id object)
 	if ((lock = malloc(sizeof(*lock))) == NULL)
 		OBJC_ERROR("Failed to allocate memory for mutex!");
 
-	if (!of_rmutex_new(&lock->rmutex))
+	if (of_rmutex_new(&lock->rmutex) != 0)
 		OBJC_ERROR("Failed to create mutex!");
 
 	lock->object = object;
@@ -83,10 +83,10 @@ objc_sync_enter(id object)
 
 	locks = lock;
 
-	if (!of_mutex_unlock(&mutex))
+	if (of_mutex_unlock(&mutex) != 0)
 		OBJC_ERROR("Failed to unlock mutex!");
 
-	if (!of_rmutex_lock(&lock->rmutex))
+	if (of_rmutex_lock(&lock->rmutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 #endif
 
@@ -102,7 +102,7 @@ objc_sync_exit(id object)
 #ifdef OF_HAVE_THREADS
 	struct lock_s *lock, *last = NULL;
 
-	if (!of_mutex_lock(&mutex))
+	if (of_mutex_lock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 
 	for (lock = locks; lock != NULL; lock = lock->next) {
@@ -111,11 +111,11 @@ objc_sync_exit(id object)
 			continue;
 		}
 
-		if (!of_rmutex_unlock(&lock->rmutex))
+		if (of_rmutex_unlock(&lock->rmutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		if (--lock->count == 0) {
-			if (!of_rmutex_free(&lock->rmutex))
+			if (of_rmutex_free(&lock->rmutex) != 0)
 				OBJC_ERROR("Failed to destroy mutex!");
 
 			if (last != NULL)
@@ -126,7 +126,7 @@ objc_sync_exit(id object)
 			free(lock);
 		}
 
-		if (!of_mutex_unlock(&mutex))
+		if (of_mutex_unlock(&mutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		return 0;

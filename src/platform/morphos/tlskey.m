@@ -19,14 +19,19 @@
 
 #import "tlskey.h"
 
-bool
+int
 of_tlskey_new(of_tlskey_t *key)
 {
-	return ((*key = TLSAllocA(NULL)) != TLS_INVALID_INDEX);
+	*key = TLSAllocA(NULL);
+
+	if (*key == TLS_INVALID_INDEX)
+		return EAGAIN;
+
+	return 0;
 }
 
-bool
+int
 of_tlskey_free(of_tlskey_t key)
 {
-	return TLSFree(key);
+	return (TLSFree(key) ? 0 : EINVAL);
 }

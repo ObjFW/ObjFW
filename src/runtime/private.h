@@ -225,9 +225,6 @@ struct objc_libc {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
-	int (*_Nonnull fflush)(FILE *_Nonnull);
-	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
 # else
@@ -257,7 +254,12 @@ struct objc_libc {
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 # endif
-	int *_Nonnull (*_Nonnull get_errno)(void);
+# ifdef OF_AMIGAOS_M68K
+	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
+	    const char *_Nonnull restrict fmt, va_list args);
+# endif
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
+	void (*_Nonnull exit)(int);
 };
 #endif
 
@@ -270,12 +272,6 @@ struct objc_libc {
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 # endif
-# undef stdout
-# undef stderr
-# undef errno
-extern FILE *_Nonnull stdout, *_Nonnull stderr;
-extern int *_Nonnull objc_get_errno(void);
-# define errno (*objc_get_errno())
 #endif
 
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);
@@ -347,6 +343,12 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
+extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
+    const char *_Nonnull format, ...);
+#define OBJC_ERROR(...)							\
+	objc_error("ObjFWRT @ " __FILE__ ":" OF_STRINGIFY(__LINE__),	\
+	    __VA_ARGS__)
+
 #if defined(OF_ELF)
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
@@ -359,16 +361,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #endif
-
-#define OBJC_ERROR(...)							\
-	{								\
-		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
-		fprintf(stderr, __VA_ARGS__);				\
-		fprintf(stderr, "\n");					\
-		fflush(stderr);						\
-		abort();						\
-		OF_UNREACHABLE						\
-	}
 
 @interface DummyObject
 {
