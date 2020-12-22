@@ -1,5 +1,5 @@
 /* The following function is only for the linklib. */
-bool glue_objc_init(unsigned int, struct objc_libc *, FILE **);
+bool glue_objc_init(unsigned int, struct objc_libc *);
 void glue___objc_exec_class(struct objc_module *);
 IMP glue_objc_msg_lookup(id, SEL);
 IMP glue_objc_msg_lookup_stret(id, SEL);

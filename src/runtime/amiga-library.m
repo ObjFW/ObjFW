@@ -166,7 +166,6 @@ const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct objc_libc libc;
-FILE **__sF;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -416,7 +415,7 @@ lib_null(void)
 }
 
 bool
-objc_init(unsigned int version, struct objc_libc *libc_, FILE **sF)
+objc_init(unsigned int version, struct objc_libc *libc_)
 {
 #ifdef OF_AMIGAOS_M68K
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
@@ -436,7 +435,6 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE **sF)
 		return true;
 
 	memcpy(&libc, libc_, sizeof(libc));
-	__sF = sF;
 
 #ifdef OF_AMIGAOS_M68K
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)

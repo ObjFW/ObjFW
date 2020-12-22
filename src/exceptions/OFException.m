@@ -36,7 +36,7 @@
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
 
-#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
+#ifdef OF_HAVE_THREADS
 # import "mutex.h"
 #endif
 
@@ -75,8 +75,12 @@ static of_mutex_t mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (of_mutex_new(&mutex) != 0)
-		@throw [OFInitializationFailedException exception];
+	OF_ENSURE(of_mutex_new(&mutex) == 0);
+}
+
+OF_DESTRUCTOR()
+{
+	of_mutex_free(&mutex);
 }
 #endif
 

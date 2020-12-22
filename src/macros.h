@@ -150,6 +150,9 @@
 # define OF_GCC_VERSION 0
 #endif
 
+#define OF_STRINGIFY(s) OF_STRINGIFY2(s)
+#define OF_STRINGIFY2(s) #s
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -364,10 +367,12 @@ extern int *_Nonnull of_get_errno(void);
 #define OF_NOT_FOUND SIZE_MAX
 
 #ifdef OBJC_COMPILING_RUNTIME
-# define OF_ENSURE(cond)						   \
-	do {								   \
-		if OF_UNLIKELY (!(cond))				   \
-			OBJC_ERROR("Failed to ensure condition:\n" #cond); \
+# define OF_ENSURE(cond)						\
+	do {								\
+		if OF_UNLIKELY (!(cond))				\
+			objc_error("ObjFWRT @ " __FILE__ ":"		\
+			    OF_STRINGIFY(__LINE__),			\
+			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
 # define OF_ENSURE(cond)						\

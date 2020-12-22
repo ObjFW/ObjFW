@@ -49,14 +49,17 @@
 # undef id
 #endif
 
+#ifdef OF_MORPHOS
+# include <proto/rexxsyslib.h>
+# include <rexx/errors.h>
+# include <rexx/storage.h>
+#endif
+
 #import "socket_helpers.h"
 
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
-#elif defined(OF_MORPHOS)
-# define HOSTS_PATH @"ENV:sys/net/hosts"
-# define RESOLV_CONF_PATH @"ENV:sys/net/resolv.conf"
 #elif defined(OF_AMIGAOS4)
 # define HOSTS_PATH @"DEVS:Internet/hosts"
 #elif defined(OF_AMIGAOS)
@@ -67,21 +70,14 @@
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
 #endif
 
-#ifndef OF_WII
 static OFString *
-domainFromHostname(void)
+domainFromHostname(OFString *hostname)
 {
-	char hostname[256];
-	OFString *domain, *ret;
-
-	if (gethostname(hostname, 256) != 0)
+	if (hostname == nil)
 		return nil;
 
-	domain = [OFString stringWithCString: hostname
-				    encoding: [OFLocale encoding]];
-
 	@try {
-		of_socket_address_parse_ip(domain, 0);
+		of_socket_address_parse_ip(hostname, 0);
 
 		/*
 		 * If we are still here, the host name is a valid IP address.
@@ -90,15 +86,98 @@ domainFromHostname(void)
 		return nil;
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
-		size_t pos = [domain rangeOfString: @"."].location;
+		size_t pos = [hostname rangeOfString: @"."].location;
 
 		if (pos == OF_NOT_FOUND)
 			return nil;
 
-		ret = [domain substringFromIndex: pos + 1];
+		return [hostname substringFromIndex: pos + 1];
 	}
+}
 
-	return ret;
+#if !defined(OF_WII) && !defined(OF_MORPHOS)
+static OFString *
+obtainHostname(void)
+{
+	char hostname[256];
+
+	if (gethostname(hostname, 256) != 0)
+		return nil;
+
+	return [OFString stringWithCString: hostname
+				  encoding: [OFLocale encoding]];
+}
+#endif
+
+#ifdef OF_MORPHOS
+static OFString *
+arexxCommand(const char *port, const char *command)
+{
+	struct Library *RexxSysBase;
+	struct MsgPort *replyPort = NULL;
+	struct RexxMsg *msg = NULL;
+
+	if ((RexxSysBase = OpenLibrary("rexxsyslib.library", 36)) == NULL)
+		return nil;
+
+	@try {
+		struct MsgPort *rexxPort;
+
+		if ((replyPort = CreateMsgPort()) == NULL)
+			return nil;
+
+		if ((msg = CreateRexxMsg(replyPort, NULL, port)) == NULL)
+			return nil;
+
+		msg->rm_Action = RXCOMM | RXFF_RESULT;
+
+		if ((msg->rm_Args[0] = (char *)CreateArgstring(
+		    command, strlen(command))) == NULL)
+			return nil;
+
+		Forbid();
+
+		if ((rexxPort = FindPort(port)) == NULL) {
+			Permit();
+			return nil;
+		}
+
+		PutMsg(rexxPort, &msg->rm_Node);
+		Permit();
+		WaitPort(replyPort);
+		GetMsg(replyPort);
+
+		if (msg->rm_Result1 != RC_OK || msg->rm_Result2 == 0)
+			return nil;
+
+		return [OFString stringWithCString: (char *)msg->rm_Result2
+					  encoding: [OFLocale encoding]];
+	} @finally {
+		if (msg != NULL) {
+			if (msg->rm_Args[0] != NULL)
+				DeleteArgstring(msg->rm_Args[0]);
+			if (msg->rm_Result2 != 0)
+				DeleteArgstring((char *)msg->rm_Result2);
+
+			DeleteRexxMsg(msg);
+		}
+
+		if (replyPort != NULL)
+			DeleteMsgPort(replyPort);
+
+		CloseLibrary(RexxSysBase);
+	}
+}
+
+static OFArray OF_GENERIC(OFString *) *
+parseNetStackArray(OFString *string)
+{
+	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
+		return nil;
+
+	string = [string substringWithRange: of_range(1, string.length - 2)];
+
+	return [string componentsSeparatedByString: @"|"];
 }
 #endif
 
@@ -163,7 +242,7 @@ domainFromHostname(void)
 #endif
 }
 
-#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_3DS)
+#if defined(OF_HAVE_FILES) && !defined(OF_MORPHOS) && !defined(OF_NINTENDO_3DS)
 - (void)parseHosts: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -172,8 +251,6 @@ domainFromHostname(void)
 	OFMutableDictionary *staticHosts;
 	OFFile *file;
 	OFString *line;
-	OFEnumerator *enumerator;
-	OFMutableArray *addresses;
 
 	@try {
 		file = [OFFile fileWithPath: path
@@ -186,7 +263,6 @@ domainFromHostname(void)
 	staticHosts = [OFMutableDictionary dictionary];
 
 	while ((line = [file readLine]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
 		OFArray *components, *hosts;
 		size_t pos;
 		OFString *address;
@@ -199,17 +275,16 @@ domainFromHostname(void)
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
 						 options: OF_STRING_SKIP_EMPTY];
 
-		if (components.count < 2) {
-			objc_autoreleasePoolPop(pool2);
+		if (components.count < 2)
 			continue;
-		}
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
 		    of_range(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			addresses = [staticHosts objectForKey: host];
+			OFMutableArray *addresses =
+			    [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -219,17 +294,11 @@ domainFromHostname(void)
 
 			[addresses addObject: address];
 		}
-
-		objc_autoreleasePoolPop(pool2);
 	}
-
-	enumerator = [staticHosts objectEnumerator];
-	while ((addresses = [enumerator nextObject]) != nil)
+	for (OFMutableArray *addresses in [staticHosts objectEnumerator])
 		[addresses makeImmutable];
 
 	[staticHosts makeImmutable];
-
-	[_staticHosts release];
 	_staticHosts = [staticHosts copy];
 
 	objc_autoreleasePoolPop(pool);
@@ -389,6 +458,57 @@ domainFromHostname(void)
 }
 #endif
 
+#ifdef OF_MORPHOS
+- (void)obtainMorphOSSystemConfig
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableDictionary *staticHosts;
+
+	_nameServers = [parseNetStackArray(arexxCommand("NETSTACK",
+	    "QUERY NAMESERVERS")) copy];
+	_localDomain = [domainFromHostname(arexxCommand("NETSTACK",
+	    "QUERY HOSTNAME")) copy];
+	_searchDomains = [parseNetStackArray(arexxCommand("NETSTACK",
+	    "QUERY DOMAINS")) copy];
+
+	staticHosts = [OFMutableDictionary dictionary];
+
+	for (OFString *entry in parseNetStackArray(arexxCommand("NETSTACK",
+	    "QUERY HOSTS"))) {
+		OFArray *components = [entry componentsSeparatedByString: @" "];
+		OFString *address;
+		OFArray *hosts;
+
+		if (components.count < 2)
+			continue;
+
+		address = components.firstObject;
+		hosts = [components objectsInRange:
+		    of_range(1, components.count - 1)];
+
+		for (OFString *host in hosts) {
+			OFMutableArray *addresses =
+			    [staticHosts objectForKey: host];
+
+			if (addresses == nil) {
+				addresses = [OFMutableArray array];
+				[staticHosts setObject: addresses
+						forKey: host];
+			}
+
+			[addresses addObject: address];
+		}
+	}
+	for (OFMutableArray *addresses in [staticHosts objectEnumerator])
+		[addresses makeImmutable];
+
+	[staticHosts makeImmutable];
+	_staticHosts = [staticHosts copy];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
+
 #ifdef OF_AMIGAOS4
 - (void)obtainAmigaOS4SystemConfig
 {
@@ -510,6 +630,8 @@ domainFromHostname(void)
 # endif
 
 	[self obtainWindowsSystemConfig];
+#elif defined(OF_MORPHOS)
+	[self obtainMorphOSSystemConfig];
 #elif defined(OF_AMIGAOS4)
 	[self parseHosts: HOSTS_PATH];
 	[self obtainAmigaOS4SystemConfig];
@@ -541,9 +663,9 @@ domainFromHostname(void)
 		_nameServers = [[OFArray alloc] initWithObject: @"127.0.0.1"];
 #endif
 
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_MORPHOS)
 	if (_localDomain == nil)
-		_localDomain = [domainFromHostname() copy];
+		_localDomain = [domainFromHostname(obtainHostname()) copy];
 #endif
 
 	if (_searchDomains == nil) {

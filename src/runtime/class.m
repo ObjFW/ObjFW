@@ -343,6 +343,13 @@ initializeClass(Class class)
 	if (class->superclass)
 		initializeClass(class->superclass);
 
+	/*
+	 * Avoid double-initialization: One of the superclasses' +[initialize]
+	 * might have called this class and hence it already got initialized.
+	 */
+	if (class->info & OBJC_CLASS_INFO_INITIALIZED)
+		return;
+
 	class->info |= OBJC_CLASS_INFO_DTABLE;
 	class->isa->info |= OBJC_CLASS_INFO_DTABLE;
 
