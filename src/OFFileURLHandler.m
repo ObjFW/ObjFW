@@ -85,7 +85,7 @@
 # endif
 #endif
 
-#if defined(OF_WINDOWS) || (defined(OF_AMIGAOS) && !defined(OF_MORPHOS))
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 typedef struct {
 	of_offset_t st_size;
 	unsigned int st_mode;
@@ -255,7 +255,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 	buffer->fileAttributes = data.dwFileAttributes;
 
 	return 0;
-#elif defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	BPTR lock;
 # ifdef OF_AMIGAOS4
 	struct ExamineData *ed;
@@ -270,7 +270,9 @@ of_stat(OFString *path, of_stat_t *buffer)
 	    SHARED_LOCK)) == 0)
 		return retrieveError();
 
-# ifdef OF_AMIGAOS4
+# if defined(OF_MORPHOS)
+	if (!Examine64(lock, &fib, TAG_DONE)) {
+# elif defined(OF_AMIGAOS4)
 	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
 # else
 	if (!Examine(lock, &fib)) {
@@ -282,11 +284,16 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	UnLock(lock);
 
-# ifdef OF_AMIGAOS4
+# if defined(OF_MORPHOS)
+	buffer->st_size = fib.fib_Size64;
+# elif defined(OF_AMIGAOS4)
 	buffer->st_size = ed->FileSize;
-	buffer->st_mode = (EXD_IS_DIRECTORY(ed) ? S_IFDIR : S_IFREG);
 # else
 	buffer->st_size = fib.fib_Size;
+# endif
+# ifdef OF_AMIGAOS4
+	buffer->st_mode = (EXD_IS_DIRECTORY(ed) ? S_IFDIR : S_IFREG);
+# else
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
