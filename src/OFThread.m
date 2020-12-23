@@ -252,6 +252,17 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	svcSleepThread((int64_t)(timeInterval * 1000000000));
+#elif defined(OF_AMIGAOS)
+	struct timerequest request = *DOSBase->dl_TimeReq;
+
+	request.tr_node.io_Message.mn_ReplyPort =
+	    &((struct Process *)FindTask(NULL))->pr_MsgPort;
+	request.tr_node.io_Command = TR_ADDREQUEST;
+	request.tr_time.tv_secs = (ULONG)timeInterval;
+	request.tr_time.tv_micro = (ULONG)
+	    ((timeInterval - (unsigned int)timeInterval) * 1000000);
+
+	DoIO((struct IORequest *)&request);
 #elif defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
 
@@ -262,11 +273,6 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
-#elif defined(OF_AMIGAOS)
-	if (timeInterval * 50 > ULONG_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	Delay(timeInterval * 50);
 #elif defined(OF_NINTENDO_DS)
 	uint64_t counter;
 
@@ -282,7 +288,7 @@ callMain(id object)
 
 	sleep((unsigned int)timeInterval);
 	usleep((unsigned int)
-	    (timeInterval - (unsigned int)timeInterval) * 1000000);
+	    ((timeInterval - (unsigned int)timeInterval) * 1000000));
 #endif
 }
 
