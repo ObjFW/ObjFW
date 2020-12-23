@@ -1,12 +1,12 @@
 #!/bin/sh
 if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
 	case "$TRAVIS_CPU_ARCH" in
-		amd64 | s390x)
-			pkgs="gobjc-multilib"
-			;;
-		*)
-			pkgs="gobjc"
-			;;
+	amd64 | s390x)
+		pkgs="gobjc-multilib"
+		;;
+	*)
+		pkgs="gobjc"
+		;;
 	esac
 
 	pkgs="$pkgs libsctp-dev"

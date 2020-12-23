@@ -249,12 +249,12 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 		ars=""; \
 		for i in ${OBJS} ${OBJS_EXTRA}; do \
 			case $$i in \
-				*.a) \
-					ars="$$ars $$i" \
-					;; \
-				*.o) \
-					objs="$$objs $$i" \
-					;; \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
 			esac \
 		done; \
 		for i in $$ars; do \
@@ -296,12 +296,12 @@ ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_E
 		ars=""; \
 		for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
 			case $$i in \
-				*.a) \
-					ars="$$ars $$i" \
-					;; \
-				*.o) \
-					objs="$$objs $$i" \
-					;; \
+			*.a) \
+				ars="$$ars $$i" \
+				;; \
+			*.o) \
+				objs="$$objs $$i" \
+				;; \
 			esac \
 		done; \
 		for i in $$ars; do \
@@ -335,12 +335,12 @@ ${STATIC_AMIGA_LIB} ${STATIC_AMIGA_LIB_NOINST}: ${EXT_DEPS} ${AMIGA_LIB_OBJS} ${
 	ars=""; \
 	for i in ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA}; do \
 		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
+		*.a) \
+			ars="$$ars $$i" \
+			;; \
+		*.o) \
+			objs="$$objs $$i" \
+			;; \
 		esac \
 	done; \
 	for i in $$ars; do \
