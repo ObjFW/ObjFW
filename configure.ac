@@ -1924,6 +1924,10 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 AC_ARG_WITH(fish_completions,
 	AS_HELP_STRING([--with-fish-completions],
 		[install completions for the fish shell]))
+AS_IF([test x"$with_fish_completions" = x""], [
+	AC_CHECK_PROG(FISH, fish, fish)
+	AS_IF([test x"$FISH" != x""], [with_fish_completions="yes"])
+])
 AS_IF([test x"$with_fish_completions" = x"yes"], [
 	AC_SUBST(FISH_COMPLETIONS, fish)
 ])
