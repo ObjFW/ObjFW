@@ -25,7 +25,7 @@ config.status
 configure
 docs
 extra.mk
-generators/gen_tables
+generators/unicode/gen_tables
 src/Info.plist
 src/bridge/Info.plist
 src/objfw-defs.h
