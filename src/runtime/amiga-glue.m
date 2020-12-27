@@ -224,16 +224,14 @@ glue_objc_enumerationMutation PPC_PARAMS(id object)
 
 int __saveds
 glue___gnu_objc_personality PPC_PARAMS(int version, int actions,
-    uint64_t exClass, void *ex, void *ctx)
+    uint64_t *exClassPtr, void *ex, void *ctx)
 {
 	M68K_ARG(int, version, d0)
 	M68K_ARG(int, actions, d1)
 	M68K_ARG(uint64_t *, exClassPtr, d2)
 	M68K_ARG(void *, ex, a0)
 	M68K_ARG(void *, ctx, a1)
-#ifdef OF_AMIGAOS_M68K
 	uint64_t exClass = *exClassPtr;
-#endif
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 	return __gnu_objc_personality_sj0(version, actions, exClass, ex, ctx);

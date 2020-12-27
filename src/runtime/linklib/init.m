@@ -26,8 +26,6 @@
 
 struct ObjFWRTBase;
 
-#import "inline.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -67,6 +65,8 @@ extern void __deregister_frame(void *);
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
+
+extern bool objc_init(unsigned int version, struct objc_libc *libc);
 
 static void
 error(const char *string, ULONG arg)
@@ -142,7 +142,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!glue_objc_init(1, &libc))
+	if (!objc_init(1, &libc))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
@@ -183,8 +183,8 @@ __gnu_objc_personality_v0(
     int version, int actions, uint64_t exClass, void *ex, void *ctx)
 {
 #ifdef OF_AMIGAOS_M68K
-	return glue___gnu_objc_personality(version, actions, &exClass, ex, ctx);
+	return __gnu_objc_personality(version, actions, &exClass, ex, ctx);
 #else
-	return glue___gnu_objc_personality(version, actions, exClass, ex, ctx);
+	return __gnu_objc_personality(version, actions, &exClass, ex, ctx);
 #endif
 }

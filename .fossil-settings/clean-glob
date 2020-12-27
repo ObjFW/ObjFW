@@ -29,8 +29,6 @@ src/Info.plist
 src/bridge/Info.plist
 src/objfw-defs.h
 src/runtime/Info.plist
-src/runtime/amiga-library-functable.inc
-src/runtime/inline.h
 tests/DerivedData
 tests/EBOOT.PBP
 tests/Info.plist

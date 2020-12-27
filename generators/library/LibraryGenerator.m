@@ -34,13 +34,6 @@
 OF_APPLICATION_DELEGATE(LibraryGenerator)
 
 @implementation LibraryGenerator
-- (void)applicationDidFinishLaunching
-{
-	[self generateLinkLibInDirectory: @"../../src/runtime"];
-
-	[OFApplication terminate];
-}
-
 - (void)generateLinkLibInDirectory: (OFString *)directory
 {
 	OFXMLElement *library = [OFXMLElement elementWithFile:
@@ -177,7 +170,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 		if (![returnType isEqual: @"void"])
 			[linklib writeString: @"return "];
 
-		[linklib writeString: @"(("];
+		[linklib writeString: @"__extension__ (("];
 		[linklib writeString: returnType];
 		if (![returnType hasSuffix: @"*"])
 			[linklib writeString: @" "];
@@ -220,5 +213,12 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 		if (++funcIndex < functions.count)
 			[linklib writeString: @"\n"];
 	}
+}
+
+- (void)applicationDidFinishLaunching
+{
+	[self generateLinkLibInDirectory: @"../../src/runtime"];
+
+	[OFApplication terminate];
 }
 @end
