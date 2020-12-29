@@ -1,7 +1,8 @@
 include ../../extra.mk
 
 PROG_NOINST = gen_libraries${PROG_SUFFIX}
-SRCS = LibraryGenerator.m	\
+SRCS = GlueGenerator.m		\
+       LibraryGenerator.m	\
        LinkLibGenerator.m
 
 .PHONY: run

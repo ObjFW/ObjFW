@@ -272,6 +272,15 @@ struct objc_libc {
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 # endif
+
+extern bool objc_init(unsigned int, struct objc_libc *);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)
+# else
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_v0(version, actions, *exClass, ex, ctx)
+# endif
 #endif
 
 extern void objc_register_all_categories(struct objc_symtab *_Nonnull);
