@@ -22,10 +22,10 @@
 @interface LinkLibGenerator: OFObject
 {
 	OFXMLElement *_library;
-	OFStream *_outputStream;
+	OFStream *_impl;
 }
 
 - (instancetype)initWithLibrary: (OFXMLElement *)library
-		   outputStream: (OFStream *)outputStream;
+		 implementation: (OFStream *)impl;
 - (void)generate;
 @end

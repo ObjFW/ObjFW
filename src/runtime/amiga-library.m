@@ -20,6 +20,8 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#import "amiga-glue.h"
+
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
@@ -68,97 +70,6 @@ extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
-
-extern bool glue_objc_init(void);
-extern void glue___objc_exec_class(void);
-extern IMP glue_objc_msg_lookup(void);
-extern IMP glue_objc_msg_lookup_stret(void);
-extern IMP glue_objc_msg_lookup_super(void);
-extern IMP glue_objc_msg_lookup_super_stret(void);
-extern Class glue_objc_lookUpClass(void);
-extern Class glue_objc_getClass(void);
-extern Class glue_objc_getRequiredClass(void);
-extern Class glue_objc_lookup_class(void);
-extern Class glue_objc_get_class(void);
-extern void glue_objc_exception_throw(void);
-extern int glue_objc_sync_enter(void);
-extern int glue_objc_sync_exit(void);
-extern id glue_objc_getProperty(void);
-extern void glue_objc_setProperty(void);
-extern void glue_objc_getPropertyStruct(void);
-extern void glue_objc_setPropertyStruct(void);
-extern void glue_objc_enumerationMutation(void);
-extern int glue___gnu_objc_personality(void);
-extern id glue_objc_retain(void);
-extern id glue_objc_retainBlock(void);
-extern id glue_objc_retainAutorelease(void);
-extern void glue_objc_release(void);
-extern id glue_objc_autorelease(void);
-extern id glue_objc_autoreleaseReturnValue(void);
-extern id glue_objc_retainAutoreleaseReturnValue(void);
-extern id glue_objc_retainAutoreleasedReturnValue(void);
-extern id glue_objc_storeStrong(void);
-extern id glue_objc_storeWeak(void);
-extern id glue_objc_loadWeakRetained(void);
-extern id glue_objc_initWeak(void);
-extern void glue_objc_destroyWeak(void);
-extern id glue_objc_loadWeak(void);
-extern void glue_objc_copyWeak(void);
-extern void glue_objc_moveWeak(void);
-extern SEL glue_sel_registerName(void);
-extern const char *glue_sel_getName(void);
-extern bool glue_sel_isEqual(void);
-extern Class glue_objc_allocateClassPair(void);
-extern void glue_objc_registerClassPair(void);
-extern unsigned int glue_objc_getClassList(void);
-extern Class *glue_objc_copyClassList(void);
-extern bool glue_class_isMetaClass(void);
-extern const char *glue_class_getName(void);
-extern Class glue_class_getSuperclass(void);
-extern unsigned long glue_class_getInstanceSize(void);
-extern bool glue_class_respondsToSelector(void);
-extern bool glue_class_conformsToProtocol(void);
-extern IMP glue_class_getMethodImplementation(void);
-extern IMP glue_class_getMethodImplementation_stret(void);
-extern Method glue_class_getInstanceMethod(void);
-extern bool glue_class_addMethod(void);
-extern IMP glue_class_replaceMethod(void);
-extern Class glue_object_getClass(void);
-extern Class glue_object_setClass(void);
-extern const char *glue_object_getClassName(void);
-extern const char *glue_protocol_getName(void);
-extern bool glue_protocol_isEqual(void);
-extern bool glue_protocol_conformsToProtocol(void);
-extern objc_uncaught_exception_handler_t
-    glue_objc_setUncaughtExceptionHandler(void);
-extern void glue_objc_setForwardHandler(void);
-extern void glue_objc_setEnumerationMutationHandler(void);
-extern id glue_objc_constructInstance(void);
-extern void glue_objc_exit(void);
-extern Ivar *glue_class_copyIvarList(void);
-extern const char *glue_ivar_getName(void);
-extern const char *glue_ivar_getTypeEncoding(void);
-extern ptrdiff_t glue_ivar_getOffset(void);
-extern Method *glue_class_copyMethodList(void);
-extern SEL glue_method_getName(void);
-extern const char *glue_method_getTypeEncoding(void);
-extern objc_property_t *glue_class_copyPropertyList(void);
-extern const char *glue_property_getName(void);
-extern char *glue_property_copyAttributeValue(void);
-extern void *glue_objc_destructInstance(void);
-extern void *glue_objc_autoreleasePoolPush(void);
-extern void glue_objc_autoreleasePoolPop(void);
-extern id glue__objc_rootAutorelease(void);
-extern struct objc_hashtable *glue_objc_hashtable_new(void);
-extern void glue_objc_hashtable_set(void);
-extern void *glue_objc_hashtable_get(void);
-extern void glue_objc_hashtable_delete(void);
-extern void glue_objc_hashtable_free(void);
-extern void glue_objc_setTaggedPointerSecret(void);
-extern int glue_objc_registerTaggedPointerClass(void);
-extern bool glue_object_isTaggedPointer(void);
-extern uintptr_t glue_object_getTaggedPointerValue(void);
-extern id glue_objc_createTaggedPointer(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;

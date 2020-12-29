@@ -40,6 +40,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	    URLByAppendingPathComponent: @"runtime/library.xml"];
 	OFURL *runtimeLinkLibURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/linklib/linklib.m"];
+	OFURL *runtimeGlueHeaderURL = [sourcesURL
+	    URLByAppendingPathComponent: @"runtime/amiga-glue.h"];
 	OFURL *runtimeGlueURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/amiga-glue.m"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
@@ -47,14 +49,17 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 			   mode: @"r"]];
 	OFFile *runtimeLinkLib = [OFFile fileWithURL: runtimeLinkLibURL
 						mode: @"w"];
+	OFFile *runtimeGlueHeader = [OFFile fileWithURL: runtimeGlueHeaderURL
+						   mode: @"w"];
 	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
 					     mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary
-	       outputStream: runtimeLinkLib] autorelease];
+	     implementation: runtimeLinkLib] autorelease];
 	GlueGenerator *runtimeGlueGenerator = [[[GlueGenerator alloc]
 	    initWithLibrary: runtimeLibrary
-	       outputStream: runtimeGlue] autorelease];
+		     header: runtimeGlueHeader
+	     implementation: runtimeGlue] autorelease];
 
 	[runtimeLinkLibGenerator generate];
 	[runtimeGlueGenerator generate];

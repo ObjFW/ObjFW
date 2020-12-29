@@ -23,10 +23,11 @@
 @interface GlueGenerator: OFObject
 {
 	OFXMLElement *_library;
-	OFStream *_outputStream;
+	OFStream *_header, *_impl;
 }
 
 - (instancetype)initWithLibrary: (OFXMLElement *)library
-		   outputStream: (OFStream *)outputStream;
+			 header: (OFStream *)header
+		 implementation: (OFStream *)implementation;
 - (void)generate;
 @end

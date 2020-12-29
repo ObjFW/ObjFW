@@ -19,18 +19,7 @@
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
-
-#ifdef OF_AMIGAOS_M68K
-# define PPC_PARAMS(...) (void)
-# define M68K_ARG(type, name, reg)		\
-	register type reg##name __asm__(#reg);	\
-	type name = reg##name;
-#else
-# define PPC_PARAMS(...) (__VA_ARGS__)
-# define M68K_ARG(...)
-#endif
+#import "amiga-glue.h"
 
 #ifdef OF_MORPHOS
 /* All __saveds functions in this file need to use the SysV ABI */
