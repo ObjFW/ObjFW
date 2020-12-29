@@ -2383,6 +2383,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		}
 	}
 
+	if (base == 0)
+		base = 10;
+
 	while (*UTF8String != '\0') {
 		unsigned char c = of_ascii_toupper(*UTF8String++);
 
@@ -2454,6 +2457,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			UTF8String++;
 		}
 	}
+
+	if (base == 0)
+		base = 10;
 
 	while (*UTF8String != '\0') {
 		unsigned char c = of_ascii_toupper(*UTF8String++);
