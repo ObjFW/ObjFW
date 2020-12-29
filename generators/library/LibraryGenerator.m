@@ -23,6 +23,7 @@
 #import "OFURL.h"
 #import "OFXMLElement.h"
 
+#import "FuncArrayGenerator.h"
 #import "GlueGenerator.h"
 #import "LinkLibGenerator.h"
 
@@ -44,6 +45,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	    URLByAppendingPathComponent: @"runtime/amiga-glue.h"];
 	OFURL *runtimeGlueURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/amiga-glue.m"];
+	OFURL *runtimeFuncArrayURL = [sourcesURL
+	    URLByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
 	    [OFFile fileWithURL: runtimeLibraryURL
 			   mode: @"r"]];
@@ -53,6 +56,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 						   mode: @"w"];
 	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
 					     mode: @"w"];
+	OFFile *runtimeFuncArray = [OFFile fileWithURL: runtimeFuncArrayURL
+						  mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary
 	     implementation: runtimeLinkLib] autorelease];
@@ -60,9 +65,14 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	    initWithLibrary: runtimeLibrary
 		     header: runtimeGlueHeader
 	     implementation: runtimeGlue] autorelease];
+	FuncArrayGenerator *runtimeFuncArrayGenerator;
+	runtimeFuncArrayGenerator = [[[FuncArrayGenerator alloc]
+	    initWithLibrary: runtimeLibrary
+		    include: runtimeFuncArray] autorelease];
 
 	[runtimeLinkLibGenerator generate];
 	[runtimeGlueGenerator generate];
+	[runtimeFuncArrayGenerator generate];
 
 	[OFApplication terminate];
 }
