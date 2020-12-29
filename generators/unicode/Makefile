@@ -21,10 +21,10 @@ run: all
 		    libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../../src/objfw.dll; then \
-		${LN_S} ../src/objfw.dll objfw.dll; \
+		${LN_S} ../../src/objfw.dll objfw.dll; \
 	fi
 	if test -f ../../src/libobjfw.dylib; then \
-		${LN_S} ../src/libobjfw.dylib \
+		${LN_S} ../../src/libobjfw.dylib \
 		    libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	fi
 	if test -f ../../src/runtime/libobjfwrt.so; then \
