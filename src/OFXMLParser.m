@@ -293,19 +293,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 }
 
-#ifdef OF_HAVE_FILES
-- (void)parseFile: (OFString *)path
-{
-	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
-	@try {
-		[self parseStream: file];
-	} @finally {
-		[file release];
-	}
-}
-#endif
-
 static void
 inByteOrderMarkState(OFXMLParser *self)
 {
