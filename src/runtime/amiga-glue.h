@@ -19,7 +19,6 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-#import "amiga-library.h"
 
 #ifdef OF_AMIGAOS_M68K
 # define PPC_PARAMS(...) (void)

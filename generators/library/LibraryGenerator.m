@@ -33,46 +33,51 @@
 OF_APPLICATION_DELEGATE(LibraryGenerator)
 
 @implementation LibraryGenerator
-- (void)applicationDidFinishLaunching
+- (void)generateInDirectory: (OFString *)directory
 {
 	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
-	    URLByAppendingPathComponent: @"../../src"];
-	OFURL *runtimeLibraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/library.xml"];
-	OFURL *runtimeLinkLibURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/linklib/linklib.m"];
-	OFURL *runtimeGlueHeaderURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-glue.h"];
-	OFURL *runtimeGlueURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-glue.m"];
-	OFURL *runtimeFuncArrayURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
-	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
-	    [OFFile fileWithURL: runtimeLibraryURL
+	    URLByAppendingPathComponent: directory];
+	OFURL *libraryURL = [sourcesURL
+	    URLByAppendingPathComponent: @"library.xml"];
+	OFURL *linkLibURL = [sourcesURL
+	    URLByAppendingPathComponent: @"linklib/linklib.m"];
+	OFURL *glueHeaderURL = [sourcesURL
+	    URLByAppendingPathComponent: @"amiga-glue.h"];
+	OFURL *glueURL = [sourcesURL
+	    URLByAppendingPathComponent: @"amiga-glue.m"];
+	OFURL *funcArrayURL = [sourcesURL
+	    URLByAppendingPathComponent: @"amiga-funcarray.inc"];
+	OFXMLElement *library = [OFXMLElement elementWithStream:
+	    [OFFile fileWithURL: libraryURL
 			   mode: @"r"]];
-	OFFile *runtimeLinkLib = [OFFile fileWithURL: runtimeLinkLibURL
-						mode: @"w"];
-	OFFile *runtimeGlueHeader = [OFFile fileWithURL: runtimeGlueHeaderURL
-						   mode: @"w"];
-	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
-					     mode: @"w"];
-	OFFile *runtimeFuncArray = [OFFile fileWithURL: runtimeFuncArrayURL
-						  mode: @"w"];
-	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
-	    initWithLibrary: runtimeLibrary
-	     implementation: runtimeLinkLib] autorelease];
-	GlueGenerator *runtimeGlueGenerator = [[[GlueGenerator alloc]
-	    initWithLibrary: runtimeLibrary
-		     header: runtimeGlueHeader
-	     implementation: runtimeGlue] autorelease];
-	FuncArrayGenerator *runtimeFuncArrayGenerator;
-	runtimeFuncArrayGenerator = [[[FuncArrayGenerator alloc]
-	    initWithLibrary: runtimeLibrary
-		    include: runtimeFuncArray] autorelease];
+	OFFile *linkLib = [OFFile fileWithURL: linkLibURL
+					 mode: @"w"];
+	OFFile *glueHeader = [OFFile fileWithURL: glueHeaderURL
+					    mode: @"w"];
+	OFFile *glue = [OFFile fileWithURL: glueURL
+				      mode: @"w"];
+	OFFile *funcArray = [OFFile fileWithURL: funcArrayURL
+					   mode: @"w"];
+	LinkLibGenerator *linkLibGenerator = [[[LinkLibGenerator alloc]
+	    initWithLibrary: library
+	     implementation: linkLib] autorelease];
+	GlueGenerator *glueGenerator = [[[GlueGenerator alloc]
+	    initWithLibrary: library
+		     header: glueHeader
+	     implementation: glue] autorelease];
+	FuncArrayGenerator *funcArrayGenerator = [[[FuncArrayGenerator alloc]
+	    initWithLibrary: library
+		    include: funcArray] autorelease];
 
-	[runtimeLinkLibGenerator generate];
-	[runtimeGlueGenerator generate];
-	[runtimeFuncArrayGenerator generate];
+	[linkLibGenerator generate];
+	[glueGenerator generate];
+	[funcArrayGenerator generate];
+}
+
+- (void)applicationDidFinishLaunching
+{
+	[self generateInDirectory: @"../../src"];
+	[self generateInDirectory: @"../../src/runtime"];
 
 	[OFApplication terminate];
 }

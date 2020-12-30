@@ -1,0 +1,205 @@
+<amiga-library version='1.0' base='ObjFWBase'>
+  <include>amiga-library.h</include>
+  <!-- The following function is only for the linklib. -->
+  <function name='of_init' return-type='bool'>
+    <argument name='version' type='unsigned int' m68k-reg='d0'/>
+    <argument name='libc' type='struct of_libc *_Nonnull' m68k-reg='a0'/>
+    <argument name='sF' type='FILE *_Nonnull *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <include>OFObject.h</include>
+  <function name='of_alloc' return-type='void *_Nullable'>
+    <argument name='count' type='size_t' m68k-reg='d0'/>
+    <argument name='size' type='size_t' m68k-reg='d1'/>
+  </function>
+  <function name='of_alloc_zeroed' return-type='void *_Nullable'>
+    <argument name='count' type='size_t' m68k-reg='d0'/>
+    <argument name='size' type='size_t' m68k-reg='d1'/>
+  </function>
+  <function name='of_realloc' return-type='void *_Nullable'>
+    <argument name='pointer' type='void *_Nullable' m68k-reg='a0'/>
+    <argument name='count' type='size_t' m68k-reg='d0'/>
+    <argument name='size' type='size_t' m68k-reg='d1'/>
+  </function>
+  <function name='of_hash_seed_ref' return-type='uint32_t *_Nonnull'/>
+  <include>OFStdIOStream.h</include>
+  <function name='of_stdin_ref'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='of_stdout_ref'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='of_stderr_ref'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='of_logv'>
+    <argument name='format' type='OFConstantString *' m68k-reg='a0'/>
+    <argument name='arguments' type='va_list' m68k-reg='a1'/>
+  </function>
+  <include>OFApplication.h</include>
+  <function name='of_application_main' return-type='int'>
+    <argument name='argc' type='int *_Nonnull' m68k-reg='a0'/>
+    <argument name='argv' type='char *_Nullable *_Nonnull *_Nonnull'
+              m68k-reg='a1'/>
+    <argument name='delegate' type='id <OFApplicationDelegate>' m68k-reg='a2'/>
+  </function>
+  <include>OFHTTPRequest.h</include>
+  <function name='of_http_request_method_to_string'
+            return-type='const char *_Nullable'>
+    <argument name='method' type='of_http_request_method_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_http_request_method_from_string'
+            return-type='of_http_request_method_t'>
+    <argument name='string' type='OFString *' m68k-reg='a0'/>
+  </function>
+  <include>OFHTTPResponse.h</include>
+  <function name='of_http_status_code_to_string'
+            return-type='OFString *_Nonnull'>
+    <argument name='code' type='short' m68k-reg='d0'/>
+  </function>
+  <include>OFMethodSignature.h</include>
+  <function name='of_sizeof_type_encoding' return-type='size_t'>
+    <argument name='type' type='const char *' m68k-reg='a0'/>
+  </function>
+  <function name='of_alignof_type_encoding' return-type='size_t'>
+    <argument name='type' type='const char *' m68k-reg='a0'/>
+  </function>
+  <include>OFString.h</include>
+  <function name='of_string_parse_encoding' return-type='of_string_encoding_t'>
+    <argument name='string' type='OFString *' m68k-reg='a0'/>
+  </function>
+  <function name='of_string_name_of_encoding' return-type='OFString *_Nullable'>
+    <argument name='encoding' type='of_string_encoding_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_string_utf8_encode' return-type='size_t'>
+    <argument name='c' type='of_unichar_t' m68k-reg='d0'/>
+    <argument name='UTF8' type='char *' m68k-reg='a0'/>
+  </function>
+  <function name='of_string_utf8_decode' return-type='ssize_t'>
+    <argument name='UTF8' type='const char *' m68k-reg='a0'/>
+    <argument name='len' type='size_t' m68k-reg='d0'/>
+    <argument name='c' type='of_unichar_t *' m68k-reg='a1'/>
+  </function>
+  <function name='of_string_utf16_length' return-type='size_t'>
+    <argument name='string' type='const of_char16_t *' m68k-reg='a0'/>
+  </function>
+  <function name='of_string_utf32_length' return-type='size_t'>
+    <argument name='string' type='const of_char32_t *' m68k-reg='a0'/>
+  </function>
+  <include>OFZIPArchiveEntry.h</include>
+  <function name='of_zip_archive_entry_version_to_string'
+            return-type='OFString *_Nonnull'>
+    <argument name='version' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_zip_archive_entry_compression_method_to_string'
+            return-type='OFString *_Nonnull'>
+    <argument name='compressionMethod' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_zip_archive_entry_extra_field_find' return-type='size_t'>
+    <argument name='extraField' type='OFData *' m68k-reg='a0'/>
+    <argument name='tag' type='uint16_t' m68k-reg='d0'/>
+    <argument name='size' type='uint16_t *' m68k-reg='a1'/>
+  </function>
+  <include>pbkdf2.h</include>
+  <function name='of_pbkdf2'>
+    <argument name='param' type='of_pbkdf2_parameters_t' m68k-reg='a0'/>
+  </function>
+  <include>scrypt.h</include>
+  <function name='of_salsa20_8_core'>
+    <argument name='buffer' type='uint32_t *_Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='of_scrypt_block_mix'>
+    <argument name='output' type='uint32_t *_Nonnull' m68k-reg='a0'/>
+    <argument name='input' type='const uint32_t *_Nonnull' m68k-reg='a1'/>
+    <argument name='blockSize' type='size_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_scrypt_romix'>
+    <argument name='buffer' type='uint32_t *' m68k-reg='a0'/>
+    <argument name='blockSize' type='size_t' m68k-reg='d0'/>
+    <argument name='costFactor' type='size_t' m68k-reg='d1'/>
+    <argument name='tmp' type='uint32_t *' m68k-reg='a1'/>
+  </function>
+  <function name='of_scrypt'>
+    <argument name='param' type='of_scrypt_parameters_t' m68k-reg='a0'/>
+  </function>
+  <include>of_strptime.h</include>
+  <function name='of_strptime' return-type='const char *_Nullable'>
+    <argument name='buf' type='const char *' m68k-reg='a0'/>
+    <argument name='fmt' type='const char *' m68k-reg='a1'/>
+    <argument name='tm' type='struct tm *' m68k-reg='a2'/>
+    <argument name='tz' type='int16_t *_Nullable' m68k-reg='a3'/>
+  </function>
+  <include>socket.h</include>
+  <function name='of_socket_address_parse_ip' return-type='of_socket_address_t'>
+    <argument name='IP' type='OFString *' m68k-reg='a0'/>
+    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_socket_address_parse_ipv4'
+            return-type='of_socket_address_t'>
+    <argument name='IP' type='OFString *' m68k-reg='a0'/>
+    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_socket_address_parse_ipv6'
+            return-type='of_socket_address_t'>
+    <argument name='IP' type='OFString *' m68k-reg='a0'/>
+    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_socket_address_ipx' return-type='of_socket_address_t'>
+    <argument name='node' type='const unsigned char *_Nonnull' m68k-reg='a0'/>
+    <argument name='network' type='uint32_t' m68k-reg='d0'/>
+    <argument name='port' type='uint16_t' m68k-reg='d1'/>
+  </function>
+  <function name='of_socket_address_equal' return-type='bool'>
+    <argument name='address1' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='address2' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a1'/>
+  </function>
+  <function name='of_socket_address_hash' return-type='unsigned long'>
+    <argument name='address' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+  </function>
+  <function name='of_socket_address_ip_string' return-type='OFString *_Nonnull'>
+    <argument name='address' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='port' type='uint16_t *_Nullable' m68k-reg='a1'/>
+  </function>
+  <function name='of_socket_address_set_port'>
+    <argument name='address' type='of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_socket_address_get_port' return-type='uint16_t'>
+    <argument name='address' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+  </function>
+  <function name='of_socket_address_set_ipx_network'>
+    <argument name='address' type='of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='network' type='uint32_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_socket_address_get_ipx_network' return-type='uint32_t'>
+    <argument name='address' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+  </function>
+  <function name='of_socket_address_set_ipx_node'>
+    <argument name='address' type='of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='node' type='const unsigned char *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <function name='of_socket_address_get_ipx_node'>
+    <argument name='address' type='const of_socket_address_t *_Nonnull'
+              m68k-reg='a0'/>
+    <argument name='node' type='unsigned char *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <include>OFDNSResourceRecord.h</include>
+  <function name='of_dns_class_to_string' return-type='OFString *_Nonnull'>
+    <argument name='DNSClass' type='of_dns_class_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_dns_record_type_to_string'
+            return-type='OFString *_Nonnull'>
+    <argument name='recordType' type='of_dns_record_type_t' m68k-reg='d0'/>
+  </function>
+  <function name='of_dns_class_parse' return-type='of_dns_class_t'>
+    <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='of_dns_record_type_parse' return-type='of_dns_record_type_t'>
+    <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
+  </function>
+</amiga-library>

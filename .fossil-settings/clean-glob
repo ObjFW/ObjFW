@@ -27,7 +27,6 @@ generators/library/gen_libraries
 generators/unicode/gen_tables
 src/Info.plist
 src/bridge/Info.plist
-src/inline.h
 src/objfw-defs.h
 src/runtime/Info.plist
 tests/DerivedData
