@@ -89,11 +89,11 @@
 	event.ident = object.fileDescriptorForReading;
 	event.filter = EVFILT_READ;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
@@ -110,11 +110,11 @@
 	event.ident = object.fileDescriptorForWriting;
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
