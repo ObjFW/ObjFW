@@ -51,9 +51,6 @@ m68k-*-amigaos*)
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw68k.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
-		AC_SUBST(SFDC_TARGET, m68k-amigaos)
-		AC_SUBST(SFD_FILE, amigaos3.sfd)
-		AC_SUBST(SFDC_INLINE_H, inline.h)
 		dnl For 68000, GCC emits calls to helper functions that
 		dnl do not work properly in a library.
 		t="-mcpu=68020 -fbaserel32 -noixemul -ffreestanding"
@@ -82,12 +79,10 @@ powerpc-*-amigaos*)
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
 	supports_amiga_lib="yes"
-	check_pedantic="no"	# Breaks generated inlines
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-		AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
@@ -1965,6 +1960,10 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 AC_ARG_WITH(fish_completions,
 	AS_HELP_STRING([--with-fish-completions],
 		[install completions for the fish shell]))
+AS_IF([test x"$with_fish_completions" = x""], [
+	AC_CHECK_PROG(FISH, fish, fish)
+	AS_IF([test x"$FISH" != x""], [with_fish_completions="yes"])
+])
 AS_IF([test x"$with_fish_completions" = x"yes"], [
 	AC_SUBST(FISH_COMPLETIONS, fish)
 ])

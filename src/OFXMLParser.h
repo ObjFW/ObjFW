@@ -228,15 +228,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param stream The stream to parse
  */
 - (void)parseStream: (OFStream *)stream;
-
-#ifdef OF_HAVE_FILES
-/**
- * @brief Parses the specified file.
- *
- * @param path The path to the file to parse
-*/
-- (void)parseFile: (OFString *)path;
-#endif
 @end
 
 OF_ASSUME_NONNULL_END

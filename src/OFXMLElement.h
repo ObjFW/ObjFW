@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableString;
+@class OFStream;
 @class OFString;
 @class OFXMLAttribute;
 
@@ -140,16 +141,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)elementWithXMLString: (OFString *)string;
 
-#ifdef OF_HAVE_FILES
 /**
- * @brief Parses the specified file and returns an OFXMLElement for it.
+ * @brief Parses the specified stream and returns an OFXMLElement for it.
  *
- * @param path The path to the file
+ * @param stream The stream to parse
  * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   file
+ *	   stream
  */
-+ (instancetype)elementWithFile: (OFString *)path;
-#endif
++ (instancetype)elementWithStream: (OFStream *)stream;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -218,16 +217,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithXMLString: (OFString *)string;
 
-#ifdef OF_HAVE_FILES
 /**
- * @brief Parses the specified file and initializes an already allocated
+ * @brief Parses the specified stream and initializes an already allocated
  *	  OFXMLElement with it.
  *
- * @param path The path to the file
- * @return An initialized OFXMLElement with the contents of the specified file
+ * @param stream The stream to parse
+ * @return An initialized OFXMLElement with the contents of the specified stream
  */
-- (instancetype)initWithFile: (OFString *)path;
-#endif
+- (instancetype)initWithStream: (OFStream *)stream;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 

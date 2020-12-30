@@ -539,7 +539,7 @@ OF_ROOT_CLASS
 @property (class, readonly, nonatomic) OFString *description;
 # endif
 
-# ifdef __cplusplus
+# ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
 # else
 @property (readonly, nonatomic, getter=class) Class class_;

@@ -95,7 +95,7 @@ static OF_INLINE void
 appendToBuffer(OFMutableData *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
-	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
+	if OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8)
 		[buffer addItems: string
 			   count: length];
 	else {
@@ -292,19 +292,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		free(buffer);
 	}
 }
-
-#ifdef OF_HAVE_FILES
-- (void)parseFile: (OFString *)path
-{
-	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
-	@try {
-		[self parseStream: file];
-	} @finally {
-		[file release];
-	}
-}
-#endif
 
 static void
 inByteOrderMarkState(OFXMLParser *self)

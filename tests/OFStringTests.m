@@ -1083,6 +1083,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"-0x10\t") longLongValueWithBase: 0] == -0x10 &&
 	    C(@"\t\t\r\n").longLongValue == 0 &&
 	    [C(@"123f") longLongValueWithBase: 16] == 0x123f &&
+	    [C(@"-1234") longLongValueWithBase: 0] == -1234 &&
 	    [C(@"\t\n0xABcd\r") longLongValueWithBase: 0] == 0xABCD &&
 	    [C(@"1234567") longLongValueWithBase: 8] == 01234567 &&
 	    [C(@"\r\n0123") longLongValueWithBase: 0] == 0123 &&
@@ -1094,6 +1095,7 @@ static uint16_t sutf16str[] = {
 	    C(@"\r\n+123  ").unsignedLongLongValue == 123 &&
 	    C(@"\t\t\r\n").unsignedLongLongValue == 0 &&
 	    [C(@"123f") unsignedLongLongValueWithBase: 16] == 0x123f &&
+	    [C(@"1234") unsignedLongLongValueWithBase: 0] == 1234 &&
 	    [C(@"\t\n0xABcd\r") unsignedLongLongValueWithBase: 0] == 0xABCD &&
 	    [C(@"1234567") unsignedLongLongValueWithBase: 8] == 01234567 &&
 	    [C(@"\r\n0123") unsignedLongLongValueWithBase: 0] == 0123 &&

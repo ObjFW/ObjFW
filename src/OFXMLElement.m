@@ -25,16 +25,17 @@
 #include <assert.h>
 
 #import "OFXMLElement.h"
-#import "OFXMLNode+Private.h"
-#import "OFString.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
 #import "OFData.h"
+#import "OFDictionary.h"
+#import "OFStream.h"
+#import "OFString.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
-#import "OFXMLParser.h"
+#import "OFXMLCharacters.h"
 #import "OFXMLElementBuilder.h"
+#import "OFXMLNode+Private.h"
+#import "OFXMLParser.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -114,12 +115,10 @@ _references_to_categories_of_OFXMLElement(void)
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
-#ifdef OF_HAVE_FILES
-+ (instancetype)elementWithFile: (OFString *)path
++ (instancetype)elementWithStream: (OFStream *)stream
 {
-	return [[[self alloc] initWithFile: path] autorelease];
+	return [[[self alloc] initWithStream: stream] autorelease];
 }
-#endif
 
 - (instancetype)init
 {
@@ -234,8 +233,7 @@ _references_to_categories_of_OFXMLElement(void)
 	return self;
 }
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithFile: (OFString *)path
+- (instancetype)initWithStream: (OFStream *)stream
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -254,7 +252,7 @@ _references_to_categories_of_OFXMLElement(void)
 	parser.delegate = builder;
 	builder.delegate = delegate;
 
-	[parser parseFile: path];
+	[parser parseStream: stream];
 
 	if (!parser.hasFinishedParsing)
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
@@ -265,7 +263,6 @@ _references_to_categories_of_OFXMLElement(void)
 
 	return self;
 }
-#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {

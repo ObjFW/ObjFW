@@ -276,10 +276,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[of_stdout writeString: @"Writing files…"];
 
-	URL = [OFURL fileURLWithPath: @"../src/unicode.m"];
+	URL = [OFURL fileURLWithPath: @"../../src/unicode.m"];
 	[self writeTablesToFile: URL.fileSystemRepresentation];
 
-	URL = [OFURL fileURLWithPath: @"../src/unicode.h"];
+	URL = [OFURL fileURLWithPath: @"../../src/unicode.h"];
 	[self writeHeaderToFile: URL.fileSystemRepresentation];
 
 	[of_stdout writeLine: @" done"];
