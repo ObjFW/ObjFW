@@ -1205,16 +1205,18 @@ AS_IF([test x"$enable_files" != x"no"], [
 ])
 
 AC_CHECK_HEADERS(dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep])
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r])
 
 case "$host_os" in
 amigaos* | morphos*)
-	dnl There is a symbol, but we cannot use fcntl() for sockets on
-	dnl AmigaOS / MorphOS.
+	dnl We don't want fcntl() or nanosleep() on AmigaOS / MorphOS, despite
+	dnl a symbol existing. The reason is that we cannot use fcntl() for
+	dnl sockets and that nanosleep() is yet another function that uses
+	dnl errno, so would need to be passed from the linklib.
 	;;
 *)
 	AC_CHECK_HEADERS(fcntl.h)
-	AC_CHECK_FUNCS(fcntl)
+	AC_CHECK_FUNCS([fcntl nanosleep])
 	;;
 esac
 
