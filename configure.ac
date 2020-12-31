@@ -121,6 +121,15 @@ powerpc-*-amigaos*)
 
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 	;;
+hppa*-*-hpux*)
+	dnl HP-UX 11.11's inttypes.h defines UINTPTR_MAX etc. to nothing. GCC's
+	dnl stdint.h defines those correctly, but if inttypes.h gets included
+	dnl after something included stdint.h, it gets broken again. Therefore,
+	dnl always include inttypes.h as the very first thing.
+	dnl We need to put this into OBJCFLAGS and not CPPFLAGS as CPPFLAGS are
+	dnl also used for .S files.
+	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
