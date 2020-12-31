@@ -129,6 +129,8 @@ hppa*-*-hpux*)
 	dnl We need to put this into OBJCFLAGS and not CPPFLAGS as CPPFLAGS are
 	dnl also used for .S files.
 	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
+	dnl We need -latomic for GCC's atomics to work.
+	LIBS="$LIBS -latomic"
 	;;
 esac
 
