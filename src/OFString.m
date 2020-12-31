@@ -72,8 +72,7 @@
 # define strtod __strtod
 #endif
 
-#ifdef OF_AMIGAOS_M68K
-/* libnix has strtod, but not strtof */
+#ifndef HAVE_STRTOF
 # define strtof strtod
 #endif
 
