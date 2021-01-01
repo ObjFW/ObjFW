@@ -1110,7 +1110,8 @@ static uint16_t sutf16str[] = {
 	    C(@"\t-0.25 ").floatValue == -0.25 &&
 	    C(@"\r\n\tINF\t\n").floatValue == INFINITY &&
 	    C(@"\r -INFINITY\n").floatValue == -INFINITY &&
-	    isnan(C(@"   NAN\t\t").floatValue))
+	    isnan(C(@"   NAN\t\t").floatValue) &&
+	    isnan(C(@"   -NaN\t\t").floatValue))
 
 #if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP) && \
     !defined(OF_AMIGAOS_M68K)

@@ -2503,6 +2503,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
 	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
 		return -INFINITY;
+	if ([stripped caseInsensitiveCompare: @"NAN"] == OF_ORDERED_SAME)
+		return NAN;
+	if ([stripped caseInsensitiveCompare: @"-NAN"] == OF_ORDERED_SAME)
+		return -NAN;
 
 #ifdef HAVE_STRTOF_L
 	const char *UTF8String = self.UTF8String;
@@ -2552,6 +2556,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
 	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
 		return -INFINITY;
+	if ([stripped caseInsensitiveCompare: @"NAN"] == OF_ORDERED_SAME)
+		return NAN;
+	if ([stripped caseInsensitiveCompare: @"-NAN"] == OF_ORDERED_SAME)
+		return -NAN;
 
 #ifdef HAVE_STRTOD_L
 	const char *UTF8String = self.UTF8String;
