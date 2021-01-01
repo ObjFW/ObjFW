@@ -342,7 +342,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
 
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (port != 0) {
 #endif
 		if (bind(_socket, &address.sockaddr.sockaddr,
@@ -357,7 +357,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 								 socket: self
 								  errNo: errNo];
 		}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
 		for (;;) {
 			uint16_t rnd = 0;
@@ -395,7 +395,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (port > 0)
 		return port;
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
