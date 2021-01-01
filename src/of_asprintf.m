@@ -289,7 +289,7 @@ formatLengthModifierState(struct context *ctx)
 #if defined(OF_WINDOWS)
 		if (!appendSubformat(ctx, "I64", 3))
 			return false;
-#elif defined(_NEWLIB_VERSION)
+#elif defined(_NEWLIB_VERSION) || defined(OF_HPUX)
 		if (!appendSubformat(ctx, "ll", 2))
 			return false;
 #else
@@ -321,7 +321,7 @@ formatLengthModifierState(struct context *ctx)
 		if (sizeof(ptrdiff_t) == 8)
 			if (!appendSubformat(ctx, "I64", 3))
 				return false;
-#elif defined(_NEWLIB_VERSION)
+#elif defined(_NEWLIB_VERSION) || defined(OF_HPUX)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
 #else
