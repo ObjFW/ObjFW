@@ -1113,12 +1113,12 @@ static uint16_t sutf16str[] = {
 	    isnan(C(@"   NAN\t\t").floatValue) &&
 	    isnan(C(@"   -NaN\t\t").floatValue))
 
-#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP) && \
-    !defined(OF_AMIGAOS_M68K)
+#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_HPUX) && \
+    !defined(OF_DJGPP) && !defined(OF_AMIGAOS_M68K)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
-/* Android, Solaris, DJGPP and AmigaOS3 do not accept 0x for strtod() */
+/* Android, Solaris, HP-UX, DJGPP and AmigaOS 3 do not accept 0x for strtod() */
 # if (!defined(OF_SOLARIS) || !defined(OF_X86)) && !defined(OF_AMIGAOS_M68K)
 #  define INPUT @"\t-0.123456789 "
 #  define EXPECTED -0.123456789
