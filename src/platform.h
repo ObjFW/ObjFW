@@ -141,6 +141,8 @@
 # define OF_SOLARIS
 #elif defined(__QNX__)
 # define OF_QNX
+#elif defined(__hpux__)
+# define OF_HPUX
 #elif defined(_PSP)
 # define OF_PSP
 #elif defined(__DJGPP__)
