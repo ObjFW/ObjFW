@@ -122,6 +122,9 @@ powerpc-*-amigaos*)
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 	;;
 hppa*-*-hpux*)
+	dnl Don't default to -g: It creates errors from the assembler and breaks
+	dnl exceptions.
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2"])
 	dnl HP-UX 11.11's inttypes.h defines UINTPTR_MAX etc. to nothing. GCC's
 	dnl stdint.h defines those correctly, but if inttypes.h gets included
 	dnl after something included stdint.h, it gets broken again. Therefore,
