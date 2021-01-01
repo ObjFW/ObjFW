@@ -269,7 +269,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.${LIB_MAJOR}'
-		LINK_LIB='&& ln -s $$out $${out%%.*}.sl'
+		LINK_LIB='&& rm -f $${out%%.*}.sl && ${LN_S} $$out $${out%%.*}.sl'
 		LDFLAGS_RPATH='-Wl,+b,${libdir}'
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'

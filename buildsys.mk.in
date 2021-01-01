@@ -150,7 +150,8 @@ ${SUBDIRS} ${SUBDIRS_AFTER}:
 
 depend: pre-depend
 	: >.deps
-	for i in ${DEPS}; do \
+	for i in "" ${DEPS}; do \
+		test x"$$i" = x"" && continue; \
 		echo "-include \$${.CURDIR}/$$i" >>.deps; \
 	done
 
