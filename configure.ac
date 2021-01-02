@@ -124,6 +124,20 @@ powerpc-*-amigaos*)
 
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 	;;
+hppa*-*-hpux*)
+	dnl Don't default to -g: It creates errors from the assembler and breaks
+	dnl exceptions.
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2"])
+	dnl HP-UX 11.11's inttypes.h defines UINTPTR_MAX etc. to nothing. GCC's
+	dnl stdint.h defines those correctly, but if inttypes.h gets included
+	dnl after something included stdint.h, it gets broken again. Therefore,
+	dnl always include inttypes.h as the very first thing.
+	dnl We need to put this into OBJCFLAGS and not CPPFLAGS as CPPFLAGS are
+	dnl also used for .S files.
+	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
+	dnl We need -latomic for GCC's atomics to work.
+	LIBS="$LIBS -latomic"
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
@@ -842,6 +856,8 @@ esac
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
+AC_CHECK_FUNCS(strtof truncf)
+
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
 	*-*-mingw*)
@@ -1246,16 +1262,18 @@ AS_IF([test x"$enable_files" != x"no"], [
 ])
 
 AC_CHECK_HEADERS(dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep])
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r])
 
 case "$host_os" in
 amigaos* | morphos*)
-	dnl There is a symbol, but we cannot use fcntl() for sockets on
-	dnl AmigaOS / MorphOS.
+	dnl We don't want fcntl() or nanosleep() on AmigaOS / MorphOS, despite
+	dnl a symbol existing. The reason is that we cannot use fcntl() for
+	dnl sockets and that nanosleep() is yet another function that uses
+	dnl errno, so would need to be passed from the linklib.
 	;;
 *)
 	AC_CHECK_HEADERS(fcntl.h)
-	AC_CHECK_FUNCS(fcntl)
+	AC_CHECK_FUNCS([fcntl nanosleep])
 	;;
 esac
 

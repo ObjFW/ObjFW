@@ -30,6 +30,10 @@
 
 #define UPDATE_INTERVAL 0.1
 
+#ifndef HAVE_TRUNCF
+# define truncf(x) trunc(x)
+#endif
+
 @implementation ProgressBar
 - (instancetype)initWithLength: (unsigned long long)length
 		   resumedFrom: (unsigned long long)resumedFrom

@@ -91,7 +91,7 @@ const char *str = "Hello!";
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
 				    count: 7
 				 itemSize: 2];
-	TEST(@"-[rangeOfString:options:range:]",
+	TEST(@"-[rangeOfData:options:range:]",
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							      count: 1
 							   itemSize: 2]
@@ -130,7 +130,7 @@ const char *str = "Hello!";
 	    range.location == 0 && range.length == 1)
 
 	EXPECT_EXCEPTION(
-	    @"-[rangeOfString:options:range:] failing on different itemSize",
+	    @"-[rangeOfData:options:range:] failing on different itemSize",
 	    OFInvalidArgumentException,
 	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
 						    count: 1

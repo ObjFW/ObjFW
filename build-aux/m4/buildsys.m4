@@ -1,6 +1,6 @@
 dnl
 dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
-dnl               2018, 2020
+dnl               2018, 2020, 2021
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
 dnl https://fossil.nil.im/buildsys
@@ -167,8 +167,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_REQUIRE([BUILDSYS_CHECK_IOS])
 	AC_MSG_CHECKING(for shared library system)
 
-	case "$host_os" in
-	darwin*)
+	case "$host" in
+	*-*-darwin*)
 		AC_MSG_RESULT(Darwin)
 		LIB_CFLAGS='-fPIC -DPIC'
 		LIB_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
@@ -190,10 +190,10 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_PLUGIN='&& rm -fr ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''
 		;;
-	mingw* | cygwin*)
+	*-*-mingw* | *-*-cygwin*)
 		AC_MSG_RESULT(MinGW / Cygwin)
 		LIB_CFLAGS=''
-		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib${SHARED_LIB}.a'
+		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib$$out.a'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
 		LIB_SUFFIX='.dll'
@@ -206,9 +206,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_LIB='&& rm -f ${DESTDIR}${bindir}/$$i ${DESTDIR}${libdir}/lib$$i.a'
 		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
-		CLEAN_LIB='${SHARED_LIB}.a'
+		CLEAN_LIB='${SHARED_LIB}.a ${SHARED_LIB_NOINST}.a'
 		;;
-	openbsd* | mirbsd*)
+	*-*-openbsd* | *-*-mirbsd*)
 		AC_MSG_RESULT(OpenBSD)
 		LIB_CFLAGS='-fPIC -DPIC'
 		LIB_LDFLAGS='-shared'
@@ -226,10 +226,10 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''
 		;;
-	solaris*)
+	*-*-solaris*)
 		AC_MSG_RESULT(Solaris)
 		LIB_CFLAGS='-fPIC -DPIC'
-		LIB_LDFLAGS='-shared -Wl,-soname=${SHARED_LIB}.${LIB_MAJOR}.${LIB_MINOR}'
+		LIB_LDFLAGS='-shared -Wl,-soname=$$out.${LIB_MAJOR}.${LIB_MINOR}'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
@@ -244,10 +244,10 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''
 		;;
-	*-android*)
+	*-*-android*)
 		AC_MSG_RESULT(Android)
 		LIB_CFLAGS='-fPIC -DPIC'
-		LIB_LDFLAGS='-shared -Wl,-soname=${SHARED_LIB}.${LIB_MAJOR}'
+		LIB_LDFLAGS='-shared -Wl,-soname=$$out.${LIB_MAJOR}'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
@@ -262,10 +262,29 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''
 		;;
+	hppa*-*-hpux*)
+		AC_MSG_RESULT([HP-UX (PA-RISC)])
+		LIB_CFLAGS='-fPIC -DPIC'
+		LIB_LDFLAGS='-shared -Wl,+h,$$out'
+		LIB_LDFLAGS_INSTALL_NAME=''
+		LIB_PREFIX='lib'
+		LIB_SUFFIX='.${LIB_MAJOR}'
+		LINK_LIB='&& rm -f $${out%%.*}.sl && ${LN_S} $$out $${out%%.*}.sl'
+		LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		PLUGIN_CFLAGS='-fPIC -DPIC'
+		PLUGIN_LDFLAGS='-shared'
+		PLUGIN_SUFFIX='.sl'
+		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i && ${LN_S} -f $$i ${DESTDIR}${libdir}/$${i%%.*}.sl'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%%.*}.sl'
+		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
+		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
+		CLEAN_LIB=''
+		;;
 	*)
 		AC_MSG_RESULT(ELF)
 		LIB_CFLAGS='-fPIC -DPIC'
-		LIB_LDFLAGS='-shared -Wl,-soname=${SHARED_LIB}.${LIB_MAJOR}'
+		LIB_LDFLAGS='-shared -Wl,-soname=$$out.${LIB_MAJOR}'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
@@ -287,6 +306,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_SUBST(LIB_LDFLAGS_INSTALL_NAME)
 	AC_SUBST(LIB_PREFIX)
 	AC_SUBST(LIB_SUFFIX)
+	AC_SUBST(LINK_LIB)
 	AC_SUBST(LDFLAGS_RPATH)
 	AC_SUBST(PLUGIN_CFLAGS)
 	AC_SUBST(PLUGIN_LDFLAGS)

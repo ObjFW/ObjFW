@@ -65,7 +65,7 @@
 	}
 #endif
 
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (of_socket_address_get_port(address) != 0) {
 #endif
 		if (bind(_socket, &address->sockaddr.sockaddr,
@@ -81,7 +81,7 @@
 								 socket: self
 								  errNo: errNo];
 		}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
 		for (;;) {
 			uint16_t rnd = 0;
@@ -121,7 +121,7 @@
 	if ((port = of_socket_address_get_port(address)) > 0)
 		return port;
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);

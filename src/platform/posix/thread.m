@@ -42,16 +42,16 @@ struct thread_ctx {
  */
 OF_CONSTRUCTOR()
 {
-	pthread_attr_t pattr;
+	pthread_attr_t attr;
 
-	if (pthread_attr_init(&pattr) == 0) {
+	if (pthread_attr_init(&attr) == 0) {
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 		int policy;
 #endif
 		struct sched_param param;
 
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
-		if (pthread_attr_getschedpolicy(&pattr, &policy) == 0) {
+		if (pthread_attr_getschedpolicy(&attr, &policy) == 0) {
 			minPrio = sched_get_priority_min(policy);
 			maxPrio = sched_get_priority_max(policy);
 
@@ -60,12 +60,12 @@ OF_CONSTRUCTOR()
 		}
 #endif
 
-		if (pthread_attr_getschedparam(&pattr, &param) != 0)
+		if (pthread_attr_getschedparam(&attr, &param) != 0)
 			normalPrio = param.sched_priority;
 		else
 			minPrio = maxPrio = 0;
 
-		pthread_attr_destroy(&pattr);
+		pthread_attr_destroy(&attr);
 	}
 }
 
@@ -89,15 +89,21 @@ int
 of_thread_attr_init(of_thread_attr_t *attr)
 {
 	int error;
-	pthread_attr_t pattr;
-
-	if ((error = pthread_attr_init(&pattr)) != 0)
-		return error;
+	pthread_attr_t POSIXAttr;
 
 	attr->priority = 0;
-	error = pthread_attr_getstacksize(&pattr, &attr->stackSize);
+	attr->stackSize = 0;
 
-	pthread_attr_destroy(&pattr);
+	if ((error = pthread_attr_init(&POSIXAttr)) != 0) {
+		if (error == ENOSYS)
+			return 0;
+
+		return error;
+	}
+
+	error = pthread_attr_getstacksize(&POSIXAttr, &attr->stackSize);
+
+	pthread_attr_destroy(&POSIXAttr);
 
 	return error;
 }
@@ -107,22 +113,27 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
     id object, const of_thread_attr_t *attr)
 {
 	int error = 0;
-	pthread_attr_t pattr;
+	pthread_attr_t POSIXAttr;
+	bool POSIXAttrAvailable = true;
 
-	if ((error = pthread_attr_init(&pattr)) != 0)
-		return error;
+	if ((error = pthread_attr_init(&POSIXAttr)) != 0) {
+		if (error == ENOSYS)
+			POSIXAttrAvailable = false;
+		else
+			return error;
+	}
 
 	@try {
 		struct thread_ctx *ctx;
 
-		if (attr != NULL) {
+		if (attr != NULL && POSIXAttrAvailable) {
 			struct sched_param param;
 
 			if (attr->priority < -1 || attr->priority > 1)
 				return EINVAL;
 
 #ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
-			if ((error = pthread_attr_setinheritsched(&pattr,
+			if ((error = pthread_attr_setinheritsched(&POSIXAttr,
 			    PTHREAD_EXPLICIT_SCHED)) != 0)
 				return error;
 #endif
@@ -135,13 +146,13 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 				param.sched_priority = normalPrio +
 				    attr->priority * (maxPrio - normalPrio);
 
-			if ((error = pthread_attr_setschedparam(&pattr,
+			if ((error = pthread_attr_setschedparam(&POSIXAttr,
 			    &param)) != 0)
 				return error;
 
 			if (attr->stackSize > 0) {
-				if ((error = pthread_attr_setstacksize(&pattr,
-				    attr->stackSize)) != 0)
+				if ((error = pthread_attr_setstacksize(
+				    &POSIXAttr, attr->stackSize)) != 0)
 					return error;
 			}
 		}
@@ -153,9 +164,11 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		ctx->object = object;
 		ctx->name = name;
 
-		error = pthread_create(thread, &pattr, functionWrapper, ctx);
+		error = pthread_create(thread, &POSIXAttr, functionWrapper,
+		    ctx);
 	} @finally {
-		pthread_attr_destroy(&pattr);
+		if (POSIXAttrAvailable)
+			pthread_attr_destroy(&POSIXAttr);
 	}
 
 	return error;

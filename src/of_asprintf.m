@@ -97,39 +97,35 @@ OF_CONSTRUCTOR()
 static int
 vasprintf(char **string, const char *format, va_list arguments)
 {
-	int expectedLength, length;
-	va_list argumentsCopy;
+	size_t length, bufferLength = 128;
 
-	va_copy(argumentsCopy, arguments);
+	*string = NULL;
 
-	expectedLength = vsnprintf(NULL, 0, format, argumentsCopy);
-	if (expectedLength == -1)
-		/*
-		 * We have no way to know how large it is. Let's try 64 KB and
-		 * hope.
-		 */
-		expectedLength = 65535;
-
-	if ((*string = malloc((size_t)expectedLength + 1)) == NULL)
-		return -1;
-
-	length = vsnprintf(*string, (size_t)expectedLength + 1,
-	    format, arguments);
-
-	if (length == -1 || length > expectedLength) {
+	for (;;) {
 		free(*string);
-		*string = NULL;
-		return -1;
+
+		if ((*string = malloc(bufferLength)) == NULL)
+			return -1;
+
+		length = vsnprintf(*string, bufferLength - 1, format,
+		    arguments);
+
+		if (length > 0 && (size_t)length < bufferLength - 1)
+			break;
+
+		if (bufferLength > INT_MAX / 2) {
+			free(*string);
+			return -1;
+		}
+
+		bufferLength <<= 1;
 	}
 
-	/*
-	 * In case we could not determine the size, resize to the actual size
-	 * needed, but ignore any failure to do so.
-	 */
-	if (length < expectedLength) {
-		char *resized;
+	if (length != bufferLength - 1) {
+		char *resized = realloc(*string, length + 1);
 
-		if ((resized = realloc(*string, length + 1)) != NULL)
+		/* Ignore if making it smaller failed. */
+		if (resized != NULL)
 			*string = resized;
 	}
 
@@ -291,7 +287,7 @@ formatLengthModifierState(struct context *ctx)
 #if defined(OF_WINDOWS)
 		if (!appendSubformat(ctx, "I64", 3))
 			return false;
-#elif defined(_NEWLIB_VERSION)
+#elif defined(_NEWLIB_VERSION) || defined(OF_HPUX)
 		if (!appendSubformat(ctx, "ll", 2))
 			return false;
 #else
@@ -307,7 +303,7 @@ formatLengthModifierState(struct context *ctx)
 		if (sizeof(size_t) == 8)
 			if (!appendSubformat(ctx, "I64", 3))
 				return false;
-#elif defined(_NEWLIB_VERSION)
+#elif defined(_NEWLIB_VERSION) || defined(OF_HPUX)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
 #else
@@ -323,7 +319,7 @@ formatLengthModifierState(struct context *ctx)
 		if (sizeof(ptrdiff_t) == 8)
 			if (!appendSubformat(ctx, "I64", 3))
 				return false;
-#elif defined(_NEWLIB_VERSION)
+#elif defined(_NEWLIB_VERSION) || defined(OF_HPUX)
 		if (!appendSubformat(ctx, "l", 1))
 			return false;
 #else
