@@ -609,7 +609,7 @@ case "$objc_runtime" in
 		AC_MSG_ERROR([Exceptions not accepted by compiler!])
 	])
 
-	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc], [
+	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
 		dnl c++abi requires pthread on OpenBSD
 		AS_IF([test x"$ac_lib" = x"c++abi"], [LIBS="$LIBS -lpthread"])
 	], [
