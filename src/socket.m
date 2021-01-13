@@ -15,7 +15,9 @@
 
 #include "config.h"
 
-#define _XOPEN_SOURCE_EXTENDED
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
 
 #ifdef OF_NINTENDO_3DS
 # include <malloc.h>  /* For memalign() */
