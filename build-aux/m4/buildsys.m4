@@ -281,6 +281,25 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''
 		;;
+	ia64*-*-hpux*)
+		AC_MSG_RESULT([HP-UX (Itanium)])
+		LIB_CFLAGS='-fPIC -DPIC'
+		LIB_LDFLAGS='-shared -Wl,+h,$$out'
+		LIB_LDFLAGS_INSTALL_NAME=''
+		LIB_PREFIX='lib'
+		LIB_SUFFIX='.${LIB_MAJOR}'
+		LINK_LIB='&& rm -f $${out%%.*}.so && ${LN_S} $$out $${out%%.*}.so'
+		LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		PLUGIN_CFLAGS='-fPIC -DPIC'
+		PLUGIN_LDFLAGS='-shared'
+		PLUGIN_SUFFIX='.so'
+		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i && ${LN_S} -f $$i ${DESTDIR}${libdir}/$${i%%.*}.so'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%%.*}.so'
+		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
+		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
+		CLEAN_LIB=''
+		;;
 	*)
 		AC_MSG_RESULT(ELF)
 		LIB_CFLAGS='-fPIC -DPIC'
