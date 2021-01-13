@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#define _LARGEFILE64_SOURCE
+
 #include <errno.h>
 #include <math.h>
 
