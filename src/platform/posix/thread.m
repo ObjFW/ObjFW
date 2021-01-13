@@ -164,7 +164,8 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		ctx->object = object;
 		ctx->name = name;
 
-		error = pthread_create(thread, &POSIXAttr, functionWrapper,
+		error = pthread_create(thread,
+		    (POSIXAttrAvailable ? &POSIXAttr : NULL), functionWrapper,
 		    ctx);
 	} @finally {
 		if (POSIXAttrAvailable)
