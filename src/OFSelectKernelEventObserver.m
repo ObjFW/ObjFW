@@ -13,9 +13,9 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#define __NO_EXT_QNX
 
 #include "platform.h"
 
@@ -40,6 +40,11 @@
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
+#endif
+
+#ifdef OF_HPUX
+/* FD_SET causes warnings on HP-UX/IA64. */
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
 @implementation OFSelectKernelEventObserver

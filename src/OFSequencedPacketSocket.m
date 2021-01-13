@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#define _XOPEN_SOURCE_EXTENDED
+
 #include <assert.h>
 #include <errno.h>
 

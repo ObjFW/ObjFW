@@ -13,9 +13,10 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#define _XOPEN_SOURCE_EXTENDED
+#define __NO_EXT_QNX
 
 #include <errno.h>
 #include <stdio.h>
