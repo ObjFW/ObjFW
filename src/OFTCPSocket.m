@@ -19,6 +19,7 @@
 # define _XOPEN_SOURCE_EXTENDED
 #endif
 #define __NO_EXT_QNX
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
 #include <stdio.h>

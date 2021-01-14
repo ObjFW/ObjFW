@@ -18,6 +18,7 @@
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED
 #endif
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #ifdef OF_NINTENDO_3DS
 # include <malloc.h>  /* For memalign() */
