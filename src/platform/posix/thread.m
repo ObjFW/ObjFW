@@ -127,16 +127,23 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 		struct thread_ctx *ctx;
 
 		if (attr != NULL && POSIXAttrAvailable) {
+#ifndef OF_HPUX
 			struct sched_param param;
+#endif
 
 			if (attr->priority < -1 || attr->priority > 1)
 				return EINVAL;
 
-#ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
+#ifndef OF_HPUX
+# ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
 			if ((error = pthread_attr_setinheritsched(&POSIXAttr,
 			    PTHREAD_EXPLICIT_SCHED)) != 0)
 				return error;
-#endif
+# endif
+
+			if ((error = pthread_attr_getschedparam(&POSIXAttr,
+			    &param)) != 0)
+				return error;
 
 			if (attr->priority < 0) {
 				param.sched_priority = minPrio +
@@ -149,6 +156,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 			if ((error = pthread_attr_setschedparam(&POSIXAttr,
 			    &param)) != 0)
 				return error;
+#endif
 
 			if (attr->stackSize > 0) {
 				if ((error = pthread_attr_setstacksize(
