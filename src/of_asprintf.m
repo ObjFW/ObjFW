@@ -110,7 +110,7 @@ vasprintf(char **string, const char *format, va_list arguments)
 		length = vsnprintf(*string, bufferLength - 1, format,
 		    arguments);
 
-		if (length > 0 && (size_t)length < bufferLength - 1)
+		if (length >= 0 && (size_t)length < bufferLength - 1)
 			break;
 
 		if (bufferLength > INT_MAX / 2) {
