@@ -642,7 +642,14 @@ case "$objc_runtime" in
 	;;
 esac
 
-AC_CHECK_FUNCS(_Unwind_Backtrace)
+case "$host_os" in
+hpux*)
+	dnl _Unwind_Backtrace() returns complete garbage on HP-UX.
+	;;
+*)
+	AC_CHECK_FUNCS(_Unwind_Backtrace)
+	;;
+esac
 
 case "$host_os" in
 darwin*)
