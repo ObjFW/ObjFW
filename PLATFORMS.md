@@ -68,6 +68,17 @@ Haiku
   * Runtimes: ObjFW
 
 
+HP-UX
+-----
+
+  * OS versions: 11i v3
+  * Architectures: Itanium
+  * Compilers: GCC 4.7.2
+  * Runtimes: ObjFW
+  * Notes: Exception handling in 32 bit mode is broken, you need to use 64 bit
+           mode by passing `OBJC="gcc -mlp64"` to `configure`.
+
+
 iOS
 ---
 
