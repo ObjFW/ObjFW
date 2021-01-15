@@ -71,12 +71,12 @@ Haiku
 HP-UX
 -----
 
-  * OS versions: 11i v3
-  * Architectures: Itanium
-  * Compilers: GCC 4.7.2
+  * OS versions: 11i v1 (PA-RISC 2.0), 11i v3 (Itanium)
+  * Architectures: Itanium, PA-RISC 2.0
+  * Compilers: GCC 4.7.2, GCC 7.5.0
   * Runtimes: ObjFW
-  * Notes: Exception handling in 32 bit mode is broken, you need to use 64 bit
-           mode by passing `OBJC="gcc -mlp64"` to `configure`.
+  * Notes: Exception handling on Itanium in 32 bit mode is broken, you need to
+           use 64 bit mode by passing `OBJC="gcc -mlp64"` to `configure`.
 
 
 iOS
