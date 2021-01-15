@@ -91,42 +91,53 @@ const char *str = "Hello!";
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
 				    count: 7
 				 itemSize: 2];
-	TEST(@"-[rangeOfData:options:range:]",
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 0 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "ac"
-							      count: 1
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 2 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
-							      count: 2
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 2 &&
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: 0
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #1",
+	    range.location == 0 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: OF_DATA_SEARCH_BACKWARDS
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #2",
+	    range.location == 5 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "ac"
+							count: 1
+						     itemSize: 2]
+			       options: 0
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #3",
+	    range.location == 2 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
+							count: 2
+						     itemSize: 2]
+						      options: 0
+							range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #4",
+	    range.location == 5 && range.length == 2)
+
+	TEST(@"-[rangeOfData:options:range:] #5",
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							      count: 1
 							   itemSize: 2]
 				     options: 0
 				       range: of_range(1, 6)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 5)]) &&
+	    range.location == 5 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: OF_DATA_SEARCH_BACKWARDS
+				 range: of_range(0, 5)];
+	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)
 
 	EXPECT_EXCEPTION(
