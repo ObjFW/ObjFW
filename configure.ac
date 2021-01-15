@@ -935,7 +935,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread")
+		AC_CHECK_LIB(pthread, main, LIBS="$LIBS -lpthread")
 
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
