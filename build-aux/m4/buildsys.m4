@@ -36,6 +36,13 @@ AC_DEFUN([BUILDSYS_INIT], [
 		;;
 	esac
 
+	AC_PROG_INSTALL
+	case "$INSTALL" in
+	./build-aux/install-sh*)
+		INSTALL="$PWD/$INSTALL"
+		;;
+	esac
+
 	AC_CONFIG_COMMANDS_PRE([
 		AS_IF([test x"$GCC" = x"yes"],
 			[AC_SUBST(DEP_CFLAGS, '-MD -MF $${out%.o}.dep')])
