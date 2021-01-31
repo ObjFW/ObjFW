@@ -97,7 +97,8 @@ OF_CONSTRUCTOR()
 static int
 vasprintf(char **string, const char *format, va_list arguments)
 {
-	size_t length, bufferLength = 128;
+	int length;
+	size_t bufferLength = 128;
 
 	*string = NULL;
 
@@ -121,7 +122,7 @@ vasprintf(char **string, const char *format, va_list arguments)
 		bufferLength <<= 1;
 	}
 
-	if (length != bufferLength - 1) {
+	if (length > 0 && (size_t)length != bufferLength - 1) {
 		char *resized = realloc(*string, length + 1);
 
 		/* Ignore if making it smaller failed. */
