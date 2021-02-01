@@ -53,7 +53,7 @@ Ltagged_pointer_$0:
 	movq	_objc_tagged_pointer_secret@GOTPCREL(%rip), %rax
 	xorq	(%rax), %rdi
 	andb	$$0xE, %dil
-	movzbq	%dil, %r8
+	movzbl	%dil, %r8d
 
 	movq	_objc_tagged_pointer_classes@GOTPCREL(%rip), %rax
 	movq	(%rax,%r8,4), %r8
@@ -84,5 +84,5 @@ ret_nil:
 	ret
 
 nil_method:
-	movq	%rdi, %rax
+	xorq	%rax, %rax
 	ret
