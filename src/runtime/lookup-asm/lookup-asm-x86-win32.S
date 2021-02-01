@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
@@ -25,55 +23,55 @@
 .section .text
 .macro generate_lookup name not_found
 \name:
-	mov	edx, [esp+4]
-	test	edx, edx
-	jz	short ret_nil
+	movl	4(%esp), %edx
+	testl	%edx, %edx
+	jz	ret_nil
 
-	bt	edx, 0
-	jc	short .Ltagged_pointer_\name
+	btl	$0, %edx
+	jc	.Ltagged_pointer_\name
 
-	mov	edx, [edx]
-	mov	edx, [edx+32]
+	movl	(%edx), %edx
+	movl	32(%edx), %edx
 
 .Lmain_\name:
-	mov	eax, [esp+8]
+	movl	8(%esp), %eax
 
 #ifdef OF_SELUID24
-	movzx	ecx, byte ptr [eax+2]
-	mov	edx, [edx+ecx*4]
+	movzbl	2(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
 #endif
-	movzx	ecx, byte ptr [eax+1]
-	mov	edx, [edx+ecx*4]
-	movzx	ecx, byte ptr [eax]
-	mov	eax, [edx+ecx*4]
+	movzbl	1(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
+	movzbl	(%eax), %ecx
+	movl	(%edx,%ecx,4), %eax
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	\not_found
 
 	ret
 
 .Ltagged_pointer_\name:
-	xor	edx, _objc_tagged_pointer_secret
-	and	dl, 0xE
-	movzx	edx, dl
+	xorl	_objc_tagged_pointer_secret, %edx
+	andb	$0xE, %dl
+	movzbl	%dl, %edx
 
-	mov	edx, [_objc_tagged_pointer_classes+edx*2]
-	mov	edx, [edx+32]
+	movl	_objc_tagged_pointer_classes(,%edx,2), %edx
+	movl	32(%edx), %edx
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .endm
 
 .macro generate_lookup_super name lookup
 \name:
-	mov	edx, [esp+4]
-	mov	eax, [edx]
-	test	eax, eax
-	jz	short ret_nil
+	movl	4(%esp), %edx
+	movl	(%edx), %eax
+	test	%eax, %eax
+	jz	ret_nil
 
-	mov	[esp+4], eax
-	mov	edx, [edx+4]
-	mov	edx, [edx+32]
-	jmp	short .Lmain_\lookup
+	movl	%eax, 4(%esp)
+	movl	4(%edx), %edx
+	movl	32(%edx), %edx
+	jmp	.Lmain_\lookup
 .endm
 
 generate_lookup _objc_msg_lookup _objc_method_not_found
@@ -82,9 +80,9 @@ generate_lookup_super _objc_msg_lookup_super _objc_msg_lookup
 generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
 ret_nil:
-	mov	eax, offset nil_method
+	movl	$nil_method, %eax
 	ret
 
 nil_method:
-	xor	eax, eax
+	xorl	%eax, %eax
 	ret
