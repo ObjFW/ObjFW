@@ -17,123 +17,121 @@
 
 #include "invoke-x86_64.h"
 
-.intel_syntax noprefix
-
 .globl of_invocation_call
 
 .section .text
 of_invocation_call:
-	pushq	rbp
-	mov	rbp, rsp
+	pushq	%rbp
+	movq	%rsp, %rbp
 
-	sub	rsp, 16
-	and	rsp, -16
-	mov	[rbp-8], rdi
+	subq	$16, %rsp
+	andq	$-16, %rsp
+	movq	%rdi, -8(%rbp)
 
-	mov	r11b, [rdi+OFFSET_RETURN_TYPE]
-	cmp	r11b, RETURN_TYPE_STRET
-	je	short .Llookup_stret
-	cmp	r11b, RETURN_TYPE_JMP_STRET
-	je	short .Llookup_stret
+	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
+	cmpb	$RETURN_TYPE_STRET, %r11b
+	je	.Llookup_stret
+	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
+	je	.Llookup_stret
 
-	mov	rsi, [rdi+OFFSET_GPR_IN+8]
-	mov	rdi, [rdi+OFFSET_GPR_IN]
+	movq	OFFSET_GPR_IN+8(%rdi), %rsi
+	movq	OFFSET_GPR_IN+0(%rdi), %rdi
 	call	objc_msg_lookup@PLT
 
 .Lafter_lookup:
-	mov	[rbp-16], rax
-	mov	rdi, [rbp-8]
+	movq	%rax, -16(%rbp)
+	movq	-8(%rbp), %rdi
 
-	lea	rdx, [rdi+OFFSET_STACK]
-	mov	rcx, [rdi+OFFSET_STACK_SIZE]
+	leaq	OFFSET_STACK(%rdi), %rdx
+	movq	OFFSET_STACK_SIZE(%rdi), %rcx
 
-	test	rcx, 1
-	jnz	short .Lfix_align
+	testq	$1, %rcx
+	jnz	.Lfix_align
 
 .Lfill_stack:
-	test	rcx, rcx
-	jz	short .Lstack_filled
+	testq	%rcx, %rcx
+	jz	.Lstack_filled
 
-	dec	rcx
-	mov	r11, [rdx+rcx*8]
-	push	r11
+	decq	%rcx
+	movq	(%rdx,%rcx,8), %r11
+	pushq	%r11
 
-	jmp	short .Lfill_stack
+	jmp	.Lfill_stack
 
 .Lstack_filled:
-	mov	al, [rdi+OFFSET_NUM_SSE_USED]
+	movb	OFFSET_NUM_SSE_USED(%rdi), %al
 
-	movaps	xmm7, [rdi+OFFSET_SSE_INOUT+112]
-	movaps	xmm6, [rdi+OFFSET_SSE_INOUT+96]
-	movaps	xmm5, [rdi+OFFSET_SSE_INOUT+80]
-	movaps	xmm4, [rdi+OFFSET_SSE_INOUT+64]
-	movaps	xmm3, [rdi+OFFSET_SSE_INOUT+48]
-	movaps	xmm2, [rdi+OFFSET_SSE_INOUT+32]
-	movaps	xmm1, [rdi+OFFSET_SSE_INOUT+16]
-	movaps	xmm0, [rdi+OFFSET_SSE_INOUT]
+	movaps	OFFSET_SSE_INOUT+112(%rdi), %xmm7
+	movaps	OFFSET_SSE_INOUT+96(%rdi), %xmm6
+	movaps	OFFSET_SSE_INOUT+80(%rdi), %xmm5
+	movaps	OFFSET_SSE_INOUT+64(%rdi), %xmm4
+	movaps	OFFSET_SSE_INOUT+48(%rdi), %xmm3
+	movaps	OFFSET_SSE_INOUT+32(%rdi), %xmm2
+	movaps	OFFSET_SSE_INOUT+16(%rdi), %xmm1
+	movaps	OFFSET_SSE_INOUT(%rdi), %xmm0
 
-	mov	r9,  [rdi+OFFSET_GPR_IN+40]
-	mov	r8,  [rdi+OFFSET_GPR_IN+32]
-	mov	rcx, [rdi+OFFSET_GPR_IN+24]
-	mov	rdx, [rdi+OFFSET_GPR_IN+16]
-	mov	rsi, [rdi+OFFSET_GPR_IN+8]
+	movq	OFFSET_GPR_IN+40(%rdi), %r9
+	movq	OFFSET_GPR_IN+32(%rdi), %r8
+	movq	OFFSET_GPR_IN+24(%rdi), %rcx
+	movq	OFFSET_GPR_IN+16(%rdi), %rdx
+	movq	OFFSET_GPR_IN+8(%rdi), %rsi
 
-	mov	r11b, [rdi+OFFSET_RETURN_TYPE]
-	mov	rdi,  [rdi+OFFSET_GPR_IN]
+	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
+	movq	OFFSET_GPR_IN(%rdi), %rdi
 
-	cmp	r11b, RETURN_TYPE_JMP
-	je	short .Ljmp_into_method
-	cmp	r11b, RETURN_TYPE_JMP_STRET
-	je	short .Ljmp_into_method
+	cmpb	$RETURN_TYPE_JMP, %r11b
+	je	.Ljmp_into_method
+	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
+	je	.Ljmp_into_method
 
-	mov	r11, [rbp-16]
-	call	r11
+	movq	-16(%rbp), %r11
+	call	*%r11
 
 .Lafter_send:
-	mov	rdi, [rbp-8]
-	mov	[rdi+OFFSET_GPR_OUT], rax
-	mov	[rdi+OFFSET_GPR_OUT+8], rdx
-	movaps	[rdi+OFFSET_SSE_INOUT], xmm0
-	movaps	[rdi+OFFSET_SSE_INOUT+16], xmm1
+	movq	-8(%rbp), %rdi
+	movq	%rax, OFFSET_GPR_OUT(%rdi)
+	movq	%rdx, OFFSET_GPR_OUT+8(%rdi)
+	movaps	%xmm0, OFFSET_SSE_INOUT(%rdi)
+	movaps	%xmm1, OFFSET_SSE_INOUT+16(%rdi)
 
-	mov	r11b, [rdi+OFFSET_RETURN_TYPE]
+	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
 
-	cmp	r11b, RETURN_TYPE_X87
-	je	short .Lpop_long_double
+	cmpb	$RETURN_TYPE_X87, %r11b
+	je	.Lpop_long_double
 
-	cmp	r11b, RETURN_TYPE_COMPLEX_X87
-	je	short .Lpop_complex_long_double
+	cmpb	$RETURN_TYPE_COMPLEX_X87, %r11b
+	je	.Lpop_complex_long_double
 
 .Lreturn:
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
 	ret
 
 .Lfix_align:
-	xor	r11, r11
-	push	r11
-	jmp	short .Lfill_stack
+	xorq	%r11, %r11
+	pushq	%r11
+	jmp	.Lfill_stack
 
 .Llookup_stret:
-	mov	rsi, [rdi+OFFSET_GPR_IN+16]
-	mov	rdi, [rdi+OFFSET_GPR_IN+8]
+	movq	OFFSET_GPR_IN+16(%rdi), %rsi
+	movq	OFFSET_GPR_IN+8(%rdi), %rdi
 	call	objc_msg_lookup_stret@PLT
 
-	jmp	short .Lafter_lookup
+	jmp	.Lafter_lookup
 
 .Ljmp_into_method:
-	mov	r11, [rbp-16]
-	jmp	r11
+	movq	-16(%rbp), %r11
+	jmp	*%r11
 
 .Lpop_long_double:
-	fstp	tbyte ptr [rdi+OFFSET_X87_OUT]
-	jmp	short .Lreturn
+	fstpt	OFFSET_X87_OUT(%rdi)
+	jmp	.Lreturn
 
 .Lpop_complex_long_double:
-	fstp	tbyte ptr [rdi+OFFSET_X87_OUT]
-	fstp	tbyte ptr [rdi+OFFSET_X87_OUT+16]
-	jmp	short .Lreturn
+	fstpt	OFFSET_X87_OUT(%rdi)
+	fstpt	OFFSET_X87_OUT+16(%rdi)
+	jmp	.Lreturn
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
