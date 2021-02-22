@@ -26,8 +26,8 @@ $0:
 	testq	%rdi, %rdi
 	jz	ret_nil
 
-	btl	$$0, %edi
-	jc	Ltagged_pointer_$0
+	testb	$$1, %dil
+	jnz	Ltagged_pointer_$0
 
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8

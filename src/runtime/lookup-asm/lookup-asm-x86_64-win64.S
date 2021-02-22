@@ -28,8 +28,8 @@
 	test	rcx, rcx
 	jz	short ret_nil
 
-	bt	ecx, 0
-	jc	short .Ltagged_pointer_\name
+	test	cl, 1
+	jnz	short .Ltagged_pointer_\name
 
 	mov	r8, [rcx]
 	mov	r8, [r8+56]

@@ -27,8 +27,8 @@
 	testl	%edx, %edx
 	jz	ret_nil
 
-	btl	$0, %edx
-	jc	.Ltagged_pointer_\name
+	testb	$1, %dl
+	jnz	.Ltagged_pointer_\name
 
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
