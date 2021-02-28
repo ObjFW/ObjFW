@@ -50,7 +50,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key for which the string value should be returned
  * @return The string value for the specified key, or `nil` if it does not exist
  */
-- (nullable OFString *)stringForKey: (OFString *)key;
+- (nullable OFString *)stringValueForKey: (OFString *)key;
 
 /**
  * @brief Returns the string value for the specified key or the specified
@@ -64,23 +64,23 @@ OF_SUBCLASSING_RESTRICTED
  * @return The string value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (nullable OFString *)stringForKey: (OFString *)key
-		       defaultValue: (nullable OFString *)defaultValue;
+- (nullable OFString *)stringValueForKey: (OFString *)key
+			    defaultValue: (nullable OFString *)defaultValue;
 
 /**
- * @brief Returns the integer value for the specified key or the specified
+ * @brief Returns the long long value for the specified key or the specified
  *	  default value if it does not exist.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
  * the first key/value pair found is returned.
  *
- * @param key The key for which the integer value should be returned
+ * @param key The key for which the long long value should be returned
  * @param defaultValue The value to return if the key does not exist
- * @return The integer value for the specified key or the specified default
+ * @return The long long value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (long long)integerForKey: (OFString *)key
-	      defaultValue: (long long)defaultValue;
+- (long long)longLongValueForKey: (OFString *)key
+		    defaultValue: (long long)defaultValue;
 
 /**
  * @brief Returns the bool value for the specified key or the specified default
@@ -94,8 +94,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return The bool value for the specified key or the specified default value
  *	   if it does not exist
  */
-- (bool)boolForKey: (OFString *)key
-      defaultValue: (bool)defaultValue;
+- (bool)boolValueForKey: (OFString *)key
+	   defaultValue: (bool)defaultValue;
 
 /**
  * @brief Returns the float value for the specified key or the specified
@@ -109,8 +109,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return The float value for the specified key or the specified default value
  *	   if it does not exist
  */
-- (float)floatForKey: (OFString *)key
-	defaultValue: (float)defaultValue;
+- (float)floatValueForKey: (OFString *)key
+	     defaultValue: (float)defaultValue;
 
 /**
  * @brief Returns the double value for the specified key or the specified
@@ -124,8 +124,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return The double value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (double)doubleForKey: (OFString *)key
-	  defaultValue: (double)defaultValue;
+- (double)doubleValueForKey: (OFString *)key
+	       defaultValue: (double)defaultValue;
 
 /**
  * @brief Returns an array of string values for the specified multi-key, or an
@@ -138,7 +138,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return The array for the specified key, or an empty array if it does not
  *	   exist
  */
-- (OFArray OF_GENERIC(OFString *) *)arrayForKey: (OFString *)key;
+- (OFArray OF_GENERIC(OFString *) *)stringValuesForKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified string.
@@ -146,11 +146,11 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
  * the first key/value pair found is changed.
  *
- * @param string The string to which the value of the key should be set
+ * @param stringValue The string value to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setString: (OFString *)string
-	   forKey: (OFString *)key;
+- (void)setStringValue: (OFString *)stringValue
+		forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified integer.
@@ -158,47 +158,47 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
  * the first key/value pair found is changed.
  *
- * @param integer The integer to which the value of the key should be set
+ * @param longLongValue The long long value to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setInteger: (long long)integer
-	    forKey: (OFString *)key;
+- (void)setLongLongValue: (long long)longLongValue
+		  forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified bool.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the
+ * value of the first key/value pair found is changed.
  *
- * @param bool_ The bool to which the value of the key should be set
+ * @param boolValue The bool value to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setBool: (bool)bool_
-	 forKey: (OFString *)key;
+- (void)setBoolValue: (bool)boolValue
+	      forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified float.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the
+ * value of the first key/value pair found is changed.
  *
- * @param float_ The float to which the value of the key should be set
+ * @param floatValue The float value to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setFloat: (float)float_
-	  forKey: (OFString *)key;
+- (void)setFloatValue: (float)floatValue
+	       forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified double.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the
+ * value of the first key/value pair found is changed.
  *
- * @param double_ The double to which the value of the key should be set
+ * @param doubleValue The double value to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setDouble: (double)double_
-	   forKey: (OFString *)key;
+- (void)setDoubleValue: (double)doubleValue
+		forKey: (OFString *)key;
 
 /**
  * @brief Sets the specified multi-key to the specified array of strings.
@@ -207,13 +207,13 @@ OF_SUBCLASSING_RESTRICTED
  * pairs and removes all following occurrences. If the multi-key does not exist
  * yet, it is appended to the section.
  *
- * See also @ref arrayForKey: for more information about multi-keys.
+ * See also @ref stringValuesForKey: for more information about multi-keys.
  *
- * @param array The array of strings to which the multi-key should be set
+ * @param stringValues The array of strings to which the multi-key should be set
  * @param key The multi-key for which the new values should be set
  */
-- (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
-	  forKey: (OFString *)key;
+- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
+		 forKey: (OFString *)key;
 
 /**
  * @brief Removes the value for the specified key

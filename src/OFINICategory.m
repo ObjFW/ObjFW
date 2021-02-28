@@ -178,14 +178,14 @@ unescapeString(OFString *string)
 	}
 }
 
-- (OFString *)stringForKey: (OFString *)key
+- (OFString *)stringValueForKey: (OFString *)key
 {
-	return [self stringForKey: key
-		     defaultValue: nil];
+	return [self stringValueForKey: key
+			  defaultValue: nil];
 }
 
-- (OFString *)stringForKey: (OFString *)key
-	      defaultValue: (OFString *)defaultValue
+- (OFString *)stringValueForKey: (OFString *)key
+		   defaultValue: (OFString *)defaultValue
 {
 	for (id line in _lines) {
 		OFINICategoryPair *pair;
@@ -202,12 +202,12 @@ unescapeString(OFString *string)
 	return defaultValue;
 }
 
-- (long long)integerForKey: (OFString *)key
-	      defaultValue: (long long)defaultValue
+- (long long)longLongValueForKey: (OFString *)key
+		    defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringValueForKey: key
+				     defaultValue: nil];
 	long long ret;
 
 	if (value != nil)
@@ -220,12 +220,12 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (bool)boolForKey: (OFString *)key
-      defaultValue: (bool)defaultValue
+- (bool)boolValueForKey: (OFString *)key
+	   defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringValueForKey: key
+				     defaultValue: nil];
 	bool ret;
 
 	if (value != nil) {
@@ -243,12 +243,12 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (float)floatForKey: (OFString *)key
-	defaultValue: (float)defaultValue
+- (float)floatValueForKey: (OFString *)key
+	     defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringValueForKey: key
+				     defaultValue: nil];
 	float ret;
 
 	if (value != nil)
@@ -261,12 +261,12 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (double)doubleForKey: (OFString *)key
-	  defaultValue: (double)defaultValue
+- (double)doubleValueForKey: (OFString *)key
+	       defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringValueForKey: key
+				     defaultValue: nil];
 	double ret;
 
 	if (value != nil)
@@ -279,7 +279,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (OFArray *)arrayForKey: (OFString *)key
+- (OFArray OF_GENERIC(OFString *) *)stringValuesForKey: (OFString *)key
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
@@ -303,8 +303,8 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (void)setString: (OFString *)string
-	   forKey: (OFString *)key
+- (void)setStringValue: (OFString *)stringValue
+		forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategoryPair *pair;
@@ -317,7 +317,7 @@ unescapeString(OFString *string)
 
 		if ([pair->_key isEqual: key]) {
 			OFString *old = pair->_value;
-			pair->_value = [string copy];
+			pair->_value = [stringValue copy];
 			[old release];
 
 			objc_autoreleasePoolPop(pool);
@@ -332,7 +332,7 @@ unescapeString(OFString *string)
 
 	@try {
 		pair->_key = [key copy];
-		pair->_value = [string copy];
+		pair->_value = [stringValue copy];
 		[_lines addObject: pair];
 	} @catch (id e) {
 		[pair->_key release];
@@ -344,48 +344,49 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setInteger: (long long)integer
-	    forKey: (OFString *)key
+- (void)setLongLongValue: (long long)longLongValue
+		  forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%lld", integer]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat: @"%lld",
+							  longLongValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setBool: (bool)bool_
-	 forKey: (OFString *)key
+- (void)setBoolValue: (bool)boolValue
+	      forKey: (OFString *)key
 {
-	[self setString: (bool_ ? @"true" : @"false")
-		 forKey: key];
+	[self setStringValue: (boolValue ? @"true" : @"false")
+		      forKey: key];
 }
 
-- (void)setFloat: (float)float_
-	  forKey: (OFString *)key
+- (void)setFloatValue: (float)floatValue
+	       forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%g", float_]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat: @"%g", floatValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setDouble: (double)double_
-	   forKey: (OFString *)key
+- (void)setDoubleValue: (double)doubleValue
+		forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%g", double_]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat: @"%g", doubleValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setArray: (OFArray *)array
-	  forKey: (OFString *)key
+- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
+		 forKey: (OFString *)key
 {
 	void *pool;
 	OFMutableArray *pairs;
@@ -393,24 +394,24 @@ unescapeString(OFString *string)
 	size_t count;
 	bool replaced;
 
-	if (array.count == 0) {
+	if (stringValues.count == 0) {
 		[self removeValueForKey: key];
 		return;
 	}
 
 	pool = objc_autoreleasePoolPush();
 
-	pairs = [OFMutableArray arrayWithCapacity: array.count];
+	pairs = [OFMutableArray arrayWithCapacity: stringValues.count];
 
-	for (id object in array) {
+	for (OFString *stringValue in stringValues) {
 		OFINICategoryPair *pair;
 
-		if (![object isKindOfClass: [OFString class]])
+		if (![stringValue isKindOfClass: [OFString class]])
 			@throw [OFInvalidArgumentException exception];
 
 		pair = [[[OFINICategoryPair alloc] init] autorelease];
 		pair->_key = [key copy];
-		pair->_value = [object copy];
+		pair->_value = [stringValue copy];
 
 		[pairs addObject: pair];
 	}
@@ -436,7 +437,7 @@ unescapeString(OFString *string)
 
 				replaced = true;
 				/* Continue after inserted pairs */
-				i += array.count - 1;
+				i += stringValues.count - 1;
 			} else
 				i--;	/* Continue at same position */
 

@@ -62,79 +62,79 @@
 	[super dealloc];
 }
 
-- (void)setString: (OFString *)string
-	  forPath: (OFString *)path
+- (void)setStringValue: (OFString *)stringValue
+	       forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setInteger: (long long)integer
-	   forPath: (OFString *)path
+- (void)setLongLongValue: (long long)longLongValue
+		 forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setBool: (bool)bool_
-	forPath: (OFString *)path
+- (void)setBoolValue: (bool)boolValue
+	     forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setFloat: (float)float_
-	 forPath: (OFString *)path
+- (void)setFloatValue: (float)floatValue
+	      forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setDouble: (double)double_
-	  forPath: (OFString *)path
+- (void)setDoubleValue: (double)doubleValue
+	       forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setArray: (OFArray *)array
-	 forPath: (OFString *)path
+- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
+		forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFString *)stringForPath: (OFString *)path
+- (OFString *)stringValueForPath: (OFString *)path
 {
-	return [self stringForPath: path
-		      defaultValue: nil];
+	return [self stringValueForPath: path
+			   defaultValue: nil];
 }
 
-- (OFString *)stringForPath: (OFString *)path
-	       defaultValue: (OFString *)defaultValue
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (long long)integerForPath: (OFString *)path
-	       defaultValue: (long long)defaultValue
+- (OFString *)stringValueForPath: (OFString *)path
+		    defaultValue: (OFString *)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)boolForPath: (OFString *)path
-       defaultValue: (bool)defaultValue
+- (long long)longLongValueForPath: (OFString *)path
+		     defaultValue: (long long)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (float)floatForPath: (OFString *)path
-	 defaultValue: (float)defaultValue
+- (bool)boolValueForPath: (OFString *)path
+	    defaultValue: (bool)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (double)doubleForPath: (OFString *)path
-	   defaultValue: (double)defaultValue
+- (float)floatValueForPath: (OFString *)path
+	      defaultValue: (float)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray *)arrayForPath: (OFString *)path
+- (double)doubleValueForPath: (OFString *)path
+		defaultValue: (double)defaultValue
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFArray OF_GENERIC(OFString *) *)stringValuesForPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

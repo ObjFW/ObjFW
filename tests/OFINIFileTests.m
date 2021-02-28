@@ -62,55 +62,57 @@ static OFString *module = @"OFINIFile";
 
 	module = @"OFINICategory";
 
-	TEST(@"-[stringForKey:]",
-	    [[tests stringForKey: @"foo"] isEqual: @"bar"] &&
-	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
+	TEST(@"-[stringValueForKey:]",
+	    [[tests stringValueForKey: @"foo"] isEqual: @"bar"] &&
+	    [[foobar stringValueForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
 
-	TEST(@"-[setString:forKey:]",
-	    R([tests setString: @"baz"
-			forKey: @"foo"]) &&
-	    R([tests setString: @"new"
-			forKey: @"new"]) &&
-	    R([foobar setString: @"a\fb"
-			 forKey: @"qux3"]))
+	TEST(@"-[setStringValue:forKey:]",
+	    R([tests setStringValue: @"baz"
+			     forKey: @"foo"]) &&
+	    R([tests setStringValue: @"new"
+			     forKey: @"new"]) &&
+	    R([foobar setStringValue: @"a\fb"
+			      forKey: @"qux3"]))
 
-	TEST(@"-[integerForKey:defaultValue:]",
-	    [types integerForKey: @"integer"
-		    defaultValue: 2] == 0x20)
+	TEST(@"-[longLongValueForKey:defaultValue:]",
+	    [types longLongValueForKey: @"integer"
+			  defaultValue: 2] == 0x20)
 
-	TEST(@"-[setInteger:forKey:]", R([types setInteger: 0x10
-						    forKey: @"integer"]))
+	TEST(@"-[setLongLongValue:forKey:]",
+	    R([types setLongLongValue: 0x10
+			       forKey: @"integer"]))
 
-	TEST(@"-[boolForKey:defaultValue:]",
-	    [types boolForKey: @"bool"
-		 defaultValue: false] == true)
+	TEST(@"-[boolValueForKey:defaultValue:]",
+	    [types boolValueForKey: @"bool"
+		      defaultValue: false] == true)
 
-	TEST(@"-[setBool:forKey:]", R([types setBool: false
-					      forKey: @"bool"]))
+	TEST(@"-[setBoolValue:forKey:]", R([types setBoolValue: false
+							forKey: @"bool"]))
 
-	TEST(@"-[floatForKey:defaultValue:]",
-	    [types floatForKey: @"float"
+	TEST(@"-[floatValueForKey:defaultValue:]",
+	    [types floatValueForKey: @"float"
 		  defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]", R([types setFloat: 0.25f
-						forKey: @"float"]))
+	TEST(@"-[setFloatValue:forKey:]", R([types setFloatValue: 0.25f
+							  forKey: @"float"]))
 
-	TEST(@"-[doubleForKey:defaultValue:]",
-	    [types doubleForKey: @"double"
-		   defaultValue: 3] == 0.25)
+	TEST(@"-[doubleValueForKey:defaultValue:]",
+	    [types doubleValueForKey: @"double"
+			defaultValue: 3] == 0.25)
 
-	TEST(@"-[setDouble:forKey:]", R([types setDouble: 0.75
-						  forKey: @"double"]))
+	TEST(@"-[setDoubleValue:forKey:]", R([types setDoubleValue: 0.75
+							    forKey: @"double"]))
 
 	array = [OFArray arrayWithObjects: @"1", @"2", nil];
-	TEST(@"-[arrayForKey:]",
-	    [[types arrayForKey: @"array1"] isEqual: array] &&
-	    [[types arrayForKey: @"array2"] isEqual: array] &&
-	    [[types arrayForKey: @"array3"] isEqual: [OFArray array]])
+	TEST(@"-[stringValuesForKey:]",
+	    [[types stringValuesForKey: @"array1"] isEqual: array] &&
+	    [[types stringValuesForKey: @"array2"] isEqual: array] &&
+	    [[types stringValuesForKey: @"array3"] isEqual: [OFArray array]])
 
 	array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
-	TEST(@"-[setArray:forKey:]", R([types setArray: array
-						forKey: @"array1"]))
+	TEST(@"-[setStringValues:forKey:]",
+	    R([types setStringValues: array
+			      forKey: @"array1"]))
 
 	TEST(@"-[removeValueForKey:]",
 	    R([foobar removeValueForKey: @"quxqux "]) &&

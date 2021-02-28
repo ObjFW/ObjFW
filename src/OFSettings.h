@@ -67,131 +67,131 @@ OF_ASSUME_NONNULL_BEGIN
     OF_DESIGNATED_INITIALIZER;
 
 /**
- * @brief Sets the specified path to the specified string.
+ * @brief Sets the specified path to the specified string value.
  *
- * @param string The string to set
- * @param path The path to store the string at
+ * @param stringValue The string value to set
+ * @param path The path to store the string value at
  */
-- (void)setString: (OFString *)string
-	  forPath: (OFString *)path;
+- (void)setStringValue: (OFString *)stringValue
+	       forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified integer.
+ * @brief Sets the specified path to the specified long long value.
  *
- * @param integer The integer to set
- * @param path The path to store the integer at
+ * @param longLongValue The long long value to set
+ * @param path The path to store the long long value at
  */
-- (void)setInteger: (long long)integer
-	   forPath: (OFString *)path;
+- (void)setLongLongValue: (long long)longLongValue
+		 forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified bool.
+ * @brief Sets the specified path to the specified bool value.
  *
- * @param bool_ The bool to set
- * @param path The path to store the bool at
+ * @param boolValue The bool value to set
+ * @param path The path to store the bool value at
  */
-- (void)setBool: (bool)bool_
-	forPath: (OFString *)path;
+- (void)setBoolValue: (bool)boolValue
+	     forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified float.
+ * @brief Sets the specified path to the specified float value.
  *
- * @param float_ The float to set
- * @param path The path to store the float at
+ * @param floatValue The float value to set
+ * @param path The path to store the float value at
  */
-- (void)setFloat: (float)float_
-	 forPath: (OFString *)path;
+- (void)setFloatValue: (float)floatValue
+	      forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified double.
+ * @brief Sets the specified path to the specified double value.
  *
- * @param double_ The double to set
- * @param path The path to store the double at
+ * @param doubleValue The double value to set
+ * @param path The path to store the double value at
  */
-- (void)setDouble: (double)double_
-	  forPath: (OFString *)path;
+- (void)setDoubleValue: (double)doubleValue
+	       forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified array of strings.
+ * @brief Sets the specified path to the specified array of string values.
  *
- * @param array The array of strings to set
- * @param path The path to store the array of strings at
+ * @param stringValues The array of string values to set
+ * @param path The path to store the array of string values at
  */
-- (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
-	 forPath: (OFString *)path;
+- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
+		forPath: (OFString *)path;
 
 /**
- * @brief Returns the string for the specified path, or `nil` if the path does
- *	  not exist.
+ * @brief Returns the string value for the specified path, or `nil` if the path
+ *	  does not exist.
  *
  * @param path The path for which the string value should be returned
  * @return The string value of the specified path
  */
-- (nullable OFString *)stringForPath: (OFString *)path;
+- (nullable OFString *)stringValueForPath: (OFString *)path;
 
 /**
- * @brief Returns the string for the specified path, or the default value if
- *	  the path does not exist.
+ * @brief Returns the string value for the specified path, or the default value
+ *	  if the path does not exist.
  *
  * @param path The path for which the string value should be returned
  * @param defaultValue The default value to return if the path does not exist
  * @return The string value of the specified path
  */
-- (nullable OFString *)stringForPath: (OFString *)path
-			defaultValue: (nullable OFString *)defaultValue;
+- (nullable OFString *)stringValueForPath: (OFString *)path
+			     defaultValue: (nullable OFString *)defaultValue;
 
 /**
- * @brief Returns the integer for the specified path, or the default value if
- *	  the path does not exist.
+ * @brief Returns the long long value for the specified path, or the default
+ *	  value if the path does not exist.
  *
- * @param path The path for which the integer value should be returned
+ * @param path The path for which the long long value should be returned
  * @param defaultValue The default value to return if the path does not exist
- * @return The integer value of the specified path
+ * @return The long long value of the specified path
  */
-- (long long)integerForPath: (OFString *)path
-	       defaultValue: (long long)defaultValue;
+- (long long)longLongValueForPath: (OFString *)path
+		     defaultValue: (long long)defaultValue;
 
 /**
- * @brief Returns the bool for the specified path, or the default value if the
- *	  path does not exist.
+ * @brief Returns the bool value for the specified path, or the default value if
+ *	  the path does not exist.
  *
  * @param path The path for which the bool value should be returned
  * @param defaultValue The default value to return if the path does not exist
  * @return The bool value of the specified path
  */
-- (bool)boolForPath: (OFString *)path
-       defaultValue: (bool)defaultValue;
+- (bool)boolValueForPath: (OFString *)path
+	    defaultValue: (bool)defaultValue;
 
 /**
- * @brief Returns the float for the specified path, or the default value if the
- *	  path does not exist.
+ * @brief Returns the float value for the specified path, or the default value
+ *	  if the path does not exist.
  *
  * @param path The path for which the float value should be returned
  * @param defaultValue The default value to return if the path does not exist
  * @return The float value of the specified path
  */
-- (float)floatForPath: (OFString *)path
-	 defaultValue: (float)defaultValue;
+- (float)floatValueForPath: (OFString *)path
+	      defaultValue: (float)defaultValue;
 
 /**
- * @brief Returns the double for the specified path, or the default value if
- *	  the path does not exist.
+ * @brief Returns the double value for the specified path, or the default value
+ *	  if the path does not exist.
  *
  * @param path The path for which the double value should be returned
  * @param defaultValue The default value to return if the path does not exist
  * @return The double value of the specified path
  */
-- (double)doubleForPath: (OFString *)path
-	   defaultValue: (double)defaultValue;
+- (double)doubleValueForPath: (OFString *)path
+		defaultValue: (double)defaultValue;
 
 /**
- * @brief Returns the array of strings for the specified path, or an empty
+ * @brief Returns the array of string values for the specified path, or an empty
  *	  array if the path does not exist.
  *
- * @param path The path for which the array of strings should be returned
- * @return The array of strings of the specified path
+ * @param path The path for which the array of string values should be returned
+ * @return The array of string values of the specified path
  */
-- (OFArray OF_GENERIC(OFString *) *)arrayForPath: (OFString *)path;
+- (OFArray OF_GENERIC(OFString *) *)stringValuesForPath: (OFString *)path;
 
 /**
  * @brief Removes the value for the specified path.
