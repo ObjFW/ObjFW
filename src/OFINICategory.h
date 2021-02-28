@@ -44,8 +44,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the string value for the specified key, or `nil` if it does
  *	  not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the string value should be returned
  * @return The string value for the specified key, or `nil` if it does not exist
@@ -56,8 +56,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the string value for the specified key or the specified
  *	  default value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the string value should be returned
  * @param defaultValue The value to return if the key does not exist
@@ -71,8 +71,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the long long value for the specified key or the specified
  *	  default value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the long long value should be returned
  * @param defaultValue The value to return if the key does not exist
@@ -86,8 +86,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the bool value for the specified key or the specified default
  *	  value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the bool value should be returned
  * @param defaultValue The value to return if the key does not exist
@@ -101,8 +101,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the float value for the specified key or the specified
  *	  default value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the float value should be returned
  * @param defaultValue The value to return if the key does not exist
@@ -116,8 +116,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the double value for the specified key or the specified
  *	  default value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is returned.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is returned.
  *
  * @param key The key for which the double value should be returned
  * @param defaultValue The value to return if the key does not exist
@@ -143,8 +143,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified string.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the
+ * value of the first key/value pair found is changed.
  *
  * @param stringValue The string value to which the key should be set
  * @param key The key for which the new value should be set
@@ -153,10 +153,10 @@ OF_SUBCLASSING_RESTRICTED
 		forKey: (OFString *)key;
 
 /**
- * @brief Sets the value of the specified key to the specified integer.
+ * @brief Sets the value of the specified key to the specified long long.
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), the value of
- * the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is changed.
  *
  * @param longLongValue The long long value to which the key should be set
  * @param key The key for which the new value should be set
@@ -191,8 +191,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified double.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the
- * value of the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * of the first key/value pair found is changed.
  *
  * @param doubleValue The double value to which the key should be set
  * @param key The key for which the new value should be set
@@ -218,8 +218,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Removes the value for the specified key
  *
- * If the specified key is a multi-key (see @ref arrayForKey:), all key/value
- * pairs matching the specified key are removed.
+ * If the specified key is a multi-key (see @ref stringValuesForKey:), all
+ * key/value pairs matching the specified key are removed.
  *
  * @param key The key of the value to remove
  */
