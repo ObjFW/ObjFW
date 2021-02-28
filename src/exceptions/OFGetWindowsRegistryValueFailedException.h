@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFGetWindowsRegistryValueFailedException: OFException
 {
 	OFWindowsRegistryKey *_registryKey;
-	OFString *_Nullable _value;
+	OFString *_Nullable _valueName;
 	DWORD _flags;
 	LSTATUS _status;
 }
@@ -41,9 +41,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
 /**
- * @brief The value which could not be retrieved.
+ * @brief The name of the value which could not be retrieved.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *valueName;
 
 /**
  * @brief The status returned by RegGetValueEx().
@@ -56,12 +56,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
- * @param value The value which could not be retrieved
+ * @param valueName The name of the value which could not be retrieved
  * @param status The status returned by RegGetValueEx()
  * @return A new, autoreleased get Windows registry value failed exception
  */
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-				   value: (nullable OFString *)value
+			       valueName: (nullable OFString *)valueName
 				  status: (LSTATUS)status;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -72,12 +72,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
- * @param value The value which could not be retrieved
+ * @param valueName The name of the value which could not be retrieved
  * @param status The status returned by RegGetValueEx()
  * @return An initialized get Windows registry value failed exception
  */
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			      value: (nullable OFString *)value
+			  valueName: (nullable OFString *)valueName
 			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
 @end
 

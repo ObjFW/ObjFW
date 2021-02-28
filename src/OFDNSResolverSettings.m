@@ -621,7 +621,7 @@ parseNetStackArray(OFString *string)
 		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 				     @"Tcpip\\Parameters"
 	    securityAndAccessRights: KEY_QUERY_VALUE];
-	path = [[[key stringForValue: @"DataBasePath"]
+	path = [[[key stringForValueNamed: @"DataBasePath"]
 	    stringByAppendingPathComponent: @"hosts"]
 	    stringByExpandingWindowsEnvironmentStrings];
 

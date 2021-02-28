@@ -55,30 +55,30 @@ static OFString *module = @"OFWindowsRegistryKey";
 	    (ObjFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
 				securityAndAccessRights: KEY_ALL_ACCESS]))
 
-	TEST(@"-[setData:forValue:type:]",
+	TEST(@"-[setData:forValueNamed:type:]",
 	    R([ObjFWKey setData: data
-		       forValue: @"data"
+		  forValueNamed: @"data"
 			   type: REG_BINARY]))
 
-	TEST(@"-[dataForValue:subkeyPath:flags:type:]",
-	    [[ObjFWKey dataForValue: @"data"
-			       type: &type] isEqual: data] &&
+	TEST(@"-[dataForValueNamed:subkeyPath:flags:type:]",
+	    [[ObjFWKey dataForValueNamed: @"data"
+				    type: &type] isEqual: data] &&
 	    type == REG_BINARY)
 
-	TEST(@"-[setString:forValue:type:]",
+	TEST(@"-[setString:forValueNamed:type:]",
 	    R([ObjFWKey setString: @"foobar"
-			 forValue: @"string"]) &&
+		    forValueNamed: @"string"]) &&
 	    R([ObjFWKey setString: @"%PATH%;foo"
-			 forValue: @"expand"
+		    forValueNamed: @"expand"
 			     type: REG_EXPAND_SZ]))
 
 	TEST(@"-[stringForValue:subkeyPath:]",
-	    [[ObjFWKey stringForValue: @"string"] isEqual: @"foobar"] &&
-	    [[ObjFWKey stringForValue: @"expand"
-				 type: &type] isEqual: @"%PATH%;foo"] &&
+	    [[ObjFWKey stringForValueNamed: @"string"] isEqual: @"foobar"] &&
+	    [[ObjFWKey stringForValueNamed: @"expand"
+				      type: &type] isEqual: @"%PATH%;foo"] &&
 	    type == REG_EXPAND_SZ)
 
-	TEST(@"-[deleteValue:]", R([ObjFWKey deleteValue: @"data"]))
+	TEST(@"-[deleteValueNamed:]", R([ObjFWKey deleteValueNamed: @"data"]))
 
 	TEST(@"-[deleteSubkeyAtPath:]",
 	    R([softwareKey deleteSubkeyAtPath: @"ObjFW"]))
