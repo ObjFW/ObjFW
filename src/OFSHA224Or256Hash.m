@@ -199,8 +199,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return copy;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 

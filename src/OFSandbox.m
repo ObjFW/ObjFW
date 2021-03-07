@@ -587,8 +587,7 @@
 }
 #endif
 
-- (void)unveilPath: (OFString *)path
-       permissions: (OFString *)permissions
+- (void)unveilPath: (OFString *)path permissions: (OFString *)permissions
 {
 	void *pool = objc_autoreleasePoolPush();
 

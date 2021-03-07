@@ -85,14 +85,14 @@ static OFString *module = @"OFINIFile";
 	TEST(@"-[floatForKey:defaultValue:]",
 	    [types floatForKey: @"float" defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]", R([types setFloat: 0.25f
-						forKey: @"float"]))
+	TEST(@"-[setFloat:forKey:]",
+	    R([types setFloat: 0.25f forKey: @"float"]))
 
 	TEST(@"-[doubleForKey:defaultValue:]",
 	    [types doubleForKey: @"double" defaultValue: 3] == 0.25)
 
-	TEST(@"-[setDouble:forKey:]", R([types setDouble: 0.75
-						  forKey: @"double"]))
+	TEST(@"-[setDouble:forKey:]",
+	    R([types setDouble: 0.75 forKey: @"double"]))
 
 	array = [OFArray arrayWithObjects: @"1", @"2", nil];
 	TEST(@"-[stringArrayForKey:]",

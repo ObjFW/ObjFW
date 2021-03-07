@@ -110,16 +110,13 @@ static OFString *module = @"OFObject";
 	    OFUndefinedKeyException, [m valueForKey: @"undefined"])
 
 	TEST(@"-[setValue:forKey:]",
-	    R([m setValue: @"World"
-		   forKey: @"objectValue"]) &&
-	    R([m setValue: [OFObject class]
-		   forKey: @"classValue"]) &&
+	    R([m setValue: @"World" forKey: @"objectValue"]) &&
+	    R([m setValue: [OFObject class] forKey: @"classValue"]) &&
 	    [m.objectValue isEqual: @"World"] &&
 	    [m.classValue isEqual: [OFObject class]])
 
 	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
-	    OFUndefinedKeyException, [m setValue: @"x"
-					  forKey: @"undefined"])
+	    OFUndefinedKeyException, [m setValue: @"x" forKey: @"undefined"])
 
 	m.boolValue = 1;
 	m.charValue = 2;

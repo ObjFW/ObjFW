@@ -643,13 +643,10 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	} else {
 		OFMutableData *data = [OFMutableData dataWithCapacity: 12];
 
-		seconds = OF_BSWAP64_IF_LE(seconds);
 		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
-
-		[data addItems: &nanoseconds
-			 count: sizeof(nanoseconds)];
-		[data addItems: &seconds
-			 count: sizeof(seconds)];
+		[data addItems: &nanoseconds count: sizeof(nanoseconds)];
+		seconds = OF_BSWAP64_IF_LE(seconds);
+		[data addItems: &seconds count: sizeof(seconds)];
 
 		ret = [[OFMessagePackExtension
 		    extensionWithType: -1

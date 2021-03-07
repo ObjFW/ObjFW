@@ -330,8 +330,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	value = [header substringFromIndex: pos + 1]
 	    .stringByDeletingEnclosingWhitespaces;
 
-	[_clientHeaders setObject: value
-			   forKey: name];
+	[_clientHeaders setObject: value forKey: name];
 }
 
 - (void)setBody: (OFString *)path
@@ -344,8 +343,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if ([path isEqual: @"-"])
 		_body = [of_stdin copy];
 	else {
-		_body = [[OFFile alloc] initWithPath: path
-						mode: @"r"];
+		_body = [[OFFile alloc] initWithPath: path mode: @"r"];
 
 		@try {
 			unsigned long long fileSize =
@@ -534,8 +532,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
 		permissions: (_continue ? @"rwc" : @"wc")];
 	/* In case we use ObjOpenSSL for https later */
-	[sandbox unveilPath: @"/etc/ssl"
-		permissions: @"r"];
+	[sandbox unveilPath: @"/etc/ssl" permissions: @"r"];
 
 	sandbox.allowsUnveil = false;
 	[OFApplication activateSandbox: sandbox];
@@ -578,8 +575,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	_useUnicode = ([OFLocale encoding] == OF_STRING_ENCODING_UTF_8);
 
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 
 -    (void)client: (OFHTTPClient *)client
@@ -598,12 +594,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	/* TODO: Do asynchronously and print status */
 	while (!_body.atEndOfStream) {
 		char buffer[4096];
-		size_t length;
-
-		length = [_body readIntoBuffer: buffer
-					length: 4096];
-		[body writeBuffer: buffer
-			   length: length];
+		size_t length = [_body readIntoBuffer: buffer length: 4096];
+		[body writeBuffer: buffer length: length];
 	}
 }
 
@@ -623,8 +615,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[of_stdout writeFormat: @"  %@: %@\n",
-						key, object];
+			[of_stdout writeFormat: @"  %@: %@\n", key, object];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -675,11 +666,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		return false;
 	}
 
+	[_output writeBuffer: buffer length: length];
+
 	_received += length;
-
-	[_output writeBuffer: buffer
-		      length: length];
-
 	[_progressBar setReceived: _received];
 
 	if (response.atEndOfStream) {
@@ -981,16 +970,14 @@ after_exception_handling:
 	_currentFileName = nil;
 
 	response.delegate = self;
-	[response asyncReadIntoBuffer: _buffer
-			       length: [OFSystemInfo pageSize]];
+	[response asyncReadIntoBuffer: _buffer length: [OFSystemInfo pageSize]];
 	return;
 
 next:
 	[_currentFileName release];
 	_currentFileName = nil;
 
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 
 - (void)downloadNextURL
@@ -1077,8 +1064,7 @@ next:
 
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];
-			[clientHeaders setObject: range
-					  forKey: @"Range"];
+			[clientHeaders setObject: range forKey: @"Range"];
 		} @catch (OFRetrieveItemAttributesFailedException *e) {
 		}
 	}
@@ -1099,7 +1085,6 @@ next:
 	return;
 
 next:
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 @end

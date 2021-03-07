@@ -36,8 +36,7 @@
 	return @encode(of_range_t);
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != sizeof(_range))
 		@throw [OFOutOfRangeException exception];

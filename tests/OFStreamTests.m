@@ -31,8 +31,7 @@ static OFString *module = @"OFStream";
 	return (state > 1);
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)size
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)size
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 

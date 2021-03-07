@@ -549,8 +549,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		}
 	}
 
-	string = [[OFString alloc] initWithUTF8String: *pointer
-					       length: i];
+	string = [[OFString alloc] initWithUTF8String: *pointer length: i];
 	*pointer += i;
 
 	@try {

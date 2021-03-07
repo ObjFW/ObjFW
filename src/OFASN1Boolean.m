@@ -80,8 +80,7 @@
 		(_booleanValue ? 0xFF : 0x00)
 	};
 
-	return [OFData dataWithItems: buffer
-			       count: sizeof(buffer)];
+	return [OFData dataWithItems: buffer count: sizeof(buffer)];
 }
 
 - (bool)isEqual: (id)object

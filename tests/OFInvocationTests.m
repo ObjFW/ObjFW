@@ -283,32 +283,29 @@ __extension__
 
 	memset(&st2, '\0', sizeof(st2));
 
-	TEST(@"-[setArgument:atIndex:] #1", R([invocation setArgument: &c
-							      atIndex: 2]))
+	TEST(@"-[setArgument:atIndex:] #1",
+	    R([invocation setArgument: &c atIndex: 2]))
 
-	TEST(@"-[setArgument:atIndex:] #2", R([invocation setArgument: &i
-							      atIndex: 3]))
+	TEST(@"-[setArgument:atIndex:] #2",
+	    R([invocation setArgument: &i atIndex: 3]))
 
-	TEST(@"-[setArgument:atIndex:] #3", R([invocation setArgument: &stp
-							      atIndex: 4]))
+	TEST(@"-[setArgument:atIndex:] #3",
+	    R([invocation setArgument: &stp atIndex: 4]))
 
-	TEST(@"-[setArgument:atIndex:] #4", R([invocation setArgument: &st
-							      atIndex: 5]))
+	TEST(@"-[setArgument:atIndex:] #4",
+	    R([invocation setArgument: &st atIndex: 5]))
 
-	TEST(@"-[getArgument:atIndex:] #1", R([invocation getArgument: &c2
-							      atIndex: 2]) &&
-	    c == c2)
+	TEST(@"-[getArgument:atIndex:] #1",
+	    R([invocation getArgument: &c2 atIndex: 2]) && c == c2)
 
-	TEST(@"-[getArgument:atIndex:] #2", R([invocation getArgument: &i2
-							      atIndex: 3]) &&
-	    i == i2)
+	TEST(@"-[getArgument:atIndex:] #2",
+	    R([invocation getArgument: &i2 atIndex: 3]) && i == i2)
 
-	TEST(@"-[getArgument:atIndex:] #3", R([invocation getArgument: &stp2
-							      atIndex: 4]) &&
-	    stp == stp2)
+	TEST(@"-[getArgument:atIndex:] #3",
+	    R([invocation getArgument: &stp2 atIndex: 4]) && stp == stp2)
 
-	TEST(@"-[getArgument:atIndex:] #4", R([invocation getArgument: &st2
-							      atIndex: 5]) &&
+	TEST(@"-[getArgument:atIndex:] #4",
+	    R([invocation getArgument: &st2 atIndex: 5]) &&
 	    memcmp(&st, &st2, sizeof(st)) == 0)
 
 #ifdef OF_INVOCATION_CAN_INVOKE
@@ -317,12 +314,9 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
-	[invocation setArgument: &self
-			atIndex: 2];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
+	[invocation setArgument: &self atIndex: 2];
 
 	TEST(@"-[invoke] #1", R([invocation invoke]))
 
@@ -331,14 +325,11 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
 
 	for (int j = 1; j <= 16; j++)
-		[invocation setArgument: &j
-				atIndex: j + 1];
+		[invocation setArgument: &j atIndex: j + 1];
 
 	int intResult;
 	TEST(@"-[invoke] #2", R([invocation invoke]) &&
@@ -349,15 +340,12 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
 
 	for (int j = 1; j <= 16; j++) {
 		double d = j;
-		[invocation setArgument: &d
-				atIndex: j + 1];
+		[invocation setArgument: &d atIndex: j + 1];
 	}
 
 	double doubleResult;
@@ -370,21 +358,17 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
 
 	for (int j = 1; j <= 16; j++) {
 		float f = j;
 		double d = j;
 
 		if (j == 1 || j == 10)
-			[invocation setArgument: &d
-					atIndex: j + 1];
+			[invocation setArgument: &d atIndex: j + 1];
 		else
-			[invocation setArgument: &f
-					atIndex: j + 1];
+			[invocation setArgument: &f atIndex: j + 1];
 	}
 
 	float floatResult;
@@ -398,15 +382,12 @@ __extension__
 		invocation = [OFInvocation invocationWithMethodSignature:
 		    [self methodSignatureForSelector: selector]];
 
-		[invocation setArgument: &self
-				atIndex: 0];
-		[invocation setArgument: &selector
-				atIndex: 1];
+		[invocation setArgument: &self atIndex: 0];
+		[invocation setArgument: &selector atIndex: 1];
 
 		for (int j = 1; j <= 16; j++) {
 			long double d = j;
-			[invocation setArgument: &d
-					atIndex: j + 1];
+			[invocation setArgument: &d atIndex: j + 1];
 		}
 
 		long double longDoubleResult;
@@ -421,21 +402,17 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
 
 	for (int j = 1; j <= 16; j++) {
 		complex float cf = j + 0.5 * j * I;
 		complex double cd = j + 0.5 * j * I;
 
 		if (j & 1)
-			[invocation setArgument: &cf
-					atIndex: j + 1];
+			[invocation setArgument: &cf atIndex: j + 1];
 		else
-			[invocation setArgument: &cd
-					atIndex: j + 1];
+			[invocation setArgument: &cd atIndex: j + 1];
 	}
 
 	complex double complexDoubleResult;
@@ -451,10 +428,8 @@ __extension__
 		invocation = [OFInvocation invocationWithMethodSignature:
 		    [self methodSignatureForSelector: selector]];
 
-		[invocation setArgument: &self
-				atIndex: 0];
-		[invocation setArgument: &selector
-				atIndex: 1];
+		[invocation setArgument: &self atIndex: 0];
+		[invocation setArgument: &selector atIndex: 1];
 
 		for (int j = 1; j <= 16; j++) {
 			complex double cd = j + 0.5 * j * I;
@@ -463,16 +438,13 @@ __extension__
 
 			switch (j % 3) {
 			case 0:
-				[invocation setArgument: &cld
-						atIndex: j + 1];
+				[invocation setArgument: &cld atIndex: j + 1];
 				break;
 			case 1:
-				[invocation setArgument: &cd
-						atIndex: j + 1];
+				[invocation setArgument: &cd atIndex: j + 1];
 				break;
 			case 2:
-				[invocation setArgument: &cf
-						atIndex: j + 1];
+				[invocation setArgument: &cf atIndex: j + 1];
 				break;
 			}
 		}
@@ -490,10 +462,8 @@ __extension__
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
-	[invocation setArgument: &self
-			atIndex: 0];
-	[invocation setArgument: &selector
-			atIndex: 1];
+	[invocation setArgument: &self atIndex: 0];
+	[invocation setArgument: &selector atIndex: 1];
 
 	for (int j = 1; j <= 16; j++) {
 		__extension__ __int128 i128 = 0xFFFFFFFFFFFFFFFF;
@@ -501,11 +471,9 @@ __extension__
 		i128 |= j;
 
 		if (j == 1 || j == 5)
-			[invocation setArgument: &j
-					atIndex: j + 1];
+			[invocation setArgument: &j atIndex: j + 1];
 		else
-			[invocation setArgument: &i128
-					atIndex: j + 1];
+			[invocation setArgument: &i128 atIndex: j + 1];
 	}
 
 	__extension__ __int128 int128Result;

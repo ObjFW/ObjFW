@@ -33,9 +33,7 @@
 - (id)copy
 {
 	OFMutableZIPArchiveEntry *copy = [self mutableCopy];
-
 	[copy makeImmutable];
-
 	return copy;
 }
 

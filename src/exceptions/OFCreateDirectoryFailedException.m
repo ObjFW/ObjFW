@@ -27,11 +27,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
-			    errNo: (int)errNo
++ (instancetype)exceptionWithURL: (OFURL *)URL errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
-				    errNo: errNo] autorelease];
+	return [[[self alloc] initWithURL: URL errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -39,8 +37,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
-		      errNo: (int)errNo
+- (instancetype)initWithURL: (OFURL *)URL errNo: (int)errNo
 {
 	self = [super init];
 

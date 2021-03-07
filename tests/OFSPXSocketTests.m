@@ -122,19 +122,15 @@ static OFString *module = @"OFSPXSocket";
 	TEST(@"-[listen]", R([sockServer listen]))
 
 	TEST(@"-[connectToNode:network:port:]",
-	    R([sockClient connectToNode: node
-				network: network
-				   port: port]))
+	    R([sockClient connectToNode: node network: network port: port]))
 
 	TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
 
 	TEST(@"-[sendBuffer:length:]",
-	    R([sockAccepted sendBuffer: "Hello"
-				length: 5]))
+	    R([sockAccepted sendBuffer: "Hello" length: 5]))
 
 	TEST(@"-[receiveIntoBuffer:length:]",
-	    [sockClient receiveIntoBuffer: buffer
-				   length: 5] == 5 &&
+	    [sockClient receiveIntoBuffer: buffer length: 5] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0)
 
 	TEST(@"-[remoteAddress]",

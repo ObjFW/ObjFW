@@ -312,8 +312,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 - (void)appendPathComponent: (OFString *)component
 {
-	[self appendPathComponent: component
-		      isDirectory: false];
+	[self appendPathComponent: component isDirectory: false];
 
 #ifdef OF_HAVE_FILES
 	if ([_URLEncodedScheme isEqual: @"file"] &&
@@ -413,8 +412,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 		}
 	}
 
-	[array insertObject: @""
-		    atIndex: 0];
+	[array insertObject: @"" atIndex: 0];
 	if (endsWithEmpty)
 		[array addObject: @""];
 

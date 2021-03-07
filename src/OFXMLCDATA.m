@@ -122,7 +122,7 @@
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+				 level: (unsigned int)level
 {
 	return self.XMLString;
 }

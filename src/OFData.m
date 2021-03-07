@@ -54,11 +54,9 @@ _references_to_categories_of_OFData(void)
 @implementation OFData
 @synthesize itemSize = _itemSize;
 
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count
++ (instancetype)dataWithItems: (const void *)items count: (size_t)count
 {
-	return [[[self alloc] initWithItems: items
-				      count: count] autorelease];
+	return [[[self alloc] initWithItems: items count: count] autorelease];
 }
 
 + (instancetype)dataWithItems: (const void *)items
@@ -113,12 +111,9 @@ _references_to_categories_of_OFData(void)
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
 
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count
+- (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
-	return [self initWithItems: items
-			     count: count
-			  itemSize: 1];
+	return [self initWithItems: items count: count itemSize: 1];
 }
 
 - (instancetype)initWithItems: (const void *)items
@@ -196,11 +191,9 @@ _references_to_categories_of_OFData(void)
 # endif
 
 		buffer = of_alloc((size_t)size, 1);
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
+		file = [[OFFile alloc] initWithPath: path mode: @"r"];
 		@try {
-			[file readIntoBuffer: buffer
-				 exactLength: (size_t)size];
+			[file readIntoBuffer: buffer exactLength: (size_t)size];
 		} @finally {
 			[file release];
 		}
@@ -239,8 +232,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithURL: URL];
 
-		stream = [URLHandler openItemAtURL: URL
-					      mode: @"r"];
+		stream = [URLHandler openItemAtURL: URL mode: @"r"];
 
 		_count = 0;
 		_itemSize = 1;
@@ -603,12 +595,9 @@ _references_to_categories_of_OFData(void)
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {
-	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"w"];
-
+	OFFile *file = [[OFFile alloc] initWithPath: path mode: @"w"];
 	@try {
-		[file writeBuffer: _items
-			   length: _count * _itemSize];
+		[file writeBuffer: _items length: _count * _itemSize];
 	} @finally {
 		[file release];
 	}
@@ -619,14 +608,11 @@ _references_to_categories_of_OFData(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURLHandler *URLHandler;
-	OFStream *stream;
 
 	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	stream = [URLHandler openItemAtURL: URL
-				      mode: @"w"];
-	[stream writeData: self];
+	[[URLHandler openItemAtURL: URL mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -663,37 +649,27 @@ _references_to_categories_of_OFData(void)
 		uint8_t type = 0xC4;
 		uint8_t tmp = (uint8_t)_count;
 
-		data = [OFMutableData dataWithItemSize: 1
-					      capacity: _count + 2];
-
+		data = [OFMutableData dataWithCapacity: _count + 2];
 		[data addItem: &type];
 		[data addItem: &tmp];
 	} else if (_count <= UINT16_MAX) {
 		uint8_t type = 0xC5;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)_count);
 
-		data = [OFMutableData dataWithItemSize: 1
-					      capacity: _count + 3];
-
+		data = [OFMutableData dataWithCapacity: _count + 3];
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (_count <= UINT32_MAX) {
 		uint8_t type = 0xC6;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)_count);
 
-		data = [OFMutableData dataWithItemSize: 1
-					      capacity: _count + 5];
-
+		data = [OFMutableData dataWithCapacity: _count + 5];
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else
 		@throw [OFOutOfRangeException exception];
 
-	[data addItems: _items
-		 count: _count];
-
+	[data addItems: _items count: _count];
 	[data makeImmutable];
 
 	return data;

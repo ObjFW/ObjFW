@@ -79,8 +79,7 @@ static OFString *module = nil;
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -160,8 +159,7 @@ static OFString *module = nil;
 @end
 
 @implementation TestsAppDelegate (OFSetTests)
-- (void)setTestsWithClass: (Class)setClass
-	     mutableClass: (Class)mutableSetClass
+- (void)setTestsWithClass: (Class)setClass mutableClass: (Class)mutableSetClass
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSet *set1, *set2;

@@ -26,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithObject: (id)object
-			      errNo: (int)errNo
++ (instancetype)exceptionWithObject: (id)object errNo: (int)errNo
 {
-	return [[[self alloc] initWithObject: object
-				       errNo: errNo] autorelease];
+	return [[[self alloc] initWithObject: object errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -38,8 +36,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObject: (id)object
-			 errNo: (int)errNo
+- (instancetype)initWithObject: (id)object errNo: (int)errNo
 {
 	self = [super init];
 

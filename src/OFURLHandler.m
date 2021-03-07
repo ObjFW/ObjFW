@@ -57,19 +57,15 @@ releaseMutex(void)
 #endif
 
 #ifdef OF_HAVE_FILES
-	[self registerClass: [OFFileURLHandler class]
-		  forScheme: @"file"];
+	[self registerClass: [OFFileURLHandler class] forScheme: @"file"];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-	[self registerClass: [OFHTTPURLHandler class]
-		  forScheme: @"http"];
-	[self registerClass: [OFHTTPURLHandler class]
-		  forScheme: @"https"];
+	[self registerClass: [OFHTTPURLHandler class] forScheme: @"http"];
+	[self registerClass: [OFHTTPURLHandler class] forScheme: @"https"];
 #endif
 }
 
-+ (bool)registerClass: (Class)class
-	    forScheme: (OFString *)scheme
++ (bool)registerClass: (Class)class forScheme: (OFString *)scheme
 {
 #ifdef OF_HAVE_THREADS
 	[mutex lock];
@@ -139,8 +135,7 @@ releaseMutex(void)
 	[super dealloc];
 }
 
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -181,8 +176,7 @@ releaseMutex(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -193,14 +187,12 @@ releaseMutex(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (bool)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	return false;
 }
 
-- (bool)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	return false;
 }

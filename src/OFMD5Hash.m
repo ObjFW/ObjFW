@@ -208,8 +208,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_iVars->state[3] = 0x10325476;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 

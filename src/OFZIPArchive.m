@@ -141,8 +141,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
     of_offset_t offset, int whence)
 {
 	@try {
-		[stream seekToOffset: offset
-			      whence: whence];
+		[stream seekToOffset: offset whence: whence];
 	} @catch (OFSeekFailedException *e) {
 		if (e.errNo == EINVAL)
 			@throw [OFInvalidFormatException exception];
@@ -154,19 +153,15 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @implementation OFZIPArchive
 @synthesize archiveComment = _archiveComment;
 
-+ (instancetype)archiveWithStream: (OFStream *)stream
-			     mode: (OFString *)mode
++ (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode] autorelease];
+	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path
-			   mode: (OFString *)mode
++ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 #endif
 
@@ -175,8 +170,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			  mode: (OFString *)mode
+- (instancetype)initWithStream: (OFStream *)stream mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -225,21 +219,17 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 
 #ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
 	OFFile *file;
 
 	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"r+"];
+		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
 	else
-		file = [[OFFile alloc] initWithPath: path
-					       mode: mode];
+		file = [[OFFile alloc] initWithPath: path mode: mode];
 
 	@try {
-		self = [self initWithStream: file
-				       mode: mode];
+		self = [self initWithStream: file mode: mode];
 	} @finally {
 		[file release];
 	}
@@ -792,8 +782,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	size_t ret;
 
@@ -814,8 +803,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if ((uint64_t)length > _toRead)
 		length = (size_t)_toRead;
 
-	ret = [_decompressedStream readIntoBuffer: buffer
-					   length: length];
+	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
 	_CRC32 = of_crc32(_CRC32, buffer, ret);
@@ -888,8 +876,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[super dealloc];
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	size_t bytesWritten;
 
@@ -901,8 +888,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (INT64_MAX - _bytesWritten < (int64_t)length)
 		@throw [OFOutOfRangeException exception];
 
-	bytesWritten = [_stream writeBuffer: buffer
-				     length: length];
+	bytesWritten = [_stream writeBuffer: buffer length: length];
 
 	_bytesWritten += (int64_t)bytesWritten;
 	_CRC32 = of_crc32(_CRC32, buffer, length);

@@ -35,8 +35,7 @@ static OFString *module = @"OFSCTPSocket";
 
 	@try {
 		TEST(@"-[bindToHost:port:]",
-		    (port = [server bindToHost: @"127.0.0.1"
-					  port: 0]))
+		    (port = [server bindToHost: @"127.0.0.1" port: 0]))
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
@@ -56,8 +55,7 @@ static OFString *module = @"OFSCTPSocket";
 	TEST(@"-[listen]", R([server listen]))
 
 	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1"
-			       port: port]))
+	    R([client connectToHost: @"127.0.0.1" port: port]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
@@ -65,11 +63,11 @@ static OFString *module = @"OFSCTPSocket";
 	    [of_socket_address_ip_string(accepted.remoteAddress, NULL)
 	    isEqual: @"127.0.0.1"])
 
-	TEST(@"-[sendBuffer:length:]", R([client sendBuffer: "Hello!"
-						     length: 6]))
+	TEST(@"-[sendBuffer:length:]",
+	    R([client sendBuffer: "Hello!" length: 6]))
 
-	TEST(@"-[receiveIntoBuffer:length:]", [accepted receiveIntoBuffer: buf
-								   length: 6] &&
+	TEST(@"-[receiveIntoBuffer:length:]",
+	    [accepted receiveIntoBuffer: buf length: 6] &&
 	    !memcmp(buf, "Hello!", 6))
 
 	objc_autoreleasePoolPop(pool);

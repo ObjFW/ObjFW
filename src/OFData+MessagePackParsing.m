@@ -321,8 +321,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 2
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 2 count: count];
 
 		return count + 2;
 	case 0xC5: /* bin 16 */
@@ -334,8 +333,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 3
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 3 count: count];
 
 		return count + 3;
 	case 0xC6: /* bin 32 */
@@ -347,8 +345,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 5
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 5 count: count];
 
 		return count + 5;
 	/* Extensions */
@@ -361,8 +358,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 3)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 3
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 3 count: count];
 		@try {
 			*object = createExtension(buffer[2], data);
 		} @finally {
@@ -379,8 +375,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 4)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 4
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 4 count: count];
 		@try {
 			*object = createExtension(buffer[3], data);
 		} @finally {
@@ -397,8 +392,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 6)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 6
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 6 count: count];
 		@try {
 			*object = createExtension(buffer[5], data);
 		} @finally {
@@ -410,8 +404,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 1];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 1];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -423,8 +416,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 4)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 2];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 2];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -436,8 +428,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 6)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 4];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 4];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -449,8 +440,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 10)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 8];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 8];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -462,8 +452,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 18)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 16];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 16];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {

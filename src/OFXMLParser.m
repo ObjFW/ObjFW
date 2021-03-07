@@ -94,15 +94,13 @@ appendToBuffer(OFMutableData *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8)
-		[buffer addItems: string
-			   count: length];
+		[buffer addItems: string count: length];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[buffer addItems: tmp.UTF8String
-			   count: tmp.UTF8StringLength];
+		[buffer addItems: tmp.UTF8String count: tmp.UTF8StringLength];
 		objc_autoreleasePoolPop(pool);
 	}
 }
@@ -130,8 +128,7 @@ transformString(OFXMLParser *parser, OFMutableData *buffer, size_t cut,
 			hasEntities = true;
 	}
 
-	ret = [OFString stringWithUTF8String: items
-				      length: length];
+	ret = [OFString stringWithUTF8String: items length: length];
 
 	if (unescape && hasEntities) {
 		@try {
@@ -240,8 +237,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[super dealloc];
 }
 
-- (void)parseBuffer: (const char *)buffer
-	     length: (size_t)length
+- (void)parseBuffer: (const char *)buffer length: (size_t)length
 {
 	_data = buffer;
 
@@ -269,8 +265,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)parseString: (OFString *)string
 {
-	[self parseBuffer: string.UTF8String
-		   length: string.UTF8StringLength];
+	[self parseBuffer: string.UTF8String length: string.UTF8StringLength];
 }
 
 - (void)parseStream: (OFStream *)stream
@@ -282,9 +277,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		while (!stream.atEndOfStream) {
 			size_t length = [stream readIntoBuffer: buffer
 							length: pageSize];
-
-			[self parseBuffer: buffer
-				   length: length];
+			[self parseBuffer: buffer length: length];
 		}
 	} @finally {
 		free(buffer);
@@ -503,7 +496,7 @@ inProcessingInstructionsState(OFXMLParser *self)
 
 		if ([self->_delegate respondsToSelector:
 		    @selector(parser:foundProcessingInstructions:)])
-			[self->_delegate	 parser: self
+			[self->_delegate parser: self
 			    foundProcessingInstructions: PI];
 
 		objc_autoreleasePoolPop(pool);
@@ -957,8 +950,7 @@ inCDATAState(OFXMLParser *self)
 
 		if ([self->_delegate respondsToSelector:
 		    @selector(parser:foundCDATA:)])
-			[self->_delegate parser: self
-				     foundCDATA: CDATA];
+			[self->_delegate parser: self foundCDATA: CDATA];
 
 		objc_autoreleasePoolPop(pool);
 
@@ -1011,8 +1003,7 @@ inCommentState2(OFXMLParser *self)
 
 	if ([self->_delegate respondsToSelector:
 	    @selector(parser:foundComment:)])
-		[self->_delegate parser: self
-			   foundComment: comment];
+		[self->_delegate parser: self foundComment: comment];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1056,8 +1047,7 @@ inDOCTYPEState(OFXMLParser *self)
 {
 	if ([_delegate respondsToSelector:
 	    @selector(parser:foundUnknownEntityNamed:)])
-		return [_delegate parser: self
-		 foundUnknownEntityNamed: entity];
+		return [_delegate parser: self foundUnknownEntityNamed: entity];
 
 	return nil;
 }

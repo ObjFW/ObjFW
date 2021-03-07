@@ -518,8 +518,7 @@
 	return [_fireDate compare: timer->_fireDate];
 }
 
-- (void)of_setInRunLoop: (OFRunLoop *)runLoop
-		   mode: (of_run_loop_mode_t)mode
+- (void)of_setInRunLoop: (OFRunLoop *)runLoop mode: (of_run_loop_mode_t)mode
 {
 	OFRunLoop *oldInRunLoop = _inRunLoop;
 	of_run_loop_mode_t oldInRunLoopMode = _inRunLoopMode;
@@ -560,8 +559,7 @@
 		    initWithTimeIntervalSince1970: newFireDate];
 
 		runLoop = [OFRunLoop currentRunLoop];
-		[runLoop addTimer: self
-			  forMode: runLoop.currentMode];
+		[runLoop addTimer: self forMode: runLoop.currentMode];
 	} else
 		[self invalidate];
 
@@ -575,8 +573,7 @@
 			[target performSelector: _selector];
 			break;
 		case 1:
-			[target performSelector: _selector
-				     withObject: object1];
+			[target performSelector: _selector withObject: object1];
 			break;
 		case 2:
 			[target performSelector: _selector
@@ -633,8 +630,7 @@
 			_fireDate = [fireDate copy];
 			[old release];
 
-			[_inRunLoop addTimer: self
-				     forMode: _inRunLoopMode];
+			[_inRunLoop addTimer: self forMode: _inRunLoopMode];
 		}
 	} @finally {
 		[self release];

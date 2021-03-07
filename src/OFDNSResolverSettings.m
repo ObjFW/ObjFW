@@ -253,8 +253,7 @@ parseNetStackArray(OFString *string)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -353,8 +352,7 @@ parseNetStackArray(OFString *string)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -392,7 +390,7 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[nameServers addObject: [arguments firstObject]];
+			[nameServers addObject: arguments.firstObject];
 		} else if ([option isEqual: @"domain"]) {
 			if (arguments.count != 1) {
 				objc_autoreleasePoolPop(pool2);

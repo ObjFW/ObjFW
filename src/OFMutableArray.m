@@ -165,8 +165,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFMutableAdjacentArray alloc] initWithObject: firstObject
 							arguments: arguments];
@@ -177,8 +176,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	return (id)[[OFMutableAdjacentArray alloc] initWithArray: array];
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFMutableAdjacentArray alloc] initWithObjects: objects
 							     count: count];
@@ -429,8 +427,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)sortUsingComparator: (of_comparator_t)comparator
-		    options: (int)options
+- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options
 {
 	size_t count = self.count;
 

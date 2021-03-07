@@ -59,15 +59,13 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFCountedMapTableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
@@ -160,10 +158,8 @@ static struct {
 
 		objc_autoreleasePoolPop(pool2);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @"\n)}"];
-
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);

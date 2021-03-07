@@ -65,15 +65,12 @@ const char *str = "Hello!";
 	    R([mutable removeLastItem]) &&
 	    [immutable compare: mutable] == OF_ORDERED_DESCENDING &&
 	    [mutable compare: immutable] == OF_ORDERED_ASCENDING &&
-	    [[OFData dataWithItems: "aa"
-			     count: 2] compare:
-	    [OFData dataWithItems: "z"
-			    count: 1]] == OF_ORDERED_ASCENDING)
+	    [[OFData dataWithItems: "aa" count: 2] compare:
+	    [OFData dataWithItems: "z" count: 1]] == OF_ORDERED_ASCENDING)
 
 	TEST(@"-[hash]", immutable.hash == 0x634A529F)
 
-	mutable = [OFMutableData dataWithItems: "abcdef"
-					 count: 6];
+	mutable = [OFMutableData dataWithItems: "abcdef" count: 6];
 
 	TEST(@"-[removeLastItem]", R([mutable removeLastItem]) &&
 	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
@@ -83,10 +80,8 @@ const char *str = "Hello!";
 	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
-	    R([mutable insertItems: "bc"
-			   atIndex: 1
-			     count: 2]) && mutable.count == 5 &&
-	    memcmp(mutable.items, "abcde", 5) == 0)
+	    R([mutable insertItems: "bc" atIndex: 1 count: 2]) &&
+	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
 
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
 				    count: 7
@@ -200,8 +195,7 @@ const char *str = "Hello!";
 	    items], "abcde", 5) == 0)
 
 	TEST(@"Building strings",
-	    (mutable = [OFMutableData dataWithItems: str
-					       count: 6]) &&
+	    (mutable = [OFMutableData dataWithItems: str count: 6]) &&
 	    R([mutable addItem: ""]) &&
 	    strcmp(mutable.items, str) == 0)
 
@@ -209,8 +203,7 @@ const char *str = "Hello!";
 	    OFOutOfRangeException, [mutable itemAtIndex: mutable.count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
-	    OFOutOfRangeException, [mutable addItems: raw[0]
-					       count: SIZE_MAX])
+	    OFOutOfRangeException, [mutable addItems: raw[0] count: SIZE_MAX])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,

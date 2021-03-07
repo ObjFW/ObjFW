@@ -45,8 +45,7 @@ int _OFString_URLEncoding_reference;
 
 		if (characterIsMember(allowedCharacters,
 		    @selector(characterIsMember:), c))
-			[ret appendCharacters: &c
-				       length: 1];
+			[ret appendCharacters: &c length: 1];
 		else {
 			char buffer[4];
 			size_t bufferLen;
@@ -66,8 +65,7 @@ int _OFString_URLEncoding_reference;
 				escaped[2] =
 				    (low  > 9 ? low  - 10 + 'A' : low  + '0');
 
-				[ret appendUTF8String: escaped
-					       length: 3];
+				[ret appendUTF8String: escaped length: 3];
 			}
 		}
 	}

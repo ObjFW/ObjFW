@@ -45,8 +45,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	cookie[1] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"2"
 					  domain: @"webkeks.org"];
-	TEST(@"-[addCookie:forURL:] #2", R([manager addCookie: cookie[1]
-						       forURL: URL[0]]))
+	TEST(@"-[addCookie:forURL:] #2",
+	    R([manager addCookie: cookie[1] forURL: URL[0]]))
 
 	TEST(@"-[cookiesForURL:] #2",
 	    [[manager cookiesForURL: URL[0]] isEqual:
@@ -57,8 +57,8 @@ static OFString *module = @"OFHTTPCookieManager";
 					   value: @"3"
 					  domain: @"nil.im"];
 	cookie[2].secure = true;
-	TEST(@"-[addCookie:forURL:] #3", R([manager addCookie: cookie[2]
-						       forURL: URL[1]]))
+	TEST(@"-[addCookie:forURL:] #3",
+	    R([manager addCookie: cookie[2] forURL: URL[1]]))
 
 	TEST(@"-[cookiesForURL:] #3",
 	    [[manager cookiesForURL: URL[1]] isEqual:
@@ -70,8 +70,8 @@ static OFString *module = @"OFHTTPCookieManager";
 					   value: @"4"
 					  domain: @"nil.im"];
 	cookie[3].domain = @".nil.im";
-	TEST(@"-[addCookie:forURL:] #4", R([manager addCookie: cookie[3]
-						       forURL: URL[1]]))
+	TEST(@"-[addCookie:forURL:] #4",
+	    R([manager addCookie: cookie[3] forURL: URL[1]]))
 
 	TEST(@"-[cookiesForURL:] #4",
 	    [[manager cookiesForURL: URL[1]] isEqual:
@@ -82,8 +82,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	cookie[4] = [OFHTTPCookie cookieWithName: @"bar"
 					   value: @"5"
 					  domain: @"test.nil.im"];
-	TEST(@"-[addCookie:forURL:] #5", R([manager addCookie: cookie[4]
-						       forURL: URL[0]]))
+	TEST(@"-[addCookie:forURL:] #5",
+	    R([manager addCookie: cookie[4] forURL: URL[0]]))
 
 	TEST(@"-[cookiesForURL:] #5",
 	    [[manager cookiesForURL: URL[0]] isEqual:

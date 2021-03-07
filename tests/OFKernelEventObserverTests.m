@@ -58,16 +58,12 @@ static OFString *module;
 		_testsAppDelegate = testsAppDelegate;
 
 		_server = [[OFTCPSocket alloc] init];
-		port = [_server bindToHost: @"127.0.0.1"
-				      port: 0];
+		port = [_server bindToHost: @"127.0.0.1" port: 0];
 		[_server listen];
 
 		_client = [[OFTCPSocket alloc] init];
-		[_client connectToHost: @"127.0.0.1"
-				  port: port];
-
-		[_client writeBuffer: "0"
-			      length: 1];
+		[_client connectToHost: @"127.0.0.1" port: port];
+		[_client writeBuffer: "0" length: 1];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -153,8 +149,7 @@ static OFString *module;
 		break;
 	case 1:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf
-				    length: 1] == 1 && buf == '0')
+		    [object readIntoBuffer: &buf length: 1] == 1 && buf == '0')
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with data ready to read"
 				 inModule: module];
@@ -174,8 +169,7 @@ static OFString *module;
 		break;
 	case 2:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf
-				    length: 1] == 0)
+		    [object readIntoBuffer: &buf length: 1] == 0)
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with closed connection"
 				 inModule: module];

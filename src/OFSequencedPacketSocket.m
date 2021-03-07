@@ -149,8 +149,7 @@
 #endif
 }
 
-- (size_t)receiveIntoBuffer: (void *)buffer
-		     length: (size_t)length
+- (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
@@ -177,8 +176,7 @@
 	return ret;
 }
 
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
@@ -228,8 +226,7 @@
 }
 #endif
 
-- (void)sendBuffer: (const void *)buffer
-	    length: (size_t)length
+- (void)sendBuffer: (const void *)buffer length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -269,8 +266,7 @@
 
 - (void)asyncSendData: (OFData *)data
 {
-	[self asyncSendData: data
-		runLoopMode: of_run_loop_mode_default];
+	[self asyncSendData: data runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncSendData: (OFData *)data

@@ -172,8 +172,7 @@
 #endif
 }
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
@@ -189,8 +188,7 @@
 	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
 	of_socket_address_set_port(&address, port);
 
-	port = [self of_bindToAddress: &address
-			    extraType: 0];
+	port = [self of_bindToAddress: &address extraType: 0];
 
 	objc_autoreleasePoolPop(pool);
 

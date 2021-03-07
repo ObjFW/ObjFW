@@ -123,9 +123,7 @@
 	if (fixedReceiver.family == OF_SOCKET_ADDRESS_FAMILY_IPX)
 		fixedReceiver.sockaddr.ipx.sipx_type = _packetType;
 
-	[super sendBuffer: buffer
-		   length: length
-		 receiver: &fixedReceiver];
+	[super sendBuffer: buffer length: length receiver: &fixedReceiver];
 }
 #endif
 @end

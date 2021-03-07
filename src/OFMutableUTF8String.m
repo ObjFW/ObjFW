@@ -55,8 +55,7 @@
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	self = [self initWithUTF8String: UTF8String
-				 length: UTF8StringLength];
+	self = [self initWithUTF8String: UTF8String length: UTF8StringLength];
 
 	if (freeWhenDone)
 		free(UTF8String);
@@ -64,10 +63,11 @@
 	return self;
 }
 
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
-		     wordMiddleTable: (const of_unichar_t *const[])middleTable
+#ifdef OF_HAVE_UNICODE_TABLES
+- (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
+		     wordMiddleTable: (const of_unichar_t *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
-		 wordMiddleTableSize: (size_t)middleTableSize OF_DIRECT
+		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	of_unichar_t *unicodeString;
 	size_t unicodeLen, newCStringLength;
@@ -187,9 +187,9 @@
 	 * need to change it.
 	 */
 }
+#endif
 
-- (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)idx
+- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)idx
 {
 	char buffer[4];
 	of_unichar_t c;
@@ -328,8 +328,7 @@
 	       length: (size_t)cStringLength
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendUTF8String: cString
-				length: cStringLength];
+		[self appendUTF8String: cString length: cStringLength];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -409,8 +408,7 @@
 	}
 }
 
-- (void)appendFormat: (OFConstantString *)format
-	   arguments: (va_list)arguments
+- (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -423,8 +421,7 @@
 		@throw [OFInvalidFormatException exception];
 
 	@try {
-		[self appendUTF8String: UTF8String
-				length: UTF8StringLength];
+		[self appendUTF8String: UTF8String length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}
@@ -510,8 +507,7 @@
 	}
 }
 
-- (void)insertString: (OFString *)string
-	     atIndex: (size_t)idx
+- (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
 	size_t newCStringLength;
 

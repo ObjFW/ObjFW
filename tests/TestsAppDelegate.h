@@ -15,41 +15,35 @@
 
 #import "ObjFW.h"
 
-#define TEST(test, ...)					\
-	{						\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		if (__VA_ARGS__)			\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define TEST(test, ...)							\
+	{								\
+		[self outputTesting: test inModule: module];		\
+									\
+		if (__VA_ARGS__)					\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
-#define EXPECT_EXCEPTION(test, exception, code)		\
-	{						\
-		bool caught = false;			\
-							\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		@try {					\
-			code;				\
-		} @catch (exception *e) {		\
-			caught = true;			\
-		}					\
-							\
-		if (caught)				\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define EXPECT_EXCEPTION(test, exception, code)				\
+	{								\
+		bool caught = false;					\
+									\
+		[self outputTesting: test inModule: module];		\
+									\
+		@try {							\
+			code;						\
+		} @catch (exception *e) {				\
+			caught = true;					\
+		}							\
+									\
+		if (caught)						\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
 #define R(...) (__VA_ARGS__, 1)
 
@@ -60,12 +54,9 @@
 	int _fails;
 }
 
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module;
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module;
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module;
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
 @interface TestsAppDelegate (OFASN1DERParsingTests)

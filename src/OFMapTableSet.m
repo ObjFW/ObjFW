@@ -136,8 +136,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self initWithCapacity: count];
 
@@ -152,8 +151,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [super init];
 

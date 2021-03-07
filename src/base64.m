@@ -149,8 +149,7 @@ of_base64_decode(OFMutableData *data, const char *string, size_t length)
 		db[1] = (sb & 0x00FF00) >> 8;
 		db[2] = sb & 0x0000FF;
 
-		[data addItems: db
-			 count: count];
+		[data addItems: db count: count];
 	}
 
 	return true;

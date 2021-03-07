@@ -268,17 +268,13 @@
 	objectEnumerator = [environment objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		[env addItems: key.UTF16String
-			count: key.UTF16StringLength];
-		[env addItems: &equal
-			count: 1];
+		[env addItems: key.UTF16String count: key.UTF16StringLength];
+		[env addItems: &equal count: 1];
 		[env addItems: object.UTF16String
 			count: object.UTF16StringLength];
-		[env addItems: &zero
-			count: 1];
+		[env addItems: &zero count: 1];
 	}
-	[env addItems: zero
-		count: 2];
+	[env addItems: zero count: 2];
 
 	return env.mutableItems;
 }
@@ -301,15 +297,12 @@
 	    (object = [objectEnumerator nextObject]) != nil) {
 		[env addItems: [key cStringWithEncoding: encoding]
 			count: [key cStringLengthWithEncoding: encoding]];
-		[env addItems: "="
-			count: 1];
+		[env addItems: "=" count: 1];
 		[env addItems: [object cStringWithEncoding: encoding]
 			count: [object cStringLengthWithEncoding: encoding]];
-		[env addItems: ""
-			count: 1];
+		[env addItems: "" count: 1];
 	}
-	[env addItems: "\0"
-		count: 2];
+	[env addItems: "\0" count: 2];
 
 	return env.mutableItems;
 }
@@ -322,8 +315,7 @@
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	DWORD ret;
 
@@ -350,8 +342,7 @@
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	DWORD bytesWritten;
 

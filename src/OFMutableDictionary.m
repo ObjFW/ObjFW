@@ -40,15 +40,13 @@ static struct {
 	    initWithDictionary: dictionary];
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithObject: object
 								forKey: key];
 }
 
-- (instancetype)initWithObjects: (OFArray *)objects
-			forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
 								forKeys: keys];
@@ -76,8 +74,7 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
 							  arguments: arguments];

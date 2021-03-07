@@ -126,12 +126,10 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
-	if (![app shouldExtractFile: fileName
-			outFileName: fileName])
+	if (![app shouldExtractFile: fileName outFileName: fileName])
 		return;
 
-	output = [OFFile fileWithPath: fileName
-				 mode: @"w"];
+	output = [OFFile fileWithPath: fileName mode: @"w"];
 	setPermissions(fileName, app->_archivePath);
 
 	while (!_stream.atEndOfStream) {

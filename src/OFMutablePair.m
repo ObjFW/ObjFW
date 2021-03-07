@@ -37,9 +37,7 @@
 - (id)copy
 {
 	OFMutablePair *copy = [self mutableCopy];
-
 	[copy makeImmutable];
-
 	return copy;
 }
 

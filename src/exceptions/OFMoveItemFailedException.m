@@ -30,7 +30,7 @@
 
 + (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
 			destinationURL: (OFURL *)destinationURL
-				  errNo: (int)errNo
+				 errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourceURL: sourceURL
 				 destinationURL: destinationURL

@@ -73,11 +73,9 @@ extern char **environ;
 OF_DIRECT_MEMBERS
 @interface OFApplication ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char **[])argv;
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t *[])argv;
+- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t *[])argv;
 #endif
 - (void)of_run;
 @end
@@ -116,12 +114,10 @@ of_application_main(int *argc, char **argv[],
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-		[app of_setArgumentCount: wargc
-		   andWideArgumentValues: wargv];
+		[app of_setArgumentCount: wargc andWideArgumentValues: wargv];
 	} else
 #endif
-		[app of_setArgumentCount: argc
-		       andArgumentValues: argv];
+		[app of_setArgumentCount: argc andArgumentValues: argv];
 
 	app.delegate = delegate;
 
@@ -331,8 +327,7 @@ SIGNAL_HANDLER(SIGUSR2)
 			if ([fileManager directoryExistsAtPath: path])
 				continue;
 
-			file = [OFFile fileWithPath: path
-					       mode: @"r"];
+			file = [OFFile fileWithPath: path mode: @"r"];
 
 			value = [file readLineWithEncoding: encoding];
 			if (value != nil)
@@ -469,8 +464,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	[super dealloc];
 }
 
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char ***)argv
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char ***)argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -503,8 +497,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t **)argv
+- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t **)argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -525,8 +518,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 #endif
 
-- (void)getArgumentCount: (int **)argc
-       andArgumentValues: (char ****)argv
+- (void)getArgumentCount: (int **)argc andArgumentValues: (char ****)argv
 {
 	*argc = _argc;
 	*argv = _argv;

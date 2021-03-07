@@ -160,9 +160,7 @@
 
 	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
-
-	[element addAttributeWithName: @"name"
-			  stringValue: _name];
+	[element addAttributeWithName: @"name" stringValue: _name];
 
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"

@@ -47,8 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param try The try block to execute
  * @param finally The finally block to call at the end
  */
-+ (void)try: (void (^)(void))try
-    finally: (void (^)(void))finally;
++ (void)try: (void (^)(void))try finally: (void (^)(void))finally;
 
 /**
  * @brief Execute the specified try block and call the catch block if an

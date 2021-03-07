@@ -129,11 +129,9 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		sandbox.allowsUserDatabaseReading = true;
 
 		for (OFString *path in optionsParser.remainingArguments)
-			[sandbox unveilPath: path
-				permissions: @"r"];
+			[sandbox unveilPath: path permissions: @"r"];
 
-		[sandbox unveilPath: @LANGUAGE_DIR
-			permissions: @"r"];
+		[sandbox unveilPath: @LANGUAGE_DIR permissions: @"r"];
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {
@@ -178,8 +176,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 			file = of_stdin;
 		else {
 			@try {
-				file = [OFFile fileWithPath: path
-						       mode: @"r"];
+				file = [OFFile fileWithPath: path mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)

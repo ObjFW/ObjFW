@@ -26,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithString: (OFString *)string
-			       line: (size_t)line
++ (instancetype)exceptionWithString: (OFString *)string line: (size_t)line
 {
-	return [[[self alloc] initWithString: string
-					line: line] autorelease];
+	return [[[self alloc] initWithString: string line: line] autorelease];
 }
 
 - (instancetype)init
@@ -38,8 +36,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithString: (OFString *)string
-			  line: (size_t)line
+- (instancetype)initWithString: (OFString *)string line: (size_t)line
 {
 	self = [super init];
 

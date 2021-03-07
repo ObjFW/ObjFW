@@ -59,15 +59,13 @@
 	_mutations++;
 }
 
-- (void)insertObject: (id)object
-	     atIndex: (size_t)idx
+- (void)insertObject: (id)object atIndex: (size_t)idx
 {
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
-		[_array insertItem: &object
-			   atIndex: idx];
+		[_array insertItem: &object atIndex: idx];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -76,16 +74,13 @@
 	_mutations++;
 }
 
-- (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)idx
+- (void)insertObjectsFromArray: (OFArray *)array atIndex: (size_t)idx
 {
 	id const *objects = array.objects;
 	size_t count = array.count;
 
 	@try {
-		[_array insertItems: objects
-			    atIndex: idx
-			      count: count];
+		[_array insertItems: objects atIndex: idx count: count];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -96,8 +91,7 @@
 	_mutations++;
 }
 
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject
+- (void)replaceObject: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -119,8 +113,7 @@
 	}
 }
 
-- (void)replaceObjectAtIndex: (size_t)idx
-		  withObject: (id)object
+- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
 	id *objects;
 	id oldObject;
@@ -138,8 +131,7 @@
 	[oldObject release];
 }
 
-- (void)replaceObjectIdenticalTo: (id)oldObject
-		      withObject: (id)newObject
+- (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -272,8 +264,7 @@
 #endif
 }
 
-- (void)exchangeObjectAtIndex: (size_t)idx1
-	    withObjectAtIndex: (size_t)idx2
+- (void)exchangeObjectAtIndex: (size_t)idx1 withObjectAtIndex: (size_t)idx2
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;

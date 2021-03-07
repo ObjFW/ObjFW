@@ -491,19 +491,13 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		/* Header */
 
 		tmp = OF_BSWAP16_IF_LE(_ID.unsignedShortValue);
-		[queryData addItems: &tmp
-			      count: 2];
-
+		[queryData addItems: &tmp count: 2];
 		/* RD */
 		tmp = OF_BSWAP16_IF_LE(1u << 8);
-		[queryData addItems: &tmp
-			      count: 2];
-
+		[queryData addItems: &tmp count: 2];
 		/* QDCOUNT */
 		tmp = OF_BSWAP16_IF_LE(1);
-		[queryData addItems: &tmp
-			      count: 2];
-
+		[queryData addItems: &tmp count: 2];
 		/* ANCOUNT, NSCOUNT and ARCOUNT */
 		[queryData increaseCountBy: 6];
 
@@ -526,14 +520,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* QTYPE */
 		tmp = OF_BSWAP16_IF_LE(_query.recordType);
-		[queryData addItems: &tmp
-			      count: 2];
-
+		[queryData addItems: &tmp count: 2];
 		/* QCLASS */
 		tmp = OF_BSWAP16_IF_LE(_query.DNSClass);
-		[queryData addItems: &tmp
-			      count: 2];
-
+		[queryData addItems: &tmp count: 2];
 		[queryData makeImmutable];
 
 		_queryData = [queryData copy];
@@ -832,8 +822,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		       ID: ID
 		 settings: _settings
 		 delegate: delegate] autorelease];
-	[self of_sendQueryForContext: context
-			 runLoopMode: runLoopMode];
+	[self of_sendQueryForContext: context runLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -856,15 +845,13 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_nameServersIndex + 1 <
 	    context->_settings->_nameServers.count) {
 		context->_nameServersIndex++;
-		[self of_sendQueryForContext: context
-				 runLoopMode: runLoopMode];
+		[self of_sendQueryForContext: context runLoopMode: runLoopMode];
 		return;
 	}
 
 	if (++context->_attempt < context->_settings->_maxAttempts) {
 		context->_nameServersIndex = 0;
-		[self of_sendQueryForContext: context
-				 runLoopMode: runLoopMode];
+		[self of_sendQueryForContext: context runLoopMode: runLoopMode];
 		return;
 	}
 
@@ -876,12 +863,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	 * trying to access the query once it no longer exists.
 	 */
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket asyncReceiveIntoBuffer: _buffer
-				     length: BUFFER_LENGTH];
+	[_IPv4Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket asyncReceiveIntoBuffer: _buffer
-				     length: BUFFER_LENGTH];
+	[_IPv6Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
 #endif
 
 	exception = [OFDNSQueryFailedException
@@ -1101,8 +1086,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		    initWithCapacity: queryDataCount + 2];
 
 		tmp = OF_BSWAP16_IF_LE(queryDataCount);
-		[context->_TCPQueryData addItems: &tmp
-					   count: sizeof(tmp)];
+		[context->_TCPQueryData addItems: &tmp count: sizeof(tmp)];
 		[context->_TCPQueryData addItems: context->_queryData.items
 					   count: queryDataCount];
 	}
@@ -1135,8 +1119,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_TCPBuffer == nil)
 		context->_TCPBuffer = of_alloc(MAX_DNS_RESPONSE_LENGTH, 1);
 
-	[sock asyncReadIntoBuffer: context->_TCPBuffer
-		      exactLength: 2];
+	[sock asyncReadIntoBuffer: context->_TCPBuffer exactLength: 2];
 	return nil;
 }
 
@@ -1183,9 +1166,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		 */
 		goto done;
 
-	[self of_handleResponseBuffer: buffer
-			       length: length
-			       sender: NULL];
+	[self of_handleResponseBuffer: buffer length: length sender: NULL];
 
 done:
 	[_TCPQueries removeObjectForKey: context->_TCPSocket];

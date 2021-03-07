@@ -84,14 +84,12 @@ static OFNull *null = nil;
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
@@ -103,17 +101,13 @@ static OFNull *null = nil;
 - (OFData *)messagePackRepresentation
 {
 	uint8_t type = 0xC0;
-
-	return [OFData dataWithItems: &type
-			       count: 1];
+	return [OFData dataWithItems: &type count: 1];
 }
 
 - (OFData *)ASN1DERRepresentation
 {
 	const unsigned char bytes[] = { OF_ASN1_TAG_NUMBER_NULL, 0 };
-
-	return [OFData dataWithItems: bytes
-			       count: sizeof(bytes)];
+	return [OFData dataWithItems: bytes count: sizeof(bytes)];
 }
 
 - (instancetype)autorelease

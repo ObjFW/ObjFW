@@ -26,8 +26,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPointer: (void *)pointer
-			      object: (id)object
++ (instancetype)exceptionWithPointer: (void *)pointer object: (id)object
 {
 	return [[[self alloc] initWithPointer: pointer
 				       object: object] autorelease];
@@ -38,8 +37,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPointer: (void *)pointer
-			 object: (id)object
+- (instancetype)initWithPointer: (void *)pointer object: (id)object
 {
 	self = [super init];
 

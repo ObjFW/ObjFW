@@ -55,8 +55,7 @@ of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
 			     error: (of_dns_resolver_error_t)error
 {
-	return [[[self alloc] initWithQuery: query
-				      error: error] autorelease];
+	return [[[self alloc] initWithQuery: query error: error] autorelease];
 }
 
 - (instancetype)initWithQuery: (OFDNSQuery *)query

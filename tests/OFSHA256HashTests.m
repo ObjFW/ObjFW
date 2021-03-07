@@ -30,18 +30,15 @@ const uint8_t testfile_sha256[32] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA256Hash *sha256, *copy;
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"r"];
+	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
 	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
 	    (sha256 = [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];
-		size_t len = [f readIntoBuffer: buf
-					length: 64];
-		[sha256 updateWithBuffer: buf
-				  length: len];
+		size_t len = [f readIntoBuffer: buf length: 64];
+		[sha256 updateWithBuffer: buf length: len];
 	}
 	[f close];
 
@@ -53,8 +50,7 @@ const uint8_t testfile_sha256[32] =
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
-	    [sha256 updateWithBuffer: ""
-			      length: 1])
+	    [sha256 updateWithBuffer: "" length: 1])
 
 	objc_autoreleasePoolPop(pool);
 }

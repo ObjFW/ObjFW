@@ -26,8 +26,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSelector: (SEL)selector
-			       object: (id)object
++ (instancetype)exceptionWithSelector: (SEL)selector object: (id)object
 {
 	return [[[self alloc] initWithSelector: selector
 					object: object] autorelease];
@@ -38,8 +37,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSelector: (SEL)selector
-			  object: (id)object
+- (instancetype)initWithSelector: (SEL)selector object: (id)object
 {
 	self = [super init];
 

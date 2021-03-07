@@ -286,8 +286,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	if (startsWithSlash)
-		[array insertObject: @""
-			    atIndex: 0];
+		[array insertObject: @"" atIndex: 0];
 
 	if ([self hasSuffix: @"/"])
 		[array addObject: @""];

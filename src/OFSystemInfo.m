@@ -487,7 +487,6 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	}
 
 	[path appendString: @"/Preferences"];
-
 	[path makeImmutable];
 
 	return path;

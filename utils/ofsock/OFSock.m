@@ -59,11 +59,8 @@ streamFromString(OFString *string)
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		[sock connectToHost: URL.host
-			       port: URL.port.shortValue];
-
-		return [OFPair pairWithFirstObject: sock
-				      secondObject: sock];
+		[sock connectToHost: URL.host port: URL.port.shortValue];
+		return [OFPair pairWithFirstObject: sock secondObject: sock];
 	}
 
 	[of_stderr writeFormat: @"Invalid protocol: %@\n", scheme];
@@ -141,8 +138,7 @@ streamFromString(OFString *string)
 		if (pair.firstObject == stream)
 			continue;
 
-		[pair.secondObject writeBuffer: buffer
-					length: length];
+		[pair.secondObject writeBuffer: buffer length: length];
 	}
 
 	return true;

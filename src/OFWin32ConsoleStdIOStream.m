@@ -124,8 +124,7 @@ codepageToEncoding(UINT codepage)
 	return self;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer_
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer_ length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	char *buffer = buffer_;
@@ -190,8 +189,7 @@ codepageToEncoding(UINT codepage)
 				if (rest == nil)
 					rest = [OFMutableData data];
 
-				[rest addItems: UTF8
-					 count: UTF8Len];
+				[rest addItems: UTF8 count: UTF8Len];
 			}
 
 			_incompleteUTF16Surrogate = 0;
@@ -248,14 +246,12 @@ codepageToEncoding(UINT codepage)
 				if (rest == nil)
 					rest = [OFMutableData data];
 
-				[rest addItems: UTF8
-					 count: UTF8Len];
+				[rest addItems: UTF8 count: UTF8Len];
 			}
 		}
 
 		if (rest != nil)
-			[self unreadFromBuffer: rest.items
-					length: rest.count];
+			[self unreadFromBuffer: rest.items length: rest.count];
 	} @finally {
 		free(UTF16);
 	}
@@ -265,8 +261,7 @@ codepageToEncoding(UINT codepage)
 	return j;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer_
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const char *buffer = buffer_;
 	of_char16_t *tmp;
@@ -491,10 +486,7 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
 	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
-	[color getRed: &red
-		green: &green
-		 blue: &blue
-		alpha: NULL];
+	[color getRed: &red green: &green blue: &blue alpha: NULL];
 
 	if (red >= 0.25)
 		csbi.wAttributes |= FOREGROUND_RED;
@@ -520,10 +512,7 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
 	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-	[color getRed: &red
-		green: &green
-		 blue: &blue
-		alpha: NULL];
+	[color getRed: &red green: &green blue: &blue alpha: NULL];
 
 	if (red >= 0.25)
 		csbi.wAttributes |= BACKGROUND_RED;

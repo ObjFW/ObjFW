@@ -73,15 +73,13 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: dictionary];
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	return (id)[[OFMapTableDictionary alloc] initWithObject: object
 							 forKey: key];
 }
 
-- (instancetype)initWithObjects: (OFArray *)objects
-			forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
 	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
 							 forKeys: keys];
@@ -228,11 +226,9 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: dictionary] autorelease];
 }
 
-+ (instancetype)dictionaryWithObject: (id)object
-			      forKey: (id)key
++ (instancetype)dictionaryWithObject: (id)object forKey: (id)key
 {
-	return [[[self alloc] initWithObject: object
-				      forKey: key] autorelease];
+	return [[[self alloc] initWithObject: object forKey: key] autorelease];
 }
 
 + (instancetype)dictionaryWithObjects: (OFArray *)objects
@@ -244,7 +240,7 @@ OF_DIRECT_MEMBERS
 
 + (instancetype)dictionaryWithObjects: (id const *)objects
 			      forKeys: (id const *)keys
-		  count: (size_t)count
+				count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
 				      forKeys: keys
@@ -285,8 +281,7 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	if (key == nil || object == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -312,9 +307,7 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	return [self initWithObjects: objects
-			     forKeys: keys
-			       count: count];
+	return [self initWithObjects: objects forKeys: keys count: count];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
@@ -330,8 +323,7 @@ OF_DIRECT_MEMBERS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [self initWithKey: firstKey
-		      arguments: arguments];
+	ret = [self initWithKey: firstKey arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -834,15 +826,13 @@ OF_DIRECT_MEMBERS
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xDF;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else
 		@throw [OFOutOfRangeException exception];
 

@@ -847,8 +847,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	id ret = [self initWithUTF8String: UTF8String
-				   length: UTF8StringLength];
+	id ret = [self initWithUTF8String: UTF8String length: UTF8StringLength];
 
 	if (freeWhenDone)
 		free(UTF8String);
@@ -1022,7 +1021,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		tmp = of_alloc((size_t)fileSize + 1, 1);
 		@try {
 			file = [[OFFile alloc] initWithPath: path mode: @"r"];
-
 			[file readIntoBuffer: tmp
 				 exactLength: (size_t)fileSize];
 		} @catch (id e) {
@@ -1775,31 +1773,27 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (length <= 31) {
 		uint8_t tmp = 0xA0 | ((uint8_t)length & 0x1F);
 
-		data = [OFMutableData dataWithItemSize: 1 capacity: length + 1];
-
+		data = [OFMutableData dataWithCapacity: length + 1];
 		[data addItem: &tmp];
 	} else if (length <= UINT8_MAX) {
 		uint8_t type = 0xD9;
 		uint8_t tmp = (uint8_t)length;
 
-		data = [OFMutableData dataWithItemSize: 1 capacity: length + 2];
-
+		data = [OFMutableData dataWithCapacity: length + 2];
 		[data addItem: &type];
 		[data addItem: &tmp];
 	} else if (length <= UINT16_MAX) {
 		uint8_t type = 0xDA;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)length);
 
-		data = [OFMutableData dataWithItemSize: 1 capacity: length + 3];
-
+		data = [OFMutableData dataWithCapacity: length + 3];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (length <= UINT32_MAX) {
 		uint8_t type = 0xDB;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)length);
 
-		data = [OFMutableData dataWithItemSize: 1 capacity: length + 5];
-
+		data = [OFMutableData dataWithCapacity: length + 5];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else
@@ -1817,8 +1811,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			     range: of_range(0, self.length)];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
+- (of_range_t)rangeOfString: (OFString *)string options: (int)options
 {
 	return [self rangeOfString: string
 			   options: options
@@ -2724,15 +2717,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	[self writeToFile: path encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
-	[file writeString: self
-		 encoding: encoding];
-
+	[file writeString: self encoding: encoding];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -2742,8 +2731,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	[self writeToURL: URL encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)writeToURL: (OFURL *)URL
-	  encoding: (of_string_encoding_t)encoding
+- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURLHandler *URLHandler;

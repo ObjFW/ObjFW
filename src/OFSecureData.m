@@ -334,7 +334,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 + (instancetype)dataWithCount: (size_t)count
 		     itemSize: (size_t)itemSize
-	   allowsSwappableMemory: (bool)allowsSwappableMemory
+	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithCount: count
 				   itemSize: itemSize
@@ -467,8 +467,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	return self;
 }
 
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count
+- (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }

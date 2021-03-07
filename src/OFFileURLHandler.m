@@ -592,8 +592,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return S_ISDIR(s.st_mode);
 }
 
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [[OFFile alloc]
@@ -1158,7 +1157,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			OFString *file = [[OFString alloc]
 			    initWithCString: fib.fib_FileName
 				   encoding: encoding];
-
 			@try {
 				[files addObject: file];
 			} @finally {
@@ -1178,7 +1176,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #else
 	of_string_encoding_t encoding = [OFLocale encoding];
 	DIR *dir;
-
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
 							      mode: nil
@@ -1343,8 +1340,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *sourcePath, *destinationPath;
@@ -1425,8 +1421,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 }
 #endif
 
-- (bool)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 

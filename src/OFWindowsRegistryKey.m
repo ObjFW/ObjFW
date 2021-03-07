@@ -34,8 +34,7 @@
 
 OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
-- (instancetype)of_initWithHKey: (HKEY)hKey
-			  close: (bool)close;
+- (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close;
 @end
 
 @implementation OFWindowsRegistryKey
@@ -69,8 +68,7 @@ OF_DIRECT_MEMBERS
 					close: false] autorelease];
 }
 
-- (instancetype)of_initWithHKey: (HKEY)hKey
-			  close: (bool)close
+- (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close
 {
 	self = [super init];
 
@@ -185,8 +183,7 @@ OF_DIRECT_MEMBERS
 	    autorelease];
 }
 
-- (OFData *)dataForValueNamed: (OFString *)name
-			 type: (DWORD *)type
+- (OFData *)dataForValueNamed: (OFString *)name type: (DWORD *)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	BYTE stackBuffer[256], *buffer = stackBuffer;
@@ -270,17 +267,14 @@ OF_DIRECT_MEMBERS
 
 - (OFString *)stringForValueNamed: (OFString *)name
 {
-	return [self stringForValueNamed: name
-				    type: NULL];
+	return [self stringForValueNamed: name type: NULL];
 }
 
-- (OFString *)stringForValueNamed: (OFString *)name
-			     type: (DWORD *)typeOut
+- (OFString *)stringForValueNamed: (OFString *)name type: (DWORD *)typeOut
 {
 	void *pool = objc_autoreleasePoolPush();
 	DWORD type;
-	OFData *data = [self dataForValueNamed: name
-					  type: &type];
+	OFData *data = [self dataForValueNamed: name type: &type];
 	OFString *ret;
 
 	if (data == nil)
@@ -342,12 +336,9 @@ OF_DIRECT_MEMBERS
 	return [ret autorelease];
 }
 
-- (void)setString: (OFString *)string
-    forValueNamed: (OFString *)name
+- (void)setString: (OFString *)string forValueNamed: (OFString *)name
 {
-	[self	setString: string
-	    forValueNamed: name
-		     type: REG_SZ];
+	[self setString: string forValueNamed: name type: REG_SZ];
 }
 
 - (void)setString: (OFString *)string
@@ -366,13 +357,10 @@ OF_DIRECT_MEMBERS
 		const char *cString = [string cStringWithEncoding: encoding];
 		size_t length = [string cStringLengthWithEncoding: encoding];
 
-		data = [OFData dataWithItems: cString
-				       count: length + 1];
+		data = [OFData dataWithItems: cString count: length + 1];
 	}
 
-	[self	  setData: data
-	    forValueNamed: name
-		     type: type];
+	[self setData: data forValueNamed: name type: type];
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -97,8 +97,7 @@ OF_DIRECT_MEMBERS
 		_block();
 	else
 #endif
-		[_target performSelector: _selector
-			      withObject: _object];
+		[_target performSelector: _selector withObject: _object];
 }
 @end
 

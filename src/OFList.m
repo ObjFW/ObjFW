@@ -358,8 +358,7 @@ OF_DIRECT_MEMBERS
 
 		objc_autoreleasePoolPop(pool);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @"\n]"];
 
 	[ret makeImmutable];
@@ -416,9 +415,9 @@ OF_DIRECT_MEMBERS
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFListEnumerator alloc]
-		initWithList: self
-	    mutationsPointer: &_mutations] autorelease];
+	return [[[OFListEnumerator alloc] initWithList: self
+				      mutationsPointer: &_mutations]
+	    autorelease];
 }
 @end
 

@@ -47,8 +47,7 @@
 	[super dealloc];
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != _size)
 		@throw [OFOutOfRangeException exception];

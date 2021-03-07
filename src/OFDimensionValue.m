@@ -36,8 +36,7 @@
 	return @encode(of_dimension_t);
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != sizeof(_dimension))
 		@throw [OFOutOfRangeException exception];

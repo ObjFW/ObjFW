@@ -23,8 +23,7 @@ static OFString *module = @"OFWindowsRegistryKey";
 - (void)windowsRegistryKeyTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithItems: "abcdef"
-				       count: 6];
+	OFData *data = [OFData dataWithItems: "abcdef" count: 6];
 	OFWindowsRegistryKey *softwareKey, *ObjFWKey;
 	DWORD type;
 
@@ -56,26 +55,22 @@ static OFString *module = @"OFWindowsRegistryKey";
 				securityAndAccessRights: KEY_ALL_ACCESS]))
 
 	TEST(@"-[setData:forValueNamed:type:]",
-	    R([ObjFWKey setData: data
-		  forValueNamed: @"data"
-			   type: REG_BINARY]))
+	    R([ObjFWKey setData: data forValueNamed: @"data" type: REG_BINARY]))
 
 	TEST(@"-[dataForValueNamed:subkeyPath:flags:type:]",
-	    [[ObjFWKey dataForValueNamed: @"data"
-				    type: &type] isEqual: data] &&
+	    [[ObjFWKey dataForValueNamed: @"data" type: &type] isEqual: data] &&
 	    type == REG_BINARY)
 
 	TEST(@"-[setString:forValueNamed:type:]",
-	    R([ObjFWKey setString: @"foobar"
-		    forValueNamed: @"string"]) &&
+	    R([ObjFWKey setString: @"foobar" forValueNamed: @"string"]) &&
 	    R([ObjFWKey setString: @"%PATH%;foo"
 		    forValueNamed: @"expand"
 			     type: REG_EXPAND_SZ]))
 
 	TEST(@"-[stringForValue:subkeyPath:]",
 	    [[ObjFWKey stringForValueNamed: @"string"] isEqual: @"foobar"] &&
-	    [[ObjFWKey stringForValueNamed: @"expand"
-				      type: &type] isEqual: @"%PATH%;foo"] &&
+	    [[ObjFWKey stringForValueNamed: @"expand" type: &type]
+	    isEqual: @"%PATH%;foo"] &&
 	    type == REG_EXPAND_SZ)
 
 	TEST(@"-[deleteValueNamed:]", R([ObjFWKey deleteValueNamed: @"data"]))

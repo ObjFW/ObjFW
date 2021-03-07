@@ -123,8 +123,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	_socket = INVALID_SOCKET;
 }
 
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port
+- (void)connectToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFSCTPSocketDelegate> delegate = _delegate;
@@ -138,12 +137,10 @@ static const of_run_loop_mode_t connectRunLoopMode =
 		     runLoopMode: connectRunLoopMode];
 
 	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -153,8 +150,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port
 {
 	[self asyncConnectToHost: host
 			    port: port
@@ -214,8 +210,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();

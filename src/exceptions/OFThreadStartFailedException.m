@@ -24,15 +24,12 @@
 @implementation OFThreadStartFailedException
 @synthesize thread = _thread, errNo = _errNo;
 
-+ (instancetype)exceptionWithThread: (OFThread *)thread
-			      errNo: (int)errNo
++ (instancetype)exceptionWithThread: (OFThread *)thread errNo: (int)errNo
 {
-	return [[[self alloc] initWithThread: thread
-				       errNo: errNo] autorelease];
+	return [[[self alloc] initWithThread: thread errNo: errNo] autorelease];
 }
 
-- (instancetype)initWithThread: (OFThread *)thread
-			 errNo: (int)errNo
+- (instancetype)initWithThread: (OFThread *)thread errNo: (int)errNo
 {
 	self = [super init];
 

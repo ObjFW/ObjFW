@@ -182,8 +182,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_socket = INVALID_SOCKET;
 }
 
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port
+- (void)connectToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = _delegate;
@@ -197,12 +196,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		     runLoopMode: connectRunLoopMode];
 
 	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -212,8 +209,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port
 {
 	[self asyncConnectToHost: host
 			    port: port
@@ -301,8 +297,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();

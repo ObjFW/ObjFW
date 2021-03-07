@@ -201,8 +201,7 @@ help(OFStream *stream, bool full, int status)
 						 recordType: recordType];
 
 			_inFlight++;
-			[resolver asyncPerformQuery: query
-					   delegate: self];
+			[resolver asyncPerformQuery: query delegate: self];
 		}
 	}
 }

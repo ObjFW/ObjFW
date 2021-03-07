@@ -190,11 +190,8 @@ static struct {
 	}
 
 	@try {
-		[self getValue: value
-			  size: size];
-		[object getValue: otherValue
-			    size: size];
-
+		[self getValue: value size: size];
+		[object getValue: otherValue size: size];
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
 		free(value);
@@ -212,8 +209,7 @@ static struct {
 
 	value = of_alloc(1, size);
 	@try {
-		[self getValue: value
-			  size: size];
+		[self getValue: value size: size];
 
 		OF_HASH_INIT(hash);
 
@@ -238,8 +234,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -247,60 +242,42 @@ static struct {
 - (void *)pointerValue
 {
 	void *ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (id)nonretainedObjectValue
 {
 	id ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (of_range_t)rangeValue
 {
 	of_range_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (of_point_t)pointValue
 {
 	of_point_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (of_dimension_t)dimensionValue
 {
 	of_dimension_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (of_rectangle_t)rectangleValue
 {
 	of_rectangle_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
@@ -313,8 +290,7 @@ static struct {
 
 	value = of_alloc(1, size);
 	@try {
-		[self getValue: value
-			  size: size];
+		[self getValue: value size: size];
 
 		for (size_t i = 0; i < size; i++) {
 			if (i > 0)

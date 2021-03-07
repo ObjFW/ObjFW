@@ -324,8 +324,7 @@ int _OFString_PathAdditions_reference;
 		}
 
 		if ([component isEqual: @".."])
-			[components replaceObjectAtIndex: i
-					      withObject: @"/"];
+			[components replaceObjectAtIndex: i withObject: @"/"];
 	}
 
 	return [OFString pathWithComponents: components];

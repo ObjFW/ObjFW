@@ -228,8 +228,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getObjects: (id *)buffer
-	   inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (of_range_t)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self objectAtIndex: range.location + i];
@@ -425,7 +424,7 @@ static struct {
 
 	if (self.count == 1) {
 		OFString *component =
-		    [[self firstObject] performSelector: selector];
+		    [[self objectAtIndex: 0] performSelector: selector];
 
 		if (component == nil)
 			@throw [OFInvalidArgumentException exception];
@@ -870,7 +869,7 @@ static struct {
 	if (count == 0)
 		return nil;
 	if (count == 1)
-		return [[[self firstObject] retain] autorelease];
+		return [[[self objectAtIndex: 0] retain] autorelease];
 
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {

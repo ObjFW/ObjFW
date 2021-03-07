@@ -39,8 +39,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPrefix: (OFString *)prefix
-			parser: (OFXMLParser *)parser
+- (instancetype)initWithPrefix: (OFString *)prefix parser: (OFXMLParser *)parser
 {
 	self = [super init];
 

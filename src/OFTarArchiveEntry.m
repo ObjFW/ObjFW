@@ -342,7 +342,6 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
 	    OF_STRING_ENCODING_ASCII);
 
-	[stream writeBuffer: buffer
-		     length: sizeof(buffer)];
+	[stream writeBuffer: buffer length: sizeof(buffer)];
 }
 @end

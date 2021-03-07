@@ -126,8 +126,7 @@
 }
 
 #ifdef OF_AMIGAOS
-- (bool)waitUntilDate: (OFDate *)date
-	 orExecSignal: (ULONG *)signalMask
+- (bool)waitUntilDate: (OFDate *)date orExecSignal: (ULONG *)signalMask
 {
 	return [self waitForTimeInterval: date.timeIntervalSinceNow
 			    orExecSignal: signalMask];

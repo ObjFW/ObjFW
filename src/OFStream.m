@@ -127,8 +127,7 @@
 	return [self lowlevelIsAtEndOfStream];
 }
 
-- (size_t)readIntoBuffer: (void *)buffer
-		  length: (size_t)length
+- (size_t)readIntoBuffer: (void *)buffer length: (size_t)length
 {
 	if (_readBufferLength == 0) {
 		/*
@@ -617,7 +616,6 @@
 	}
 
 	[data makeImmutable];
-
 	return data;
 }
 

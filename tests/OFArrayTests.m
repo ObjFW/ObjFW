@@ -51,8 +51,7 @@ static OFString *c_ary[] = {
 	return self;
 }
 
-- (instancetype)initWithObject: (id)object
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)object arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -67,8 +66,7 @@ static OFString *c_ary[] = {
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [super init];
 
@@ -108,18 +106,14 @@ static OFString *c_ary[] = {
 		[self inheritMethodsFromClass: [SimpleArray class]];
 }
 
-- (void)insertObject: (id)object
-	     atIndex: (size_t)idx
+- (void)insertObject: (id)object atIndex: (size_t)idx
 {
-	[_array insertObject: object
-		     atIndex: idx];
+	[_array insertObject: object atIndex: idx];
 }
 
-- (void)replaceObjectAtIndex: (size_t)idx
-		  withObject: (id)object
+- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
-	[_array replaceObjectAtIndex: idx
-			  withObject: object];
+	[_array replaceObjectAtIndex: idx withObject: object];
 }
 
 - (void)removeObjectAtIndex: (size_t)idx
@@ -146,8 +140,7 @@ static OFString *c_ary[] = {
 	    (a[0] = [arrayClass arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
 	TEST(@"+[arrayWithObjects:count:]",
-	    (a[1] = [arrayClass arrayWithObjects: c_ary
-					   count: 3]) &&
+	    (a[1] = [arrayClass arrayWithObjects: c_ary count: 3]) &&
 	    [a[1] isEqual: a[0]])
 
 	TEST(@"-[description]",
@@ -156,8 +149,8 @@ static OFString *c_ary[] = {
 	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
 	    R([m[0] addObject: c_ary[2]]))
 
-	TEST(@"-[insertObject:atIndex:]", R([m[0] insertObject: c_ary[1]
-						       atIndex: 1]))
+	TEST(@"-[insertObject:atIndex:]",
+	    R([m[0] insertObject: c_ary[1] atIndex: 1]))
 
 	TEST(@"-[count]", m[0].count == 3 && a[0].count == 3 && a[1].count == 3)
 
@@ -193,22 +186,19 @@ static OFString *c_ary[] = {
 	    [arrayClass arrayWithObjects: c_ary[1], c_ary[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
-	    R([m[0] replaceObject: c_ary[1]
-		       withObject: c_ary[0]]) &&
+	    R([m[0] replaceObject: c_ary[1] withObject: c_ary[0]]) &&
 	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[replaceObject:identicalTo:]",
-	    R([m[0] replaceObjectIdenticalTo: c_ary[0]
-				  withObject: c_ary[1]]) &&
+	    R([m[0] replaceObjectIdenticalTo: c_ary[0] withObject: c_ary[1]]) &&
 	    [[m[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
 	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[replaceObjectAtIndex:withObject:]",
-	    R([m[0] replaceObjectAtIndex: 0
-			      withObject: c_ary[0]]) &&
+	    R([m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]]) &&
 	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
@@ -282,8 +272,7 @@ static OFString *c_ary[] = {
 	while ((obj = [enumerator nextObject]) != nil) {
 		if (![obj isEqual: c_ary[i]])
 			ok = false;
-		[m[0] replaceObjectAtIndex: i
-				withObject: @""];
+		[m[0] replaceObjectAtIndex: i withObject: @""];
 		i++;
 	}
 
@@ -304,8 +293,7 @@ static OFString *c_ary[] = {
 	for (OFString *s in m[0]) {
 		if (![s isEqual: c_ary[i]])
 			ok = false;
-		[m[0] replaceObjectAtIndex: i
-				withObject: @""];
+		[m[0] replaceObjectAtIndex: i withObject: @""];
 		i++;
 	}
 
@@ -314,12 +302,9 @@ static OFString *c_ary[] = {
 
 	TEST(@"Fast Enumeration", ok)
 
-	[m[0] replaceObjectAtIndex: 0
-			withObject: c_ary[0]];
-	[m[0] replaceObjectAtIndex: 1
-			withObject: c_ary[1]];
-	[m[0] replaceObjectAtIndex: 2
-			withObject: c_ary[2]];
+	[m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]];
+	[m[0] replaceObjectAtIndex: 1 withObject: c_ary[1]];
+	[m[0] replaceObjectAtIndex: 2 withObject: c_ary[2]];
 
 	ok = false;
 	i = 0;

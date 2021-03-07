@@ -88,19 +88,15 @@ extern void of_invocation_invoke(OFInvocation *);
 	[super dealloc];
 }
 
-- (void)setArgument: (const void *)buffer
-	    atIndex: (size_t)idx
+- (void)setArgument: (const void *)buffer atIndex: (size_t)idx
 {
 	OFMutableData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(data.mutableItems, buffer, data.itemSize);
 }
 
-- (void)getArgument: (void *)buffer
-	    atIndex: (size_t)idx
+- (void)getArgument: (void *)buffer atIndex: (size_t)idx
 {
 	OFData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(buffer, data.items, data.itemSize);
 }
 

@@ -67,8 +67,7 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 -    (void)parser: (OFXMLParser *)parser
@@ -136,8 +135,7 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate  elementBuilder: self
-		    didBuildParentlessNode: node];
+		[_delegate  elementBuilder: self didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
@@ -150,8 +148,7 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
@@ -164,8 +161,7 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 -      (OFString *)parser: (OFXMLParser *)parser

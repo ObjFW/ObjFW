@@ -718,8 +718,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 			port = URLPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: URL.host
-				    port: port];
+		[sock asyncConnectToHost: URL.host port: port];
 	} @catch (id e) {
 		[self raiseException: e];
 	}
@@ -800,8 +799,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	else if (length > _toWrite)
 		length = (size_t)_toWrite;
 
-	ret = [_socket writeBuffer: buffer
-			    length: length];
+	ret = [_socket writeBuffer: buffer length: length];
 	if (_chunked)
 		[_socket writeString: @"\r\n"];
 
@@ -905,8 +903,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	}
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -915,8 +912,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		return 0;
 
 	if (!_hasContentLength && !_chunked)
-		return [_socket readIntoBuffer: buffer
-					length: length];
+		return [_socket readIntoBuffer: buffer length: length];
 
 	if (_socket.atEndOfStream)
 		@throw [OFTruncatedDataException exception];
@@ -928,9 +924,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
-		ret = [_socket readIntoBuffer: buffer
-				       length: length];
-
+		ret = [_socket readIntoBuffer: buffer length: length];
 		if (ret > length)
 			@throw [OFOutOfRangeException exception];
 
@@ -946,8 +940,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	if (_toRead == -2) {
 		char tmp[2];
 
-		switch ([_socket readIntoBuffer: tmp
-					 length: 2]) {
+		switch ([_socket readIntoBuffer: tmp length: 2]) {
 		case 2:
 			_toRead++;
 			if (tmp[1] != '\n')
@@ -967,8 +960,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	} else if (_toRead == -1) {
 		char tmp;
 
-		if ([_socket readIntoBuffer: &tmp
-				     length: 1] == 1) {
+		if ([_socket readIntoBuffer: &tmp length: 1] == 1) {
 			_toRead++;
 			if (tmp != '\n')
 				@throw [OFInvalidServerReplyException
@@ -983,11 +975,9 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
-		length = [_socket readIntoBuffer: buffer
-					  length: length];
+		length = [_socket readIntoBuffer: buffer length: length];
 
 		_toRead -= length;
-
 		if (_toRead == 0)
 			_toRead = -2;
 
@@ -1115,11 +1105,8 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects
 {
-	[_client asyncPerformRequest: request
-			   redirects: redirects];
-
+	[_client asyncPerformRequest: request redirects: redirects];
 	[[OFRunLoop currentRunLoop] run];
-
 	return _response;
 }
 
@@ -1221,8 +1208,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 {
-	return [self performRequest: request
-			  redirects: REDIRECTS_DEFAULT];
+	return [self performRequest: request redirects: REDIRECTS_DEFAULT];
 }
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
@@ -1244,8 +1230,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 {
-	[self asyncPerformRequest: request
-			redirects: REDIRECTS_DEFAULT];
+	[self asyncPerformRequest: request redirects: REDIRECTS_DEFAULT];
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request

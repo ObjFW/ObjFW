@@ -25,8 +25,7 @@ static OFString *module = @"OFThread";
 @implementation TestThread
 - (id)main
 {
-	[[OFThread threadDictionary] setObject: @"bar"
-					forKey: @"foo"];
+	[[OFThread threadDictionary] setObject: @"bar" forKey: @"foo"];
 
 	return @"success";
 }

@@ -138,7 +138,6 @@ isWhitespaceLine(OFString *line)
 
 			categoryName = [line substringWithRange:
 			    of_range(1, line.length - 2)];
-
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];
@@ -158,8 +157,7 @@ isWhitespaceLine(OFString *line)
 	[self writeToFile: path encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path mode: @"w"];

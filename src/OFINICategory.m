@@ -479,9 +479,7 @@ unescapeString(OFString *string)
 			OFString *value = escapeString(pair->_value);
 			OFString *tmp = [OFString
 			    stringWithFormat: @"%@=%@\r\n", key, value];
-
-			[stream writeString: tmp
-				   encoding: encoding];
+			[stream writeString: tmp encoding: encoding];
 		} else
 			@throw [OFInvalidArgumentException exception];
 	}

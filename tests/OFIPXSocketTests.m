@@ -33,8 +33,7 @@ static OFString *module = @"OFIPXSocket";
 
 	@try {
 		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0
-				       packetType: 0]))
+		    R(address1 = [sock bindToPort: 0 packetType: 0]))
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
@@ -58,14 +57,10 @@ static OFString *module = @"OFIPXSocket";
 	}
 
 	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello"
-			length: 5
-		      receiver: &address1]))
+	    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
 
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buffer
-			     length: 5
-			     sender: &address2] == 5 &&
+	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
 	    of_socket_address_equal(&address1, &address2) &&
 	    of_socket_address_hash(&address1) ==

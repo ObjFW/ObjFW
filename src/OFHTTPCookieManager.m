@@ -53,8 +53,7 @@
 	return [[_cookies copy] autorelease];
 }
 
-- (void)addCookie: (OFHTTPCookie *)cookie
-	   forURL: (OFURL *)URL
+- (void)addCookie: (OFHTTPCookie *)cookie forURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *cookieDomain, *URLHost;
@@ -87,9 +86,7 @@
 		if ([iter.name isEqual: cookie.name] &&
 		    [iter.domain isEqual: cookie.domain] &&
 		    [iter.path isEqual: cookie.path]) {
-			[_cookies replaceObjectAtIndex: i
-					    withObject: cookie];
-
+			[_cookies replaceObjectAtIndex: i withObject: cookie];
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
@@ -106,8 +103,7 @@
 	    forURL: (OFURL *)URL
 {
 	for (OFHTTPCookie *cookie in cookies)
-		[self addCookie: cookie
-			 forURL: URL];
+		[self addCookie: cookie forURL: URL];
 }
 
 - (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURL: (OFURL *)URL

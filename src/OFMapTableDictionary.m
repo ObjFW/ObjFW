@@ -181,8 +181,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -354,8 +353,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: keys
-					  count: count];
+		ret = [OFArray arrayWithObjects: keys count: count];
 	} @finally {
 		free(keys);
 	}
@@ -388,8 +386,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: objects
-					  count: count];
+		ret = [OFArray arrayWithObjects: objects count: count];
 	} @finally {
 		free(objects);
 	}

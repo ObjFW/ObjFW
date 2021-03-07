@@ -85,8 +85,9 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 #endif
 
 static bool
-evaluateCondition(OFString *condition, OFDictionary *variables)
+evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
+	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -98,12 +99,9 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 	 * before ")".
 	 * TODO: Replace with a proper tokenizer.
 	 */
-	condition = [condition stringByReplacingOccurrencesOfString: @"!"
-							 withString: @"! "];
-	condition = [condition stringByReplacingOccurrencesOfString: @"("
-							 withString: @"( "];
-	condition = [condition stringByReplacingOccurrencesOfString: @")"
-							 withString: @" )"];
+	[condition replaceOccurrencesOfString: @"!" withString: @"! "];
+	[condition replaceOccurrencesOfString: @"(" withString: @"( "];
+	[condition replaceOccurrencesOfString: @")" withString: @" )"];
 
 	/* Substitute variables and convert to RPN first */
 	tokens = [OFMutableArray array];

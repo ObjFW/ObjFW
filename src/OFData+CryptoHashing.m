@@ -38,8 +38,7 @@ int _OFData_CryptoHashing_reference;
 	const unsigned char *digest;
 	char cString[digestSize * 2];
 
-	[hash updateWithBuffer: _items
-			length: _count * _itemSize];
+	[hash updateWithBuffer: _items length: _count * _itemSize];
 	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {

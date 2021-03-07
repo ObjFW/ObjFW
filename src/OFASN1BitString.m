@@ -140,10 +140,8 @@
 
 	data = [OFMutableData
 	    dataWithCapacity: sizeof(header) + bitStringValueCount];
-	[data addItems: header
-		 count: sizeof(header)];
-	[data addItems: [_bitStringValue items]
-		 count: bitStringValueCount];
+	[data addItems: header count: sizeof(header)];
+	[data addItems: [_bitStringValue items] count: bitStringValueCount];
 
 	[data makeImmutable];
 

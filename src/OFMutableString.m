@@ -233,7 +233,7 @@ static struct {
 - (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
 		     wordMiddleTable: (const of_unichar_t *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
-		 wordMiddleTableSize: (size_t)middleTableSize OF_DIRECT
+		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = self.characters;
@@ -254,8 +254,7 @@ static struct {
 		}
 
 		if (c >> 8 < tableSize && table[c >> 8][c & 0xFF])
-			[self setCharacter: table[c >> 8][c & 0xFF]
-				   atIndex: i];
+			[self setCharacter: table[c >> 8][c & 0xFF] atIndex: i];
 
 		isStart = of_ascii_isspace(c);
 	}
@@ -263,9 +262,9 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 #else
-- (void)of_convertWithWordStartFunction: (char (*)(char))startFunction
-		     wordMiddleFunction: (char (*)(char))middleFunction
-    OF_DIRECT
+static void
+convert(OFMutableString *self, char (*startFunction)(char),
+    char (*middleFunction)(char))
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = self.characters;
@@ -278,8 +277,7 @@ static struct {
 		of_unichar_t c = characters[i];
 
 		if (c <= 0x7F)
-			[self setCharacter: (int)function(c)
-				   atIndex: i];
+			[self setCharacter: (int)function(c) atIndex: i];
 
 		isStart = of_ascii_isspace(c);
 	}
@@ -288,44 +286,33 @@ static struct {
 }
 #endif
 
-- (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)idx
+- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)idx
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *string;
-
-	string = [OFString stringWithCharacters: &character
-					 length: 1];
-
-	[self replaceCharactersInRange: of_range(idx, 1)
-			    withString: string];
-
+	OFString *string =
+	    [OFString stringWithCharacters: &character length: 1];
+	[self replaceCharactersInRange: of_range(idx, 1) withString: string];
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendString: (OFString *)string
 {
-	[self insertString: string
-		   atIndex: self.length];
+	[self insertString: string atIndex: self.length];
 }
 
 - (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCharacters: characters
 						    length: length]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendUTF8String: (const char *)UTF8String
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithUTF8String: UTF8String]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -333,10 +320,8 @@ static struct {
 		  length: (size_t)UTF8StringLength
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithUTF8String: UTF8String
 						    length: UTF8StringLength]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -344,10 +329,8 @@ static struct {
 	     encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -356,11 +339,9 @@ static struct {
 	       length: (size_t)cStringLength
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding
 						 length: cStringLength]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -374,8 +355,7 @@ static struct {
 	va_end(arguments);
 }
 
-- (void)appendFormat: (OFConstantString *)format
-	   arguments: (va_list)arguments
+- (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -388,8 +368,7 @@ static struct {
 		@throw [OFInvalidFormatException exception];
 
 	@try {
-		[self appendUTF8String: UTF8String
-				length: UTF8StringLength];
+		[self appendUTF8String: UTF8String length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}
@@ -397,8 +376,7 @@ static struct {
 
 - (void)prependString: (OFString *)string
 {
-	[self insertString: string
-		   atIndex: 0];
+	[self insertString: string atIndex: 0];
 }
 
 - (void)reverse
@@ -407,10 +385,8 @@ static struct {
 
 	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
 		of_unichar_t tmp = [self characterAtIndex: j];
-		[self setCharacter: [self characterAtIndex: i]
-			   atIndex: j];
-		[self setCharacter: tmp
-			   atIndex: i];
+		[self setCharacter: [self characterAtIndex: i] atIndex: j];
+		[self setCharacter: tmp atIndex: i];
 	}
 }
 
@@ -441,34 +417,28 @@ static struct {
 #else
 - (void)uppercase
 {
-	[self of_convertWithWordStartFunction: of_ascii_toupper
-			   wordMiddleFunction: of_ascii_toupper];
+	convert(self, of_ascii_toupper, of_ascii_toupper);
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartFunction: of_ascii_tolower
-			   wordMiddleFunction: of_ascii_tolower];
+	convert(self, of_ascii_tolower, of_ascii_tolower);
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartFunction: of_ascii_toupper
-			   wordMiddleFunction: of_ascii_tolower];
+	convert(self, of_ascii_toupper, of_ascii_tolower);
 }
 #endif
 
-- (void)insertString: (OFString *)string
-	     atIndex: (size_t)idx
+- (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: of_range(idx, 0)
-			    withString: string];
+	[self replaceCharactersInRange: of_range(idx, 0) withString: string];
 }
 
 - (void)deleteCharactersInRange: (of_range_t)range
 {
-	[self replaceCharactersInRange: range
-			    withString: @""];
+	[self replaceCharactersInRange: range withString: @""];
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range

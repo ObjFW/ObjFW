@@ -59,8 +59,7 @@ static OFString *PLIST3 = PLIST(
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *array = [OFArray arrayWithObjects:
 	    @"Hello",
-	    [OFData dataWithItems: "World!"
-			    count: 6],
+	    [OFData dataWithItems: "World!" count: 6],
 	    [OFDate dateWithTimeIntervalSince1970: 1521030896],
 	    [OFNumber numberWithBool: true],
 	    [OFNumber numberWithBool: false],

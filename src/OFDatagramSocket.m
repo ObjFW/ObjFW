@@ -217,8 +217,7 @@
 	return ret;
 }
 
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length

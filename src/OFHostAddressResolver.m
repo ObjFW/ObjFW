@@ -351,20 +351,16 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	[self asyncResolve];
 
 	while (!delegate->_done)
-		[runLoop runMode: resolveRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: resolveRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: resolveRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: resolveRunLoopMode beforeDate: [OFDate date]];
 
 	if (delegate->_exception != nil)
 		@throw delegate->_exception;
 
 	ret = [delegate->_addresses copy];
-
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 @end

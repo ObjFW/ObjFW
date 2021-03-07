@@ -122,23 +122,18 @@ static OFString *module = @"OFSPXStreamSocket";
 	TEST(@"-[listen]", R([sockServer listen]))
 
 	TEST(@"-[connectToNode:network:port:]",
-	    R([sockClient connectToNode: node
-				network: network
-				   port: port]))
+	    R([sockClient connectToNode: node network: network port: port]))
 
 	TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
 
 	/* Test reassembly (this would not work with OFSPXSocket) */
 	TEST(@"-[writeBuffer:length:]",
-	    R([sockAccepted writeBuffer: "Hello"
-				 length: 5]))
+	    R([sockAccepted writeBuffer: "Hello" length: 5]))
 
 	TEST(@"-[readIntoBuffer:length:]",
-	    [sockClient readIntoBuffer: buffer
-				length: 2] == 2 &&
+	    [sockClient readIntoBuffer: buffer length: 2] == 2 &&
 	    memcmp(buffer, "He", 2) == 0 &&
-	    [sockClient readIntoBuffer: buffer
-				length: 3] == 3 &&
+	    [sockClient readIntoBuffer: buffer length: 3] == 3 &&
 	    memcmp(buffer, "llo", 3) == 0)
 
 	TEST(@"-[remoteAddress]",
