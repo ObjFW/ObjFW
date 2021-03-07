@@ -114,8 +114,7 @@ OF_SUBCLASSING_RESTRICTED
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
  */
-- (bool)waitUntilDate: (OFDate *)date
-	 orExecSignal: (ULONG *)signalMask;
+- (bool)waitUntilDate: (OFDate *)date orExecSignal: (ULONG *)signalMask;
 #endif
 
 /**

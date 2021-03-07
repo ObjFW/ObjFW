@@ -98,8 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
  */
-- (void)updateWithBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Resets all state so that a new hash can be calculated.

@@ -170,8 +170,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
  */
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length;
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified

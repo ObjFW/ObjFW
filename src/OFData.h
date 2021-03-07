@@ -94,8 +94,7 @@ enum {
  * @param count The number of items
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count;
++ (instancetype)dataWithItems: (const void *)items count: (size_t)count;
 
 /**
  * @brief Creates a new OFData with the specified `count` items of the
@@ -186,8 +185,7 @@ enum {
  * @param count The number of items
  * @return An initialized OFData
  */
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count;
+- (instancetype)initWithItems: (const void *)items count: (size_t)count;
 
 /**
  * @brief Initialized an already allocated OFData with the specified `count`

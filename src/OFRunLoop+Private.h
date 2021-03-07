@@ -128,8 +128,7 @@ OF_DIRECT_MEMBERS
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode;
 #endif
-- (void)of_removeTimer: (OFTimer *)timer
-	       forMode: (of_run_loop_mode_t)mode;
+- (void)of_removeTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode;
 @end
 
 OF_ASSUME_NONNULL_END

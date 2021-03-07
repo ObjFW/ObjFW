@@ -33,8 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param character The character to set
  * @param index The index where to set the character
  */
-- (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)index;
+- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)index;
 
 /**
  * @brief Appends another OFString to the OFMutableString.
@@ -111,8 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string
  */
-- (void)appendFormat: (OFConstantString *)format
-	   arguments: (va_list)arguments;
+- (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
 /**
  * @brief Prepends another OFString to the OFMutableString.
@@ -151,8 +149,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to insert
  * @param index The index
  */
-- (void)insertString: (OFString *)string
-	     atIndex: (size_t)index;
+- (void)insertString: (OFString *)string atIndex: (size_t)index;
 
 /**
  * @brief Deletes the characters at the specified range.

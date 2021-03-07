@@ -52,8 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param data The data for the extension
  * @return A new, autoreleased OFMessagePackRepresentation
  */
-+ (instancetype)extensionWithType: (int8_t)type
-			     data: (OFData *)data;
++ (instancetype)extensionWithType: (int8_t)type data: (OFData *)data;
 
 - (instancetype)init OF_UNAVAILABLE;
 

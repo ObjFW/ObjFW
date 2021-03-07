@@ -51,8 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the class was successfully registered. If a handler for the
  *	   same scheme is already registered, registration fails.
  */
-+ (bool)registerClass: (Class)class_
-	    forScheme: (OFString *)scheme;
++ (bool)registerClass: (Class)class_ forScheme: (OFString *)scheme;
 
 /**
  * @brief Returns the handler for the specified URL.
@@ -92,8 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       The handler is allowed to not implement all modes and is also
  *	       allowed to implement additional, scheme-specific modes.
  */
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode;
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Returns the attributes for the item at the specified URL.
@@ -168,8 +166,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
  */
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 /**
  * @brief Creates a symbolic link for an item.
@@ -205,8 +202,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   was not possible. Note that errors while performing a copy are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (bool)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 /**
  * @brief Tries to efficiently move an item. If a move would only be possible
@@ -224,8 +220,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   was not possible. Note that errors while performing a move are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 @end
 
 OF_ASSUME_NONNULL_END

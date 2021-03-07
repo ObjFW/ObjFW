@@ -72,8 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

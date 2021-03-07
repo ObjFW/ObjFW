@@ -93,8 +93,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key for the HMAC
  * @param length The length of the key for the HMAC
  */
-- (void)setKey: (const void *)key
-	length: (size_t)length;
+- (void)setKey: (const void *)key length: (size_t)length;
 
 /**
  * @brief Adds a buffer to the HMAC to be calculated.
@@ -102,8 +101,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
  */
-- (void)updateWithBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Resets the HMAC so that it can be calculated for a new message.

@@ -51,8 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased sandboxing failed exception
  */
-+ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox
-			       errNo: (int)errNo;
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 

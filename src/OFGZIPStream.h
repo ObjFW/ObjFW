@@ -105,8 +105,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       and "w" for writing.
  * @return A new, autoreleased OFGZIPStream
  */
-+ (instancetype)streamWithStream: (OFStream *)stream
-			    mode: (OFString *)mode;
++ (instancetype)streamWithStream: (OFStream *)stream mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 

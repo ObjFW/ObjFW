@@ -76,8 +76,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithStream: (OFStream *)stream
-			     mode: (OFString *)mode;
++ (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -89,8 +88,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path
-			   mode: (OFString *)mode;
++ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -120,8 +118,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
 #endif
 
 /**

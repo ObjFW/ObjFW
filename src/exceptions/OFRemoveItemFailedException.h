@@ -50,8 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithURL: (OFURL *)URL
-			   errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 

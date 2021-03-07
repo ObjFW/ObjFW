@@ -232,8 +232,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is set
  */
-- (void)setPrefix: (OFString *)prefix
-     forNamespace: (OFString *)namespace_;
+- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
 
 /**
  * @brief Binds a prefix for a namespace.
@@ -241,8 +240,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is bound
  */
-- (void)bindPrefix: (OFString *)prefix
-      forNamespace: (OFString *)namespace_;
+- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
 
 /**
  * @brief Adds the specified attribute.
@@ -328,8 +326,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child An OFXMLNode which is added as a child
  * @param index The index where the child is added
  */
-- (void)insertChild: (OFXMLNode *)child
-	    atIndex: (size_t)index;
+- (void)insertChild: (OFXMLNode *)child atIndex: (size_t)index;
 
 /**
  * @brief Inserts the specified children at the specified index.
@@ -361,8 +358,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child The child to replace
  * @param node The node to replace the child with
  */
-- (void)replaceChild: (OFXMLNode *)child
-	    withNode: (OFXMLNode *)node;
+- (void)replaceChild: (OFXMLNode *)child withNode: (OFXMLNode *)node;
 
 /**
  * @brief Replaces the child at the specified index with the specified node.
@@ -370,8 +366,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index of the child to replace
  * @param node The node to replace the child with
  */
-- (void)replaceChildAtIndex: (size_t)index
-		   withNode: (OFXMLNode *)node;
+- (void)replaceChildAtIndex: (size_t)index withNode: (OFXMLNode *)node;
 
 /**
  * @brief Returns all children that have the specified namespace.

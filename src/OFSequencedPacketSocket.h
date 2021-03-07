@@ -178,8 +178,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param length The length of the buffer
  * @return The length of the received packet
  */
-- (size_t)receiveIntoBuffer: (void *)buffer
-		     length: (size_t)length;
+- (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
@@ -190,8 +189,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
  */
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length;
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
@@ -257,8 +255,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param buffer The buffer to send as a packet
  * @param length The length of the buffer
  */
-- (void)sendBuffer: (const void *)buffer
-	    length: (size_t)length;
+- (void)sendBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously sends the specified packet.

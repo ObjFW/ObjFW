@@ -260,8 +260,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
  *		      c          | Make the path available for creation and
  *		                 | deletion, like @ref allowsCreatingFiles
  */
-- (void)unveilPath: (OFString *)path
-       permissions: (OFString *)permissions;
+- (void)unveilPath: (OFString *)path permissions: (OFString *)permissions;
 @end
 
 OF_ASSUME_NONNULL_END

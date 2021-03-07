@@ -189,8 +189,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL An URL to which the string is relative
  * @return A new, autoreleased OFURL
  */
-+ (instancetype)URLWithString: (OFString *)string
-		relativeToURL: (OFURL *)URL;
++ (instancetype)URLWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -232,8 +231,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL A URL to which the string is relative
  * @return An initialized OFURL
  */
-- (instancetype)initWithString: (OFString *)string
-		 relativeToURL: (OFURL *)URL;
+- (instancetype)initWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**

@@ -61,8 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 /**
  * @brief Set the value for the specified key path.
@@ -70,8 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param value The value for the specified key path
  * @param keyPath The key path of the value to set
  */
-- (void)setValue: (nullable id)value
-      forKeyPath: (OFString *)keyPath;
+- (void)setValue: (nullable id)value forKeyPath: (OFString *)keyPath;
 
 /**
  * @brief This is called by @ref setValue:forKey: if the specified key does not
@@ -82,8 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param value The value for the specified undefined key
  * @param key The undefined key of the value to set
  */
--  (void)setValue: (nullable id)value
-  forUndefinedKey: (OFString *)key;
+-  (void)setValue: (nullable id)value forUndefinedKey: (OFString *)key;
 
 /**
  * @brief This is called by @ref setValue:forKey: if the specified key is a

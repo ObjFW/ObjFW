@@ -53,8 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change current directory path failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithPath: (OFString *)path errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 

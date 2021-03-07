@@ -86,8 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param capacity The initial capacity for the OFMutableData
  * @return A new autoreleased OFMutableData
  */
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity;
++ (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity;
 
 /**
  * @brief Initializes an already allocated OFMutableData with an item size of 1.
@@ -124,8 +123,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param capacity The initial capacity for the OFMutableData
  * @return An initialized OFMutableData
  */
-- (instancetype)initWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity;
+- (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity;
 
 /**
  * @brief Returns a specific item of the OFMutableData.
@@ -151,8 +149,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param item A pointer to an arbitrary item
  * @param index The index where the item should be added
  */
-- (void)insertItem: (const void *)item
-	   atIndex: (size_t)index;
+- (void)insertItem: (const void *)item atIndex: (size_t)index;
 
 /**
  * @brief Adds items from a C array to the OFMutableData.
@@ -160,8 +157,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param items A C array containing the items to add
  * @param count The number of items to add
  */
-- (void)addItems: (const void *)items
-	   count: (size_t)count;
+- (void)addItems: (const void *)items count: (size_t)count;
 
 /**
  * @brief Adds items from a C array to the OFMutableData at the specified index.

@@ -90,8 +90,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  */
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port;
+- (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
@@ -99,8 +98,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  */
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port;
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
@@ -148,8 +146,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

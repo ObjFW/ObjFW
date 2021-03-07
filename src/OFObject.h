@@ -401,8 +401,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  *		 selector
  * @return The object returned by the method specified by the selector
  */
-- (nullable id)performSelector: (SEL)selector
-		    withObject: (nullable id)object;
+- (nullable id)performSelector: (SEL)selector withObject: (nullable id)object;
 
 /**
  * @brief Performs the specified selector with the specified objects.
@@ -819,8 +818,7 @@ OF_ROOT_CLASS
  * @param selector The selector to perform
  * @param delay The delay after which the selector will be performed
  */
-- (void)performSelector: (SEL)selector
-	     afterDelay: (of_time_interval_t)delay;
+- (void)performSelector: (SEL)selector afterDelay: (of_time_interval_t)delay;
 
 /**
  * @brief Performs the specified selector with the specified object after the

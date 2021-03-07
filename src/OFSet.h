@@ -239,8 +239,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 #ifdef OF_HAVE_BLOCKS
 /**
