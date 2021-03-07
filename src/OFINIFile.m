@@ -29,8 +29,7 @@
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseFile: (OFString *)path
-	    encoding: (of_string_encoding_t)encoding;
+- (void)of_parseFile: (OFString *)path encoding: (of_string_encoding_t)encoding;
 @end
 
 static bool
@@ -66,8 +65,7 @@ isWhitespaceLine(OFString *line)
 
 - (instancetype)initWithPath: (OFString *)path
 {
-	return [self initWithPath: path
-			 encoding: OF_STRING_ENCODING_UTF_8];
+	return [self initWithPath: path encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (instancetype)initWithPath: (OFString *)path
@@ -78,8 +76,7 @@ isWhitespaceLine(OFString *line)
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self of_parseFile: path
-			  encoding: encoding];
+		[self of_parseFile: path encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -112,8 +109,7 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)of_parseFile: (OFString *)path
-	    encoding: (of_string_encoding_t)encoding
+- (void)of_parseFile: (OFString *)path encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;
@@ -121,8 +117,7 @@ isWhitespaceLine(OFString *line)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -160,16 +155,14 @@ isWhitespaceLine(OFString *line)
 
 - (void)writeToFile: (OFString *)path
 {
-	[self writeToFile: path
-		 encoding: OF_STRING_ENCODING_UTF_8];
+	[self writeToFile: path encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"w"];
+	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)

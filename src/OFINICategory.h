@@ -41,95 +41,92 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
- * @brief Returns the string value for the specified key, or `nil` if it does
- *	  not exist.
+ * @brief Returns the string for the specified key, or `nil` if it does not
+ *	  exist.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is returned.
  *
- * @param key The key for which the string value should be returned
- * @return The string value for the specified key, or `nil` if it does not exist
+ * @param key The key for which the string should be returned
+ * @return The string for the specified key, or `nil` if it does not exist
  */
-- (nullable OFString *)stringValueForKey: (OFString *)key;
+- (nullable OFString *)stringForKey: (OFString *)key;
 
 /**
- * @brief Returns the string value for the specified key or the specified
- *	  default value if it does not exist.
- *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
- * of the first key/value pair found is returned.
- *
- * @param key The key for which the string value should be returned
- * @param defaultValue The value to return if the key does not exist
- * @return The string value for the specified key or the specified default
- *	   value if it does not exist
- */
-- (nullable OFString *)stringValueForKey: (OFString *)key
-			    defaultValue: (nullable OFString *)defaultValue;
-
-/**
- * @brief Returns the long long value for the specified key or the specified
- *	  default value if it does not exist.
- *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
- * of the first key/value pair found is returned.
- *
- * @param key The key for which the long long value should be returned
- * @param defaultValue The value to return if the key does not exist
- * @return The long long value for the specified key or the specified default
- *	   value if it does not exist
- */
-- (long long)longLongValueForKey: (OFString *)key
-		    defaultValue: (long long)defaultValue;
-
-/**
- * @brief Returns the bool value for the specified key or the specified default
+ * @brief Returns the string for the specified key or the specified default
  *	  value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is returned.
  *
- * @param key The key for which the bool value should be returned
+ * @param key The key for which the string should be returned
  * @param defaultValue The value to return if the key does not exist
- * @return The bool value for the specified key or the specified default value
+ * @return The string for the specified key or the specified default value if
+ *	   it does not exist
+ */
+- (nullable OFString *)stringForKey: (OFString *)key
+		       defaultValue: (nullable OFString *)defaultValue;
+
+/**
+ * @brief Returns the long long for the specified key or the specified default
+ *	  value if it does not exist.
+ *
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
+ * of the first key/value pair found is returned.
+ *
+ * @param key The key for which the long long should be returned
+ * @param defaultValue The value to return if the key does not exist
+ * @return The long long for the specified key or the specified default value
  *	   if it does not exist
  */
-- (bool)boolValueForKey: (OFString *)key
-	   defaultValue: (bool)defaultValue;
+- (long long)longLongForKey: (OFString *)key
+	       defaultValue: (long long)defaultValue;
 
 /**
- * @brief Returns the float value for the specified key or the specified
- *	  default value if it does not exist.
+ * @brief Returns the bool for the specified key or the specified default value
+ *	  if it does not exist.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is returned.
  *
- * @param key The key for which the float value should be returned
+ * @param key The key for which the bool should be returned
  * @param defaultValue The value to return if the key does not exist
- * @return The float value for the specified key or the specified default value
- *	   if it does not exist
+ * @return The bool for the specified key or the specified default value if it
+ *	   does not exist
  */
-- (float)floatValueForKey: (OFString *)key
-	     defaultValue: (float)defaultValue;
+- (bool)boolForKey: (OFString *)key defaultValue: (bool)defaultValue;
 
 /**
- * @brief Returns the double value for the specified key or the specified
- *	  default value if it does not exist.
+ * @brief Returns the float for the specified key or the specified default
+ *	  value if it does not exist.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is returned.
  *
- * @param key The key for which the double value should be returned
+ * @param key The key for which the float should be returned
  * @param defaultValue The value to return if the key does not exist
- * @return The double value for the specified key or the specified default
- *	   value if it does not exist
+ * @return The float for the specified key or the specified default value if it
+ *	   does not exist
  */
-- (double)doubleValueForKey: (OFString *)key
-	       defaultValue: (double)defaultValue;
+- (float)floatForKey: (OFString *)key defaultValue: (float)defaultValue;
 
 /**
- * @brief Returns an array of string values for the specified multi-key, or an
- *	  empty array if the key does not exist.
+ * @brief Returns the double for the specified key or the specified default
+ *	  value if it does not exist.
+ *
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
+ * of the first key/value pair found is returned.
+ *
+ * @param key The key for which the double should be returned
+ * @param defaultValue The value to return if the key does not exist
+ * @return The double for the specified key or the specified default value if
+ *	   it does not exist
+ */
+- (double)doubleForKey: (OFString *)key defaultValue: (double)defaultValue;
+
+/**
+ * @brief Returns an array of strings for the specified multi-key, or an empty
+ *	  array if the key does not exist.
  *
  * A multi-key is a key which exists several times in the same category. Each
  * occurrence of the key/value pair adds the respective value to the array.
@@ -138,7 +135,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return The array for the specified key, or an empty array if it does not
  *	   exist
  */
-- (OFArray OF_GENERIC(OFString *) *)stringValuesForKey: (OFString *)key;
+- (OFArray OF_GENERIC(OFString *) *)stringArrayForKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified string.
@@ -146,11 +143,10 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref stringValuesForKey:), the
  * value of the first key/value pair found is changed.
  *
- * @param stringValue The string value to which the key should be set
+ * @param string The string to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setStringValue: (OFString *)stringValue
-		forKey: (OFString *)key;
+- (void)setString: (OFString *)string forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified long long.
@@ -158,11 +154,10 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
  * of the first key/value pair found is changed.
  *
- * @param longLongValue The long long value to which the key should be set
+ * @param longLong The long long to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setLongLongValue: (long long)longLongValue
-		  forKey: (OFString *)key;
+- (void)setLongLong: (long long)longLong forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified bool.
@@ -170,11 +165,10 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref stringValuesForKey:), the
  * value of the first key/value pair found is changed.
  *
- * @param boolValue The bool value to which the key should be set
+ * @param bool_ The bool to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setBoolValue: (bool)boolValue
-	      forKey: (OFString *)key;
+- (void)setBool: (bool)bool_ forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified float.
@@ -182,11 +176,10 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref stringValuesForKey:), the
  * value of the first key/value pair found is changed.
  *
- * @param floatValue The float value to which the key should be set
+ * @param float_ The float to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setFloatValue: (float)floatValue
-	       forKey: (OFString *)key;
+- (void)setFloat: (float)float_ forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified double.
@@ -194,11 +187,10 @@ OF_SUBCLASSING_RESTRICTED
  * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
  * of the first key/value pair found is changed.
  *
- * @param doubleValue The double value to which the key should be set
+ * @param double_ The double to which the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setDoubleValue: (double)doubleValue
-		forKey: (OFString *)key;
+- (void)setDouble: (double)double_ forKey: (OFString *)key;
 
 /**
  * @brief Sets the specified multi-key to the specified array of strings.
@@ -207,13 +199,13 @@ OF_SUBCLASSING_RESTRICTED
  * pairs and removes all following occurrences. If the multi-key does not exist
  * yet, it is appended to the section.
  *
- * See also @ref stringValuesForKey: for more information about multi-keys.
+ * See also @ref stringArrayForKey: for more information about multi-keys.
  *
- * @param stringValues The array of strings to which the multi-key should be set
+ * @param array The array of strings to which the multi-key should be set
  * @param key The multi-key for which the new values should be set
  */
-- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
-		 forKey: (OFString *)key;
+- (void)setStringArray: (OFArray OF_GENERIC(OFString *) *)array
+		forKey: (OFString *)key;
 
 /**
  * @brief Removes the value for the specified key

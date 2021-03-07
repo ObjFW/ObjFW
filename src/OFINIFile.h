@@ -103,8 +103,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding;
+- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

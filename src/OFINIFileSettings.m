@@ -69,212 +69,160 @@
 	*key = [path substringFromIndex: pos + 1];
 }
 
-- (void)setStringValue: (OFString *)string
+- (void)setString: (OFString *)string forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *category, *key;
+
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setString: string forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setLongLong: (long long)longLong forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *category, *key;
+
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setLongLong: longLong
+						   forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setBool: (bool)bool_ forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *category, *key;
+
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setBool: bool_ forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setFloat: (float)float_ forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *category, *key;
+
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setFloat: float_ forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setDouble: (double)double_ forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *category, *key;
+
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setDouble: double_ forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setStringArray: (OFArray OF_GENERIC(OFString *) *)array
 	       forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setStringValue: string
+	[self of_getCategory: &category andKey: &key forPath: path];
+	[[_INIFile categoryForName: category] setStringArray: array
 						      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setLongLongValue: (long long)longLongValue
-		 forPath: (OFString *)path
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *category, *key;
-
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setLongLongValue: longLongValue
-							forKey: key];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setBoolValue: (bool)boolValue
-	     forPath: (OFString *)path
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *category, *key;
-
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setBoolValue: boolValue
-						    forKey: key];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setFloatValue: (float)floatValue
-	      forPath: (OFString *)path
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *category, *key;
-
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setFloatValue: floatValue
-						     forKey: key];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setDoubleValue: (double)doubleValue
-	       forPath: (OFString *)path
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *category, *key;
-
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setDoubleValue: doubleValue
-						      forKey: key];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setStringValues: (OFArray OF_GENERIC(OFString *) *)stringValues
-		forPath: (OFString *)path
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *category, *key;
-
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	[[_INIFile categoryForName: category] setStringValues: stringValues
-						       forKey: key];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (OFString *)stringValueForPath: (OFString *)path
-		    defaultValue: (OFString *)defaultValue
+- (OFString *)stringForPath: (OFString *)path
+	       defaultValue: (OFString *)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key, *ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	ret = [[_INIFile categoryForName: category]
-	    stringValueForKey: key
-		 defaultValue: defaultValue];
+	[self of_getCategory: &category andKey: &key forPath: path];
+	ret = [[_INIFile categoryForName: category] stringForKey: key
+						    defaultValue: defaultValue];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
 	return [ret autorelease];
 }
 
-- (long long)longLongValueForPath: (OFString *)path
-		     defaultValue: (long long)defaultValue
+- (long long)longLongForPath: (OFString *)path
+		defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 	long long ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
+	[self of_getCategory: &category andKey: &key forPath: path];
 	ret = [[_INIFile categoryForName: category]
-	    longLongValueForKey: key
-		   defaultValue: defaultValue];
+	    longLongForKey: key
+	      defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
-- (bool)boolValueForPath: (OFString *)path
-	    defaultValue: (bool)defaultValue
+- (bool)boolForPath: (OFString *)path defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 	bool ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	ret = [[_INIFile categoryForName: category]
-	    boolValueForKey: key
-	       defaultValue: defaultValue];
+	[self of_getCategory: &category andKey: &key forPath: path];
+	ret = [[_INIFile categoryForName: category] boolForKey: key
+						  defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
-- (float)floatValueForPath: (OFString *)path
-	      defaultValue: (float)defaultValue
+- (float)floatForPath: (OFString *)path defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 	float ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	ret = [[_INIFile categoryForName: category]
-	    floatValueForKey: key
-		defaultValue: defaultValue];
+	[self of_getCategory: &category andKey: &key forPath: path];
+	ret = [[_INIFile categoryForName: category] floatForKey: key
+						   defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
-- (double)doubleValueForPath: (OFString *)path
-		defaultValue: (double)defaultValue
+- (double)doubleForPath: (OFString *)path defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 	double ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	ret = [[_INIFile categoryForName: category]
-	    doubleValueForKey: key
-		 defaultValue: defaultValue];
+	[self of_getCategory: &category andKey: &key forPath: path];
+	ret = [[_INIFile categoryForName: category] doubleForKey: key
+						    defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
-- (OFArray OF_GENERIC(OFString *) *)stringValuesForPath: (OFString *)path
+- (OFArray OF_GENERIC(OFString *) *)stringArrayForPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 	OFArray *ret;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
-	ret = [[_INIFile categoryForName: category] stringValuesForKey: key];
+	[self of_getCategory: &category andKey: &key forPath: path];
+	ret = [[_INIFile categoryForName: category] stringArrayForKey: key];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -286,10 +234,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self of_getCategory: &category
-		      andKey: &key
-		     forPath: path];
-
+	[self of_getCategory: &category andKey: &key forPath: path];
 	[[_INIFile categoryForName: category] removeValueForKey: key];
 
 	objc_autoreleasePoolPop(pool);
