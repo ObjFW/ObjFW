@@ -104,14 +104,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -163,8 +161,7 @@
 			}
 		}
 
-		return [self lowlevelReadIntoBuffer: buffer
-					     length: length];
+		return [self lowlevelReadIntoBuffer: buffer length: length];
 	}
 
 	if (length >= _readBufferLength) {
@@ -186,8 +183,7 @@
 	}
 }
 
-- (void)readIntoBuffer: (void *)buffer
-	   exactLength: (size_t)length
+- (void)readIntoBuffer: (void *)buffer exactLength: (size_t)length
 {
 	size_t readLength = 0;
 
@@ -201,8 +197,7 @@
 }
 
 #ifdef OF_HAVE_SOCKETS
-- (void)asyncReadIntoBuffer: (void *)buffer
-		     length: (size_t)length
+- (void)asyncReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
@@ -226,8 +221,7 @@
 				   delegate: _delegate];
 }
 
-- (void)asyncReadIntoBuffer: (void *)buffer
-		exactLength: (size_t)length
+- (void)asyncReadIntoBuffer: (void *)buffer exactLength: (size_t)length
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
@@ -309,65 +303,46 @@
 - (uint8_t)readInt8
 {
 	uint8_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 1];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 1];
 	return ret;
 }
 
 - (uint16_t)readBigEndianInt16
 {
 	uint16_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 2];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 2];
 	return OF_BSWAP16_IF_LE(ret);
 }
 
 - (uint32_t)readBigEndianInt32
 {
 	uint32_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 4];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 4];
 	return OF_BSWAP32_IF_LE(ret);
 }
 
 - (uint64_t)readBigEndianInt64
 {
 	uint64_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 8];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 8];
 	return OF_BSWAP64_IF_LE(ret);
 }
 
 - (float)readBigEndianFloat
 {
 	float ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 4];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 4];
 	return OF_BSWAP_FLOAT_IF_LE(ret);
 }
 
 - (double)readBigEndianDouble
 {
 	double ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 8];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 8];
 	return OF_BSWAP_DOUBLE_IF_LE(ret);
 }
 
-- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer
-				  count: (size_t)count
+- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -376,8 +351,7 @@
 
 	size = count * sizeof(uint16_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -387,8 +361,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer
-				  count: (size_t)count
+- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -397,8 +370,7 @@
 
 	size = count * sizeof(uint32_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -408,8 +380,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer
-				  count: (size_t)count
+- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -418,8 +389,7 @@
 
 	size = count * sizeof(uint64_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -429,8 +399,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
-				  count: (size_t)count
+- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -439,8 +408,7 @@
 
 	size = count * sizeof(float);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -450,8 +418,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
-				   count: (size_t)count
+- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -460,8 +427,7 @@
 
 	size = count * sizeof(double);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -474,50 +440,35 @@
 - (uint16_t)readLittleEndianInt16
 {
 	uint16_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 2];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 2];
 	return OF_BSWAP16_IF_BE(ret);
 }
 
 - (uint32_t)readLittleEndianInt32
 {
 	uint32_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 4];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 4];
 	return OF_BSWAP32_IF_BE(ret);
 }
 
 - (uint64_t)readLittleEndianInt64
 {
 	uint64_t ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 8];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 8];
 	return OF_BSWAP64_IF_BE(ret);
 }
 
 - (float)readLittleEndianFloat
 {
 	float ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 4];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 4];
 	return OF_BSWAP_FLOAT_IF_BE(ret);
 }
 
 - (double)readLittleEndianDouble
 {
 	double ret;
-
-	[self readIntoBuffer: (char *)&ret
-		 exactLength: 8];
-
+	[self readIntoBuffer: (char *)&ret exactLength: 8];
 	return OF_BSWAP_DOUBLE_IF_BE(ret);
 }
 
@@ -531,8 +482,7 @@
 
 	size = count * sizeof(uint16_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -552,8 +502,7 @@
 
 	size = count * sizeof(uint32_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -573,8 +522,7 @@
 
 	size = count * sizeof(uint64_t);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -594,8 +542,7 @@
 
 	size = count * sizeof(float);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -615,8 +562,7 @@
 
 	size = count * sizeof(double);
 
-	[self readIntoBuffer: buffer
-		 exactLength: size];
+	[self readIntoBuffer: buffer exactLength: size];
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
@@ -628,12 +574,10 @@
 
 - (OFData *)readDataWithCount: (size_t)count
 {
-	return [self readDataWithItemSize: 1
-				    count: count];
+	return [self readDataWithItemSize: 1 count: count];
 }
 
-- (OFData *)readDataWithItemSize: (size_t)itemSize
-			   count: (size_t)count
+- (OFData *)readDataWithItemSize: (size_t)itemSize count: (size_t)count
 {
 	OFData *ret;
 	char *buffer;
@@ -643,9 +587,7 @@
 
 	buffer = of_alloc(count, itemSize);
 	@try {
-		[self readIntoBuffer: buffer
-			 exactLength: count * itemSize];
-
+		[self readIntoBuffer: buffer exactLength: count * itemSize];
 		ret = [OFData dataWithItemsNoCopy: buffer
 					    count: count
 					 itemSize: itemSize
@@ -666,12 +608,9 @@
 
 	@try {
 		while (!self.atEndOfStream) {
-			size_t length;
-
-			length = [self readIntoBuffer: buffer
-					       length: pageSize];
-			[data addItems: buffer
-				 count: length];
+			size_t length =
+			    [self readIntoBuffer: buffer length: pageSize];
+			[data addItems: buffer count: length];
 		}
 	} @finally {
 		free(buffer);
@@ -696,11 +635,8 @@
 	buffer[length] = 0;
 
 	@try {
-		[self readIntoBuffer: buffer
-			 exactLength: length];
-
-		ret = [OFString stringWithCString: buffer
-					 encoding: encoding];
+		[self readIntoBuffer: buffer exactLength: length];
+		ret = [OFString stringWithCString: buffer encoding: encoding];
 	} @finally {
 		free(buffer);
 	}
@@ -1127,8 +1063,7 @@
 	if (_writeBuffer == NULL)
 		return;
 
-	[self lowlevelWriteBuffer: _writeBuffer
-			   length: _writeBufferLength];
+	[self lowlevelWriteBuffer: _writeBuffer length: _writeBufferLength];
 
 	free(_writeBuffer);
 	_writeBuffer = NULL;
@@ -1163,8 +1098,7 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncWriteData: (OFData *)data
 {
-	[self asyncWriteData: data
-		 runLoopMode: of_run_loop_mode_default];
+	[self asyncWriteData: data runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncWriteData: (OFData *)data
@@ -1276,52 +1210,40 @@
 
 - (void)writeInt8: (uint8_t)int8
 {
-	[self writeBuffer: (char *)&int8
-		   length: 1];
+	[self writeBuffer: (char *)&int8 length: 1];
 }
 
 - (void)writeBigEndianInt16: (uint16_t)int16
 {
 	int16 = OF_BSWAP16_IF_LE(int16);
-
-	[self writeBuffer: (char *)&int16
-		   length: 2];
+	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeBigEndianInt32: (uint32_t)int32
 {
 	int32 = OF_BSWAP32_IF_LE(int32);
-
-	[self writeBuffer: (char *)&int32
-		   length: 4];
+	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeBigEndianInt64: (uint64_t)int64
 {
 	int64 = OF_BSWAP64_IF_LE(int64);
-
-	[self writeBuffer: (char *)&int64
-		   length: 8];
+	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeBigEndianFloat: (float)float_
 {
 	float_ = OF_BSWAP_FLOAT_IF_LE(float_);
-
-	[self writeBuffer: (char *)&float_
-		   length: 4];
+	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeBigEndianDouble: (double)double_
 {
 	double_ = OF_BSWAP_DOUBLE_IF_LE(double_);
-
-	[self writeBuffer: (char *)&double_
-		   length: 8];
+	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
-			 count: (size_t)count
+- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1331,8 +1253,7 @@
 	size = count * sizeof(uint16_t);
 
 #ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
 
@@ -1340,8 +1261,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1350,8 +1270,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
-			 count: (size_t)count
+- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1361,8 +1280,7 @@
 	size = count * sizeof(uint32_t);
 
 #ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
 
@@ -1370,8 +1288,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1380,8 +1297,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
-			 count: (size_t)count
+- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1391,8 +1307,7 @@
 	size = count * sizeof(uint64_t);
 
 #ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
 
@@ -1400,8 +1315,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1410,8 +1324,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianFloats: (const float *)buffer
-			 count: (size_t)count
+- (size_t)writeBigEndianFloats: (const float *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1421,8 +1334,7 @@
 	size = count * sizeof(float);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	float *tmp = of_alloc(count, sizeof(float));
 
@@ -1430,8 +1342,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1440,8 +1351,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianDoubles: (const double *)buffer
-			  count: (size_t)count
+- (size_t)writeBigEndianDoubles: (const double *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1451,8 +1361,7 @@
 	size = count * sizeof(double);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	double *tmp = of_alloc(count, sizeof(double));
 
@@ -1460,8 +1369,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1473,45 +1381,34 @@
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
 	int16 = OF_BSWAP16_IF_BE(int16);
-
-	[self writeBuffer: (char *)&int16
-		   length: 2];
+	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeLittleEndianInt32: (uint32_t)int32
 {
 	int32 = OF_BSWAP32_IF_BE(int32);
-
-	[self writeBuffer: (char *)&int32
-		   length: 4];
+	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeLittleEndianInt64: (uint64_t)int64
 {
 	int64 = OF_BSWAP64_IF_BE(int64);
-
-	[self writeBuffer: (char *)&int64
-		   length: 8];
+	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeLittleEndianFloat: (float)float_
 {
 	float_ = OF_BSWAP_FLOAT_IF_BE(float_);
-
-	[self writeBuffer: (char *)&float_
-		   length: 4];
+	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeLittleEndianDouble: (double)double_
 {
 	double_ = OF_BSWAP_DOUBLE_IF_BE(double_);
-
-	[self writeBuffer: (char *)&double_
-		   length: 8];
+	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
-			    count: (size_t)count
+- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1521,8 +1418,7 @@
 	size = count * sizeof(uint16_t);
 
 #ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
 
@@ -1530,8 +1426,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1540,8 +1435,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
-			    count: (size_t)count
+- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1551,8 +1445,7 @@
 	size = count * sizeof(uint32_t);
 
 #ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
 
@@ -1560,8 +1453,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1570,8 +1462,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
-			    count: (size_t)count
+- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1581,8 +1472,7 @@
 	size = count * sizeof(uint64_t);
 
 #ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
 
@@ -1590,8 +1480,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1600,8 +1489,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianFloats: (const float *)buffer
-			    count: (size_t)count
+- (size_t)writeLittleEndianFloats: (const float *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1611,8 +1499,7 @@
 	size = count * sizeof(float);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	float *tmp = of_alloc(count, sizeof(float));
 
@@ -1620,8 +1507,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1630,8 +1516,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianDoubles: (const double *)buffer
-			     count: (size_t)count
+- (size_t)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1641,8 +1526,7 @@
 	size = count * sizeof(double);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer
-		   length: size];
+	[self writeBuffer: buffer length: size];
 #else
 	double *tmp = of_alloc(count, sizeof(double));
 
@@ -1650,8 +1534,7 @@
 		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
-		[self writeBuffer: tmp
-			   length: size];
+		[self writeBuffer: tmp length: size];
 	} @finally {
 		free(tmp);
 	}
@@ -1669,10 +1552,9 @@
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	length = data.count * data.itemSize;
 
-	[self writeBuffer: data.items
-		   length: length];
+	length = data.count * data.itemSize;
+	[self writeBuffer: data.items length: length];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1681,8 +1563,7 @@
 
 - (size_t)writeString: (OFString *)string
 {
-	return [self writeString: string
-			encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeString: string encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (size_t)writeString: (OFString *)string
@@ -1707,12 +1588,10 @@
 
 - (size_t)writeLine: (OFString *)string
 {
-	return [self writeLine: string
-		      encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeLine: string encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (size_t)writeLine: (OFString *)string
-	   encoding: (of_string_encoding_t)encoding
+- (size_t)writeLine: (OFString *)string encoding: (of_string_encoding_t)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
@@ -1724,8 +1603,7 @@
 		    stringLength);
 		buffer[stringLength] = '\n';
 
-		[self writeBuffer: buffer
-			   length: stringLength + 1];
+		[self writeBuffer: buffer length: stringLength + 1];
 	} @finally {
 		free(buffer);
 	}
@@ -1739,15 +1617,13 @@
 	size_t ret;
 
 	va_start(arguments, format);
-	ret = [self writeFormat: format
-		      arguments: arguments];
+	ret = [self writeFormat: format arguments: arguments];
 	va_end(arguments);
 
 	return ret;
 }
 
-- (size_t)writeFormat: (OFConstantString *)format
-	    arguments: (va_list)arguments
+- (size_t)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int length;
@@ -1760,8 +1636,7 @@
 		@throw [OFInvalidFormatException exception];
 
 	@try {
-		[self writeBuffer: UTF8String
-			   length: length];
+		[self writeBuffer: UTF8String length: length];
 	} @finally {
 		free(UTF8String);
 	}
@@ -1864,8 +1739,7 @@
 }
 #endif
 
-- (void)unreadFromBuffer: (const void *)buffer
-		  length: (size_t)length
+- (void)unreadFromBuffer: (const void *)buffer length: (size_t)length
 {
 	char *readBuffer;
 

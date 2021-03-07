@@ -193,8 +193,7 @@
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];
 
-	[_mapTable setObject: (void *)(uintptr_t)(count + 1)
-		      forKey: object];
+	[_mapTable setObject: (void *)(uintptr_t)(count + 1) forKey: object];
 }
 
 - (void)removeObject: (id)object
@@ -207,8 +206,7 @@
 	count--;
 
 	if (count > 0)
-		[_mapTable setObject: (void *)(uintptr_t)count
-			      forKey: object];
+		[_mapTable setObject: (void *)(uintptr_t)count forKey: object];
 	else
 		[_mapTable removeObjectForKey: object];
 }

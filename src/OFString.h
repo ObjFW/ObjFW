@@ -909,8 +909,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param buffer The buffer to store the Unicode characters
  * @param range The range of the Unicode characters to copy
  */
-- (void)getCharacters: (of_unichar_t *)buffer
-	      inRange: (of_range_t)range;
+- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range;
 
 /**
  * @brief Returns the range of the first occurrence of the string.
@@ -933,8 +932,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options;
+- (of_range_t)rangeOfString: (OFString *)string options: (int)options;
 
 /**
  * @brief Returns the range of the string in the specified range.
@@ -1244,8 +1242,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path of the file to write to
  * @param encoding The encoding to use to write the string into the file
  */
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding;
+- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding;
 # endif
 
 /**
@@ -1261,8 +1258,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param URL The URL to write to
  * @param encoding The encoding to use to write the string to the URL
  */
-- (void)writeToURL: (OFURL *)URL
-	  encoding: (of_string_encoding_t)encoding;
+- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding;
 
 # ifdef OF_HAVE_BLOCKS
 /**

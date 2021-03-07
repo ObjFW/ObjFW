@@ -483,8 +483,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 					   length: length];
 
 	key = of_file_attribute_key_symbolic_link_destination;
-	[attributes setObject: destination
-		       forKey: key];
+	[attributes setObject: destination forKey: key];
 # else
 	HANDLE handle;
 	OFString *destination;
@@ -532,8 +531,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		[attributes setObject: of_file_type_symbolic_link
 			       forKey: of_file_attribute_key_type];
 		key = of_file_attribute_key_symbolic_link_destination;
-		[attributes setObject: destination
-			       forKey: key];
+		[attributes setObject: destination forKey: key];
 #  undef slrb
 	} @finally {
 		CloseHandle(handle);

@@ -154,11 +154,9 @@ constructRequestString(OFHTTPRequest *request)
 			OFString *host = [OFString stringWithFormat:
 			    @"%@:%@", URL.URLEncodedHost, port];
 
-			[headers setObject: host
-				    forKey: @"Host"];
+			[headers setObject: host forKey: @"Host"];
 		} else
-			[headers setObject: [URL URLEncodedHost]
-				    forKey: @"Host"];
+			[headers setObject: URL.URLEncodedHost forKey: @"Host"];
 	}
 
 	if ((user.length > 0 || password.length > 0) &&
@@ -175,8 +173,7 @@ constructRequestString(OFHTTPRequest *request)
 		authorization = [OFString stringWithFormat:
 		    @"Basic %@", authorizationData.stringByBase64Encoding];
 
-		[headers setObject: authorization
-			    forKey: @"Authorization"];
+		[headers setObject: authorization forKey: @"Authorization"];
 	}
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
@@ -187,8 +184,7 @@ constructRequestString(OFHTTPRequest *request)
 	if (request.protocolVersion.major == 1 &&
 	    request.protocolVersion.minor == 0 &&
 	    [headers objectForKey: @"Connection"] == nil)
-		[headers setObject: @"keep-alive"
-			    forKey: @"Connection"];
+		[headers setObject: @"keep-alive" forKey: @"Connection"];
 
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
 	chunked = [[headers objectForKey: @"Transfer-Encoding"]
@@ -536,8 +532,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	if (old != nil)
 		value = [old stringByAppendingFormat: @",%@", value];
 
-	[_serverHeaders setObject: value
-			   forKey: key];
+	[_serverHeaders setObject: value forKey: key];
 
 	return true;
 }

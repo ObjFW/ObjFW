@@ -100,8 +100,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in set)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -128,8 +127,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in array)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -145,8 +143,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[_mapTable setObject: (void *)1
-				      forKey: objects[i]];
+			[_mapTable setObject: (void *)1 forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -174,12 +171,10 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setObject: (void *)1
-			      forKey: firstObject];
+		[_mapTable setObject: (void *)1 forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;

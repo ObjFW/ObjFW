@@ -571,8 +571,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	variables = [OFMutableDictionary dictionary];
 	while ((name = va_arg(arguments, OFConstantString *)) != nil)
-		[variables setObject: va_arg(arguments, id)
-			      forKey: name];
+		[variables setObject: va_arg(arguments, id) forKey: name];
 
 	for (OFDictionary *strings in _localizedStrings) {
 		id string = [strings objectForKey: ID];

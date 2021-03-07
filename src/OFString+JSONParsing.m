@@ -504,8 +504,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		if (object == nil)
 			return nil;
 
-		[dictionary setObject: object
-			       forKey: key];
+		[dictionary setObject: object forKey: key];
 
 		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)

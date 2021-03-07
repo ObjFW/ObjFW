@@ -438,8 +438,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[tmp setObject: object
-				forKey: key];
+			[tmp setObject: object forKey: key];
 
 		allNS = tmp;
 	} else
@@ -826,8 +825,7 @@ _references_to_categories_of_OFXMLElement(void)
 	if (namespace == nil)
 		namespace = @"";
 
-	[_namespaces setObject: prefix
-			forKey: namespace];
+	[_namespaces setObject: prefix forKey: namespace];
 }
 
 - (void)bindPrefix: (OFString *)prefix

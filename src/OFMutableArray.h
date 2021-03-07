@@ -82,8 +82,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param object An object to add
  * @param index The index where the object should be inserted
  */
-- (void)insertObject: (ObjectType)object
-	     atIndex: (size_t)index;
+- (void)insertObject: (ObjectType)object atIndex: (size_t)index;
 
 /**
  * @brief Inserts the objects from the specified OFArray at the specified index.
@@ -101,8 +100,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param oldObject The object to replace
  * @param newObject The replacement object
  */
-- (void)replaceObject: (ObjectType)oldObject
-	   withObject: (ObjectType)newObject;
+- (void)replaceObject: (ObjectType)oldObject withObject: (ObjectType)newObject;
 
 /**
  * @brief Replaces the object at the specified index with the specified object.
@@ -110,8 +108,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index The index of the object to replace
  * @param object The replacement object
  */
-- (void)replaceObjectAtIndex: (size_t)index
-		  withObject: (ObjectType)object;
+- (void)replaceObjectAtIndex: (size_t)index withObject: (ObjectType)object;
 
 /**
  * @brief Replaces the object at the specified index with the specified object.
@@ -123,8 +120,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index The index of the object to replace
  * @param object The replacement object
  */
--    (void)setObject: (ObjectType)object
-  atIndexedSubscript: (size_t)index;
+- (void)setObject: (ObjectType)object atIndexedSubscript: (size_t)index;
 
 /**
  * @brief Replaces the first object that has the same address as the specified
@@ -190,8 +186,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index1 The index of the first object to exchange
  * @param index2 The index of the second object to exchange
  */
-- (void)exchangeObjectAtIndex: (size_t)index1
-	    withObjectAtIndex: (size_t)index2;
+- (void)exchangeObjectAtIndex: (size_t)index1 withObjectAtIndex: (size_t)index2;
 
 /**
  * @brief Sorts the array in ascending order.
@@ -209,8 +204,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *		  ---------------------------|-------------------------
  *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  */
-- (void)sortUsingSelector: (SEL)selector
-		  options: (int)options;
+- (void)sortUsingSelector: (SEL)selector options: (int)options;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -223,8 +217,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *		  ---------------------------|-------------------------
  *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  */
-- (void)sortUsingComparator: (of_comparator_t)comparator
-		    options: (int)options;
+- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options;
 #endif
 
 /**

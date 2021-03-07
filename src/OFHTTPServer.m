@@ -196,17 +196,14 @@ normalizedKey(OFString *key)
 	if ([headers objectForKey: @"Date"] == nil) {
 		OFString *date = [[OFDate date]
 		    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-
-		[headers setObject: date
-			    forKey: @"Date"];
+		[headers setObject: date forKey: @"Date"];
 	}
 
 	if ([headers objectForKey: @"Server"] == nil) {
 		OFString *name = _server.name;
 
 		if (name != nil)
-			[headers setObject: name
-				    forKey: @"Server"];
+			[headers setObject: name forKey: @"Server"];
 	}
 
 	keyEnumerator = [headers keyEnumerator];
@@ -465,8 +462,7 @@ normalizedKey(OFString *key)
 	if (old != nil)
 		value = [old stringByAppendingFormat: @",%@", value];
 
-	[_headers setObject: value
-		     forKey: key];
+	[_headers setObject: value forKey: key];
 
 	if ([key isEqual: @"Host"]) {
 		pos = [value

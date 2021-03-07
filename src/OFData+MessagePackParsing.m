@@ -118,8 +118,7 @@ parseTable(const unsigned char *buffer, size_t length, id *object, size_t count,
 		pos += parseObject(buffer + pos, length - pos, &value,
 		    depthLimit);
 
-		[*object setObject: value
-			    forKey: key];
+		[*object setObject: value forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	}

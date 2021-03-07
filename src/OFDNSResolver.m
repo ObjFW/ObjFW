@@ -453,8 +453,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		if (array == nil) {
 			array = [OFMutableArray array];
-			[ret setObject: array
-				forKey: name];
+			[ret setObject: array forKey: name];
 		}
 
 		[array addObject: record];
@@ -716,8 +715,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFUDPSocket *sock;
 	OFString *nameServer;
 
-	[_queries setObject: context
-		     forKey: context->_ID];
+	[_queries setObject: context forKey: context->_ID];
 
 	[context->_cancelTimer invalidate];
 	[context->_cancelTimer release];
@@ -740,8 +738,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		OF_ENSURE(context->_TCPSocket == nil);
 
 		context->_TCPSocket = [[OFTCPSocket alloc] init];
-		[_TCPQueries setObject: context
-				forKey: context->_TCPSocket];
+		[_TCPQueries setObject: context forKey: context->_TCPSocket];
 
 		context->_TCPSocket.delegate = self;
 		[context->_TCPSocket asyncConnectToHost: nameServer

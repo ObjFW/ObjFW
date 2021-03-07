@@ -372,8 +372,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			@throw [OFInvalidFormatException exception];
 
 		[_entries addObject: entry];
-		[_pathToEntryMap setObject: entry
-				    forKey: entry.fileName];
+		[_pathToEntryMap setObject: entry forKey: entry.fileName];
 	}
 
 	objc_autoreleasePoolPop(pool);

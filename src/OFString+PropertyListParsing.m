@@ -66,8 +66,7 @@ parseDictElement(OFXMLElement *element)
 		    ![key.name isEqual: @"key"])
 			@throw [OFInvalidFormatException exception];
 
-		[ret setObject: parseElement(object)
-			forKey: key.stringValue];
+		[ret setObject: parseElement(object) forKey: key.stringValue];
 	}
 
 	[ret makeImmutable];

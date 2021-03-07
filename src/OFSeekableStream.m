@@ -38,20 +38,17 @@
 	return [super init];
 }
 
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset whence: (int)whence
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_offset_t)seekToOffset: (of_offset_t)offset
-		     whence: (int)whence
+- (of_offset_t)seekToOffset: (of_offset_t)offset whence: (int)whence
 {
 	if (whence == SEEK_CUR)
 		offset -= _readBufferLength;
 
-	offset = [self lowlevelSeekToOffset: offset
-				     whence: whence];
+	offset = [self lowlevelSeekToOffset: offset whence: whence];
 
 	free(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;

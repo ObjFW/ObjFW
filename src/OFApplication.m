@@ -260,9 +260,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				key = [tmp substringToIndex: pos];
 				value = [tmp substringFromIndex: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -304,9 +302,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				key = [tmp substringToIndex: pos];
 				value = [tmp substringFromIndex: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -340,8 +336,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 			value = [file readLineWithEncoding: encoding];
 			if (value != nil)
-				[_environment setObject: value
-						 forKey: name];
+				[_environment setObject: value forKey: name];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -374,9 +369,7 @@ SIGNAL_HANDLER(SIGUSR2)
 			    stringWithCString: (const char *)iter->lv_Value
 				     encoding: encoding
 				       length: length];
-
-			[_environment setObject: value
-					 forKey: key];
+			[_environment setObject: value forKey: key];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -409,9 +402,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				value = [OFString
 				    stringWithCString: sep + 1
 					     encoding: encoding];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -431,36 +422,31 @@ SIGNAL_HANDLER(SIGUSR2)
 			OFString *home = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: home
-					 forKey: @"HOME"];
+			[_environment setObject: home forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
 			OFString *path = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: path
-					 forKey: @"PATH"];
+			[_environment setObject: path forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
 			OFString *shell = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: shell
-					 forKey: @"SHELL"];
+			[_environment setObject: shell forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
 			OFString *tmpdir = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: tmpdir
-					 forKey: @"TMPDIR"];
+			[_environment setObject: tmpdir forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
 			OFString *user = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: user
-					 forKey: @"USER"];
+			[_environment setObject: user forKey: @"USER"];
 		}
 
 		objc_autoreleasePoolPop(pool);

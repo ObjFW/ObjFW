@@ -31,11 +31,9 @@
 		[self inheritMethodsFromClass: [OFMapTableDictionary class]];
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
-	[_mapTable setObject: object
-		      forKey: key];
+	[_mapTable setObject: object forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key

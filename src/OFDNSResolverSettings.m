@@ -288,8 +288,7 @@ parseNetStackArray(OFString *string)
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses
-						forKey: host];
+				[staticHosts setObject: addresses forKey: host];
 			}
 
 			[addresses addObject: address];
@@ -492,8 +491,7 @@ parseNetStackArray(OFString *string)
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses
-						forKey: host];
+				[staticHosts setObject: addresses forKey: host];
 			}
 
 			[addresses addObject: address];

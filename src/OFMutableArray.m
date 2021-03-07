@@ -257,47 +257,38 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)addObject: (id)object
 {
-	[self insertObject: object
-		   atIndex: self.count];
+	[self insertObject: object atIndex: self.count];
 }
 
 - (void)addObjectsFromArray: (OFArray *)array
 {
-	[self insertObjectsFromArray: array
-			     atIndex: self.count];
+	[self insertObjectsFromArray: array atIndex: self.count];
 }
 
-- (void)insertObject: (id)object
-	     atIndex: (size_t)idx
+- (void)insertObject: (id)object atIndex: (size_t)idx
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)idx
+- (void)insertObjectsFromArray: (OFArray *)array atIndex: (size_t)idx
 {
 	size_t i = 0;
 
 	for (id object in array)
-		[self insertObject: object
-			   atIndex: idx + i++];
+		[self insertObject: object atIndex: idx + i++];
 }
 
-- (void)replaceObjectAtIndex: (size_t)idx
-		  withObject: (id)object
+- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
--    (void)setObject: (id)object
-  atIndexedSubscript: (size_t)idx
+- (void)setObject: (id)object atIndexedSubscript: (size_t)idx
 {
-	[self replaceObjectAtIndex: idx
-			withObject: object];
+	[self replaceObjectAtIndex: idx withObject: object];
 }
 
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject
+- (void)replaceObject: (id)oldObject withObject: (id)newObject
 {
 	size_t count;
 
@@ -308,15 +299,13 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 	for (size_t i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: oldObject]) {
-			[self replaceObjectAtIndex: i
-					withObject: newObject];
+			[self replaceObjectAtIndex: i withObject: newObject];
 			return;
 		}
 	}
 }
 
-- (void)replaceObjectIdenticalTo: (id)oldObject
-		      withObject: (id)newObject
+- (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
 {
 	size_t count;
 
@@ -327,8 +316,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 	for (size_t i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == oldObject) {
-			[self replaceObjectAtIndex: i
-					withObject: newObject];
+			[self replaceObjectAtIndex: i withObject: newObject];
 
 			return;
 		}
@@ -405,24 +393,20 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		id new = block(object, idx);
 
 		if (new != object)
-			[self replaceObjectAtIndex: idx
-					withObject: new];
+			[self replaceObjectAtIndex: idx withObject: new];
 	}];
 }
 #endif
 
-- (void)exchangeObjectAtIndex: (size_t)idx1
-	    withObjectAtIndex: (size_t)idx2
+- (void)exchangeObjectAtIndex: (size_t)idx1 withObjectAtIndex: (size_t)idx2
 {
 	id object1 = [self objectAtIndex: idx1];
 	id object2 = [self objectAtIndex: idx2];
 
 	[object1 retain];
 	@try {
-		[self replaceObjectAtIndex: idx1
-				withObject: object2];
-		[self replaceObjectAtIndex: idx2
-				withObject: object1];
+		[self replaceObjectAtIndex: idx1 withObject: object2];
+		[self replaceObjectAtIndex: idx2 withObject: object1];
 	} @finally {
 		[object1 release];
 	}
@@ -430,8 +414,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)sort
 {
-	[self sortUsingSelector: @selector(compare:)
-			options: 0];
+	[self sortUsingSelector: @selector(compare:) options: 0];
 }
 
 - (void)sortUsingSelector: (SEL)selector
@@ -466,8 +449,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		return;
 
 	for (i = 0, j = count - 1; i < j; i++, j--)
-		[self exchangeObjectAtIndex: i
-			  withObjectAtIndex: j];
+		[self exchangeObjectAtIndex: i withObjectAtIndex: j];
 }
 
 - (void)makeImmutable

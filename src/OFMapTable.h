@@ -162,8 +162,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (nullable void *)object
-	   forKey: (nullable void *)key;
+- (void)setObject: (nullable void *)object forKey: (nullable void *)key;
 
 /**
  * @brief Removes the object for the specified key from the map table.

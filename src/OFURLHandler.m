@@ -82,8 +82,7 @@ releaseMutex(void)
 
 		handler = [[class alloc] initWithScheme: scheme];
 		@try {
-			[handlers setObject: handler
-				     forKey: scheme];
+			[handlers setObject: handler forKey: scheme];
 		} @finally {
 			[handler release];
 		}

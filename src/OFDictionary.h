@@ -98,8 +98,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)dictionaryWithObject: (ObjectType)object
-			      forKey: (KeyType)key;
++ (instancetype)dictionaryWithObject: (ObjectType)object forKey: (KeyType)key;
 
 /**
  * @brief Creates a new OFDictionary with the specified keys and objects.
@@ -152,8 +151,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object
  * @return An initialized OFDictionary
  */
-- (instancetype)initWithObject: (ObjectType)object
-			forKey: (KeyType)key;
+- (instancetype)initWithObject: (ObjectType)object forKey: (KeyType)key;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -196,8 +194,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param arguments A va_list of the other arguments
  * @return An initialized OFDictionary
  */
-- (instancetype)initWithKey: (KeyType)firstKey
-		  arguments: (va_list)arguments;
+- (instancetype)initWithKey: (KeyType)firstKey arguments: (va_list)arguments;
 
 /**
  * @brief Returns the object for the given key or `nil` if the key was not
@@ -234,8 +231,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param key The key to set
  * @param value The value to set the key to
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 /**
  * @brief Checks whether the dictionary contains an object equal to the

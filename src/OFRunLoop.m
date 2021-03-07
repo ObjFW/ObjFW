@@ -1037,8 +1037,7 @@ OF_DIRECT_MEMBERS
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_readQueues setObject: queue			\
-				       forKey: object];			\
+		[state->_readQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1056,8 +1055,7 @@ OF_DIRECT_MEMBERS
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_writeQueues setObject: queue			\
-					  forKey: object];		\
+		[state->_writeQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1384,8 +1382,7 @@ OF_DIRECT_MEMBERS
 		if (create && state == nil) {
 			state = [[OFRunLoopState alloc] init];
 			@try {
-				[_states setObject: state
-					    forKey: mode];
+				[_states setObject: state forKey: mode];
 			} @finally {
 				[state release];
 			}

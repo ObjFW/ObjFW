@@ -442,12 +442,9 @@ OF_DIRECT_MEMBERS
 	_objectFunctions.release(old);
 }
 
-- (void)setObject: (void *)object
-	   forKey: (void *)key
+- (void)setObject: (void *)object forKey: (void *)key
 {
-	[self of_setObject: object
-		    forKey: key
-		      hash: _keyFunctions.hash(key)];
+	[self of_setObject: object forKey: key hash: _keyFunctions.hash(key)];
 }
 
 - (void)removeObjectForKey: (void *)key

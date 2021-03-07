@@ -63,8 +63,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithPath: (OFString *)path
-			mode: (OFString *)mode;
++ (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode;
 
 /**
  * @brief Creates a new OFFile with the specified URL and mode.
@@ -84,8 +83,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithURL: (OFURL *)URL
-		       mode: (OFString *)mode;
++ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Creates a new OFFile with the specified native file handle.
@@ -121,8 +119,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -146,8 +143,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
-- (instancetype)initWithURL: (OFURL *)URL
-		       mode: (OFString *)mode;
+- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Initializes an already allocated OFFile.

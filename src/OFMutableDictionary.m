@@ -156,18 +156,15 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
--   (void)setObject: (id)object
-  forKeyedSubscript: (id)key
+- (void)setObject: (id)object forKeyedSubscript: (id)key
 {
 	if (object != nil)
-		[self setObject: object
-			 forKey: key];
+		[self setObject: object forKey: key];
 	else
 		[self removeObjectForKey: key];
 }
@@ -201,8 +198,7 @@ static struct {
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil)
-		[self setObject: object
-			 forKey: key];
+		[self setObject: object forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -215,8 +211,7 @@ static struct {
 		id new = block(key, object);
 
 		if (new != object) {
-			[self setObject: block(key, object)
-				 forKey: key];
+			[self setObject: block(key, object) forKey: key];
 		}
 	}];
 }
