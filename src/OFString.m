@@ -571,7 +571,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL];
@@ -583,7 +582,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL
 						      encoding: encoding];
 }
-#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
@@ -787,7 +785,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 + (instancetype)stringWithContentsOfURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
@@ -799,7 +796,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];
 }
-#endif
 
 - (instancetype)init
 {
