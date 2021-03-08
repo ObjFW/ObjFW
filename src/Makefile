@@ -195,7 +195,7 @@ SRCS += OFAdjacentArray.m		\
 	OFRangeCharacterSet.m		\
 	OFRangeValue.m			\
 	OFRectangleValue.m		\
-       OFSandbox.m			\
+	OFSandbox.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
