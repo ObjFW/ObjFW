@@ -182,112 +182,6 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)object
-{
-	OFMapTable *mapTable;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFMapTable class]])
-		return false;
-
-	mapTable = object;
-
-	if (mapTable->_count != _count ||
-	    mapTable->_keyFunctions.equal != _keyFunctions.equal ||
-	    mapTable->_objectFunctions.equal != _objectFunctions.equal)
-		return false;
-
-	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			void *objectIter =
-			    [mapTable objectForKey: _buckets[i]->key];
-
-			if (!_objectFunctions.equal(objectIter,
-			    _buckets[i]->object))
-				return false;
-		}
-	}
-
-	return true;
-}
-
-- (unsigned long)hash
-{
-	unsigned long hash = 0;
-
-	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			hash ^= OF_ROR(_buckets[i]->hash, _rotate);
-			hash ^= _objectFunctions.hash(_buckets[i]->object);
-		}
-	}
-
-	return hash;
-}
-
-- (id)copy
-{
-	OFMapTable *copy = [[OFMapTable alloc]
-	    initWithKeyFunctions: _keyFunctions
-		 objectFunctions: _objectFunctions
-			capacity: _capacity];
-
-	@try {
-		for (unsigned long i = 0; i < _capacity; i++)
-			if (_buckets[i] != NULL && _buckets[i] != &deleted)
-				setObject(copy, _buckets[i]->key,
-				    _buckets[i]->object,
-				    OF_ROR(_buckets[i]->hash, _rotate));
-	} @catch (id e) {
-		[copy release];
-		@throw e;
-	}
-
-	return copy;
-}
-
-- (size_t)count
-{
-	return _count;
-}
-
-- (void *)objectForKey: (void *)key
-{
-	unsigned long i, hash, last;
-
-	if (key == NULL)
-		@throw [OFInvalidArgumentException exception];
-
-	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
-	last = _capacity;
-
-	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
-			continue;
-
-		if (_keyFunctions.equal(_buckets[i]->key, key))
-			return _buckets[i]->object;
-	}
-
-	if (i < last)
-		return nil;
-
-	/* In case the last bucket is already used */
-	last = hash & (_capacity - 1);
-
-	for (i = 0; i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
-			continue;
-
-		if (_keyFunctions.equal(_buckets[i]->key, key))
-			return _buckets[i]->object;
-	}
-
-	return NULL;
-}
-
 static void
 resizeForCount(OFMapTable *self, unsigned long count)
 {
@@ -440,6 +334,112 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	old = self->_buckets[i]->object;
 	self->_buckets[i]->object = self->_objectFunctions.retain(object);
 	self->_objectFunctions.release(old);
+}
+
+- (bool)isEqual: (id)object
+{
+	OFMapTable *mapTable;
+
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFMapTable class]])
+		return false;
+
+	mapTable = object;
+
+	if (mapTable->_count != _count ||
+	    mapTable->_keyFunctions.equal != _keyFunctions.equal ||
+	    mapTable->_objectFunctions.equal != _objectFunctions.equal)
+		return false;
+
+	for (unsigned long i = 0; i < _capacity; i++) {
+		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
+			void *objectIter =
+			    [mapTable objectForKey: _buckets[i]->key];
+
+			if (!_objectFunctions.equal(objectIter,
+			    _buckets[i]->object))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+- (unsigned long)hash
+{
+	unsigned long hash = 0;
+
+	for (unsigned long i = 0; i < _capacity; i++) {
+		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
+			hash ^= OF_ROR(_buckets[i]->hash, _rotate);
+			hash ^= _objectFunctions.hash(_buckets[i]->object);
+		}
+	}
+
+	return hash;
+}
+
+- (id)copy
+{
+	OFMapTable *copy = [[OFMapTable alloc]
+	    initWithKeyFunctions: _keyFunctions
+		 objectFunctions: _objectFunctions
+			capacity: _capacity];
+
+	@try {
+		for (unsigned long i = 0; i < _capacity; i++)
+			if (_buckets[i] != NULL && _buckets[i] != &deleted)
+				setObject(copy, _buckets[i]->key,
+				    _buckets[i]->object,
+				    OF_ROR(_buckets[i]->hash, _rotate));
+	} @catch (id e) {
+		[copy release];
+		@throw e;
+	}
+
+	return copy;
+}
+
+- (size_t)count
+{
+	return _count;
+}
+
+- (void *)objectForKey: (void *)key
+{
+	unsigned long i, hash, last;
+
+	if (key == NULL)
+		@throw [OFInvalidArgumentException exception];
+
+	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
+	last = _capacity;
+
+	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
+		if (_buckets[i] == &deleted)
+			continue;
+
+		if (_keyFunctions.equal(_buckets[i]->key, key))
+			return _buckets[i]->object;
+	}
+
+	if (i < last)
+		return nil;
+
+	/* In case the last bucket is already used */
+	last = hash & (_capacity - 1);
+
+	for (i = 0; i < last && _buckets[i] != NULL; i++) {
+		if (_buckets[i] == &deleted)
+			continue;
+
+		if (_keyFunctions.equal(_buckets[i]->key, key))
+			return _buckets[i]->object;
+	}
+
+	return NULL;
 }
 
 - (void)setObject: (void *)object forKey: (void *)key

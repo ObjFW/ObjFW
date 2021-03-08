@@ -1016,6 +1016,34 @@ static OFRunLoop *mainRunLoop = nil;
 	mainRunLoop = [runLoop retain];
 }
 
+static OFRunLoopState *
+stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
+{
+	OFRunLoopState *state;
+
+#ifdef OF_HAVE_THREADS
+	[self->_statesMutex lock];
+	@try {
+#endif
+		state = [self->_states objectForKey: mode];
+
+		if (create && state == nil) {
+			state = [[OFRunLoopState alloc] init];
+			@try {
+				[self->_states setObject: state forKey: mode];
+			} @finally {
+				[state release];
+			}
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[self->_statesMutex unlock];
+	}
+#endif
+
+	return state;
+}
+
 #ifdef OF_HAVE_SOCKETS
 # define NEW_READ(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
@@ -1353,34 +1381,6 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 	[super dealloc];
-}
-
-static OFRunLoopState *
-stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
-{
-	OFRunLoopState *state;
-
-#ifdef OF_HAVE_THREADS
-	[self->_statesMutex lock];
-	@try {
-#endif
-		state = [self->_states objectForKey: mode];
-
-		if (create && state == nil) {
-			state = [[OFRunLoopState alloc] init];
-			@try {
-				[self->_states setObject: state forKey: mode];
-			} @finally {
-				[state release];
-			}
-		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[self->_statesMutex unlock];
-	}
-#endif
-
-	return state;
 }
 
 - (void)addTimer: (OFTimer *)timer
