@@ -39,13 +39,13 @@ static OFString *module = @"OFIPXSocket";
 		case EAFNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:

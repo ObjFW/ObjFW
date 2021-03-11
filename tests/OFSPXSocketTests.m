@@ -92,19 +92,19 @@ static OFString *module = @"OFSPXSocket";
 		case EAFNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -174,7 +174,7 @@ static OFString *module = @"OFSPXSocket";
 		case ENOTSOCK:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[asyncAccept] & "
+			    @"\r[OFSPXSocket] -[asyncAccept] & "
 			    @"-[asyncConnectToNode:network:port:]: select() "
 			    @"not supported for SPX, skipping test"];
 			break;
