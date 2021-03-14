@@ -1050,6 +1050,14 @@ next:
 	if (_currentFileName == nil)
 		_currentFileName = [URL.path.lastPathComponent copy];
 
+	if ([_currentFileName isEqual: @"/"]) {
+		[_currentFileName release];
+		_currentFileName = nil;
+	}
+
+	if (_currentFileName == nil)
+		_currentFileName = @"unnamed";
+
 	if (_continue) {
 		@try {
 			unsigned long long size =
