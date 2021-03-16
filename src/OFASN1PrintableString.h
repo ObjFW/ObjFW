@@ -42,10 +42,10 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a PrintableString with the specified string value.
  *
- * @param stringValue The string value of the PrintableString
+ * @param string The string value of the PrintableString
  * @return A new, autoreleased OFASN1PrintableString
  */
-+ (instancetype)stringWithStringValue: (OFString *)stringValue;
++ (instancetype)stringWithString: (OFString *)string;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -53,11 +53,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated PrintableString with the specified
  *	  string value.
  *
- * @param stringValue The string value of the PrintableString
+ * @param string The string value of the PrintableString
  * @return An initialized OFASN1PrintableString
  */
-- (instancetype)initWithStringValue: (OFString *)stringValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 PrintableString with the

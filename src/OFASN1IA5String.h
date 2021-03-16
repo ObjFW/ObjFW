@@ -42,10 +42,10 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates an IA5String with the specified string value.
  *
- * @param stringValue The string value of the IA5String
+ * @param string The string value of the IA5String
  * @return A new, autoreleased OFASN1IA5String
  */
-+ (instancetype)stringWithStringValue: (OFString *)stringValue;
++ (instancetype)stringWithString: (OFString *)string;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -53,11 +53,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated IA5String with the specified string
  *	  value.
  *
- * @param stringValue The string value of the IA5String
+ * @param string The string value of the IA5String
  * @return An initialized OFASN1IA5String
  */
-- (instancetype)initWithStringValue: (OFString *)stringValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 IA5String with the specified

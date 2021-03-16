@@ -25,25 +25,25 @@
 @implementation OFASN1NumericString
 @synthesize numericStringValue = _numericStringValue;
 
-+ (instancetype)stringWithStringValue: (OFString *)stringValue
++ (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithStringValue: stringValue] autorelease];
+	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- (instancetype)initWithStringValue: (OFString *)stringValue
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *cString = stringValue.UTF8String;
-		size_t length = stringValue.UTF8StringLength;
+		const char *cString = string.UTF8String;
+		size_t length = string.UTF8StringLength;
 
 		for (size_t i = 0; i < length; i++)
 			if (!of_ascii_isdigit(cString[i]) && cString[i] != ' ')
 				@throw [OFInvalidEncodingException exception];
 
-		_numericStringValue = [stringValue copy];
+		_numericStringValue = [string copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -60,7 +60,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *numericStringValue;
+	OFString *numericString;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -71,7 +71,7 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		numericStringValue = [OFString
+		numericString = [OFString
 		    stringWithCString: DEREncodedContents.items
 			     encoding: OF_STRING_ENCODING_ASCII
 			       length: DEREncodedContents.count];
@@ -80,7 +80,7 @@
 		@throw e;
 	}
 
-	self = [self initWithStringValue: numericStringValue];
+	self = [self initWithString: numericString];
 
 	objc_autoreleasePoolPop(pool);
 

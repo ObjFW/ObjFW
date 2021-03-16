@@ -24,17 +24,17 @@
 @implementation OFASN1UTF8String
 @synthesize UTF8StringValue = _UTF8StringValue;
 
-+ (instancetype)stringWithStringValue: (OFString *)stringValue
++ (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithStringValue: stringValue] autorelease];
+	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- (instancetype)initWithStringValue: (OFString *)stringValue
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super init];
 
 	@try {
-		_UTF8StringValue = [stringValue copy];
+		_UTF8StringValue = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -49,7 +49,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *UTF8StringValue;
+	OFString *UTF8String;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -59,7 +59,7 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		UTF8StringValue = [OFString
+		UTF8String = [OFString
 		    stringWithUTF8String: DEREncodedContents.items
 				  length: DEREncodedContents.count];
 	} @catch (id e) {
@@ -67,7 +67,7 @@
 		@throw e;
 	}
 
-	self = [self initWithStringValue: UTF8StringValue];
+	self = [self initWithString: UTF8String];
 
 	objc_autoreleasePoolPop(pool);
 

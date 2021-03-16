@@ -45,12 +45,12 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
- * @param bitStringValue The value of the BitString
- * @param bitStringLength The length of the BitString in bits
+ * @param bitString The value of the BitString
+ * @param length The length of the BitString in bits
  * @return A new, autoreleased OFASN1BitString
  */
-+ (instancetype)bitStringWithBitStringValue: (OFData *)bitStringValue
-			    bitStringLength: (size_t)bitStringLength;
++ (instancetype)bitStringWithBitString: (OFData *)bitString
+				length: (size_t)length;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -58,13 +58,12 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
  *
- * @param bitStringValue The value of the BitString
- * @param bitStringLength The length of the BitString in bits
+ * @param bitString The value of the BitString
+ * @param length The length of the BitString in bits
  * @return An initialized OFASN1BitString
  */
-- (instancetype)initWithBitStringValue: (OFData *)bitStringValue
-		       bitStringLength: (size_t)bitStringLength
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBitString: (OFData *)bitString
+			   length: (size_t)length OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 BitString with the specified

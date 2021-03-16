@@ -42,10 +42,10 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a UTF8String with the specified string value.
  *
- * @param stringValue The string value of the UTF8String
+ * @param string The string value of the UTF8String
  * @return A new, autoreleased OFASN1UTF8String
  */
-+ (instancetype)stringWithStringValue: (OFString *)stringValue;
++ (instancetype)stringWithString: (OFString *)string;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -53,11 +53,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated UTF8String with the specified
  *	  string value.
  *
- * @param stringValue The string value of the UTF8String
+ * @param string The string value of the UTF8String
  * @return An initialized OFASN1UTF8String
  */
-- (instancetype)initWithStringValue: (OFString *)stringValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 UTF8String with the specified

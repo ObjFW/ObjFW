@@ -24,18 +24,17 @@
 @implementation OFASN1OctetString
 @synthesize octetStringValue = _octetStringValue;
 
-+ (instancetype)octetStringWithOctetStringValue: (OFData *)octetStringValue
++ (instancetype)octetStringWithOctetString: (OFData *)octetString
 {
-	return [[[self alloc]
-	    initWithOctetStringValue: octetStringValue] autorelease];
+	return [[[self alloc] initWithOctetString: octetString] autorelease];
 }
 
-- (instancetype)initWithOctetStringValue: (OFData *)octetStringValue
+- (instancetype)initWithOctetString: (OFData *)octetString
 {
 	self = [super init];
 
 	@try {
-		_octetStringValue = [octetStringValue copy];
+		_octetStringValue = [octetString copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -62,7 +61,7 @@
 		@throw e;
 	}
 
-	return [self initWithOctetStringValue: DEREncodedContents];
+	return [self initWithOctetString: DEREncodedContents];
 }
 
 - (instancetype)init

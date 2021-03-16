@@ -28,29 +28,24 @@ static OFString *module;
 	module = @"OFASN1BitString";
 	TEST(@"-[ASN1DERRepresentation]",
 	    (data = [OFData dataWithItems: "\xFF\x00\xF8" count: 3]) &&
-	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 21]
+	    [[[OFASN1BitString bitStringWithBitString: data length: 21]
 	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x03\x04\x03\xFF\x00\xF8" count: 6]] &&
 	    (data = [OFData dataWithItems: "abcdefäöü" count: 12]) &&
-	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 12 * 8]
+	    [[[OFASN1BitString bitStringWithBitString: data length: 12 * 8]
 	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x03\x0D\x00" "abcdefäöü" count: 15]] &&
 	    (data = [OFData dataWithItems: "" count: 0]) &&
-	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 0]
+	    [[[OFASN1BitString bitStringWithBitString: data length: 0]
 	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]])
 
 	module = @"OFASN1Boolean";
 	TEST(@"-[ASN1DERRepresentation]",
-	    [[[OFASN1Boolean booleanWithBooleanValue: false]
-	    ASN1DERRepresentation] isEqual:
-	    [OFData dataWithItems: "\x01\x01\x00" count: 3]] &&
-	    [[[OFASN1Boolean booleanWithBooleanValue: true]
-	    ASN1DERRepresentation] isEqual:
-	    [OFData dataWithItems: "\x01\x01\xFF" count: 3]])
+	    [[[OFASN1Boolean booleanWithBool: false] ASN1DERRepresentation]
+	    isEqual: [OFData dataWithItems: "\x01\x01\x00" count: 3]] &&
+	    [[[OFASN1Boolean booleanWithBool: true] ASN1DERRepresentation]
+	    isEqual: [OFData dataWithItems: "\x01\x01\xFF" count: 3]])
 
 	module = @"OFNull";
 	TEST(@"-[OFASN1DERRepresentation]",

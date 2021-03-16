@@ -42,10 +42,10 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates an NumericString with the specified string value.
  *
- * @param stringValue The string value of the NumericString
+ * @param string The string value of the NumericString
  * @return A new, autoreleased OFASN1NumericString
  */
-+ (instancetype)stringWithStringValue: (OFString *)stringValue;
++ (instancetype)stringWithString: (OFString *)string;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -53,11 +53,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated NumericString with the specified
  *	  string value.
  *
- * @param stringValue The string value of the NumericString
+ * @param string The string value of the NumericString
  * @return An initialized OFASN1NumericString
  */
-- (instancetype)initWithStringValue: (OFString *)stringValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 NumericString with the

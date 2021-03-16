@@ -25,21 +25,21 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Boolean: OFObject <OFASN1DERRepresentation>
 {
-	bool _booleanValue;
+	bool _boolValue;
 }
 
 /**
- * @brief The Boolean value.
+ * @brief The value of the Boolean.
  */
-@property (readonly, nonatomic) bool booleanValue;
+@property (readonly, nonatomic) bool boolValue;
 
 /**
  * @brief Creates an ASN.1 Boolean with the specified Boolean value.
  *
- * @param booleanValue The value of the Boolean
+ * @param bool_ The value of the Boolean
  * @return A new, autoreleased OFASN1Boolean
  */
-+ (instancetype)booleanWithBooleanValue: (bool)booleanValue;
++ (instancetype)booleanWithBool: (bool)bool_;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -47,11 +47,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
  *	  Boolean value.
  *
- * @param booleanValue The value of the Boolean
+ * @param bool_ The value of the Boolean
  * @return An initialized OFASN1Boolean
  */
-- (instancetype)initWithBooleanValue: (bool)booleanValue
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBool: (bool)bool_ OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 Boolean with the specified

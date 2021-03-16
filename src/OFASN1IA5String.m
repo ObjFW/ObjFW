@@ -24,17 +24,17 @@
 @implementation OFASN1IA5String
 @synthesize IA5StringValue = _IA5StringValue;
 
-+ (instancetype)stringWithStringValue: (OFString *)stringValue
++ (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithStringValue: stringValue] autorelease];
+	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- (instancetype)initWithStringValue: (OFString *)stringValue
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super init];
 
 	@try {
-		_IA5StringValue = [stringValue copy];
+		_IA5StringValue = [string copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -49,7 +49,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *IA5StringValue;
+	OFString *IA5String;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -59,7 +59,7 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		IA5StringValue = [OFString
+		IA5String= [OFString
 		    stringWithCString: DEREncodedContents.items
 			     encoding: OF_STRING_ENCODING_ASCII
 			       length: DEREncodedContents.count];
@@ -68,7 +68,7 @@
 		@throw e;
 	}
 
-	self = [self initWithStringValue: IA5StringValue];
+	self = [self initWithString: IA5String];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -31,10 +31,9 @@ static OFString *module = @"OFData+ASN1DERParsing";
 	/* Boolean */
 	TEST(@"Parsing of boolean",
 	    ![[[OFData dataWithItems: "\x01\x01\x00"
-			       count: 3] objectByParsingASN1DER]
-	    booleanValue] &&
+			       count: 3] objectByParsingASN1DER] boolValue] &&
 	    [[[OFData dataWithItems: "\x01\x01\xFF"
-			      count: 3] objectByParsingASN1DER] booleanValue])
+			      count: 3] objectByParsingASN1DER] boolValue])
 
 	EXPECT_EXCEPTION(@"Detection of invalid boolean #1",
 	    OFInvalidFormatException,

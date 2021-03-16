@@ -27,26 +27,24 @@
 @synthesize bitStringValue = _bitStringValue;
 @synthesize bitStringLength = _bitStringLength;
 
-+ (instancetype)bitStringWithBitStringValue: (OFData *)bitStringValue
-			    bitStringLength: (size_t)bitStringLength
++ (instancetype)bitStringWithBitString: (OFData *)bitString
+				length: (size_t)length
 {
-	return [[[self alloc]
-	    initWithBitStringValue: bitStringValue
-		   bitStringLength: bitStringLength] autorelease];
+	return [[[self alloc] initWithBitString: bitString
+					 length: length] autorelease];
 }
 
-- (instancetype)initWithBitStringValue: (OFData *)bitStringValue
-		       bitStringLength: (size_t)bitStringLength
+- (instancetype)initWithBitString: (OFData *)bitString length: (size_t)length
 {
 	self = [super init];
 
 	@try {
-		if (bitStringValue.count * bitStringValue.itemSize !=
-		    OF_ROUND_UP_POW2(8, bitStringLength) / 8)
+		if (bitString.count * bitString.itemSize !=
+		    OF_ROUND_UP_POW2(8, length) / 8)
 			@throw [OFInvalidFormatException exception];
 
-		_bitStringValue = [bitStringValue copy];
-		_bitStringLength = bitStringLength;
+		_bitStringValue = [bitString copy];
+		_bitStringLength = length;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,8 +59,8 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *bitStringValue;
-	size_t bitStringLength;
+	OFData *bitString;
+	size_t length;
 
 	@try {
 		unsigned char unusedBits;
@@ -91,19 +89,18 @@
 		if (SIZE_MAX / 8 < count - 1)
 			@throw [OFOutOfRangeException exception];
 
-		bitStringLength = (count - 1) * 8;
-		bitStringValue = [DEREncodedContents subdataWithRange:
+		length = (count - 1) * 8;
+		bitString = [DEREncodedContents subdataWithRange:
 		    of_range(1, count - 1)];
 
 		if (unusedBits != 0)
-			bitStringLength -= unusedBits;
+			length -= unusedBits;
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	self = [self initWithBitStringValue: bitStringValue
-			    bitStringLength: bitStringLength];
+	self = [self initWithBitString: bitString length: length];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -124,7 +121,7 @@
 
 - (OFData *)ASN1DERRepresentation
 {
-	size_t bitStringValueCount = [_bitStringValue count];
+	size_t bitStringValueCount = _bitStringValue.count;
 	size_t roundedUpLength = OF_ROUND_UP_POW2(8, _bitStringLength);
 	unsigned char unusedBits = roundedUpLength - _bitStringLength;
 	unsigned char header[] = {
@@ -141,7 +138,7 @@
 	data = [OFMutableData
 	    dataWithCapacity: sizeof(header) + bitStringValueCount];
 	[data addItems: header count: sizeof(header)];
-	[data addItems: [_bitStringValue items] count: bitStringValueCount];
+	[data addItems: _bitStringValue.items count: bitStringValueCount];
 
 	[data makeImmutable];
 

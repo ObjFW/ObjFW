@@ -37,10 +37,10 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates an OctetString with the specified value.
  *
- * @param octetStringValue The OctetString value
+ * @param octetString The OctetString value
  * @return A new, autoreleased OFASN1OctetString
  */
-+ (instancetype)octetStringWithOctetStringValue: (OFData *)octetStringValue;
++ (instancetype)octetStringWithOctetString: (OFData *)octetString;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -48,10 +48,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OctetString with the specified
  *	  value.
  *
- * @param octetStringValue The OctetString value
+ * @param octetString The OctetString value
  * @return An initialized OFASN1OctetString
  */
-- (instancetype)initWithOctetStringValue: (OFData *)octetStringValue
+- (instancetype)initWithOctetString: (OFData *)octetString
     OF_DESIGNATED_INITIALIZER;
 
 /**

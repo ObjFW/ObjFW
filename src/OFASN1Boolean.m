@@ -23,18 +23,18 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Boolean
-@synthesize booleanValue = _booleanValue;
+@synthesize boolValue = _boolValue;
 
-+ (instancetype)booleanWithBooleanValue: (bool)booleanValue
++ (instancetype)booleanWithBool: (bool)bool_
 {
-	return [[[self alloc] initWithBooleanValue: booleanValue] autorelease];
+	return [[[self alloc] initWithBool: bool_] autorelease];
 }
 
-- (instancetype)initWithBooleanValue: (bool)booleanValue
+- (instancetype)initWithBool: (bool)bool_
 {
 	self = [super init];
 
-	_booleanValue = booleanValue;
+	_boolValue = bool_;
 
 	return self;
 }
@@ -64,7 +64,7 @@
 		@throw e;
 	}
 
-	return [self initWithBooleanValue: !!value];
+	return [self initWithBool: !!value];
 }
 
 - (instancetype)init
@@ -77,7 +77,7 @@
 	char buffer[] = {
 		OF_ASN1_TAG_NUMBER_BOOLEAN,
 		1,
-		(_booleanValue ? 0xFF : 0x00)
+		(_boolValue ? 0xFF : 0x00)
 	};
 
 	return [OFData dataWithItems: buffer count: sizeof(buffer)];
@@ -95,7 +95,7 @@
 
 	boolean = object;
 
-	if (boolean->_booleanValue != _booleanValue)
+	if (boolean->_boolValue != _boolValue)
 		return false;
 
 	return true;
@@ -103,12 +103,12 @@
 
 - (unsigned long)hash
 {
-	return _booleanValue;
+	return _boolValue;
 }
 
 - (OFString *)description
 {
-	return (_booleanValue
+	return (_boolValue
 	    ? @"<OFASN1Boolean: true>"
 	    : @"<OFASN1Boolean: false>");
 }
