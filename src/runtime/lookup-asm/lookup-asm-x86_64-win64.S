@@ -58,12 +58,11 @@
 	jmp	\not_found
 
 .Ltagged_pointer_\name:
-	movq	objc_tagged_pointer_secret(%rip), %rax
-	xorq	(%rax), %rcx
+	xorq	objc_tagged_pointer_secret(%rip), %rcx
 	andb	$0xE, %cl
 	movzbl	%cl, %r8d
 
-	movq	objc_tagged_pointer_classes(%rip), %rax
+	leaq	objc_tagged_pointer_classes(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	56(%r8), %r8
 
@@ -88,7 +87,7 @@ generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
-	movq	nil_method(%rip), %rax
+	leaq	nil_method(%rip), %rax
 	ret
 
 nil_method:
