@@ -33,6 +33,11 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
+ * @brief All categories in the INI file.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFINICategory *) *categories;
+
+/**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
  * @param path The path to the file whose contents the OFINIFile should contain

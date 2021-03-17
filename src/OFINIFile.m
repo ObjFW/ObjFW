@@ -46,6 +46,8 @@ isWhitespaceLine(OFString *line)
 }
 
 @implementation OFINIFile
+@synthesize categories = _categories;
+
 + (instancetype)fileWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
