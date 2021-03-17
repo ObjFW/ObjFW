@@ -96,6 +96,11 @@ unescapeString(OFString *string)
 
 	[super dealloc];
 }
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"%@ = %@", _key, _value];
+}
 @end
 
 @implementation OFINICategoryComment
@@ -104,6 +109,11 @@ unescapeString(OFString *string)
 	[_comment release];
 
 	[super dealloc];
+}
+
+- (OFString *)description
+{
+	return [[_comment copy] autorelease];
 }
 @end
 
@@ -485,5 +495,11 @@ unescapeString(OFString *string)
 	}
 
 	return true;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@ \"%@\": %@>",
+					   self.class, _name, _lines];
 }
 @end

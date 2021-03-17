@@ -173,4 +173,10 @@ isWhitespaceLine(OFString *line)
 
 	objc_autoreleasePoolPop(pool);
 }
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@: %@>",
+					   self.class, _categories];
+}
 @end
