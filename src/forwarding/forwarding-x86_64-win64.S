@@ -89,6 +89,10 @@ of_forward:
 	popq	%rbp
 
 	jmp	of_method_not_found
+.def of_forward
+.scl 2
+.type 32
+.endef
 
 of_forward_stret:
 	pushq	%rbp
@@ -162,6 +166,10 @@ of_forward_stret:
 	popq	%rbp
 
 	jmp	of_method_not_found_stret
+.def of_forward_stret
+.scl 2
+.type 32
+.endef
 
 init:
 	leaq	module(%rip), %rcx

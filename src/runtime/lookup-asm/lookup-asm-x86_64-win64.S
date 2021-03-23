@@ -67,6 +67,10 @@
 	movq	56(%r8), %r8
 
 	jmp	.Lmain_\name
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 .macro generate_lookup_super name lookup
@@ -79,6 +83,10 @@
 	movq	8(%r8), %r8
 	movq	56(%r8), %r8
 	jmp	.Lmain_\lookup
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 generate_lookup objc_msg_lookup objc_method_not_found
