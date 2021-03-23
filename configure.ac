@@ -349,25 +349,6 @@ AC_COMPILE_IFELSE([
 	AC_MSG_ERROR(Compiler does not support properties!)
 ])
 
-case "$host" in
-x86_64-*-mingw*)
-	dnl MSYS2 backported some patches to binutils 2.35 to enable ASLR.
-	dnl Unfortunately, those patches result in a crash on start. Tracing it
-	dnl in a debugger, a bunch of ctors get executed and after the last
-	dnl ctor, it jumps into a random address. Sounds like something in the
-	dnl ctor array does not get relocated correctly? In any case, this no
-	dnl longer happens with --default-image-base-low.
-	AC_MSG_CHECKING([whether we can use -Wl,--default-image-base-low])
-	old_LDFLAGS="$LDFLAGS"
-	LDFLAGS="$LDFLAGS -Wl,--default-image-base-low"
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], [
-		AC_MSG_RESULT(yes)
-	], [
-		AC_MSG_RESULT(no)
-		LDFLAGS="$old_LDFLAGS"
-	])
-esac
-
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 
