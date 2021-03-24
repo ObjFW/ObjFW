@@ -59,6 +59,10 @@
 	movl	32(%edx), %edx
 
 	jmp	.Lmain_\name
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 .macro generate_lookup_super name lookup
@@ -72,6 +76,10 @@
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
 	jmp	.Lmain_\lookup
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 generate_lookup _objc_msg_lookup _objc_method_not_found

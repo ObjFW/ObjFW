@@ -75,6 +75,10 @@ _of_forward:
 	popl	%ebp
 
 	jmp	_of_method_not_found
+.def _of_forward
+.scl 2
+.type 32
+.endef
 
 _of_forward_stret:
 	pushl	%ebp
@@ -132,6 +136,10 @@ _of_forward_stret:
 	popl	%ebp
 
 	jmp	_of_method_not_found_stret
+.def _of_forward_stret
+.scl 2
+.type 32
+.endef
 
 init:
 	pushl	%ebp
