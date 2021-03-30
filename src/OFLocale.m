@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -87,8 +85,9 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 #endif
 
 static bool
-evaluateCondition(OFString *condition, OFDictionary *variables)
+evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
+	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -100,12 +99,9 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 	 * before ")".
 	 * TODO: Replace with a proper tokenizer.
 	 */
-	condition = [condition stringByReplacingOccurrencesOfString: @"!"
-							 withString: @"! "];
-	condition = [condition stringByReplacingOccurrencesOfString: @"("
-							 withString: @"( "];
-	condition = [condition stringByReplacingOccurrencesOfString: @")"
-							 withString: @" )"];
+	[condition replaceOccurrencesOfString: @"!" withString: @"! "];
+	[condition replaceOccurrencesOfString: @"(" withString: @"( "];
+	[condition replaceOccurrencesOfString: @")" withString: @" )"];
 
 	/* Substitute variables and convert to RPN first */
 	tokens = [OFMutableArray array];
@@ -573,8 +569,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	variables = [OFMutableDictionary dictionary];
 	while ((name = va_arg(arguments, OFConstantString *)) != nil)
-		[variables setObject: va_arg(arguments, id)
-			      forKey: name];
+		[variables setObject: va_arg(arguments, id) forKey: name];
 
 	for (OFDictionary *strings in _localizedStrings) {
 		id string = [strings objectForKey: ID];

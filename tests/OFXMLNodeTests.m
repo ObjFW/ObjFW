@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -40,15 +38,13 @@ static OFString *module = @"OFXMLNode";
 	TEST(@"+[elementWithName:namespace:]",
 	    (nodes[2] = [OFXMLElement elementWithName: @"foo"
 					    namespace: @"urn:objfw:test"]) &&
-	    R([nodes[2] addAttributeWithName: @"test"
-				 stringValue: @"test"]) &&
+	    R([nodes[2] addAttributeWithName: @"test" stringValue: @"test"]) &&
 	    R([nodes[2] setPrefix: @"objfw-test"
 		     forNamespace: @"urn:objfw:test"]) &&
 	    [[nodes[2] XMLString] isEqual: @"<objfw-test:foo test='test'/>"] &&
 	    (nodes[3] = [OFXMLElement elementWithName: @"foo"
 					    namespace: @"urn:objfw:test"]) &&
-	    R([nodes[3] addAttributeWithName: @"test"
-				 stringValue: @"test"]) &&
+	    R([nodes[3] addAttributeWithName: @"test" stringValue: @"test"]) &&
 	    [[nodes[3] XMLString] isEqual:
 	    @"<foo xmlns='urn:objfw:test' test='test'/>"])
 
@@ -76,11 +72,9 @@ static OFString *module = @"OFXMLNode";
 	module = @"OFXMLElement";
 
 	TEST(@"-[addAttributeWithName:stringValue:]",
-	    R([nodes[0] addAttributeWithName: @"foo"
-				 stringValue: @"b&ar"]) &&
+	    R([nodes[0] addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
 	    [[nodes[0] XMLString] isEqual: @"<foo foo='b&amp;ar'/>"] &&
-	    R([nodes[1] addAttributeWithName: @"foo"
-				 stringValue: @"b&ar"]) &&
+	    R([nodes[1] addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
 	    [[nodes[1] XMLString] isEqual:
 	    @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 

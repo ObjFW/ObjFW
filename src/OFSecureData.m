@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -336,7 +334,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 + (instancetype)dataWithCount: (size_t)count
 		     itemSize: (size_t)itemSize
-	   allowsSwappableMemory: (bool)allowsSwappableMemory
+	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithCount: count
 				   itemSize: itemSize
@@ -469,8 +467,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	return self;
 }
 
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count
+- (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,9 +13,13 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define __NO_EXT_QNX
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <assert.h>
 #include <errno.h>
@@ -95,8 +97,7 @@
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
@@ -126,8 +127,7 @@
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key
++ (instancetype)exceptionWithObject: (id)object key: (OFString *)key
 {
-	return [[[self alloc] initWithObject: object
-					 key: key] autorelease];
+	return [[[self alloc] initWithObject: object key: key] autorelease];
 }
 
 + (instancetype)exceptionWithObject: (id)object
@@ -49,17 +45,12 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
+- (instancetype)initWithObject: (id)object key: (OFString *)key
 {
-	return [self initWithObject: object
-				key: key
-			      value: nil];
+	return [self initWithObject: object key: key value: nil];
 }
 
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
-			 value: (id)value
+- (instancetype)initWithObject: (id)object key: (OFString *)key value: (id)value
 {
 	self = [super init];
 

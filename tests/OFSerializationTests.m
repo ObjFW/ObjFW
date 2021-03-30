@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,10 +35,8 @@ static OFString *module = @"OFSerialization";
 	[a addObject: [OFMutableString stringWithString: @"asd"]];
 	[a addObject: [OFDate dateWithTimeIntervalSince1970: 1234.5678]];
 
-	[d setObject: @"Hello"
-	      forKey: a];
-	[d setObject: @"B\"la"
-	      forKey: @"Blub"];
+	[d setObject: @"Hello" forKey: a];
+	[d setObject: @"B\"la" forKey: @"Blub"];
 
 	[l appendObject: @"Hello"];
 	[l appendObject: @"Wo\rld!\nHow are you?"];
@@ -51,13 +47,11 @@ static OFString *module = @"OFSerialization";
 	[l appendObject:
 	    [OFCountedSet setWithObjects: @"foo", @"foo", @"bar", nil]];
 
-	[d setObject: @"list"
-	      forKey: l];
+	[d setObject: @"list" forKey: l];
 
 	data = [OFData dataWithItems: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"
 			       count: 39];
-	[d setObject: @"data"
-	      forKey: data];
+	[d setObject: @"data" forKey: data];
 
 	TEST(@"-[stringBySerializing]",
 	    (s = d.stringBySerializing) && [s isEqual:

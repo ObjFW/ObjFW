@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -198,17 +196,14 @@ normalizedKey(OFString *key)
 	if ([headers objectForKey: @"Date"] == nil) {
 		OFString *date = [[OFDate date]
 		    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-
-		[headers setObject: date
-			    forKey: @"Date"];
+		[headers setObject: date forKey: @"Date"];
 	}
 
 	if ([headers objectForKey: @"Server"] == nil) {
 		OFString *name = _server.name;
 
 		if (name != nil)
-			[headers setObject: name
-				    forKey: @"Server"];
+			[headers setObject: name forKey: @"Server"];
 	}
 
 	keyEnumerator = [headers keyEnumerator];
@@ -226,8 +221,7 @@ normalizedKey(OFString *key)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	/* TODO: Use non-blocking writes */
 
@@ -240,15 +234,13 @@ normalizedKey(OFString *key)
 		[self of_sendHeaders];
 
 	if (!_chunked)
-		return [_socket writeBuffer: buffer
-				     length: length];
+		return [_socket writeBuffer: buffer length: length];
 
 	pool = objc_autoreleasePoolPush();
 	[_socket writeString: [OFString stringWithFormat: @"%zX\r\n", length]];
 	objc_autoreleasePoolPop(pool);
 
-	[_socket writeBuffer: buffer
-		      length: length];
+	[_socket writeBuffer: buffer length: length];
 	[_socket writeString: @"\r\n"];
 
 	return length;
@@ -467,8 +459,7 @@ normalizedKey(OFString *key)
 	if (old != nil)
 		value = [old stringByAppendingFormat: @",%@", value];
 
-	[_headers setObject: value
-		     forKey: key];
+	[_headers setObject: value forKey: key];
 
 	if ([key isEqual: @"Host"]) {
 		pos = [value
@@ -505,7 +496,6 @@ normalizedKey(OFString *key)
 {
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-
 	[_socket writeFormat: @"HTTP/1.1 %hd %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
@@ -513,7 +503,6 @@ normalizedKey(OFString *key)
 			      statusCode,
 			      of_http_status_code_to_string(statusCode),
 			      date, _server.name];
-
 	return false;
 }
 
@@ -618,8 +607,7 @@ normalizedKey(OFString *key)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -637,8 +625,7 @@ normalizedKey(OFString *key)
 		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
-		ret = [_socket readIntoBuffer: buffer
-				       length: length];
+		ret = [_socket readIntoBuffer: buffer length: length];
 
 		_toRead -= ret;
 
@@ -652,8 +639,7 @@ normalizedKey(OFString *key)
 	if (_toRead == -2) {
 		char tmp[2];
 
-		switch ([_socket readIntoBuffer: tmp
-					 length: 2]) {
+		switch ([_socket readIntoBuffer: tmp length: 2]) {
 		case 2:
 			_toRead++;
 			if (tmp[1] != '\n')
@@ -671,8 +657,7 @@ normalizedKey(OFString *key)
 	} else if (_toRead == -1) {
 		char tmp;
 
-		if ([_socket readIntoBuffer: &tmp
-				     length: 1] == 1) {
+		if ([_socket readIntoBuffer: &tmp length: 1] == 1) {
 			_toRead++;
 			if (tmp != '\n')
 				@throw [OFInvalidFormatException exception];
@@ -686,11 +671,9 @@ normalizedKey(OFString *key)
 		if (length > (unsigned long long)_toRead)
 			length = (size_t)_toRead;
 
-		length = [_socket readIntoBuffer: buffer
-					  length: length];
+		length = [_socket readIntoBuffer: buffer length: length];
 
 		_toRead -= length;
-
 		if (_toRead == 0)
 			_toRead = -2;
 
@@ -938,8 +921,7 @@ normalizedKey(OFString *key)
 	} else
 		_listeningSocket = [[OFTCPSocket alloc] init];
 
-	_port = [_listeningSocket bindToHost: _host
-					port: _port];
+	_port = [_listeningSocket bindToHost: _host port: _port];
 	[_listeningSocket listen];
 
 #ifdef OF_HAVE_THREADS
@@ -1001,7 +983,7 @@ normalizedKey(OFString *key)
 		    @selector(server:didReceiveExceptionOnListeningSocket:)])
 			return false;
 
-		return [_delegate		  server: self
+		return [_delegate server: self
 		    didReceiveExceptionOnListeningSocket: exception];
 	}
 

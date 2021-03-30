@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -256,8 +254,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 /**
  * @brief Copies the objects at the specified range to the specified buffer.

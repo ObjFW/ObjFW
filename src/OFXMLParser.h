@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,8 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param characters The characters the XML parser found
  */
--    (void)parser: (OFXMLParser *)parser
-  foundCharacters: (OFString *)characters;
+- (void)parser: (OFXMLParser *)parser foundCharacters: (OFString *)characters;
 
 /**
  * @brief This callback is called when the XML parser found CDATA.
@@ -93,8 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param CDATA The CDATA the XML parser found
  */
-- (void)parser: (OFXMLParser *)parser
-    foundCDATA: (OFString *)CDATA;
+- (void)parser: (OFXMLParser *)parser foundCDATA: (OFString *)CDATA;
 
 /**
  * @brief This callback is called when the XML parser found a comment.
@@ -102,8 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a comment
  * @param comment The comment the XML parser found
  */
-- (void)parser: (OFXMLParser *)parser
-  foundComment: (OFString *)comment;
+- (void)parser: (OFXMLParser *)parser foundComment: (OFString *)comment;
 
 /**
  * @brief This callback is called when the XML parser found an entity it
@@ -212,8 +207,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param buffer The buffer to parse
  * @param length The length of the buffer
  */
-- (void)parseBuffer: (const char *)buffer
-	     length: (size_t)length;
+- (void)parseBuffer: (const char *)buffer length: (size_t)length;
 
 /**
  * @brief Parses the specified string.
@@ -228,15 +222,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param stream The stream to parse
  */
 - (void)parseStream: (OFStream *)stream;
-
-#ifdef OF_HAVE_FILES
-/**
- * @brief Parses the specified file.
- *
- * @param path The path to the file to parse
-*/
-- (void)parseFile: (OFString *)path;
-#endif
 @end
 
 OF_ASSUME_NONNULL_END

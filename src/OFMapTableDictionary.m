@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -139,8 +137,7 @@ static const of_map_table_functions_t objectFunctions = {
 		objectEnumerator = [dictionary objectEnumerator];
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[_mapTable setObject: object
-				      forKey: key];
+			[_mapTable setObject: object forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -151,14 +148,12 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	self = [self initWithCapacity: 1];
 
 	@try {
-		[_mapTable setObject: object
-			      forKey: key];
+		[_mapTable setObject: object forKey: key];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -177,8 +172,7 @@ static const of_map_table_functions_t objectFunctions = {
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[_mapTable setObject: objects[i]
-				      forKey: keys[i]];
+			[_mapTable setObject: objects[i] forKey: keys[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -187,8 +181,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -220,8 +213,7 @@ static const of_map_table_functions_t objectFunctions = {
 			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setObject: object
-			      forKey: key];
+		[_mapTable setObject: object forKey: key];
 
 		for (i = 1; i < count; i++) {
 			key = va_arg(arguments, id);
@@ -230,8 +222,7 @@ static const of_map_table_functions_t objectFunctions = {
 			if (key == nil || object == nil)
 				@throw [OFInvalidArgumentException exception];
 
-			[_mapTable setObject: object
-				      forKey: key];
+			[_mapTable setObject: object forKey: key];
 		}
 	} @catch (id e) {
 		[self release];
@@ -362,8 +353,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: keys
-					  count: count];
+		ret = [OFArray arrayWithObjects: keys count: count];
 	} @finally {
 		free(keys);
 	}
@@ -396,8 +386,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: objects
-					  count: count];
+		ret = [OFArray arrayWithObjects: objects count: count];
 	} @finally {
 		free(objects);
 	}

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,8 +59,7 @@ static OFString *PLIST3 = PLIST(
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *array = [OFArray arrayWithObjects:
 	    @"Hello",
-	    [OFData dataWithItems: "World!"
-			    count: 6],
+	    [OFData dataWithItems: "World!" count: 6],
 	    [OFDate dateWithTimeIntervalSince1970: 1521030896],
 	    [OFNumber numberWithBool: true],
 	    [OFNumber numberWithBool: false],

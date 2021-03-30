@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,8 +71,7 @@ typedef off_t of_offset_t;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset form the start of the file
  */
-- (of_offset_t)seekToOffset: (of_offset_t)offset
-		     whence: (int)whence;
+- (of_offset_t)seekToOffset: (of_offset_t)offset whence: (int)whence;
 
 /**
  * @brief Seek the stream on the lowlevel.
@@ -94,8 +91,7 @@ typedef off_t of_offset_t;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset from the start of the file
  */
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence;
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset whence: (int)whence;
 @end
 
 OF_ASSUME_NONNULL_END

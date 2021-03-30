@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -86,19 +84,15 @@
 	[super dealloc];
 }
 
-- (void)setArgument: (const void *)buffer
-	    atIndex: (size_t)idx
+- (void)setArgument: (const void *)buffer atIndex: (size_t)idx
 {
 	OFMutableData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(data.mutableItems, buffer, data.itemSize);
 }
 
-- (void)getArgument: (void *)buffer
-	    atIndex: (size_t)idx
+- (void)getArgument: (void *)buffer atIndex: (size_t)idx
 {
 	OFData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(buffer, data.items, data.itemSize);
 }
 

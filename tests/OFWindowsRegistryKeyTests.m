@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,8 +23,7 @@ static OFString *module = @"OFWindowsRegistryKey";
 - (void)windowsRegistryKeyTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithItems: "abcdef"
-				       count: 6];
+	OFData *data = [OFData dataWithItems: "abcdef" count: 6];
 	OFWindowsRegistryKey *softwareKey, *ObjFWKey;
 	DWORD type;
 
@@ -57,30 +54,26 @@ static OFString *module = @"OFWindowsRegistryKey";
 	    (ObjFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
 				securityAndAccessRights: KEY_ALL_ACCESS]))
 
-	TEST(@"-[setData:forValue:type:]",
-	    R([ObjFWKey setData: data
-		       forValue: @"data"
-			   type: REG_BINARY]))
+	TEST(@"-[setData:forValueNamed:type:]",
+	    R([ObjFWKey setData: data forValueNamed: @"data" type: REG_BINARY]))
 
-	TEST(@"-[dataForValue:subkeyPath:flags:type:]",
-	    [[ObjFWKey dataForValue: @"data"
-			       type: &type] isEqual: data] &&
+	TEST(@"-[dataForValueNamed:subkeyPath:flags:type:]",
+	    [[ObjFWKey dataForValueNamed: @"data" type: &type] isEqual: data] &&
 	    type == REG_BINARY)
 
-	TEST(@"-[setString:forValue:type:]",
-	    R([ObjFWKey setString: @"foobar"
-			 forValue: @"string"]) &&
+	TEST(@"-[setString:forValueNamed:type:]",
+	    R([ObjFWKey setString: @"foobar" forValueNamed: @"string"]) &&
 	    R([ObjFWKey setString: @"%PATH%;foo"
-			 forValue: @"expand"
+		    forValueNamed: @"expand"
 			     type: REG_EXPAND_SZ]))
 
 	TEST(@"-[stringForValue:subkeyPath:]",
-	    [[ObjFWKey stringForValue: @"string"] isEqual: @"foobar"] &&
-	    [[ObjFWKey stringForValue: @"expand"
-				 type: &type] isEqual: @"%PATH%;foo"] &&
+	    [[ObjFWKey stringForValueNamed: @"string"] isEqual: @"foobar"] &&
+	    [[ObjFWKey stringForValueNamed: @"expand" type: &type]
+	    isEqual: @"%PATH%;foo"] &&
 	    type == REG_EXPAND_SZ)
 
-	TEST(@"-[deleteValue:]", R([ObjFWKey deleteValue: @"data"]))
+	TEST(@"-[deleteValueNamed:]", R([ObjFWKey deleteValueNamed: @"data"]))
 
 	TEST(@"-[deleteSubkeyAtPath:]",
 	    R([softwareKey deleteSubkeyAtPath: @"ObjFW"]))

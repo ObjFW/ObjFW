@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,46 +62,40 @@
 	[super dealloc];
 }
 
-- (void)setString: (OFString *)string
-	  forPath: (OFString *)path
+- (void)setString: (OFString *)string forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setInteger: (long long)integer
-	   forPath: (OFString *)path
+- (void)setLongLong: (long long)longLong forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setBool: (bool)bool_
-	forPath: (OFString *)path
+- (void)setBool: (bool)bool_ forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setFloat: (float)float_
-	 forPath: (OFString *)path
+- (void)setFloat: (float)float_ forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setDouble: (double)double_
-	  forPath: (OFString *)path
+- (void)setDouble: (double)double_ forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setArray: (OFArray *)array
-	 forPath: (OFString *)path
+- (void)setStringArray: (OFArray OF_GENERIC(OFString *) *)array
+	       forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFString *)stringForPath: (OFString *)path
 {
-	return [self stringForPath: path
-		      defaultValue: nil];
+	return [self stringForPath: path defaultValue: nil];
 }
 
 - (OFString *)stringForPath: (OFString *)path
@@ -112,31 +104,28 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (long long)integerForPath: (OFString *)path
-	       defaultValue: (long long)defaultValue
+- (long long)longLongForPath: (OFString *)path
+		defaultValue: (long long)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)boolForPath: (OFString *)path
-       defaultValue: (bool)defaultValue
+- (bool)boolForPath: (OFString *)path defaultValue: (bool)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (float)floatForPath: (OFString *)path
-	 defaultValue: (float)defaultValue
+- (float)floatForPath: (OFString *)path defaultValue: (float)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (double)doubleForPath: (OFString *)path
-	   defaultValue: (double)defaultValue
+- (double)doubleForPath: (OFString *)path defaultValue: (double)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray *)arrayForPath: (OFString *)path
+- (OFArray OF_GENERIC(OFString *) *)stringArrayForPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

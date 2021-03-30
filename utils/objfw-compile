@@ -1,8 +1,6 @@
 #!/bin/sh
 #
-#  Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
-#                2018, 2019, 2020
-#    Jonathan Schleifer <js@nil.im>
+#  Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
 #
 #  All rights reserved.
 #
@@ -32,10 +30,10 @@ parse_packages() {
 
 	while test x"$1" != "x"; do
 		case "$1" in
-			--package)
-				shift
-				packages="$packages --package $1"
-				;;
+		--package)
+			shift
+			packages="$packages --package $1"
+			;;
 		esac
 		shift
 	done
@@ -124,137 +122,136 @@ out_suffix=""
 
 while test x"$1" != "x"; do
 	case "$1" in
-		-o|--out)
-			shift
-			out="$1"
-			;;
-		--lib)
-			if test x"$plugin" = x"yes"; then
-				echo "You can't use --lib and --plugin!"
-				exit 1
-			fi
-
-			shift
-
-			if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+$" >/dev/null
-			then
-				echo "$1 is not a valid library version!"
-				exit 1
-			fi
-
-			export LIB_MAJOR="${1%.*}"
-			export LIB_MINOR="${1#*.}"
-
-			lib="yes"
-			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
-			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
-			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
-			;;
-		--package)
-			# Already included into the flags.
-			shift
-			;;
-		--plugin)
-			if test x"$lib" = x"yes"; then
-				echo "You can't use --lib and --plugin!"
-				exit 1
-			fi
-
-			plugin="yes"
-			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --plugin-cflags)"
-			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
-			out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
-			;;
-		--arc)
-			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --arc)"
-			;;
-		--builddir)
-			shift
-			builddir="$1"
-			;;
-		-D)
-			shift
-			CPPFLAGS="$CPPFLAGS -D$1"
-			;;
-		-D*)
-			CPPFLAGS="$CPPFLAGS $1"
-			;;
-		-framework)
-			shift
-			LIBS="$LIBS -framework $1"
-			;;
-		-f*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		-F)
-			shift
-			LIBS="$LIBS -F$1"
-			;;
-		-F*)
-			LIBS="$LIBS $1"
-			;;
-		-g*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		-I)
-			shift
-			CPPFLAGS="$CPPFLAGS -I$1"
-			;;
-		-I*)
-			CPPFLAGS="$CPPFLAGS $1"
-			;;
-		-l)
-			shift
-			LIBS="$LIBS -l$1"
-			;;
-		-l*)
-			LIBS="$LIBS $1"
-			;;
-		-L)
-			shift
-			LIBS="$LIBS -L$1"
-			;;
-		-L*)
-			LIBS="$LIBS $1"
-			;;
-		-m*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		-O*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		-pthread)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			LDFLAGS="$LDFLAGS $1"
-			;;
-		-std=*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		-Wl,*)
-			LDFLAGS="$LDFLAGS $1"
-			;;
-		-W*)
-			OBJCFLAGS="$OBJCFLAGS $1"
-			;;
-		--help)
-			show_help
-			exit 0
-			;;
-		-*)
-			echo "Unknown option: $1"
+	-o|--out)
+		shift
+		out="$1"
+		;;
+	--lib)
+		if test x"$plugin" = x"yes"; then
+			echo "You can't use --lib and --plugin!"
 			exit 1
-			;;
-		*.m)
-			srcs="$srcs $1"
-			;;
-		*.mm)
-			srcs="$srcs $1"
-			link_stdcpp="yes"
-			;;
-		*)
-			echo "Only .m and .mm files can be compiled!" 1>&2
+		fi
+
+		shift
+
+		if ! echo "$1" | grep "^[0-9]\+\.[0-9]\+$" >/dev/null; then
+			echo "$1 is not a valid library version!"
 			exit 1
-			;;
+		fi
+
+		export LIB_MAJOR="${1%.*}"
+		export LIB_MINOR="${1#*.}"
+
+		lib="yes"
+		OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
+		out_prefix="$($OBJFW_CONFIG --lib-prefix)"
+		out_suffix="$($OBJFW_CONFIG --lib-suffix)"
+		;;
+	--package)
+		# Already included into the flags.
+		shift
+		;;
+	--plugin)
+		if test x"$lib" = x"yes"; then
+			echo "You can't use --lib and --plugin!"
+			exit 1
+		fi
+
+		plugin="yes"
+		OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --plugin-cflags)"
+		LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
+		out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
+		;;
+	--arc)
+		OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --arc)"
+		;;
+	--builddir)
+		shift
+		builddir="$1"
+		;;
+	-D)
+		shift
+		CPPFLAGS="$CPPFLAGS -D$1"
+		;;
+	-D*)
+		CPPFLAGS="$CPPFLAGS $1"
+		;;
+	-framework)
+		shift
+		LIBS="$LIBS -framework $1"
+		;;
+	-f*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	-F)
+		shift
+		LIBS="$LIBS -F$1"
+		;;
+	-F*)
+		LIBS="$LIBS $1"
+		;;
+	-g*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	-I)
+		shift
+		CPPFLAGS="$CPPFLAGS -I$1"
+		;;
+	-I*)
+		CPPFLAGS="$CPPFLAGS $1"
+		;;
+	-l)
+		shift
+		LIBS="$LIBS -l$1"
+		;;
+	-l*)
+		LIBS="$LIBS $1"
+		;;
+	-L)
+		shift
+		LIBS="$LIBS -L$1"
+		;;
+	-L*)
+		LIBS="$LIBS $1"
+		;;
+	-m*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	-O*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	-pthread)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		LDFLAGS="$LDFLAGS $1"
+		;;
+	-std=*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	-Wl,*)
+		LDFLAGS="$LDFLAGS $1"
+		;;
+	-W*)
+		OBJCFLAGS="$OBJCFLAGS $1"
+		;;
+	--help)
+		show_help
+		exit 0
+		;;
+	-*)
+		echo "Unknown option: $1"
+		exit 1
+		;;
+	*.m)
+		srcs="$srcs $1"
+		;;
+	*.mm)
+		srcs="$srcs $1"
+		link_stdcpp="yes"
+		;;
+	*)
+		echo "Only .m and .mm files can be compiled!" 1>&2
+		exit 1
+		;;
 	esac
 
 	shift
@@ -266,35 +263,35 @@ if test x"$out" = x""; then
 fi
 
 case "$builddir" in
-	"")
-		;;
-	*/)
-		;;
-	*)
-		builddir="$builddir/"
-		;;
+"")
+	;;
+*/)
+	;;
+*)
+	builddir="$builddir/"
+	;;
 esac
 
 for i in $srcs; do
 	case $i in
-		*.m)
-			if test x"$lib" = x"yes"; then
-				obj="$builddir${i%.m}.lib.o"
-			elif test x"$plugin" = x"yes"; then
-				obj="$builddir${i%.m}.plugin.o"
-			else
-				obj="$builddir${i%.m}.o"
-			fi
-			;;
-		*.mm)
-			if test x"$lib" = x"yes"; then
-				obj="$builddir${i%.mm}.lib.o"
-			elif test x"$plugin" = x"yes"; then
-				obj="$builddir${i%.mm}.plugin.o"
-			else
-				obj="$builddir${i%.mm}.o"
-			fi
-			;;
+	*.m)
+		if test x"$lib" = x"yes"; then
+			obj="$builddir${i%.m}.lib.o"
+		elif test x"$plugin" = x"yes"; then
+			obj="$builddir${i%.m}.plugin.o"
+		else
+			obj="$builddir${i%.m}.o"
+		fi
+		;;
+	*.mm)
+		if test x"$lib" = x"yes"; then
+			obj="$builddir${i%.mm}.lib.o"
+		elif test x"$plugin" = x"yes"; then
+			obj="$builddir${i%.mm}.plugin.o"
+		else
+			obj="$builddir${i%.mm}.o"
+		fi
+		;;
 	esac
 	objs="$objs $obj"
 	build="no"

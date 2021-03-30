@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -95,8 +93,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key for the HMAC
  * @param length The length of the key for the HMAC
  */
-- (void)setKey: (const void *)key
-	length: (size_t)length;
+- (void)setKey: (const void *)key length: (size_t)length;
 
 /**
  * @brief Adds a buffer to the HMAC to be calculated.
@@ -104,8 +101,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
  */
-- (void)updateWithBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Resets the HMAC so that it can be calculated for a new message.

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -285,32 +283,29 @@ __extension__
 
 	memset(&st2, '\0', sizeof(st2));
 
-	TEST(@"-[setArgument:atIndex:] #1", R([invocation setArgument: &c
-							      atIndex: 2]))
+	TEST(@"-[setArgument:atIndex:] #1",
+	    R([invocation setArgument: &c atIndex: 2]))
 
-	TEST(@"-[setArgument:atIndex:] #2", R([invocation setArgument: &i
-							      atIndex: 3]))
+	TEST(@"-[setArgument:atIndex:] #2",
+	    R([invocation setArgument: &i atIndex: 3]))
 
-	TEST(@"-[setArgument:atIndex:] #3", R([invocation setArgument: &stp
-							      atIndex: 4]))
+	TEST(@"-[setArgument:atIndex:] #3",
+	    R([invocation setArgument: &stp atIndex: 4]))
 
-	TEST(@"-[setArgument:atIndex:] #4", R([invocation setArgument: &st
-							      atIndex: 5]))
+	TEST(@"-[setArgument:atIndex:] #4",
+	    R([invocation setArgument: &st atIndex: 5]))
 
-	TEST(@"-[getArgument:atIndex:] #1", R([invocation getArgument: &c2
-							      atIndex: 2]) &&
-	    c == c2)
+	TEST(@"-[getArgument:atIndex:] #1",
+	    R([invocation getArgument: &c2 atIndex: 2]) && c == c2)
 
-	TEST(@"-[getArgument:atIndex:] #2", R([invocation getArgument: &i2
-							      atIndex: 3]) &&
-	    i == i2)
+	TEST(@"-[getArgument:atIndex:] #2",
+	    R([invocation getArgument: &i2 atIndex: 3]) && i == i2)
 
-	TEST(@"-[getArgument:atIndex:] #3", R([invocation getArgument: &stp2
-							      atIndex: 4]) &&
-	    stp == stp2)
+	TEST(@"-[getArgument:atIndex:] #3",
+	    R([invocation getArgument: &stp2 atIndex: 4]) && stp == stp2)
 
-	TEST(@"-[getArgument:atIndex:] #4", R([invocation getArgument: &st2
-							      atIndex: 5]) &&
+	TEST(@"-[getArgument:atIndex:] #4",
+	    R([invocation getArgument: &st2 atIndex: 5]) &&
 	    memcmp(&st, &st2, sizeof(st)) == 0)
 
 	objc_autoreleasePoolPop(pool);

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -63,8 +61,7 @@
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -111,8 +108,7 @@
 		for (size_t i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[_array addItems: objects
-			   count: count];
+		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
@@ -128,8 +124,7 @@
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self init];
 
@@ -146,8 +141,7 @@
 		if (!ok)
 			@throw [OFInvalidArgumentException exception];
 
-		[_array addItems: objects
-			   count: count];
+		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
@@ -212,8 +206,7 @@
 	return *((id *)[_array itemAtIndex: idx]);
 }
 
-- (void)getObjects: (id *)buffer
-	   inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (of_range_t)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -274,8 +267,7 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [OFAdjacentSubarray arrayWithArray: self
-					    range: range];
+	return [OFAdjacentSubarray arrayWithArray: self range: range];
 }
 
 - (bool)isEqual: (id)object

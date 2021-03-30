@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -58,8 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new, autoreleased undefined key exception
  */
-+ (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key;
++ (instancetype)exceptionWithObject: (id)object key: (OFString *)key;
 
 /**
  * @brief Creates a new, autoreleased undefined key exception.
@@ -84,8 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized undefined key exception
  */
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key;
+- (instancetype)initWithObject: (id)object key: (OFString *)key;
 
 /**
  * @brief Initializes an already allocated undefined key exception.

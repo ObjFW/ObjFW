@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -57,8 +55,7 @@ static OFString *values[] = {
 	return self;
 }
 
-- (instancetype)initWithKey: (id)key
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)key arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -123,13 +120,11 @@ static OFString *values[] = {
 		[self inheritMethodsFromClass: [SimpleDictionary class]];
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
 	bool existed = ([_dictionary objectForKey: key] == nil);
 
-	[_dictionary setObject: object
-			forKey: key];
+	[_dictionary setObject: object forKey: key];
 
 	if (existed)
 		_mutations++;
@@ -169,10 +164,8 @@ static OFString *values[] = {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFArray *keysArray, *valuesArray;
 
-	[mutDict setObject: values[0]
-		    forKey: keys[0]];
-	[mutDict setValue: values[1]
-		   forKey: keys[1]];
+	[mutDict setObject: values[0] forKey: keys[0]];
+	[mutDict setValue: values[1] forKey: keys[1]];
 
 	TEST(@"-[objectForKey:]",
 	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
@@ -186,8 +179,7 @@ static OFString *values[] = {
 
 	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
 	    @"dictionary", OFUndefinedKeyException,
-	    [[dictionaryClass dictionary] setValue: @"x"
-					    forKey: @"x"])
+	    [[dictionaryClass dictionary] setValue: @"x" forKey: @"x"])
 
 	TEST(@"-[containsObject:]",
 	    [mutDict containsObject: values[0]] &&
@@ -227,8 +219,7 @@ static OFString *values[] = {
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [keyEnumerator nextObject]);
 
-	[mutDict setObject: values[0]
-		    forKey: keys[0]];
+	[mutDict setObject: values[0] forKey: keys[0]];
 
 	size_t i = 0;
 	bool ok = true;
@@ -239,8 +230,7 @@ static OFString *values[] = {
 			break;
 		}
 
-		[mutDict setObject: [mutDict objectForKey: key]
-			    forKey: key];
+		[mutDict setObject: [mutDict objectForKey: key] forKey: key];
 		i++;
 	}
 
@@ -250,9 +240,7 @@ static OFString *values[] = {
 	@try {
 		for (OFString *key in mutDict) {
 			(void)key;
-
-			[mutDict setObject: @""
-				    forKey: @""];
+			[mutDict setObject: @"" forKey: @""];
 		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;
@@ -363,25 +351,21 @@ static OFString *values[] = {
 	    mutDict.count == dict.count &&
 	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[mutDict objectForKey: keys[1]] isEqual: values[1]] &&
-	    R([mutDict setObject: @"value3"
-			  forKey: @"key3"]) &&
+	    R([mutDict setObject: @"value3" forKey: @"key3"]) &&
 	    [[mutDict objectForKey: @"key3"] isEqual: @"value3"] &&
 	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
-	    R([mutDict setObject: @"foo"
-			  forKey: keys[0]]) &&
+	    R([mutDict setObject: @"foo" forKey: keys[0]]) &&
 	    [[mutDict objectForKey: keys[0]] isEqual: @"foo"])
 
 	TEST(@"-[removeObjectForKey:]",
 	    R([mutDict removeObjectForKey: keys[0]]) &&
 	    [mutDict objectForKey: keys[0]] == nil)
 
-	[mutDict setObject: @"foo"
-		    forKey: keys[0]];
+	[mutDict setObject: @"foo" forKey: keys[0]];
 	TEST(@"-[isEqual:]", ![mutDict isEqual: dict] &&
 	    R([mutDict removeObjectForKey: @"key3"]) &&
 	    ![mutDict isEqual: dict] &&
-	    R([mutDict setObject: values[0]
-			  forKey: keys[0]]) &&
+	    R([mutDict setObject: values[0] forKey: keys[0]]) &&
 	    [mutDict isEqual: dict])
 
 	objc_autoreleasePoolPop(pool);

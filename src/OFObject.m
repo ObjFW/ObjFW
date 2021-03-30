@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -462,8 +460,7 @@ _references_to_categories_of_OFObject(void)
 	return [self className];
 }
 
-+ (IMP)replaceClassMethod: (SEL)selector
-      withMethodFromClass: (Class)class
++ (IMP)replaceClassMethod: (SEL)selector withMethodFromClass: (Class)class
 {
 	IMP method = [class methodForSelector: selector];
 
@@ -474,8 +471,7 @@ _references_to_categories_of_OFObject(void)
 	    typeEncodingForSelector(object_getClass(class), selector));
 }
 
-+ (IMP)replaceInstanceMethod: (SEL)selector
-	 withMethodFromClass: (Class)class
++ (IMP)replaceInstanceMethod: (SEL)selector withMethodFromClass: (Class)class
 {
 	IMP method = [class instanceMethodForSelector: selector];
 
@@ -610,8 +606,7 @@ _references_to_categories_of_OFObject(void)
 	return imp(self, selector);
 }
 
-- (id)performSelector: (SEL)selector
-	   withObject: (id)object
+- (id)performSelector: (SEL)selector withObject: (id)object
 {
 #if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id) =
@@ -670,8 +665,7 @@ _references_to_categories_of_OFObject(void)
 	return imp(self, selector, object1, object2, object3, object4);
 }
 
-- (void)performSelector: (SEL)selector
-	     afterDelay: (of_time_interval_t)delay
+- (void)performSelector: (SEL)selector afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -973,8 +971,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return character;
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer
-	      inRange: (of_range_t)range
+- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range
 {
 	/* TODO: Could be slightly optimized */
 	void *pool = objc_autoreleasePoolPush();
@@ -1241,9 +1238,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		if (*cString == '\n' || *cString == '\r') {
 			pool = objc_autoreleasePoolPush();
 
-			block([OFString
-			    stringWithUTF8String: last
-					  length: cString - last], &stop);
+			block([OFString stringWithUTF8String: last
+						      length: cString - last],
+			    &stop);
 			last = cString + 1;
 
 			objc_autoreleasePoolPop(pool);

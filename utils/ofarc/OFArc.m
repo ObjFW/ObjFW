@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -326,8 +324,7 @@ writingNotSupported(OFString *type)
 				permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
-			[sandbox unveilPath: path
-				permissions: @"r"];
+			[sandbox unveilPath: path permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
 		[OFApplication of_activateSandbox: sandbox];
@@ -400,14 +397,12 @@ writingNotSupported(OFString *type)
 
 		if (files.count > 0)
 			for (OFString *path in files)
-				[sandbox unveilPath: path
-					permissions: @"wc"];
+				[sandbox unveilPath: path permissions: @"wc"];
 		else {
 			OFString *path = (outputDir != nil
 			    ? outputDir : OF_PATH_CURRENT_DIRECTORY);
 			/* We need 'r' to change the directory to it. */
-			[sandbox unveilPath: path
-				permissions: @"rwc"];
+			[sandbox unveilPath: path permissions: @"rwc"];
 		}
 
 		sandbox.allowsUnveil = false;
@@ -514,8 +509,7 @@ writingNotSupported(OFString *type)
 		}
 	} else {
 		@try {
-			file = [OFFile fileWithPath: path
-					       mode: fileModeString];
+			file = [OFFile fileWithPath: path mode: fileModeString];
 		} @catch (OFOpenItemFailedException *e) {
 			OFString *error = [OFString
 			    stringWithCString: strerror(e.errNo)
@@ -693,8 +687,7 @@ error:
 	size_t length;
 
 	@try {
-		length = [input readIntoBuffer: buffer
-					length: BUFFER_SIZE];
+		length = [input readIntoBuffer: buffer length: BUFFER_SIZE];
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)
@@ -708,8 +701,7 @@ error:
 	}
 
 	@try {
-		[output writeBuffer: buffer
-			     length: length];
+		[output writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)

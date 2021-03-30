@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -54,8 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param data The data for the extension
  * @return A new, autoreleased OFMessagePackRepresentation
  */
-+ (instancetype)extensionWithType: (int8_t)type
-			     data: (OFData *)data;
++ (instancetype)extensionWithType: (int8_t)type data: (OFData *)data;
 
 - (instancetype)init OF_UNAVAILABLE;
 

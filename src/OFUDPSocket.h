@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -74,8 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

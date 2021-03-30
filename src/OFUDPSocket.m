@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +14,11 @@
  */
 
 #include "config.h"
+
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
 
@@ -67,7 +70,7 @@
 	}
 #endif
 
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (of_socket_address_get_port(address) != 0) {
 #endif
 		if (bind(_socket, &address->sockaddr.sockaddr,
@@ -83,7 +86,7 @@
 								 socket: self
 								  errNo: errNo];
 		}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
 		for (;;) {
 			uint16_t rnd = 0;
@@ -123,7 +126,7 @@
 	if ((port = of_socket_address_get_port(address)) > 0)
 		return port;
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
@@ -169,8 +172,7 @@
 #endif
 }
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
@@ -186,8 +188,7 @@
 	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
 	of_socket_address_set_port(&address, port);
 
-	port = [self of_bindToAddress: &address
-			    extraType: 0];
+	port = [self of_bindToAddress: &address extraType: 0];
 
 	objc_autoreleasePoolPop(pool);
 

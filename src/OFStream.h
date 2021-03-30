@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -250,8 +248,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		 The buffer *must* be *at least* this big!
  * @return The number of bytes read
  */
-- (size_t)readIntoBuffer: (void *)buffer
-		  length: (size_t)length;
+- (size_t)readIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Reads exactly the specified length bytes from the stream into a
@@ -268,8 +265,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  */
- - (void)readIntoBuffer: (void *)buffer
-	    exactLength: (size_t)length;
+ - (void)readIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -292,8 +288,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  */
-- (void)asyncReadIntoBuffer: (void *)buffer
-		     length: (size_t)length;
+- (void)asyncReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously reads *at most* size bytes from the stream into a
@@ -336,8 +331,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  */
-- (void)asyncReadIntoBuffer: (void *)buffer
-		exactLength: (size_t)length;
+- (void)asyncReadIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -592,8 +586,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of floats to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
-				  count: (size_t)count;
+- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer count: (size_t)count;
 
 /**
  * @brief Reads the specified number of doubles from the stream which are
@@ -607,8 +600,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of doubles to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
-				   count: (size_t)count;
+- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer count: (size_t)count;
 
 /**
  * @brief Reads a uint16_t from the stream which is encoded in little endian.
@@ -758,8 +750,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of items to read
  * @return OFData with count items.
  */
-- (OFData *)readDataWithItemSize: (size_t)itemSize
-			   count: (size_t)count;
+- (OFData *)readDataWithItemSize: (size_t)itemSize count: (size_t)count;
 
 /**
  * @brief Returns OFData with all the remaining data of the stream.
@@ -988,8 +979,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return The number of bytes written. This can only differ from the specified
  *	   length in non-blocking mode.
  */
-- (size_t)writeBuffer: (const void *)buffer
-	       length: (size_t)length;
+- (size_t)writeBuffer: (const void *)buffer length: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -1190,8 +1180,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of uint16_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
-			 count: (size_t)count;
+- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint32_ts into the stream, encoded in
@@ -1202,8 +1191,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of uint32_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
-			 count: (size_t)count;
+- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint64_ts into the stream, encoded in
@@ -1214,8 +1202,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of uint64_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
-			 count: (size_t)count;
+- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of floats into the stream, encoded in big
@@ -1226,8 +1213,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of floats to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianFloats: (const float *)buffer
-			 count: (size_t)count;
+- (size_t)writeBigEndianFloats: (const float *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of doubles into the stream, encoded in
@@ -1238,8 +1224,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of doubles to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianDoubles: (const double *)buffer
-			  count: (size_t)count;
+- (size_t)writeBigEndianDoubles: (const double *)buffer count: (size_t)count;
 
 /**
  * @brief Writes a uint16_t into the stream, encoded in little endian.
@@ -1321,8 +1306,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of floats to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianFloats: (const float *)buffer
-			    count: (size_t)count;
+- (size_t)writeLittleEndianFloats: (const float *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of doubles into the stream, encoded in
@@ -1333,8 +1317,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of doubles to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianDoubles: (const double *)buffer
-			     count: (size_t)count;
+- (size_t)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count;
 
 /**
  * @brief Writes OFData into the stream.
@@ -1405,8 +1388,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param arguments The arguments used in the format string
  * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString *)format
-	    arguments: (va_list)arguments;
+- (size_t)writeFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -1436,8 +1418,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param buffer The buffer to unread
  * @param length The length of the buffer to unread
  */
-- (void)unreadFromBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)unreadFromBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Closes the stream.
@@ -1458,8 +1439,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the buffer
  * @return The number of bytes read
  */
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length;
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Performs a lowlevel write.
@@ -1473,8 +1453,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data to write
  * @return The number of bytes written
  */
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length;
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Returns whether the lowlevel is at the end of the stream.

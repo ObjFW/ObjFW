@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -378,8 +376,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param URL The URL of the directory to create
  * @param createParents Whether to create the parents of the directory
  */
-- (void)createDirectoryAtURL: (OFURL *)URL
-	       createParents: (bool)createParents;
+- (void)createDirectoryAtURL: (OFURL *)URL createParents: (bool)createParents;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -431,8 +428,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
  */
-- (void)copyItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -448,8 +444,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination URL
  */
-- (void)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -465,8 +460,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  */
-- (void)moveItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -482,8 +476,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  */
-- (void)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -517,8 +510,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The path to the item for which a link should be created
  * @param destination The path to the item which should link to the source
  */
-- (void)linkItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -532,8 +524,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
  */
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /**

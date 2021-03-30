@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,8 +31,7 @@ static OFString *module = @"OFStream";
 	return (state > 1);
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)size
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)size
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 

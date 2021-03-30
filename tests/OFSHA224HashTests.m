@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,18 +30,15 @@ const uint8_t testfile_sha224[28] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA224Hash *sha224, *copy;
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"r"];
+	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
 	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
 	    (sha224 = [OFSHA224Hash cryptoHashWithAllowsSwappableMemory: true]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];
-		size_t len = [f readIntoBuffer: buf
-					length: 64];
-		[sha224 updateWithBuffer: buf
-				  length: len];
+		size_t len = [f readIntoBuffer: buf length: 64];
+		[sha224 updateWithBuffer: buf length: len];
 	}
 	[f close];
 
@@ -55,8 +50,7 @@ const uint8_t testfile_sha224[28] =
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
-	    [sha224 updateWithBuffer: ""
-			      length: 1])
+	    [sha224 updateWithBuffer: "" length: 1])
 
 	objc_autoreleasePoolPop(pool);
 }

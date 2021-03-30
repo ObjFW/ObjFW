@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -68,8 +66,9 @@
 # define OF_SPARC64
 #elif defined(__sparc__) && !defined(__arch64__)
 # define OF_SPARC
-#elif defined(__hppa__) || defined(__HPPA__) || \
-    defined(_PA_RISC1_0) || defined(_PA_RISC1_1)
+#elif defined(__hppa64__) || defined(_PA_RISC2_0)
+# define OF_PA_RISC_2_0
+#elif defined(__hppa__) || defined(_PA_RISC1_0) || defined(_PA_RISC1_1)
 # define OF_PA_RISC
 #elif defined(__ia64__) || defined(__IA64__)
 # define OF_ITANIUM
@@ -141,6 +140,8 @@
 # define OF_SOLARIS
 #elif defined(__QNX__)
 # define OF_QNX
+#elif defined(__hpux__)
+# define OF_HPUX
 #elif defined(_PSP)
 # define OF_PSP
 #elif defined(__DJGPP__)

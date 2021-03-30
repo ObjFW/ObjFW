@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -314,8 +312,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 - (void)appendPathComponent: (OFString *)component
 {
-	[self appendPathComponent: component
-		      isDirectory: false];
+	[self appendPathComponent: component isDirectory: false];
 
 #ifdef OF_HAVE_FILES
 	if ([_URLEncodedScheme isEqual: @"file"] &&
@@ -415,8 +412,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 		}
 	}
 
-	[array insertObject: @""
-		    atIndex: 0];
+	[array insertObject: @"" atIndex: 0];
 	if (endsWithEmpty)
 		[array addObject: @""];
 

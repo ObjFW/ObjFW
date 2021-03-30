@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -212,8 +210,7 @@ colorToANSI(OFColor *color)
 	return self;
 }
 #else
-- (instancetype)of_initWithHandle: (BPTR)handle
-			 closable: (bool)closable
+- (instancetype)of_initWithHandle: (BPTR)handle closable: (bool)closable
 {
 	self = [super init];
 
@@ -248,8 +245,7 @@ colorToANSI(OFColor *color)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
@@ -290,8 +286,7 @@ colorToANSI(OFColor *color)
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 #ifndef OF_AMIGAOS
 	if (_fd == -1)

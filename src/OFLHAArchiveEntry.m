@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -586,16 +584,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 		 count: 5];
 
 	tmp32 = OF_BSWAP32_IF_BE(_compressedSize);
-	[data addItems: &tmp32
-		 count: sizeof(tmp32)];
+	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	tmp32 = OF_BSWAP32_IF_BE(_uncompressedSize);
-	[data addItems: &tmp32
-		 count: sizeof(tmp32)];
+	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	tmp32 = OF_BSWAP32_IF_BE((uint32_t)_date.timeIntervalSince1970);
-	[data addItems: &tmp32
-		 count: sizeof(tmp32)];
+	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	/* Reserved */
 	[data increaseCountBy: 1];
@@ -605,33 +600,27 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 
 	/* CRC16 */
 	tmp16 = OF_BSWAP16_IF_BE(_CRC16);
-	[data addItems: &tmp16
-		 count: sizeof(tmp16)];
+	[data addItems: &tmp16 count: sizeof(tmp16)];
 
 	/* Operating system identifier */
 	[data addItem: "U"];
 
 	/* Common header. Contains CRC16, which is written at the end. */
 	tmp16 = OF_BSWAP16_IF_BE(5);
-	[data addItems: &tmp16
-		 count: sizeof(tmp16)];
+	[data addItems: &tmp16 count: sizeof(tmp16)];
 	[data addItem: "\x00"];
 	[data increaseCountBy: 2];
 
 	tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileNameLength + 3);
-	[data addItems: &tmp16
-		 count: sizeof(tmp16)];
+	[data addItems: &tmp16 count: sizeof(tmp16)];
 	[data addItem: "\x01"];
-	[data addItems: fileName
-		 count: fileNameLength];
+	[data addItems: fileName count: fileNameLength];
 
 	if (directoryNameLength > 0) {
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)directoryNameLength + 3);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x02"];
-		[data addItems: directoryName
-			 count: directoryNameLength];
+		[data addItems: directoryName count: directoryNameLength];
 	}
 
 	if (_fileComment != nil) {
@@ -642,8 +631,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			@throw [OFOutOfRangeException exception];
 
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileCommentLength + 3);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x3F"];
 		[data addItems: [_fileComment cStringWithEncoding: encoding]
 			 count: fileCommentLength];
@@ -651,13 +639,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 
 	if (_mode != nil) {
 		tmp16 = OF_BSWAP16_IF_BE(5);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x50"];
 
 		tmp16 = OF_BSWAP16_IF_BE(_mode.unsignedShortValue);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
 	if (_UID != nil || _GID != nil) {
@@ -665,17 +651,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			@throw [OFInvalidArgumentException exception];
 
 		tmp16 = OF_BSWAP16_IF_BE(7);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x51"];
 
 		tmp16 = OF_BSWAP16_IF_BE(_GID.unsignedShortValue);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 
 		tmp16 = OF_BSWAP16_IF_BE(_UID.unsignedShortValue);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
 	if (_group != nil) {
@@ -686,8 +669,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			@throw [OFOutOfRangeException exception];
 
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)groupLength + 3);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x52"];
 		[data addItems: [_group cStringWithEncoding: encoding]
 			 count: groupLength];
@@ -701,8 +683,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			@throw [OFOutOfRangeException exception];
 
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)ownerLength + 3);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x53"];
 		[data addItems: [_owner cStringWithEncoding: encoding]
 			 count: ownerLength];
@@ -710,14 +691,12 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 
 	if (_modificationDate != nil) {
 		tmp16 = OF_BSWAP16_IF_BE(7);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x54"];
 
 		tmp32 = OF_BSWAP32_IF_BE(
 		    (uint32_t)_modificationDate.timeIntervalSince1970);
-		[data addItems: &tmp32
-			 count: sizeof(tmp32)];
+		[data addItems: &tmp32 count: sizeof(tmp32)];
 	}
 
 	for (OFData *extension in _extensions) {
@@ -730,10 +709,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			@throw [OFOutOfRangeException exception];
 
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)extensionLength + 2);
-		[data addItems: &tmp16
-			 count: sizeof(tmp16)];
-		[data addItems: extension.items
-			 count: extension.count];
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+		[data addItems: extension.items count: extension.count];
 	}
 
 	/* Zero-length extension to terminate */

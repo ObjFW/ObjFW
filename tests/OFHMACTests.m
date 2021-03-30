@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,8 +51,7 @@ static const uint8_t digest_sha512[] =
 - (void)HMACTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"r"];
+	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 	OFHMAC *HMAC_MD5, *HMAC_SHA1, *HMAC_RMD160;
 	OFHMAC *HMAC_SHA256, *HMAC_SHA384, *HMAC_SHA512;
 
@@ -82,40 +79,27 @@ static const uint8_t digest_sha512[] =
 							    length: 0])
 
 	TEST(@"-[setKey:length:] with MD5",
-	    R([HMAC_MD5 setKey: key
-			length: key_length]))
+	    R([HMAC_MD5 setKey: key length: key_length]))
 	TEST(@"-[setKey:length:] with SHA-1",
-	    R([HMAC_SHA1 setKey: key
-			 length: key_length]))
+	    R([HMAC_SHA1 setKey: key length: key_length]))
 	TEST(@"-[setKey:length:] with RIPEMD-160",
-	    R([HMAC_RMD160 setKey: key
-			   length: key_length]))
+	    R([HMAC_RMD160 setKey: key length: key_length]))
 	TEST(@"-[setKey:length:] with SHA-256",
-	    R([HMAC_SHA256 setKey: key
-			   length: key_length]))
+	    R([HMAC_SHA256 setKey: key length: key_length]))
 	TEST(@"-[setKey:length:] with SHA-384",
-	    R([HMAC_SHA384 setKey: key
-			   length: key_length]))
+	    R([HMAC_SHA384 setKey: key length: key_length]))
 	TEST(@"-[setKey:length:] with SHA-512",
-	    R([HMAC_SHA512 setKey: key
-			   length: key_length]))
+	    R([HMAC_SHA512 setKey: key length: key_length]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];
-		size_t len = [f readIntoBuffer: buf
-					length: 64];
-		[HMAC_MD5 updateWithBuffer: buf
-				    length: len];
-		[HMAC_SHA1 updateWithBuffer: buf
-				     length: len];
-		[HMAC_RMD160 updateWithBuffer: buf
-				       length: len];
-		[HMAC_SHA256 updateWithBuffer: buf
-				       length: len];
-		[HMAC_SHA384 updateWithBuffer: buf
-				       length: len];
-		[HMAC_SHA512 updateWithBuffer: buf
-				       length: len];
+		size_t len = [f readIntoBuffer: buf length: 64];
+		[HMAC_MD5 updateWithBuffer: buf length: len];
+		[HMAC_SHA1 updateWithBuffer: buf length: len];
+		[HMAC_RMD160 updateWithBuffer: buf length: len];
+		[HMAC_SHA256 updateWithBuffer: buf length: len];
+		[HMAC_SHA384 updateWithBuffer: buf length: len];
+		[HMAC_SHA512 updateWithBuffer: buf length: len];
 	}
 	[f close];
 

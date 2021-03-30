@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -617,8 +615,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	return self;
 }
 
-- (instancetype)initWithString: (OFString *)string
-		 relativeToURL: (OFURL *)URL
+- (instancetype)initWithString: (OFString *)string relativeToURL: (OFURL *)URL
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -719,17 +716,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
 		isDirectory = [path of_isDirectoryPath];
-
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	self = [self initFileURLWithPath: path
-			     isDirectory: isDirectory];
+	self = [self initFileURLWithPath: path isDirectory: isDirectory];
 
 	return self;
 }
@@ -952,8 +946,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		ret = [[path.pathComponents mutableCopy] autorelease];
 
 		if (![ret.firstObject isEqual: @"/"])
-			    [ret insertObject: @"/"
-				      atIndex: 0];
+			[ret insertObject: @"/" atIndex: 0];
 	} else
 #endif
 		ret = [[[_URLEncodedPath componentsSeparatedByString: @"/"]
@@ -962,8 +955,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	count = ret.count;
 
 	if (count > 0 && [ret.firstObject length] == 0)
-		[ret replaceObjectAtIndex: 0
-			       withObject: @"/"];
+		[ret replaceObjectAtIndex: 0 withObject: @"/"];
 
 	for (size_t i = 0; i < count; i++) {
 		OFString *component = [ret objectAtIndex: i];
@@ -1164,10 +1156,8 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 - (OFURL *)URLByAppendingPathComponent: (OFString *)component
 {
 	OFMutableURL *URL = [[self mutableCopy] autorelease];
-
 	[URL appendPathComponent: component];
 	[URL makeImmutable];
-
 	return URL;
 }
 
@@ -1175,21 +1165,16 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			   isDirectory: (bool)isDirectory
 {
 	OFMutableURL *URL = [[self mutableCopy] autorelease];
-
-	[URL appendPathComponent: component
-		     isDirectory: isDirectory];
+	[URL appendPathComponent: component isDirectory: isDirectory];
 	[URL makeImmutable];
-
 	return URL;
 }
 
 - (OFURL *)URLByStandardizingPath
 {
 	OFMutableURL *URL = [[self mutableCopy] autorelease];
-
 	[URL standardizePath];
 	[URL makeImmutable];
-
 	return URL;
 }
 

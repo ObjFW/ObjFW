@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -353,20 +351,16 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	[self asyncResolve];
 
 	while (!delegate->_done)
-		[runLoop runMode: resolveRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: resolveRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: resolveRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: resolveRunLoopMode beforeDate: [OFDate date]];
 
 	if (delegate->_exception != nil)
 		@throw delegate->_exception;
 
 	ret = [delegate->_addresses copy];
-
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 @end

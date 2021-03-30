@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -273,8 +271,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	[URLHandler setAttributes: attributes
-		      ofItemAtURL: URL];
+	[URLHandler setAttributes: attributes ofItemAtURL: URL];
 }
 
 #ifdef OF_HAVE_FILES
@@ -282,10 +279,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	 ofItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self setAttributes: attributes
 		ofItemAtURL: [OFURL fileURLWithPath: path]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -554,8 +549,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)copyItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -566,8 +560,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (void)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 	OFURLHandler *URLHandler;
@@ -583,8 +576,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithURL: source];
 
-	if ([URLHandler copyItemAtURL: source
-				toURL: destination])
+	if ([URLHandler copyItemAtURL: source toURL: destination])
 		return;
 
 	if ([self fileExistsAtURL: destination])
@@ -654,8 +646,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			destinationURL =
 			    [destination URLByAppendingPathComponent: item];
 
-			[self copyItemAtURL: sourceURL
-				      toURL: destinationURL];
+			[self copyItemAtURL: sourceURL toURL: destinationURL];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -752,20 +743,16 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 
 #ifdef OF_HAVE_FILES
-- (void)moveItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self moveItemAtURL: [OFURL fileURLWithPath: source]
 		      toURL: [OFURL fileURLWithPath: destination]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 	OFURLHandler *URLHandler;
@@ -780,8 +767,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		    exceptionWithURL: source];
 
 	@try {
-		if ([URLHandler moveItemAtURL: source
-					toURL: destination])
+		if ([URLHandler moveItemAtURL: source toURL: destination])
 			return;
 	} @catch (OFMoveItemFailedException *e) {
 		if (e.errNo != EXDEV)
@@ -795,8 +781,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 				     errNo: EEXIST];
 
 	@try {
-		[self copyItemAtURL: source
-			      toURL: destination];
+		[self copyItemAtURL: source toURL: destination];
 	} @catch (OFCopyItemFailedException *e) {
 		[self removeItemAtURL: destination];
 
@@ -835,15 +820,12 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (void)removeItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self removeItemAtURL: [OFURL fileURLWithPath: path]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURLHandler *URLHandler;
@@ -860,21 +842,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithURL: source];
 
-	[URLHandler linkItemAtURL: source
-			    toURL: destination];
+	[URLHandler linkItemAtURL: source toURL: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-- (void)linkItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self linkItemAtURL: [OFURL fileURLWithPath: source]
 		      toURL: [OFURL fileURLWithPath: destination]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -893,8 +871,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if (URLHandler == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	[URLHandler createSymbolicLinkAtURL: URL
-			withDestinationPath: target];
+	[URLHandler createSymbolicLinkAtURL: URL withDestinationPath: target];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -904,10 +881,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	     withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self createSymbolicLinkAtURL: [OFURL fileURLWithPath: path]
 		  withDestinationPath: target];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif

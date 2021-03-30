@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -403,8 +401,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  *		 selector
  * @return The object returned by the method specified by the selector
  */
-- (nullable id)performSelector: (SEL)selector
-		    withObject: (nullable id)object;
+- (nullable id)performSelector: (SEL)selector withObject: (nullable id)object;
 
 /**
  * @brief Performs the specified selector with the specified objects.
@@ -539,7 +536,7 @@ OF_ROOT_CLASS
 @property (class, readonly, nonatomic) OFString *description;
 # endif
 
-# ifdef __cplusplus
+# ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
 # else
 @property (readonly, nonatomic, getter=class) Class class_;
@@ -821,8 +818,7 @@ OF_ROOT_CLASS
  * @param selector The selector to perform
  * @param delay The delay after which the selector will be performed
  */
-- (void)performSelector: (SEL)selector
-	     afterDelay: (of_time_interval_t)delay;
+- (void)performSelector: (SEL)selector afterDelay: (of_time_interval_t)delay;
 
 /**
  * @brief Performs the specified selector with the specified object after the

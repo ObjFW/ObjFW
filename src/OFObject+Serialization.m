@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,8 +43,7 @@ int _OFObject_Serialization_reference;
 
 	root = [OFXMLElement elementWithName: @"serialization"
 				   namespace: OF_SERIALIZATION_NS];
-	[root addAttributeWithName: @"version"
-		       stringValue: @"1"];
+	[root addAttributeWithName: @"version" stringValue: @"1"];
 	[root addChild: element];
 
 	ret = [@"<?xml version='1.0' encoding='UTF-8'?>\n"

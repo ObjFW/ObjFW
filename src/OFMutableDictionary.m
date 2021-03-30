@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,15 +40,13 @@ static struct {
 	    initWithDictionary: dictionary];
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithObject: object
 								forKey: key];
 }
 
-- (instancetype)initWithObjects: (OFArray *)objects
-			forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
 								forKeys: keys];
@@ -78,8 +74,7 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	return (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
 							  arguments: arguments];
@@ -158,18 +153,15 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
--   (void)setObject: (id)object
-  forKeyedSubscript: (id)key
+- (void)setObject: (id)object forKeyedSubscript: (id)key
 {
 	if (object != nil)
-		[self setObject: object
-			 forKey: key];
+		[self setObject: object forKey: key];
 	else
 		[self removeObjectForKey: key];
 }
@@ -203,8 +195,7 @@ static struct {
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil)
-		[self setObject: object
-			 forKey: key];
+		[self setObject: object forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -217,8 +208,7 @@ static struct {
 		id new = block(key, object);
 
 		if (new != object) {
-			[self setObject: block(key, object)
-				 forKey: key];
+			[self setObject: block(key, object) forKey: key];
 		}
 	}];
 }

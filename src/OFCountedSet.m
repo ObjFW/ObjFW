@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,15 +59,13 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFCountedMapTableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
@@ -162,10 +158,8 @@ static struct {
 
 		objc_autoreleasePoolPop(pool2);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @"\n)}"];
-
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);

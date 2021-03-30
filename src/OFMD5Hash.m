@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -210,8 +208,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_iVars->state[3] = 0x10325476;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 

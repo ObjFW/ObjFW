@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -172,8 +170,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
  */
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length;
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified

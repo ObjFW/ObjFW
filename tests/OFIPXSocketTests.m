@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,20 +33,19 @@ static OFString *module = @"OFIPXSocket";
 
 	@try {
 		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0
-				       packetType: 0]))
+		    R(address1 = [sock bindToPort: 0 packetType: 0]))
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -60,14 +57,10 @@ static OFString *module = @"OFIPXSocket";
 	}
 
 	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello"
-			length: 5
-		      receiver: &address1]))
+	    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
 
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buffer
-			     length: 5
-			     sender: &address2] == 5 &&
+	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
 	    of_socket_address_equal(&address1, &address2) &&
 	    of_socket_address_hash(&address1) ==

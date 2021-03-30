@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -192,8 +190,7 @@ static uint16_t sutf16str[] = {
 - (void)replaceCharactersInRange: (of_range_t)range
 		      withString: (OFString *)string
 {
-	[_string replaceCharactersInRange: range
-			       withString: string];
+	[_string replaceCharactersInRange: range withString: string];
 }
 @end
 
@@ -277,14 +274,15 @@ static uint16_t sutf16str[] = {
 	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[appendCharacters:length:]",
-	    R([s[1] appendCharacters: ucstr + 6
-			      length: 2]) && [s[1] isEqual: @"1𝄞3r🀺"])
+	    R([s[1] appendCharacters: ucstr + 6 length: 2]) &&
+	   [s[1] isEqual: @"1𝄞3r🀺"])
 
 	TEST(@"-[length]", s[0].length == 7)
 	TEST(@"-[UTF8StringLength]", s[0].UTF8StringLength == 13)
 	TEST(@"-[hash]", s[0].hash == 0x705583C0)
 
-	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
+	TEST(@"-[characterAtIndex:]",
+	    [s[0] characterAtIndex: 0] == 't' &&
 	    [s[0] characterAtIndex: 1] == 0xE4 &&
 	    [s[0] characterAtIndex: 3] == 0x20AC &&
 	    [s[0] characterAtIndex: 5] == 0x1D11E)
@@ -362,8 +360,8 @@ static uint16_t sutf16str[] = {
 #endif
 
 	TEST(@"-[appendUTFString:length:]",
-	    R([s[0] appendUTF8String: "\xEF\xBB\xBF" "barqux"
-			      length: 6]) && [s[0] isEqual: @"foobar"])
+	    R([s[0] appendUTF8String: "\xEF\xBB\xBF" "barqux" length: 6]) &&
+	    [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,
@@ -502,9 +500,7 @@ static uint16_t sutf16str[] = {
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö"
-			     options: 0
-			       range: of_range(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: of_range(3, 1)])
 
 	cs = [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 	TEST(@"-[indexOfCharacterFromSet:]",
@@ -1083,6 +1079,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"-0x10\t") longLongValueWithBase: 0] == -0x10 &&
 	    C(@"\t\t\r\n").longLongValue == 0 &&
 	    [C(@"123f") longLongValueWithBase: 16] == 0x123f &&
+	    [C(@"-1234") longLongValueWithBase: 0] == -1234 &&
 	    [C(@"\t\n0xABcd\r") longLongValueWithBase: 0] == 0xABCD &&
 	    [C(@"1234567") longLongValueWithBase: 8] == 01234567 &&
 	    [C(@"\r\n0123") longLongValueWithBase: 0] == 0123 &&
@@ -1094,6 +1091,7 @@ static uint16_t sutf16str[] = {
 	    C(@"\r\n+123  ").unsignedLongLongValue == 123 &&
 	    C(@"\t\t\r\n").unsignedLongLongValue == 0 &&
 	    [C(@"123f") unsignedLongLongValueWithBase: 16] == 0x123f &&
+	    [C(@"1234") unsignedLongLongValueWithBase: 0] == 1234 &&
 	    [C(@"\t\n0xABcd\r") unsignedLongLongValueWithBase: 0] == 0xABCD &&
 	    [C(@"1234567") unsignedLongLongValueWithBase: 8] == 01234567 &&
 	    [C(@"\r\n0123") unsignedLongLongValueWithBase: 0] == 0123 &&
@@ -1108,14 +1106,15 @@ static uint16_t sutf16str[] = {
 	    C(@"\t-0.25 ").floatValue == -0.25 &&
 	    C(@"\r\n\tINF\t\n").floatValue == INFINITY &&
 	    C(@"\r -INFINITY\n").floatValue == -INFINITY &&
-	    isnan(C(@"   NAN\t\t").floatValue))
+	    isnan(C(@"   NAN\t\t").floatValue) &&
+	    isnan(C(@"   -NaN\t\t").floatValue))
 
-#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP) && \
-    !defined(OF_AMIGAOS_M68K)
+#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_HPUX) && \
+    !defined(OF_DJGPP) && !defined(OF_AMIGAOS_M68K)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
-/* Android, Solaris, DJGPP and AmigaOS3 do not accept 0x for strtod() */
+/* Android, Solaris, HP-UX, DJGPP and AmigaOS 3 do not accept 0x for strtod() */
 # if (!defined(OF_SOLARIS) || !defined(OF_X86)) && !defined(OF_AMIGAOS_M68K)
 #  define INPUT @"\t-0.123456789 "
 #  define EXPECTED -0.123456789
@@ -1245,8 +1244,7 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[insertString:atIndex:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] insertString: @"äöü"
-			 atIndex: 3]) &&
+	    R([s[0] insertString: @"äöü" atIndex: 3]) &&
 	    [s[0] isEqual: @"𝄞ööäöüöbä€"])
 
 	EXPECT_EXCEPTION(@"Detect invalid format in -[stringByURLDecoding] "
@@ -1258,18 +1256,13 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[setCharacter:atIndex:]",
 	    (s[0] = [mutableStringClass stringWithString: @"abäde"]) &&
-	    R([s[0] setCharacter: 0xF6
-			 atIndex: 2]) &&
+	    R([s[0] setCharacter: 0xF6 atIndex: 2]) &&
 	    [s[0] isEqual: @"aböde"] &&
-	    R([s[0] setCharacter: 'c'
-			 atIndex: 2]) &&
+	    R([s[0] setCharacter: 'c' atIndex: 2]) &&
 	    [s[0] isEqual: @"abcde"] &&
-	    R([s[0] setCharacter: 0x20AC
-			 atIndex: 3]) &&
+	    R([s[0] setCharacter: 0x20AC atIndex: 3]) &&
 	    [s[0] isEqual: @"abc€e"] &&
-	    R([s[0] setCharacter: 'x'
-			 atIndex: 1]) &&
-	    [s[0] isEqual: @"axc€e"])
+	    R([s[0] setCharacter: 'x' atIndex: 1]) && [s[0] isEqual: @"axc€e"])
 
 	TEST(@"-[deleteCharactersInRange:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
@@ -1304,24 +1297,20 @@ static uint16_t sutf16str[] = {
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(2, 2)
-				withString: @""])
+	    [s[0] replaceCharactersInRange: of_range(2, 2) withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(4, 0)
-				withString: @""])
+	    [s[0] replaceCharactersInRange: of_range(4, 0) withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    (s[0] = [mutableStringClass stringWithString:
 	    @"asd fo asd fofo asd"]) &&
-	    R([s[0] replaceOccurrencesOfString: @"fo"
-				    withString: @"foo"]) &&
+	    R([s[0] replaceOccurrencesOfString: @"fo" withString: @"foo"]) &&
 	    [s[0] isEqual: @"asd foo asd foofoo asd"] &&
 	    (s[0] = [mutableStringClass stringWithString: @"XX"]) &&
-	    R([s[0] replaceOccurrencesOfString: @"X"
-				    withString: @"XX"]) &&
+	    R([s[0] replaceOccurrencesOfString: @"X" withString: @"XX"]) &&
 	    [s[0] isEqual: @"XXXX"])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:options:range:]",

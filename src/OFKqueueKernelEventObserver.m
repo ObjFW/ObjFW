@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -89,11 +87,11 @@
 	event.ident = object.fileDescriptorForReading;
 	event.filter = EVFILT_READ;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
@@ -110,11 +108,11 @@
 	event.ident = object.fileDescriptorForWriting;
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self

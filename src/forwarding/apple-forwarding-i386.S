@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,131 +15,121 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
 .globl _of_forward
 .globl _of_forward_stret
 
 .section __TEXT, __cstring, cstring_literals
-Lstr_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-Lsel_forwardingTargetForSelector_:
-	.long Lstr_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.long str_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
 _of_forward:
-	push	ebp
-	mov	ebp, esp
+	pushl	%ebp
+	movl	%esp, %ebp
 
-	push	ebx
-	sub	esp, 20
+	pushl	%ebx
+	subl	$20, %esp
 
 	call	get_eip
 0:
 
-	mov	eax, [ebp+8]
-	mov	[esp], eax
+	movl	8(%ebp), %eax
+	movl	%eax, (%esp)
 	call	_object_getClass
 
-	mov	[esp], eax
-	.att_syntax	/* Next line is broken in Intel syntax */
-	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
-	.intel_syntax noprefix
-	mov	[esp+4], eax
+	movl	%eax, (%esp)
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	0f
 
-	mov	eax, [ebp+8]
-	mov	[esp], eax
-	.att_syntax	/* Next line is broken in Intel syntax */
-	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
-	.intel_syntax noprefix
-	mov	[esp+4], eax
-	mov	eax, [ebp+12]
-	mov	[esp+8], eax
+	movl	8(%ebp), %eax
+	movl	%eax, (%esp)
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	%eax, 4(%esp)
+	movl	12(%ebp), %eax
+	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	0f
-	cmp	eax, [ebp+8]
+	cmpl	8(%ebp), %eax
 	je	0f
 
-	mov	[ebp+8], eax
+	movl	%eax, 8(%ebp)
 
-	add	esp, 20
-	pop	ebx
-	pop	ebp
+	addl	$20, %esp
+	popl	%ebx
+	popl	%ebp
 
 	jmp	_objc_msgSend
 
 0:
-	add	esp, 20
-	pop	ebx
-	pop	ebp
+	addl	$20, %esp
+	popl	%ebx
+	popl	%ebp
 
 	jmp	_of_method_not_found
 
 _of_forward_stret:
-	push	ebp
-	mov	ebp, esp
+	pushl	%ebp
+	movl	%esp, %ebp
 
-	push	ebx
-	sub	esp, 20
+	pushl	%ebx
+	subl	$20, %esp
 
 	call	get_eip
 0:
 
-	mov	eax, [ebp+12]
-	mov	[esp], eax
+	movl	12(%ebp), %eax
+	movl	%eax, (%esp)
 	call	_object_getClass
 
-	mov	[esp], eax
-	.att_syntax	/* Next line is broken in Intel syntax */
-	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
-	.intel_syntax noprefix
-	mov	[esp+4], eax
+	movl	%eax, (%esp)
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	0f
 
-	mov	eax, [ebp+12]
-	mov	[esp], eax
-	.att_syntax	/* Next line is broken in Intel syntax */
-	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
-	.intel_syntax noprefix
-	mov	[esp+4], eax
-	mov	eax, [ebp+16]
-	mov	[esp+8], eax
+	movl	12(%ebp), %eax
+	movl	%eax, (%esp)
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	%eax, 4(%esp)
+	movl	16(%ebp), %eax
+	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	0f
-	cmp	eax, [ebp+12]
+	cmpl	12(%ebp), %eax
 	je	0f
 
-	mov	[ebp+12], eax
+	movl	%eax, 12(%ebp)
 
-	add	esp, 20
-	pop	ebx
-	pop	ebp
+	addl	$20, %esp
+	popl	%ebx
+	popl	%ebp
 
 	jmp	_objc_msgSend_stret
 
 0:
-	add	esp, 20
-	pop	ebx
-	pop	ebp
+	addl	$20, %esp
+	popl	%ebx
+	popl	%ebp
 
 	jmp	_of_method_not_found_stret
 
 get_eip:
-	mov	ebx, [esp]
+	movl	(%esp), %ebx
 	ret

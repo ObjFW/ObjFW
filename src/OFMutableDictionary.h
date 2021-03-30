@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,8 +71,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (ObjectType)object
-	   forKey: (KeyType)key;
+- (void)setObject: (ObjectType)object forKey: (KeyType)key;
 
 /**
  * @brief Sets an object for a key.
@@ -87,8 +84,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @param object The object to set the key to. If it is nil, this is equal to
  *		 calling @ref removeObjectForKey:.
  */
--   (void)setObject: (nullable ObjectType)object
-  forKeyedSubscript: (KeyType)key;
+- (void)setObject: (nullable ObjectType)object forKeyedSubscript: (KeyType)key;
 
 /**
  * @brief Removes the object for the specified key from the dictionary.

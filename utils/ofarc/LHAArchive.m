@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -330,13 +328,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if (![app shouldExtractFile: fileName
-				outFileName: outFileName])
+		if (![app shouldExtractFile: fileName outFileName: outFileName])
 			goto outer_loop_end;
 
 		stream = [_archive streamForReadingCurrentEntry];
-		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+		output = [OFFile fileWithPath: outFileName mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {

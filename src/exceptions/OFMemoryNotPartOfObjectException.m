@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,8 +26,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPointer: (void *)pointer
-			      object: (id)object
++ (instancetype)exceptionWithPointer: (void *)pointer object: (id)object
 {
 	return [[[self alloc] initWithPointer: pointer
 				       object: object] autorelease];
@@ -40,8 +37,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPointer: (void *)pointer
-			 object: (id)object
+- (instancetype)initWithPointer: (void *)pointer object: (id)object
 {
 	self = [super init];
 

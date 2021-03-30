@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,41 +15,35 @@
 
 #import "ObjFW.h"
 
-#define TEST(test, ...)					\
-	{						\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		if (__VA_ARGS__)			\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define TEST(test, ...)							\
+	{								\
+		[self outputTesting: test inModule: module];		\
+									\
+		if (__VA_ARGS__)					\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
-#define EXPECT_EXCEPTION(test, exception, code)		\
-	{						\
-		bool caught = false;			\
-							\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		@try {					\
-			code;				\
-		} @catch (exception *e) {		\
-			caught = true;			\
-		}					\
-							\
-		if (caught)				\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define EXPECT_EXCEPTION(test, exception, code)				\
+	{								\
+		bool caught = false;					\
+									\
+		[self outputTesting: test inModule: module];		\
+									\
+		@try {							\
+			code;						\
+		} @catch (exception *e) {				\
+			caught = true;					\
+		}							\
+									\
+		if (caught)						\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
 #define R(...) (__VA_ARGS__, 1)
 
@@ -62,12 +54,9 @@
 	int _fails;
 }
 
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module;
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module;
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module;
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
 @interface TestsAppDelegate (OFArrayTests)

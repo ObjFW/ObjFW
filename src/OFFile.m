@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +14,8 @@
  */
 
 #include "config.h"
+
+#define _LARGEFILE64_SOURCE
 
 #include <assert.h>
 #include <errno.h>
@@ -182,18 +182,14 @@ parseMode(const char *mode, bool *append)
 #endif
 }
 
-+ (instancetype)fileWithPath: (OFString *)path
-			mode: (OFString *)mode
++ (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithURL: (OFURL *)URL
-		       mode: (OFString *)mode
++ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURL: URL
-				     mode: mode] autorelease];
+	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
 }
 
 + (instancetype)fileWithHandle: (of_file_handle_t)handle
@@ -206,8 +202,7 @@ parseMode(const char *mode, bool *append)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
 	of_file_handle_t handle;
 
@@ -326,8 +321,7 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *fileSystemRepresentation;
@@ -339,8 +333,7 @@ parseMode(const char *mode, bool *append)
 		@throw e;
 	}
 
-	self = [self initWithPath: fileSystemRepresentation
-			     mode: mode];
+	self = [self initWithPath: fileSystemRepresentation mode: mode];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -364,8 +357,7 @@ parseMode(const char *mode, bool *append)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
@@ -401,8 +393,7 @@ parseMode(const char *mode, bool *append)
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -460,8 +451,7 @@ parseMode(const char *mode, bool *append)
 	return (size_t)bytesWritten;
 }
 
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset whence: (int)whence
 {
 	of_offset_t ret;
 

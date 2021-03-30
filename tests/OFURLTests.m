@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -72,8 +70,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [OFURL URLWithString: @"https://[f]:f/"])
 
 	TEST(@"+[URLWithString:relativeToURL:]",
-	    [[[OFURL URLWithString: @"/foo"
-		     relativeToURL: u1] string] isEqual:
+	    [[[OFURL URLWithString: @"/foo" relativeToURL: u1] string] isEqual:
 	    @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
 	    [[[OFURL URLWithString: @"foo/bar?q"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
@@ -93,26 +90,22 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #1",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"`" relativeToURL: u1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #2",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"/`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"/`" relativeToURL: u1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #3",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"?`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"?`" relativeToURL: u1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #4",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"#`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"#`" relativeToURL: u1])
 
 #ifdef OF_HAVE_FILES
 	TEST(@"+[fileURLWithPath:]",
@@ -293,20 +286,16 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	TEST(@"-[URLByAppendingPathComponent:isDirectory:]",
 	    [[[OFURL URLWithString: @"file:///foo/bar"]
-	    URLByAppendingPathComponent: @"qux"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qux"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qu?x"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qu?x" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qu?x"
-			    isDirectory: true] isEqual:
+	    URLByAppendingPathComponent: @"qu?x" isDirectory: true] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx/"]])
 
 	TEST(@"-[URLByStandardizingPath]",

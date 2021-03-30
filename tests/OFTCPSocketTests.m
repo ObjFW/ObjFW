@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,14 +33,12 @@ static OFString *module = @"OFTCPSocket";
 	    (client = [OFTCPSocket socket]))
 
 	TEST(@"-[bindToHost:port:]",
-	    (port = [server bindToHost: @"127.0.0.1"
-				  port: 0]))
+	    (port = [server bindToHost: @"127.0.0.1" port: 0]))
 
 	TEST(@"-[listen]", R([server listen]))
 
 	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1"
-			       port: port]))
+	    R([client connectToHost: @"127.0.0.1" port: port]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
@@ -52,8 +48,8 @@ static OFString *module = @"OFTCPSocket";
 
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 
-	TEST(@"-[readIntoBuffer:length:]", [accepted readIntoBuffer: buf
-							     length: 6] &&
+	TEST(@"-[readIntoBuffer:length:]",
+	    [accepted readIntoBuffer: buf length: 6] &&
 	    !memcmp(buf, "Hello!", 6))
 
 	objc_autoreleasePoolPop(pool);

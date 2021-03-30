@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +18,7 @@
 #include <errno.h>
 #include <string.h>
 
-#import "OFProcess.h"
+#import "OFSubprocess.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
@@ -36,37 +34,37 @@
 
 #include <windows.h>
 
-@interface OFProcess ()
+@interface OFSubprocess ()
 - (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
 - (char *)of_environmentForDictionary: (OFDictionary *)environment;
 @end
 
-@implementation OFProcess
-+ (instancetype)processWithProgram: (OFString *)program
+@implementation OFSubprocess
++ (instancetype)subprocessWithProgram: (OFString *)program
 {
 	return [[[self alloc] initWithProgram: program] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
-		       environment: (OFDictionary *)environment
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
+			  environment: (OFDictionary *)environment
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
@@ -119,7 +117,7 @@
 		void *pool;
 		OFMutableString *argumentsString;
 
-		_process = INVALID_HANDLE_VALUE;
+		_handle = INVALID_HANDLE_VALUE;
 		_readPipe[0] = _writePipe[1] = NULL;
 
 		sa.nLength = sizeof(sa);
@@ -232,7 +230,7 @@
 
 		objc_autoreleasePoolPop(pool);
 
-		_process = pi.hProcess;
+		_handle = pi.hProcess;
 		CloseHandle(pi.hThread);
 
 		CloseHandle(_readPipe[1]);
@@ -270,17 +268,13 @@
 	objectEnumerator = [environment objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		[env addItems: key.UTF16String
-			count: key.UTF16StringLength];
-		[env addItems: &equal
-			count: 1];
+		[env addItems: key.UTF16String count: key.UTF16StringLength];
+		[env addItems: &equal count: 1];
 		[env addItems: object.UTF16String
 			count: object.UTF16StringLength];
-		[env addItems: &zero
-			count: 1];
+		[env addItems: &zero count: 1];
 	}
-	[env addItems: zero
-		count: 2];
+	[env addItems: zero count: 2];
 
 	return env.mutableItems;
 }
@@ -303,15 +297,12 @@
 	    (object = [objectEnumerator nextObject]) != nil) {
 		[env addItems: [key cStringWithEncoding: encoding]
 			count: [key cStringLengthWithEncoding: encoding]];
-		[env addItems: "="
-			count: 1];
+		[env addItems: "=" count: 1];
 		[env addItems: [object cStringWithEncoding: encoding]
 			count: [object cStringLengthWithEncoding: encoding]];
-		[env addItems: ""
-			count: 1];
+		[env addItems: "" count: 1];
 	}
-	[env addItems: "\0"
-		count: 2];
+	[env addItems: "\0" count: 2];
 
 	return env.mutableItems;
 }
@@ -324,8 +315,7 @@
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	DWORD ret;
 
@@ -352,8 +342,7 @@
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	DWORD bytesWritten;
 
@@ -395,12 +384,12 @@
 	[self closeForWriting];
 	CloseHandle(_readPipe[0]);
 
-	if (_process != INVALID_HANDLE_VALUE) {
-		TerminateProcess(_process, 0);
-		CloseHandle(_process);
+	if (_handle != INVALID_HANDLE_VALUE) {
+		TerminateProcess(_handle, 0);
+		CloseHandle(_handle);
 	}
 
-	_process = INVALID_HANDLE_VALUE;
+	_handle = INVALID_HANDLE_VALUE;
 	_readPipe[0] = NULL;
 
 	[super close];
@@ -411,18 +400,18 @@
 	if (_readPipe[0] == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_process != INVALID_HANDLE_VALUE) {
+	if (_handle != INVALID_HANDLE_VALUE) {
 		DWORD exitCode;
 
-		WaitForSingleObject(_process, INFINITE);
+		WaitForSingleObject(_handle, INFINITE);
 
-		if (GetExitCodeProcess(_process, &exitCode))
+		if (GetExitCodeProcess(_handle, &exitCode))
 			_status = exitCode;
 		else
 			_status = GetLastError();
 
-		CloseHandle(_process);
-		_process = INVALID_HANDLE_VALUE;
+		CloseHandle(_handle);
+		_handle = INVALID_HANDLE_VALUE;
 	}
 
 	return _status;

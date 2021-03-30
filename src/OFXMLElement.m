@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,16 +23,17 @@
 #include <assert.h>
 
 #import "OFXMLElement.h"
-#import "OFXMLNode+Private.h"
-#import "OFString.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
 #import "OFData.h"
+#import "OFDictionary.h"
+#import "OFStream.h"
+#import "OFString.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
-#import "OFXMLParser.h"
+#import "OFXMLCharacters.h"
 #import "OFXMLElementBuilder.h"
+#import "OFXMLNode+Private.h"
+#import "OFXMLParser.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -114,12 +113,10 @@ _references_to_categories_of_OFXMLElement(void)
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
-#ifdef OF_HAVE_FILES
-+ (instancetype)elementWithFile: (OFString *)path
++ (instancetype)elementWithStream: (OFStream *)stream
 {
-	return [[[self alloc] initWithFile: path] autorelease];
+	return [[[self alloc] initWithStream: stream] autorelease];
 }
-#endif
 
 - (instancetype)init
 {
@@ -128,9 +125,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 - (instancetype)initWithName: (OFString *)name
 {
-	return [self initWithName: name
-			namespace: nil
-		      stringValue: nil];
+	return [self initWithName: name namespace: nil stringValue: nil];
 }
 
 - (instancetype)initWithName: (OFString *)name
@@ -144,9 +139,7 @@ _references_to_categories_of_OFXMLElement(void)
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (OFString *)namespace
 {
-	return [self initWithName: name
-			namespace: namespace
-		      stringValue: nil];
+	return [self initWithName: name namespace: namespace stringValue: nil];
 }
 
 - (instancetype)initWithName: (OFString *)name
@@ -234,8 +227,7 @@ _references_to_categories_of_OFXMLElement(void)
 	return self;
 }
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithFile: (OFString *)path
+- (instancetype)initWithStream: (OFStream *)stream
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -254,7 +246,7 @@ _references_to_categories_of_OFXMLElement(void)
 	parser.delegate = builder;
 	builder.delegate = delegate;
 
-	[parser parseFile: path];
+	[parser parseStream: stream];
 
 	if (!parser.hasFinishedParsing)
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
@@ -265,7 +257,6 @@ _references_to_categories_of_OFXMLElement(void)
 
 	return self;
 }
-#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
@@ -443,8 +434,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[tmp setObject: object
-				forKey: key];
+			[tmp setObject: object forKey: key];
 
 		allNS = tmp;
 	} else
@@ -668,8 +658,7 @@ _references_to_categories_of_OFXMLElement(void)
 				      namespace: OF_SERIALIZATION_NS];
 
 	if (_name != nil)
-		[element addAttributeWithName: @"name"
-				  stringValue: _name];
+		[element addAttributeWithName: @"name" stringValue: _name];
 
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
@@ -823,23 +812,19 @@ _references_to_categories_of_OFXMLElement(void)
 	}
 }
 
-- (void)setPrefix: (OFString *)prefix
-     forNamespace: (OFString *)namespace
+- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)namespace
 {
 	if (prefix.length == 0)
 		@throw [OFInvalidArgumentException exception];
 	if (namespace == nil)
 		namespace = @"";
 
-	[_namespaces setObject: prefix
-			forKey: namespace];
+	[_namespaces setObject: prefix forKey: namespace];
 }
 
-- (void)bindPrefix: (OFString *)prefix
-      forNamespace: (OFString *)namespace
+- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)namespace
 {
-	[self setPrefix: prefix
-	   forNamespace: namespace];
+	[self setPrefix: prefix forNamespace: namespace];
 	[self addAttributeWithName: prefix
 			 namespace: @"http://www.w3.org/2000/xmlns/"
 		       stringValue: namespace];
@@ -856,8 +841,7 @@ _references_to_categories_of_OFXMLElement(void)
 	[_children addObject: child];
 }
 
-- (void)insertChild: (OFXMLNode *)child
-	    atIndex: (size_t)idx
+- (void)insertChild: (OFXMLNode *)child atIndex: (size_t)idx
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
@@ -865,19 +849,16 @@ _references_to_categories_of_OFXMLElement(void)
 	if (_children == nil)
 		_children = [[OFMutableArray alloc] init];
 
-	[_children insertObject: child
-			atIndex: idx];
+	[_children insertObject: child atIndex: idx];
 }
 
-- (void)insertChildren: (OFArray *)children
-	       atIndex: (size_t)idx
+- (void)insertChildren: (OFArray *)children atIndex: (size_t)idx
 {
 	for (OFXMLNode *node in children)
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
-	[_children insertObjectsFromArray: children
-				  atIndex: idx];
+	[_children insertObjectsFromArray: children atIndex: idx];
 }
 
 - (void)removeChild: (OFXMLNode *)child
@@ -893,25 +874,21 @@ _references_to_categories_of_OFXMLElement(void)
 	[_children removeObjectAtIndex: idx];
 }
 
-- (void)replaceChild: (OFXMLNode *)child
-	    withNode: (OFXMLNode *)node
+- (void)replaceChild: (OFXMLNode *)child withNode: (OFXMLNode *)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]] ||
 	    [child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	[_children replaceObject: child
-		      withObject: node];
+	[_children replaceObject: child withObject: node];
 }
 
-- (void)replaceChildAtIndex: (size_t)idx
-		   withNode: (OFXMLNode *)node
+- (void)replaceChildAtIndex: (size_t)idx withNode: (OFXMLNode *)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	[_children replaceObjectAtIndex: idx
-			     withObject: node];
+	[_children replaceObjectAtIndex: idx withObject: node];
 }
 
 - (OFXMLElement *)elementForName: (OFString *)elementName

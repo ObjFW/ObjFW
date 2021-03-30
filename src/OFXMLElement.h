@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableString;
+@class OFStream;
 @class OFString;
 @class OFXMLAttribute;
 
@@ -140,16 +139,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)elementWithXMLString: (OFString *)string;
 
-#ifdef OF_HAVE_FILES
 /**
- * @brief Parses the specified file and returns an OFXMLElement for it.
+ * @brief Parses the specified stream and returns an OFXMLElement for it.
  *
- * @param path The path to the file
+ * @param stream The stream to parse
  * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   file
+ *	   stream
  */
-+ (instancetype)elementWithFile: (OFString *)path;
-#endif
++ (instancetype)elementWithStream: (OFStream *)stream;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -218,16 +215,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithXMLString: (OFString *)string;
 
-#ifdef OF_HAVE_FILES
 /**
- * @brief Parses the specified file and initializes an already allocated
+ * @brief Parses the specified stream and initializes an already allocated
  *	  OFXMLElement with it.
  *
- * @param path The path to the file
- * @return An initialized OFXMLElement with the contents of the specified file
+ * @param stream The stream to parse
+ * @return An initialized OFXMLElement with the contents of the specified stream
  */
-- (instancetype)initWithFile: (OFString *)path;
-#endif
+- (instancetype)initWithStream: (OFStream *)stream;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 
@@ -237,8 +232,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is set
  */
-- (void)setPrefix: (OFString *)prefix
-     forNamespace: (OFString *)namespace_;
+- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
 
 /**
  * @brief Binds a prefix for a namespace.
@@ -246,8 +240,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is bound
  */
-- (void)bindPrefix: (OFString *)prefix
-      forNamespace: (OFString *)namespace_;
+- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
 
 /**
  * @brief Adds the specified attribute.
@@ -333,8 +326,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child An OFXMLNode which is added as a child
  * @param index The index where the child is added
  */
-- (void)insertChild: (OFXMLNode *)child
-	    atIndex: (size_t)index;
+- (void)insertChild: (OFXMLNode *)child atIndex: (size_t)index;
 
 /**
  * @brief Inserts the specified children at the specified index.
@@ -366,8 +358,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child The child to replace
  * @param node The node to replace the child with
  */
-- (void)replaceChild: (OFXMLNode *)child
-	    withNode: (OFXMLNode *)node;
+- (void)replaceChild: (OFXMLNode *)child withNode: (OFXMLNode *)node;
 
 /**
  * @brief Replaces the child at the specified index with the specified node.
@@ -375,8 +366,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index of the child to replace
  * @param node The node to replace the child with
  */
-- (void)replaceChildAtIndex: (size_t)index
-		   withNode: (OFXMLNode *)node;
+- (void)replaceChildAtIndex: (size_t)index withNode: (OFXMLNode *)node;
 
 /**
  * @brief Returns all children that have the specified namespace.

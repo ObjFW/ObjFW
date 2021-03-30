@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -104,8 +102,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param timer The timer to add
  * @param mode The run loop mode in which to run the timer
  */
-- (void)addTimer: (OFTimer *)timer
-	 forMode: (of_run_loop_mode_t)mode;
+- (void)addTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode;
 
 #ifdef OF_AMIGAOS
 /**
@@ -122,9 +119,7 @@ OF_SUBCLASSING_RESTRICTED
  *		   received. The selector must have one parameter for the ULONG
  *		   of the signal that was received.
  */
-- (void)addExecSignal: (ULONG)signal
-	       target: (id)target
-	     selector: (SEL)selector;
+- (void)addExecSignal: (ULONG)signal target: (id)target selector: (SEL)selector;
 
 /**
  * @brief Adds an Exec Signal to the run loop for the specified mode.

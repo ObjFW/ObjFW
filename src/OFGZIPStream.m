@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,11 +31,9 @@
 @synthesize operatingSystemMadeOn = _operatingSystemMadeOn;
 @synthesize modificationDate = _modificationDate;
 
-+ (instancetype)streamWithStream: (OFStream *)stream
-			    mode: (OFString *)mode
++ (instancetype)streamWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode] autorelease];
+	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
 - (instancetype)init
@@ -45,8 +41,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			  mode: (OFString *)mode
+- (instancetype)initWithStream: (OFStream *)stream mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -79,8 +74,7 @@
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -100,8 +94,7 @@
 		case OF_GZIP_STREAM_ID1:
 		case OF_GZIP_STREAM_ID2:
 		case OF_GZIP_STREAM_COMPRESSION_METHOD:
-			if ([_stream readIntoBuffer: &byte
-					     length: 1] < 1)
+			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			if ((_state == OF_GZIP_STREAM_ID1 && byte != 0x1F) ||
@@ -113,8 +106,7 @@
 			_state++;
 			break;
 		case OF_GZIP_STREAM_FLAGS:
-			if ([_stream readIntoBuffer: &byte
-					     length: 1] < 1)
+			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_flags = byte;
@@ -140,16 +132,14 @@
 			_state++;
 			break;
 		case OF_GZIP_STREAM_EXTRA_FLAGS:
-			if ([_stream readIntoBuffer: &byte
-					     length: 1] < 1)
+			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_extraFlags = byte;
 			_state++;
 			break;
 		case OF_GZIP_STREAM_OPERATING_SYSTEM:
-			if ([_stream readIntoBuffer: &byte
-					     length: 1] < 1)
+			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_operatingSystemMadeOn = byte;

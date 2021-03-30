@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,14 +40,12 @@ static OFString *module = @"OFValue";
 	TEST(@"-[objCType]", strcmp(value.objCType, @encode(of_range_t)) == 0)
 
 	TEST(@"-[getValue:size:]",
-	    R([value getValue: &range2
-			 size: sizeof(of_range_t)]) &&
+	    R([value getValue: &range2 size: sizeof(of_range_t)]) &&
 	    of_range_equal(range2, range))
 
 	EXPECT_EXCEPTION(@"-[getValue:size:] with wrong size throws",
 	    OFOutOfRangeException,
-	    [value getValue: &range
-		       size: sizeof(of_range_t) - 1])
+	    [value getValue: &range size: sizeof(of_range_t) - 1])
 
 	TEST(@"+[valueWithPointer:]",
 	    (value = [OFValue valueWithPointer: pointer]))
@@ -88,8 +84,7 @@ static OFString *module = @"OFValue";
 
 	TEST(@"-[getValue:size:] for OFRangeValue",
 	    (value = [OFValue valueWithRange: range]) &&
-	    R([value getValue: &range2
-			 size: sizeof(range2)]) &&
+	    R([value getValue: &range2 size: sizeof(range2)]) &&
 	    of_range_equal(range2, range))
 
 	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
@@ -108,8 +103,7 @@ static OFString *module = @"OFValue";
 
 	TEST(@"-[getValue:size:] for OFPointValue",
 	    (value = [OFValue valueWithPoint: point]) &&
-	    R([value getValue: &point2
-			 size: sizeof(point2)]) &&
+	    R([value getValue: &point2 size: sizeof(point2)]) &&
 	    of_point_equal(point2, point))
 
 	EXPECT_EXCEPTION(@"-[pointValue] with wrong size throws",
@@ -128,8 +122,7 @@ static OFString *module = @"OFValue";
 
 	TEST(@"-[getValue:size:] for OFDimensionValue",
 	    (value = [OFValue valueWithDimension: dimension]) &&
-	    R([value getValue: &dimension2
-			 size: sizeof(dimension2)]) &&
+	    R([value getValue: &dimension2 size: sizeof(dimension2)]) &&
 	    of_dimension_equal(dimension2, dimension))
 
 	EXPECT_EXCEPTION(@"-[dimensionValue] with wrong size throws",
@@ -148,8 +141,7 @@ static OFString *module = @"OFValue";
 
 	TEST(@"-[getValue:size:] for OFRectangleValue",
 	    (value = [OFValue valueWithRectangle: rectangle]) &&
-	    R([value getValue: &rectangle2
-			 size: sizeof(rectangle2)]) &&
+	    R([value getValue: &rectangle2 size: sizeof(rectangle2)]) &&
 	    of_rectangle_equal(rectangle2, rectangle))
 
 	EXPECT_EXCEPTION(@"-[rectangleValue] with wrong size throws",
@@ -161,14 +153,11 @@ static OFString *module = @"OFValue";
 	    [[OFValue valueWithRectangle: rectangle]
 	    isEqual: [OFValue valueWithBytes: &rectangle
 				    objCType: @encode(of_rectangle_t)]] &&
-	    ![[OFValue valueWithBytes: "a"
-			     objCType: @encode(signed char)]
+	    ![[OFValue valueWithBytes: "a" objCType: @encode(signed char)]
 	    isEqual: [OFValue valueWithBytes: "a"
 				    objCType: @encode(unsigned char)]] &&
-	    ![[OFValue valueWithBytes: "a"
-			     objCType: @encode(char)]
-	    isEqual: [OFValue valueWithBytes: "b"
-				    objCType: @encode(char)]])
+	    ![[OFValue valueWithBytes: "a" objCType: @encode(char)]
+	    isEqual: [OFValue valueWithBytes: "b" objCType: @encode(char)]])
 
 	objc_autoreleasePoolPop(pool);
 }

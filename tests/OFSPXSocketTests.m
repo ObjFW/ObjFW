@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -94,19 +92,19 @@ static OFString *module = @"OFSPXSocket";
 		case EAFNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[bindToPort:]: "
+			    @"\r[OFSPXSocket] -[bindToPort:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -124,19 +122,15 @@ static OFString *module = @"OFSPXSocket";
 	TEST(@"-[listen]", R([sockServer listen]))
 
 	TEST(@"-[connectToNode:network:port:]",
-	    R([sockClient connectToNode: node
-				network: network
-				   port: port]))
+	    R([sockClient connectToNode: node network: network port: port]))
 
 	TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
 
 	TEST(@"-[sendBuffer:length:]",
-	    R([sockAccepted sendBuffer: "Hello"
-				length: 5]))
+	    R([sockAccepted sendBuffer: "Hello" length: 5]))
 
 	TEST(@"-[receiveIntoBuffer:length:]",
-	    [sockClient receiveIntoBuffer: buffer
-				   length: 5] == 5 &&
+	    [sockClient receiveIntoBuffer: buffer length: 5] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0)
 
 	TEST(@"-[remoteAddress]",
@@ -180,7 +174,7 @@ static OFString *module = @"OFSPXSocket";
 		case ENOTSOCK:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXSocket] -[asyncAccept] & "
+			    @"\r[OFSPXSocket] -[asyncAccept] & "
 			    @"-[asyncConnectToNode:network:port:]: select() "
 			    @"not supported for SPX, skipping test"];
 			break;

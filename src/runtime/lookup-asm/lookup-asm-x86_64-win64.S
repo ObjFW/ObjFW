@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +15,6 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -27,61 +23,70 @@
 .section .text
 .macro generate_lookup name not_found
 \name:
-	test	rcx, rcx
-	jz	short ret_nil
+	testq	%rcx, %rcx
+	jz	ret_nil
 
-	bt	ecx, 0
-	jc	short .Ltagged_pointer_\name
+	testb	$1, %cl
+	jnz	.Ltagged_pointer_\name
 
-	mov	r8, [rcx]
-	mov	r8, [r8+56]
+	movq	(%rcx), %r8
+	movq	56(%r8), %r8
 
 .Lmain_\name:
-	mov	r10, rcx
-	mov	r11, rdx
+	movq	%rcx, %r10
+	movq	%rdx, %r11
 
-	mov	rax, [rdx]
-	movzx	ecx, ah
-	movzx	edx, al
+	movq	(%rdx), %rax
+	movzbl	%ah, %ecx
+	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shr	eax, 16
+	shrl	$16, %eax
 
-	mov	r8,  [r8+rax*8]
+	movq	(%r8,%rax,8), %r8
 #endif
-	mov	r8,  [r8+rcx*8]
-	mov	rax, [r8+rdx*8]
+	movq	(%r8,%rcx,8), %r8
+	movq	(%r8,%rdx,8), %rax
 
-	test	rax, rax
-	jz	short 0f
+	testq	%rax, %rax
+	jz	0f
 
 	ret
 
 0:
-	mov	rcx, r10
-	mov	rdx, r11
+	movq	%r10, %rcx
+	movq	%r11, %rdx
 	jmp	\not_found
 
 .Ltagged_pointer_\name:
-	xor	rcx, objc_tagged_pointer_secret
-	and	cl, 0xE
-	movzx	r8, cl
+	xorq	objc_tagged_pointer_secret(%rip), %rcx
+	andb	$0xE, %cl
+	movzbl	%cl, %r8d
 
-	mov	r8, [objc_tagged_pointer_classes+r8*4]
-	mov	r8, [r8+56]
+	leaq	objc_tagged_pointer_classes(%rip), %rax
+	movq	(%rax,%r8,4), %r8
+	movq	56(%r8), %r8
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 .macro generate_lookup_super name lookup
 \name:
-	mov	r8, rcx
-	mov	rcx, [rcx]
-	test	rcx, rcx
-	jz	short ret_nil
+	movq	%rcx, %r8
+	movq	(%rcx), %rcx
+	testq	%rcx, %rcx
+	jz	ret_nil
 
-	mov	r8, [r8+8]
-	mov	r8, [r8+56]
-	jmp	short .Lmain_\lookup
+	movq	8(%r8), %r8
+	movq	56(%r8), %r8
+	jmp	.Lmain_\lookup
+.def \name
+.scl 2
+.type 32
+.endef
 .endm
 
 generate_lookup objc_msg_lookup objc_method_not_found
@@ -90,9 +95,9 @@ generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
-	mov	rax, offset nil_method
+	leaq	nil_method(%rip), %rax
 	ret
 
 nil_method:
-	xor	rax, rax
+	xorq	%rax, %rax
 	ret

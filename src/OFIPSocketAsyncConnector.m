@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -79,7 +77,7 @@
 #endif
 		if ([_delegate respondsToSelector:
 		    @selector(socket:didConnectToHost:port:exception:)])
-			[_delegate    socket: _socket
+			[_delegate socket: _socket
 			    didConnectToHost: _host
 					port: _port
 				   exception: _exception];
@@ -88,8 +86,7 @@
 #endif
 }
 
-- (void)of_socketDidConnect: (id)sock
-		  exception: (id)exception
+- (void)of_socketDidConnect: (id)sock exception: (id)exception
 {
 	if (exception != nil) {
 		/*
@@ -119,8 +116,7 @@
 					 selector: selector
 					   object: runLoop.currentMode
 					  repeats: false];
-			[runLoop addTimer: timer
-				  forMode: runLoop.currentMode];
+			[runLoop addTimer: timer forMode: runLoop.currentMode];
 		}
 
 		return;
@@ -145,8 +141,7 @@
 
 	of_socket_address_set_port(&address, _port);
 
-	if (![_socket of_createSocketForAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [[OFConnectionFailedException alloc]
 			    initWithHost: _host
@@ -177,8 +172,7 @@
 	[_socket setCanBlock: false];
 #endif
 
-	if (![_socket of_connectSocketToAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
 #if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
 		if (errNo == EINPROGRESS) {
 			[OFRunLoop of_addAsyncConnectForSocket: _socket

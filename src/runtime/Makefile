@@ -2,7 +2,6 @@ include ../../extra.mk
 
 SUBDIRS = lookup-asm
 SUBDIRS_AFTER = ${LINKLIB}
-CLEAN = amiga-library-functable.inc inline.h
 DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
@@ -48,14 +47,6 @@ AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
 		       amiga-end.amigalib.o
 
 include ../../buildsys.mk
-
-${OBJFWRT_AMIGA_LIB}: inline.h
-
-${SFDC_INLINE_H}: ${SFD_FILE}
-	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<; \
-
-${CVINCLUDE_INLINE_H}: morphos.fd morphos-clib.h
-	cvinclude.pl --quiet --fd=morphos.fd --clib=morphos-clib.h --inlines=$@
 
 CPPFLAGS += -I. -I.. -I../..					\
 	    -DOBJC_COMPILING_RUNTIME				\

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,12 +13,19 @@
  * file.
  */
 
-#include "config.h"
+#import "OFObject.h"
 
-#include "platform.h"
+#import "OFStream.h"
+#import "OFXMLElement.h"
 
-#ifdef OF_WINDOWS
-# include "platform/windows/OFProcess.m"
-#else
-# include "platform/posix/OFProcess.m"
-#endif
+@interface GlueGenerator: OFObject
+{
+	OFXMLElement *_library;
+	OFStream *_header, *_impl;
+}
+
+- (instancetype)initWithLibrary: (OFXMLElement *)library
+			 header: (OFStream *)header
+		 implementation: (OFStream *)implementation;
+- (void)generate;
+@end

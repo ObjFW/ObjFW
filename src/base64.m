@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -151,8 +149,7 @@ of_base64_decode(OFMutableData *data, const char *string, size_t length)
 		db[1] = (sb & 0x00FF00) >> 8;
 		db[2] = sb & 0x0000FF;
 
-		[data addItems: db
-			 count: count];
+		[data addItems: db count: count];
 	}
 
 	return true;

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -275,8 +273,7 @@ enum event_type {
 		    string: nil];
 }
 
--    (void)parser: (OFXMLParser *)parser
-  foundCharacters: (OFString *)string
+- (void)parser: (OFXMLParser *)parser foundCharacters: (OFString *)string
 {
 	[self	    parser: parser
 	    didCreateEvent: STRING
@@ -287,8 +284,7 @@ enum event_type {
 		    string: string];
 }
 
-- (void)parser: (OFXMLParser *)parser
-    foundCDATA: (OFString *)cdata
+- (void)parser: (OFXMLParser *)parser foundCDATA: (OFString *)cdata
 {
 	[self	    parser: parser
 	    didCreateEvent: CDATA
@@ -299,8 +295,7 @@ enum event_type {
 		    string: cdata];
 }
 
-- (void)parser: (OFXMLParser *)parser
-  foundComment: (OFString *)comment
+- (void)parser: (OFXMLParser *)parser foundComment: (OFString *)comment
 {
 	[self	    parser: parser
 	    didCreateEvent: COMMENT
@@ -353,11 +348,9 @@ enum event_type {
 			abort();
 
 		if (j + 2 > len)
-			[parser parseBuffer: str + j
-				     length: 1];
+			[parser parseBuffer: str + j length: 1];
 		else
-			[parser parseBuffer: str + j
-				     length: 2];
+			[parser parseBuffer: str + j length: 2];
 	}
 
 	TEST(@"Checking if everything was parsed",

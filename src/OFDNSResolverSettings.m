@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -70,6 +68,7 @@
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
 #endif
 
+#ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
 {
@@ -94,6 +93,7 @@ domainFromHostname(OFString *hostname)
 		return [hostname substringFromIndex: pos + 1];
 	}
 }
+#endif
 
 #if !defined(OF_WII) && !defined(OF_MORPHOS)
 static OFString *
@@ -253,8 +253,7 @@ parseNetStackArray(OFString *string)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -288,8 +287,7 @@ parseNetStackArray(OFString *string)
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses
-						forKey: host];
+				[staticHosts setObject: addresses forKey: host];
 			}
 
 			[addresses addObject: address];
@@ -354,8 +352,7 @@ parseNetStackArray(OFString *string)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
@@ -393,7 +390,7 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[nameServers addObject: [arguments firstObject]];
+			[nameServers addObject: arguments.firstObject];
 		} else if ([option isEqual: @"domain"]) {
 			if (arguments.count != 1) {
 				objc_autoreleasePoolPop(pool2);
@@ -492,8 +489,7 @@ parseNetStackArray(OFString *string)
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses
-						forKey: host];
+				[staticHosts setObject: addresses forKey: host];
 			}
 
 			[addresses addObject: address];
@@ -621,7 +617,7 @@ parseNetStackArray(OFString *string)
 		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 				     @"Tcpip\\Parameters"
 	    securityAndAccessRights: KEY_QUERY_VALUE];
-	path = [[[key stringForValue: @"DataBasePath"]
+	path = [[[key stringForValueNamed: @"DataBasePath"]
 	    stringByAppendingPathComponent: @"hosts"]
 	    stringByExpandingWindowsEnvironmentStrings];
 

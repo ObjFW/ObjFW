@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -100,8 +98,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
     OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
 
 + (instancetype)sandbox;
-- (void)unveilPath: (OFString *)path
-       permissions: (OFString *)permissions;
+- (void)unveilPath: (OFString *)path permissions: (OFString *)permissions;
 @end
 
 OF_ASSUME_NONNULL_END

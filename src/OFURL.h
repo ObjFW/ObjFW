@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -191,8 +189,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL An URL to which the string is relative
  * @return A new, autoreleased OFURL
  */
-+ (instancetype)URLWithString: (OFString *)string
-		relativeToURL: (OFURL *)URL;
++ (instancetype)URLWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -234,8 +231,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL A URL to which the string is relative
  * @return An initialized OFURL
  */
-- (instancetype)initWithString: (OFString *)string
-		 relativeToURL: (OFURL *)URL;
+- (instancetype)initWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**

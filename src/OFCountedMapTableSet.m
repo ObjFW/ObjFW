@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -85,8 +83,7 @@
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self init];
 
@@ -101,8 +98,7 @@
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -195,8 +191,7 @@
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];
 
-	[_mapTable setObject: (void *)(uintptr_t)(count + 1)
-		      forKey: object];
+	[_mapTable setObject: (void *)(uintptr_t)(count + 1) forKey: object];
 }
 
 - (void)removeObject: (id)object
@@ -209,8 +204,7 @@
 	count--;
 
 	if (count > 0)
-		[_mapTable setObject: (void *)(uintptr_t)count
-			      forKey: object];
+		[_mapTable setObject: (void *)(uintptr_t)count forKey: object];
 	else
 		[_mapTable removeObjectForKey: object];
 }

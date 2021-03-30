@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -506,8 +504,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		if (object == nil)
 			return nil;
 
-		[dictionary setObject: object
-			       forKey: key];
+		[dictionary setObject: object forKey: key];
 
 		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
@@ -552,8 +549,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		}
 	}
 
-	string = [[OFString alloc] initWithUTF8String: *pointer
-					       length: i];
+	string = [[OFString alloc] initWithUTF8String: *pointer length: i];
 	*pointer += i;
 
 	@try {

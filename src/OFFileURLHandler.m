@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +14,8 @@
  */
 
 #include "config.h"
+
+#define _LARGEFILE64_SOURCE
 
 #include <errno.h>
 #include <math.h>
@@ -483,8 +483,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 					   length: length];
 
 	key = of_file_attribute_key_symbolic_link_destination;
-	[attributes setObject: destination
-		       forKey: key];
+	[attributes setObject: destination forKey: key];
 # else
 	HANDLE handle;
 	OFString *destination;
@@ -532,8 +531,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		[attributes setObject: of_file_type_symbolic_link
 			       forKey: of_file_attribute_key_type];
 		key = of_file_attribute_key_symbolic_link_destination;
-		[attributes setObject: destination
-			       forKey: key];
+		[attributes setObject: destination forKey: key];
 #  undef slrb
 	} @finally {
 		CloseHandle(handle);
@@ -594,8 +592,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return S_ISDIR(s.st_mode);
 }
 
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [[OFFile alloc]
@@ -1160,7 +1157,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			OFString *file = [[OFString alloc]
 			    initWithCString: fib.fib_FileName
 				   encoding: encoding];
-
 			@try {
 				[files addObject: file];
 			} @finally {
@@ -1180,7 +1176,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #else
 	of_string_encoding_t encoding = [OFLocale encoding];
 	DIR *dir;
-
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
 							      mode: nil
@@ -1345,8 +1340,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *sourcePath, *destinationPath;
@@ -1427,8 +1421,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 }
 #endif
 
-- (bool)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 

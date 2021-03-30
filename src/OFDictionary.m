@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,15 +73,13 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: dictionary];
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	return (id)[[OFMapTableDictionary alloc] initWithObject: object
 							 forKey: key];
 }
 
-- (instancetype)initWithObjects: (OFArray *)objects
-			forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
 	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
 							 forKeys: keys];
@@ -230,11 +226,9 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: dictionary] autorelease];
 }
 
-+ (instancetype)dictionaryWithObject: (id)object
-			      forKey: (id)key
++ (instancetype)dictionaryWithObject: (id)object forKey: (id)key
 {
-	return [[[self alloc] initWithObject: object
-				      forKey: key] autorelease];
+	return [[[self alloc] initWithObject: object forKey: key] autorelease];
 }
 
 + (instancetype)dictionaryWithObjects: (OFArray *)objects
@@ -246,7 +240,7 @@ OF_DIRECT_MEMBERS
 
 + (instancetype)dictionaryWithObjects: (id const *)objects
 			      forKeys: (id const *)keys
-		  count: (size_t)count
+				count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
 				      forKeys: keys
@@ -287,8 +281,7 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	if (key == nil || object == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -296,8 +289,7 @@ OF_DIRECT_MEMBERS
 	return [self initWithKeysAndObjects: key, object, nil];
 }
 
-- (instancetype)initWithObjects: (OFArray *)objects_
-			forKeys: (OFArray *)keys_
+- (instancetype)initWithObjects: (OFArray *)objects_ forKeys: (OFArray *)keys_
 {
 	id const *objects, *keys;
 	size_t count;
@@ -315,9 +307,7 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	return [self initWithObjects: objects
-			     forKeys: keys
-			       count: count];
+	return [self initWithObjects: objects forKeys: keys count: count];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
@@ -333,15 +323,13 @@ OF_DIRECT_MEMBERS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [self initWithKey: firstKey
-		      arguments: arguments];
+	ret = [self initWithKey: firstKey arguments: arguments];
 	va_end(arguments);
 
 	return ret;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -369,16 +357,14 @@ OF_DIRECT_MEMBERS
 	return [self objectForKey: key];
 }
 
-- (void)setValue: (id)value
-	  forKey: (OFString *)key
+- (void)setValue: (id)value forKey: (OFString *)key
 {
 	if (![self isKindOfClass: [OFMutableDictionary class]])
 		@throw [OFUndefinedKeyException exceptionWithObject: self
 								key: key
 							      value: value];
 
-	[(OFMutableDictionary *)self setObject: value
-					forKey: key];
+	[(OFMutableDictionary *)self setObject: value forKey: key];
 }
 
 - (size_t)count
@@ -570,8 +556,7 @@ OF_DIRECT_MEMBERS
 
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
 	    bool *stop) {
-		[new setObject: block(key, object)
-			forKey: key];
+		[new setObject: block(key, object) forKey: key];
 	}];
 
 	[new makeImmutable];
@@ -587,8 +572,7 @@ OF_DIRECT_MEMBERS
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
 	    bool *stop) {
 		if (block(key, object))
-			[new setObject: object
-				forKey: key];
+			[new setObject: object forKey: key];
 	}];
 
 	[new makeImmutable];
@@ -646,8 +630,7 @@ OF_DIRECT_MEMBERS
 
 		objc_autoreleasePoolPop(pool2);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @";\n}"];
 
 	[ret makeImmutable];
@@ -735,14 +718,12 @@ OF_DIRECT_MEMBERS
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
@@ -845,15 +826,13 @@ OF_DIRECT_MEMBERS
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xDF;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else
 		@throw [OFOutOfRangeException exception];
 
@@ -870,12 +849,10 @@ OF_DIRECT_MEMBERS
 		i++;
 
 		child = key.messagePackRepresentation;
-		[data addItems: child.items
-			 count: child.count];
+		[data addItems: child.items count: child.count];
 
 		child = object.messagePackRepresentation;
-		[data addItems: child.items
-			 count: child.count];
+		[data addItems: child.items count: child.count];
 
 		objc_autoreleasePoolPop(pool2);
 	}

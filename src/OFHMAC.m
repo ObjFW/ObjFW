@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,8 +59,7 @@
 	[super dealloc];
 }
 
-- (void)setKey: (const void *)key
-	length: (size_t)length
+- (void)setKey: (const void *)key length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blockSize = [_hashClass blockSize];
@@ -86,9 +83,7 @@
 			id <OFCryptoHash> hash = [_hashClass
 			    cryptoHashWithAllowsSwappableMemory:
 			    _allowsSwappableMemory];
-
-			[hash updateWithBuffer: key
-					length: length];
+			[hash updateWithBuffer: key length: length];
 
 			length = hash.digestSize;
 			if OF_UNLIKELY (length > blockSize)
@@ -133,8 +128,7 @@
 	_calculated = false;
 }
 
-- (void)updateWithBuffer: (const void *)buffer
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer length: (size_t)length
 {
 	if (_innerHash == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -143,8 +137,7 @@
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithObject: self];
 
-	[_innerHash updateWithBuffer: buffer
-			      length: length];
+	[_innerHash updateWithBuffer: buffer length: length];
 }
 
 - (const unsigned char *)digest

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -70,8 +68,7 @@ parseNumericEntity(const char *entity, size_t length)
 		return nil;
 	buffer[i] = 0;
 
-	return [OFString stringWithUTF8String: buffer
-				       length: i];
+	return [OFString stringWithUTF8String: buffer length: i];
 }
 
 static OFString *
@@ -96,9 +93,7 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 
 	for (i = 0; i < length; i++) {
 		if (!inEntity && string[i] == '&') {
-			[ret appendUTF8String: string + last
-				       length: i - last];
-
+			[ret appendUTF8String: string + last length: i - last];
 			last = i + 1;
 			inEntity = true;
 		} else if (inEntity && string[i] == ';') {
@@ -172,9 +167,7 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 	if (inEntity)
 		@throw [OFInvalidFormatException exception];
 
-	[ret appendUTF8String: string + last
-		       length: i - last];
-
+	[ret appendUTF8String: string + last length: i - last];
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
@@ -190,8 +183,7 @@ lookupUsingDelegate(void *context, OFString *self, OFString *entity)
 	if (delegate == nil)
 		return nil;
 
-	return [delegate        string: self
-	    containsUnknownEntityNamed: entity];
+	return [delegate string: self containsUnknownEntityNamed: entity];
 }
 
 #ifdef OF_HAVE_BLOCKS

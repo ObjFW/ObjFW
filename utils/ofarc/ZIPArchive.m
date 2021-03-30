@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,9 +46,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		    (entry.versionSpecificAttributes >> 16) & 0777];
 		of_file_attribute_key_t key =
 		    of_file_attribute_key_posix_permissions;
-		of_file_attributes_t attributes = [OFDictionary
-		    dictionaryWithObject: mode
-				  forKey: key];
+		of_file_attributes_t attributes =
+		    [OFDictionary dictionaryWithObject: mode forKey: key];
 
 		[[OFFileManager defaultManager] setAttributes: attributes
 						 ofItemAtPath: path];
@@ -297,13 +294,11 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if (![app shouldExtractFile: fileName
-				outFileName: outFileName])
+		if (![app shouldExtractFile: fileName outFileName: outFileName])
 			goto outer_loop_end;
 
 		stream = [_archive streamForReadingFile: fileName];
-		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+		output = [OFFile fileWithPath: outFileName mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {

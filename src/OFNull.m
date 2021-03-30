@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -86,14 +84,12 @@ static OFNull *null = nil;
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
@@ -105,9 +101,7 @@ static OFNull *null = nil;
 - (OFData *)messagePackRepresentation
 {
 	uint8_t type = 0xC0;
-
-	return [OFData dataWithItems: &type
-			       count: 1];
+	return [OFData dataWithItems: &type count: 1];
 }
 
 - (instancetype)autorelease

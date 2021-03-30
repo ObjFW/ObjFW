@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,9 +13,13 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define __NO_EXT_QNX
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
 #include <stdio.h>
@@ -180,8 +182,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_socket = INVALID_SOCKET;
 }
 
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port
+- (void)connectToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = _delegate;
@@ -195,12 +196,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		     runLoopMode: connectRunLoopMode];
 
 	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -210,8 +209,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port
 {
 	[self asyncConnectToHost: host
 			    port: port
@@ -299,8 +297,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
@@ -342,7 +339,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
 
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (port != 0) {
 #endif
 		if (bind(_socket, &address.sockaddr.sockaddr,
@@ -357,7 +354,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 								 socket: self
 								  errNo: errNo];
 		}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+#if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
 		for (;;) {
 			uint16_t rnd = 0;
@@ -395,7 +392,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (port > 0)
 		return port;
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);

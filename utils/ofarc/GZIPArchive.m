@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -128,12 +126,10 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
-	if (![app shouldExtractFile: fileName
-			outFileName: fileName])
+	if (![app shouldExtractFile: fileName outFileName: fileName])
 		return;
 
-	output = [OFFile fileWithPath: fileName
-				 mode: @"w"];
+	output = [OFFile fileWithPath: fileName mode: @"w"];
 	setPermissions(fileName, app->_archivePath);
 
 	while (!_stream.atEndOfStream) {

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -102,8 +100,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in set)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -130,8 +127,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in array)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -140,15 +136,13 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self initWithCapacity: count];
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[_mapTable setObject: (void *)1
-				      forKey: objects[i]];
+			[_mapTable setObject: (void *)1 forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -157,8 +151,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -176,12 +169,10 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setObject: (void *)1
-			      forKey: firstObject];
+		[_mapTable setObject: (void *)1 forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[_mapTable setObject: (void *)1
-				      forKey: object];
+			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;

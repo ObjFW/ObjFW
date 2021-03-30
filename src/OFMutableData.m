@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,8 +42,7 @@
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
++ (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	return [[[self alloc] initWithItemSize: itemSize
 				      capacity: capacity] autorelease];
@@ -85,8 +82,7 @@
 			     capacity: capacity];
 }
 
-- (instancetype)initWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
+- (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	self = [super init];
 
@@ -110,9 +106,7 @@
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	self = [super initWithItems: items
-			      count: count
-			   itemSize: itemSize];
+	self = [super initWithItems: items count: count itemSize: itemSize];
 
 	_capacity = _count;
 
@@ -124,9 +118,7 @@
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	self = [self initWithItems: items
-			     count: count
-			  itemSize: itemSize];
+	self = [self initWithItems: items count: count itemSize: itemSize];
 
 	if (freeWhenDone)
 		free(items);
@@ -198,16 +190,12 @@
 	_count++;
 }
 
-- (void)insertItem: (const void *)item
-	   atIndex: (size_t)idx
+- (void)insertItem: (const void *)item atIndex: (size_t)idx
 {
-	[self insertItems: item
-		  atIndex: idx
-		    count: 1];
+	[self insertItems: item atIndex: idx count: 1];
 }
 
-- (void)addItems: (const void *)items
-	   count: (size_t)count
+- (void)addItems: (const void *)items count: (size_t)count
 {
 	if (count > SIZE_MAX - _count)
 		@throw [OFOutOfRangeException exception];

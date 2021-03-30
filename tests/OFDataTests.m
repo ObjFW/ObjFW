@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -67,15 +65,12 @@ const char *str = "Hello!";
 	    R([mutable removeLastItem]) &&
 	    [immutable compare: mutable] == OF_ORDERED_DESCENDING &&
 	    [mutable compare: immutable] == OF_ORDERED_ASCENDING &&
-	    [[OFData dataWithItems: "aa"
-			     count: 2] compare:
-	    [OFData dataWithItems: "z"
-			    count: 1]] == OF_ORDERED_ASCENDING)
+	    [[OFData dataWithItems: "aa" count: 2] compare:
+	    [OFData dataWithItems: "z" count: 1]] == OF_ORDERED_ASCENDING)
 
 	TEST(@"-[hash]", immutable.hash == 0x634A529F)
 
-	mutable = [OFMutableData dataWithItems: "abcdef"
-					 count: 6];
+	mutable = [OFMutableData dataWithItems: "abcdef" count: 6];
 
 	TEST(@"-[removeLastItem]", R([mutable removeLastItem]) &&
 	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
@@ -85,54 +80,63 @@ const char *str = "Hello!";
 	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
-	    R([mutable insertItems: "bc"
-			   atIndex: 1
-			     count: 2]) && mutable.count == 5 &&
-	    memcmp(mutable.items, "abcde", 5) == 0)
+	    R([mutable insertItems: "bc" atIndex: 1 count: 2]) &&
+	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
 
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
 				    count: 7
 				 itemSize: 2];
-	TEST(@"-[rangeOfString:options:range:]",
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 0 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "ac"
-							      count: 1
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 2 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
-							      count: 2
-							   itemSize: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 2 &&
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: 0
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #1",
+	    range.location == 0 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: OF_DATA_SEARCH_BACKWARDS
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #2",
+	    range.location == 5 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "ac"
+							count: 1
+						     itemSize: 2]
+			       options: 0
+				 range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #3",
+	    range.location == 2 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
+							count: 2
+						     itemSize: 2]
+						      options: 0
+							range: of_range(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #4",
+	    range.location == 5 && range.length == 2)
+
+	TEST(@"-[rangeOfData:options:range:] #5",
 	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							      count: 1
 							   itemSize: 2]
 				     options: 0
 				       range: of_range(1, 6)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 5)]) &&
+	    range.location == 5 && range.length == 1)
+
+	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							count: 1
+						     itemSize: 2]
+			       options: OF_DATA_SEARCH_BACKWARDS
+				 range: of_range(0, 5)];
+	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)
 
 	EXPECT_EXCEPTION(
-	    @"-[rangeOfString:options:range:] failing on different itemSize",
+	    @"-[rangeOfData:options:range:] failing on different itemSize",
 	    OFInvalidArgumentException,
 	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
 						    count: 1
@@ -191,8 +195,7 @@ const char *str = "Hello!";
 	    items], "abcde", 5) == 0)
 
 	TEST(@"Building strings",
-	    (mutable = [OFMutableData dataWithItems: str
-					       count: 6]) &&
+	    (mutable = [OFMutableData dataWithItems: str count: 6]) &&
 	    R([mutable addItem: ""]) &&
 	    strcmp(mutable.items, str) == 0)
 
@@ -200,8 +203,7 @@ const char *str = "Hello!";
 	    OFOutOfRangeException, [mutable itemAtIndex: mutable.count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
-	    OFOutOfRangeException, [mutable addItems: raw[0]
-					       count: SIZE_MAX])
+	    OFOutOfRangeException, [mutable addItems: raw[0] count: SIZE_MAX])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -338,8 +336,14 @@ readValue(uint8_t enc, const uint8_t **ptr)
 {
 	uint64_t value;
 
-	if (enc == DW_EH_PE_aligned)
-		OBJC_ERROR("DW_EH_PE_aligned is not implemented!");
+	if (enc == DW_EH_PE_aligned) {
+		const uintptr_t *aligned = (const uintptr_t *)
+		    OF_ROUND_UP_POW2(sizeof(void *), (uintptr_t)*ptr);
+
+		*ptr = (const uint8_t *)(aligned + 1);
+
+		return *aligned;
+	}
 
 #define READ(type)					\
 	{						\
@@ -382,8 +386,8 @@ readValue(uint8_t enc, const uint8_t **ptr)
 static uint64_t
 resolveValue(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 {
-	if (value == 0)
-		return 0;
+	if (value == 0 || enc == DW_EH_PE_aligned)
+		return value;
 
 	value += ((enc & 0x70) == DW_EH_PE_pcrel ? (uintptr_t)start : base);
 

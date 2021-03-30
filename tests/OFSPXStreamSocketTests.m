@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -94,19 +92,19 @@ static OFString *module = @"OFSPXStreamSocket";
 		case EAFNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -124,23 +122,18 @@ static OFString *module = @"OFSPXStreamSocket";
 	TEST(@"-[listen]", R([sockServer listen]))
 
 	TEST(@"-[connectToNode:network:port:]",
-	    R([sockClient connectToNode: node
-				network: network
-				   port: port]))
+	    R([sockClient connectToNode: node network: network port: port]))
 
 	TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
 
 	/* Test reassembly (this would not work with OFSPXSocket) */
 	TEST(@"-[writeBuffer:length:]",
-	    R([sockAccepted writeBuffer: "Hello"
-				 length: 5]))
+	    R([sockAccepted writeBuffer: "Hello" length: 5]))
 
 	TEST(@"-[readIntoBuffer:length:]",
-	    [sockClient readIntoBuffer: buffer
-				length: 2] == 2 &&
+	    [sockClient readIntoBuffer: buffer length: 2] == 2 &&
 	    memcmp(buffer, "He", 2) == 0 &&
-	    [sockClient readIntoBuffer: buffer
-				length: 3] == 3 &&
+	    [sockClient readIntoBuffer: buffer length: 3] == 3 &&
 	    memcmp(buffer, "llo", 3) == 0)
 
 	TEST(@"-[remoteAddress]",
@@ -184,7 +177,7 @@ static OFString *module = @"OFSPXStreamSocket";
 		case ENOTSOCK:
 			[of_stdout setForegroundColor: [OFColor lime]];
 			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[asyncAccept] & "
+			    @"\r[OFSPXStreamSocket] -[asyncAccept] & "
 			    @"-[asyncConnectToNode:network:port:]: select() "
 			    @"not supported for SPX, skipping test"];
 			break;

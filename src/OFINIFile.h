@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,6 +31,11 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;
 }
+
+/**
+ * @brief All categories in the INI file.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFINICategory *) *categories;
 
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file.
@@ -105,8 +108,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding;
+- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

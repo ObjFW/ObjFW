@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,20 +34,15 @@ static OFString *module = @"OFUDPSocket";
 	TEST(@"+[socket]", (sock = [OFUDPSocket socket]))
 
 	TEST(@"-[bindToHost:port:]",
-	    (port1 = [sock bindToHost: @"127.0.0.1"
-				 port: 0]))
+	    (port1 = [sock bindToHost: @"127.0.0.1" port: 0]))
 
 	addr1 = of_socket_address_parse_ip(@"127.0.0.1", port1);
 
 	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello"
-			length: 6
-		      receiver: &addr1]))
+	    R([sock sendBuffer: "Hello" length: 6 receiver: &addr1]))
 
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buf
-			     length: 6
-			     sender: &addr2] == 6 &&
+	    [sock receiveIntoBuffer: buf length: 6 sender: &addr2] == 6 &&
 	    !memcmp(buf, "Hello", 6) &&
 	    (host = of_socket_address_ip_string(&addr2, &port2)) &&
 	    [host isEqual: @"127.0.0.1"] && port2 == port1)

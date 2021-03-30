@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -115,16 +113,14 @@ OF_DIRECT_MEMBERS
 	id exception = nil;
 	int errNo;
 
-	if (![_socket of_createSocketForAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		exception = [self of_connectionFailedExceptionForErrNo: errNo];
 		goto inform_delegate;
 	}
 
 	_socket.canBlock = false;
 
-	if (![_socket of_connectSocketToAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
 		if (errNo == EINPROGRESS) {
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
@@ -144,8 +140,7 @@ inform_delegate:
 		   afterDelay: 0];
 }
 
-- (void)of_socketDidConnect: (id)sock
-		  exception: (id)exception
+- (void)of_socketDidConnect: (id)sock exception: (id)exception
 {
 	id <OFSPXStreamSocketDelegate> delegate =
 	    ((OFSPXStreamSocket *)sock).delegate;
@@ -236,8 +231,7 @@ inform_delegate:
 	    of_socket_address_ipx(node, network, port);
 	int errNo;
 
-	if (![self of_createSocketForAddress: &address
-				       errNo: &errNo])
+	if (![self of_createSocketForAddress: &address errNo: &errNo])
 		@throw [OFConnectionFailedException
 		    exceptionWithNode: node
 			      network: network
@@ -245,8 +239,7 @@ inform_delegate:
 			       socket: self
 				errNo: errNo];
 
-	if (![self of_connectSocketToAddress: &address
-				       errNo: &errNo]) {
+	if (![self of_connectSocketToAddress: &address errNo: &errNo]) {
 		[self of_closeSocket];
 
 		@throw [OFConnectionFailedException

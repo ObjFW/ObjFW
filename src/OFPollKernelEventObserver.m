@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -69,9 +67,8 @@
 	[super dealloc];
 }
 
-- (void)of_addObject: (id)object
-      fileDescriptor: (int)fd
-	      events: (short)events OF_DIRECT
+static void
+addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
 	struct pollfd *FDs;
 	size_t count;
@@ -81,8 +78,8 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: EBADF];
 
-	FDs = _FDs.mutableItems;
-	count = _FDs.count;
+	FDs = self->_FDs.mutableItems;
+	count = self->_FDs.count;
 	found = false;
 
 	for (size_t i = 0; i < count; i++) {
@@ -96,20 +93,19 @@
 	if (!found) {
 		struct pollfd p = { fd, events, 0 };
 
-		if (fd > _maxFD) {
-			_maxFD = fd;
-			_FDToObject = of_realloc(_FDToObject,
-			    (size_t)_maxFD + 1, sizeof(id));
+		if (fd > self->_maxFD) {
+			self->_maxFD = fd;
+			self->_FDToObject = of_realloc(self->_FDToObject,
+			    (size_t)self->_maxFD + 1, sizeof(id));
 		}
 
-		_FDToObject[fd] = object;
-		[_FDs addItem: &p];
+		self->_FDToObject[fd] = object;
+		[self->_FDs addItem: &p];
 	}
 }
 
-- (void)of_removeObject: (id)object
-	 fileDescriptor: (int)fd
-		 events: (short)events OF_DIRECT
+static void
+removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
 	struct pollfd *FDs;
 	size_t nFDs;
@@ -118,8 +114,8 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: EBADF];
 
-	FDs = _FDs.mutableItems;
-	nFDs = _FDs.count;
+	FDs = self->_FDs.mutableItems;
+	nFDs = self->_FDs.count;
 
 	for (size_t i = 0; i < nFDs; i++) {
 		if (FDs[i].fd == fd) {
@@ -130,7 +126,7 @@
 				 * TODO: Remove from and resize _FDToObject,
 				 *	 adjust _maxFD.
 				 */
-				[_FDs removeItemAtIndex: i];
+				[self->_FDs removeItemAtIndex: i];
 			}
 
 			break;
@@ -140,36 +136,28 @@
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	[self of_addObject: object
-	    fileDescriptor: object.fileDescriptorForReading
-		    events: POLLIN];
+	addObject(self, object, object.fileDescriptorForReading, POLLIN);
 
 	[super addObjectForReading: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self of_addObject: object
-	    fileDescriptor: object.fileDescriptorForWriting
-		    events: POLLOUT];
+	addObject(self, object, object.fileDescriptorForWriting, POLLOUT);
 
 	[super addObjectForWriting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	[self of_removeObject: object
-	       fileDescriptor: object.fileDescriptorForReading
-		       events: POLLIN];
+	removeObject(self, object, object.fileDescriptorForReading, POLLIN);
 
 	[super removeObjectForReading: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self of_removeObject: object
-	       fileDescriptor: object.fileDescriptorForWriting
-		       events: POLLOUT];
+	removeObject(self, object, object.fileDescriptorForWriting, POLLOUT);
 
 	[super removeObjectForWriting: object];
 }

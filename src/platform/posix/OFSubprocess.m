@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +29,7 @@
 # include <spawn.h>
 #endif
 
-#import "OFProcess.h"
+#import "OFSubprocess.h"
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -47,39 +45,39 @@
 extern char **environ;
 #endif
 
-@interface OFProcess ()
+@interface OFSubprocess ()
 - (void)of_getArgv: (char ***)argv
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments;
 - (char **)of_environmentForDictionary: (OFDictionary *)dictionary;
 @end
 
-@implementation OFProcess
-+ (instancetype)processWithProgram: (OFString *)program
+@implementation OFSubprocess
++ (instancetype)subprocessWithProgram: (OFString *)program
 {
 	return [[[self alloc] initWithProgram: program] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
-		       environment: (OFDictionary *)environment
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
+			  environment: (OFDictionary *)environment
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName

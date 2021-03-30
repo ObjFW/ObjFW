@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -131,11 +129,9 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		sandbox.allowsUserDatabaseReading = true;
 
 		for (OFString *path in optionsParser.remainingArguments)
-			[sandbox unveilPath: path
-				permissions: @"r"];
+			[sandbox unveilPath: path permissions: @"r"];
 
-		[sandbox unveilPath: @LANGUAGE_DIR
-			permissions: @"r"];
+		[sandbox unveilPath: @LANGUAGE_DIR permissions: @"r"];
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
@@ -180,8 +176,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 			file = of_stdin;
 		else {
 			@try {
-				file = [OFFile fileWithPath: path
-						       mode: @"r"];
+				file = [OFFile fileWithPath: path mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)

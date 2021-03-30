@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,11 +73,9 @@ extern char **environ;
 OF_DIRECT_MEMBERS
 @interface OFApplication ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char **[])argv;
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t *[])argv;
+- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t *[])argv;
 #endif
 - (void)of_run;
 @end
@@ -118,12 +114,10 @@ of_application_main(int *argc, char **argv[],
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-		[app of_setArgumentCount: wargc
-		   andWideArgumentValues: wargv];
+		[app of_setArgumentCount: wargc andWideArgumentValues: wargv];
 	} else
 #endif
-		[app of_setArgumentCount: argc
-		       andArgumentValues: argv];
+		[app of_setArgumentCount: argc andArgumentValues: argv];
 
 	app.delegate = delegate;
 
@@ -262,9 +256,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				key = [tmp substringToIndex: pos];
 				value = [tmp substringFromIndex: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -306,9 +298,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				key = [tmp substringToIndex: pos];
 				value = [tmp substringFromIndex: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -337,13 +327,11 @@ SIGNAL_HANDLER(SIGUSR2)
 			if ([fileManager directoryExistsAtPath: path])
 				continue;
 
-			file = [OFFile fileWithPath: path
-					       mode: @"r"];
+			file = [OFFile fileWithPath: path mode: @"r"];
 
 			value = [file readLineWithEncoding: encoding];
 			if (value != nil)
-				[_environment setObject: value
-						 forKey: name];
+				[_environment setObject: value forKey: name];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -376,9 +364,7 @@ SIGNAL_HANDLER(SIGUSR2)
 			    stringWithCString: (const char *)iter->lv_Value
 				     encoding: encoding
 				       length: length];
-
-			[_environment setObject: value
-					 forKey: key];
+			[_environment setObject: value forKey: key];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -411,9 +397,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				value = [OFString
 				    stringWithCString: sep + 1
 					     encoding: encoding];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -433,36 +417,31 @@ SIGNAL_HANDLER(SIGUSR2)
 			OFString *home = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: home
-					 forKey: @"HOME"];
+			[_environment setObject: home forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
 			OFString *path = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: path
-					 forKey: @"PATH"];
+			[_environment setObject: path forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
 			OFString *shell = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: shell
-					 forKey: @"SHELL"];
+			[_environment setObject: shell forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
 			OFString *tmpdir = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: tmpdir
-					 forKey: @"TMPDIR"];
+			[_environment setObject: tmpdir forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
 			OFString *user = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: user
-					 forKey: @"USER"];
+			[_environment setObject: user forKey: @"USER"];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -485,8 +464,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	[super dealloc];
 }
 
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char ***)argv
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char ***)argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -519,8 +497,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t **)argv
+- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t **)argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -541,8 +518,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 #endif
 
-- (void)getArgumentCount: (int **)argc
-       andArgumentValues: (char ****)argv
+- (void)getArgumentCount: (int **)argc andArgumentValues: (char ****)argv
 {
 	*argc = _argc;
 	*argv = _argv;

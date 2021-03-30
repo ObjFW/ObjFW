@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -796,8 +794,7 @@ isFloat(OFNumber *number)
 	return _typeEncoding;
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	switch (*self.objCType) {
 #define CASE(enc, type, property)					\
@@ -1053,18 +1050,15 @@ isFloat(OFNumber *number)
 				    stringValue: self.description];
 
 	if (*self.objCType == 'B')
-		[element addAttributeWithName: @"type"
-				  stringValue: @"bool"];
+		[element addAttributeWithName: @"type" stringValue: @"bool"];
 	else if (isFloat(self)) {
-		[element addAttributeWithName: @"type"
-				  stringValue: @"float"];
+		[element addAttributeWithName: @"type" stringValue: @"float"];
 		element.stringValue = [OFString
 		    stringWithFormat: @"%016" PRIx64,
 		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
 		    self.doubleValue)))];
 	} else if (isSigned(self))
-		[element addAttributeWithName: @"type"
-				  stringValue: @"signed"];
+		[element addAttributeWithName: @"type" stringValue: @"signed"];
 	else if (isUnsigned(self))
 		[element addAttributeWithName: @"type"
 				  stringValue: @"unsigned"];
@@ -1080,14 +1074,12 @@ isFloat(OFNumber *number)
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
@@ -1119,76 +1111,56 @@ isFloat(OFNumber *number)
 
 	if (*typeEncoding == 'B') {
 		uint8_t type = (self.boolValue ? 0xC3 : 0xC2);
-
-		data = [OFMutableData dataWithItems: &type
-					      count: 1];
+		data = [OFMutableData dataWithItems: &type count: 1];
 	} else if (*typeEncoding == 'f') {
 		uint8_t type = 0xCA;
 		float tmp = OF_BSWAP_FLOAT_IF_LE(self.floatValue);
 
-		data = [OFMutableData dataWithItemSize: 1
-					      capacity: 5];
-
+		data = [OFMutableData dataWithCapacity: 5];
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (*typeEncoding == 'd') {
 		uint8_t type = 0xCB;
 		double tmp = OF_BSWAP_DOUBLE_IF_LE(self.doubleValue);
 
-		data = [OFMutableData dataWithItemSize: 1
-					      capacity: 9];
-
+		data = [OFMutableData dataWithCapacity: 9];
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (isSigned(self)) {
 		long long value = self.longLongValue;
 
 		if (value >= -32 && value < 0) {
 			uint8_t tmp = 0xE0 | ((uint8_t)(value - 32) & 0x1F);
 
-			data = [OFMutableData dataWithItems: &tmp
-						      count: 1];
+			data = [OFMutableData dataWithItems: &tmp count: 1];
 		} else if (value >= INT8_MIN && value <= INT8_MAX) {
 			uint8_t type = 0xD0;
 			int8_t tmp = (int8_t)value;
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 2];
-
+			data = [OFMutableData dataWithCapacity: 2];
 			[data addItem: &type];
 			[data addItem: &tmp];
 		} else if (value >= INT16_MIN && value <= INT16_MAX) {
 			uint8_t type = 0xD1;
 			int16_t tmp = OF_BSWAP16_IF_LE((int16_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 3];
-
+			data = [OFMutableData dataWithCapacity: 3];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value >= INT32_MIN && value <= INT32_MAX) {
 			uint8_t type = 0xD2;
 			int32_t tmp = OF_BSWAP32_IF_LE((int32_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 5];
-
+			data = [OFMutableData dataWithCapacity: 5];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value >= INT64_MIN && value <= INT64_MAX) {
 			uint8_t type = 0xD3;
 			int64_t tmp = OF_BSWAP64_IF_LE((int64_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 9];
-
+			data = [OFMutableData dataWithCapacity: 9];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
 	} else if (isUnsigned(self)) {
@@ -1196,48 +1168,35 @@ isFloat(OFNumber *number)
 
 		if (value <= 127) {
 			uint8_t tmp = ((uint8_t)value & 0x7F);
-
-			data = [OFMutableData dataWithItems: &tmp
-						      count: 1];
+			data = [OFMutableData dataWithItems: &tmp count: 1];
 		} else if (value <= UINT8_MAX) {
 			uint8_t type = 0xCC;
 			uint8_t tmp = (uint8_t)value;
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 2];
-
+			data = [OFMutableData dataWithCapacity: 2];
 			[data addItem: &type];
 			[data addItem: &tmp];
 		} else if (value <= UINT16_MAX) {
 			uint8_t type = 0xCD;
 			uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 3];
-
+			data = [OFMutableData dataWithCapacity: 3];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value <= UINT32_MAX) {
 			uint8_t type = 0xCE;
 			uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 5];
-
+			data = [OFMutableData dataWithCapacity: 5];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value <= UINT64_MAX) {
 			uint8_t type = 0xCF;
 			uint64_t tmp = OF_BSWAP64_IF_LE((uint64_t)value);
 
-			data = [OFMutableData dataWithItemSize: 1
-						      capacity: 9];
-
+			data = [OFMutableData dataWithCapacity: 9];
 			[data addItem: &type];
-			[data addItems: &tmp
-				 count: sizeof(tmp)];
+			[data addItems: &tmp count: sizeof(tmp)];
 		} else
 			@throw [OFOutOfRangeException exception];
 	} else

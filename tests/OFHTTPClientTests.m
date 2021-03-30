@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,8 +43,7 @@ static OFHTTPResponse *response = nil;
 	[cond lock];
 
 	listener = [OFTCPSocket socket];
-	_port = [listener bindToHost: @"127.0.0.1"
-				port: 0];
+	_port = [listener bindToHost: @"127.0.0.1" port: 0];
 	[listener listen];
 
 	[cond signal];
@@ -74,8 +71,7 @@ static OFHTTPResponse *response = nil;
 	if (![[client readLine] isEqual: @""])
 		OF_ENSURE(0);
 
-	[client readIntoBuffer: buffer
-		   exactLength: 5];
+	[client readIntoBuffer: buffer exactLength: 5];
 	if (memcmp(buffer, "Hello", 5) != 0)
 		OF_ENSURE(0);
 

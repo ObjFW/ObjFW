@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -76,12 +74,6 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 #endif
 }
-@end
-
-OF_DIRECT_MEMBERS
-@interface OFRunLoop ()
-- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
-			     create: (bool)create;
 @end
 
 #ifdef OF_HAVE_SOCKETS
@@ -431,8 +423,7 @@ OF_DIRECT_MEMBERS
 	id exception = nil;
 
 	@try {
-		length = [object readIntoBuffer: _buffer
-					 length: _length];
+		length = [object readIntoBuffer: _buffer length: _length];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -740,9 +731,7 @@ OF_DIRECT_MEMBERS
 				   object: object
 				   object: exception
 				  repeats: false];
-
-		[runLoop addTimer: timer
-			  forMode: runLoop.currentMode];
+		[runLoop addTimer: timer forMode: runLoop.currentMode];
 	}
 
 	return false;
@@ -911,8 +900,7 @@ OF_DIRECT_MEMBERS
 	id exception = nil;
 
 	@try {
-		length = [object receiveIntoBuffer: _buffer
-					    length: _length];
+		length = [object receiveIntoBuffer: _buffer length: _length];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -1028,19 +1016,45 @@ OF_DIRECT_MEMBERS
 	mainRunLoop = [runLoop retain];
 }
 
+static OFRunLoopState *
+stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
+{
+	OFRunLoopState *state;
+
+#ifdef OF_HAVE_THREADS
+	[self->_statesMutex lock];
+	@try {
+#endif
+		state = [self->_states objectForKey: mode];
+
+		if (create && state == nil) {
+			state = [[OFRunLoopState alloc] init];
+			@try {
+				[self->_states setObject: state forKey: mode];
+			} @finally {
+				[state release];
+			}
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[self->_statesMutex unlock];
+	}
+#endif
+
+	return state;
+}
+
 #ifdef OF_HAVE_SOCKETS
 # define NEW_READ(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
-						  create: true];	\
+	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
 	OFList *queue = [state->_readQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_readQueues setObject: queue			\
-				       forKey: object];			\
+		[state->_readQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1051,15 +1065,13 @@ OF_DIRECT_MEMBERS
 # define NEW_WRITE(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
-						  create: true];	\
+	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
 	OFList *queue = [state->_writeQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_writeQueues setObject: queue			\
-					  forKey: object];		\
+		[state->_writeQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1297,8 +1309,7 @@ OF_DIRECT_MEMBERS
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoopState *state = [runLoop of_stateForMode: mode
-						  create: false];
+	OFRunLoopState *state = stateForMode(runLoop, mode, false);
 	OFList *queue;
 
 	if (state == nil)
@@ -1372,46 +1383,14 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
-			     create: (bool)create
-{
-	OFRunLoopState *state;
-
-#ifdef OF_HAVE_THREADS
-	[_statesMutex lock];
-	@try {
-#endif
-		state = [_states objectForKey: mode];
-
-		if (create && state == nil) {
-			state = [[OFRunLoopState alloc] init];
-			@try {
-				[_states setObject: state
-					    forKey: mode];
-			} @finally {
-				[state release];
-			}
-		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_statesMutex unlock];
-	}
-#endif
-
-	return state;
-}
-
 - (void)addTimer: (OFTimer *)timer
 {
-	[self addTimer: timer
-	       forMode: of_run_loop_mode_default];
+	[self addTimer: timer forMode: of_run_loop_mode_default];
 }
 
-- (void)addTimer: (OFTimer *)timer
-	 forMode: (of_run_loop_mode_t)mode
+- (void)addTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: true];
+	OFRunLoopState *state = stateForMode(self, mode, true);
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1424,8 +1403,7 @@ OF_DIRECT_MEMBERS
 	}
 #endif
 
-	[timer of_setInRunLoop: self
-			  mode: mode];
+	[timer of_setInRunLoop: self mode: mode];
 
 #if defined(OF_HAVE_SOCKETS)
 	[state->_kernelEventObserver cancel];
@@ -1434,11 +1412,9 @@ OF_DIRECT_MEMBERS
 #endif
 }
 
-- (void)of_removeTimer: (OFTimer *)timer
-	       forMode: (of_run_loop_mode_t)mode
+- (void)of_removeTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
 		return;
@@ -1464,9 +1440,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_AMIGAOS
-- (void)addExecSignal: (ULONG)signal
-	       target: (id)target
-	     selector: (SEL)selector
+- (void)addExecSignal: (ULONG)signal target: (id)target selector: (SEL)selector
 {
 	[self addExecSignal: signal
 		    forMode: of_run_loop_mode_default
@@ -1479,8 +1453,7 @@ OF_DIRECT_MEMBERS
 	       target: (id)target
 	     selector: (SEL)selector
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: true];
+	OFRunLoopState *state = stateForMode(self, mode, true);
 
 # ifdef OF_HAVE_THREADS
 	[state->_execSignalsMutex lock];
@@ -1523,8 +1496,7 @@ OF_DIRECT_MEMBERS
 		  target: (id)target
 		selector: (SEL)selector
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
 		return;
@@ -1584,17 +1556,14 @@ OF_DIRECT_MEMBERS
 
 	while (!_stop &&
 	    (deadline == nil || deadline.timeIntervalSinceNow >= 0))
-		[self runMode: of_run_loop_mode_default
-		   beforeDate: deadline];
+		[self runMode: of_run_loop_mode_default beforeDate: deadline];
 }
 
-- (void)runMode: (of_run_loop_mode_t)mode
-     beforeDate: (OFDate *)deadline
+- (void)runMode: (of_run_loop_mode_t)mode beforeDate: (OFDate *)deadline
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_run_loop_mode_t previousMode = _currentMode;
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
 		return;
@@ -1624,8 +1593,7 @@ OF_DIRECT_MEMBERS
 					[state->_timersQueue
 					    removeListObject: listObject];
 
-					[timer of_setInRunLoop: nil
-							  mode: nil];
+					[timer of_setInRunLoop: nil mode: nil];
 				} else
 					break;
 #ifdef OF_HAVE_THREADS
@@ -1728,8 +1696,8 @@ OF_DIRECT_MEMBERS
 
 - (void)stop
 {
-	OFRunLoopState *state = [self of_stateForMode: of_run_loop_mode_default
-					       create: false];
+	OFRunLoopState *state =
+	    stateForMode(self, of_run_loop_mode_default, false);
 
 	_stop = true;
 

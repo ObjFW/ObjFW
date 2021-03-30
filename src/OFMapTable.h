@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -164,8 +162,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (nullable void *)object
-	   forKey: (nullable void *)key;
+- (void)setObject: (nullable void *)object forKey: (nullable void *)key;
 
 /**
  * @brief Removes the object for the specified key from the map table.

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,17 +20,17 @@
 #import "OFData.h"
 
 @implementation OFSetWindowsRegistryValueFailedException
-@synthesize registryKey = _registryKey, value = _value, data = _data;
+@synthesize registryKey = _registryKey, valueName = _valueName, data = _data;
 @synthesize type = _type, status = _status;
 
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-				   value: (OFString *)value
+			       valueName: (OFString *)valueName
 				    data: (OFData *)data
 				    type: (DWORD)type
 				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
-					    value: value
+					valueName: valueName
 					     data: data
 					     type: type
 					   status: status] autorelease];
@@ -44,7 +42,7 @@
 }
 
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			      value: (OFString *)value
+			  valueName: (OFString *)valueName
 			       data: (OFData *)data
 			       type: (DWORD)type
 			     status: (LSTATUS)status
@@ -53,7 +51,7 @@
 
 	@try {
 		_registryKey = [registryKey retain];
-		_value = [value copy];
+		_valueName = [valueName copy];
 		_data = [data copy];
 		_type = type;
 		_status = status;
@@ -68,7 +66,7 @@
 - (void)dealloc
 {
 	[_registryKey release];
-	[_value release];
+	[_valueName release];
 	[_data release];
 
 	[super dealloc];
@@ -77,7 +75,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to set value %@ of type %u: %@",
-	    _value, _type, of_windows_status_to_string(_status)];
+	    @"Failed to set value named %@ of type %u: %@",
+	    _valueName, _type, of_windows_status_to_string(_status)];
 }
 @end

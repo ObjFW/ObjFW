@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -360,8 +358,7 @@ OF_DIRECT_MEMBERS
 
 		objc_autoreleasePoolPop(pool);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @"\n]"];
 
 	[ret makeImmutable];
@@ -418,9 +415,9 @@ OF_DIRECT_MEMBERS
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFListEnumerator alloc]
-		initWithList: self
-	    mutationsPointer: &_mutations] autorelease];
+	return [[[OFListEnumerator alloc] initWithList: self
+				      mutationsPointer: &_mutations]
+	    autorelease];
 }
 @end
 

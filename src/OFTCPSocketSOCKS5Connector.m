@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,7 +82,7 @@
 #endif
 		if ([_delegate respondsToSelector:
 		    @selector(socket:didConnectToHost:port:exception:)])
-			[_delegate    socket: _socket
+			[_delegate socket: _socket
 			    didConnectToHost: _host
 					port: _port
 				   exception: _exception];
@@ -106,8 +104,7 @@
 		return;
 	}
 
-	data = [OFData dataWithItems: "\x05\x01\x00"
-			       count: 3];
+	data = [OFData dataWithItems: "\x05\x01\x00" count: 3];
 
 	_SOCKS5State = OF_SOCKS5_STATE_SEND_AUTHENTICATION;
 	[_socket asyncWriteData: data
@@ -150,22 +147,18 @@
 		[_request release];
 		_request = [[OFMutableData alloc] init];
 
-		[_request addItems: "\x05\x01\x00\x03"
-			     count: 4];
+		[_request addItems: "\x05\x01\x00\x03" count: 4];
 
 		hostLength = (uint8_t)_host.UTF8StringLength;
 		[_request addItem: &hostLength];
-		[_request addItems: _host.UTF8String
-			     count: hostLength];
+		[_request addItems: _host.UTF8String count: hostLength];
 
 		port[0] = _port >> 8;
 		port[1] = _port & 0xFF;
-		[_request addItems: port
-			     count: 2];
+		[_request addItems: port count: 2];
 
 		_SOCKS5State = OF_SOCKS5_STATE_SEND_REQUEST;
-		[_socket asyncWriteData: _request
-			    runLoopMode: runLoopMode];
+		[_socket asyncWriteData: _request runLoopMode: runLoopMode];
 		return false;
 	case OF_SOCKS5_STATE_READ_RESPONSE:
 		response = buffer;

@@ -1,7 +1,8 @@
 include ../../../extra.mk
 
 STATIC_LIB = libobjfwrt.library.a
-SRCS = linklib.m
+SRCS = init.m		\
+       linklib.m
 
 include ../../../buildsys.mk
 

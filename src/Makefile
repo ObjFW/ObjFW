@@ -55,7 +55,6 @@ SRCS = OFApplication.m			\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
        OFPair.m				\
-       ${OF_PROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSecureData.m			\
@@ -79,6 +78,7 @@ SRCS = OFApplication.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
+       ${OF_SUBUPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\

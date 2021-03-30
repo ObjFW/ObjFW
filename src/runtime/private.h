@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -271,6 +269,15 @@ struct objc_libc {
 #  define OBJC_M68K_ARG(type, name, reg)	\
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
+# endif
+
+extern bool objc_init(unsigned int, struct objc_libc *);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)
+# else
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_v0(version, actions, *exClass, ex, ctx)
 # endif
 #endif
 
