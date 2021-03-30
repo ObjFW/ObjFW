@@ -18,7 +18,7 @@
 #include <errno.h>
 #include <string.h>
 
-#import "OFProcess.h"
+#import "OFSubprocess.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
@@ -34,37 +34,37 @@
 
 #include <windows.h>
 
-@interface OFProcess ()
+@interface OFSubprocess ()
 - (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
 - (char *)of_environmentForDictionary: (OFDictionary *)environment;
 @end
 
-@implementation OFProcess
-+ (instancetype)processWithProgram: (OFString *)program
+@implementation OFSubprocess
++ (instancetype)subprocessWithProgram: (OFString *)program
 {
 	return [[[self alloc] initWithProgram: program] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString *)program
-		       programName: (OFString *)programName
-			 arguments: (OFArray *)arguments
-		       environment: (OFDictionary *)environment
++ (instancetype)subprocessWithProgram: (OFString *)program
+			  programName: (OFString *)programName
+			    arguments: (OFArray *)arguments
+			  environment: (OFDictionary *)environment
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
@@ -117,7 +117,7 @@
 		void *pool;
 		OFMutableString *argumentsString;
 
-		_process = INVALID_HANDLE_VALUE;
+		_handle = INVALID_HANDLE_VALUE;
 		_readPipe[0] = _writePipe[1] = NULL;
 
 		sa.nLength = sizeof(sa);
@@ -230,7 +230,7 @@
 
 		objc_autoreleasePoolPop(pool);
 
-		_process = pi.hProcess;
+		_handle = pi.hProcess;
 		CloseHandle(pi.hThread);
 
 		CloseHandle(_readPipe[1]);
@@ -384,12 +384,12 @@
 	[self closeForWriting];
 	CloseHandle(_readPipe[0]);
 
-	if (_process != INVALID_HANDLE_VALUE) {
-		TerminateProcess(_process, 0);
-		CloseHandle(_process);
+	if (_handle != INVALID_HANDLE_VALUE) {
+		TerminateProcess(_handle, 0);
+		CloseHandle(_handle);
 	}
 
-	_process = INVALID_HANDLE_VALUE;
+	_handle = INVALID_HANDLE_VALUE;
 	_readPipe[0] = NULL;
 
 	[super close];
@@ -400,18 +400,18 @@
 	if (_readPipe[0] == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_process != INVALID_HANDLE_VALUE) {
+	if (_handle != INVALID_HANDLE_VALUE) {
 		DWORD exitCode;
 
-		WaitForSingleObject(_process, INFINITE);
+		WaitForSingleObject(_handle, INFINITE);
 
-		if (GetExitCodeProcess(_process, &exitCode))
+		if (GetExitCodeProcess(_handle, &exitCode))
 			_status = exitCode;
 		else
 			_status = GetLastError();
 
-		CloseHandle(_process);
-		_process = INVALID_HANDLE_VALUE;
+		CloseHandle(_handle);
+		_handle = INVALID_HANDLE_VALUE;
 	}
 
 	return _status;

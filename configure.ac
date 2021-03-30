@@ -1561,17 +1561,17 @@ darwin*)
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
-		have_processes="yes"
+		have_subprocesses="yes"
 	], [
 		AC_MSG_RESULT(no)
-		have_processes="no"
+		have_subprocesses="no"
 	])
 	;;
 mingw*)
-	have_processes="yes"
+	have_subprocesses="yes"
 	;;
 msdosdjgpp*)
-	have_processes="no"
+	have_subprocesses="no"
 	;;
 *)
 	AC_HEADER_SYS_WAIT
@@ -1579,7 +1579,7 @@ msdosdjgpp*)
 
 	AC_CHECK_FUNCS(posix_spawnp, [
 		AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
-			have_processes="yes"
+			have_subprocesses="yes"
 
 			AC_CHECK_HEADERS(spawn.h)
 		])
@@ -1591,7 +1591,7 @@ msdosdjgpp*)
 			    -a x"$ac_cv_func_execvp" = x"yes" \
 			    -a x"$ac_cv_func_kill" = x"yes" \
 			    -a x"$ac_cv_func__exit" = x"yes"], [
-				have_processes="yes"
+				have_subprocesses="yes"
 			])
 		], [
 			break
@@ -1599,9 +1599,9 @@ msdosdjgpp*)
 	])
 	;;
 esac
-AS_IF([test x"$have_processes" = x"yes"], [
-	AC_SUBST(OF_PROCESS_M, "OFProcess.m")
-	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
+AS_IF([test x"$have_subprocesses" = x"yes"], [
+	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
+	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])

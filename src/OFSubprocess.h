@@ -40,12 +40,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
- * @class OFProcess OFProcess.h ObjFW/OFProcess.h
+ * @class OFSubprocess OFSubprocess.h ObjFW/OFSubprocess.h
  *
- * @brief A class for stream-like communication with a newly created process.
+ * @brief A class for stream-like communication with a newly created subprocess.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFProcess: OFStream
+@interface OFSubprocess: OFStream
 #ifndef OF_WINDOWS
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
 #endif
@@ -54,53 +54,53 @@ OF_SUBCLASSING_RESTRICTED
 	pid_t _pid;
 	int _readPipe[2], _writePipe[2];
 #else
-	HANDLE _process, _readPipe[2], _writePipe[2];
+	HANDLE _handle, _readPipe[2], _writePipe[2];
 #endif
 	int _status;
 	bool _atEndOfStream;
 }
 
 /**
- * @brief Creates a new OFProcess with the specified program and invokes the
+ * @brief Creates a new OFSubprocess with the specified program and invokes the
  *	  program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @return A new, autoreleased OFProcess.
+ * @return A new, autoreleased OFSubprocess.
  */
-+ (instancetype)processWithProgram: (OFString *)program;
++ (instancetype)subprocessWithProgram: (OFString *)program;
 
 /**
- * @brief Creates a new OFProcess with the specified program and arguments and
- *	  invokes the program.
+ * @brief Creates a new OFSubprocess with the specified program and arguments
+ *	  and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFProcess.
+ * @return A new, autoreleased OFSubprocess.
  */
 + (instancetype)
-    processWithProgram: (OFString *)program
-	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
+    subProcessWithProgram: (OFString *)program
+		arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /**
- * @brief Creates a new OFProcess with the specified program, program name and
- *	  arguments and invokes the program.
+ * @brief Creates a new OFSubprocess with the specified program, program name
+ *	  and arguments and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFProcess.
+ * @return A new, autoreleased OFSubprocess.
  */
 + (instancetype)
-    processWithProgram: (OFString *)program
-	   programName: (OFString *)programName
-	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
+    subprocessWithProgram: (OFString *)program
+	      programName: (OFString *)programName
+		arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /**
- * @brief Creates a new OFProcess with the specified program, program name,
+ * @brief Creates a new OFSubprocess with the specified program, program name,
  *	  arguments and environment and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
@@ -113,50 +113,50 @@ OF_SUBCLASSING_RESTRICTED
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return A new, autoreleased OFProcess.
+ * @return A new, autoreleased OFSubprocess.
  */
 + (instancetype)
-    processWithProgram: (OFString *)program
-	   programName: (OFString *)programName
-	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
-	   environment: (nullable OFDictionary
-			    OF_GENERIC(OFString *, OFString *) *)environment;
+    subprocessWithProgram: (OFString *)program
+	      programName: (OFString *)programName
+		arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
+	      environment: (nullable OFDictionary
+			       OF_GENERIC(OFString *, OFString *) *)environment;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated OFProcess with the specified program
- *	  and invokes the program.
+ * @brief Initializes an already allocated OFSubprocess with the specified
+ *	  program and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @return An initialized OFProcess.
+ * @return An initialized OFSubprocess.
  */
 - (instancetype)initWithProgram: (OFString *)program;
 
 /**
- * @brief Initializes an already allocated OFProcess with the specified program
- *	  and arguments and invokes the program.
+ * @brief Initializes an already allocated OFSubprocess with the specified
+ *	  program and arguments and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFProcess.
+ * @return An initialized OFSubprocess.
  */
 - (instancetype)
     initWithProgram: (OFString *)program
 	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /**
- * @brief Initializes an already allocated OFProcess with the specified program,
- *	  program name and arguments and invokes the program.
+ * @brief Initializes an already allocated OFSubprocess with the specified
+ *	  program, program name and arguments and invokes the program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFProcess.
+ * @return An initialized OFSubprocess.
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -164,8 +164,9 @@ OF_SUBCLASSING_RESTRICTED
 	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /**
- * @brief Initializes an already allocated OFProcess with the specified program,
- *	  program name, arguments and environment and invokes the program.
+ * @brief Initializes an already allocated OFSubprocess with the specified
+ *	  program, program name, arguments and environment and invokes the
+ *	  program.
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
@@ -177,7 +178,7 @@ OF_SUBCLASSING_RESTRICTED
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return An initialized OFProcess.
+ * @return An initialized OFSubprocess.
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -188,7 +189,7 @@ OF_SUBCLASSING_RESTRICTED
     OF_DESIGNATED_INITIALIZER;
 
 /**
- * @brief Closes the write direction of the process.
+ * @brief Closes the write direction of the subprocess.
  *
  * This method needs to be called for some programs before data can be read,
  * since some programs don't start processing before the write direction is
@@ -197,9 +198,10 @@ OF_SUBCLASSING_RESTRICTED
 - (void)closeForWriting;
 
 /**
- * @brief Waits for the process to terminate and returns the exit status.
+ * @brief Waits for the subprocess to terminate and returns the exit status.
  *
- * If the process has already exited, this returns the exit status immediately.
+ * If the subprocess has already exited, this returns the exit status
+ * immediately.
  */
 - (int)waitForTermination;
 @end

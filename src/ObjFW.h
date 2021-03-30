@@ -98,8 +98,8 @@
 # import "OFHTTPServer.h"
 #endif
 
-#ifdef OF_HAVE_PROCESSES
-# import "OFProcess.h"
+#ifdef OF_HAVE_SUBPROCESSES
+# import "OFSubprocess.h"
 #endif
 
 #import "OFCryptoHash.h"

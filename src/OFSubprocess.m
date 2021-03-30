@@ -18,7 +18,7 @@
 #include "platform.h"
 
 #ifdef OF_WINDOWS
-# include "platform/windows/OFProcess.m"
+# include "platform/windows/OFSubprocess.m"
 #else
-# include "platform/posix/OFProcess.m"
+# include "platform/posix/OFSubprocess.m"
 #endif
