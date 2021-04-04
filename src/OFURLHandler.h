@@ -137,14 +137,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)createDirectoryAtURL: (OFURL *)URL;
 
 /**
- * @brief Returns an array with the items in the specified directory.
+ * @brief Returns an array with the URLs of the items in the specified
+ *	  directory.
  *
  * @note `.` and `..` are not part of the returned array.
  *
  * @param URL The URL to the directory whose items should be returned
- * @return An array of OFString with the items in the specified directory
+ * @return An array with the URLs of the items in the specified directory
  */
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
 /**
  * @brief Removes the item at the specified URL.

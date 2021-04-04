@@ -166,7 +166,7 @@ releaseMutex(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

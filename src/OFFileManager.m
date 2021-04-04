@@ -456,7 +456,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -473,9 +473,14 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *ret;
+	OFArray OF_GENERIC(OFURL *) *URLs;
+	OFMutableArray OF_GENERIC(OFString *) *ret;
 
-	ret = [self contentsOfDirectoryAtURL: [OFURL fileURLWithPath: path]];
+	URLs = [self contentsOfDirectoryAtURL: [OFURL fileURLWithPath: path]];
+	ret = [OFMutableArray arrayWithCapacity: URLs.count];
+
+	for (OFURL *URL in URLs)
+		[ret addObject: URL.lastPathComponent];
 
 	[ret retain];
 
@@ -597,7 +602,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	type = attributes.fileType;
 
 	if ([type isEqual: of_file_type_directory]) {
-		OFArray *contents;
+		OFArray OF_GENERIC(OFURL *) *contents;
 
 		@try {
 			[self createDirectoryAtURL: destination];
@@ -637,16 +642,13 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			@throw e;
 		}
 
-		for (OFString *item in contents) {
+		for (OFURL *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFURL *sourceURL, *destinationURL;
+			OFURL *destinationURL = [destination
+			    URLByAppendingPathComponent:
+			    item.lastPathComponent];
 
-			sourceURL =
-			    [source URLByAppendingPathComponent: item];
-			destinationURL =
-			    [destination URLByAppendingPathComponent: item];
-
-			[self copyItemAtURL: sourceURL toURL: destinationURL];
+			[self copyItemAtURL: item toURL: destinationURL];
 
 			objc_autoreleasePoolPop(pool2);
 		}

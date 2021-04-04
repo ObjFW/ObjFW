@@ -1012,9 +1012,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
 {
-	OFMutableArray *files = [OFMutableArray array];
+	OFMutableArray *URLs = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
@@ -1052,7 +1052,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				file = [[OFString alloc]
 				    initWithUTF16String: fd.cFileName];
 				@try {
-					[files addObject: file];
+					[URLs addObject: [URL
+					    URLByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1090,7 +1091,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				    initWithCString: fd.cFileName
 					   encoding: encoding];
 				@try {
-					[files addObject: file];
+					[URLs addObject: [URL
+					    URLByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1136,7 +1138,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 					   encoding: encoding];
 
 				@try {
-					[files addObject: file];
+					[URLs addObject: [URL
+					    URLByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1158,7 +1161,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    initWithCString: fib.fib_FileName
 				   encoding: encoding];
 			@try {
-				[files addObject: file];
+				[URLs addObject:
+				    [URL URLByAppendingPathComponent: file]];
 			} @finally {
 				[file release];
 			}
@@ -1227,7 +1231,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			file = [[OFString alloc] initWithCString: dirent->d_name
 							encoding: encoding];
 			@try {
-				[files addObject: file];
+				[URLs addObject:
+				    [URL URLByAppendingPathComponent: file]];
 			} @finally {
 				[file release];
 			}
@@ -1240,11 +1245,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	}
 #endif
 
-	[files makeImmutable];
+	[URLs makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 
-	return files;
+	return URLs;
 }
 
 - (void)removeItemAtURL: (OFURL *)URL
@@ -1267,7 +1272,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 							       errNo: error];
 
 	if (S_ISDIR(s.st_mode)) {
-		OFArray *contents;
+		OFArray OF_GENERIC(OFURL *) *contents;
 
 		@try {
 			contents = [self contentsOfDirectoryAtURL: URL];
@@ -1287,11 +1292,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			@throw e;
 		}
 
-		for (OFString *item in contents) {
+		for (OFURL *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[self removeItemAtURL: [OFURL fileURLWithPath:
-			    [path stringByAppendingPathComponent: item]]];
+			[self removeItemAtURL: item];
 
 			objc_autoreleasePoolPop(pool2);
 		}
