@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path Path to the plugin file. The suffix is appended automatically.
  * @return The loaded plugin
  */
-+ (OF_KINDOF(OFPlugin *))pluginFromFile: (OFString *)path;
++ (OF_KINDOF(OFPlugin *))pluginWithPath: (OFString *)path;
 @end
 
 #ifdef __cplusplus
