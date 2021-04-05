@@ -75,6 +75,10 @@ typedef int of_socket_t;
 typedef SOCKET of_socket_t;
 #endif
 
+#ifdef OF_WINDOWS
+typedef short sa_family_t;
+#endif
+
 #ifdef OF_WII
 typedef u8 sa_family_t;
 #endif
