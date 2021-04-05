@@ -38,6 +38,9 @@
 #ifdef OF_HAVE_NETIPX_IPX_H
 # include <netipx/ipx.h>
 #endif
+#ifdef OF_HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
 
 #include "platform.h"
 
@@ -94,6 +97,8 @@ typedef enum {
 	OF_SOCKET_ADDRESS_FAMILY_IPV6,
 	/** IPX */
 	OF_SOCKET_ADDRESS_FAMILY_IPX,
+	/** UNIX */
+	OF_SOCKET_ADDRESS_FAMILY_UNIX,
 	/** Any address family */
 	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
 } of_socket_address_family_t;
@@ -128,6 +133,13 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
+#ifndef OF_HAVE_UNIX_SOCKETS
+struct sockaddr_un {
+	sa_family_t sun_family;
+	char sun_path[108];
+};
+#endif
+
 /**
  * @struct of_socket_address_t socket.h ObjFW/socket.h
  *
@@ -147,6 +159,7 @@ struct OF_BOXABLE of_socket_address_t {
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
 		struct sockaddr_ipx ipx;
+		struct sockaddr_un un;
 	} sockaddr;
 	socklen_t length;
 };
@@ -186,15 +199,24 @@ extern of_socket_address_t of_socket_address_parse_ipv6(
     OFString *IP, uint16_t port);
 
 /**
- * @brief Creates an IPX address for the specified network, node and port.
+ * @brief Creates an IPX address for the specified node, network and port.
  *
  * @param node The node in the IPX network
  * @param network The IPX network
  * @param port The IPX port (sometimes called socket number) on the node
+ * @return An IPX socket address with the specified node, network and port.
  */
 extern of_socket_address_t of_socket_address_ipx(
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
     uint16_t port);
+
+/**
+ * @brief Creates a UNIX socket address from the specified path.
+ *
+ * @param path The path of the UNIX socket
+ * @return A UNIX socket address with the specified path
+ */
+extern of_socket_address_t of_socket_address_unix(OFString *path);
 
 /**
  * @brief Compares two of_socket_address_t for equality.
@@ -284,6 +306,15 @@ extern void of_socket_address_set_ipx_node(
 extern void of_socket_address_get_ipx_node(
     const of_socket_address_t *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/**
+ * @brief Gets the UNIX socket path of the specified of_socket_address_t.
+ *
+ * @param address The address on which to get the UNIX socket path
+ * @return The UNIX socket path
+ */
+extern OFString *_Nullable of_socket_get_unix_path(
+    const of_socket_address_t *_Nonnull address);
 
 extern bool of_socket_init(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)

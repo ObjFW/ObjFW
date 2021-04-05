@@ -39,6 +39,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFLockFailedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnlockFailedException.h"
 
 #import "socket.h"
@@ -539,6 +540,35 @@ of_socket_address_ipx(const unsigned char node[IPX_NODE_LEN], uint32_t network,
 	return ret;
 }
 
+of_socket_address_t
+of_socket_unix(OFString *path)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_string_encoding_t encoding = [OFLocale encoding];
+	size_t length = [path cStringLengthWithEncoding: encoding];
+	of_socket_address_t ret;
+
+	if (length > sizeof(ret.sockaddr.un.sun_path))
+		@throw [OFOutOfRangeException exception];
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.family = OF_SOCKET_ADDRESS_FAMILY_UNIX;
+	ret.length = (socklen_t)(sizeof(ret.sockaddr.un) -
+	    (sizeof(ret.sockaddr.un.sun_path) - length));
+
+#ifdef AF_UNIX
+	ret.sockaddr.un.sun_family = AF_UNIX;
+#else
+	ret.sockaddr.un.sun_family = AF_UNSPEC;
+#endif
+	memcpy(ret.sockaddr.un.sun_path,
+	    [path cStringWithEncoding: encoding], length);
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 bool
 of_socket_address_equal(const of_socket_address_t *address1,
     const of_socket_address_t *address2)
@@ -546,6 +576,9 @@ of_socket_address_equal(const of_socket_address_t *address1,
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 	const struct sockaddr_ipx *addrIPX1, *addrIPX2;
+	void *pool;
+	OFString *path1, *path2;
+	bool ret;
 
 	if (address1->family != address2->family)
 		return false;
@@ -569,7 +602,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 		if (addrIn1->sin_addr.s_addr != addrIn2->sin_addr.s_addr)
 			return false;
 
-		break;
+		return true;
 	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_in6) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_in6))
@@ -585,7 +618,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
 			return false;
 
-		break;
+		return true;
 	case OF_SOCKET_ADDRESS_FAMILY_IPX:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_ipx) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_ipx))
@@ -603,18 +636,46 @@ of_socket_address_equal(const of_socket_address_t *address1,
 		    IPX_NODE_LEN) != 0)
 			return false;
 
-		break;
+		return true;
+	case OF_SOCKET_ADDRESS_FAMILY_UNIX:
+		/*
+		 * This is a bit tricky. The only thing that is well-defined is
+		 * the path. So compare the path, and if both don't have a
+		 * path, compare bytes.
+		 */
+
+		if (address1->length != address2->length)
+			return false;
+
+		pool = objc_autoreleasePoolPush();
+
+		path1 = of_socket_get_unix_path(address1);
+		path2 = of_socket_get_unix_path(address2);
+
+		if (path1 == nil && path2 == nil) {
+			objc_autoreleasePoolPop(pool);
+
+			return (memcmp(&address1->sockaddr.un,
+			    &address2->sockaddr.un, address1->length) == 0);
+		}
+
+		if (path1 == nil || path2 == nil)
+			ret = false;
+		else
+			ret = [path1 isEqual: path2];
+
+		objc_autoreleasePoolPop(pool);
+
+		return ret;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
-
-	return true;
 }
 
 unsigned long
 of_socket_address_hash(const of_socket_address_t *address)
 {
-	uint32_t hash;
+	unsigned long hash;
 
 	OF_HASH_INIT(hash);
 	OF_HASH_ADD(hash, address->family);
@@ -668,6 +729,28 @@ of_socket_address_hash(const of_socket_address_t *address)
 
 		for (size_t i = 0; i < IPX_NODE_LEN; i++)
 			OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_node[i]);
+
+		break;
+	case OF_SOCKET_ADDRESS_FAMILY_UNIX:;
+		/*
+		 * This is a bit tricky. The only thing that is well-defined is
+		 * the path. So hash the path if we have one, otherwise the
+		 * bytes.
+		 */
+		void *pool = objc_autoreleasePoolPush();
+		OFString *path = of_socket_get_unix_path(address);
+
+		if (path != nil) {
+			hash = [path hash];
+			objc_autoreleasePoolPop(pool);
+			return hash;
+		}
+
+		objc_autoreleasePoolPop(pool);
+
+		for (socklen_t i = 0; i < address->length; i++)
+			OF_HASH_ADD(hash,
+			    ((const char *)&address->sockaddr.un)[i]);
 
 		break;
 	default:
@@ -855,4 +938,25 @@ of_socket_address_get_ipx_node(const of_socket_address_t *address,
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
+}
+
+OFString *
+of_socket_get_unix_path(const of_socket_address_t *_Nonnull address)
+{
+	socklen_t maxLength = (socklen_t)sizeof(address->sockaddr.un);
+	size_t length;
+
+	if (address->family != OF_SOCKET_ADDRESS_FAMILY_UNIX ||
+	    address->length > maxLength)
+		@throw [OFInvalidArgumentException exception];
+
+	length = sizeof(address->sockaddr.un.sun_path) -
+	    (maxLength - address->length);
+
+	if (length == 0)
+		return nil;
+
+	return [OFString stringWithCString: address->sockaddr.un.sun_path
+				  encoding: [OFLocale encoding]
+				    length: length];
 }

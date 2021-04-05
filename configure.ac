@@ -1348,6 +1348,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
 			[Whether we have netipx/ipx.h])
 	])
+	AC_CHECK_HEADERS(sys/un.h, [
+		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
+	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
@@ -1468,6 +1471,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
 			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
 		])
+	])
+
+	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
+		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
+			[Whether we have UNIX sockets])
+	], [], [
+		#ifdef OF_HAVE_SYS_UN_H
+		# include <sys/un.h>
+		#endif
 	])
 
 	AC_CHECK_FUNCS(paccept accept4, break)
