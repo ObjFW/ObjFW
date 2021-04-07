@@ -199,10 +199,6 @@
 - (void)SHA512HashTests;
 @end
 
-@interface TestsAppDelegate (OFSCTPSocketTests)
-- (void)SCTPSocketTests;
-@end
-
 @interface TestsAppDelegate (OFSPXSocketTests)
 - (void)SPXSocketTests;
 @end

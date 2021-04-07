@@ -137,7 +137,6 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
@@ -154,8 +153,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
 	       socket.m				\
-	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
