@@ -4,7 +4,6 @@ SUBDIRS += ${OFARC}	\
 	   ${OFDNS}	\
 	   ${OFHASH}	\
 	   ${OFHTTP}	\
-	   ${OFSOCK}	\
 	   completions
 
 include ../buildsys.mk

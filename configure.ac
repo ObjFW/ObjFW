@@ -1521,7 +1521,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
 	])
-	AC_SUBST(OFSOCK, "ofsock")
 ])
 
 AC_DEFUN([CHECK_BUILTIN_BSWAP], [
