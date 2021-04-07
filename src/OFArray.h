@@ -218,6 +218,13 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 			  count: (size_t)count;
 
 /**
+ * @brief Returns an OFEnumerator to enumerate through all objects of the array.
+ *
+ * @return An OFEnumerator to enumerate through all objects of the array
+ */
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
+
+/**
  * @brief Returns the object at the specified index in the array.
  *
  * @warning The returned object is *not* retained and autoreleased for

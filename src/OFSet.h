@@ -164,6 +164,13 @@ typedef bool (^of_set_filter_block_t)(id object);
 		     arguments: (va_list)arguments;
 
 /**
+ * @brief Returns an OFEnumerator to enumerate through all objects of the set.
+ *
+ * @return An OFEnumerator to enumerate through all objects of the set
+ */
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
+
+/**
  * @brief Returns whether the receiver is a subset of the specified set.
  *
  * @return Whether the receiver is a subset of the specified set
