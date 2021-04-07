@@ -58,37 +58,37 @@ int _OFData_CryptoHashing_reference;
 				    length: digestSize * 2];
 }
 
-- (OFString *)MD5Hash
+- (OFString *)stringByMD5Hashing
 {
 	return [self of_cryptoHashWithClass: [OFMD5Hash class]];
 }
 
-- (OFString *)RIPEMD160Hash
+- (OFString *)stringByRIPEMD160Hashing
 {
 	return [self of_cryptoHashWithClass: [OFRIPEMD160Hash class]];
 }
 
-- (OFString *)SHA1Hash
+- (OFString *)stringBySHA1Hashing
 {
 	return [self of_cryptoHashWithClass: [OFSHA1Hash class]];
 }
 
-- (OFString *)SHA224Hash
+- (OFString *)stringBySHA224Hashing
 {
 	return [self of_cryptoHashWithClass: [OFSHA224Hash class]];
 }
 
-- (OFString *)SHA256Hash
+- (OFString *)stringBySHA256Hashing
 {
 	return [self of_cryptoHashWithClass: [OFSHA256Hash class]];
 }
 
-- (OFString *)SHA384Hash
+- (OFString *)stringBySHA384Hashing
 {
 	return [self of_cryptoHashWithClass: [OFSHA384Hash class]];
 }
 
-- (OFString *)SHA512Hash
+- (OFString *)stringBySHA512Hashing
 {
 	return [self of_cryptoHashWithClass: [OFSHA512Hash class]];
 }
