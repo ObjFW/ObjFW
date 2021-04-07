@@ -10,18 +10,7 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASN1BitString.m		\
-       OFASN1Boolean.m			\
-       OFASN1Enumerated.m		\
-       OFASN1IA5String.m		\
-       OFASN1Integer.m			\
-       OFASN1NumericString.m		\
-       OFASN1ObjectIdentifier.m		\
-       OFASN1OctetString.m		\
-       OFASN1PrintableString.m		\
-       OFASN1UTF8String.m		\
-       OFASN1Value.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
        OFCharacterSet.m			\
@@ -29,7 +18,6 @@ SRCS = OFASN1BitString.m		\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERParsing.m		\
        OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
@@ -137,7 +125,6 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
@@ -154,8 +141,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
 	       socket.m				\
-	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
@@ -175,7 +161,6 @@ INCLUDES_ATOMIC = atomic.h			\
 		  atomic_sync_builtins.h	\
 		  atomic_x86.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\

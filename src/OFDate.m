@@ -565,18 +565,14 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFDate *)date
 {
-	OFDate *otherDate;
-
-	if (![(id)object isKindOfClass: [OFDate class]])
+	if (![date isKindOfClass: [OFDate class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherDate = (OFDate *)object;
-
-	if (self.timeIntervalSince1970 < otherDate.timeIntervalSince1970)
+	if (self.timeIntervalSince1970 < date.timeIntervalSince1970)
 		return OF_ORDERED_ASCENDING;
-	if (self.timeIntervalSince1970 > otherDate.timeIntervalSince1970)
+	if (self.timeIntervalSince1970 > date.timeIntervalSince1970)
 		return OF_ORDERED_DESCENDING;
 
 	return OF_ORDERED_SAME;

@@ -352,9 +352,6 @@ main(int argc, char *argv[])
 	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
-# ifdef OF_HAVE_SCTP
-	[self SCTPSocketTests];
-# endif
 # ifdef OF_HAVE_IPX
 	[self IPXSocketTests];
 	[self SPXSocketTests];
@@ -381,8 +378,6 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
-	[self ASN1DERParsingTests];
-	[self ASN1DERRepresentationTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
