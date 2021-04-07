@@ -1218,11 +1218,11 @@ typedef void OFObject;
  *
  * @brief A protocol for comparing objects.
  *
- * This protocol is implemented by objects that can be compared.
+ * This protocol is implemented by objects that can be compared. Its only method, @ref compare:, should be overridden with a stronger type.
  */
 @protocol OFComparing
 /**
- * @brief Compares the object with another object.
+ * @brief Compares the object to another object.
  *
  * @param object An object to compare the object to
  * @return The result of the comparison

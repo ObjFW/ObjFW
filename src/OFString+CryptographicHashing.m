@@ -15,9 +15,8 @@
 
 #include "config.h"
 
-#import "OFData+CryptoHashing.h"
 #import "OFString.h"
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 #import "OFMD5Hash.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"
@@ -26,19 +25,20 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 
-int _OFData_CryptoHashing_reference;
+int _OFString_CryptographicHashing_reference;
 
-@implementation OFData (CryptoHashing)
-- (OFString *)of_cryptoHashWithClass: (Class <OFCryptoHash>)class OF_DIRECT
+@implementation OFString (CryptographicHashing)
+static OFString *
+stringByHashing(Class <OFCryptographicHash> class, OFString *self)
 {
 	void *pool = objc_autoreleasePoolPush();
-	id <OFCryptoHash> hash =
-	    [class cryptoHashWithAllowsSwappableMemory: true];
+	id <OFCryptographicHash> hash =
+	    [class hashWithAllowsSwappableMemory: true];
 	size_t digestSize = [class digestSize];
 	const unsigned char *digest;
 	char cString[digestSize * 2];
 
-	[hash updateWithBuffer: _items length: _count * _itemSize];
+	[hash updateWithBuffer: self.UTF8String length: self.UTF8StringLength];
 	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {
@@ -58,38 +58,38 @@ int _OFData_CryptoHashing_reference;
 				    length: digestSize * 2];
 }
 
-- (OFString *)MD5Hash
+- (OFString *)stringByMD5Hashing
 {
-	return [self of_cryptoHashWithClass: [OFMD5Hash class]];
+	return stringByHashing([OFMD5Hash class], self);
 }
 
-- (OFString *)RIPEMD160Hash
+- (OFString *)stringByRIPEMD160Hashing
 {
-	return [self of_cryptoHashWithClass: [OFRIPEMD160Hash class]];
+	return stringByHashing([OFRIPEMD160Hash class], self);
 }
 
-- (OFString *)SHA1Hash
+- (OFString *)stringBySHA1Hashing
 {
-	return [self of_cryptoHashWithClass: [OFSHA1Hash class]];
+	return stringByHashing([OFSHA1Hash class], self);
 }
 
-- (OFString *)SHA224Hash
+- (OFString *)stringBySHA224Hashing
 {
-	return [self of_cryptoHashWithClass: [OFSHA224Hash class]];
+	return stringByHashing([OFSHA224Hash class], self);
 }
 
-- (OFString *)SHA256Hash
+- (OFString *)stringBySHA256Hashing
 {
-	return [self of_cryptoHashWithClass: [OFSHA256Hash class]];
+	return stringByHashing([OFSHA256Hash class], self);
 }
 
-- (OFString *)SHA384Hash
+- (OFString *)stringBySHA384Hashing
 {
-	return [self of_cryptoHashWithClass: [OFSHA384Hash class]];
+	return stringByHashing([OFSHA384Hash class], self);
 }
 
-- (OFString *)SHA512Hash
+- (OFString *)stringBySHA512Hashing
 {
-	return [self of_cryptoHashWithClass: [OFSHA512Hash class]];
+	return stringByHashing([OFSHA512Hash class], self);
 }
 @end

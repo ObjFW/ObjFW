@@ -268,6 +268,14 @@ OF_SUBCLASSING_RESTRICTED
 				 format: (OFString *)format;
 
 /**
+ * @brief Compares the date to another date.
+ *
+ * @param date The date to compare the date to
+ * @return The result of the comparison
+ */
+- (of_comparison_result_t)compare: (OFDate *)date;
+
+/**
  * @brief Creates a string of the date with the specified format.
  *
  * See the man page for `strftime` for information on the format.

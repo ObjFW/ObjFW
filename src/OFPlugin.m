@@ -81,7 +81,7 @@ of_dlerror(void)
 }
 
 @implementation OFPlugin
-+ (id)pluginFromFile: (OFString *)path
++ (id)pluginWithPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_plugin_handle_t handle;

@@ -1208,30 +1208,32 @@ static uint16_t sutf16str[] = {
 	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
 #undef SWAPPED_BYTE_ORDER
 
-	TEST(@"-[MD5Hash]", [C(@"asdfoobar").MD5Hash
+	TEST(@"-[stringByMD5Hashing]", [C(@"asdfoobar").stringByMD5Hashing
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
-	TEST(@"-[RIPEMD160Hash]", [C(@"asdfoobar").RIPEMD160Hash
+	TEST(@"-[stringByRIPEMD160Hashing]",
+	    [C(@"asdfoobar").stringByRIPEMD160Hashing
 	    isEqual: @"021d773b0fac06eb6755ca6aa58a580c980f7f13"])
 
-	TEST(@"-[SHA1Hash]", [C(@"asdfoobar").SHA1Hash
+	TEST(@"-[stringBySHA1Hashing]", [C(@"asdfoobar").stringBySHA1Hashing
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 
-	TEST(@"-[SHA224Hash]", [C(@"asdfoobar").SHA224Hash
-	    isEqual:
-	    @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"])
+	TEST(@"-[stringBySHA224Hashing]", [C(@"asdfoobar").stringBySHA224Hashing
+	    isEqual: @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"
+	    ])
 
-	TEST(@"-[SHA256Hash]", [C(@"asdfoobar").SHA256Hash isEqual:
-	    @"28e65b1dcd7f6ce2ea6277b15f87b913"
-	    @"628b5500bf7913a2bbf4cedcfa1215f6"])
+	TEST(@"-[stringBySHA256Hashing]", [C(@"asdfoobar").stringBySHA256Hashing
+	    isEqual: @"28e65b1dcd7f6ce2ea6277b15f87b913628b5500bf7913a2bbf4cedc"
+		     @"fa1215f6"])
 
-	TEST(@"-[SHA384Hash]", [C(@"asdfoobar").SHA384Hash isEqual:
-	    @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d08"
-	    @"7ded2f9c279e5addf8be854044bca0cece073fce28eec7d9"])
+	TEST(@"-[stringBySHA384Hashing]", [C(@"asdfoobar").stringBySHA384Hashing
+	    isEqual: @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d087ded2f9c"
+		     @"279e5addf8be854044bca0cece073fce28eec7d9"])
 
-	TEST(@"-[SHA512Hash]", [C(@"asdfoobar").SHA512Hash isEqual:
-	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
-	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
+	TEST(@"-[stringBySHA512Hashing]", [C(@"asdfoobar").stringBySHA512Hashing
+	    isEqual: @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56"
+		     @"412a9247c3579a329e53a5dc74676b106755e3394f9454a2d4227324"
+		     @"2615d32f80437d61"])
 
 	cs = [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
 	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",

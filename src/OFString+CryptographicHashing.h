@@ -20,46 +20,46 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_CryptoHashing_reference;
+extern int _OFString_CryptographicHashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (CryptoHashing)
+@interface OFString (CryptographicHashing)
 /**
  * @brief The MD5 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *MD5Hash;
+@property (readonly, nonatomic) OFString *stringByMD5Hashing;
 
 /**
  * @brief The RIPEMD-160 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *RIPEMD160Hash;
+@property (readonly, nonatomic) OFString *stringByRIPEMD160Hashing;
 
 /**
  * @brief The SHA-1 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *SHA1Hash;
+@property (readonly, nonatomic) OFString *stringBySHA1Hashing;
 
 /**
  * @brief The SHA-224 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *SHA224Hash;
+@property (readonly, nonatomic) OFString *stringBySHA224Hashing;
 
 /**
  * @brief The SHA-256 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *SHA256Hash;
+@property (readonly, nonatomic) OFString *stringBySHA256Hashing;
 
 /**
  * @brief The SHA-384 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *SHA384Hash;
+@property (readonly, nonatomic) OFString *stringBySHA384Hashing;
 
 /**
  * @brief The SHA-512 hash of the string as a string.
  */
-@property (readonly, nonatomic) OFString *SHA512Hash;
+@property (readonly, nonatomic) OFString *stringBySHA512Hashing;
 @end
 
 OF_ASSUME_NONNULL_END

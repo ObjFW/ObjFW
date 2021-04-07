@@ -18,7 +18,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFCryptoHash OFCryptoHash.h ObjFW/OFCryptoHash.h
+ * @protocol OFCryptographicHash \
+ *	     OFCryptographicHash.h ObjFW/OFCryptographicHash.h
  *
  * @brief A protocol for classes providing cryptographic hash functions.
  *
@@ -26,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * state is copied, allowing to calculate a new hash from there. This is
  * especially useful for generating many hashes with a common prefix.
  */
-@protocol OFCryptoHash <OFObject, OFCopying>
+@protocol OFCryptographicHash <OFObject, OFCopying>
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) size_t digestSize;
 @property (class, readonly, nonatomic) size_t blockSize;
@@ -66,8 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new autoreleased cryptographic hash
  */
-+ (instancetype)cryptoHashWithAllowsSwappableMemory:
-    (bool)allowsSwappableMemory;
++ (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
  * @brief Returns the digest size of the cryptographic hash, in bytes.

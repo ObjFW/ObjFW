@@ -168,24 +168,31 @@ const char *str = "Hello!";
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
 	    OFOutOfRangeException, [mutable subdataWithRange: of_range(6, 1)])
 
-	TEST(@"-[MD5Hash]", [mutable.MD5Hash isEqual: @"abcde".MD5Hash])
+	TEST(@"-[stringByMD5Hashing]", [mutable.stringByMD5Hashing
+	    isEqual: @"ab56b4d92b40713acc5af89985d4b786"])
 
-	TEST(@"-[RIPEMD160Hash]", [mutable.RIPEMD160Hash
-	    isEqual: @"abcde".RIPEMD160Hash])
+	TEST(@"-[stringByRIPEMD160Hashing]", [mutable.stringByRIPEMD160Hashing
+	    isEqual: @"973398b6e6c6cfa6b5e6a5173f195ce3274bf828"])
 
-	TEST(@"-[SHA1Hash]", [mutable.SHA1Hash isEqual: @"abcde".SHA1Hash])
+	TEST(@"-[stringBySHA1Hashing]", [mutable.stringBySHA1Hashing
+	    isEqual: @"03de6c570bfe24bfc328ccd7ca46b76eadaf4334"])
 
-	TEST(@"-[SHA224Hash]", [mutable.SHA224Hash
-	    isEqual: @"abcde".SHA224Hash])
+	TEST(@"-[stringBySHA224Hashing]", [mutable.stringBySHA224Hashing
+	    isEqual: @"bdd03d560993e675516ba5a50638b6531ac2ac3d5847c61916cfced6"
+	    ])
 
-	TEST(@"-[SHA256Hash]", [mutable.SHA256Hash
-	    isEqual: @"abcde".SHA256Hash])
+	TEST(@"-[stringBySHA256Hashing]", [mutable.stringBySHA256Hashing
+	    isEqual: @"36bbe50ed96841d10443bcb670d6554f0a34b761be67ec9c4a8ad2c0"
+		     @"c44ca42c"])
 
-	TEST(@"-[SHA384Hash]", [mutable.SHA384Hash
-	    isEqual: @"abcde".SHA384Hash])
+	TEST(@"-[stringBySHA384Hashing]", [mutable.stringBySHA384Hashing
+	    isEqual: @"4c525cbeac729eaf4b4665815bc5db0c84fe6300068a727cf74e2813"
+		     @"521565abc0ec57a37ee4d8be89d097c0d2ad52f0"])
 
-	TEST(@"-[SHA512Hash]", [mutable.SHA512Hash
-	    isEqual: @"abcde".SHA512Hash])
+	TEST(@"-[stringBySHA512Hashing]", [mutable.stringBySHA512Hashing
+	    isEqual: @"878ae65a92e86cac011a570d4c30a7eaec442b85ce8eca0c2952b5e3"
+		     @"cc0628c2e79d889ad4d5c7c626986d452dd86374b6ffaa7cd8b67665"
+		     @"bef2289a5c70b0a1"])
 
 	TEST(@"-[stringByBase64Encoding]",
 	    [mutable.stringByBase64Encoding isEqual: @"YWJjZGU="])

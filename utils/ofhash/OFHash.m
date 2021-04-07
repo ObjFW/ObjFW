@@ -51,7 +51,7 @@ help(void)
 }
 
 static void
-printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
+printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
 	const unsigned char *digest = hash.digest;
 	size_t digestSize = hash.digestSize;
@@ -148,25 +148,20 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		help();
 
 	if (calculateMD5)
-		MD5Hash = [OFMD5Hash cryptoHashWithAllowsSwappableMemory: true];
+		MD5Hash = [OFMD5Hash hashWithAllowsSwappableMemory: true];
 	if (calculateRIPEMD160)
 		RIPEMD160Hash =
-		    [OFRIPEMD160Hash cryptoHashWithAllowsSwappableMemory: true];
+		    [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA1)
-		SHA1Hash =
-		    [OFSHA1Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA1Hash = [OFSHA1Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA224)
-		SHA224Hash =
-		    [OFSHA224Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA224Hash = [OFSHA224Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA256)
-		SHA256Hash =
-		    [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA256Hash = [OFSHA256Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA384)
-		SHA384Hash =
-		    [OFSHA384Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA384Hash = [OFSHA384Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA512)
-		SHA512Hash =
-		    [OFSHA512Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA512Hash = [OFSHA512Hash hashWithAllowsSwappableMemory: true];
 
 	for (OFString *path in optionsParser.remainingArguments) {
 		void *pool = objc_autoreleasePoolPush();

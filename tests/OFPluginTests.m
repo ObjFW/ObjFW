@@ -33,8 +33,8 @@ static OFString *module = @"OFPlugin";
 	void *pool = objc_autoreleasePoolPush();
 	TestPlugin *plugin;
 
-	TEST(@"+[pluginFromFile:]",
-	    (plugin = [OFPlugin pluginFromFile: PLUGIN_PATH]))
+	TEST(@"+[pluginWithPath:]",
+	    (plugin = [OFPlugin pluginWithPath: PLUGIN_PATH]))
 
 	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
 

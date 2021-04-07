@@ -361,6 +361,14 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFNumber
  */
 - (instancetype)initWithDouble: (double)value;
+
+/**
+ * @brief Compares the number to another number.
+ *
+ * @param number The number to compare the number to
+ * @return The result of the comparison
+ */
+- (of_comparison_result_t)compare: (OFNumber *)number;
 @end
 
 OF_ASSUME_NONNULL_END
