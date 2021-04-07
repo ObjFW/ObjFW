@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A protocol with methods common for all collections.
  */
-@protocol OFCollection <OFEnumerating, OFFastEnumeration>
+@protocol OFCollection <OFEnumeration, OFFastEnumeration>
 /**
  * @brief The number of objects in the collection
  */

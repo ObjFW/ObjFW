@@ -21,11 +21,11 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFEnumerator OF_GENERIC(ObjectType);
 
 /**
- * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief A protocol for getting an enumerator for the object.
  */
-@protocol OFEnumerating
+@protocol OFEnumeration
 /**
  * @brief Returns an OFEnumerator to enumerate through all objects of the
  *	  collection.
