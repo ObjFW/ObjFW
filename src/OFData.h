@@ -271,6 +271,14 @@ enum {
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
 /**
+ * @brief Compares the data to other data.
+ *
+ * @param data Data to compare the data to
+ * @return The result of the comparison
+ */
+- (of_comparison_result_t)compare: (OFData *)data;
+
+/**
  * @brief Returns a specific item of the OFData.
  *
  * @param index The number of the item to return

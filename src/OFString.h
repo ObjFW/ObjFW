@@ -884,13 +884,20 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
 
 /**
- * @brief Compares the OFString to another OFString without caring about the
- *	  case.
+ * @brief Compares the string to another string.
  *
- * @param otherString A string to compare with
- * @return An of_comparison_result_t
+ * @param string The string to compare the string to
+ * @return The result of the comparison
  */
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString;
+- (of_comparison_result_t)compare: (OFString *)string;
+
+/**
+ * @brief Compares the string to another string without caring about the case.
+ *
+ * @param string The string to compare the string to
+ * @return The result of the comparison
+ */
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string;
 
 /**
  * @brief Returns the Unicode character at the specified index.

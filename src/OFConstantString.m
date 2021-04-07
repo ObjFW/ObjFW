@@ -178,8 +178,8 @@ struct {
 	return [self mutableCopy];
 }
 
-/* From protocol OFComparing */
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+/* From protocol OFComparing,  but overridden in OFString */
+- (of_comparison_result_t)compare: (OFString *)object
 {
 	[self finishInitialization];
 	return [self compare: object];
