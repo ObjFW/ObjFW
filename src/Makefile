@@ -30,7 +30,7 @@ SRCS = OFASN1BitString.m		\
        OFCountedSet.m			\
        OFData.m				\
        OFData+ASN1DERParsing.m		\
-       OFData+CryptoHashing.m		\
+       OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
@@ -84,7 +84,7 @@ SRCS = OFASN1BitString.m		\
        OFStdIOStream.m			\
        OFStream.m			\
        OFString.m			\
-       OFString+CryptoHashing.m		\
+       OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
@@ -177,7 +177,7 @@ INCLUDES_ATOMIC = atomic.h			\
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
-	    OFCryptoHash.h			\
+	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\

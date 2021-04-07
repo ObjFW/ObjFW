@@ -102,7 +102,7 @@
 # import "OFSubprocess.h"
 #endif
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 #import "OFMD5Hash.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"

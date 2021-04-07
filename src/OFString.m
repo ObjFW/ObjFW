@@ -127,7 +127,7 @@ extern bool of_unicode_to_koi8_u(const of_unichar_t *, unsigned char *,
 void
 _references_to_categories_of_OFString(void)
 {
-	_OFString_CryptoHashing_reference = 1;
+	_OFString_CryptographicHashing_reference = 1;
 	_OFString_JSONParsing_reference = 1;
 #ifdef OF_HAVE_FILES
 	_OFString_PathAdditions_reference = 1;

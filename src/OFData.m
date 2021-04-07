@@ -47,7 +47,7 @@ void
 _references_to_categories_of_OFData(void)
 {
 	_OFData_ASN1DERParsing_reference = 1;
-	_OFData_CryptoHashing_reference = 1;
+	_OFData_CryptographicHashing_reference = 1;
 	_OFData_MessagePackParsing_reference = 1;
 }
 

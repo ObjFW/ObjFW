@@ -140,7 +140,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	return BLOCK_SIZE;
 }
 
-+ (instancetype)cryptoHashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
++ (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithAllowsSwappableMemory:
 	    allowsSwappableMemory] autorelease];

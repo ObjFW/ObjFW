@@ -13,7 +13,7 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which provides methods to create an MD5 hash.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFMD5Hash: OFObject <OFCryptoHash>
+@interface OFMD5Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
 	struct of_md5_hash_ivars {

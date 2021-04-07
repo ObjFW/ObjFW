@@ -22,12 +22,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFData_CryptoHashing_reference;
+extern int _OFData_CryptographicHashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFData (CryptoHashing)
+@interface OFData (CryptographicHashing)
 /**
  * @brief The MD5 hash of the data as a string.
  */

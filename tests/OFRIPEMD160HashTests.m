@@ -32,9 +32,8 @@ const uint8_t testfile_rmd160[20] =
 	OFRIPEMD160Hash *rmd160, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
-	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
-	    (rmd160 = [OFRIPEMD160Hash
-	    cryptoHashWithAllowsSwappableMemory: true]))
+	TEST(@"+[hashWithAllowsSwappableMemory:]",
+	    (rmd160 = [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];

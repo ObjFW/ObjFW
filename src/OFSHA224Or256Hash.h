@@ -13,7 +13,7 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A base class for SHA-224 and SHA-256.
  */
-@interface OFSHA224Or256Hash: OFObject <OFCryptoHash>
+@interface OFSHA224Or256Hash: OFObject <OFCryptographicHash>
 {
 @private
 	OFSecureData *_iVarsData;
