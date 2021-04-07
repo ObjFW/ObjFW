@@ -1514,7 +1514,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (bool)isEqual: (id)object
 {
 	void *pool;
-	OFString *otherString;
+	OFString *string;
 	const of_unichar_t *characters, *otherCharacters;
 	size_t length;
 
@@ -1524,16 +1524,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (![object isKindOfClass: [OFString class]])
 		return false;
 
-	otherString = object;
+	string = object;
 	length = self.length;
 
-	if (otherString.length != length)
+	if (string.length != length)
 		return false;
 
 	pool = objc_autoreleasePoolPush();
 
 	characters = self.characters;
-	otherCharacters = otherString.characters;
+	otherCharacters = string.characters;
 
 	if (memcmp(characters, otherCharacters,
 	    length * sizeof(of_unichar_t)) != 0) {
@@ -1556,27 +1556,25 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFString *)string
 {
 	void *pool;
-	OFString *otherString;
 	const of_unichar_t *characters, *otherCharacters;
 	size_t minimumLength;
 
-	if (object == self)
+	if (string == self)
 		return OF_ORDERED_SAME;
 
-	if (![(id)object isKindOfClass: [OFString class]])
+	if (![string isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherString = (OFString *)object;
-	minimumLength = (self.length > otherString.length
-	    ? otherString.length : self.length);
+	minimumLength = (self.length > string.length
+	    ? string.length : self.length);
 
 	pool = objc_autoreleasePoolPush();
 
 	characters = self.characters;
-	otherCharacters = otherString.characters;
+	otherCharacters = string.characters;
 
 	for (size_t i = 0; i < minimumLength; i++) {
 		if (characters[i] > otherCharacters[i]) {
@@ -1592,27 +1590,27 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	objc_autoreleasePoolPop(pool);
 
-	if (self.length > otherString.length)
+	if (self.length > string.length)
 		return OF_ORDERED_DESCENDING;
-	if (self.length < otherString.length)
+	if (self.length < string.length)
 		return OF_ORDERED_ASCENDING;
 
 	return OF_ORDERED_SAME;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters, *otherCharacters;
 	size_t length, otherLength, minimumLength;
 
-	if (otherString == self)
+	if (string == self)
 		return OF_ORDERED_SAME;
 
 	characters = self.characters;
-	otherCharacters = otherString.characters;
+	otherCharacters = string.characters;
 	length = self.length;
-	otherLength = otherString.length;
+	otherLength = string.length;
 
 	minimumLength = (length > otherLength ? otherLength : length);
 

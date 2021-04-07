@@ -506,14 +506,10 @@
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFTimer *)timer
 {
-	OFTimer *timer;
-
-	if (![(id)object isKindOfClass: [OFTimer class]])
+	if (![timer isKindOfClass: [OFTimer class]])
 		@throw [OFInvalidArgumentException exception];
-
-	timer = (OFTimer *)object;
 
 	return [_fireDate compare: timer->_fireDate];
 }

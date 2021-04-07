@@ -450,16 +450,13 @@ _references_to_categories_of_OFData(void)
 	return true;
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFData *)data
 {
-	OFData *data;
 	int comparison;
 	size_t count, minCount;
 
-	if (![(id)object isKindOfClass: [OFData class]])
+	if (![data isKindOfClass: [OFData class]])
 		@throw [OFInvalidArgumentException exception];
-
-	data = (OFData *)object;
 
 	if (data.itemSize != _itemSize)
 		@throw [OFInvalidArgumentException exception];

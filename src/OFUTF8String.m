@@ -774,7 +774,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (bool)isEqual: (id)object
 {
-	OFUTF8String *otherString;
+	OFUTF8String *string;
 
 	if (object == self)
 		return true;
@@ -782,42 +782,39 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	if (![object isKindOfClass: [OFString class]])
 		return false;
 
-	otherString = object;
+	string = object;
 
-	if (otherString.UTF8StringLength != _s->cStringLength ||
-	    otherString.length != _s->length)
+	if (string.UTF8StringLength != _s->cStringLength ||
+	    string.length != _s->length)
 		return false;
 
-	if (([otherString isKindOfClass: [OFUTF8String class]] ||
-	    [otherString isKindOfClass: [OFMutableUTF8String class]]) &&
-	    _s->hashed && otherString->_s->hashed &&
-	    _s->hash != otherString->_s->hash)
+	if (([string isKindOfClass: [OFUTF8String class]] ||
+	    [string isKindOfClass: [OFMutableUTF8String class]]) &&
+	    _s->hashed && string->_s->hashed && _s->hash != string->_s->hash)
 		return false;
 
-	if (strcmp(_s->cString, otherString.UTF8String) != 0)
+	if (strcmp(_s->cString, string.UTF8String) != 0)
 		return false;
 
 	return true;
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFString *)string
 {
-	OFString *otherString;
 	size_t otherCStringLength, minimumCStringLength;
 	int compare;
 
-	if (object == self)
+	if (string == self)
 		return OF_ORDERED_SAME;
 
-	if (![(id)object isKindOfClass: [OFString class]])
+	if (![string isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherString = (OFString *)object;
-	otherCStringLength = otherString.UTF8StringLength;
+	otherCStringLength = string.UTF8StringLength;
 	minimumCStringLength = (_s->cStringLength > otherCStringLength
 	    ? otherCStringLength : _s->cStringLength);
 
-	if ((compare = memcmp(_s->cString, otherString.UTF8String,
+	if ((compare = memcmp(_s->cString, string.UTF8String,
 	    minimumCStringLength)) == 0) {
 		if (_s->cStringLength > otherCStringLength)
 			return OF_ORDERED_DESCENDING;
@@ -832,7 +829,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
 {
 	const char *otherCString;
 	size_t otherCStringLength, minimumCStringLength;
@@ -841,14 +838,11 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 #endif
 	int compare;
 
-	if (otherString == self)
+	if (string == self)
 		return OF_ORDERED_SAME;
 
-	if (![otherString isKindOfClass: [OFString class]])
-		@throw [OFInvalidArgumentException exception];
-
-	otherCString = otherString.UTF8String;
-	otherCStringLength = otherString.UTF8StringLength;
+	otherCString = string.UTF8String;
+	otherCStringLength = string.UTF8StringLength;
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	if (!_s->isUTF8) {
