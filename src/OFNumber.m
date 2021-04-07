@@ -942,14 +942,10 @@ isFloat(OFNumber *number)
 	return (number.unsignedLongLongValue == self.unsignedLongLongValue);
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (OFNumber *)number
 {
-	OFNumber *number;
-
-	if (![(id)object isKindOfClass: [OFNumber class]])
+	if (![number isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException exception];
-
-	number = (OFNumber *)object;
 
 	if (isFloat(self) || isFloat(number)) {
 		double double1 = self.doubleValue;

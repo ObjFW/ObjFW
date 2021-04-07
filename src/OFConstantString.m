@@ -179,10 +179,10 @@ struct {
 }
 
 /* From protocol OFComparing,  but overridden in OFString */
-- (of_comparison_result_t)compare: (OFString *)object
+- (of_comparison_result_t)compare: (OFString *)string
 {
 	[self finishInitialization];
-	return [self compare: object];
+	return [self compare: string];
 }
 
 /* From OFObject, but reimplemented in OFString */
@@ -245,10 +245,10 @@ struct {
 	return [self cStringLengthWithEncoding: encoding];
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
 {
 	[self finishInitialization];
-	return [self caseInsensitiveCompare: otherString];
+	return [self caseInsensitiveCompare: string];
 }
 
 - (of_unichar_t)characterAtIndex: (size_t)idx
