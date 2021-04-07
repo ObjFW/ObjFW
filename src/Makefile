@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions encodings forwarding invocation
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding
 SUBDIRS_AFTER = ${BRIDGE}
 DISTCLEAN = Info.plist objfw-defs.h
 
@@ -232,12 +232,10 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
-	     forwarding/forwarding.a	\
-	     invocation/invocation.a
+	     forwarding/forwarding.a
 LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 		 encodings/encodings.lib.a	\
-		 forwarding/forwarding.lib.a	\
-		 invocation/invocation.lib.a
+		 forwarding/forwarding.lib.a
 
 include ../buildsys.mk
 
