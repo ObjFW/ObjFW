@@ -59,14 +59,6 @@
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
-@interface TestsAppDelegate (OFASN1DERParsingTests)
-- (void)ASN1DERParsingTests;
-@end
-
-@interface TestsAppDelegate (OFASN1DERRepresentationTests)
-- (void)ASN1DERRepresentationTests;
-@end
-
 @interface TestsAppDelegate (OFArrayTests)
 - (void)arrayTests;
 @end
