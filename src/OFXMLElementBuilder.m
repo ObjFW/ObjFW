@@ -30,7 +30,7 @@
 @implementation OFXMLElementBuilder
 @synthesize delegate = _delegate;
 
-+ (instancetype)elementBuilder
++ (instancetype)builder
 {
 	return [[[self alloc] init] autorelease];
 }

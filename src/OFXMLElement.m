@@ -208,7 +208,7 @@ _references_to_categories_of_OFXMLElement(void)
 	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder elementBuilder];
+	builder = [OFXMLElementBuilder builder];
 	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 
@@ -239,7 +239,7 @@ _references_to_categories_of_OFXMLElement(void)
 	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder elementBuilder];
+	builder = [OFXMLElementBuilder builder];
 	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 

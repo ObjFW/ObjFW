@@ -40,7 +40,7 @@ static size_t i = 0;
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLParser *p = [OFXMLParser parser];
-	OFXMLElementBuilder *builder = [OFXMLElementBuilder elementBuilder];
+	OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
 	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
 	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
