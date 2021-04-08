@@ -154,7 +154,7 @@
 - (void)parser: (OFXMLParser *)parser
   foundComment: (OFString *)comment
 {
-	OFXMLComment *node = [OFXMLComment commentWithString: comment];
+	OFXMLComment *node = [OFXMLComment commentWithText: comment];
 	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
