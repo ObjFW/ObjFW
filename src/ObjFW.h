@@ -249,6 +249,7 @@
 # import "tlskey.h"
 # import "mutex.h"
 # import "condition.h"
+# import "OFThreadPool.h"
 # import "OFMutex.h"
 # import "OFRecursiveMutex.h"
 # import "OFCondition.h"
