@@ -133,7 +133,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 
 		[sandbox unveilPath: @LANGUAGE_DIR permissions: @"r"];
 
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
 		[sandbox release];
 	}

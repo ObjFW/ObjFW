@@ -111,7 +111,7 @@ help(OFStream *stream, bool full, int status)
 		sandbox.allowsStdIO = true;
 		sandbox.allowsDNS = true;
 
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
 		[sandbox release];
 	}

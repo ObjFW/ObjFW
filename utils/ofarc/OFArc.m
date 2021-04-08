@@ -182,7 +182,7 @@ writingNotSupported(OFString *type)
 	/* Dropped after parsing options */
 	sandbox.allowsUnveil = true;
 
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -327,7 +327,7 @@ writingNotSupported(OFString *type)
 			[sandbox unveilPath: path permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self
@@ -348,7 +348,7 @@ writingNotSupported(OFString *type)
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self
@@ -369,7 +369,7 @@ writingNotSupported(OFString *type)
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		files = [remainingArguments objectsInRange:
@@ -406,7 +406,7 @@ writingNotSupported(OFString *type)
 		}
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self

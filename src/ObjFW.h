@@ -128,7 +128,6 @@
 #import "OFOptionsParser.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
-#import "OFSandbox.h"
 
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
@@ -212,7 +211,6 @@
 # import "OFResolveHostFailedException.h"
 #endif
 #import "OFRetrieveItemAttributesFailedException.h"
-#import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"

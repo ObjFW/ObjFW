@@ -57,7 +57,6 @@ SRCS = OFApplication.m			\
        OFPair.m				\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
-       OFSandbox.m			\
        OFSecureData.m			\
        OFSeekableStream.m		\
        OFSet.m				\
@@ -197,6 +196,7 @@ SRCS += OFAdjacentArray.m		\
 	OFRangeCharacterSet.m		\
 	OFRangeValue.m			\
 	OFRectangleValue.m		\
+       OFSandbox.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
