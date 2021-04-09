@@ -116,7 +116,7 @@
 #import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
 #import "OFXMLComment.h"
-#import "OFXMLProcessingInstructions.h"
+#import "OFXMLProcessingInstruction.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 

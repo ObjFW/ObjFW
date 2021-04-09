@@ -20,16 +20,17 @@
 #include <string.h>
 
 #import "OFXMLParser.h"
-#import "OFString.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
+#import "OFCharacterSet.h"
 #import "OFData.h"
-#import "OFXMLAttribute.h"
-#import "OFStream.h"
+#import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
+#import "OFStream.h"
+#import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFXMLAttribute.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -45,7 +46,7 @@
 static void inByteOrderMarkState(OFXMLParser *);
 static void outsideTagState(OFXMLParser *);
 static void tagOpenedState(OFXMLParser *);
-static void inProcessingInstructionsState(OFXMLParser *);
+static void inProcessingInstructionState(OFXMLParser *);
 static void inTagNameState(OFXMLParser *);
 static void inCloseTagNameState(OFXMLParser *);
 static void inTagState(OFXMLParser *);
@@ -67,8 +68,7 @@ static state_function_t lookupTable[] = {
 	[OF_XMLPARSER_IN_BYTE_ORDER_MARK] = inByteOrderMarkState,
 	[OF_XMLPARSER_OUTSIDE_TAG] = outsideTagState,
 	[OF_XMLPARSER_TAG_OPENED] = tagOpenedState,
-	[OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS] =
-	    inProcessingInstructionsState,
+	[OF_XMLPARSER_IN_PROCESSING_INSTRUCTION] = inProcessingInstructionState,
 	[OF_XMLPARSER_IN_TAG_NAME] = inTagNameState,
 	[OF_XMLPARSER_IN_CLOSE_TAG_NAME] = inCloseTagNameState,
 	[OF_XMLPARSER_IN_TAG] = inTagState,
@@ -352,7 +352,7 @@ tagOpenedState(OFXMLParser *self)
 	switch (self->_data[self->_i]) {
 	case '?':
 		self->_last = self->_i + 1;
-		self->_state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS;
+		self->_state = OF_XMLPARSER_IN_PROCESSING_INSTRUCTION;
 		self->_level = 0;
 		break;
 	case '/':
@@ -379,7 +379,7 @@ tagOpenedState(OFXMLParser *self)
 
 /* <?xml […]?> */
 static bool
-parseXMLProcessingInstructions(OFXMLParser *self, OFString *pi)
+parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 {
 	const char *cString;
 	size_t length, last;
@@ -394,11 +394,8 @@ parseXMLProcessingInstructions(OFXMLParser *self, OFString *pi)
 
 	self->_acceptProlog = false;
 
-	pi = [pi substringFromIndex: 3];
-	pi = pi.stringByDeletingEnclosingWhitespaces;
-
-	cString = pi.UTF8String;
-	length = pi.UTF8StringLength;
+	cString = data.UTF8String;
+	length = data.UTF8StringLength;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -473,31 +470,45 @@ parseXMLProcessingInstructions(OFXMLParser *self, OFString *pi)
 	return true;
 }
 
-/* Inside processing instructions */
+/* Inside processing instruction */
 static void
-inProcessingInstructionsState(OFXMLParser *self)
+inProcessingInstructionState(OFXMLParser *self)
 {
 	if (self->_data[self->_i] == '?')
 		self->_level = 1;
 	else if (self->_level == 1 && self->_data[self->_i] == '>') {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *PI;
+		OFString *PI, *target, *data = nil;
+		OFCharacterSet *whitespaceCS;
+		size_t pos;
 
 		appendToBuffer(self->_buffer, self->_data + self->_last,
 		    self->_encoding, self->_i - self->_last);
 		PI = transformString(self, self->_buffer, 1, false);
 
-		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
-		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
-		    [PI hasPrefix: @"xml\n"])
-			if (!parseXMLProcessingInstructions(self, PI))
+		whitespaceCS = [OFCharacterSet
+		    characterSetWithCharactersInString: @" \r\n\r"];
+		pos = [PI indexOfCharacterFromSet: whitespaceCS];
+		if (pos != OF_NOT_FOUND) {
+			target = [PI substringToIndex: pos];
+			data = [[PI substringFromIndex: pos + 1]
+			    stringByDeletingEnclosingWhitespaces];
+
+			if (data.length == 0)
+				data = nil;
+		} else
+			target = PI;
+
+		if ([target caseInsensitiveCompare: @"xml"] == OF_ORDERED_SAME)
+			if (!parseXMLProcessingInstruction(self, data))
 				@throw [OFMalformedXMLException
 				    exceptionWithParser: self];
 
-		if ([self->_delegate respondsToSelector:
-		    @selector(parser:foundProcessingInstructions:)])
+		if ([self->_delegate respondsToSelector: @selector(
+		    parser:foundProcessingInstructionWithTarget:data:)])
 			[self->_delegate parser: self
-			    foundProcessingInstructions: PI];
+			    foundProcessingInstructionWithTarget: target
+							    data: data];
 
 		objc_autoreleasePoolPop(pool);
 
@@ -548,9 +559,7 @@ inTagNameState(OFXMLParser *self)
 	}
 
 	if (self->_data[self->_i] == '>' || self->_data[self->_i] == '/') {
-		OFString *namespace;
-
-		namespace = namespaceForPrefix(self->_prefix,
+		OFString *namespace = namespaceForPrefix(self->_prefix,
 		    self->_namespaces);
 
 		if (self->_prefix != nil && namespace == nil)

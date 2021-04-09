@@ -97,7 +97,7 @@ SRCS = OFApplication.m			\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
-       OFXMLProcessingInstructions.m	\
+       OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
        base64.m				\

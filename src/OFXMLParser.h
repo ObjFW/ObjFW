@@ -34,14 +34,16 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFXMLParserDelegate <OFObject>
 @optional
 /**
- * @brief This callback is called when the XML parser found processing
- *	  instructions.
+ * @brief This callback is called when the XML parser found a processing
+ *	  instruction.
  *
- * @param parser The parser which found processing instructions
- * @param processingInstructions The processing instructions
+ * @param parser The parser which found a processing instruction
+ * @param target The target of the processing instruction
+ * @param data The data of the processing instruction
  */
--		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)processingInstructions;
+-			  (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructionWithTarget: (OFString *)target
+				  data: (OFString *)data;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new
@@ -132,7 +134,7 @@ OF_SUBCLASSING_RESTRICTED
 		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
 		OF_XMLPARSER_OUTSIDE_TAG,
 		OF_XMLPARSER_TAG_OPENED,
-		OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS,
+		OF_XMLPARSER_IN_PROCESSING_INSTRUCTION,
 		OF_XMLPARSER_IN_TAG_NAME,
 		OF_XMLPARSER_IN_CLOSE_TAG_NAME,
 		OF_XMLPARSER_IN_TAG,
