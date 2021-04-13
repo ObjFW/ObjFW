@@ -26,64 +26,11 @@
 
 #import "OFOutOfMemoryException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
-@interface OFValuePlaceholder: OFValue
-@end
-
-@implementation OFValuePlaceholder
-- (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType
-{
-	return (id)[[OFBytesValue alloc] initWithBytes: bytes
-					      objCType: objCType];
-}
-
-- (instancetype)initWithPointer: (const void *)pointer
-{
-	return (id)[[OFPointerValue alloc] initWithPointer: pointer];
-}
-
-- (instancetype)initWithNonretainedObject: (id)object
-{
-	return (id)[[OFNonretainedObjectValue alloc]
-	    initWithNonretainedObject: object];
-}
-
-- (instancetype)initWithRange: (of_range_t)range
-{
-	return (id)[[OFRangeValue alloc] initWithRange: range];
-}
-
-- (instancetype)initWithPoint: (of_point_t)point
-{
-	return (id)[[OFPointValue alloc] initWithPoint: point];
-}
-
-- (instancetype)initWithDimension: (of_dimension_t)dimension
-{
-	return (id)[[OFDimensionValue alloc] initWithDimension: dimension];
-}
-
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
-{
-	return (id)[[OFRectangleValue alloc] initWithRectangle: rectangle];
-}
-@end
-
 @implementation OFValue
-+ (void)initialize
-{
-	if (self == [OFValue class])
-		placeholder.isa = [OFValuePlaceholder class];
-}
-
 + (instancetype)alloc
 {
 	if (self == [OFValue class])
-		return (id)&placeholder;
+		return [OFBytesValue alloc];
 
 	return [super alloc];
 }
@@ -91,72 +38,45 @@ static struct {
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType
 {
-	return [[[self alloc] initWithBytes: bytes
-				   objCType: objCType] autorelease];
+	return [[[OFBytesValue alloc] initWithBytes: bytes
+					   objCType: objCType] autorelease];
 }
 
 + (instancetype)valueWithPointer: (const void *)pointer
 {
-	return [[[self alloc] initWithPointer: pointer] autorelease];
+	return [[[OFPointerValue alloc] initWithPointer: pointer] autorelease];
 }
 
 + (instancetype)valueWithNonretainedObject: (id)object
 {
-	return [[[self alloc] initWithNonretainedObject: object] autorelease];
+	return [[[OFNonretainedObjectValue alloc]
+	    initWithNonretainedObject: object] autorelease];
 }
 
 + (instancetype)valueWithRange: (of_range_t)range
 {
-	return [[[self alloc] initWithRange: range] autorelease];
+	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
 }
 
 + (instancetype)valueWithPoint: (of_point_t)point
 {
-	return [[[self alloc] initWithPoint: point] autorelease];
+	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
 }
 
 + (instancetype)valueWithDimension: (of_dimension_t)dimension
 {
-	return [[[self alloc] initWithDimension: dimension] autorelease];
+	return [[[OFDimensionValue alloc]
+	    initWithDimension: dimension] autorelease];
 }
 
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
 {
-	return [[[self alloc] initWithRectangle: rectangle] autorelease];
+	return [[[OFRectangleValue alloc]
+	    initWithRectangle: rectangle] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPointer: (const void *)pointer
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithNonretainedObject: (id)object
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithRange: (of_range_t)range
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPoint: (of_point_t)point
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithDimension: (of_dimension_t)dimension
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
 {
 	OF_INVALID_INIT_METHOD
 }

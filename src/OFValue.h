@@ -153,65 +153,6 @@ OF_ASSUME_NONNULL_BEGIN
 		     objCType: (const char *)objCType;
 
 /**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  pointer.
- *
- * Only the raw value of the pointer is stored and no data will be copied.
- *
- * @param pointer The pointer the OFValue should contain
- * @return An initialized OFValue
- */
-- (instancetype)initWithPointer: (const void *)pointer;
-
-/**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  non-retained object.
- *
- * The object is not retained, which makes this useful for storing objects in
- * collections without retaining them.
- *
- * @param object The object the OFValue should contain without retaining it
- * @return An initialized OFValue
- */
-- (instancetype)initWithNonretainedObject: (id)object;
-
-/**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  range.
- *
- * @param range The range the OFValue should contain
- * @return An initialized OFValue
- */
-- (instancetype)initWithRange: (of_range_t)range;
-
-/**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  point.
- *
- * @param point The point the OFValue should contain
- * @return An initialized OFValue
- */
-- (instancetype)initWithPoint: (of_point_t)point;
-
-/**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  dimension.
- *
- * @param dimension The dimension the OFValue should contain
- * @return An initialized OFValue
- */
-- (instancetype)initWithDimension: (of_dimension_t)dimension;
-
-/**
- * @brief Initializes an already allocated OFValue containing the specified
- *	  rectangle.
- *
- * @param rectangle The rectangle the OFValue should contain
- * @return An initialized OFValue
- */
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle;
-
-/**
  * @brief Gets the value.
  *
  * If the specified size does not match, this raises an

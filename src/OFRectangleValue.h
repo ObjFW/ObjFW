@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_rectangle_t _rectangle;
 }
+
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle;
 @end
 
 OF_ASSUME_NONNULL_END

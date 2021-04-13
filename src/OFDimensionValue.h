@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_dimension_t _dimension;
 }
+
+- (instancetype)initWithDimension: (of_dimension_t)dimension;
 @end
 
 OF_ASSUME_NONNULL_END

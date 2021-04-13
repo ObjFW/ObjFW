@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	void *_pointer;
 }
+
+- (instancetype)initWithPointer: (const void *)pointer;
 @end
 
 OF_ASSUME_NONNULL_END

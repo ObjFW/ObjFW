@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_range_t _range;
 }
+
+- (instancetype)initWithRange: (of_range_t)range;
 @end
 
 OF_ASSUME_NONNULL_END

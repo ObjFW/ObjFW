@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_point_t _point;
 }
+
+- (instancetype)initWithPoint: (of_point_t)point;
 @end
 
 OF_ASSUME_NONNULL_END
