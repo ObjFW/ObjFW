@@ -243,12 +243,6 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_UNAVAILABLE
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType OF_UNAVAILABLE;
-- (instancetype)initWithPointer: (const void *)pointer OF_UNAVAILABLE;
-- (instancetype)initWithNonretainedObject: (id)object OF_UNAVAILABLE;
-- (instancetype)initWithRange: (of_range_t)range OF_UNAVAILABLE;
-- (instancetype)initWithPoint: (of_point_t)point OF_UNAVAILABLE;
-- (instancetype)initWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
 
 /**
