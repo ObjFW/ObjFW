@@ -110,7 +110,7 @@ static uint16_t sutf16str[] = {
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)UTF16String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -129,7 +129,7 @@ static uint16_t sutf16str[] = {
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)UTF32String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -1189,9 +1189,9 @@ static uint16_t sutf16str[] = {
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
 
 #ifdef OF_BIG_ENDIAN
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_LITTLE_ENDIAN
+# define SWAPPED_BYTE_ORDER OFByteOrderLittleEndian
 #else
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_BIG_ENDIAN
+# define SWAPPED_BYTE_ORDER OFByteOrderBigEndian
 #endif
 	TEST(@"-[UTF16String]", (u16a = C(@"fööbär🀺").UTF16String) &&
 	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&

@@ -102,12 +102,6 @@
 # define OF_WEAK_REF(sym)
 #endif
 
-#ifdef OF_BIG_ENDIAN
-# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_BIG_ENDIAN
-#else
-# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_LITTLE_ENDIAN
-#endif
-
 #if __STDC_VERSION__ >= 201112L
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)

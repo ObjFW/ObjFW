@@ -96,7 +96,7 @@ static struct {
 }
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							  byteOrder: byteOrder];
@@ -104,7 +104,7 @@ static struct {
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							     length: length
@@ -124,7 +124,7 @@ static struct {
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							  byteOrder: byteOrder];
@@ -132,7 +132,7 @@ static struct {
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							     length: length

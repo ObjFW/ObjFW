@@ -79,10 +79,16 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
  */
 typedef enum {
 	/** Most significant byte first (big endian) */
-	OF_BYTE_ORDER_BIG_ENDIAN,
+	OFByteOrderBigEndian,
 	/** Least significant byte first (little endian) */
-	OF_BYTE_ORDER_LITTLE_ENDIAN
-} of_byte_order_t;
+	OFByteOrderLittleEndian,
+	/** Native byte order of the system */
+#ifdef OF_BIG_ENDIAN
+	OFByteOrderNative = OFByteOrderBigEndian
+#else
+	OFByteOrderNative = OFByteOrderLittleEndian
+#endif
+} OFByteOrder;
 
 /**
  * @struct of_range_t OFObject.h ObjFW/OFObject.h

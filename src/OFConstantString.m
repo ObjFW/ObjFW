@@ -518,7 +518,7 @@ struct {
 	return self.UTF16String;
 }
 
-- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	[self finishInitialization];
 	return [self UTF16StringWithByteOrder: byteOrder];
@@ -536,7 +536,7 @@ struct {
 	return self.UTF32String;
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	[self finishInitialization];
 	return [self UTF32StringWithByteOrder: byteOrder];

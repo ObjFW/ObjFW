@@ -423,7 +423,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const of_char16_t *)string
-			    byteOrder: (of_byte_order_t)byteOrder;
+			    byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Creates a new OFString from a UTF-16 encoded string with the
@@ -437,7 +437,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			       length: (size_t)length
-			    byteOrder: (of_byte_order_t)byteOrder;
+			    byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Creates a new OFString from a UTF-32 encoded string.
@@ -467,7 +467,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF32String: (const of_char32_t *)string
-			    byteOrder: (of_byte_order_t)byteOrder;
+			    byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Creates a new OFString from a UTF-32 encoded string with the
@@ -481,7 +481,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			       length: (size_t)length
-			    byteOrder: (of_byte_order_t)byteOrder;
+			    byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Creates a new OFString from a format string.
@@ -681,7 +681,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder;
+			  byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -695,7 +695,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder;
+			  byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Initializes an already allocated OFString with a UTF-32 string.
@@ -725,7 +725,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder;
+			  byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Initializes an already allocated OFString with a UTF-32 string with
@@ -739,7 +739,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder;
+			  byteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Initializes an already allocated OFString with a format string.
@@ -1208,7 +1208,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-16 encoding
  * @return The string in UTF-16 encoding with the specified byte order
  */
-- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 /**
@@ -1221,7 +1221,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
  */
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 /**

@@ -507,7 +507,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -522,7 +522,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			swap = true;
 			string++;
 			length--;
-		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
+		} else if (byteOrder != OFByteOrderNative)
 			swap = true;
 
 		_s = &_storage;
@@ -592,7 +592,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)characters
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -607,7 +607,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			swap = true;
 			characters++;
 			length--;
-		} else if (byteOrder != OF_BYTE_ORDER_NATIVE)
+		} else if (byteOrder != OFByteOrderNative)
 			swap = true;
 
 		_s = &_storage;
@@ -1179,7 +1179,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			       freeWhenDone: true] items];
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	of_char32_t *buffer = of_alloc(_s->length + 1, sizeof(of_char32_t));
 	size_t i = 0, j = 0;
@@ -1196,7 +1196,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			@throw [OFInvalidEncodingException exception];
 		}
 
-		if (byteOrder != OF_BYTE_ORDER_NATIVE)
+		if (byteOrder != OFByteOrderNative)
 			buffer[j++] = OF_BSWAP32(c);
 		else
 			buffer[j++] = c;
