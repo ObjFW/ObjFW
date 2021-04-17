@@ -86,15 +86,15 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OF_TAR_ARCHIVE_MODE_READ;
+			_mode = OFTarArchiveModeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_TAR_ARCHIVE_MODE_WRITE;
+			_mode = OFTarArchiveModeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_TAR_ARCHIVE_MODE_APPEND;
+			_mode = OFTarArchiveModeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OF_TAR_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFTarArchiveModeAppend) {
 			uint32_t buffer[1024 / sizeof(uint32_t)];
 			bool empty = true;
 
@@ -158,7 +158,7 @@ OF_DIRECT_MEMBERS
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
-	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
+	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -202,7 +202,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
+	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_lastReturnedStream == nil)
@@ -216,8 +216,7 @@ OF_DIRECT_MEMBERS
 {
 	void *pool;
 
-	if (_mode != OF_TAR_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_TAR_ARCHIVE_MODE_APPEND)
+	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -255,12 +254,10 @@ OF_DIRECT_MEMBERS
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	if (_mode == OF_TAR_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_TAR_ARCHIVE_MODE_APPEND) {
+	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
 		char buffer[1024];
 		memset(buffer, '\0', 1024);
-		[_stream writeBuffer: buffer
-			      length: 1024];
+		[_stream writeBuffer: buffer length: 1024];
 	}
 
 	[_stream release];

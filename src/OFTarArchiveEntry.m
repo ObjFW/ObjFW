@@ -113,7 +113,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			_targetFileName = [targetFileName copy];
 
 		if (_type == '\0')
-			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+			_type = OFTarArchiveEntryTypeFile;
 
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
@@ -153,7 +153,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 	@try {
 		_fileName = [fileName copy];
-		_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+		_type = OFTarArchiveEntryTypeFile;
 		_mode = 0644;
 	} @catch (id e) {
 		[self release];
@@ -232,7 +232,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
-- (of_tar_archive_entry_type_t)type
+- (OFTarArchiveEntryType)type
 {
 	return _type;
 }

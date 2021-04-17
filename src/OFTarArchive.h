@@ -31,10 +31,10 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFTarArchive: OFObject
 {
 	OFStream *_stream;
-	enum {
-		OF_TAR_ARCHIVE_MODE_READ,
-		OF_TAR_ARCHIVE_MODE_WRITE,
-		OF_TAR_ARCHIVE_MODE_APPEND
+	enum OFTarArchiveMode {
+		OFTarArchiveModeRead,
+		OFTarArchiveModeWrite,
+		OFTarArchiveModeAppend
 	} _mode;
 	OFStringEncoding _encoding;
 	OFStream *_Nullable _lastReturnedStream;

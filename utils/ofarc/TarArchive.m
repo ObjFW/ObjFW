@@ -172,12 +172,12 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			[of_stdout writeString: @"\t"];
 
 			switch (entry.type) {
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_FILE:
+			case OFTarArchiveEntryTypeFile:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_normal",
 				    @"Type: Normal file")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_LINK:
+			case OFTarArchiveEntryTypeLink:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_hardlink",
 				    @"Type: Hard link")];
@@ -187,7 +187,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK:
+			case OFTarArchiveEntryTypeSymlink:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_symlink",
 				    @"Type: Symbolic link")];
@@ -197,7 +197,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE: {
+			case OFTarArchiveEntryTypeCharacterDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -218,7 +218,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE: {
+			case OFTarArchiveEntryTypeBlockDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -239,17 +239,17 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY:
+			case OFTarArchiveEntryTypeDirectory:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_directory",
 				    @"Type: Directory")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_FIFO:
+			case OFTarArchiveEntryTypeFIFO:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_fifo",
 				    @"Type: FIFO")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_CONTIGUOUS_FILE:
+			case OFTarArchiveEntryTypeContiguousFile:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_contiguous_file",
 				    @"Type: Contiguous file")];
@@ -277,7 +277,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = entry.fileName;
-		of_tar_archive_entry_type_t type = entry.type;
+		OFTarArchiveEntryType type = entry.type;
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
@@ -287,8 +287,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (!all && ![files containsObject: fileName])
 			continue;
 
-		if (type != OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
-		    type != OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY) {
+		if (type != OFTarArchiveEntryTypeFile &&
+		    type != OFTarArchiveEntryTypeDirectory) {
 			if (app->_outputLevel >= 0)
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"skipping_file",
@@ -315,8 +315,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
-		if (type == OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY ||
-		    (type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
+		if (type == OFTarArchiveEntryTypeDirectory ||
+		    (type == OFTarArchiveEntryTypeFile &&
 		    [fileName hasSuffix: @"/"])) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
@@ -492,12 +492,12 @@ outer_loop_end:
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+			entry.type = OFTarArchiveEntryTypeFile;
 		else if ([type isEqual: OFFileTypeDirectory]) {
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY;
+			entry.type = OFTarArchiveEntryTypeDirectory;
 			entry.size = 0;
 		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK;
+			entry.type = OFTarArchiveEntryTypeSymlink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
 			entry.size = 0;
@@ -507,7 +507,7 @@ outer_loop_end:
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if (entry.type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
+		if (entry.type == OFTarArchiveEntryTypeFile) {
 			uint64_t written = 0, size = entry.size;
 			int8_t percent = -1, newPercent;
 
