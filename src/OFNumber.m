@@ -31,8 +31,9 @@
 
 @interface OFNumber ()
 + (instancetype)of_alloc;
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFNumberPlaceholder: OFNumber
@@ -1073,13 +1074,15 @@ isFloat(OFNumber *number)
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
 	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	double doubleValue;
 
@@ -1088,7 +1091,7 @@ isFloat(OFNumber *number)
 
 	doubleValue = self.doubleValue;
 	if (isinf(doubleValue)) {
-		if (options & OF_JSON_REPRESENTATION_JSON5) {
+		if (options & OFJSONRepresentationOptionJSON5) {
 			if (doubleValue > 0)
 				return @"Infinity";
 			else

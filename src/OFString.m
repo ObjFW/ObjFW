@@ -93,8 +93,9 @@ static locale_t cLocale;
 		  lossy: (bool)lossy OF_DIRECT;
 - (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
 				 lossy: (bool)lossy OF_DIRECT;
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFStringPlaceholder: OFString
@@ -1711,13 +1712,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
 	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	OFMutableString *JSON = [[self mutableCopy] autorelease];
 
@@ -1729,10 +1732,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	[JSON replaceOccurrencesOfString: @"\r" withString: @"\\r"];
 	[JSON replaceOccurrencesOfString: @"\t" withString: @"\\t"];
 
-	if (options & OF_JSON_REPRESENTATION_JSON5) {
+	if (options & OFJSONRepresentationOptionJSON5) {
 		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\\n"];
 
-		if (options & OF_JSON_REPRESENTATION_IDENTIFIER) {
+		if (options & OFJSONRepresentationOptionIsIdentifier) {
 			const char *cString = self.UTF8String;
 
 			if ((!of_ascii_isalpha(cString[0]) &&

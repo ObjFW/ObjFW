@@ -38,8 +38,9 @@ static struct {
 } placeholder;
 
 @interface OFArray ()
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFPlaceholderArray: OFArray
@@ -578,19 +579,21 @@ static struct {
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
 	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
 	size_t i, count = self.count;
 
-	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
 
 		for (i = 0; i < depth; i++)

@@ -39,8 +39,9 @@ static struct {
 static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 
 @interface OFDictionary ()
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFDictionaryPlaceholder: OFDictionary
@@ -719,13 +720,15 @@ OF_DIRECT_MEMBERS
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
 	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
@@ -734,7 +737,7 @@ OF_DIRECT_MEMBERS
 	size_t i, count = self.count;
 	id key, object;
 
-	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
 
 		for (i = 0; i < depth; i++)
@@ -747,7 +750,7 @@ OF_DIRECT_MEMBERS
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
 			int identifierOptions =
-			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+			    options | OFJSONRepresentationOptionIsIdentifier;
 
 			if (![key isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException exception];
@@ -777,7 +780,7 @@ OF_DIRECT_MEMBERS
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
 			int identifierOptions =
-			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+			    options | OFJSONRepresentationOptionIsIdentifier;
 
 			if (![key isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException exception];
