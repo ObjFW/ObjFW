@@ -59,7 +59,7 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 
 			@try {
 				if (encoding != NULL)
-					*encoding = OFParseStringEncodingName(
+					*encoding = OFStringEncodingParseName(
 					    [OFString stringWithCString: tmp
 							       encoding: enc]);
 			} @catch (OFInvalidArgumentException *e) {

@@ -244,7 +244,7 @@
 
 - (void)removeItemAtIndex: (size_t)idx
 {
-	[self removeItemsInRange: OFMakeRange(idx, 1)];
+	[self removeItemsInRange: OFRangeMake(idx, 1)];
 }
 
 - (void)removeItemsInRange: (OFRange)range

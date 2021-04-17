@@ -390,7 +390,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 
-		[path deleteCharactersInRange: OFMakeRange(0, 1)];
+		[path deleteCharactersInRange: OFRangeMake(0, 1)];
 		[path prependString: home];
 	}
 
@@ -482,7 +482,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 
-		[path deleteCharactersInRange: OFMakeRange(0, 1)];
+		[path deleteCharactersInRange: OFRangeMake(0, 1)];
 		[path prependString: home];
 	}
 

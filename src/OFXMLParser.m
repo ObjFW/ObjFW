@@ -450,7 +450,7 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 			if ([attribute isEqual: @"encoding"]) {
 				@try {
 					self->_encoding =
-					    OFParseStringEncodingName(value);
+					    OFStringEncodingParseName(value);
 				} @catch (OFInvalidArgumentException *e) {
 					@throw [OFInvalidEncodingException
 					    exception];

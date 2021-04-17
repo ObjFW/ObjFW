@@ -111,7 +111,7 @@ typedef struct OFRange OFRange;
  * @return An OFRangeith the specified start and length
  */
 static OF_INLINE OFRange OF_CONST_FUNC
-OFMakeRange(size_t start, size_t length)
+OFRangeMake(size_t start, size_t length)
 {
 	OFRange range = { start, length };
 
@@ -126,7 +126,7 @@ OFMakeRange(size_t start, size_t length)
  * @return Whether the two ranges are equal
  */
 static OF_INLINE bool
-OFEqualRanges(OFRange range1, OFRange range2)
+OFRangeEqual(OFRange range1, OFRange range2)
 {
 	if (range1.location != range2.location)
 		return false;
@@ -163,7 +163,7 @@ typedef struct OFPoint OFPoint;
  * @return An OFPoint with the specified coordinates
  */
 static OF_INLINE OFPoint OF_CONST_FUNC
-OFMakePoint(float x, float y)
+OFPointMake(float x, float y)
 {
 	OFPoint point = { x, y };
 
@@ -178,7 +178,7 @@ OFMakePoint(float x, float y)
  * @return Whether the two points are equal
  */
 static OF_INLINE bool
-OFEqualPoints(OFPoint point1, OFPoint point2)
+OFPointEqual(OFPoint point1, OFPoint point2)
 {
 	if (point1.x != point2.x)
 		return false;
@@ -210,7 +210,7 @@ typedef struct OFSize OFSize;
  * @return An OFSize with the specified width and height
  */
 static OF_INLINE OFSize OF_CONST_FUNC
-OFMakeSize(float width, float height)
+OFSizeMake(float width, float height)
 {
 	OFSize size = { width, height };
 
@@ -225,7 +225,7 @@ OFMakeSize(float width, float height)
  * @return Whether the two sizes are equal
  */
 static OF_INLINE bool
-OFEqualSizes(OFSize size1, OFSize size2)
+OFSizeEqual(OFSize size1, OFSize size2)
 {
 	if (size1.width != size2.width)
 		return false;
@@ -259,11 +259,11 @@ typedef struct OFRect OFRect;
  * @return An OFRect with the specified origin and size
  */
 static OF_INLINE OFRect OF_CONST_FUNC
-OFMakeRect(float x, float y, float width, float height)
+OFRectMake(float x, float y, float width, float height)
 {
 	OFRect rect = {
-		OFMakePoint(x, y),
-		OFMakeSize(width, height)
+		OFPointMake(x, y),
+		OFSizeMake(width, height)
 	};
 
 	return rect;
@@ -277,12 +277,12 @@ OFMakeRect(float x, float y, float width, float height)
  * @return Whether the two rectangles are equal
  */
 static OF_INLINE bool
-OFEqualRects(OFRect rect1, OFRect rect2)
+OFRectEqual(OFRect rect1, OFRect rect2)
 {
-	if (!OFEqualPoints(rect1.origin, rect2.origin))
+	if (!OFPointEqual(rect1.origin, rect2.origin))
 		return false;
 
-	if (!OFEqualSizes(rect1.size, rect2.size))
+	if (!OFSizeEqual(rect1.size, rect2.size))
 		return false;
 
 	return true;

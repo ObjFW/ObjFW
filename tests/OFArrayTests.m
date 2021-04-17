@@ -182,7 +182,7 @@ static OFString *c_ary[] = {
 	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
 
 	TEST(@"-[objectsInRange:]",
-	    [[a[0] objectsInRange: OFMakeRange(1, 2)] isEqual:
+	    [[a[0] objectsInRange: OFRangeMake(1, 2)] isEqual:
 	    [arrayClass arrayWithObjects: c_ary[1], c_ary[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
@@ -215,7 +215,7 @@ static OFString *c_ary[] = {
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	TEST(@"-[removeObjectsInRange:]",
-	    R([m[1] removeObjectsInRange: OFMakeRange(0, 2)]) &&
+	    R([m[1] removeObjectsInRange: OFRangeMake(0, 2)]) &&
 	    m[1].count == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
@@ -248,7 +248,7 @@ static OFString *c_ary[] = {
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
 	    OFOutOfRangeException, [m[0] removeObjectsInRange:
-		OFMakeRange(0, m[0].count + 1)])
+		OFRangeMake(0, m[0].count + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
 	    (a[1] = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",

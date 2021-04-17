@@ -460,12 +460,12 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	    [line characterAtIndex: 8] != ' ')
 		@throw [OFInvalidServerReplyException exception];
 
-	_version = [[line substringWithRange: OFMakeRange(5, 3)] copy];
+	_version = [[line substringWithRange: OFRangeMake(5, 3)] copy];
 	if (![_version isEqual: @"1.0"] && ![_version isEqual: @"1.1"])
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	status = [line substringWithRange: OFMakeRange(9, 3)].longLongValue;
+	status = [line substringWithRange: OFRangeMake(9, 3)].longLongValue;
 
 	if (status < 0 || status > 599)
 		@throw [OFInvalidServerReplyException exception];

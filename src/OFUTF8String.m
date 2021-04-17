@@ -1005,10 +1005,10 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	}
 
 	if (cStringLength == 0)
-		return OFMakeRange(0, 0);
+		return OFRangeMake(0, 0);
 
 	if (cStringLength > rangeLength)
-		return OFMakeRange(OFNotFound, 0);
+		return OFRangeMake(OFNotFound, 0);
 
 	if (options & OFStringSearchBackwards) {
 		for (size_t i = rangeLength - cStringLength;; i--) {
@@ -1023,7 +1023,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 			/* Did not match and we're at the last char */
 			if (i == 0)
-				return OFMakeRange(OFNotFound, 0);
+				return OFRangeMake(OFNotFound, 0);
 		}
 	} else {
 		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
@@ -1038,7 +1038,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		}
 	}
 
-	return OFMakeRange(OFNotFound, 0);
+	return OFRangeMake(OFNotFound, 0);
 }
 
 - (bool)containsString: (OFString *)string

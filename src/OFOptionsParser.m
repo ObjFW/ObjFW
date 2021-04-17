@@ -199,7 +199,7 @@ stringEqual(void *object1, void *object2)
 				pos = argument.length;
 
 			_lastLongOption = [[argument substringWithRange:
-			    OFMakeRange(2, pos - 2)] copy];
+			    OFRangeMake(2, pos - 2)] copy];
 
 			objc_autoreleasePoolPop(pool);
 
@@ -271,6 +271,6 @@ stringEqual(void *object1, void *object2)
 - (OFArray *)remainingArguments
 {
 	return [_arguments objectsInRange:
-	    OFMakeRange(_index, _arguments.count - _index)];
+	    OFRangeMake(_index, _arguments.count - _index)];
 }
 @end

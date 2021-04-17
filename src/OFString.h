@@ -1281,7 +1281,7 @@ extern "C" {
  * @param name The name to parse as a string encoding
  * @return The OFStringEncoding for the specified name
  */
-extern OFStringEncoding OFParseStringEncodingName(OFString *name);
+extern OFStringEncoding OFStringEncodingParseName(OFString *name);
 
 /**
  * @brief Returns the name of the specified OFStringEncoding.

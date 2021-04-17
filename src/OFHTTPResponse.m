@@ -215,7 +215,7 @@ encodingForContentType(OFString *contentType)
 	}
 
 	@try {
-		ret = OFParseStringEncodingName(charset);
+		ret = OFStringEncodingParseName(charset);
 	} @catch (OFInvalidArgumentException *e) {
 		ret = OFStringEncodingAutodetect;
 	}

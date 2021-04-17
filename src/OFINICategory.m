@@ -74,7 +74,7 @@ unescapeString(OFString *string)
 	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
 		return string;
 
-	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
+	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
 	mutableString = [[string mutableCopy] autorelease];
 
 	[mutableString replaceOccurrencesOfString: @"\\f" withString: @"\f"];

@@ -500,7 +500,7 @@ static uint16_t sutf16str[] = {
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFMakeRange(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFRangeMake(3, 1)])
 
 	cs = [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 	TEST(@"-[indexOfCharacterFromSet:]",
@@ -511,29 +511,29 @@ static uint16_t sutf16str[] = {
 	     [C(@"abcđabcđë")
 	     indexOfCharacterFromSet: cs
 			     options: 0
-			       range: OFMakeRange(4, 4)] == 6 &&
+			       range: OFRangeMake(4, 4)] == 6 &&
 	     [C(@"abcđabcđëf")
 	     indexOfCharacterFromSet: cs
 			     options: 0
-			       range: OFMakeRange(8, 2)] == OFNotFound)
+			       range: OFRangeMake(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
 	    OFOutOfRangeException,
 	    [C(@"𝄞öö") indexOfCharacterFromSet: cs
 				       options: 0
-					 range: OFMakeRange(3, 1)])
+					 range: OFRangeMake(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
-	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(1, 1)] isEqual: @"ö"] &&
-	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(3, 0)] isEqual: @""])
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(1, 1)] isEqual: @"ö"] &&
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(3, 0)] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFMakeRange(2, 2)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(2, 2)])
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFMakeRange(4, 0)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
@@ -1268,20 +1268,20 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[deleteCharactersInRange:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] deleteCharactersInRange: OFMakeRange(1, 3)]) &&
+	    R([s[0] deleteCharactersInRange: OFRangeMake(1, 3)]) &&
 	    [s[0] isEqual: @"𝄞bä€"] &&
-	    R([s[0] deleteCharactersInRange: OFMakeRange(0, 4)]) &&
+	    R([s[0] deleteCharactersInRange: OFRangeMake(0, 4)]) &&
 	    [s[0] isEqual: @""])
 
 	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] replaceCharactersInRange: OFMakeRange(1, 3)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(1, 3)
 				  withString: @"äöüß"]) &&
 	    [s[0] isEqual: @"𝄞äöüßbä€"] &&
-	    R([s[0] replaceCharactersInRange: OFMakeRange(4, 2)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(4, 2)
 				  withString: @"b"]) &&
 	    [s[0] isEqual: @"𝄞äöübä€"] &&
-	    R([s[0] replaceCharactersInRange: OFMakeRange(0, 7)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(0, 7)
 				  withString: @""]) &&
 	    [s[0] isEqual: @""])
 
@@ -1289,22 +1289,22 @@ static uint16_t sutf16str[] = {
 	    OFOutOfRangeException,
 	    {
 		s[0] = [mutableStringClass stringWithString: @"𝄞öö"];
-		[s[0] deleteCharactersInRange: OFMakeRange(2, 2)];
+		[s[0] deleteCharactersInRange: OFRangeMake(2, 2)];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [s[0] deleteCharactersInRange: OFMakeRange(4, 0)])
+	    [s[0] deleteCharactersInRange: OFRangeMake(4, 0)])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: OFMakeRange(2, 2) withString: @""])
+	    [s[0] replaceCharactersInRange: OFRangeMake(2, 2) withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: OFMakeRange(4, 0) withString: @""])
+	    [s[0] replaceCharactersInRange: OFRangeMake(4, 0) withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    (s[0] = [mutableStringClass stringWithString:
@@ -1321,7 +1321,7 @@ static uint16_t sutf16str[] = {
 	    R([s[0] replaceOccurrencesOfString: @"oo"
 				    withString: @"óò"
 				       options: 0
-					 range: OFMakeRange(2, 15)]) &&
+					 range: OFRangeMake(2, 15)]) &&
 	    [s[0] isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",

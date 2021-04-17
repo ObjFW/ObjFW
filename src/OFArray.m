@@ -240,7 +240,7 @@ static struct {
 	id *buffer = of_alloc(count, sizeof(id));
 
 	@try {
-		[self getObjects: buffer inRange: OFMakeRange(0, count)];
+		[self getObjects: buffer inRange: OFRangeMake(0, count)];
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: count
@@ -745,7 +745,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
-	OFRange range = OFMakeRange(state->state, count);
+	OFRange range = OFRangeMake(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exception];

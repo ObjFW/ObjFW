@@ -879,7 +879,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	if ([_URLEncodedHost hasPrefix: @"["] &&
 	    [_URLEncodedHost hasSuffix: @"]"]) {
 		OFString *host = [_URLEncodedHost substringWithRange:
-		    OFMakeRange(1, _URLEncodedHost.length - 2)];
+		    OFRangeMake(1, _URLEncodedHost.length - 2)];
 
 		if (!of_url_is_ipv6_host(host))
 			@throw [OFInvalidArgumentException exception];

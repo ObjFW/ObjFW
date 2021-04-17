@@ -155,7 +155,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	components = [components objectsInRange:
-	    OFMakeRange(0, components.count - 1)];
+	    OFRangeMake(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
 	[ret retain];
@@ -235,7 +235,7 @@ int _OFString_PathAdditions_reference;
 			if ([component isEqual: @"/"] &&
 			    parent != nil && ![parent isEqual: @"/"]) {
 				[array removeObjectsInRange:
-				    OFMakeRange(i - 1, 2)];
+				    OFRangeMake(i - 1, 2)];
 
 				done = false;
 				break;

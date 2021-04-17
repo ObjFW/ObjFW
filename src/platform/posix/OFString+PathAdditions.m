@@ -277,7 +277,7 @@ int _OFString_PathAdditions_reference;
 			if ([component isEqual: @".."] &&
 			    parent != nil && ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    OFMakeRange(i - 1, 2)];
+				    OFRangeMake(i - 1, 2)];
 
 				done = false;
 				break;
