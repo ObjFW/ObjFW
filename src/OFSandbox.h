@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFPair OF_GENERIC(FirstType, SecondType);
 
-typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
+typedef OFPair OF_GENERIC(OFString *, OFString *) *OFSandboxUnveilPath;
 
 @interface OFSandbox: OFObject <OFCopying>
 {
@@ -55,7 +55,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 	unsigned int _allowsBPF: 1;
 	unsigned int _allowsUnveil: 1;
 	unsigned int _returnsErrors: 1;
-	OFMutableArray OF_GENERIC(of_sandbox_unveil_path_t) *_unveiledPaths;
+	OFMutableArray OF_GENERIC(OFSandboxUnveilPath) *_unveiledPaths;
 @public
 	size_t _unveiledPathsIndex;
 	OF_RESERVE_IVARS(OFSandbox, 4)
@@ -95,7 +95,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 @property (readonly, nonatomic) OFString *pledgeString;
 #endif
 @property (readonly, nonatomic)
-    OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+    OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
 
 + (instancetype)sandbox;
 - (void)unveilPath: (OFString *)path permissions: (OFString *)permissions;

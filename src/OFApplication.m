@@ -607,7 +607,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
-	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+	OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
 	size_t unveiledPathsCount;
 	const char *promises;
 
@@ -619,7 +619,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 	for (size_t i = sandbox->_unveiledPathsIndex;
 	    i < unveiledPathsCount; i++) {
-		of_sandbox_unveil_path_t unveiledPath =
+		OFSandboxUnveilPath unveiledPath =
 		    [unveiledPaths objectAtIndex: i];
 		OFString *path = unveiledPath.firstObject;
 		OFString *permissions = unveiledPath.secondObject;

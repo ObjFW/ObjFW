@@ -597,7 +597,7 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray OF_GENERIC(of_sandbox_unveil_path_t) *)unveiledPaths
+- (OFArray OF_GENERIC(OFSandboxUnveilPath) *)unveiledPaths
 {
 	return [[_unveiledPaths copy] autorelease];
 }
