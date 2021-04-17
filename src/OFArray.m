@@ -723,7 +723,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFArray *)sortedArrayUsingComparator: (of_comparator_t)comparator
+- (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
 				options: (int)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];

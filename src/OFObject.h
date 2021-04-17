@@ -71,8 +71,7 @@ typedef enum {
  * @param right The right object
  * @return The order of the objects
  */
-typedef OFComparisonResult (^of_comparator_t)(id _Nonnull left,
-    id _Nonnull right);
+typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**

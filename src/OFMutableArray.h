@@ -217,7 +217,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *		  ---------------------------|-------------------------
  *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  */
-- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options;
+- (void)sortUsingComparator: (OFComparator)comparator options: (int)options;
 #endif
 
 /**

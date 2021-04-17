@@ -417,7 +417,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @return A sorted copy of the array
  */
 - (OFArray OF_GENERIC(ObjectType) *)
-    sortedArrayUsingComparator: (of_comparator_t)comparator
+    sortedArrayUsingComparator: (OFComparator)comparator
 		       options: (int)options;
 #endif
 

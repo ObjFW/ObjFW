@@ -92,7 +92,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 #ifdef OF_HAVE_BLOCKS
 static void
 quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
-    of_comparator_t comparator, int options)
+    OFComparator comparator, int options)
 {
 	OFComparisonResult ascending, descending;
 
@@ -427,7 +427,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options
+- (void)sortUsingComparator: (OFComparator)comparator options: (int)options
 {
 	size_t count = self.count;
 
