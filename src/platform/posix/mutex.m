@@ -18,38 +18,38 @@
 #import "mutex.h"
 
 int
-of_mutex_new(of_mutex_t *mutex)
+OFPlainMutexNew(OFPlainMutex *mutex)
 {
 	return pthread_mutex_init(mutex, NULL);
 }
 
 int
-of_mutex_lock(of_mutex_t *mutex)
+OFPlainMutexLock(OFPlainMutex *mutex)
 {
 	return pthread_mutex_lock(mutex);
 }
 
 int
-of_mutex_trylock(of_mutex_t *mutex)
+OFPlainMutexTryLock(OFPlainMutex *mutex)
 {
 	return pthread_mutex_trylock(mutex);
 }
 
 int
-of_mutex_unlock(of_mutex_t *mutex)
+OFPlainMutexUnlock(OFPlainMutex *mutex)
 {
 	return pthread_mutex_unlock(mutex);
 }
 
 int
-of_mutex_free(of_mutex_t *mutex)
+OFPlainMutexFree(OFPlainMutex *mutex)
 {
 	return pthread_mutex_destroy(mutex);
 }
 
 #ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
 int
-of_rmutex_new(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 {
 	int error;
 	pthread_mutexattr_t attr;
@@ -71,35 +71,35 @@ of_rmutex_new(of_rmutex_t *rmutex)
 }
 
 int
-of_rmutex_lock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_lock(rmutex);
+	return OFPlainMutexLock(rmutex);
 }
 
 int
-of_rmutex_trylock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_trylock(rmutex);
+	return OFPlainMutexTryLock(rmutex);
 }
 
 int
-of_rmutex_unlock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_unlock(rmutex);
+	return OFPlainMutexUnlock(rmutex);
 }
 
 int
-of_rmutex_free(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_free(rmutex);
+	return OFPlainMutexFree(rmutex);
 }
 #else
 int
-of_rmutex_new(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 {
 	int error;
 
-	if ((error = of_mutex_new(&rmutex->mutex)) != 0)
+	if ((error = OFPlainMutexNew(&rmutex->mutex)) != 0)
 		return error;
 
 	if ((error = OFTLSKeyNew(&rmutex->count)) != 0)
@@ -109,7 +109,7 @@ of_rmutex_new(of_rmutex_t *rmutex)
 }
 
 int
-of_rmutex_lock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex)
 {
 	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
@@ -122,11 +122,11 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 		return 0;
 	}
 
-	if ((error = of_mutex_lock(&rmutex->mutex)) != 0)
+	if ((error = OFPlainMutexLock(&rmutex->mutex)) != 0)
 		return error;
 
 	if ((error = OFTLSKeySet(rmutex->count, (void *)1)) != 0) {
-		of_mutex_unlock(&rmutex->mutex);
+		OFPlainMutexUnlock(&rmutex->mutex);
 		return error;
 	}
 
@@ -134,7 +134,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 }
 
 int
-of_rmutex_trylock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex)
 {
 	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
@@ -147,11 +147,11 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 		return 0;
 	}
 
-	if ((error = of_mutex_trylock(&rmutex->mutex)) != 0)
+	if ((error = OFPlainMutexTryLock(&rmutex->mutex)) != 0)
 		return error;
 
 	if ((error = OFTLSKeySet(rmutex->count, (void *)1)) != 0) {
-		of_mutex_unlock(&rmutex->mutex);
+		OFPlainMutexUnlock(&rmutex->mutex);
 		return error;
 	}
 
@@ -159,7 +159,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 }
 
 int
-of_rmutex_unlock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex)
 {
 	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
@@ -175,18 +175,18 @@ of_rmutex_unlock(of_rmutex_t *rmutex)
 	if ((error = OFTLSKeySet(rmutex->count, (void *)0)) != 0)
 		return error;
 
-	if ((error = of_mutex_unlock(&rmutex->mutex)) != 0)
+	if ((error = OFPlainMutexUnlock(&rmutex->mutex)) != 0)
 		return error;
 
 	return 0;
 }
 
 int
-of_rmutex_free(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex)
 {
 	int error;
 
-	if ((error = of_mutex_free(&rmutex->mutex)) != 0)
+	if ((error = OFPlainMutexFree(&rmutex->mutex)) != 0)
 		return error;
 
 	if ((error = OFTLSKeyFree(rmutex->count)) != 0)

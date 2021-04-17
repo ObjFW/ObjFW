@@ -36,13 +36,13 @@ of_condition_broadcast(of_condition_t *condition)
 }
 
 int
-of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
+of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
 {
 	return pthread_cond_wait(condition, mutex);
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
+of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	struct timespec ts;

@@ -28,13 +28,13 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-typedef pthread_mutex_t of_mutex_t;
+typedef pthread_mutex_t OFPlainMutex;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-typedef CRITICAL_SECTION of_mutex_t;
+typedef CRITICAL_SECTION OFPlainMutex;
 #elif defined(OF_AMIGAOS)
 # include <exec/semaphores.h>
-typedef struct SignalSemaphore of_mutex_t;
+typedef struct SignalSemaphore OFPlainMutex;
 #endif
 
 #if defined(OF_HAVE_ATOMIC_OPS)
@@ -44,7 +44,7 @@ typedef volatile int of_spinlock_t;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 typedef pthread_spinlock_t of_spinlock_t;
 #else
-typedef of_mutex_t of_spinlock_t;
+typedef OFPlainMutex of_spinlock_t;
 #endif
 
 #ifdef OF_HAVE_SCHED_YIELD
@@ -53,28 +53,28 @@ typedef of_mutex_t of_spinlock_t;
 
 #if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS) || \
     defined(OF_AMIGAOS)
-# define of_rmutex_t of_mutex_t
+# define OFPlainRecursiveMutex OFPlainMutex
 #else
 # import "tlskey.h"
 typedef struct {
-	of_mutex_t mutex;
+	OFPlainMutex mutex;
 	OFTLSKey count;
-} of_rmutex_t;
+} OFPlainRecursiveMutex;
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_mutex_new(of_mutex_t *mutex);
-extern int of_mutex_lock(of_mutex_t *mutex);
-extern int of_mutex_trylock(of_mutex_t *mutex);
-extern int of_mutex_unlock(of_mutex_t *mutex);
-extern int of_mutex_free(of_mutex_t *mutex);
-extern int of_rmutex_new(of_rmutex_t *rmutex);
-extern int of_rmutex_lock(of_rmutex_t *rmutex);
-extern int of_rmutex_trylock(of_rmutex_t *rmutex);
-extern int of_rmutex_unlock(of_rmutex_t *rmutex);
-extern int of_rmutex_free(of_rmutex_t *rmutex);
+extern int OFPlainMutexNew(OFPlainMutex *mutex);
+extern int OFPlainMutexLock(OFPlainMutex *mutex);
+extern int OFPlainMutexTryLock(OFPlainMutex *mutex);
+extern int OFPlainMutexUnlock(OFPlainMutex *mutex);
+extern int OFPlainMutexFree(OFPlainMutex *mutex);
+extern int OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex);
+extern int OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex);
+extern int OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex);
+extern int OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex);
+extern int OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex);
 #ifdef __cplusplus
 }
 #endif
@@ -100,7 +100,7 @@ of_spinlock_new(of_spinlock_t *spinlock)
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_init(spinlock, 0);
 #else
-	return of_mutex_new(spinlock);
+	return OFPlainMutexNew(spinlock);
 #endif
 }
 
@@ -117,7 +117,7 @@ of_spinlock_trylock(of_spinlock_t *spinlock)
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_trylock(spinlock);
 #else
-	return of_mutex_trylock(spinlock);
+	return OFPlainMutexTryLock(spinlock);
 #endif
 }
 
@@ -138,7 +138,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_lock(spinlock);
 #else
-	return of_mutex_lock(spinlock);
+	return OFPlainMutexLock(spinlock);
 #endif
 }
 
@@ -154,7 +154,7 @@ of_spinlock_unlock(of_spinlock_t *spinlock)
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_unlock(spinlock);
 #else
-	return of_mutex_unlock(spinlock);
+	return OFPlainMutexUnlock(spinlock);
 #endif
 }
 
@@ -166,6 +166,6 @@ of_spinlock_free(of_spinlock_t *spinlock)
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_destroy(spinlock);
 #else
-	return of_mutex_free(spinlock);
+	return OFPlainMutexFree(spinlock);
 #endif
 }

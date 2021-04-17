@@ -53,14 +53,14 @@ extern "C" {
 extern int of_condition_new(of_condition_t *condition);
 extern int of_condition_signal(of_condition_t *condition);
 extern int of_condition_broadcast(of_condition_t *condition);
-extern int of_condition_wait(of_condition_t *condition, of_mutex_t *mutex);
+extern int of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex);
 extern int of_condition_timed_wait(of_condition_t *condition,
-    of_mutex_t *mutex, OFTimeInterval timeout);
+    OFPlainMutex *mutex, OFTimeInterval timeout);
 #ifdef OF_AMIGAOS
 extern int of_condition_wait_or_signal(of_condition_t *condition,
-    of_mutex_t *mutex, ULONG *signalMask);
+    OFPlainMutex *mutex, ULONG *signalMask);
 extern int of_condition_timed_wait_or_signal(of_condition_t *condition,
-    of_mutex_t *mutex, OFTimeInterval timeout, ULONG *signalMask);
+    OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask);
 #endif
 extern int of_condition_free(of_condition_t *condition);
 #ifdef __cplusplus

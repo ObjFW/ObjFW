@@ -67,12 +67,12 @@ of_condition_broadcast(of_condition_t *condition)
 }
 
 int
-of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
+of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
 {
 	int error;
 	DWORD status;
 
-	if ((error = of_mutex_unlock(mutex)) != 0)
+	if ((error = OFPlainMutexUnlock(mutex)) != 0)
 		return error;
 
 	of_atomic_int_inc(&condition->count);
@@ -81,7 +81,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 
 	switch (status) {
 	case WAIT_OBJECT_0:
-		return of_mutex_lock(mutex);
+		return OFPlainMutexLock(mutex);
 	case WAIT_FAILED:
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
@@ -95,13 +95,13 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
+of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	int error;
 	DWORD status;
 
-	if ((error = of_mutex_unlock(mutex)) != 0)
+	if ((error = OFPlainMutexUnlock(mutex)) != 0)
 		return error;
 
 	of_atomic_int_inc(&condition->count);
@@ -110,7 +110,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 
 	switch (status) {
 	case WAIT_OBJECT_0:
-		return of_mutex_lock(mutex);
+		return OFPlainMutexLock(mutex);
 	case WAIT_TIMEOUT:
 		return ETIMEDOUT;
 	case WAIT_FAILED:

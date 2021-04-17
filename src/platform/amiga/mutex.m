@@ -22,7 +22,7 @@
 #include <proto/exec.h>
 
 int
-of_mutex_new(of_mutex_t *mutex)
+OFPlainMutexNew(OFPlainMutex *mutex)
 {
 	InitSemaphore(mutex);
 
@@ -30,7 +30,7 @@ of_mutex_new(of_mutex_t *mutex)
 }
 
 int
-of_mutex_lock(of_mutex_t *mutex)
+OFPlainMutexLock(OFPlainMutex *mutex)
 {
 	ObtainSemaphore(mutex);
 
@@ -38,7 +38,7 @@ of_mutex_lock(of_mutex_t *mutex)
 }
 
 int
-of_mutex_trylock(of_mutex_t *mutex)
+OFPlainMutexTryLock(OFPlainMutex *mutex)
 {
 	if (!AttemptSemaphore(mutex))
 		return EBUSY;
@@ -47,7 +47,7 @@ of_mutex_trylock(of_mutex_t *mutex)
 }
 
 int
-of_mutex_unlock(of_mutex_t *mutex)
+OFPlainMutexUnlock(OFPlainMutex *mutex)
 {
 	ReleaseSemaphore(mutex);
 
@@ -55,37 +55,37 @@ of_mutex_unlock(of_mutex_t *mutex)
 }
 
 int
-of_mutex_free(of_mutex_t *mutex)
+OFPlainMutexFree(OFPlainMutex *mutex)
 {
 	return 0;
 }
 
 int
-of_rmutex_new(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_new(rmutex);
+	return OFPlainMutexNew(rmutex);
 }
 
 int
-of_rmutex_lock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_lock(rmutex);
+	return OFPlainMutexLock(rmutex);
 }
 
 int
-of_rmutex_trylock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_trylock(rmutex);
+	return OFPlainMutexTryLock(rmutex);
 }
 
 int
-of_rmutex_unlock(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_unlock(rmutex);
+	return OFPlainMutexUnlock(rmutex);
 }
 
 int
-of_rmutex_free(of_rmutex_t *rmutex)
+OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex)
 {
-	return of_mutex_free(rmutex);
+	return OFPlainMutexFree(rmutex);
 }

@@ -74,7 +74,7 @@ of_condition_broadcast(of_condition_t *condition)
 }
 
 int
-of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
+of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
 {
 	ULONG signalMask = 0;
 
@@ -82,7 +82,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 }
 
 int
-of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
+of_condition_wait_or_signal(of_condition_t *condition, OFPlainMutex *mutex,
     ULONG *signalMask)
 {
 	struct of_condition_waiting_task waitingTask = {
@@ -97,7 +97,7 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	Forbid();
 
-	if ((error = of_mutex_unlock(mutex)) != 0) {
+	if ((error = OFPlainMutexUnlock(mutex)) != 0) {
 		FreeSignal(waitingTask.sigBit);
 		return error;
 	}
@@ -107,7 +107,7 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
 	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = of_mutex_lock(mutex);
+		error = OFPlainMutexLock(mutex);
 	else
 		/*
 		 * This should not happen - it means something interrupted the
@@ -123,7 +123,7 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
+of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	ULONG signalMask = 0;
@@ -133,8 +133,8 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 }
 
 int
-of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
-    OFTimeInterval timeout, ULONG *signalMask)
+of_condition_timed_wait_or_signal(of_condition_t *condition,
+    OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask)
 {
 	struct of_condition_waiting_task waitingTask = {
 		.task = FindTask(NULL),
@@ -194,7 +194,7 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	Forbid();
 
-	if ((error = of_mutex_unlock(mutex)) != 0) {
+	if ((error = OFPlainMutexUnlock(mutex)) != 0) {
 		Permit();
 		goto fail;
 	}
@@ -207,7 +207,7 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
 	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = of_mutex_lock(mutex);
+		error = OFPlainMutexLock(mutex);
 	else if (mask & (1ul << port.mp_SigBit))
 		error = ETIMEDOUT;
 	else

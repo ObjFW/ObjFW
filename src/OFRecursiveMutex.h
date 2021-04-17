@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFRecursiveMutex: OFObject <OFLocking>
 {
-	of_rmutex_t _rmutex;
+	OFPlainRecursiveMutex _rmutex;
 	bool _initialized;
 	OFString *_Nullable _name;
 }

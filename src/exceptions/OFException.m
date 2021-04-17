@@ -69,16 +69,16 @@ extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
 #endif
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-static of_mutex_t mutex;
+static OFPlainMutex mutex;
 
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(of_mutex_new(&mutex) == 0);
+	OF_ENSURE(OFPlainMutexNew(&mutex) == 0);
 }
 
 OF_DESTRUCTOR()
 {
-	of_mutex_free(&mutex);
+	OFPlainMutexFree(&mutex);
 }
 #endif
 
@@ -191,7 +191,7 @@ of_strerror(int errNo)
 				 encoding: [OFLocale encoding]];
 #else
 # ifdef OF_HAVE_THREADS
-	if (of_mutex_lock(&mutex) != 0)
+	if (OFPlainMutexLock(&mutex) != 0)
 		@throw [OFLockFailedException exception];
 
 	@try {
@@ -201,7 +201,7 @@ of_strerror(int errNo)
 			     encoding: [OFLocale encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (of_mutex_unlock(&mutex) != 0)
+		if (OFPlainMutexUnlock(&mutex) != 0)
 			@throw [OFUnlockFailedException exception];
 	}
 # endif
