@@ -35,7 +35,7 @@
 
 #define EVENTLIST_SIZE 64
 
-static const of_map_table_functions_t mapFunctions = { NULL };
+static const OFMapTableFunctions mapFunctions = { NULL };
 
 @implementation OFEpollKernelEventObserver
 - (instancetype)init

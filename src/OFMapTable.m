@@ -77,18 +77,16 @@ OF_DIRECT_MEMBERS
 @implementation OFMapTable
 @synthesize keyFunctions = _keyFunctions, objectFunctions = _objectFunctions;
 
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions
 {
 	return [[[self alloc]
 	    initWithKeyFunctions: keyFunctions
 		  objectFunctions: objectFunctions] autorelease];
 }
 
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions
 				capacity: (size_t)capacity
 {
 	return [[[self alloc]
@@ -102,16 +100,16 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions
 {
 	return [self initWithKeyFunctions: keyFunctions
 			  objectFunctions: objectFunctions
 				 capacity: 0];
 }
 
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions
 			    capacity: (size_t)capacity
 {
 	self = [super init];

@@ -59,13 +59,13 @@ equal(void *object1, void *object2)
 	return [(id)object1 isEqual: (id)object2];
 }
 
-static const of_map_table_functions_t keyFunctions = {
+static const OFMapTableFunctions keyFunctions = {
 	.retain = copy,
 	.release = release,
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t objectFunctions = {
+static const OFMapTableFunctions objectFunctions = {
 	.retain = retain,
 	.release = release,
 	.hash = hash,

@@ -56,11 +56,11 @@ stringEqual(void *object1, void *object2)
 		size_t count = 0;
 		const OFOptionsParserOption *iter;
 		OFOptionsParserOption *iter2;
-		const of_map_table_functions_t keyFunctions = {
+		const OFMapTableFunctions keyFunctions = {
 			.hash = stringHash,
 			.equal = stringEqual
 		};
-		const of_map_table_functions_t objectFunctions = { NULL };
+		const OFMapTableFunctions objectFunctions = { NULL };
 
 		/* Count, sanity check, initialize pointers */
 		for (iter = options;
