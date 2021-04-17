@@ -182,7 +182,7 @@ of_scrypt(of_scrypt_parameters_t param)
 			initWithHashClass: [OFSHA256Hash class]
 		    allowsSwappableMemory: param.allowsSwappableMemory];
 
-		of_pbkdf2((of_pbkdf2_parameters_t){
+		OFPBKDF2((OFPBKDF2Parameters){
 			.HMAC                  = HMAC,
 			.iterations            = 1,
 			.salt                  = param.salt,
@@ -199,7 +199,7 @@ of_scrypt(of_scrypt_parameters_t param)
 			of_scrypt_romix(bufferItems + i * 32 * param.blockSize,
 			    param.blockSize, param.costFactor, tmpItems);
 
-		of_pbkdf2((of_pbkdf2_parameters_t){
+		OFPBKDF2((OFPBKDF2Parameters){
 			.HMAC                  = HMAC,
 			.iterations            = 1,
 			.salt                  = (unsigned char *)bufferItems,

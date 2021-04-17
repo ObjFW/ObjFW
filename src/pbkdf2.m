@@ -27,7 +27,7 @@
 #import "pbkdf2.h"
 
 void
-of_pbkdf2(of_pbkdf2_parameters_t param)
+OFPBKDF2(OFPBKDF2Parameters param)
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blocks, digestSize = param.HMAC.digestSize;

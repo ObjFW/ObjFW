@@ -29,9 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHMAC;
 
 /**
- * @brief The parameters for @ref of_pbkdf2.
+ * @brief The parameters for @ref OFPBKDF2.
  */
-typedef struct of_pbkdf2_parameters_t {
+typedef struct OFPBKDF2Parameters {
 	/** @brief The HMAC to use to derive a key. */
 	__unsafe_unretained OFHMAC *HMAC;
 	/** @brief The number of iterations to perform. */
@@ -54,7 +54,7 @@ typedef struct of_pbkdf2_parameters_t {
 	size_t keyLength;
 	/** @brief Whether data may be stored in swappable memory. */
 	bool allowsSwappableMemory;
-} of_pbkdf2_parameters_t;
+} OFPBKDF2Parameters;
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,7 +68,7 @@ extern "C" {
  *
  * @param param The parameters to use
  */
-extern void of_pbkdf2(of_pbkdf2_parameters_t param);
+extern void OFPBKDF2(OFPBKDF2Parameters param);
 #ifdef __cplusplus
 }
 #endif
