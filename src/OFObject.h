@@ -91,29 +91,29 @@ typedef enum {
 } OFByteOrder;
 
 /**
- * @struct of_range_t OFObject.h ObjFW/OFObject.h
+ * @struct OFRange OFObject.h ObjFW/OFObject.h
  *
  * @brief A range.
  */
-struct OF_BOXABLE of_range_t {
+struct OF_BOXABLE OFRange {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
 	size_t length;
 };
-typedef struct of_range_t of_range_t;
+typedef struct OFRange OFRange;
 
 /**
- * @brief Creates a new of_range_t.
+ * @brief Creates a new OFRange.
  *
  * @param start The starting index of the range
  * @param length The length of the range
- * @return An of_range with the specified start and length
+ * @return An OFRangeith the specified start and length
  */
-static OF_INLINE of_range_t OF_CONST_FUNC
-of_range(size_t start, size_t length)
+static OF_INLINE OFRange OF_CONST_FUNC
+OFMakeRange(size_t start, size_t length)
 {
-	of_range_t range = { start, length };
+	OFRange range = { start, length };
 
 	return range;
 }
@@ -126,7 +126,7 @@ of_range(size_t start, size_t length)
  * @return Whether the two ranges are equal
  */
 static OF_INLINE bool
-of_range_equal(of_range_t range1, of_range_t range2)
+OFEqualRanges(OFRange range1, OFRange range2)
 {
 	if (range1.location != range2.location)
 		return false;

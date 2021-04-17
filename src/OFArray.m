@@ -228,7 +228,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getObjects: (id *)buffer inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self objectAtIndex: range.location + i];
@@ -240,7 +240,7 @@ static struct {
 	id *buffer = of_alloc(count, sizeof(id));
 
 	@try {
-		[self getObjects: buffer inRange: of_range(0, count)];
+		[self getObjects: buffer inRange: OFMakeRange(0, count)];
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: count
@@ -363,7 +363,7 @@ static struct {
 	return nil;
 }
 
-- (OFArray *)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (OFRange)range
 {
 	OFArray *ret;
 	id *buffer;
@@ -745,7 +745,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
-	of_range_t range = of_range(state->state, count);
+	OFRange range = OFMakeRange(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exception];

@@ -270,7 +270,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param range The range to copy
  */
 - (void)getObjects: (ObjectType __unsafe_unretained _Nonnull *_Nonnull)buffer
-	   inRange: (of_range_t)range;
+	   inRange: (OFRange)range;
 
 /**
  * @brief Returns the index of the first object that is equivalent to the
@@ -317,7 +317,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param range The range for the subarray
  * @return The subarray as a new autoreleased OFArray
  */
-- (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (of_range_t)range;
+- (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (OFRange)range;
 
 /**
  * @brief Creates a string by joining all objects of the array.

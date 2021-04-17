@@ -74,7 +74,8 @@ static OFString *module = nil;
 	module = @"OFRangeCharacterSet";
 
 	TEST(@"+[characterSetWithRange:]",
-	    (cs = [OFCharacterSet characterSetWithRange: of_range('0', 10)]) &&
+	    (cs = [OFCharacterSet
+	    characterSetWithRange: OFMakeRange('0', 10)]) &&
 	    [cs isKindOfClass: [OFRangeCharacterSet class]])
 
 	ok = true;

@@ -137,7 +137,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			if ([decomposed.firstObject hasPrefix: @"<"]) {
 				decomposed = [decomposed objectsInRange:
-				    of_range(1, decomposed.count - 1)];
+				    OFMakeRange(1, decomposed.count - 1)];
 				compat = true;
 			}
 

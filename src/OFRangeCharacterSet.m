@@ -26,7 +26,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	self = [super init];
 

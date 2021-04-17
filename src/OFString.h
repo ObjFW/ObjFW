@@ -914,7 +914,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param buffer The buffer to store the Unicode characters
  * @param range The range of the Unicode characters to copy
  */
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range;
+- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range;
 
 /**
  * @brief Returns the range of the first occurrence of the string.
@@ -923,7 +923,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString *)string;
+- (OFRange)rangeOfString: (OFString *)string;
 
 /**
  * @brief Returns the range of the string.
@@ -937,7 +937,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString *)string options: (int)options;
+- (OFRange)rangeOfString: (OFString *)string options: (int)options;
 
 /**
  * @brief Returns the range of the string in the specified range.
@@ -952,9 +952,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
-		      range: (of_range_t)range;
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (int)options
+		   range: (OFRange)range;
 
 /**
  * @brief Returns the index of the first character from the set.
@@ -995,7 +995,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (int)options
-			    range: (of_range_t)range;
+			    range: (OFRange)range;
 
 /**
  * @brief Returns whether the string contains the specified string.
@@ -1027,7 +1027,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param range The range of the substring
  * @return The substring as a new autoreleased OFString
  */
-- (OFString *)substringWithRange: (of_range_t)range;
+- (OFString *)substringWithRange: (OFRange)range;
 
 /**
  * @brief The value of the string in the specified base as a `long long`.
@@ -1128,7 +1128,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 					   options: (int)options
-					     range: (of_range_t)range;
+					     range: (OFRange)range;
 
 /**
  * @brief Checks whether the string has the specified prefix.

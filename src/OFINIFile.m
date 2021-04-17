@@ -139,7 +139,7 @@ isWhitespaceLine(OFString *line)
 				@throw [OFInvalidFormatException exception];
 
 			categoryName = [line substringWithRange:
-			    of_range(1, line.length - 2)];
+			    OFMakeRange(1, line.length - 2)];
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];

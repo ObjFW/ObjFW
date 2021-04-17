@@ -965,7 +965,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return character;
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range
+- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range
 {
 	/* TODO: Could be slightly optimized */
 	void *pool = objc_autoreleasePoolPush();
@@ -981,9 +981,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
-		      range: (of_range_t)range
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (int)options
+		   range: (OFRange)range
 {
 	const char *cString = string.UTF8String;
 	size_t cStringLength = string.UTF8StringLength;
@@ -1005,10 +1005,10 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	}
 
 	if (cStringLength == 0)
-		return of_range(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (cStringLength > rangeLength)
-		return of_range(OF_NOT_FOUND, 0);
+		return OFMakeRange(OF_NOT_FOUND, 0);
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
 		for (size_t i = rangeLength - cStringLength;; i--) {
@@ -1023,7 +1023,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 			/* Did not match and we're at the last char */
 			if (i == 0)
-				return of_range(OF_NOT_FOUND, 0);
+				return OFMakeRange(OF_NOT_FOUND, 0);
 		}
 	} else {
 		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
@@ -1038,7 +1038,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		}
 	}
 
-	return of_range(OF_NOT_FOUND, 0);
+	return OFMakeRange(OF_NOT_FOUND, 0);
 }
 
 - (bool)containsString: (OFString *)string
@@ -1059,7 +1059,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return false;
 }
 
-- (OFString *)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (OFRange)range
 {
 	size_t start = range.location;
 	size_t end = range.location + range.length;

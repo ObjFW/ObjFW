@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * If the value is not range-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_range_t rangeValue;
+@property (readonly, nonatomic) OFRange rangeValue;
 
 /**
  * @brief The value as a point.
@@ -113,7 +113,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithRange: (of_range_t)range;
++ (instancetype)valueWithRange: (OFRange)range;
 
 /**
  * @brief Creates a new, autoreleased OFValue containing the specified point.

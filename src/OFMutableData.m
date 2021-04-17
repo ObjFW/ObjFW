@@ -164,7 +164,7 @@
 	return _items + (_count - 1) * _itemSize;
 }
 
-- (OFData *)subdataWithRange: (of_range_t)range
+- (OFData *)subdataWithRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -244,10 +244,10 @@
 
 - (void)removeItemAtIndex: (size_t)idx
 {
-	[self removeItemsInRange: of_range(idx, 1)];
+	[self removeItemsInRange: OFMakeRange(idx, 1)];
 }
 
-- (void)removeItemsInRange: (of_range_t)range
+- (void)removeItemsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)

@@ -90,7 +90,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	if ([URLEncodedHost hasPrefix: @"["] &&
 	    [URLEncodedHost hasSuffix: @"]"]) {
 		if (!of_url_is_ipv6_host([URLEncodedHost substringWithRange:
-		    of_range(1, URLEncodedHost.length - 2)]))
+		    OFMakeRange(1, URLEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (URLEncodedHost != nil)
 		of_url_verify_escaped(URLEncodedHost,
@@ -404,7 +404,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 			if ([current isEqual: @".."] && parent != nil &&
 			    ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;

@@ -292,7 +292,7 @@ enum {
  * @param range The range of the data for the new OFData
  * @return The data in the specified range as a new OFData
  */
-- (OFData *)subdataWithRange: (of_range_t)range;
+- (OFData *)subdataWithRange: (OFRange)range;
 
 /**
  * @brief Returns the range of the data.
@@ -307,9 +307,9 @@ enum {
  * @return The range of the first occurrence of the data or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found.
  */
-- (of_range_t)rangeOfData: (OFData *)data
-		  options: (int)options
-		    range: (of_range_t)range;
+- (OFRange)rangeOfData: (OFData *)data
+	       options: (int)options
+		 range: (OFRange)range;
 
 #ifdef OF_HAVE_FILES
 /**

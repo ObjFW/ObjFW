@@ -25,7 +25,7 @@ static OFString *module = @"OFValue";
 - (void)valueTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_range_t range = of_range(1, 64), range2;
+	OFRange range = OFMakeRange(1, 64), range2;
 	of_point_t point = of_point(1.5f, 3.0f), point2;
 	of_dimension_t dimension = of_dimension(4.5f, 5.0f), dimension2;
 	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
@@ -35,17 +35,17 @@ static OFString *module = @"OFValue";
 
 	TEST(@"+[valueWithBytes:objCType:]",
 	    (value = [OFValue valueWithBytes: &range
-				    objCType: @encode(of_range_t)]))
+				    objCType: @encode(OFRange)]))
 
-	TEST(@"-[objCType]", strcmp(value.objCType, @encode(of_range_t)) == 0)
+	TEST(@"-[objCType]", strcmp(value.objCType, @encode(OFRange)) == 0)
 
 	TEST(@"-[getValue:size:]",
-	    R([value getValue: &range2 size: sizeof(of_range_t)]) &&
-	    of_range_equal(range2, range))
+	    R([value getValue: &range2 size: sizeof(OFRange)]) &&
+	    OFEqualRanges(range2, range))
 
 	EXPECT_EXCEPTION(@"-[getValue:size:] with wrong size throws",
 	    OFOutOfRangeException,
-	    [value getValue: &range size: sizeof(of_range_t) - 1])
+	    [value getValue: &range size: sizeof(OFRange) - 1])
 
 	TEST(@"+[valueWithPointer:]",
 	    (value = [OFValue valueWithPointer: pointer]))
@@ -77,15 +77,15 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithRange: range]))
 
 	TEST(@"-[rangeValue]",
-	    of_range_equal(value.rangeValue, range) &&
+	    OFEqualRanges(value.rangeValue, range) &&
 	    (value = [OFValue valueWithBytes: &range
-				    objCType: @encode(of_range_t)]) &&
-	    of_range_equal(value.rangeValue, range))
+				    objCType: @encode(OFRange)]) &&
+	    OFEqualRanges(value.rangeValue, range))
 
 	TEST(@"-[getValue:size:] for OFRangeValue",
 	    (value = [OFValue valueWithRange: range]) &&
 	    R([value getValue: &range2 size: sizeof(range2)]) &&
-	    of_range_equal(range2, range))
+	    OFEqualRanges(range2, range))
 
 	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
 	    OFOutOfRangeException,

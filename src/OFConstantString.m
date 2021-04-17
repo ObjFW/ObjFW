@@ -257,27 +257,27 @@ struct {
 	return [self characterAtIndex: idx];
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range
+- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range
 {
 	[self finishInitialization];
 	[self getCharacters: buffer inRange: range];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
+- (OFRange)rangeOfString: (OFString *)string
 {
 	[self finishInitialization];
 	return [self rangeOfString: string];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string options: (int)options
+- (OFRange)rangeOfString: (OFString *)string options: (int)options
 {
 	[self finishInitialization];
 	return [self rangeOfString: string options: options];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
-		      range: (of_range_t)range
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (int)options
+		   range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self rangeOfString: string options: options range: range];
@@ -298,7 +298,7 @@ struct {
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (int)options
-			    range: (of_range_t)range
+			    range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self indexOfCharacterFromSet: characterSet
@@ -324,7 +324,7 @@ struct {
 	return [self substringToIndex: idx];
 }
 
-- (OFString *)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (OFRange)range
 {
 	[self finishInitialization];
 	return [self substringWithRange: range];
@@ -366,7 +366,7 @@ struct {
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 					   options: (int)options
-					     range: (of_range_t)range
+					     range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self stringByReplacingOccurrencesOfString: string

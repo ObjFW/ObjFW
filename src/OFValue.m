@@ -53,7 +53,7 @@
 	    initWithNonretainedObject: object] autorelease];
 }
 
-+ (instancetype)valueWithRange: (of_range_t)range
++ (instancetype)valueWithRange: (OFRange)range
 {
 	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
 }
@@ -173,9 +173,9 @@
 	return ret;
 }
 
-- (of_range_t)rangeValue
+- (OFRange)rangeValue
 {
-	of_range_t ret;
+	OFRange ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }

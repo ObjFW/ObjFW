@@ -52,7 +52,7 @@ initWhitespaceCharacterSet(void)
 	    initWithCharactersInString: characters];
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	return (id)[[OFRangeCharacterSet alloc] initWithRange: range];
 }
@@ -100,7 +100,7 @@ initWhitespaceCharacterSet(void)
 	    autorelease];
 }
 
-+ (instancetype)characterSetWithRange: (of_range_t)range
++ (instancetype)characterSetWithRange: (OFRange)range
 {
 	return [[[self alloc] initWithRange: range] autorelease];
 }
@@ -134,7 +134,7 @@ initWhitespaceCharacterSet(void)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	OF_INVALID_INIT_METHOD
 }

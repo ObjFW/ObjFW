@@ -676,7 +676,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				    (URL->_URLEncodedPath != nil
 				    ? URL->_URLEncodedPath
 				    : @"/")];
-				of_range_t range = [path
+				OFRange range = [path
 				    rangeOfString: @"/"
 					  options: OF_STRING_SEARCH_BACKWARDS];
 
@@ -879,7 +879,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	if ([_URLEncodedHost hasPrefix: @"["] &&
 	    [_URLEncodedHost hasSuffix: @"]"]) {
 		OFString *host = [_URLEncodedHost substringWithRange:
-		    of_range(1, _URLEncodedHost.length - 2)];
+		    OFMakeRange(1, _URLEncodedHost.length - 2)];
 
 		if (!of_url_is_ipv6_host(host))
 			@throw [OFInvalidArgumentException exception];

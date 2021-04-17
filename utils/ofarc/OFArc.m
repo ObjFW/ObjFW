@@ -316,7 +316,7 @@ writingNotSupported(OFString *type)
 			help(of_stderr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -373,7 +373,7 @@ writingNotSupported(OFString *type)
 #endif
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 		archive = [self
 		    openArchiveWithPath: remainingArguments.firstObject
@@ -388,7 +388,7 @@ writingNotSupported(OFString *type)
 			help(of_stderr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])

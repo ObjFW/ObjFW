@@ -362,7 +362,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	}
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		[self removeObjectAtIndex: range.location];
@@ -380,7 +380,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)removeAllObjects
 {
-	[self removeObjectsInRange: of_range(0, self.count)];
+	[self removeObjectsInRange: OFMakeRange(0, self.count)];
 }
 
 #ifdef OF_HAVE_BLOCKS

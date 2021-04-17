@@ -95,7 +95,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case STATE_NAME:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				state = STATE_EXPECT_VALUE;
 			}
 			break;
@@ -113,7 +113,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case STATE_VALUE:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
@@ -127,7 +127,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case STATE_QUOTED_VALUE:
 			if (characters[i] == '"') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
 							   value: value
@@ -155,14 +155,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case STATE_ATTR_NAME:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				state = STATE_ATTR_VALUE;
 				last = i + 1;
 			} else if (characters[i] == ';' ||
 			    characters[i] == ',') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				handleAttribute(ret.lastObject, name, nil);
 
@@ -174,7 +174,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case STATE_ATTR_VALUE:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				/*
 				 * Expires often contains a comma, even though
@@ -215,7 +215,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		break;
 	case STATE_VALUE:
 		value = [string substringWithRange:
-		    of_range(last, length - last)];
+		    OFMakeRange(last, length - last)];
 		[ret addObject: [OFHTTPCookie cookieWithName: name
 						       value: value
 						      domain: domain]];
@@ -229,14 +229,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	case STATE_ATTR_NAME:
 		if (last != length) {
 			name = [string substringWithRange:
-			    of_range(last, length - last)];
+			    OFMakeRange(last, length - last)];
 
 			handleAttribute(ret.lastObject, name, nil);
 		}
 		break;
 	case STATE_ATTR_VALUE:
 		value = [string substringWithRange:
-		    of_range(last, length - last)];
+		    OFMakeRange(last, length - last)];
 
 		handleAttribute(ret.lastObject, name, value);
 

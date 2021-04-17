@@ -203,7 +203,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	components = [components objectsInRange:
-	    of_range(0, components.count - 1)];
+	    OFMakeRange(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
 	[ret retain];
@@ -288,7 +288,7 @@ int _OFString_PathAdditions_reference;
 			    ![parent hasSuffix: @"://"] &&
 			    (![parent hasPrefix: @"\\"] || i != 1)) {
 				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;
@@ -339,7 +339,7 @@ int _OFString_PathAdditions_reference;
 		     stringByURLEncodingWithAllowedCharacters:
 		     [OFCharacterSet URLHostAllowedCharacterSet]];
 		path = [OFString pathWithComponents: [components
-		    objectsInRange: of_range(2, components.count - 2)]];
+		    objectsInRange: OFMakeRange(2, components.count - 2)]];
 	}
 
 	path = [path stringByReplacingOccurrencesOfString: @"\\"

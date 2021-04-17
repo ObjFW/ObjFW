@@ -29,7 +29,7 @@ const char *str = "Hello!";
 	OFMutableData *mutable;
 	OFData *immutable;
 	void *raw[2];
-	of_range_t range;
+	OFRange range;
 
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
@@ -76,7 +76,7 @@ const char *str = "Hello!";
 	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
 
 	TEST(@"-[removeItemsInRange:]",
-	    R([mutable removeItemsInRange: of_range(1, 2)]) &&
+	    R([mutable removeItemsInRange: OFMakeRange(1, 2)]) &&
 	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
@@ -91,7 +91,7 @@ const char *str = "Hello!";
 							count: 1
 						     itemSize: 2]
 			       options: 0
-				 range: of_range(0, 7)];
+				 range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #1",
 	    range.location == 0 && range.length == 1)
 
@@ -99,7 +99,7 @@ const char *str = "Hello!";
 							count: 1
 						     itemSize: 2]
 			       options: OF_DATA_SEARCH_BACKWARDS
-				 range: of_range(0, 7)];
+				 range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #2",
 	    range.location == 5 && range.length == 1)
 
@@ -107,15 +107,15 @@ const char *str = "Hello!";
 							count: 1
 						     itemSize: 2]
 			       options: 0
-				 range: of_range(0, 7)];
+				 range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #3",
 	    range.location == 2 && range.length == 1)
 
 	range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
 							count: 2
 						     itemSize: 2]
-						      options: 0
-							range: of_range(0, 7)];
+			       options: 0
+				 range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #4",
 	    range.location == 5 && range.length == 2)
 
@@ -124,14 +124,14 @@ const char *str = "Hello!";
 							      count: 1
 							   itemSize: 2]
 				     options: 0
-				       range: of_range(1, 6)]) &&
+				       range: OFMakeRange(1, 6)]) &&
 	    range.location == 5 && range.length == 1)
 
 	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							count: 1
 						     itemSize: 2]
 			       options: OF_DATA_SEARCH_BACKWARDS
-				 range: of_range(0, 5)];
+				 range: OFMakeRange(0, 5)];
 	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)
 
@@ -142,7 +142,7 @@ const char *str = "Hello!";
 						    count: 1
 						 itemSize: 3]
 			   options: 0
-			     range: of_range(0, 1)])
+			     range: OFMakeRange(0, 1)])
 
 	EXPECT_EXCEPTION(
 	    @"-[rangeOfData:options:range:] failing on out of range",
@@ -151,22 +151,24 @@ const char *str = "Hello!";
 						    count: 0
 						 itemSize: 2]
 			   options: 0
-			     range: of_range(8, 1)])
+			     range: OFMakeRange(8, 1)])
 
 	TEST(@"-[subdataWithRange:]",
-	    [[immutable subdataWithRange: of_range(2, 4)]
+	    [[immutable subdataWithRange: OFMakeRange(2, 4)]
 	    isEqual: [OFData dataWithItems: "accdacaa"
 				     count: 4
 				  itemSize: 2]] &&
-	    [[mutable subdataWithRange: of_range(2, 3)]
+	    [[mutable subdataWithRange: OFMakeRange(2, 3)]
 	    isEqual: [OFData dataWithItems: "cde"
 				     count: 3]])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #1",
-	    OFOutOfRangeException, [immutable subdataWithRange: of_range(7, 1)])
+	    OFOutOfRangeException,
+	    [immutable subdataWithRange: OFMakeRange(7, 1)])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
-	    OFOutOfRangeException, [mutable subdataWithRange: of_range(6, 1)])
+	    OFOutOfRangeException,
+	    [mutable subdataWithRange: OFMakeRange(6, 1)])
 
 	TEST(@"-[stringByMD5Hashing]", [mutable.stringByMD5Hashing
 	    isEqual: @"ab56b4d92b40713acc5af89985d4b786"])
@@ -214,7 +216,7 @@ const char *str = "Hello!";
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
-	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
+	    [mutable removeItemsInRange: OFMakeRange(mutable.count, 1)])
 
 	free(raw[0]);
 	free(raw[1]);

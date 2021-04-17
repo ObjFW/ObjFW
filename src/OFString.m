@@ -1505,7 +1505,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (void)getCharacters: (of_unichar_t *)buffer
-	      inRange: (of_range_t)range
+	      inRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self characterAtIndex: range.location + i];
@@ -1798,23 +1798,23 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return data;
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
+- (OFRange)rangeOfString: (OFString *)string
 {
 	return [self rangeOfString: string
 			   options: 0
-			     range: of_range(0, self.length)];
+			     range: OFMakeRange(0, self.length)];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string options: (int)options
+- (OFRange)rangeOfString: (OFString *)string options: (int)options
 {
 	return [self rangeOfString: string
 			   options: options
-			     range: of_range(0, self.length)];
+			     range: OFMakeRange(0, self.length)];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
-		      range: (of_range_t)range
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (int)options
+		   range: (OFRange)range
 {
 	void *pool;
 	const of_unichar_t *searchCharacters;
@@ -1822,10 +1822,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t searchLength;
 
 	if ((searchLength = string.length) == 0)
-		return of_range(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return of_range(OF_NOT_FOUND, 0);
+		return OFMakeRange(OF_NOT_FOUND, 0);
 
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exception];
@@ -1843,7 +1843,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
-					return of_range(range.location + i,
+					return OFMakeRange(range.location + i,
 					    searchLength);
 				}
 
@@ -1857,7 +1857,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
-					return of_range(range.location + i,
+					return OFMakeRange(range.location + i,
 					    searchLength);
 				}
 			}
@@ -1868,14 +1868,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	objc_autoreleasePoolPop(pool);
 
-	return of_range(OF_NOT_FOUND, 0);
+	return OFMakeRange(OF_NOT_FOUND, 0);
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
 	return [self indexOfCharacterFromSet: characterSet
 				     options: 0
-				       range: of_range(0, self.length)];
+				       range: OFMakeRange(0, self.length)];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
@@ -1883,12 +1883,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	return [self indexOfCharacterFromSet: characterSet
 				     options: options
-				       range: of_range(0, self.length)];
+				       range: OFMakeRange(0, self.length)];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (int)options
-			    range: (of_range_t)range
+			    range: (OFRange)range
 {
 	bool (*characterIsMember)(id, SEL, of_unichar_t) =
 	    (bool (*)(id, SEL, of_unichar_t))[characterSet
@@ -1962,15 +1962,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (OFString *)substringFromIndex: (size_t)idx
 {
-	return [self substringWithRange: of_range(idx, self.length - idx)];
+	return [self substringWithRange: OFMakeRange(idx, self.length - idx)];
 }
 
 - (OFString *)substringToIndex: (size_t)idx
 {
-	return [self substringWithRange: of_range(0, idx)];
+	return [self substringWithRange: OFMakeRange(0, idx)];
 }
 
-- (OFString *)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (OFRange)range
 {
 	void *pool;
 	OFString *ret;
@@ -2041,7 +2041,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 					   options: (int)options
-					     range: (of_range_t)range
+					     range: (OFRange)range
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 	[new replaceOccurrencesOfString: string
@@ -2113,7 +2113,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		[self getCharacters: tmp inRange: of_range(0, prefixLength)];
+		[self getCharacters: tmp inRange: OFMakeRange(0, prefixLength)];
 
 		hasPrefix = (memcmp(tmp, prefix.characters,
 		    prefixLength * sizeof(of_unichar_t)) == 0);
@@ -2143,7 +2143,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		void *pool = objc_autoreleasePoolPush();
 
 		[self getCharacters: tmp
-			    inRange: of_range(length - suffixLength,
+			    inRange: OFMakeRange(length - suffixLength,
 					 suffixLength)];
 
 		suffixCharacters = suffix.characters;
@@ -2202,14 +2202,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		    delimiterLength * sizeof(of_unichar_t)) != 0)
 			continue;
 
-		component = [self substringWithRange: of_range(last, i - last)];
+		component = [self substringWithRange:
+		    OFMakeRange(last, i - last)];
 		if (!skipEmpty || component.length > 0)
 			[array addObject: component];
 
 		i += delimiterLength - 1;
 		last = i + 1;
 	}
-	component = [self substringWithRange: of_range(last, length - last)];
+	component = [self substringWithRange: OFMakeRange(last, length - last)];
 	if (!skipEmpty || component.length > 0)
 		[array addObject: component];
 
@@ -2247,7 +2248,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		    @selector(characterIsMember:), characters[i])) {
 			if (!skipEmpty || i != last) {
 				OFString *component = [self substringWithRange:
-				    of_range(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				[array addObject: component];
 			}
 
@@ -2256,7 +2257,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 	if (!skipEmpty || length != last) {
 		OFString *component = [self substringWithRange:
-		    of_range(last, length - last)];
+		    OFMakeRange(last, length - last)];
 		[array addObject: component];
 	}
 
@@ -2529,7 +2530,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	buffer = of_alloc(length, sizeof(of_unichar_t));
 	@try {
-		[self getCharacters: buffer inRange: of_range(0, length)];
+		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: length
@@ -2630,7 +2631,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	buffer = of_alloc(length + 1, sizeof(of_char32_t));
 	@try {
-		[self getCharacters: buffer inRange: of_range(0, length)];
+		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 		buffer[length] = 0;
 
 		if (byteOrder != OFByteOrderNative)
@@ -2760,7 +2761,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			void *pool2 = objc_autoreleasePoolPush();
 
 			block([self substringWithRange:
-			    of_range(last, i - last)], &stop);
+			    OFMakeRange(last, i - last)], &stop);
 			last = i + 1;
 
 			objc_autoreleasePoolPop(pool2);
@@ -2770,7 +2771,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 
 	if (!stop)
-		block([self substringWithRange: of_range(last, i - last)],
+		block([self substringWithRange: OFMakeRange(last, i - last)],
 		    &stop);
 
 	objc_autoreleasePoolPop(pool);

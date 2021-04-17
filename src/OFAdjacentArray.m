@@ -206,7 +206,7 @@
 	return *((id *)[_array itemAtIndex: idx]);
 }
 
-- (void)getObjects: (id *)buffer inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -256,7 +256,7 @@
 }
 
 
-- (OFArray *)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _array.count)

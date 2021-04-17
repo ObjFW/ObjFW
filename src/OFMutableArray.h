@@ -159,7 +159,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param range The range of the objects to remove
  */
-- (void)removeObjectsInRange: (of_range_t)range;
+- (void)removeObjectsInRange: (OFRange)range;
 
 /**
  * @brief Removes the last object.

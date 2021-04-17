@@ -156,7 +156,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param range The range of the characters which should be removed
  */
-- (void)deleteCharactersInRange: (of_range_t)range;
+- (void)deleteCharactersInRange: (OFRange)range;
 
 /**
  * @brief Replaces the characters at the specified range.
@@ -164,7 +164,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range of the characters which should be replaced
  * @param replacement The string to the replace the characters with
  */
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement;
 
 /**
@@ -189,7 +189,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement
 			   options: (int)options
-			     range: (of_range_t)range;
+			     range: (OFRange)range;
 
 /**
  * @brief Deletes all whitespaces at the beginning of the string.

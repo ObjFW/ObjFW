@@ -539,7 +539,7 @@
 		_s->isUTF8 = true;
 }
 
-- (void)deleteCharactersInRange: (of_range_t)range
+- (void)deleteCharactersInRange: (OFRange)range
 {
 	size_t start = range.location;
 	size_t end = range.location + range.length;
@@ -568,7 +568,7 @@
 	}
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement
 {
 	size_t start = range.location;
@@ -632,7 +632,7 @@
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement
 			   options: (int)options
-			     range: (of_range_t)range
+			     range: (OFRange)range
 {
 	const char *searchString = string.UTF8String;
 	const char *replacementString = replacement.UTF8String;

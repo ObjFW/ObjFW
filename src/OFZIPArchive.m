@@ -668,8 +668,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		if (ZIP64Index != OF_NOT_FOUND) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
-			of_range_t range =
-			    of_range(ZIP64Index - 4, ZIP64Size + 4);
+			OFRange range =
+			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
 				_uncompressedSize = of_zip_archive_read_field64(

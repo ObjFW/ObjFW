@@ -289,7 +289,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string =
 	    [OFString stringWithCharacters: &character length: 1];
-	[self replaceCharactersInRange: of_range(idx, 1) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 1) withString: string];
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -431,15 +431,15 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 - (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: of_range(idx, 0) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 0) withString: string];
 }
 
-- (void)deleteCharactersInRange: (of_range_t)range
+- (void)deleteCharactersInRange: (OFRange)range
 {
 	[self replaceCharactersInRange: range withString: @""];
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -451,13 +451,13 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
 				 options: 0
-				   range: of_range(0, self.length)];
+				   range: OFMakeRange(0, self.length)];
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement
 			   options: (int)options
-			     range: (of_range_t)range
+			     range: (OFRange)range
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
 	const of_unichar_t *characters;
@@ -485,7 +485,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 		    searchLength * sizeof(of_unichar_t)) != 0)
 			continue;
 
-		[self replaceCharactersInRange: of_range(i, searchLength)
+		[self replaceCharactersInRange: OFMakeRange(i, searchLength)
 				    withString: replacement];
 
 		range.length -= searchLength;
@@ -517,7 +517,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: of_range(0, i)];
+	[self deleteCharactersInRange: OFMakeRange(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
@@ -544,7 +544,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: of_range(length - d, d)];
+	[self deleteCharactersInRange: OFMakeRange(length - d, d)];
 }
 
 - (void)deleteEnclosingWhitespaces

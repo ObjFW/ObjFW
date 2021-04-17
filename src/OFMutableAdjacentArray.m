@@ -223,7 +223,7 @@
 	[_array removeAllItems];
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;

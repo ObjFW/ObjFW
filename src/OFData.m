@@ -493,7 +493,7 @@ _references_to_categories_of_OFData(void)
 	return hash;
 }
 
-- (OFData *)subdataWithRange: (of_range_t)range
+- (OFData *)subdataWithRange: (OFRange)range
 {
 	OFData *ret;
 
@@ -545,9 +545,9 @@ _references_to_categories_of_OFData(void)
 	return of_base64_encode(_items, _count * _itemSize);
 }
 
-- (of_range_t)rangeOfData: (OFData *)data
-		  options: (int)options
-		    range: (of_range_t)range
+- (OFRange)rangeOfData: (OFData *)data
+	       options: (int)options
+		 range: (OFRange)range
 {
 	const char *search;
 	size_t searchLength;
@@ -560,10 +560,10 @@ _references_to_categories_of_OFData(void)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((searchLength = data.count) == 0)
-		return of_range(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return of_range(OF_NOT_FOUND, 0);
+		return OFMakeRange(OF_NOT_FOUND, 0);
 
 	search = data.items;
 
@@ -571,7 +571,7 @@ _references_to_categories_of_OFData(void)
 		for (size_t i = range.length - searchLength;; i--) {
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return of_range(i, searchLength);
+				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
 			if (i == 0)
@@ -582,10 +582,10 @@ _references_to_categories_of_OFData(void)
 		    i <= range.length - searchLength; i++)
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return of_range(i, searchLength);
+				return OFMakeRange(i, searchLength);
 	}
 
-	return of_range(OF_NOT_FOUND, 0);
+	return OFMakeRange(OF_NOT_FOUND, 0);
 }
 
 #ifdef OF_HAVE_FILES
