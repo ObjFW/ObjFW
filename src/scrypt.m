@@ -27,7 +27,7 @@
 #import "pbkdf2.h"
 
 void
-of_salsa20_8_core(uint32_t buffer[16])
+OFSalsa20_8Core(uint32_t buffer[16])
 {
 	uint32_t tmp[16];
 
@@ -77,11 +77,11 @@ of_salsa20_8_core(uint32_t buffer[16])
 }
 
 void
-of_scrypt_block_mix(uint32_t *output, const uint32_t *input, size_t blockSize)
+OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 {
 	uint32_t tmp[16];
 
-	/* Check defined here and executed in of_scrypt() */
+	/* Check defined here and executed in OFScrypt() */
 #define OVERFLOW_CHECK_1					\
 	if (param.blockSize > SIZE_MAX / 2 ||			\
 	    2 * param.blockSize - 1 > SIZE_MAX / 16)		\
@@ -93,7 +93,7 @@ of_scrypt_block_mix(uint32_t *output, const uint32_t *input, size_t blockSize)
 		for (size_t j = 0; j < 16; j++)
 			tmp[j] ^= input[i * 16 + j];
 
-		of_salsa20_8_core(tmp);
+		OFSalsa20_8Core(tmp);
 
 		/*
 		 * Even indices are stored in the first half and odd ones in
@@ -106,10 +106,10 @@ of_scrypt_block_mix(uint32_t *output, const uint32_t *input, size_t blockSize)
 }
 
 void
-of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
+OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
     uint32_t *tmp)
 {
-	/* Check defined here and executed in of_scrypt() */
+	/* Check defined here and executed in OFScrypt() */
 #define OVERFLOW_CHECK_2						\
 	if (param.blockSize > SIZE_MAX / 128 / param.costFactor)	\
 		@throw [OFOutOfRangeException exception];
@@ -120,7 +120,7 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 
 	for (size_t i = 0; i < costFactor; i++) {
 		memcpy(tmp2 + i * 32 * blockSize, tmp, 128 * blockSize);
-		of_scrypt_block_mix(tmp, tmp2 + i * 32 * blockSize, blockSize);
+		OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
@@ -130,7 +130,7 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];
 
-		of_scrypt_block_mix(buffer, tmp, blockSize);
+		OFScryptBlockMix(buffer, tmp, blockSize);
 
 		if (i < costFactor - 1)
 			memcpy(tmp, buffer, 128 * blockSize);
@@ -138,7 +138,7 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 }
 
 void
-of_scrypt(of_scrypt_parameters_t param)
+OFScrypt(OFScryptParameters param)
 {
 	OFSecureData *tmp = nil, *buffer = nil;
 	OFHMAC *HMAC = nil;
@@ -196,7 +196,7 @@ of_scrypt(of_scrypt_parameters_t param)
 		});
 
 		for (size_t i = 0; i < param.parallelization; i++)
-			of_scrypt_romix(bufferItems + i * 32 * param.blockSize,
+			OFScryptROMix(bufferItems + i * 32 * param.blockSize,
 			    param.blockSize, param.costFactor, tmpItems);
 
 		OFPBKDF2((OFPBKDF2Parameters){

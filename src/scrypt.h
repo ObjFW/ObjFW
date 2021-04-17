@@ -29,9 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHMAC;
 
 /**
- * @brief The parameters for @ref of_scrypt.
+ * @brief The parameters for @ref OFScrypt.
  */
-typedef struct of_scrypt_parameters_t {
+typedef struct OFScryptParameters {
 	/** @brief The block size to use. */
 	size_t blockSize;
 	/** @brief The CPU/memory cost factor to use. */
@@ -56,15 +56,15 @@ typedef struct of_scrypt_parameters_t {
 	size_t keyLength;
 	/** @brief Whether data may be stored in swappable memory. */
 	bool allowsSwappableMemory;
-} of_scrypt_parameters_t;
+} OFScryptParameters;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void of_salsa20_8_core(uint32_t buffer[_Nonnull 16]);
-extern void of_scrypt_block_mix(uint32_t *output, const uint32_t *input,
+extern void OFSalsa20_8Core(uint32_t buffer[_Nonnull 16]);
+extern void OFScryptBlockMix(uint32_t *output, const uint32_t *input,
     size_t blockSize);
-extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
+extern void OFScryptROMix(uint32_t *buffer, size_t blockSize,
     size_t costFactor, uint32_t *tmp);
 
 /**
@@ -72,7 +72,7 @@ extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
  *
  * @param param The parameters to use
  */
-extern void of_scrypt(of_scrypt_parameters_t param);
+extern void OFScrypt(OFScryptParameters param);
 #ifdef __cplusplus
 }
 #endif
