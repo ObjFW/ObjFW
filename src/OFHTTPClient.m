@@ -116,7 +116,7 @@ static OFString *
 constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_http_request_method_t method = request.method;
+	OFHTTPRequestMethod method = request.method;
 	OFURL *URL = request.URL;
 	OFString *path;
 	OFString *user = URL.user, *password = URL.password;
@@ -132,7 +132,7 @@ constructRequestString(OFHTTPRequest *request)
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
-	    @"%s %@", of_http_request_method_to_string(method), path];
+	    @"%s %@", OFHTTPRequestMethodName(method), path];
 
 	if (URL.query != nil) {
 		[requestString appendString: @"?"];
@@ -235,7 +235,7 @@ normalizeKey(char *str_)
 }
 
 static bool
-defaultShouldFollow(of_http_request_method_t method, short statusCode)
+defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 {
 	bool follow;
 
@@ -244,8 +244,8 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	 * request method is not GET or HEAD. Asking the delegate and getting
 	 * true returned is considered user confirmation.
 	 */
-	if (method == OF_HTTP_REQUEST_METHOD_GET ||
-	    method == OF_HTTP_REQUEST_METHOD_HEAD)
+	if (method == OFHTTPRequestMethodGet ||
+	    method == OFHTTPRequestMethodHead)
 		follow = true;
 	/* 303 should always be redirected and converted to a GET request. */
 	else if (statusCode == 303)
@@ -332,7 +332,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		_client->_socket = [sock retain];
 		_client->_lastURL = [URL copy];
 		_client->_lastWasHEAD =
-		    (_request.method == OF_HTTP_REQUEST_METHOD_HEAD);
+		    (_request.method == OFHTTPRequestMethodHead);
 		_client->_lastResponse = [response retain];
 	}
 
@@ -401,7 +401,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 						[newHeaders
 						    removeObjectForKey: key];
 
-				newRequest.method = OF_HTTP_REQUEST_METHOD_GET;
+				newRequest.method = OFHTTPRequestMethodGet;
 			}
 
 			newRequest.URL = newURL;

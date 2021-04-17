@@ -66,7 +66,7 @@
 	bool _detectedFileName, _quiet, _verbose, _insecure, _ignoreStatus;
 	bool _useUnicode;
 	OFStream *_body;
-	of_http_request_method_t _method;
+	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
@@ -294,7 +294,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	self = [super init];
 
 	@try {
-		_method = OF_HTTP_REQUEST_METHOD_GET;
+		_method = OFHTTPRequestMethodGet;
 
 		_clientHeaders = [[OFMutableDictionary alloc]
 		    initWithObject: @"OFHTTP"
@@ -370,7 +370,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	method = method.uppercaseString;
 
 	@try {
-		_method = of_http_request_method_from_string(method);
+		_method = OFHTTPRequestMethodParseName(method);
 	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_method",
 		    @"%[prog]: Invalid request method %[method]!",
@@ -888,8 +888,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			statusCode = response.statusCode;
 			codeString = [OFString stringWithFormat: @"%hd %@",
-			    statusCode,
-			    of_http_status_code_to_string(statusCode)];
+			    statusCode, OFHTTPStatusCodeString(statusCode)];
 			[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  HTTP status code: %[code]",
@@ -906,7 +905,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 after_exception_handling:
-	if (_method == OF_HTTP_REQUEST_METHOD_HEAD)
+	if (_method == OFHTTPRequestMethodHead)
 		goto next;
 
 	if (_detectFileNameRequest) {
@@ -1031,7 +1030,7 @@ next:
 
 		request = [OFHTTPRequest requestWithURL: URL];
 		request.headers = clientHeaders;
-		request.method = OF_HTTP_REQUEST_METHOD_HEAD;
+		request.method = OFHTTPRequestMethodHead;
 
 		_detectFileNameRequest = true;
 		[_HTTPClient asyncPerformRequest: request];

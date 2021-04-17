@@ -28,7 +28,7 @@
 #import "OFUnsupportedVersionException.h"
 
 OFString *
-of_http_status_code_to_string(short code)
+OFHTTPStatusCodeString(short code)
 {
 	switch (code) {
 	case 100:
@@ -249,7 +249,7 @@ encodingForContentType(OFString *contentType)
 	[super dealloc];
 }
 
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
+- (void)setProtocolVersion: (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
@@ -260,7 +260,7 @@ encodingForContentType(OFString *contentType)
 	_protocolVersion = protocolVersion;
 }
 
-- (of_http_request_protocol_version_t)protocolVersion
+- (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	return _protocolVersion;
 }
@@ -270,7 +270,7 @@ encodingForContentType(OFString *contentType)
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
 	unsigned long long major, minor;
-	of_http_request_protocol_version_t protocolVersion;
+	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];

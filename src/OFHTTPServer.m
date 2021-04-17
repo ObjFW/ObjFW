@@ -82,7 +82,7 @@ OF_DIRECT_MEMBERS
 		SEND_RESPONSE
 	} _state;
 	uint8_t _HTTPMinorVersion;
-	of_http_request_method_t _method;
+	OFHTTPRequestMethod _method;
 	OFString *_host, *_path;
 	uint16_t _port;
 	OFMutableDictionary *_headers;
@@ -189,7 +189,7 @@ normalizedKey(OFString *key)
 
 	[_socket writeFormat: @"HTTP/%@ %hd %@\r\n",
 			      self.protocolVersionString, _statusCode,
-			      of_http_status_code_to_string(_statusCode)];
+			      OFHTTPStatusCodeString(_statusCode)];
 
 	headers = [[_headers mutableCopy] autorelease];
 
@@ -375,7 +375,7 @@ normalizedKey(OFString *key)
 
 	method = [line substringToIndex: pos];
 	@try {
-		_method = of_http_request_method_from_string(method);
+		_method = OFHTTPRequestMethodParseName(method);
 	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
@@ -499,8 +499,7 @@ normalizedKey(OFString *key)
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
-			      statusCode,
-			      of_http_status_code_to_string(statusCode),
+			      statusCode, OFHTTPStatusCodeString(statusCode),
 			      date, _server.name];
 	return false;
 }
@@ -550,7 +549,7 @@ normalizedKey(OFString *key)
 	request = [OFHTTPRequest requestWithURL: URL];
 	request.method = _method;
 	request.protocolVersion =
-	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion };
+	    (OFHTTPRequestProtocolVersion){ 1, _HTTPMinorVersion };
 	request.headers = _headers;
 	request.remoteAddress = _socket.remoteAddress;
 
