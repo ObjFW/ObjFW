@@ -29,7 +29,7 @@
 }
 
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
-			     offset: (of_offset_t)offset
+			     offset: (OFFileOffset)offset
 			     whence: (int)whence
 			      errNo: (int)errNo
 {
@@ -45,7 +45,7 @@
 }
 
 - (instancetype)initWithStream: (OFSeekableStream *)stream
-			offset: (of_offset_t)offset
+			offset: (OFFileOffset)offset
 			whence: (int)whence
 			 errNo: (int)errNo
 {

@@ -451,9 +451,9 @@ parseMode(const char *mode, bool *append)
 	return (size_t)bytesWritten;
 }
 
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset whence: (int)whence
+- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence
 {
-	of_offset_t ret;
+	OFFileOffset ret;
 
 	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];

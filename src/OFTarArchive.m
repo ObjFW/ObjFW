@@ -359,10 +359,10 @@ OF_DIRECT_MEMBERS
 		return;
 
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
-	    _toRead <= INT64_MAX && (of_offset_t)_toRead == (int64_t)_toRead) {
+	    _toRead <= INT64_MAX && (OFFileOffset)_toRead == (int64_t)_toRead) {
 		uint64_t size;
 
-		[(OFSeekableStream *)_stream seekToOffset: (of_offset_t)_toRead
+		[(OFSeekableStream *)_stream seekToOffset: (OFFileOffset)_toRead
 						   whence: SEEK_CUR];
 
 		_toRead = 0;

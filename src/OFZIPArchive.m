@@ -138,7 +138,7 @@ of_zip_archive_read_field64(const uint8_t **data, uint16_t *size)
 
 static void
 seekOrThrowInvalidFormat(OFSeekableStream *stream,
-    of_offset_t offset, int whence)
+    OFFileOffset offset, int whence)
 {
 	@try {
 		[stream seekToOffset: offset whence: whence];
@@ -200,7 +200,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		if (_mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
 			_offset = _centralDirectoryOffset;
 			seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-			    (of_offset_t)_offset, SEEK_SET);
+			    (OFFileOffset)_offset, SEEK_SET);
 		}
 	} @catch (id e) {
 		/*
@@ -256,7 +256,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
-	of_offset_t offset = -22;
+	OFFileOffset offset = -22;
 	bool valid = false;
 
 	do {
@@ -308,11 +308,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		[_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
 
-		if (offset64 < 0 || (of_offset_t)offset64 != offset64)
+		if (offset64 < 0 || (OFFileOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
 		seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-		    (of_offset_t)offset64, SEEK_SET);
+		    (OFFileOffset)offset64, SEEK_SET);
 
 		if ([_stream readLittleEndianInt32] != 0x06064B50)
 			@throw [OFInvalidFormatException exception];
@@ -335,7 +335,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_centralDirectoryOffset = [_stream readLittleEndianInt64];
 
 		if (_centralDirectoryOffset < 0 ||
-		    (of_offset_t)_centralDirectoryOffset !=
+		    (OFFileOffset)_centralDirectoryOffset !=
 		    _centralDirectoryOffset)
 			@throw [OFOutOfRangeException exception];
 	}
@@ -348,11 +348,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	void *pool = objc_autoreleasePoolPush();
 
 	if (_centralDirectoryOffset < 0 ||
-	    (of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
+	    (OFFileOffset)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-	    (of_offset_t)_centralDirectoryOffset, SEEK_SET);
+	    (OFFileOffset)_centralDirectoryOffset, SEEK_SET);
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
@@ -442,11 +442,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[self of_closeLastReturnedStream];
 
 	offset64 = entry.of_localFileHeaderOffset;
-	if (offset64 < 0 || (of_offset_t)offset64 != offset64)
+	if (offset64 < 0 || (OFFileOffset)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-	    (of_offset_t)offset64, SEEK_SET);
+	    (OFFileOffset)offset64, SEEK_SET);
 	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 
