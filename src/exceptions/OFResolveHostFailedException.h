@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_host;
 	OFSocketAddressFamily _addressFamily;
-	of_dns_resolver_error_t _error;
+	OFDNSResolverErrorCode _errorCode;
 }
 
 /**
@@ -42,9 +42,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFSocketAddressFamily addressFamily;
 
 /**
- * @brief The error from the resolver.
+ * @brief The error code from the resolver.
  */
-@property (readonly, nonatomic) of_dns_resolver_error_t error;
+@property (readonly, nonatomic) OFDNSResolverErrorCode errorCode;
 
 /**
  * @brief Creates a new, autoreleased resolve host failed exception.
@@ -52,12 +52,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host which could not be resolved
  * @param addressFamily The address family for which the host could not be
  *			resolved
- * @param error The error from the resolver
+ * @param errorCode The error code from the resolver
  * @return A new, autoreleased address translation failed exception
  */
 + (instancetype)exceptionWithHost: (OFString *)host
 		    addressFamily: (OFSocketAddressFamily)addressFamily
-			    error: (of_dns_resolver_error_t)error;
+			errorCode: (OFDNSResolverErrorCode)errorCode;
 
 /**
  * @brief Initializes an already allocated resolve host failed exception.
@@ -65,12 +65,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host which could not be resolved
  * @param addressFamily The address family for which the host could not be
  *			resolved
- * @param error The error from the resolver
+ * @param errorCode The error code from the resolver
  * @return An initialized address translation failed exception
  */
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
-		       error: (of_dns_resolver_error_t)error;
+		   errorCode: (OFDNSResolverErrorCode)errorCode;
 @end
 
 OF_ASSUME_NONNULL_END

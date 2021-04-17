@@ -70,13 +70,13 @@ addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
 {
 	switch ([record recordType]) {
 #ifdef OF_HAVE_IPV6
-	case OF_DNS_RECORD_TYPE_AAAA:
+	case OFDNSRecordTypeAAAA:
 		if (addressFamily != OFSocketAddressFamilyIPv6 &&
 		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
 		break;
 #endif
-	case OF_DNS_RECORD_TYPE_A:
+	case OFDNSRecordTypeA:
 		if (addressFamily != OFSocketAddressFamilyIPv4 &&
 		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
@@ -166,8 +166,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RECORD_TYPE_AAAA];
+			       DNSClass: OFDNSClassIN
+			     recordType: OFDNSRecordTypeAAAA];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -179,8 +179,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RECORD_TYPE_A];
+			       DNSClass: OFDNSClassIN
+			     recordType: OFDNSRecordTypeA];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -196,7 +196,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	_numExpectedResponses--;
 
 	if ([exception isKindOfClass: [OFDNSQueryFailedException class]] &&
-	    [exception error] == OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR &&
+	    [exception errorCode] == OFDNSResolverErrorCodeServerNameError &&
 	    !_isFQDN && _numExpectedResponses == 0 && _addresses.count == 0 &&
 	    _searchDomainIndex + 1 < _settings->_searchDomains.count) {
 		_searchDomainIndex++;
@@ -209,7 +209,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 		const OFSocketAddress *address = NULL;
 		OFDNSQuery *CNAMEQuery;
 
-		if ([record DNSClass] != OF_DNS_CLASS_IN)
+		if ([record DNSClass] != OFDNSClassIN)
 			continue;
 
 		if (addressForRecord(record, &address, _addressFamily)) {
@@ -217,12 +217,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 			continue;
 		}
 
-		if ([record recordType] != OF_DNS_RECORD_TYPE_CNAME)
+		if ([record recordType] != OFDNSRecordTypeCNAME)
 			continue;
 
 		/* FIXME: Check if it's already in answers */
 		CNAMEQuery = [OFDNSQuery queryWithDomainName: [record alias]
-						    DNSClass: OF_DNS_CLASS_IN
+						    DNSClass: OFDNSClassIN
 						  recordType: query.recordType];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: CNAMEQuery
@@ -244,13 +244,13 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: [exception error]];
+				    errorCode: [exception errorCode]];
 
 		if (exception == nil)
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+				    errorCode: OFDNSResolverErrorCodeNoResult];
 	} else
 		exception = nil;
 
@@ -316,7 +316,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+				    errorCode: OFDNSResolverErrorCodeNoResult];
 		}
 
 		callDelegateInMode(_runLoopMode, _delegate, _resolver, _host,

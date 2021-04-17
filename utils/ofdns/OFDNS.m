@@ -95,7 +95,7 @@ help(OFStream *stream, bool full, int status)
 	OFUnichar option;
 	OFArray OF_GENERIC(OFString *) *remainingArguments;
 	OFDNSResolver *resolver;
-	of_dns_class_t DNSClass;
+	OFDNSClass DNSClass;
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
@@ -180,8 +180,7 @@ help(OFStream *stream, bool full, int status)
 
 	resolver = [OFDNSResolver resolver];
 	DNSClass = (DNSClassString != nil
-	    ? of_dns_class_parse(DNSClassString)
-	    : OF_DNS_CLASS_IN);
+	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
 	if (recordTypes.count == 0)
 		[recordTypes addObject: @"ALL"];
@@ -193,8 +192,8 @@ help(OFStream *stream, bool full, int status)
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {
-			of_dns_record_type_t recordType =
-			    of_dns_record_type_parse(recordTypeString);
+			OFDNSRecordType recordType =
+			    OFDNSRecordTypeParseName(recordTypeString);
 			OFDNSQuery *query =
 			    [OFDNSQuery queryWithDomainName: domainName
 						   DNSClass: DNSClass

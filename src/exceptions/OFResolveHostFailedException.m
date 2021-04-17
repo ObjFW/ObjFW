@@ -20,27 +20,28 @@
 #import "OFString.h"
 
 @implementation OFResolveHostFailedException
-@synthesize host = _host, addressFamily = _addressFamily, error = _error;
+@synthesize host = _host, addressFamily = _addressFamily;
+@synthesize errorCode = _errorCode;
 
 + (instancetype)exceptionWithHost: (OFString *)host
 		    addressFamily: (OFSocketAddressFamily)addressFamily
-			    error: (of_dns_resolver_error_t)error
+			errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	return [[[self alloc] initWithHost: host
 			     addressFamily: addressFamily
-				     error: error] autorelease];
+				 errorCode: errorCode] autorelease];
 }
 
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
-		       error: (of_dns_resolver_error_t)error
+		   errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	self = [super init];
 
 	@try {
 		_host = [host copy];
 		_addressFamily = addressFamily;
-		_error = error;
+		_errorCode = errorCode;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -60,6 +61,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"The host %@ could not be resolved: %@",
-	    _host, of_dns_resolver_error_to_string(_error)];
+	    _host, OFDNSResolverErrorCodeDescription(_errorCode)];
 }
 @end

@@ -168,11 +168,11 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 static OF_KINDOF(OFDNSResourceRecord *)
-parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
-    of_dns_record_type_t recordType, uint32_t TTL, const unsigned char *buffer,
+parseResourceRecord(OFString *name, OFDNSClass DNSClass,
+    OFDNSRecordType recordType, uint32_t TTL, const unsigned char *buffer,
     size_t length, size_t i, uint16_t dataLength)
 {
-	if (recordType == OF_DNS_RECORD_TYPE_A && DNSClass == OF_DNS_CLASS_IN) {
+	if (recordType == OFDNSRecordTypeA && DNSClass == OFDNSClassIN) {
 		OFSocketAddress address;
 
 		if (dataLength != 4)
@@ -189,7 +189,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_NS) {
+	} else if (recordType == OFDNSRecordTypeNS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -202,7 +202,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     DNSClass: DNSClass
 		    authoritativeHost: authoritativeHost
 				  TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_CNAME) {
+	} else if (recordType == OFDNSRecordTypeCNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -215,7 +215,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 			   alias: alias
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_SOA) {
+	} else if (recordType == OFDNSRecordTypeSOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -256,7 +256,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    expirationInterval: expirationInterval
 				minTTL: minTTL
 				   TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_PTR) {
+	} else if (recordType == OFDNSRecordTypePTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -269,7 +269,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 		      domainName: domainName
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_HINFO) {
+	} else if (recordType == OFDNSRecordTypeHINFO) {
 		size_t j = i;
 		OFString *CPU = parseString(buffer, length, &j);
 		OFString *OS;
@@ -288,7 +288,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     CPU: CPU
 			      OS: OS
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_MX) {
+	} else if (recordType == OFDNSRecordTypeMX) {
 		uint16_t preference;
 		size_t j;
 		OFString *mailExchange;
@@ -311,7 +311,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		      preference: preference
 		    mailExchange: mailExchange
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_TXT) {
+	} else if (recordType == OFDNSRecordTypeTXT) {
 		OFMutableArray *textStrings = [OFMutableArray array];
 
 		while (dataLength > 0) {
@@ -337,7 +337,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 		     textStrings: textStrings
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_RP) {
+	} else if (recordType == OFDNSRecordTypeRP) {
 		size_t j = i;
 		OFString *mailbox = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -358,8 +358,8 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			  mailbox: mailbox
 		    TXTDomainName: TXTDomainName
 			      TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_AAAA &&
-	    DNSClass == OF_DNS_CLASS_IN) {
+	} else if (recordType == OFDNSRecordTypeAAAA &&
+	    DNSClass == OFDNSClassIN) {
 		OFSocketAddress address;
 
 		if (dataLength != 16)
@@ -380,8 +380,8 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_SRV &&
-	    DNSClass == OF_DNS_CLASS_IN) {
+	} else if (recordType == OFDNSRecordTypeSRV &&
+	    DNSClass == OFDNSClassIN) {
 		uint16_t priority, weight, port;
 		size_t j;
 		OFString *target;
@@ -425,8 +425,8 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
 		    MAX_ALLOWED_POINTERS);
-		of_dns_class_t DNSClass;
-		of_dns_record_type_t recordType;
+		OFDNSClass DNSClass;
+		OFDNSRecordType recordType;
 		uint32_t TTL;
 		uint16_t dataLength;
 		OFDNSResourceRecord *record;
@@ -809,7 +809,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (_settings->_nameServers.count == 0) {
 		id exception = [OFDNSQueryFailedException
 		    exceptionWithQuery: query
-				 error: OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER];
+			     errorCode: OFDNSResolverErrorCodeNoNameServer];
 		[delegate  resolver: self
 		    didPerformQuery: query
 			   response: nil
@@ -871,7 +871,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	exception = [OFDNSQueryFailedException
 	    exceptionWithQuery: context->_query
-			 error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
+		     errorCode: OFDNSResolverErrorCodeTimeout];
 
 	[context->_delegate resolver: self
 		     didPerformQuery: context->_query
@@ -912,7 +912,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_queries removeObjectForKey: ID];
 
 	@try {
-		of_dns_resolver_error_t error = 0;
+		OFDNSResolverErrorCode errorCode = 0;
 		bool tryNextNameServer = false;
 		const unsigned char *queryDataBuffer;
 		size_t i;
@@ -955,25 +955,25 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		case 0:
 			break;
 		case 1:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT;
+			errorCode = OFDNSResolverErrorCodeServerInvalidFormat;
 			break;
 		case 2:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_FAILURE;
+			errorCode = OFDNSResolverErrorCodeServerFailure;
 			tryNextNameServer = true;
 			break;
 		case 3:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
+			errorCode = OFDNSResolverErrorCodeServerNameError;
 			break;
 		case 4:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED;
+			errorCode = OFDNSResolverErrorCodeServerNotImplemented;
 			tryNextNameServer = true;
 			break;
 		case 5:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_REFUSED;
+			errorCode = OFDNSResolverErrorCodeServerRefused;
 			tryNextNameServer = true;
 			break;
 		default:
-			error = OF_DNS_RESOLVER_ERROR_UNKNOWN;
+			errorCode = OFDNSResolverErrorCodeUnknown;
 			tryNextNameServer = true;
 			break;
 		}
@@ -995,7 +995,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (buffer[3] & 0x0F)
 			@throw [OFDNSQueryFailedException
 			    exceptionWithQuery: context->_query
-					 error: error];
+				     errorCode: errorCode];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
 		numAnswers = (buffer[6] << 8) | buffer[7];
@@ -1257,7 +1257,7 @@ done:
 
 		exception = [OFDNSQueryFailedException
 		    exceptionWithQuery: context->_query
-				 error: OF_DNS_RESOLVER_ERROR_CANCELED];
+			     errorCode: OFDNSResolverErrorCodeCanceled];
 
 		[context->_delegate resolver: self
 			     didPerformQuery: context->_query
