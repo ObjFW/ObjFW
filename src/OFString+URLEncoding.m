@@ -85,7 +85,7 @@ int _OFString_URLEncoding_reference;
 	int state = 0;
 	size_t i = 0;
 
-	retCString = of_alloc(length + 1, 1);
+	retCString = OFAllocMemory(length + 1, 1);
 
 	while (length--) {
 		char c = *string++;
@@ -108,7 +108,7 @@ int _OFString_URLEncoding_reference;
 			else if (c >= 'a' && c <= 'f')
 				byte += (c - 'a' + 10) << shift;
 			else {
-				free(retCString);
+				OFFreeMemory(retCString);
 				@throw [OFInvalidFormatException exception];
 			}
 
@@ -126,12 +126,12 @@ int _OFString_URLEncoding_reference;
 	objc_autoreleasePoolPop(pool);
 
 	if (state != 0) {
-		free(retCString);
+		OFFreeMemory(retCString);
 		@throw [OFInvalidFormatException exception];
 	}
 
 	@try {
-		retCString = of_realloc(retCString, 1, i + 1);
+		retCString = OFResizeMemory(retCString, 1, i + 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care if it fails, as we only made it smaller. */
 	}
@@ -141,7 +141,7 @@ int _OFString_URLEncoding_reference;
 						     length: i
 					       freeWhenDone: true];
 	} @catch (id e) {
-		free(retCString);
+		OFFreeMemory(retCString);
 		@throw e;
 	}
 }

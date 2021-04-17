@@ -777,7 +777,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -792,7 +792,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;
@@ -837,7 +837,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 	@try {
 #ifndef OF_WINDOWS
 		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
@@ -852,7 +852,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;

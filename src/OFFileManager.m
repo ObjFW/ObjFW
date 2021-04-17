@@ -646,7 +646,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		buffer = of_alloc(1, pageSize);
+		buffer = OFAllocMemory(1, pageSize);
 		@try {
 			sourceStream = [[OFURLHandler handlerForURL: source]
 			    openItemAtURL: source
@@ -698,7 +698,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		} @finally {
 			[sourceStream close];
 			[destinationStream close];
-			free(buffer);
+			OFFreeMemory(buffer);
 		}
 	} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 		@try {

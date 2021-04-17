@@ -79,7 +79,7 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 			*language = [OFString stringWithCString: locale
 						       encoding: enc];
 	} @finally {
-		free(locale);
+		OFFreeMemory(locale);
 	}
 }
 #endif

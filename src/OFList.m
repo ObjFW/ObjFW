@@ -83,7 +83,7 @@ OF_DIRECT_MEMBERS
 	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
-		free(iter);
+		OFFreeMemory(iter);
 	}
 
 	[super dealloc];
@@ -93,7 +93,7 @@ OF_DIRECT_MEMBERS
 {
 	OFListItem *listItem;
 
-	listItem = of_alloc(1, sizeof(OFListItem));
+	listItem = OFAllocMemory(1, sizeof(OFListItem));
 	listItem->object = [object retain];
 	listItem->next = NULL;
 	listItem->previous = _lastListItem;
@@ -114,7 +114,7 @@ OF_DIRECT_MEMBERS
 
 - (OFListItem *)prependObject: (id)object
 {
-	OFListItem *listItem = of_alloc(1, sizeof(OFListItem));
+	OFListItem *listItem = OFAllocMemory(1, sizeof(OFListItem));
 
 	listItem->object = [object retain];
 	listItem->next = _firstListItem;
@@ -136,7 +136,7 @@ OF_DIRECT_MEMBERS
 - (OFListItem *)insertObject: (id)object
 	      beforeListItem: (OFListItem *)listItem
 {
-	OFListItem *newListItem = of_alloc(1, sizeof(OFListItem));
+	OFListItem *newListItem = OFAllocMemory(1, sizeof(OFListItem));
 
 	newListItem->object = [object retain];
 	newListItem->next = listItem;
@@ -159,7 +159,7 @@ OF_DIRECT_MEMBERS
 - (OFListItem *)insertObject: (id)object
 	       afterListItem: (OFListItem *)listItem
 {
-	OFListItem *newListItem = of_alloc(1, sizeof(OFListItem));
+	OFListItem *newListItem = OFAllocMemory(1, sizeof(OFListItem));
 
 	newListItem->object = [object retain];
 	newListItem->next = listItem->next;
@@ -195,7 +195,7 @@ OF_DIRECT_MEMBERS
 	_mutations++;
 
 	[listItem->object release];
-	free(listItem);
+	OFFreeMemory(listItem);
 }
 
 - (id)firstObject
@@ -274,7 +274,7 @@ OF_DIRECT_MEMBERS
 	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
-		free(iter);
+		OFFreeMemory(iter);
 	}
 
 	_firstListItem = _lastListItem = NULL;
@@ -291,7 +291,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		for (OFListItem *iter = _firstListItem;
 		    iter != NULL; iter = iter->next) {
-			listItem = of_alloc(1, sizeof(OFListItem));
+			listItem = OFAllocMemory(1, sizeof(OFListItem));
 			listItem->object = [iter->object retain];
 			listItem->next = NULL;
 			listItem->previous = previous;

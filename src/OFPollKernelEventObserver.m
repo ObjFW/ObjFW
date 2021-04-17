@@ -50,7 +50,7 @@
 		[_FDs addItem: &p];
 
 		_maxFD = _cancelFD[0];
-		_FDToObject = of_alloc((size_t)_maxFD + 1, sizeof(id));
+		_FDToObject = OFAllocMemory((size_t)_maxFD + 1, sizeof(id));
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -62,7 +62,7 @@
 - (void)dealloc
 {
 	[_FDs release];
-	free(_FDToObject);
+	OFFreeMemory(_FDToObject);
 
 	[super dealloc];
 }
@@ -95,7 +95,7 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 		if (fd > self->_maxFD) {
 			self->_maxFD = fd;
-			self->_FDToObject = of_realloc(self->_FDToObject,
+			self->_FDToObject = OFResizeMemory(self->_FDToObject,
 			    (size_t)self->_maxFD + 1, sizeof(id));
 		}
 

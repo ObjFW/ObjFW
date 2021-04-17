@@ -108,7 +108,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		_dictionaryBits = dictionaryBits;
 
 		_slidingWindowMask = (1u << dictionaryBits) - 1;
-		_slidingWindow = of_alloc(_slidingWindowMask + 1, 1);
+		_slidingWindow = OFAllocMemory(_slidingWindowMask + 1, 1);
 		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
 		[self release];
@@ -123,7 +123,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	if (_stream != nil)
 		[self close];
 
-	free(_slidingWindow);
+	OFFreeMemory(_slidingWindow);
 
 	if (_codeLenTree != NULL)
 		of_huffman_tree_release(_codeLenTree);
@@ -132,7 +132,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	if (_distTree != NULL)
 		of_huffman_tree_release(_distTree);
 
-	free(_codesLengths);
+	OFFreeMemory(_codesLengths);
 
 	[super dealloc];
 }
@@ -175,7 +175,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_alloc_zeroed(bits, 1);
+		_codesLengths = OFAllocZeroedMemory(bits, 1);
 		_skip = true;
 
 		_state = STATE_CODE_LEN_TREE;
@@ -226,7 +226,7 @@ start:
 
 		_codeLenTree = of_huffman_tree_construct(_codesLengths,
 		    _codesCount);
-		free(_codesLengths);
+		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
 		_state = STATE_LITLEN_CODES_COUNT;
@@ -256,7 +256,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_alloc_zeroed(bits, 1);
+		_codesLengths = OFAllocZeroedMemory(bits, 1);
 		_skip = false;
 
 		_treeIter = _codeLenTree;
@@ -316,7 +316,7 @@ start:
 
 		_litLenTree = of_huffman_tree_construct(_codesLengths,
 		    _codesCount);
-		free(_codesLengths);
+		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
 		of_huffman_tree_release(_codeLenTree);
@@ -346,7 +346,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = of_alloc_zeroed(bits, 1);
+		_codesLengths = OFAllocZeroedMemory(bits, 1);
 
 		_treeIter = _codeLenTree;
 		_state = STATE_DIST_TREE;
@@ -381,7 +381,7 @@ start:
 
 		_distTree = of_huffman_tree_construct(_codesLengths,
 		    _codesCount);
-		free(_codesLengths);
+		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
 		_treeIter = _litLenTree;

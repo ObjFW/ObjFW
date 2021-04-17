@@ -40,7 +40,7 @@ int _OFString_XMLEscaping_reference;
 
 	j = 0;
 	retLength = length;
-	retCString = of_alloc(retLength, 1);
+	retCString = OFAllocMemory(retLength, 1);
 
 	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {
@@ -75,10 +75,10 @@ int _OFString_XMLEscaping_reference;
 
 		if (append != NULL) {
 			@try {
-				retCString = of_realloc(retCString, 1,
+				retCString = OFResizeMemory(retCString, 1,
 				    retLength + appendLen);
 			} @catch (id e) {
-				free(retCString);
+				OFFreeMemory(retCString);
 				@throw e;
 			}
 			retLength += appendLen - 1;
@@ -96,7 +96,7 @@ int _OFString_XMLEscaping_reference;
 		ret = [OFString stringWithUTF8String: retCString
 					      length: retLength];
 	} @finally {
-		free(retCString);
+		OFFreeMemory(retCString);
 	}
 	return ret;
 }

@@ -34,8 +34,8 @@ const char *str = "Hello!";
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
 
-	raw[0] = of_alloc(1, 4096);
-	raw[1] = of_alloc(1, 4096);
+	raw[0] = OFAllocMemory(1, 4096);
+	raw[1] = OFAllocMemory(1, 4096);
 	memset(raw[0], 0xFF, 4096);
 	memset(raw[1], 0x42, 4096);
 
@@ -218,8 +218,8 @@ const char *str = "Hello!";
 	    OFOutOfRangeException,
 	    [mutable removeItemsInRange: OFRangeMake(mutable.count, 1)])
 
-	free(raw[0]);
-	free(raw[1]);
+	OFFreeMemory(raw[0]);
+	OFFreeMemory(raw[1]);
 
 	objc_autoreleasePoolPop(pool);
 }

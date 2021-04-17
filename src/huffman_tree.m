@@ -28,7 +28,7 @@ newTree(void)
 {
 	struct of_huffman_tree *tree;
 
-	tree = of_alloc(1, sizeof(*tree));
+	tree = OFAllocMemory(1, sizeof(*tree));
 	tree->leaves[0] = tree->leaves[1] = NULL;
 	tree->value = 0xFFFF;
 
@@ -67,9 +67,9 @@ of_huffman_tree_construct(uint8_t lengths[], uint16_t count)
 			uint_fast8_t length = lengths[i];
 
 			if OF_UNLIKELY (length > maxBit) {
-				lengthCount = of_realloc(lengthCount,
+				lengthCount = OFResizeMemory(lengthCount,
 				    length + 1, sizeof(uint16_t));
-				nextCode = of_realloc(nextCode,
+				nextCode = OFResizeMemory(nextCode,
 				    length + 1, sizeof(uint16_t));
 
 				for (uint_fast8_t j = maxBit + 1; j <= length;
@@ -102,8 +102,8 @@ of_huffman_tree_construct(uint8_t lengths[], uint16_t count)
 				insertTree(tree, nextCode[length]++, length, i);
 		}
 	} @finally {
-		free(lengthCount);
-		free(nextCode);
+		OFFreeMemory(lengthCount);
+		OFFreeMemory(nextCode);
 	}
 
 	return tree;
@@ -126,5 +126,5 @@ of_huffman_tree_release(struct of_huffman_tree *tree)
 		if OF_LIKELY (tree->leaves[i] != NULL)
 			of_huffman_tree_release(tree->leaves[i]);
 
-	free(tree);
+	OFFreeMemory(tree);
 }

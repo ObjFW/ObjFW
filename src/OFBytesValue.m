@@ -29,7 +29,7 @@
 	@try {
 		_size = of_sizeof_type_encoding(objCType);
 		_objCType = objCType;
-		_bytes = of_alloc(1, _size);
+		_bytes = OFAllocMemory(1, _size);
 
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
@@ -42,7 +42,7 @@
 
 - (void)dealloc
 {
-	free(_bytes);
+	OFFreeMemory(_bytes);
 
 	[super dealloc];
 }

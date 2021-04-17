@@ -98,7 +98,7 @@ closeHandle(OFFileHandle handle)
 	if (firstHandle == handle)
 		firstHandle = handle->next;
 
-	free(handle);
+	OFFreeMemory(handle);
 }
 
 OF_DESTRUCTOR()
@@ -238,7 +238,7 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		handle = of_alloc(1, sizeof(*handle));
+		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
 			if ((flags = parseMode(mode.UTF8String,
 			    &handle->append)) == -1)
@@ -300,7 +300,7 @@ parseMode(const char *mode, bool *append)
 
 			firstHandle = handle;
 		} @catch (id e) {
-			free(handle);
+			OFFreeMemory(handle);
 			@throw e;
 		}
 #endif

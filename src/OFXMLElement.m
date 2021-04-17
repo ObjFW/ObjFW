@@ -452,7 +452,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 	i = 0;
 	length = _name.UTF8StringLength + 3 + (level * indentation);
-	cString = of_alloc(length, 1);
+	cString = OFAllocMemory(length, 1);
 
 	@try {
 		memset(cString + i, ' ', level * indentation);
@@ -463,7 +463,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		if (prefix != nil && ![_namespace isEqual: defaultNS]) {
 			length += prefix.UTF8StringLength + 1;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			memcpy(cString + i, prefix.UTF8String,
 			    prefix.UTF8StringLength);
@@ -479,7 +479,7 @@ _references_to_categories_of_OFXMLElement(void)
 		    ![_namespace isEqual: defaultNS]) ||
 		    (_namespace == nil && defaultNS != nil))) {
 			length += _namespace.UTF8StringLength + 9;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			memcpy(cString + i, " xmlns='", 8);
 			i += 8;
@@ -512,7 +512,7 @@ _references_to_categories_of_OFXMLElement(void)
 			length += attributeNameLength + (attributePrefix != nil
 			    ? attributePrefix.UTF8StringLength + 1 : 0) +
 			    tmp.UTF8StringLength + 4;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			cString[i++] = ' ';
 			if (attributePrefix != nil) {
@@ -582,7 +582,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 			length += tmp.count + _name.UTF8StringLength + 2 +
 			    (indent ? level * indentation : 0);
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			cString[i++] = '>';
 
@@ -598,7 +598,7 @@ _references_to_categories_of_OFXMLElement(void)
 			cString[i++] = '/';
 			if (prefix != nil) {
 				length += prefix.UTF8StringLength + 1;
-				cString = of_realloc(cString, length, 1);
+				cString = OFResizeMemory(cString, length, 1);
 
 				memcpy(cString + i, prefix.UTF8String,
 				    prefix.UTF8StringLength);
@@ -619,7 +619,7 @@ _references_to_categories_of_OFXMLElement(void)
 		ret = [OFString stringWithUTF8String: cString
 					      length: length];
 	} @finally {
-		free(cString);
+		OFFreeMemory(cString);
 	}
 	return ret;
 }

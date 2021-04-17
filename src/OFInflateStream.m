@@ -194,7 +194,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 #else
 		_slidingWindowMask = 0x7FFF;
 #endif
-		_slidingWindow = of_alloc_zeroed(_slidingWindowMask + 1, 1);
+		_slidingWindow = OFAllocZeroedMemory(_slidingWindowMask + 1, 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -208,10 +208,10 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	if (_stream != nil)
 		[self close];
 
-	free(_slidingWindow);
+	OFFreeMemory(_slidingWindow);
 
 	if (_state == HUFFMAN_TREE) {
-		free(_context.huffmanTree.lengths);
+		OFFreeMemory(_context.huffmanTree.lengths);
 
 		if (_context.huffmanTree.codeLenTree != NULL)
 			of_huffman_tree_release(
@@ -378,7 +378,7 @@ start:
 			}
 
 			if OF_LIKELY (CTX.lengths == NULL)
-				CTX.lengths = of_alloc_zeroed(19, 1);
+				CTX.lengths = OFAllocZeroedMemory(19, 1);
 
 			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
@@ -394,14 +394,14 @@ start:
 			    CTX.lengths, 19);
 			CTX.treeIter = CTX.codeLenTree;
 
-			free(CTX.lengths);
+			OFFreeMemory(CTX.lengths);
 			CTX.lengths = NULL;
 			CTX.receivedCount = 0;
 			CTX.value = 0xFF;
 		}
 
 		if OF_LIKELY (CTX.lengths == NULL)
-			CTX.lengths = of_alloc(
+			CTX.lengths = OFAllocMemory(
 			    CTX.litLenCodesCount + CTX.distCodesCount + 258, 1);
 
 		for (uint16_t i = CTX.receivedCount;
@@ -485,7 +485,7 @@ start:
 		    CTX.lengths + CTX.litLenCodesCount + 257,
 		    CTX.distCodesCount + 1);
 
-		free(CTX.lengths);
+		OFFreeMemory(CTX.lengths);
 
 		/*
 		 * litLenTree and distTree are at the same location in

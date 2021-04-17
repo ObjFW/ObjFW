@@ -111,7 +111,7 @@ struct {
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
 
-		ivars = of_alloc_zeroed(1, sizeof(*ivars));
+		ivars = OFAllocZeroedMemory(1, sizeof(*ivars));
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 
@@ -121,7 +121,7 @@ struct {
 			ivars->isUTF8 = true;
 			break;
 		case -1:
-			free(ivars);
+			OFFreeMemory(ivars);
 			@throw [OFInvalidEncodingException exception];
 		}
 

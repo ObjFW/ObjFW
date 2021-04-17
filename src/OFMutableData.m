@@ -90,7 +90,7 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = of_alloc(capacity, itemSize);
+		_items = OFAllocMemory(capacity, itemSize);
 		_itemSize = itemSize;
 		_capacity = capacity;
 		_freeWhenDone = true;
@@ -121,7 +121,7 @@
 	self = [self initWithItems: items count: count itemSize: itemSize];
 
 	if (freeWhenDone)
-		free(items);
+		OFFreeMemory(items);
 
 	return self;
 }
@@ -181,7 +181,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + 1 > _capacity) {
-		_items = of_realloc(_items, _count + 1, _itemSize);
+		_items = OFResizeMemory(_items, _count + 1, _itemSize);
 		_capacity = _count + 1;
 	}
 
@@ -201,7 +201,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -217,7 +217,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -234,7 +234,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -259,7 +259,7 @@
 
 	_count -= range.length;
 	@try {
-		_items = of_realloc(_items, _count, _itemSize);
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
@@ -273,7 +273,7 @@
 
 	_count--;
 	@try {
-		_items = of_realloc(_items, _count, _itemSize);
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
@@ -282,7 +282,7 @@
 
 - (void)removeAllItems
 {
-	free(_items);
+	OFFreeMemory(_items);
 	_items = NULL;
 	_count = 0;
 	_capacity = 0;
@@ -299,7 +299,7 @@
 {
 	if (_capacity != _count) {
 		@try {
-			_items = of_realloc(_items, _count, _itemSize);
+			_items = OFResizeMemory(_items, _count, _itemSize);
 			_capacity = _count;
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */

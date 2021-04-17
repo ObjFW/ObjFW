@@ -125,7 +125,7 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = of_alloc(count, itemSize);
+		_items = OFAllocMemory(count, itemSize);
 		_count = count;
 		_itemSize = itemSize;
 		_freeWhenDone = true;
@@ -189,7 +189,7 @@ _references_to_categories_of_OFData(void)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		buffer = of_alloc((size_t)size, 1);
+		buffer = OFAllocMemory((size_t)size, 1);
 		file = [[OFFile alloc] initWithPath: path mode: @"r"];
 		@try {
 			[file readIntoBuffer: buffer exactLength: (size_t)size];
@@ -197,7 +197,7 @@ _references_to_categories_of_OFData(void)
 			[file release];
 		}
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		[self release];
 
 		@throw e;
@@ -208,7 +208,7 @@ _references_to_categories_of_OFData(void)
 					   count: (size_t)size
 				    freeWhenDone: true];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 
@@ -238,7 +238,7 @@ _references_to_categories_of_OFData(void)
 		_freeWhenDone = true;
 
 		pageSize = [OFSystemInfo pageSize];
-		buffer = of_alloc(1, pageSize);
+		buffer = OFAllocMemory(1, pageSize);
 
 		@try {
 			while (!stream.atEndOfStream) {
@@ -250,12 +250,13 @@ _references_to_categories_of_OFData(void)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				_items = of_realloc(_items, _count + length, 1);
+				_items = OFResizeMemory(_items,
+				    _count + length, 1);
 				memcpy(_items + _count, buffer, length);
 				_count += length;
 			}
 		} @finally {
-			free(buffer);
+			OFFreeMemory(buffer);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -281,7 +282,7 @@ _references_to_categories_of_OFData(void)
 
 		count /= 2;
 
-		_items = of_alloc(count, 1);
+		_items = OFAllocMemory(count, 1);
 		_count = count;
 		_itemSize = 1;
 		_freeWhenDone = true;
@@ -374,7 +375,7 @@ _references_to_categories_of_OFData(void)
 - (void)dealloc
 {
 	if (_freeWhenDone)
-		free(_items);
+		OFFreeMemory(_items);
 
 	[_parentData release];
 

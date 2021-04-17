@@ -475,8 +475,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	return true;
 }
 
-- (bool)handleServerHeader: (OFString *)line
-		    socket: (OFTCPSocket *)sock
+- (bool)handleServerHeader: (OFString *)line socket: (OFTCPSocket *)sock
 {
 	OFString *key, *value, *old;
 	const char *lineC, *tmp;
@@ -509,7 +508,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if ((tmp = strchr(lineC, ':')) == NULL)
 		@throw [OFInvalidServerReplyException exception];
 
-	keyC = of_alloc(tmp - lineC + 1, 1);
+	keyC = OFAllocMemory(tmp - lineC + 1, 1);
 	memcpy(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);
@@ -518,7 +517,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		key = [OFString stringWithUTF8StringNoCopy: keyC
 					      freeWhenDone: true];
 	} @catch (id e) {
-		free(keyC);
+		OFFreeMemory(keyC);
 		@throw e;
 	}
 

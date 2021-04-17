@@ -144,7 +144,7 @@
 {
 	if (indentation > 0 && level > 0) {
 		OFString *ret;
-		char *whitespaces = of_alloc((level * indentation) + 1, 1);
+		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 
@@ -157,7 +157,7 @@
 				ret = [OFString stringWithFormat:
 				    @"%s<?%@?>", whitespaces, _target];
 		} @finally {
-			free(whitespaces);
+			OFFreeMemory(whitespaces);
 		}
 
 		return ret;

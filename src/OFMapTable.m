@@ -152,7 +152,7 @@ OF_DIRECT_MEMBERS
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
 
-		_buckets = of_alloc_zeroed(_capacity, sizeof(*_buckets));
+		_buckets = OFAllocZeroedMemory(_capacity, sizeof(*_buckets));
 
 		if (of_hash_seed != 0)
 			_rotate = of_random16() & 31;
@@ -171,11 +171,11 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 		}
 	}
 
-	free(_buckets);
+	OFFreeMemory(_buckets);
 
 	[super dealloc];
 }
@@ -210,7 +210,7 @@ resizeForCount(OFMapTable *self, unsigned long count)
 	    capacity < MIN_CAPACITY)
 		return;
 
-	buckets = of_alloc_zeroed(capacity, sizeof(*buckets));
+	buckets = OFAllocZeroedMemory(capacity, sizeof(*buckets));
 
 	for (unsigned long i = 0; i < self->_capacity; i++) {
 		if (self->_buckets[i] != NULL &&
@@ -237,7 +237,7 @@ resizeForCount(OFMapTable *self, unsigned long count)
 		}
 	}
 
-	free(self->_buckets);
+	OFFreeMemory(self->_buckets);
 	self->_buckets = buckets;
 	self->_capacity = capacity;
 }
@@ -304,12 +304,12 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 		if (i >= last)
 			@throw [OFOutOfRangeException exception];
 
-		bucket = of_alloc(1, sizeof(*bucket));
+		bucket = OFAllocMemory(1, sizeof(*bucket));
 
 		@try {
 			bucket->key = self->_keyFunctions.retain(key);
 		} @catch (id e) {
-			free(bucket);
+			OFFreeMemory(bucket);
 			@throw e;
 		}
 
@@ -317,7 +317,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			bucket->object = self->_objectFunctions.retain(object);
 		} @catch (id e) {
 			self->_keyFunctions.release(bucket->key);
-			free(bucket);
+			OFFreeMemory(bucket);
 			@throw e;
 		}
 
@@ -465,7 +465,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 			_buckets[i] = &deleted;
 
 			_count--;
@@ -489,7 +489,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 			_buckets[i] = &deleted;
 
 			_count--;
@@ -513,14 +513,14 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 			_buckets[i] = NULL;
 		}
 	}
 
 	_count = 0;
 	_capacity = MIN_CAPACITY;
-	_buckets = of_realloc(_buckets, _capacity, sizeof(*_buckets));
+	_buckets = OFResizeMemory(_buckets, _capacity, sizeof(*_buckets));
 
 	/*
 	 * Get a new random value for _rotate, so that it is not less secure

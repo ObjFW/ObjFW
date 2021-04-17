@@ -48,7 +48,7 @@
 				newSize = OF_ROUND_UP_POW2(CHAR_BIT, c + 1) /
 				    CHAR_BIT;
 
-				_bitset = of_realloc(_bitset, newSize, 1);
+				_bitset = OFResizeMemory(_bitset, newSize, 1);
 				memset(_bitset + _size, '\0', newSize - _size);
 
 				_size = newSize;
@@ -68,7 +68,7 @@
 
 - (void)dealloc
 {
-	free(_bitset);
+	OFFreeMemory(_bitset);
 
 	[super dealloc];
 }

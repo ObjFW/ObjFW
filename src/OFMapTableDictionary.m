@@ -335,7 +335,7 @@ static const OFMapTableFunctions objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	keys = of_alloc(count, sizeof(*keys));
+	keys = OFAllocMemory(count, sizeof(*keys));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -355,7 +355,7 @@ static const OFMapTableFunctions objectFunctions = {
 
 		ret = [OFArray arrayWithObjects: keys count: count];
 	} @finally {
-		free(keys);
+		OFFreeMemory(keys);
 	}
 
 	return ret;
@@ -368,7 +368,7 @@ static const OFMapTableFunctions objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	objects = of_alloc(count, sizeof(*objects));
+	objects = OFAllocMemory(count, sizeof(*objects));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -388,7 +388,7 @@ static const OFMapTableFunctions objectFunctions = {
 
 		ret = [OFArray arrayWithObjects: objects count: count];
 	} @finally {
-		free(objects);
+		OFFreeMemory(objects);
 	}
 
 	return ret;

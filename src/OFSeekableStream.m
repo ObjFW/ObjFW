@@ -50,7 +50,7 @@
 
 	offset = [self lowlevelSeekToOffset: offset whence: whence];
 
-	free(_readBufferMemory);
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;
 

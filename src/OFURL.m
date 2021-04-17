@@ -610,7 +610,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		[self release];
 		@throw e;
 	} @finally {
-		free(UTF8String2);
+		OFFreeMemory(UTF8String2);
 	}
 
 	return self;
@@ -704,7 +704,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		[self release];
 		@throw e;
 	} @finally {
-		free(UTF8String2);
+		OFFreeMemory(UTF8String2);
 	}
 
 	return self;

@@ -233,7 +233,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = of_alloc(range.length, sizeof(*copy));
+	copy = OFAllocMemory(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
@@ -243,7 +243,7 @@
 		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
-		free(copy);
+		OFFreeMemory(copy);
 	}
 }
 

@@ -1244,7 +1244,7 @@ extern "C" {
  * @brief Allocates memory for the specified number of items of the specified
  *	  size.
  *
- * To free the allocated memory, use `free()`.
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
@@ -1254,14 +1254,14 @@ extern "C" {
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_alloc(size_t count, size_t size)
+extern void *_Nullable OFAllocMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Allocates memory for the specified number of items of the specified
  *	  size and initializes it with zeros.
  *
- * To free the allocated memory, use `free()`.
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
@@ -1271,13 +1271,13 @@ extern void *_Nullable of_alloc(size_t count, size_t size)
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_alloc_zeroed(size_t count, size_t size)
+extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Resizes memory to the specified number of items of the specified size.
  *
- * To free the allocated memory, use `free()`.
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
@@ -1290,8 +1290,17 @@ extern void *_Nullable of_alloc_zeroed(size_t count, size_t size)
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
  */
-extern void *_Nullable of_realloc(void *_Nullable pointer, size_t count,
+extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;
+
+/**
+ * @brief Frees memory allocated by @ref OFAllocMemory, @ref OFAllocZeroedMemory
+ *	  or @ref OFResizeMemory.
+ *
+ * @param pointer A pointer to the memory to free or nil (passing nil ooes
+ *		  nothing)
+ */
+extern void OFFreeMemory(void *_Nullable pointer);
 
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);

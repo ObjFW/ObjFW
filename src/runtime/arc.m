@@ -22,7 +22,7 @@
 # import "mutex.h"
 #endif
 
-struct weak_ref {
+struct weakref {
 	id **locations;
 	size_t count;
 };
@@ -117,7 +117,7 @@ objc_storeStrong(id *object, id value)
 id
 objc_storeWeak(id *object, id value)
 {
-	struct weak_ref *old;
+	struct weakref *old;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -155,7 +155,7 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
+		struct weakref *ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -188,7 +188,7 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct weak_ref *ref;
+	struct weakref *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -239,7 +239,7 @@ objc_copyWeak(id *dest, id *src)
 void
 objc_moveWeak(id *dest, id *src)
 {
-	struct weak_ref *ref;
+	struct weakref *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -268,7 +268,7 @@ objc_moveWeak(id *dest, id *src)
 void
 objc_zero_weak_references(id value)
 {
-	struct weak_ref *ref;
+	struct weakref *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)

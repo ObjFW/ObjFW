@@ -99,11 +99,11 @@
 
 	size = of_sizeof_type_encoding(objCType);
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
-		otherValue = of_alloc(1, size);
+		otherValue = OFAllocMemory(1, size);
 	} @catch (id e) {
-		free(value);
+		OFFreeMemory(value);
 		@throw e;
 	}
 
@@ -112,8 +112,8 @@
 		[object getValue: otherValue size: size];
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		free(value);
-		free(otherValue);
+		OFFreeMemory(value);
+		OFFreeMemory(otherValue);
 	}
 
 	return ret;
@@ -125,7 +125,7 @@
 	unsigned char *value;
 	uint32_t hash;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
 
@@ -136,7 +136,7 @@
 
 		OF_HASH_FINALIZE(hash);
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	return hash;
@@ -206,7 +206,7 @@
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
 
@@ -217,7 +217,7 @@
 			[ret appendFormat: @"%02x", value[i]];
 		}
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	[ret appendString: @">"];

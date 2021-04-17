@@ -546,7 +546,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_queryData release];
 	[_TCPSocket release];
 	[_TCPQueryData release];
-	free(_TCPBuffer);
+	OFFreeMemory(_TCPBuffer);
 	[_cancelTimer release];
 
 	[super dealloc];
@@ -1117,7 +1117,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	}
 
 	if (context->_TCPBuffer == nil)
-		context->_TCPBuffer = of_alloc(MAX_DNS_RESPONSE_LENGTH, 1);
+		context->_TCPBuffer = OFAllocMemory(MAX_DNS_RESPONSE_LENGTH, 1);
 
 	[sock asyncReadIntoBuffer: context->_TCPBuffer exactLength: 2];
 	return nil;

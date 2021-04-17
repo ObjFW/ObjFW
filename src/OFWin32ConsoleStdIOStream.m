@@ -134,7 +134,7 @@ codepageToEncoding(UINT codepage)
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	UTF16 = of_alloc(length, sizeof(OFChar16));
+	UTF16 = OFAllocMemory(length, sizeof(OFChar16));
 	@try {
 		DWORD UTF16Len;
 		OFMutableData *rest = nil;
@@ -253,7 +253,7 @@ codepageToEncoding(UINT codepage)
 		if (rest != nil)
 			[self unreadFromBuffer: rest.items length: rest.count];
 	} @finally {
-		free(UTF16);
+		OFFreeMemory(UTF16);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -357,7 +357,7 @@ codepageToEncoding(UINT codepage)
 		i += toCopy;
 	}
 
-	tmp = of_alloc(length * 2, sizeof(OFChar16));
+	tmp = OFAllocMemory(length * 2, sizeof(OFChar16));
 	@try {
 		DWORD bytesWritten;
 
@@ -436,7 +436,7 @@ codepageToEncoding(UINT codepage)
 				   bytesWritten: bytesWritten * 2
 					  errNo: 0];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	/*

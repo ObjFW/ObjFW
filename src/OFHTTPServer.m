@@ -149,7 +149,7 @@ normalizedKey(OFString *key)
 		return [OFString stringWithUTF8StringNoCopy: cString
 					       freeWhenDone: true];
 	} @catch (id e) {
-		free(cString);
+		OFFreeMemory(cString);
 		@throw e;
 	}
 }

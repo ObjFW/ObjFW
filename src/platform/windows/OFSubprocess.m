@@ -193,7 +193,7 @@
 			si.dwFlags |= STARTF_USESTDHANDLES;
 
 			length = argumentsString.UTF16StringLength;
-			argumentsCopy = of_alloc(length + 1,
+			argumentsCopy = OFAllocMemory(length + 1,
 			    sizeof(OFChar16));
 			memcpy(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
@@ -206,7 +206,7 @@
 					@throw [OFInitializationFailedException
 					    exceptionWithClass: self.class];
 			} @finally {
-				free(argumentsCopy);
+				OFFreeMemory(argumentsCopy);
 			}
 		} else {
 			OFStringEncoding encoding = [OFLocale encoding];

@@ -97,7 +97,7 @@ static struct {
 uint32_t of_hash_seed;
 
 void *
-of_alloc(size_t count, size_t size)
+OFAllocMemory(size_t count, size_t size)
 {
 	void *pointer;
 
@@ -115,7 +115,7 @@ of_alloc(size_t count, size_t size)
 }
 
 void *
-of_alloc_zeroed(size_t count, size_t size)
+OFAllocZeroedMemory(size_t count, size_t size)
 {
 	void *pointer;
 
@@ -134,7 +134,7 @@ of_alloc_zeroed(size_t count, size_t size)
 }
 
 void *
-of_realloc(void *pointer, size_t count, size_t size)
+OFResizeMemory(void *pointer, size_t count, size_t size)
 {
 	if OF_UNLIKELY (count == 0 || size == 0)
 		return NULL;
@@ -147,6 +147,12 @@ of_realloc(void *pointer, size_t count, size_t size)
 		    exceptionWithRequestedSize: size];
 
 	return pointer;
+}
+
+void
+OFFreeMemory(void *pointer)
+{
+	free(pointer);
 }
 
 #if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)

@@ -127,7 +127,7 @@ addPage(bool allowPreallocated)
 			page = preallocatedPages[numPreallocatedPages];
 
 			if (numPreallocatedPages == 0) {
-				free(preallocatedPages);
+				OFFreeMemory(preallocatedPages);
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 				OF_ENSURE(OFTLSKeySet(preallocatedPagesKey,
@@ -139,18 +139,18 @@ addPage(bool allowPreallocated)
 		}
 	}
 
-	page = of_alloc(1, sizeof(*page));
+	page = OFAllocMemory(1, sizeof(*page));
 	@try {
-		page->map = of_alloc_zeroed(1, mapSize);
+		page->map = OFAllocZeroedMemory(1, mapSize);
 	} @catch (id e) {
-		free(page);
+		OFFreeMemory(page);
 		@throw e;
 	}
 	@try {
 		page->page = mapPages(1);
 	} @catch (id e) {
-		free(page->map);
-		free(page);
+		OFFreeMemory(page->map);
+		OFFreeMemory(page);
 		@throw e;
 	}
 	of_explicit_memset(page->page, 0, pageSize);
@@ -193,7 +193,7 @@ removePageIfEmpty(struct page *page)
 			return;
 
 	unmapPages(page->page, 1);
-	free(page->map);
+	OFFreeMemory(page->map);
 
 	if (page->previous != NULL)
 		page->previous->next = page->next;
@@ -212,7 +212,7 @@ removePageIfEmpty(struct page *page)
 		OF_ENSURE(OFTLSKeySet(lastPageKey, page->previous) == 0);
 # endif
 
-	free(page);
+	OFFreeMemory(page);
 }
 
 static void *
@@ -294,7 +294,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	preallocatedPages = of_alloc_zeroed(numPages, sizeof(struct page));
+	preallocatedPages = OFAllocZeroedMemory(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OF_ENSURE(OFTLSKeySet(preallocatedPagesKey, preallocatedPages) == 0);
 # endif
@@ -306,7 +306,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		for (size_t j = 0; j < i; j++)
 			removePageIfEmpty(preallocatedPages[j]);
 
-		free(preallocatedPages);
+		OFFreeMemory(preallocatedPages);
 		preallocatedPages = NULL;
 
 		@throw e;
@@ -415,7 +415,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			@throw [OFOutOfRangeException exception];
 
 		if (allowsSwappableMemory) {
-			_items = of_alloc(count, itemSize);
+			_items = OFAllocMemory(count, itemSize);
 			_freeWhenDone = true;
 			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)

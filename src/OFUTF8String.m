@@ -179,7 +179,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	@try {
 		_s = &_storage;
 
-		_s->cString = of_alloc_zeroed(1, 1);
+		_s->cString = OFAllocZeroedMemory(1, 1);
 		_s->freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
@@ -245,7 +245,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_alloc(cStringLength + 1, 1);
+		_s->cString = OFAllocMemory(cStringLength + 1, 1);
 		_s->cStringLength = cStringLength;
 		_s->freeWhenDone = true;
 
@@ -293,7 +293,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 					    exception];
 
 				_s->cStringLength += bytes - 1;
-				_s->cString = of_realloc(_s->cString,
+				_s->cString = OFResizeMemory(_s->cString,
 				    _s->cStringLength + 1, 1);
 
 				memcpy(_s->cString + j, buffer, bytes);
@@ -373,7 +373,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				@throw [OFInvalidEncodingException exception];
 
 			_s->cStringLength += byteLength - 1;
-			_s->cString = of_realloc(_s->cString,
+			_s->cString = OFResizeMemory(_s->cString,
 			    _s->cStringLength + 1, 1);
 
 			memcpy(_s->cString + j, buffer, byteLength);
@@ -450,7 +450,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s->length = string.length;
 
-		_s->cString = of_alloc(_s->cStringLength + 1, 1);
+		_s->cString = OFAllocMemory(_s->cStringLength + 1, 1);
 		memcpy(_s->cString, string.UTF8String, _s->cStringLength + 1);
 		_s->freeWhenDone = true;
 	} @catch (id e) {
@@ -471,7 +471,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_alloc((length * 4) + 1, 1);
+		_s->cString = OFAllocMemory((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -493,7 +493,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = of_realloc(_s->cString, j + 1, 1);
+			_s->cString = OFResizeMemory(_s->cString, j + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -527,7 +527,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_alloc((length * 4) + 1, 1);
+		_s->cString = OFAllocMemory((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -578,7 +578,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = of_realloc(_s->cString, j + 1, 1);
+			_s->cString = OFResizeMemory(_s->cString, j + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -612,7 +612,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = of_alloc((length * 4) + 1, 1);
+		_s->cString = OFAllocMemory((length * 4) + 1, 1);
 		_s->length = length;
 		_s->freeWhenDone = true;
 
@@ -645,7 +645,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = of_realloc(_s->cString, j + 1, 1);
+			_s->cString = OFResizeMemory(_s->cString, j + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -687,11 +687,11 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				@throw [OFInvalidEncodingException exception];
 			}
 
-			_s->cString = of_alloc(cStringLength + 1, 1);
+			_s->cString = OFAllocMemory(cStringLength + 1, 1);
 			memcpy(_s->cString, tmp, cStringLength + 1);
 			_s->freeWhenDone = true;
 		} @finally {
-			free(tmp);
+			OFFreeMemory(tmp);
 		}
 	} @catch (id e) {
 		[self release];
@@ -704,7 +704,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 - (void)dealloc
 {
 	if (_s != NULL && _s->freeWhenDone)
-		free(_s->cString);
+		OFFreeMemory(_s->cString);
 
 	[super dealloc];
 }
@@ -1154,7 +1154,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (const OFUnichar *)characters
 {
-	OFUnichar *buffer = of_alloc(_s->length, sizeof(OFUnichar));
+	OFUnichar *buffer = OFAllocMemory(_s->length, sizeof(OFUnichar));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {
@@ -1165,7 +1165,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
-			free(buffer);
+			OFFreeMemory(buffer);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -1181,7 +1181,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
-	OFChar32 *buffer = of_alloc(_s->length + 1, sizeof(OFChar32));
+	OFChar32 *buffer = OFAllocMemory(_s->length + 1, sizeof(OFChar32));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {
@@ -1192,7 +1192,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
-			free(buffer);
+			OFFreeMemory(buffer);
 			@throw [OFInvalidEncodingException exception];
 		}
 

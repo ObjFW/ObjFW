@@ -84,7 +84,7 @@ stringEqual(void *object1, void *object2)
 			count++;
 		}
 
-		_options = of_alloc(count + 1, sizeof(*_options));
+		_options = OFAllocMemory(count + 1, sizeof(*_options));
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions];
@@ -146,7 +146,7 @@ stringEqual(void *object1, void *object2)
 		    iter++)
 			[iter->longOption release];
 
-	free(_options);
+	OFFreeMemory(_options);
 	[_longOptions release];
 
 	[_arguments release];

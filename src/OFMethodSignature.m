@@ -595,7 +595,7 @@ of_alignof_type_encoding(const char *type)
 		if (length == 0)
 			@throw [OFInvalidFormatException exception];
 
-		_types = of_alloc(length + 1, 1);
+		_types = OFAllocMemory(length + 1, 1);
 		memcpy(_types, types, length);
 
 		_typesPointers = [[OFMutableData alloc]
@@ -669,7 +669,7 @@ of_alignof_type_encoding(const char *type)
 
 - (void)dealloc
 {
-	free(_types);
+	OFFreeMemory(_types);
 	[_typesPointers release];
 	[_offsets release];
 

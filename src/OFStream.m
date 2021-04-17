@@ -93,8 +93,8 @@
 
 - (void)dealloc
 {
-	free(_readBufferMemory);
-	free(_writeBuffer);
+	OFFreeMemory(_readBufferMemory);
+	OFFreeMemory(_writeBuffer);
 
 	[super dealloc];
 }
@@ -146,7 +146,8 @@
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
 
-				readBuffer = of_alloc(bytesRead - length, 1);
+				readBuffer = OFAllocMemory(bytesRead - length,
+				    1);
 				memcpy(readBuffer, tmp + length,
 				    bytesRead - length);
 
@@ -167,7 +168,7 @@
 		size_t ret = _readBufferLength;
 		memcpy(buffer, _readBuffer, _readBufferLength);
 
-		free(_readBufferMemory);
+		OFFreeMemory(_readBufferMemory);
 		_readBuffer = _readBufferMemory = NULL;
 		_readBufferLength = 0;
 
@@ -584,7 +585,7 @@
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	buffer = of_alloc(count, itemSize);
+	buffer = OFAllocMemory(count, itemSize);
 	@try {
 		[self readIntoBuffer: buffer exactLength: count * itemSize];
 		ret = [OFData dataWithItemsNoCopy: buffer
@@ -592,7 +593,7 @@
 					 itemSize: itemSize
 				     freeWhenDone: true];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 
@@ -603,7 +604,7 @@
 {
 	OFMutableData *data = [OFMutableData data];
 	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = of_alloc(1, pageSize);
+	char *buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		while (!self.atEndOfStream) {
@@ -612,7 +613,7 @@
 			[data addItems: buffer count: length];
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	[data makeImmutable];
@@ -629,14 +630,14 @@
 			  encoding: (OFStringEncoding)encoding
 {
 	OFString *ret;
-	char *buffer = of_alloc(length + 1, 1);
+	char *buffer = OFAllocMemory(length + 1, 1);
 	buffer[length] = 0;
 
 	@try {
 		[self readIntoBuffer: buffer exactLength: length];
 		ret = [OFString stringWithCString: buffer encoding: encoding];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;
@@ -673,7 +674,7 @@
 
 	/* Read and see if we got a newline or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -693,7 +694,7 @@
 						 encoding: encoding
 						   length: retLength];
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -709,7 +710,7 @@
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
 				size_t retLength = _readBufferLength + i;
-				char *retCString = of_alloc(retLength, 1);
+				char *retCString = OFAllocMemory(retLength, 1);
 
 				if (_readBuffer != NULL)
 					memcpy(retCString, _readBuffer,
@@ -732,7 +733,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_alloc(
+						readBuffer = OFAllocMemory(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -742,7 +743,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						free(_readBufferMemory);
+						OFFreeMemory(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -751,15 +752,16 @@
 
 					@throw e;
 				} @finally {
-					free(retCString);
+					OFFreeMemory(retCString);
 				}
 
-				readBuffer = of_alloc(bufferLength - i - 1, 1);
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				free(_readBufferMemory);
+				OFFreeMemory(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -770,19 +772,19 @@
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
-			readBuffer = of_alloc(_readBufferLength + bufferLength,
-			    1);
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -911,7 +913,7 @@
 
 	/* Read and see if we got a delimiter or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -924,7 +926,7 @@
 						 encoding: encoding
 						   length: _readBufferLength];
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -949,7 +951,7 @@
 
 				retLength = _readBufferLength + i + 1 -
 				    delimiterLength;
-				retCString = of_alloc(retLength, 1);
+				retCString = OFAllocMemory(retLength, 1);
 
 				if (_readBuffer != NULL &&
 				    _readBufferLength <= retLength)
@@ -973,7 +975,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_alloc(
+						readBuffer = OFAllocMemory(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -983,7 +985,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						free(_readBufferMemory);
+						OFFreeMemory(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -992,15 +994,16 @@
 
 					@throw e;
 				} @finally {
-					free(retCString);
+					OFFreeMemory(retCString);
 				}
 
-				readBuffer = of_alloc(bufferLength - i - 1, 1);
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				free(_readBufferMemory);
+				OFFreeMemory(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -1011,19 +1014,19 @@
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
-			readBuffer = of_alloc(_readBufferLength + bufferLength,
-			    1);
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -1063,7 +1066,7 @@
 
 	[self lowlevelWriteBuffer: _writeBuffer length: _writeBufferLength];
 
-	free(_writeBuffer);
+	OFFreeMemory(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 }
@@ -1084,7 +1087,7 @@
 
 		return bytesWritten;
 	} else {
-		_writeBuffer = of_realloc(_writeBuffer,
+		_writeBuffer = OFResizeMemory(_writeBuffer,
 		    _writeBufferLength + length, 1);
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
@@ -1251,7 +1254,7 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
+	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1259,7 +1262,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1278,7 +1281,7 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
+	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1286,7 +1289,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1305,7 +1308,7 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
+	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1313,7 +1316,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1332,7 +1335,7 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	float *tmp = of_alloc(count, sizeof(float));
+	float *tmp = OFAllocMemory(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1340,7 +1343,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1359,7 +1362,7 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	double *tmp = of_alloc(count, sizeof(double));
+	double *tmp = OFAllocMemory(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1367,7 +1370,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1416,7 +1419,7 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
+	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1424,7 +1427,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1443,7 +1446,7 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
+	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1451,7 +1454,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1470,7 +1473,7 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
+	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1478,7 +1481,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1497,7 +1500,7 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	float *tmp = of_alloc(count, sizeof(float));
+	float *tmp = OFAllocMemory(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1505,7 +1508,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1524,7 +1527,7 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	double *tmp = of_alloc(count, sizeof(double));
+	double *tmp = OFAllocMemory(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
@@ -1532,7 +1535,7 @@
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1591,7 +1594,7 @@
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
 
-	buffer = of_alloc(stringLength + 1, 1);
+	buffer = OFAllocMemory(stringLength + 1, 1);
 
 	@try {
 		memcpy(buffer, [string cStringWithEncoding: encoding],
@@ -1600,7 +1603,7 @@
 
 		[self writeBuffer: buffer length: stringLength + 1];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return stringLength + 1;
@@ -1741,22 +1744,22 @@
 	if (length > SIZE_MAX - _readBufferLength)
 		@throw [OFOutOfRangeException exception];
 
-	readBuffer = of_alloc(_readBufferLength + length, 1);
+	readBuffer = OFAllocMemory(_readBufferLength + length, 1);
 	memcpy(readBuffer, buffer, length);
 	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 
-	free(_readBufferMemory);
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = readBuffer;
 	_readBufferLength += length;
 }
 
 - (void)close
 {
-	free(_readBufferMemory);
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;
 
-	free(_writeBuffer);
+	OFFreeMemory(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 	_buffersWrites = false;

@@ -835,7 +835,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	id ret = [self initWithUTF8String: UTF8String];
 
 	if (freeWhenDone)
-		free(UTF8String);
+		OFFreeMemory(UTF8String);
 
 	return ret;
 }
@@ -847,7 +847,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	id ret = [self initWithUTF8String: UTF8String length: UTF8StringLength];
 
 	if (freeWhenDone)
-		free(UTF8String);
+		OFFreeMemory(UTF8String);
 
 	return ret;
 }
@@ -1015,13 +1015,13 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		tmp = of_alloc((size_t)fileSize + 1, 1);
+		tmp = OFAllocMemory((size_t)fileSize + 1, 1);
 		@try {
 			file = [[OFFile alloc] initWithPath: path mode: @"r"];
 			[file readIntoBuffer: tmp
 				 exactLength: (size_t)fileSize];
 		} @catch (id e) {
-			free(tmp);
+			OFFreeMemory(tmp);
 			@throw e;
 		} @finally {
 			[file release];
@@ -1039,7 +1039,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						       length: (size_t)fileSize
 						 freeWhenDone: true];
 		} @catch (id e) {
-			free(tmp);
+			OFFreeMemory(tmp);
 			@throw e;
 		}
 	} else {
@@ -1048,7 +1048,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					    encoding: encoding
 					      length: (size_t)fileSize];
 		} @finally {
-			free(tmp);
+			OFFreeMemory(tmp);
 		}
 	}
 
@@ -1374,7 +1374,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	switch (encoding) {
 	case OFStringEncodingUTF8:
-		cString = of_alloc((length * 4) + 1, 1);
+		cString = OFAllocMemory((length * 4) + 1, 1);
 
 		@try {
 			cStringLength = [self
@@ -1383,12 +1383,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				 encoding: OFStringEncodingUTF8
 				    lossy: lossy];
 		} @catch (id e) {
-			free(cString);
+			OFFreeMemory(cString);
 			@throw e;
 		}
 
 		@try {
-			cString = of_realloc(cString, cStringLength + 1, 1);
+			cString = OFResizeMemory(cString, cStringLength + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -1407,7 +1407,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	case OFStringEncodingMacRoman:
 	case OFStringEncodingKOI8R:
 	case OFStringEncodingKOI8U:
-		cString = of_alloc(length + 1, 1);
+		cString = OFAllocMemory(length + 1, 1);
 
 		@try {
 			cStringLength = [self of_getCString: cString
@@ -1415,7 +1415,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						   encoding: encoding
 						      lossy: lossy];
 		} @catch (id e) {
-			free(cString);
+			OFFreeMemory(cString);
 			@throw e;
 		}
 
@@ -1429,7 +1429,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					      count: cStringLength + 1
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(cString);
+		OFFreeMemory(cString);
 		@throw e;
 	}
 }
@@ -1838,7 +1838,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	searchCharacters = string.characters;
 
-	characters = of_alloc(range.length, sizeof(OFUnichar));
+	characters = OFAllocMemory(range.length, sizeof(OFUnichar));
 	@try {
 		[self getCharacters: characters inRange: range];
 
@@ -1867,7 +1867,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			}
 		}
 	} @finally {
-		free(characters);
+		OFFreeMemory(characters);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -1905,7 +1905,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (range.length > SIZE_MAX / sizeof(OFUnichar))
 		@throw [OFOutOfRangeException exception];
 
-	characters = of_alloc(range.length, sizeof(OFUnichar));
+	characters = OFAllocMemory(range.length, sizeof(OFUnichar));
 	@try {
 		[self getCharacters: characters inRange: range];
 
@@ -1928,7 +1928,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					return range.location + i;
 		}
 	} @finally {
-		free(characters);
+		OFFreeMemory(characters);
 	}
 
 	return OFNotFound;
@@ -2113,7 +2113,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ((prefixLength = prefix.length) > self.length)
 		return false;
 
-	tmp = of_alloc(prefixLength, sizeof(OFUnichar));
+	tmp = OFAllocMemory(prefixLength, sizeof(OFUnichar));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2124,7 +2124,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return hasPrefix;
@@ -2142,7 +2142,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	length = self.length;
 
-	tmp = of_alloc(suffixLength, sizeof(OFUnichar));
+	tmp = OFAllocMemory(suffixLength, sizeof(OFUnichar));
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -2156,7 +2156,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return hasSuffix;
@@ -2532,7 +2532,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t length = self.length;
 	OFUnichar *buffer;
 
-	buffer = of_alloc(length, sizeof(OFUnichar));
+	buffer = OFAllocMemory(length, sizeof(OFUnichar));
 	@try {
 		[self getCharacters: buffer inRange: OFRangeMake(0, length)];
 
@@ -2541,7 +2541,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					   itemSize: sizeof(OFUnichar)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 }
@@ -2561,14 +2561,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	bool swap = (byteOrder != OFByteOrderNative);
 
 	/* Allocate memory for the worst case */
-	buffer = of_alloc((length + 1) * 2, sizeof(OFChar16));
+	buffer = OFAllocMemory((length + 1) * 2, sizeof(OFChar16));
 
 	j = 0;
 	for (size_t i = 0; i < length; i++) {
 		OFUnichar c = characters[i];
 
 		if (c > 0x10FFFF) {
-			free(buffer);
+			OFFreeMemory(buffer);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -2591,7 +2591,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	buffer[j] = 0;
 
 	@try {
-		buffer = of_realloc(buffer, j + 1, sizeof(OFChar16));
+		buffer = OFResizeMemory(buffer, j + 1, sizeof(OFChar16));
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}
@@ -2604,7 +2604,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					   itemSize: sizeof(OFChar16)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 }
@@ -2633,7 +2633,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t length = self.length;
 	OFChar32 *buffer;
 
-	buffer = of_alloc(length + 1, sizeof(OFChar32));
+	buffer = OFAllocMemory(length + 1, sizeof(OFChar32));
 	@try {
 		[self getCharacters: buffer inRange: OFRangeMake(0, length)];
 		buffer[length] = 0;
@@ -2647,7 +2647,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					   itemSize: sizeof(OFChar32)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 }

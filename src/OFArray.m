@@ -238,7 +238,7 @@ static struct {
 - (id const *)objects
 {
 	size_t count = self.count;
-	id *buffer = of_alloc(count, sizeof(id));
+	id *buffer = OFAllocMemory(count, sizeof(id));
 
 	@try {
 		[self getObjects: buffer inRange: OFRangeMake(0, count)];
@@ -248,7 +248,7 @@ static struct {
 					   itemSize: sizeof(id)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 }
@@ -376,13 +376,13 @@ static struct {
 	if (![self isKindOfClass: [OFMutableArray class]])
 		return [OFSubarray arrayWithArray: self range: range];
 
-	buffer = of_alloc(range.length, sizeof(*buffer));
+	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {
 		[self getObjects: buffer inRange: range];
 
 		ret = [OFArray arrayWithObjects: buffer count: range.length];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;
@@ -825,7 +825,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_alloc(count, sizeof(id));
+	id *tmp = OFAllocMemory(count, sizeof(id));
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
@@ -835,7 +835,7 @@ static struct {
 
 		ret = [OFArray arrayWithObjects: tmp count: count];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return ret;
@@ -845,7 +845,7 @@ static struct {
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_alloc(count, sizeof(id));
+	id *tmp = OFAllocMemory(count, sizeof(id));
 
 	@try {
 		__block size_t i = 0;
@@ -858,7 +858,7 @@ static struct {
 
 		ret = [OFArray arrayWithObjects: tmp count: i];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return ret;
