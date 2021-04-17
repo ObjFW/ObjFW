@@ -982,7 +982,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 }
 
 - (OFRange)rangeOfString: (OFString *)string
-		 options: (int)options
+		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range
 {
 	const char *cString = string.UTF8String;
@@ -1010,7 +1010,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	if (cStringLength > rangeLength)
 		return OFMakeRange(OFNotFound, 0);
 
-	if (options & OF_STRING_SEARCH_BACKWARDS) {
+	if (options & OFStringSearchBackwards) {
 		for (size_t i = rangeLength - cStringLength;; i--) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength) == 0) {
@@ -1100,13 +1100,13 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	void *pool;
 	OFMutableArray *array;
 	const char *cString;
 	size_t cStringLength;
-	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	bool skipEmpty = (options & OFStringSkipEmptyComponents);
 	size_t last;
 	OFString *component;
 

@@ -489,13 +489,13 @@ static uint16_t sutf16str[] = {
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"].location == OFNotFound &&
 	    [C(@"𝄞öö") rangeOfString: @"öö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
+	    options: OFStringSearchBackwards].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 2 &&
+	    options: OFStringSearchBackwards].location == 2 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
+	    options: OFStringSearchBackwards].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == OFNotFound)
+	    options: OFStringSearchBackwards].location == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
@@ -507,7 +507,7 @@ static uint16_t sutf16str[] = {
 	     [C(@"abcđabcđe") indexOfCharacterFromSet: cs] == 2 &&
 	     [C(@"abcđabcđë")
 	     indexOfCharacterFromSet: cs
-			     options: OF_STRING_SEARCH_BACKWARDS] == 7 &&
+			     options: OFStringSearchBackwards] == 7 &&
 	     [C(@"abcđabcđë")
 	     indexOfCharacterFromSet: cs
 			     options: 0
@@ -610,7 +610,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[componentsSeparatedByString:options:]",
 	    (a = [C(@"fooXXbarXXXXbazXXXX")
 	    componentsSeparatedByString: @"XX"
-				options: OF_STRING_SKIP_EMPTY]) &&
+				options: OFStringSkipEmptyComponents]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
@@ -639,7 +639,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[componentsSeparatedByCharactersInSet:options:]",
 	    (a = [C(@"fooXYbarXYZXbazXYXZ")
 	    componentsSeparatedByCharactersInSet: cs
-					 options: OF_STRING_SKIP_EMPTY]) &&
+	    options: OFStringSkipEmptyComponents]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&

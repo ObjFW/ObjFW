@@ -1805,7 +1805,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			     range: OFMakeRange(0, self.length)];
 }
 
-- (OFRange)rangeOfString: (OFString *)string options: (int)options
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (OFStringSearchOptions)options
 {
 	return [self rangeOfString: string
 			   options: options
@@ -1813,7 +1814,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (OFRange)rangeOfString: (OFString *)string
-		 options: (int)options
+		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range
 {
 	void *pool;
@@ -1838,7 +1839,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		[self getCharacters: characters inRange: range];
 
-		if (options & OF_STRING_SEARCH_BACKWARDS) {
+		if (options & OFStringSearchBackwards) {
 			for (size_t i = range.length - searchLength;; i--) {
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(OFUnichar)) == 0) {
@@ -1879,7 +1880,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 {
 	return [self indexOfCharacterFromSet: characterSet
 				     options: options
@@ -1887,7 +1888,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 			    range: (OFRange)range
 {
 	bool (*characterIsMember)(id, SEL, OFUnichar) =
@@ -1905,7 +1906,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		[self getCharacters: characters inRange: range];
 
-		if (options & OF_STRING_SEARCH_BACKWARDS) {
+		if (options & OFStringSearchBackwards) {
 			for (size_t i = range.length - 1;; i--) {
 				if (characterIsMember(characterSet,
 				    @selector(characterIsMember:),
@@ -2164,12 +2165,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	void *pool;
 	OFMutableArray *array;
 	const OFUnichar *characters, *delimiterCharacters;
-	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	bool skipEmpty = (options & OFStringSkipEmptyComponents);
 	size_t length = self.length;
 	size_t delimiterLength = delimiter.length;
 	size_t last;
@@ -2230,11 +2231,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (OFArray *)
    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
-				options: (int)options
+				options: (OFStringSeparationOptions)options
 {
 	OFMutableArray *array = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	bool skipEmpty = (options & OFStringSkipEmptyComponents);
 	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	bool (*characterIsMember)(id, SEL, OFUnichar) =

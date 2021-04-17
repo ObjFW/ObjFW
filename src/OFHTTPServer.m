@@ -462,9 +462,8 @@ normalizedKey(OFString *key)
 	[_headers setObject: value forKey: key];
 
 	if ([key isEqual: @"Host"]) {
-		pos = [value
-		    rangeOfString: @":"
-			  options: OF_STRING_SEARCH_BACKWARDS].location;
+		pos = [value rangeOfString: @":"
+				   options: OFStringSearchBackwards].location;
 
 		if (pos != OFNotFound) {
 			[_host release];

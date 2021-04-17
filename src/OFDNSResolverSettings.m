@@ -272,7 +272,7 @@ parseNetStackArray(OFString *string)
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
-						 options: OF_STRING_SKIP_EMPTY];
+		    options: OFStringSkipEmptyComponents];
 
 		if (components.count < 2)
 			continue;
@@ -373,7 +373,7 @@ parseNetStackArray(OFString *string)
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
-						 options: OF_STRING_SKIP_EMPTY];
+		    options: OFStringSkipEmptyComponents];
 
 		if (components.count < 2) {
 			objc_autoreleasePoolPop(pool2);

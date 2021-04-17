@@ -57,7 +57,7 @@
 	       forPath: (OFString *)path OF_DIRECT
 {
 	size_t pos = [path rangeOfString: @"."
-				 options: OF_STRING_SEARCH_BACKWARDS].location;
+				 options: OFStringSearchBackwards].location;
 
 	if (pos == OFNotFound) {
 		*category = @"";

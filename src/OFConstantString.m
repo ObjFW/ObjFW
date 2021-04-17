@@ -269,14 +269,15 @@ struct {
 	return [self rangeOfString: string];
 }
 
-- (OFRange)rangeOfString: (OFString *)string options: (int)options
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
 	return [self rangeOfString: string options: options];
 }
 
 - (OFRange)rangeOfString: (OFString *)string
-		 options: (int)options
+		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range
 {
 	[self finishInitialization];
@@ -290,14 +291,14 @@ struct {
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
 	return [self indexOfCharacterFromSet: characterSet options: options];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 			    range: (OFRange)range
 {
 	[self finishInitialization];
@@ -430,7 +431,7 @@ struct {
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	[self finishInitialization];
 	return [self componentsSeparatedByString: delimiter options: options];
@@ -445,7 +446,7 @@ struct {
 
 - (OFArray *)
     componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	[self finishInitialization];
 	return [self componentsSeparatedByCharactersInSet: characterSet

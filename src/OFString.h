@@ -102,10 +102,25 @@ typedef enum OFStringEncoding {
 	OFStringEncodingAutodetect = 0xFF
 } OFStringEncoding;
 
-enum {
-	OF_STRING_SEARCH_BACKWARDS = 1,
-	OF_STRING_SKIP_EMPTY	   = 2
-};
+/**
+ * @brief Options for searching in strings.
+ *
+ * This is a bit mask.
+ */
+typedef enum OFStringSearchOptions {
+	/** Search backwards in the string */
+	OFStringSearchBackwards = 1
+} OFStringSearchOptions;
+
+/**
+ * @brief Options for separating strings.
+ *
+ * This is a bit mask.
+ */
+typedef enum OFStringSeparationOptions {
+	/** Skip empty components */
+	OFStringSkipEmptyComponents = 1
+} OFStringSeparationOptions;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -929,31 +944,24 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Returns the range of the string.
  *
  * @param string The string to search
- * @param options Options modifying search behavior.@n
- *		  Possible values are:
- *		  Value                        | Description
- *		  -----------------------------|-------------------------------
- *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @param options Options modifying search behavior
  * @return The range of the first occurrence of the string or a range with
  *	   `OFNotFound` as start position if it was not found
  */
-- (OFRange)rangeOfString: (OFString *)string options: (int)options;
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (OFStringSearchOptions)options;
 
 /**
  * @brief Returns the range of the string in the specified range.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour.@n
- *		  Possible values are:
- *		  Value                        | Description
- *		  -----------------------------|-------------------------------
- *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @param options Options modifying search behaviour
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
  *	   `OFNotFound` as start position if it was not found
  */
 - (OFRange)rangeOfString: (OFString *)string
-		 options: (int)options
+		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range;
 
 /**
@@ -969,32 +977,24 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Returns the index of the first character from the set.
  *
  * @param characterSet The set of characters to search for
- * @param options Options modifying search behaviour.@n
- *		  Possible values are:
- *		  Value                        | Description
- *		  -----------------------------|-------------------------------
- *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @param options Options modifying search behaviour
  * @return The index of the first occurrence of a character from the set or
  *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options;
+			  options: (OFStringSearchOptions)options;
 
 /**
  * @brief Returns the index of the first character from the set.
  *
  * @param characterSet The set of characters to search for
- * @param options Options modifying search behaviour.@n
- *		  Possible values are:
- *		  Value                        | Description
- *		  -----------------------------|-------------------------------
- *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @param options Options modifying search behaviour
  * @param range The range in which to search
  * @return The index of the first occurrence of a character from the set or
  *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 			    range: (OFRange)range;
 
 /**
@@ -1161,16 +1161,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *	  delimiter.
  *
  * @param delimiter The delimiter for separating
- * @param options Options according to which the string should be separated.@n
- *		  Possible values are:
- *		  Value                  | Description
- *		  -----------------------|----------------------
- * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
+ * @param options Options according to which the string should be separated
  * @return An autoreleased OFArray with the separated string
  */
 - (OFArray OF_GENERIC(OFString *) *)
     componentsSeparatedByString: (OFString *)delimiter
-			options: (int)options;
+			options: (OFStringSeparationOptions)options;
 
 /**
  * @brief Separates the string into an array of strings, split by characters in
@@ -1187,16 +1183,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *	  the specified set.
  *
  * @param characterSet The character set for separating
- * @param options Options according to which the string should be separated.@n
- *		  Possible values are:
- *		  Value                  | Description
- *		  -----------------------|----------------------
- * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
+ * @param options Options according to which the string should be separated
  * @return An autoreleased OFArray with the separated string
  */
 - (OFArray OF_GENERIC(OFString *) *)
     componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
-				 options: (int)options;
+				 options: (OFStringSeparationOptions)options;
 
 /**
  * @brief Returns the string in UTF-16 encoding with the specified byte order.

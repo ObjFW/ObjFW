@@ -387,7 +387,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	@try {
 		size_t pos = [proxy
 		    rangeOfString: @":"
-			  options: OF_STRING_SEARCH_BACKWARDS].location;
+			  options: OFStringSearchBackwards].location;
 		OFString *host;
 		unsigned long long port;
 

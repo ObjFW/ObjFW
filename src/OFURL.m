@@ -678,7 +678,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				    : @"/")];
 				OFRange range = [path
 				    rangeOfString: @"/"
-					  options: OF_STRING_SEARCH_BACKWARDS];
+					  options: OFStringSearchBackwards];
 
 				if (range.location == OFNotFound)
 					@throw [OFInvalidFormatException

@@ -108,7 +108,7 @@ evaluateCondition(OFString *condition_, OFDictionary *variables)
 	operators = [OFMutableArray array];
 	for (OFString *token in [condition
 	    componentsSeparatedByString: @" "
-				options: OF_STRING_SKIP_EMPTY]) {
+				options: OFStringSkipEmptyComponents]) {
 		unsigned precedence;
 		OFUnichar c;
 
