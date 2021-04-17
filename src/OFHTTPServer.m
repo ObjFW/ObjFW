@@ -370,7 +370,7 @@ normalizedKey(OFString *key)
 	}
 
 	pos = [line rangeOfString: @" "].location;
-	if (pos == OF_NOT_FOUND)
+	if (pos == OFNotFound)
 		return [self sendErrorAndClose: 400];
 
 	method = [line substringToIndex: pos];
@@ -446,7 +446,7 @@ normalizedKey(OFString *key)
 	}
 
 	pos = [line rangeOfString: @":"].location;
-	if (pos == OF_NOT_FOUND)
+	if (pos == OFNotFound)
 		return [self sendErrorAndClose: 400];
 
 	key = [line substringToIndex: pos];
@@ -466,7 +466,7 @@ normalizedKey(OFString *key)
 		    rangeOfString: @":"
 			  options: OF_STRING_SEARCH_BACKWARDS].location;
 
-		if (pos != OF_NOT_FOUND) {
+		if (pos != OFNotFound) {
 			[_host release];
 			_host = [[value substringToIndex: pos] retain];
 
@@ -535,7 +535,7 @@ normalizedKey(OFString *key)
 	if (_port != 80)
 		URL.port = [OFNumber numberWithUnsignedShort: _port];
 
-	if ((pos = [_path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
+	if ((pos = [_path rangeOfString: @"?"].location) != OFNotFound) {
 		OFString *path, *query;
 
 		path = [_path substringToIndex: pos];
@@ -694,7 +694,7 @@ normalizedKey(OFString *key)
 			return 0;
 
 		pos = [line rangeOfString: @";"].location;
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		if (line.length < 1) {
@@ -702,7 +702,7 @@ normalizedKey(OFString *key)
 			 * We have read the empty string because the socket is
 			 * at end of stream.
 			 */
-			if (_socket.atEndOfStream && pos == OF_NOT_FOUND)
+			if (_socket.atEndOfStream && pos == OFNotFound)
 				@throw [OFTruncatedDataException exception];
 			else
 				@throw [OFInvalidFormatException exception];

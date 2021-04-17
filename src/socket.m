@@ -387,7 +387,7 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 			@throw [OFInvalidFormatException exception];
 
 		if ([component indexOfCharacterFromSet:
-		    whitespaceCharacterSet] != OF_NOT_FOUND)
+		    whitespaceCharacterSet] != OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		number = component.unsignedLongLongValue;
@@ -411,7 +411,7 @@ parseIPv6Component(OFString *component)
 	unsigned long long number;
 
 	if ([component indexOfCharacterFromSet:
-	    [OFCharacterSet whitespaceCharacterSet]] != OF_NOT_FOUND)
+	    [OFCharacterSet whitespaceCharacterSet]] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	number = [component unsignedLongLongValueWithBase: 16];
@@ -443,7 +443,7 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
 
-	if (doubleColon != OF_NOT_FOUND) {
+	if (doubleColon != OFNotFound) {
 		OFString *left = [IPv6 substringToIndex: doubleColon];
 		OFString *right = [IPv6 substringFromIndex: doubleColon + 2];
 		OFArray OF_GENERIC(OFString *) *leftComponents;

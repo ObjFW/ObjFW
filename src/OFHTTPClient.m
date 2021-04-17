@@ -997,7 +997,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 			return 0;
 
 		pos = [line rangeOfString: @";"].location;
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		if (line.length < 1) {
@@ -1005,7 +1005,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 			 * We have read the empty string because the socket is
 			 * at end of stream.
 			 */
-			if (_socket.atEndOfStream && pos == OF_NOT_FOUND)
+			if (_socket.atEndOfStream && pos == OFNotFound)
 				@throw [OFTruncatedDataException exception];
 			else
 				@throw [OFInvalidServerReplyException

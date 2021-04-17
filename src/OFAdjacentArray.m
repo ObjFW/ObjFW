@@ -225,7 +225,7 @@
 	size_t count;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	objects = _array.items;
 	count = _array.count;
@@ -234,7 +234,7 @@
 		if ([objects[i] isEqual: object])
 			return i;
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -243,7 +243,7 @@
 	size_t count;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	objects = _array.items;
 	count = _array.count;
@@ -252,7 +252,7 @@
 		if (objects[i] == object)
 			return i;
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 

@@ -921,7 +921,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @param string The string to search
  * @return The range of the first occurrence of the string or a range with
- *	   `OF_NOT_FOUND` as start position if it was not found
+ *	   `OFNotFound` as start position if it was not found
  */
 - (OFRange)rangeOfString: (OFString *)string;
 
@@ -935,7 +935,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		  -----------------------------|-------------------------------
  *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @return The range of the first occurrence of the string or a range with
- *	   `OF_NOT_FOUND` as start position if it was not found
+ *	   `OFNotFound` as start position if it was not found
  */
 - (OFRange)rangeOfString: (OFString *)string options: (int)options;
 
@@ -950,7 +950,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
- *	   `OF_NOT_FOUND` as start position if it was not found
+ *	   `OFNotFound` as start position if it was not found
  */
 - (OFRange)rangeOfString: (OFString *)string
 		 options: (int)options
@@ -961,7 +961,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @param characterSet The set of characters to search for
  * @return The index of the first occurrence of a character from the set or
- *	   `OF_NOT_FOUND` if it was not found
+ *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet;
 
@@ -975,7 +975,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		  -----------------------------|-------------------------------
  *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @return The index of the first occurrence of a character from the set or
- *	   `OF_NOT_FOUND` if it was not found
+ *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (int)options;
@@ -991,7 +991,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @param range The range in which to search
  * @return The index of the first occurrence of a character from the set or
- *	   `OF_NOT_FOUND` if it was not found
+ *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (int)options

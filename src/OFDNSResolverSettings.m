@@ -87,7 +87,7 @@ domainFromHostname(OFString *hostname)
 		/* Not an IP address -> we can use it if it contains a dot. */
 		size_t pos = [hostname rangeOfString: @"."].location;
 
-		if (pos == OF_NOT_FOUND)
+		if (pos == OFNotFound)
 			return nil;
 
 		return [hostname substringFromIndex: pos + 1];
@@ -267,7 +267,7 @@ parseNetStackArray(OFString *string)
 		OFString *address;
 
 		pos = [line rangeOfString: @"#"].location;
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		components = [line
@@ -368,7 +368,7 @@ parseNetStackArray(OFString *string)
 		OFString *option;
 
 		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		components = [line

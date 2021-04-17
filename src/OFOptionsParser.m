@@ -192,7 +192,7 @@ stringEqual(void *object1, void *object2)
 			_index++;
 
 			if ((pos = [argument rangeOfString: @"="].location) !=
-			    OF_NOT_FOUND)
+			    OFNotFound)
 				_argument = [[argument
 				    substringFromIndex: pos + 1] copy];
 			else

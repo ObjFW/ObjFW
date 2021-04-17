@@ -306,7 +306,7 @@ static struct {
 	size_t i = 0;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	for (id objectIter in self) {
 		if ([objectIter isEqual: object])
@@ -315,7 +315,7 @@ static struct {
 		i++;
 	}
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -323,7 +323,7 @@ static struct {
 	size_t i = 0;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	for (id objectIter in self) {
 		if (objectIter == object)
@@ -332,17 +332,17 @@ static struct {
 		i++;
 	}
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (bool)containsObject: (id)object
 {
-	return ([self indexOfObject: object] != OF_NOT_FOUND);
+	return ([self indexOfObject: object] != OFNotFound);
 }
 
 - (bool)containsObjectIdenticalTo: (id)object
 {
-	return ([self indexOfObjectIdenticalTo: object] != OF_NOT_FOUND);
+	return ([self indexOfObjectIdenticalTo: object] != OFNotFound);
 }
 
 - (id)firstObject

@@ -563,7 +563,7 @@ _references_to_categories_of_OFData(void)
 		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return OFMakeRange(OF_NOT_FOUND, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	search = data.items;
 
@@ -585,7 +585,7 @@ _references_to_categories_of_OFData(void)
 				return OFMakeRange(i, searchLength);
 	}
 
-	return OFMakeRange(OF_NOT_FOUND, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 #ifdef OF_HAVE_FILES

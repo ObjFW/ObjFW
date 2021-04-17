@@ -59,7 +59,7 @@
 	size_t pos = [path rangeOfString: @"."
 				 options: OF_STRING_SEARCH_BACKWARDS].location;
 
-	if (pos == OF_NOT_FOUND) {
+	if (pos == OFNotFound) {
 		*category = @"";
 		*key = path;
 		return;

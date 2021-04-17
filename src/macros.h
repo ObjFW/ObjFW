@@ -350,7 +350,6 @@
 #endif
 
 #define OF_RETAIN_COUNT_MAX UINT_MAX
-#define OF_NOT_FOUND SIZE_MAX
 
 #ifdef OBJC_COMPILING_RUNTIME
 # define OF_ENSURE(cond)						\

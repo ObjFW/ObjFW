@@ -250,7 +250,7 @@ extern OFString *of_zip_archive_entry_compression_method_to_string(
  * @param tag The tag to look for
  * @param size A pointer to an uint16_t that should be set to the size
  * @return The index at which the extra field content starts in the OFData, or
- *	   OF_NOT_FOUND
+ *	   `OFNotFound`
  */
 extern size_t of_zip_archive_entry_extra_field_find(OFData *extraField,
     uint16_t tag, uint16_t *size);

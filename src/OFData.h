@@ -305,7 +305,7 @@ enum {
  *		  `OF_DATA_SEARCH_BACKWARDS` | Search backwards in the data
  * @param range The range in which to search
  * @return The range of the first occurrence of the data or a range with
- *	   `OF_NOT_FOUND` as start position if it was not found.
+ *	   `OFNotFound` as start position if it was not found.
  */
 - (OFRange)rangeOfData: (OFData *)data
 	       options: (int)options

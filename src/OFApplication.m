@@ -247,7 +247,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);
@@ -289,7 +289,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);

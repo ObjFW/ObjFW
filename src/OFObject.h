@@ -288,6 +288,8 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 	return true;
 }
 
+static const size_t OFNotFound = SIZE_MAX;
+
 #ifdef __OBJC__
 @class OFMethodSignature;
 @class OFString;

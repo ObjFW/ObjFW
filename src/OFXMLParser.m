@@ -489,7 +489,7 @@ inProcessingInstructionState(OFXMLParser *self)
 		whitespaceCS = [OFCharacterSet
 		    characterSetWithCharactersInString: @" \r\n\r"];
 		pos = [PI indexOfCharacterFromSet: whitespaceCS];
-		if (pos != OF_NOT_FOUND) {
+		if (pos != OFNotFound) {
 			target = [PI substringToIndex: pos];
 			data = [[PI substringFromIndex: pos + 1]
 			    stringByDeletingEnclosingWhitespaces];

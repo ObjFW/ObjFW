@@ -317,7 +317,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	size_t pos = [header rangeOfString: @":"].location;
 	OFString *name, *value;
 
-	if (pos == OF_NOT_FOUND) {
+	if (pos == OFNotFound) {
 		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_header",
 		    @"%[prog]: Headers must to be in format name:value!",
 		    @"prog", [OFApplication programName])];
@@ -391,7 +391,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *host;
 		unsigned long long port;
 
-		if (pos == OF_NOT_FOUND)
+		if (pos == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringToIndex: pos];

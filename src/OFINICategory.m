@@ -156,7 +156,7 @@ unescapeString(OFString *string)
 		OFString *key, *value;
 		size_t pos;
 
-		if ((pos = [line rangeOfString: @"="].location) == OF_NOT_FOUND)
+		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		key = unescapeString([line substringToIndex: pos]

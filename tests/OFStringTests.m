@@ -487,7 +487,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"𝄞öö") rangeOfString: @"öö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"].location == 0 &&
-	    [C(@"𝄞öö") rangeOfString: @"x"].location == OF_NOT_FOUND &&
+	    [C(@"𝄞öö") rangeOfString: @"x"].location == OFNotFound &&
 	    [C(@"𝄞öö") rangeOfString: @"öö"
 	    options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"
@@ -495,7 +495,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"
 	    options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == OF_NOT_FOUND)
+	    options: OF_STRING_SEARCH_BACKWARDS].location == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
@@ -515,7 +515,7 @@ static uint16_t sutf16str[] = {
 	     [C(@"abcđabcđëf")
 	     indexOfCharacterFromSet: cs
 			     options: 0
-			       range: OFMakeRange(8, 2)] == OF_NOT_FOUND)
+			       range: OFMakeRange(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",

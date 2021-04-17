@@ -1825,7 +1825,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return OFMakeRange(OF_NOT_FOUND, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exception];
@@ -1868,7 +1868,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	objc_autoreleasePoolPop(pool);
 
-	return OFMakeRange(OF_NOT_FOUND, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
@@ -1896,7 +1896,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	of_unichar_t *characters;
 
 	if (range.length == 0)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
 		@throw [OFOutOfRangeException exception];
@@ -1927,7 +1927,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		free(characters);
 	}
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (bool)containsString: (OFString *)string

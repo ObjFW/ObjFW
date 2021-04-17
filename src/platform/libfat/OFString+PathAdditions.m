@@ -154,7 +154,7 @@ int _OFString_PathAdditions_reference;
 	fileName = self.lastPathComponent;
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0) {
+	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
@@ -224,7 +224,7 @@ int _OFString_PathAdditions_reference;
 
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0) {
+	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
 		return [[self copy] autorelease];
 	}

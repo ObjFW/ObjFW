@@ -665,7 +665,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		ZIP64Index = of_zip_archive_entry_extra_field_find(extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
 
-		if (ZIP64Index != OF_NOT_FOUND) {
+		if (ZIP64Index != OFNotFound) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
 			OFRange range =

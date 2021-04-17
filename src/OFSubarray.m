@@ -77,12 +77,12 @@
 	size_t idx = [_array indexOfObject: object];
 
 	if (idx < _range.location)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	idx -= _range.location;
 
 	if (idx >= _range.length)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	return idx;
 }
@@ -92,12 +92,12 @@
 	size_t idx = [_array indexOfObjectIdenticalTo: object];
 
 	if (idx < _range.location)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	idx -= _range.location;
 
 	if (idx >= _range.length)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	return idx;
 }

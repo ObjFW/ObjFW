@@ -331,7 +331,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
 	    initWithCharacterSet: characterSet] autorelease];
 
-	if ([string indexOfCharacterFromSet: characterSet] != OF_NOT_FOUND)
+	if ([string indexOfCharacterFromSet: characterSet] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -680,7 +680,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				    rangeOfString: @"/"
 					  options: OF_STRING_SEARCH_BACKWARDS];
 
-				if (range.location == OF_NOT_FOUND)
+				if (range.location == OFNotFound)
 					@throw [OFInvalidFormatException
 					    exception];
 
