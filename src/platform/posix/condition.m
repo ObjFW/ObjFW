@@ -18,31 +18,31 @@
 #import "condition.h"
 
 int
-of_condition_new(of_condition_t *condition)
+OFPlainConditionNew(OFPlainCondition *condition)
 {
 	return pthread_cond_init(condition, NULL);
 }
 
 int
-of_condition_signal(of_condition_t *condition)
+OFPlainConditionSignal(OFPlainCondition *condition)
 {
 	return pthread_cond_signal(condition);
 }
 
 int
-of_condition_broadcast(of_condition_t *condition)
+OFPlainConditionBroadcast(OFPlainCondition *condition)
 {
 	return pthread_cond_broadcast(condition);
 }
 
 int
-of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
+OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 {
 	return pthread_cond_wait(condition, mutex);
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
+OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	struct timespec ts;
@@ -54,7 +54,7 @@ of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
 }
 
 int
-of_condition_free(of_condition_t *condition)
+OFPlainConditionFree(OFPlainCondition *condition)
 {
 	return pthread_cond_destroy(condition);
 }

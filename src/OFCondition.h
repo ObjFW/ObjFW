@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFCondition: OFMutex
 {
-	of_condition_t _condition;
+	OFPlainCondition _condition;
 	bool _conditionInitialized;
 }
 

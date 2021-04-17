@@ -36,7 +36,7 @@
 {
 	self = [super init];
 
-	if (of_condition_new(&_condition) != 0) {
+	if (OFPlainConditionNew(&_condition) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -50,7 +50,7 @@
 - (void)dealloc
 {
 	if (_conditionInitialized) {
-		int error = of_condition_free(&_condition);
+		int error = OFPlainConditionFree(&_condition);
 
 		if (error != 0) {
 			OF_ENSURE(error == EBUSY);
@@ -65,7 +65,7 @@
 
 - (void)wait
 {
-	int error = of_condition_wait(&_condition, &_mutex);
+	int error = OFPlainConditionWait(&_condition, &_mutex);
 
 	if (error != 0)
 		@throw [OFConditionWaitFailedException
@@ -76,7 +76,7 @@
 #ifdef OF_AMIGAOS
 - (void)waitForConditionOrExecSignal: (ULONG *)signalMask
 {
-	int error = of_condition_wait_or_signal(&_condition, &_mutex,
+	int error = OFPlainConditionWaitOrExecSignal(&_condition, &_mutex,
 	    signalMask);
 
 	if (error != 0)
@@ -88,7 +88,8 @@
 
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 {
-	int error = of_condition_timed_wait(&_condition, &_mutex, timeInterval);
+	int error = OFPlainConditionTimedWait(&_condition, &_mutex,
+	    timeInterval);
 
 	if (error == ETIMEDOUT)
 		return false;
@@ -105,7 +106,7 @@
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
-	int error = of_condition_timed_wait_or_signal(&_condition, &_mutex,
+	int error = OFPlainConditionTimedWaitExecOrSignal(&_condition, &_mutex,
 	    timeInterval, signalMask);
 
 	if (error == ETIMEDOUT)
@@ -135,7 +136,7 @@
 
 - (void)signal
 {
-	int error = of_condition_signal(&_condition);
+	int error = OFPlainConditionSignal(&_condition);
 
 	if (error != 0)
 		@throw [OFConditionSignalFailedException
@@ -145,7 +146,7 @@
 
 - (void)broadcast
 {
-	int error = of_condition_broadcast(&_condition);
+	int error = OFPlainConditionBroadcast(&_condition);
 
 	if (error != 0)
 		@throw [OFConditionBroadcastFailedException

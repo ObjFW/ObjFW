@@ -29,40 +29,41 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-typedef pthread_cond_t of_condition_t;
+typedef pthread_cond_t OFPlainCondition;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
 typedef struct {
 	HANDLE event;
 	volatile int count;
-} of_condition_t;
+} OFPlainCondition;
 #elif defined(OF_AMIGAOS)
 # include <exec/tasks.h>
 typedef struct {
-	struct of_condition_waiting_task {
+	struct OFPlainConditionWaitingTask {
 		struct Task *task;
 		unsigned char sigBit;
-		struct of_condition_waiting_task *next;
+		struct OFPlainConditionWaitingTask *next;
 	} *waitingTasks;
-} of_condition_t;
+} OFPlainCondition;
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_condition_new(of_condition_t *condition);
-extern int of_condition_signal(of_condition_t *condition);
-extern int of_condition_broadcast(of_condition_t *condition);
-extern int of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex);
-extern int of_condition_timed_wait(of_condition_t *condition,
+extern int OFPlainConditionNew(OFPlainCondition *condition);
+extern int OFPlainConditionSignal(OFPlainCondition *condition);
+extern int OFPlainConditionBroadcast(OFPlainCondition *condition);
+extern int OFPlainConditionWait(OFPlainCondition *condition,
+    OFPlainMutex *mutex);
+extern int OFPlainConditionTimedWait(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout);
 #ifdef OF_AMIGAOS
-extern int of_condition_wait_or_signal(of_condition_t *condition,
+extern int OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, ULONG *signalMask);
-extern int of_condition_timed_wait_or_signal(of_condition_t *condition,
+extern int OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask);
 #endif
-extern int of_condition_free(of_condition_t *condition);
+extern int OFPlainConditionFree(OFPlainCondition *condition);
 #ifdef __cplusplus
 }
 #endif

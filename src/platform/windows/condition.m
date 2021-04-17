@@ -22,7 +22,7 @@
 #include <windows.h>
 
 int
-of_condition_new(of_condition_t *condition)
+OFPlainConditionNew(OFPlainCondition *condition)
 {
 	condition->count = 0;
 
@@ -33,7 +33,7 @@ of_condition_new(of_condition_t *condition)
 }
 
 int
-of_condition_signal(of_condition_t *condition)
+OFPlainConditionSignal(OFPlainCondition *condition)
 {
 	if (!SetEvent(condition->event)) {
 		switch (GetLastError()) {
@@ -48,7 +48,7 @@ of_condition_signal(of_condition_t *condition)
 }
 
 int
-of_condition_broadcast(of_condition_t *condition)
+OFPlainConditionBroadcast(OFPlainCondition *condition)
 {
 	int count = condition->count;
 
@@ -67,7 +67,7 @@ of_condition_broadcast(of_condition_t *condition)
 }
 
 int
-of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
+OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 {
 	int error;
 	DWORD status;
@@ -95,7 +95,7 @@ of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
+OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	int error;
@@ -126,7 +126,7 @@ of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
 }
 
 int
-of_condition_free(of_condition_t *condition)
+OFPlainConditionFree(OFPlainCondition *condition)
 {
 	if (condition->count != 0)
 		return EBUSY;

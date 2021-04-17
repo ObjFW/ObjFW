@@ -26,7 +26,7 @@
 #endif
 
 int
-of_condition_new(of_condition_t *condition)
+OFPlainConditionNew(OFPlainCondition *condition)
 {
 	condition->waitingTasks = NULL;
 
@@ -34,7 +34,7 @@ of_condition_new(of_condition_t *condition)
 }
 
 int
-of_condition_signal(of_condition_t *condition)
+OFPlainConditionSignal(OFPlainCondition *condition)
 {
 	Forbid();
 	@try {
@@ -53,7 +53,7 @@ of_condition_signal(of_condition_t *condition)
 }
 
 int
-of_condition_broadcast(of_condition_t *condition)
+OFPlainConditionBroadcast(OFPlainCondition *condition)
 {
 	Forbid();
 	@try {
@@ -74,18 +74,18 @@ of_condition_broadcast(of_condition_t *condition)
 }
 
 int
-of_condition_wait(of_condition_t *condition, OFPlainMutex *mutex)
+OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 {
 	ULONG signalMask = 0;
 
-	return of_condition_wait_or_signal(condition, mutex, &signalMask);
+	return OFPlainConditionWaitOrExecSignal(condition, mutex, &signalMask);
 }
 
 int
-of_condition_wait_or_signal(of_condition_t *condition, OFPlainMutex *mutex,
-    ULONG *signalMask)
+OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
+    OFPlainMutex *mutex, ULONG *signalMask)
 {
-	struct of_condition_waiting_task waitingTask = {
+	struct OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
@@ -123,20 +123,20 @@ of_condition_wait_or_signal(of_condition_t *condition, OFPlainMutex *mutex,
 }
 
 int
-of_condition_timed_wait(of_condition_t *condition, OFPlainMutex *mutex,
+OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
     OFTimeInterval timeout)
 {
 	ULONG signalMask = 0;
 
-	return of_condition_timed_wait_or_signal(condition, mutex, timeout,
+	return OFPlainConditionTimedWaitOrExecSignal(condition, mutex, timeout,
 	    &signalMask);
 }
 
 int
-of_condition_timed_wait_or_signal(of_condition_t *condition,
+OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask)
 {
-	struct of_condition_waiting_task waitingTask = {
+	struct OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
@@ -237,7 +237,7 @@ fail:
 }
 
 int
-of_condition_free(of_condition_t *condition)
+OFPlainConditionFree(OFPlainCondition *condition)
 {
 	Forbid();
 	@try {
