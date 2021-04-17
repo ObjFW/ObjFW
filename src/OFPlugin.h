@@ -21,12 +21,12 @@
 # include <dlfcn.h>
 # define OF_RTLD_LAZY RTLD_LAZY
 # define OF_RTLD_NOW  RTLD_NOW
-typedef void *of_plugin_handle_t;
+typedef void *OFPluginHandle;
 #else
 # include <windows.h>
 # define OF_RTLD_LAZY 0
 # define OF_RTLD_NOW  0
-typedef HMODULE of_plugin_handle_t;
+typedef HMODULE OFPluginHandle;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFPlugin: OFObject
 {
-	of_plugin_handle_t _pluginHandle;
+	OFPluginHandle _pluginHandle;
 	OF_RESERVE_IVARS(OFPlugin, 4)
 }
 
@@ -54,10 +54,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
-extern void *of_dlsym(of_plugin_handle_t handle, const char *symbol);
-extern OFString *_Nullable of_dlerror(void);
-extern void of_dlclose(of_plugin_handle_t handle);
+extern OFPluginHandle OFDlopen(OFString *path, int flags);
+extern void *OFDlsym(OFPluginHandle handle, const char *symbol);
+extern OFString *_Nullable OFDlerror(void);
+extern void OFDlclose(OFPluginHandle handle);
 #ifdef __cplusplus
 }
 #endif

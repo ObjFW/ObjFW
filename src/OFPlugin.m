@@ -32,8 +32,8 @@
 
 typedef OFPlugin *(*init_plugin_t)(void);
 
-of_plugin_handle_t
-of_dlopen(OFString *path, int flags)
+OFPluginHandle
+OFDlopen(OFString *path, int flags)
 {
 #ifndef OF_WINDOWS
 	return dlopen([path cStringWithEncoding: [OFLocale encoding]], flags);
@@ -50,7 +50,7 @@ of_dlopen(OFString *path, int flags)
 }
 
 void *
-of_dlsym(of_plugin_handle_t handle, const char *symbol)
+OFDlsym(OFPluginHandle handle, const char *symbol)
 {
 #ifndef OF_WINDOWS
 	return dlsym(handle, symbol);
@@ -60,7 +60,7 @@ of_dlsym(of_plugin_handle_t handle, const char *symbol)
 }
 
 void
-of_dlclose(of_plugin_handle_t handle)
+OFDlclose(OFPluginHandle handle)
 {
 #ifndef OF_WINDOWS
 	dlclose(handle);
@@ -70,7 +70,7 @@ of_dlclose(of_plugin_handle_t handle)
 }
 
 OFString *
-of_dlerror(void)
+OFDlerror(void)
 {
 #ifndef OF_WINDOWS
 	return [OFString stringWithCString: dlerror()
@@ -84,7 +84,7 @@ of_dlerror(void)
 + (id)pluginWithPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_plugin_handle_t handle;
+	OFPluginHandle handle;
 	init_plugin_t initPlugin;
 	OFPlugin *plugin;
 
@@ -98,16 +98,16 @@ of_dlerror(void)
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 #endif
 
-	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
+	if ((handle = OFDlopen(path, OF_RTLD_LAZY)) == NULL)
 		@throw [OFLoadPluginFailedException
 		    exceptionWithPath: path
-				error: of_dlerror()];
+				error: OFDlerror()];
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (init_plugin_t)(uintptr_t)of_dlsym(handle, "init_plugin");
+	initPlugin = (init_plugin_t)(uintptr_t)OFDlsym(handle, "init_plugin");
 	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
-		of_dlclose(handle);
+		OFDlclose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 	}
@@ -134,10 +134,10 @@ of_dlerror(void)
 
 - (void)dealloc
 {
-	of_plugin_handle_t h = _pluginHandle;
+	OFPluginHandle h = _pluginHandle;
 
 	[super dealloc];
 
-	of_dlclose(h);
+	OFDlclose(h);
 }
 @end

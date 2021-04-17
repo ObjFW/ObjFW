@@ -285,7 +285,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		return;
 
 	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
-	of_dlopen(@LIB_PREFIX @"objopenssl" @LIB_SUFFIX, OF_RTLD_LAZY);
+	OFDlopen(@LIB_PREFIX @"objopenssl" @LIB_SUFFIX, OF_RTLD_LAZY);
 }
 #endif
 
