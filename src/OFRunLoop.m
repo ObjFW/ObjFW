@@ -43,7 +43,7 @@
 
 #import "OFObserveFailedException.h"
 
-const of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
 static OFRunLoop *mainRunLoop = nil;
 
 @interface OFRunLoopState: OFObject
@@ -1016,7 +1016,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 static OFRunLoopState *
-stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
+stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	OFRunLoopState *state;
 
@@ -1087,7 +1087,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			   block: (OFStreamAsyncReadBlock)block
 # endif
@@ -1109,7 +1109,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			   block: (OFStreamAsyncReadBlock)block
 # endif
@@ -1130,7 +1130,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (OFStringEncoding)encoding
-				mode: (of_run_loop_mode_t)mode
+				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (OFStreamAsyncReadLineBlock)block
 # endif
@@ -1150,7 +1150,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			     data: (OFData *)data
-			     mode: (of_run_loop_mode_t)mode
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (OFStreamAsyncWriteDataBlock)block
 # endif
@@ -1171,7 +1171,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 				       stream
 			   string: (OFString *)string
 			 encoding: (OFStringEncoding)encoding
-			     mode: (of_run_loop_mode_t)mode
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (OFStreamAsyncWriteStringBlock)block
 # endif
@@ -1191,7 +1191,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 + (void)of_addAsyncConnectForSocket: (id)sock
-			       mode: (of_run_loop_mode_t)mode
+			       mode: (OFRunLoopMode)mode
 			   delegate: (id <OFRunLoopConnectDelegate>)delegate
 {
 	NEW_WRITE(OFRunLoopConnectQueueItem, sock, mode)
@@ -1203,7 +1203,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 # endif
 
 + (void)of_addAsyncAcceptForSocket: (id)sock
-			      mode: (of_run_loop_mode_t)mode
+			      mode: (OFRunLoopMode)mode
 			     block: (id)block
 			  delegate: (id)delegate
 {
@@ -1220,7 +1220,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)sock
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (OFDatagramSocketAsyncReceiveBlock)block
 # endif
@@ -1241,7 +1241,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
       data: (OFData *)data
   receiver: (const of_socket_address_t *)receiver
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (OFDatagramSocketAsyncSendDataBlock)block
 # endif
@@ -1263,7 +1263,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 							sock
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
@@ -1283,7 +1283,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 + (void)of_addAsyncSendForSequencedPacketSocket: (OFSequencedPacketSocket *)sock
       data: (OFData *)data
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
@@ -1303,8 +1303,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 # undef NEW_WRITE
 # undef QUEUE_ITEM
 
-+ (void)of_cancelAsyncRequestsForObject: (id)object
-				   mode: (of_run_loop_mode_t)mode
++ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
@@ -1355,8 +1354,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 		state = [[OFRunLoopState alloc] init];
 		@try {
-			[_states setObject: state
-				    forKey: of_run_loop_mode_default];
+			[_states setObject: state forKey: OFDefaultRunLoopMode];
 		} @finally {
 			[state release];
 		}
@@ -1384,10 +1382,10 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 - (void)addTimer: (OFTimer *)timer
 {
-	[self addTimer: timer forMode: of_run_loop_mode_default];
+	[self addTimer: timer forMode: OFDefaultRunLoopMode];
 }
 
-- (void)addTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode
+- (void)addTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
 	OFRunLoopState *state = stateForMode(self, mode, true);
 
@@ -1411,7 +1409,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 #endif
 }
 
-- (void)of_removeTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode
+- (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
 	OFRunLoopState *state = stateForMode(self, mode, false);
 
@@ -1442,13 +1440,13 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 - (void)addExecSignal: (ULONG)signal target: (id)target selector: (SEL)selector
 {
 	[self addExecSignal: signal
-		    forMode: of_run_loop_mode_default
+		    forMode: OFDefaultRunLoopMode
 		     target: target
 		   selector: selector];
 }
 
 - (void)addExecSignal: (ULONG)signal
-	      forMode: (of_run_loop_mode_t)mode
+	      forMode: (OFRunLoopMode)mode
 	       target: (id)target
 	     selector: (SEL)selector
 {
@@ -1485,13 +1483,13 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 		selector: (SEL)selector
 {
 	[self removeExecSignal: signal
-		       forMode: of_run_loop_mode_default
+		       forMode: OFDefaultRunLoopMode
 			target: target
 		      selector: selector];
 }
 
 - (void)removeExecSignal: (ULONG)signal
-		 forMode: (of_run_loop_mode_t)mode
+		 forMode: (OFRunLoopMode)mode
 		  target: (id)target
 		selector: (SEL)selector
 {
@@ -1555,13 +1553,13 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 	while (!_stop &&
 	    (deadline == nil || deadline.timeIntervalSinceNow >= 0))
-		[self runMode: of_run_loop_mode_default beforeDate: deadline];
+		[self runMode: OFDefaultRunLoopMode beforeDate: deadline];
 }
 
-- (void)runMode: (of_run_loop_mode_t)mode beforeDate: (OFDate *)deadline
+- (void)runMode: (OFRunLoopMode)mode beforeDate: (OFDate *)deadline
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_run_loop_mode_t previousMode = _currentMode;
+	OFRunLoopMode previousMode = _currentMode;
 	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
@@ -1695,8 +1693,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 - (void)stop
 {
-	OFRunLoopState *state =
-	    stateForMode(self, of_run_loop_mode_default, false);
+	OFRunLoopState *state = stateForMode(self, OFDefaultRunLoopMode, false);
 
 	_stop = true;
 

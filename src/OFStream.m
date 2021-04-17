@@ -200,12 +200,12 @@
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
-		      runLoopMode: of_run_loop_mode_default];
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -224,12 +224,12 @@
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
-		      runLoopMode: of_run_loop_mode_default];
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -251,13 +251,13 @@
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
-		      runLoopMode: of_run_loop_mode_default
+		      runLoopMode: OFDefaultRunLoopMode
 			    block: block];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -277,13 +277,13 @@
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
-		      runLoopMode: of_run_loop_mode_default
+		      runLoopMode: OFDefaultRunLoopMode
 			    block: block];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -809,17 +809,17 @@
 - (void)asyncReadLine
 {
 	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
-			    runLoopMode: of_run_loop_mode_default];
+			    runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 {
 	[self asyncReadLineWithEncoding: encoding
-			    runLoopMode: of_run_loop_mode_default];
+			    runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -837,7 +837,7 @@
 - (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
 {
 	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
-			    runLoopMode: of_run_loop_mode_default
+			    runLoopMode: OFDefaultRunLoopMode
 				  block: block];
 }
 
@@ -845,12 +845,12 @@
 			    block: (OFStreamAsyncReadLineBlock)block
 {
 	[self asyncReadLineWithEncoding: encoding
-			    runLoopMode: of_run_loop_mode_default
+			    runLoopMode: OFDefaultRunLoopMode
 				  block: block];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      runLoopMode: (OFRunLoopMode)runLoopMode
 			    block: (OFStreamAsyncReadLineBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -1096,11 +1096,10 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncWriteData: (OFData *)data
 {
-	[self asyncWriteData: data runLoopMode: of_run_loop_mode_default];
+	[self asyncWriteData: data runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncWriteData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1118,7 +1117,7 @@
 {
 	[self asyncWriteString: string
 		      encoding: OFStringEncodingUTF8
-		   runLoopMode: of_run_loop_mode_default];
+		   runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncWriteString: (OFString *)string
@@ -1126,12 +1125,12 @@
 {
 	[self asyncWriteString: string
 		      encoding: encoding
-		   runLoopMode: of_run_loop_mode_default];
+		   runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+	     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1150,12 +1149,12 @@
 - (void)asyncWriteData: (OFData *)data block: (OFStreamAsyncWriteDataBlock)block
 {
 	[self asyncWriteData: data
-		 runLoopMode: of_run_loop_mode_default
+		 runLoopMode: OFDefaultRunLoopMode
 		       block: block];
 }
 
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+	   runLoopMode: (OFRunLoopMode)runLoopMode
 		 block: (OFStreamAsyncWriteDataBlock)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
@@ -1173,7 +1172,7 @@
 {
 	[self asyncWriteString: string
 		      encoding: OFStringEncodingUTF8
-		   runLoopMode: of_run_loop_mode_default
+		   runLoopMode: OFDefaultRunLoopMode
 			 block: block];
 }
 
@@ -1183,13 +1182,13 @@
 {
 	[self asyncWriteString: string
 		      encoding: encoding
-		   runLoopMode: of_run_loop_mode_default
+		   runLoopMode: OFDefaultRunLoopMode
 			 block: block];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+	     runLoopMode: (OFRunLoopMode)runLoopMode
 		   block: (OFStreamAsyncWriteStringBlock)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
@@ -1731,7 +1730,7 @@
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: of_run_loop_mode_default];
+					      mode: OFDefaultRunLoopMode];
 }
 #endif
 

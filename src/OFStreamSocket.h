@@ -129,7 +129,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -149,7 +149,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			     block: (OFStreamSocketAsyncAcceptBlock)block;
 #endif
 @end

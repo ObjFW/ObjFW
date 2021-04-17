@@ -170,7 +170,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -194,7 +194,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFTCPSocketAsyncConnectBlock)block;
 #endif
 

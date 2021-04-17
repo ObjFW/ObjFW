@@ -180,12 +180,12 @@
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default];
+			 runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
 						       buffer: buffer
@@ -204,14 +204,14 @@
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default
+			 runLoopMode: OFDefaultRunLoopMode
 			       block: block];
 }
 
 - (void)
     asyncReceiveIntoBuffer: (void *)buffer
 		    length: (size_t)length
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
 	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
@@ -263,11 +263,10 @@
 
 - (void)asyncSendData: (OFData *)data
 {
-	[self asyncSendData: data runLoopMode: of_run_loop_mode_default];
+	[self asyncSendData: data runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncSendData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
 						      data: data
@@ -283,12 +282,12 @@
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
-		runLoopMode: of_run_loop_mode_default
+		runLoopMode: OFDefaultRunLoopMode
 		      block: block];
 }
 
 - (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
@@ -388,10 +387,10 @@
 
 - (void)asyncAccept
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
@@ -402,12 +401,11 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
-				   block: block];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
 }
 
 - (void)
-    asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
@@ -434,7 +432,7 @@
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: of_run_loop_mode_default];
+					      mode: OFDefaultRunLoopMode];
 }
 
 - (int)fileDescriptorForReading

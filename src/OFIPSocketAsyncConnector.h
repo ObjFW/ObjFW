@@ -46,8 +46,8 @@ OF_ASSUME_NONNULL_BEGIN
 		      delegate: (nullable id)delegate
 			 block: (nullable id)block;
 - (void)didConnect;
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 OF_ASSUME_NONNULL_END

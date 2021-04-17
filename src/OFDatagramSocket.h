@@ -183,7 +183,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -223,7 +223,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFDatagramSocketAsyncReceiveBlock)block;
 #endif
 
@@ -259,7 +259,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	  runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -289,7 +289,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block;
 #endif
 

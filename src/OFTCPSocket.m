@@ -51,8 +51,8 @@
 #import "socket.h"
 #import "socket_helpers.h"
 
-static const of_run_loop_mode_t connectRunLoopMode =
-    @"of_tcp_socket_connect_mode";
+static const OFRunLoopMode connectRunLoopMode =
+    @"OFTCPSocketConnectRunLoopMode";
 
 Class of_tls_socket_class = Nil;
 
@@ -213,12 +213,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default];
+		     runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
@@ -259,13 +259,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
+		     runLoopMode: OFDefaultRunLoopMode
 			   block: block];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFTCPSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();

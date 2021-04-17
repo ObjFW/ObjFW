@@ -116,7 +116,7 @@
 	     length: (size_t)length
 	  exception: (id)exception
 {
-	of_run_loop_mode_t runLoopMode;
+	OFRunLoopMode runLoopMode;
 	unsigned char *SOCKSVersion;
 	uint8_t hostLength;
 	unsigned char port[2];
@@ -269,7 +269,7 @@
       bytesWritten: (size_t)bytesWritten
 	 exception: (id)exception
 {
-	of_run_loop_mode_t runLoopMode;
+	OFRunLoopMode runLoopMode;
 
 	if (exception != nil) {
 		_exception = [exception retain];

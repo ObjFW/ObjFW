@@ -59,7 +59,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _done;
 #endif
 	OFRunLoop *_Nullable _inRunLoop;
-	of_run_loop_mode_t _Nullable _inRunLoopMode;
+	OFRunLoopMode _Nullable _inRunLoopMode;
 }
 
 /**

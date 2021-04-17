@@ -700,7 +700,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 - (void)of_sendQueryForContext: (OFDNSResolverContext *)context
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFUDPSocket *sock;
 	OFString *nameServer;
@@ -786,12 +786,12 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	[self asyncPerformQuery: query
-		    runLoopMode: of_run_loop_mode_default
+		    runLoopMode: OFDefaultRunLoopMode
 		       delegate: delegate];
 }
 
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+	      runLoopMode: (OFRunLoopMode)runLoopMode
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -829,7 +829,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context
 {
-	of_run_loop_mode_t runLoopMode = [OFRunLoop currentRunLoop].currentMode;
+	OFRunLoopMode runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 	OFDNSQueryFailedException *exception;
 
 	if (context->_TCPSocket != nil) {
@@ -938,7 +938,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* TC */
 		if (buffer[2] & 0x02) {
-			of_run_loop_mode_t runLoopMode;
+			OFRunLoopMode runLoopMode;
 
 			if (context->_settings->_usesTCP)
 				@throw [OFTruncatedDataException exception];
@@ -981,7 +981,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (tryNextNameServer) {
 			if (context->_nameServersIndex + 1 <
 			    context->_settings->_nameServers.count) {
-				of_run_loop_mode_t runLoopMode =
+				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
 
 				context->_nameServersIndex++;
@@ -1182,7 +1182,7 @@ done:
 {
 	[self asyncResolveAddressesForHost: host
 			     addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
-			       runLoopMode: of_run_loop_mode_default
+			       runLoopMode: OFDefaultRunLoopMode
 				  delegate: delegate];
 }
 
@@ -1192,13 +1192,13 @@ done:
 {
 	[self asyncResolveAddressesForHost: host
 			     addressFamily: addressFamily
-			       runLoopMode: of_run_loop_mode_default
+			       runLoopMode: OFDefaultRunLoopMode
 				  delegate: delegate];
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
-			 runLoopMode: (of_run_loop_mode_t)runLoopMode
+			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();

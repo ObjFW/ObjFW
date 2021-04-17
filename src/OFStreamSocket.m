@@ -311,10 +311,10 @@
 
 - (void)asyncAccept
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
@@ -325,11 +325,10 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
-				   block: block];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			     block: (OFStreamSocketAsyncAcceptBlock)block
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self

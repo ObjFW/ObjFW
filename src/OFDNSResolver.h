@@ -218,7 +218,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+	      runLoopMode: (OFRunLoopMode)runLoopMode
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /**
@@ -251,7 +251,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
-			 runLoopMode: (of_run_loop_mode_t)runLoopMode
+			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /**

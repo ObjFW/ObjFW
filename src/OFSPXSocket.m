@@ -63,7 +63,7 @@ OF_DIRECT_MEMBERS
 			 block: (OFSPXSocketAsyncConnectBlock)block
 #endif
 ;
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 @implementation OFSPXSocketAsyncConnectDelegate
@@ -103,7 +103,7 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	of_socket_address_t address =
 	    of_socket_address_ipx(_node, _network, _port);
@@ -254,13 +254,13 @@ inform_delegate:
 	[self asyncConnectToNode: node
 			 network: network
 			    port: port
-		     runLoopMode: of_run_loop_mode_default];
+		     runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -286,14 +286,14 @@ inform_delegate:
 	[self asyncConnectToNode: node
 			 network: network
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
+		     runLoopMode: OFDefaultRunLoopMode
 			   block: block];
 }
 
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFSPXSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();

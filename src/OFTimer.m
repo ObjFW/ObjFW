@@ -514,10 +514,10 @@
 	return [_fireDate compare: timer->_fireDate];
 }
 
-- (void)of_setInRunLoop: (OFRunLoop *)runLoop mode: (of_run_loop_mode_t)mode
+- (void)of_setInRunLoop: (OFRunLoop *)runLoop mode: (OFRunLoopMode)mode
 {
 	OFRunLoop *oldInRunLoop = _inRunLoop;
-	of_run_loop_mode_t oldInRunLoopMode = _inRunLoopMode;
+	OFRunLoopMode oldInRunLoopMode = _inRunLoopMode;
 
 	_inRunLoop = [runLoop retain];
 	[oldInRunLoop release];

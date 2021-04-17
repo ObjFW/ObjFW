@@ -40,8 +40,8 @@
 }
 @end
 
-static const of_run_loop_mode_t resolveRunLoopMode =
-    @"of_host_address_resolver_resolve_mode";
+static const OFRunLoopMode resolveRunLoopMode =
+    @"OFHostAddressResolverResolveRunLoopMode";
 
 static bool
 isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
@@ -91,7 +91,7 @@ addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
 }
 
 static void
-callDelegateInMode(of_run_loop_mode_t runLoopMode,
+callDelegateInMode(OFRunLoopMode runLoopMode,
     id <OFDNSResolverHostDelegate> delegate, OFDNSResolver *resolver,
     OFString *host, OFData *addresses, id exception)
 {
@@ -117,7 +117,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	       addressFamily: (of_socket_address_family_t)addressFamily
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
-		 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 runLoopMode: (OFRunLoopMode)runLoopMode
 		    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	self = [super init];

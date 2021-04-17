@@ -118,7 +118,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -148,7 +148,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFSPXSocketAsyncConnectBlock)block;
 #endif
 

@@ -203,7 +203,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -241,7 +241,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block;
 #endif
 
@@ -266,8 +266,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @param data The data to send as a packet
  * @param runLoopMode The run loop mode in which to perform the async send
  */
-- (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncSendData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -291,7 +290,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block;
 #endif
 
@@ -324,7 +323,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -345,7 +344,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *		by the specified block as well.
  */
 - (void)
-    asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block;
 #endif
 

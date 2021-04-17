@@ -221,12 +221,12 @@
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default];
+			 runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
@@ -245,13 +245,13 @@
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default
+			 runLoopMode: OFDefaultRunLoopMode
 			       block: block];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
@@ -311,12 +311,12 @@
 {
 	[self asyncSendData: data
 		   receiver: receiver
-		runLoopMode: of_run_loop_mode_default];
+		runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data
@@ -335,13 +335,13 @@
 {
 	[self asyncSendData: data
 		   receiver: receiver
-		runLoopMode: of_run_loop_mode_default
+		runLoopMode: OFDefaultRunLoopMode
 		      block: block];
 }
 
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
@@ -356,7 +356,7 @@
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: of_run_loop_mode_default];
+					      mode: OFDefaultRunLoopMode];
 }
 
 - (int)fileDescriptorForReading

@@ -39,7 +39,7 @@ OF_DIRECT_MEMBERS
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			   block: (nullable OFStreamAsyncReadBlock)block
 # endif
@@ -48,7 +48,7 @@ OF_DIRECT_MEMBERS
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			   block: (nullable OFStreamAsyncReadBlock)block
 # endif
@@ -56,7 +56,7 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (OFStringEncoding)encoding
-				mode: (of_run_loop_mode_t)mode
+				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (nullable OFStreamAsyncReadLineBlock)block
 # endif
@@ -64,7 +64,7 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			     data: (OFData *)data
-			     mode: (of_run_loop_mode_t)mode
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (nullable OFStreamAsyncWriteDataBlock)block
 # endif
@@ -73,24 +73,24 @@ OF_DIRECT_MEMBERS
 				       stream
 			   string: (OFString *)string
 			 encoding: (OFStringEncoding)encoding
-			     mode: (of_run_loop_mode_t)mode
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (nullable OFStreamAsyncWriteStringBlock)block
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 + (void)of_addAsyncConnectForSocket: (id)socket
-			       mode: (of_run_loop_mode_t)mode
+			       mode: (OFRunLoopMode)mode
 			   delegate: (id <OFRunLoopConnectDelegate>)delegate;
 # endif
 + (void)of_addAsyncAcceptForSocket: (id)socket
-			      mode: (of_run_loop_mode_t)mode
+			      mode: (OFRunLoopMode)mode
 			     block: (nullable id)block
 			  delegate: (nullable id)delegate;
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFDatagramSocketAsyncReceiveBlock)block
 # endif
@@ -98,7 +98,7 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
       data: (OFData *)data
   receiver: (const of_socket_address_t *)receiver
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFDatagramSocketAsyncSendDataBlock)block
 # endif
@@ -107,7 +107,7 @@ OF_DIRECT_MEMBERS
 					       (OFSequencedPacketSocket *)socket
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
@@ -115,15 +115,14 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncSendForSequencedPacketSocket:
 					       (OFSequencedPacketSocket *)socket
       data: (OFData *)data
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
-+ (void)of_cancelAsyncRequestsForObject: (id)object
-				   mode: (of_run_loop_mode_t)mode;
++ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode;
 #endif
-- (void)of_removeTimer: (OFTimer *)timer forMode: (of_run_loop_mode_t)mode;
+- (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode;
 @end
 
 OF_ASSUME_NONNULL_END

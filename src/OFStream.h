@@ -312,7 +312,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -351,7 +351,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -411,7 +411,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
@@ -463,7 +463,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block;
 # endif
 #endif
@@ -843,7 +843,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param runLoopMode The run loop mode in which to perform the async read
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		      runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -894,7 +894,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		block.
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      runLoopMode: (OFRunLoopMode)runLoopMode
 			    block: (OFStreamAsyncReadLineBlock)block;
 # endif
 #endif
@@ -1001,7 +1001,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param runLoopMode The run loop mode in which to perform the async write
  */
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Asynchronously writes a string in UTF-8 encoding into the stream.
@@ -1041,7 +1041,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	     runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -1071,7 +1071,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+	   runLoopMode: (OFRunLoopMode)runLoopMode
 		 block: (OFStreamAsyncWriteDataBlock)block;
 
 /**
@@ -1123,7 +1123,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+	     runLoopMode: (OFRunLoopMode)runLoopMode
 		   block: (OFStreamAsyncWriteStringBlock)block;
 # endif
 #endif

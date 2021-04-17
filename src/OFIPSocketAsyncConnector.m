@@ -132,7 +132,7 @@
 							errNo: errNo];
 }
 
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	of_socket_address_t address = *(const of_socket_address_t *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
@@ -223,7 +223,7 @@
 	    [OFRunLoop currentRunLoop].currentMode];
 }
 
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
 		of_socket_address_t address =
