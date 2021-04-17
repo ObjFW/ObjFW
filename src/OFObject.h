@@ -56,12 +56,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** The left object is smaller than the right */
-	OF_ORDERED_ASCENDING = -1,
+	OFOrderedAscending = -1,
 	/** Both objects are equal */
-	OF_ORDERED_SAME = 0,
+	OFOrderedSame = 0,
 	/** The left object is bigger than the right */
-	OF_ORDERED_DESCENDING = 1
-} of_comparison_result_t;
+	OFOrderedDescending = 1
+} OFComparisonResult;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -71,7 +71,7 @@ typedef enum {
  * @param right The right object
  * @return The order of the objects
  */
-typedef of_comparison_result_t (^of_comparator_t)(id _Nonnull left,
+typedef OFComparisonResult (^of_comparator_t)(id _Nonnull left,
     id _Nonnull right);
 #endif
 
@@ -1227,7 +1227,7 @@ typedef void OFObject;
  * @param object An object to compare the object to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (id <OFComparing>)object;
+- (OFComparisonResult)compare: (id <OFComparing>)object;
 @end
 #endif
 

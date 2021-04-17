@@ -565,17 +565,17 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (OFDate *)date
+- (OFComparisonResult)compare: (OFDate *)date
 {
 	if (![date isKindOfClass: [OFDate class]])
 		@throw [OFInvalidArgumentException exception];
 
 	if (self.timeIntervalSince1970 < date.timeIntervalSince1970)
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 	if (self.timeIntervalSince1970 > date.timeIntervalSince1970)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 
-	return OF_ORDERED_SAME;
+	return OFOrderedSame;
 }
 
 - (OFString *)description
@@ -863,7 +863,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	if (otherDate == nil)
 		return self;
 
-	if ([self compare: otherDate] == OF_ORDERED_DESCENDING)
+	if ([self compare: otherDate] == OFOrderedDescending)
 		return otherDate;
 
 	return self;
@@ -874,7 +874,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	if (otherDate == nil)
 		return self;
 
-	if ([self compare: otherDate] == OF_ORDERED_ASCENDING)
+	if ([self compare: otherDate] == OFOrderedAscending)
 		return otherDate;
 
 	return self;

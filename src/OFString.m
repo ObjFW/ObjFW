@@ -1556,14 +1556,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (OFString *)string
+- (OFComparisonResult)compare: (OFString *)string
 {
 	void *pool;
 	const of_unichar_t *characters, *otherCharacters;
 	size_t minimumLength;
 
 	if (string == self)
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 
 	if (![string isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
@@ -1579,33 +1579,33 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	for (size_t i = 0; i < minimumLength; i++) {
 		if (characters[i] > otherCharacters[i]) {
 			objc_autoreleasePoolPop(pool);
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		}
 
 		if (characters[i] < otherCharacters[i]) {
 			objc_autoreleasePoolPop(pool);
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
 	if (self.length > string.length)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 	if (self.length < string.length)
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 
-	return OF_ORDERED_SAME;
+	return OFOrderedSame;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
+- (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters, *otherCharacters;
 	size_t length, otherLength, minimumLength;
 
 	if (string == self)
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 
 	characters = self.characters;
 	otherCharacters = string.characters;
@@ -1640,22 +1640,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		if (c > oc) {
 			objc_autoreleasePoolPop(pool);
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		}
 		if (c < oc) {
 			objc_autoreleasePoolPop(pool);
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 
 	if (length > otherLength)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 	if (length < otherLength)
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 
-	return OF_ORDERED_SAME;
+	return OFOrderedSame;
 }
 
 - (unsigned long)hash
@@ -2421,15 +2421,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *stripped = self.stringByDeletingEnclosingWhitespaces;
 
-	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
-	    [stripped caseInsensitiveCompare: @"INFINITY"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"INF"] == OFOrderedSame ||
+	    [stripped caseInsensitiveCompare: @"INFINITY"] == OFOrderedSame)
 		return INFINITY;
-	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
-	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"-INF"] == OFOrderedSame ||
+	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OFOrderedSame)
 		return -INFINITY;
-	if ([stripped caseInsensitiveCompare: @"NAN"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"NAN"] == OFOrderedSame)
 		return NAN;
-	if ([stripped caseInsensitiveCompare: @"-NAN"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
 #ifdef HAVE_STRTOF_L
@@ -2474,15 +2474,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *stripped = self.stringByDeletingEnclosingWhitespaces;
 
-	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
-	    [stripped caseInsensitiveCompare: @"INFINITY"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"INF"] == OFOrderedSame ||
+	    [stripped caseInsensitiveCompare: @"INFINITY"] == OFOrderedSame)
 		return INFINITY;
-	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
-	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"-INF"] == OFOrderedSame ||
+	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OFOrderedSame)
 		return -INFINITY;
-	if ([stripped caseInsensitiveCompare: @"NAN"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"NAN"] == OFOrderedSame)
 		return NAN;
-	if ([stripped caseInsensitiveCompare: @"-NAN"] == OF_ORDERED_SAME)
+	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
 #ifdef HAVE_STRTOD_L

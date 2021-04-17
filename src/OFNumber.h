@@ -368,7 +368,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param number The number to compare the number to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFNumber *)number;
+- (OFComparisonResult)compare: (OFNumber *)number;
 @end
 
 OF_ASSUME_NONNULL_END

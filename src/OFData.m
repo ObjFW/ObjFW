@@ -449,7 +449,7 @@ _references_to_categories_of_OFData(void)
 	return true;
 }
 
-- (of_comparison_result_t)compare: (OFData *)data
+- (OFComparisonResult)compare: (OFData *)data
 {
 	int comparison;
 	size_t count, minCount;
@@ -466,17 +466,17 @@ _references_to_categories_of_OFData(void)
 	if ((comparison = memcmp(_items, data.items,
 	    minCount * _itemSize)) == 0) {
 		if (_count > count)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (_count < count)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 	}
 
 	if (comparison > 0)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 	else
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 }
 
 - (unsigned long)hash

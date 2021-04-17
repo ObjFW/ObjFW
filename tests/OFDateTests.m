@@ -80,7 +80,7 @@ static OFString *module = @"OFDate";
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
 	    ![d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
 
-	TEST(@"-[compare:]", [d1 compare: d2] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare:]", [d1 compare: d2] == OFOrderedAscending)
 
 	TEST(@"-[second]", d1.second == 0 && d2.second == 5)
 

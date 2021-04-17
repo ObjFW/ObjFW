@@ -506,7 +506,7 @@
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (OFTimer *)timer
+- (OFComparisonResult)compare: (OFTimer *)timer
 {
 	if (![timer isKindOfClass: [OFTimer class]])
 		@throw [OFInvalidArgumentException exception];

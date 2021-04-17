@@ -889,7 +889,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to compare the string to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFString *)string;
+- (OFComparisonResult)compare: (OFString *)string;
 
 /**
  * @brief Compares the string to another string without caring about the case.
@@ -897,7 +897,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to compare the string to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string;
+- (OFComparisonResult)caseInsensitiveCompare: (OFString *)string;
 
 /**
  * @brief Returns the Unicode character at the specified index.

@@ -73,12 +73,12 @@ memcasecmp(const char *first, const char *second, size_t length)
 		s = of_ascii_toupper(s);
 
 		if (f > s)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (f < s)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 	}
 
-	return OF_ORDERED_SAME;
+	return OFOrderedSame;
 }
 
 int
@@ -799,13 +799,13 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return true;
 }
 
-- (of_comparison_result_t)compare: (OFString *)string
+- (OFComparisonResult)compare: (OFString *)string
 {
 	size_t otherCStringLength, minimumCStringLength;
 	int compare;
 
 	if (string == self)
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 
 	if (![string isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
@@ -817,19 +817,19 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	if ((compare = memcmp(_s->cString, string.UTF8String,
 	    minimumCStringLength)) == 0) {
 		if (_s->cStringLength > otherCStringLength)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (_s->cStringLength < otherCStringLength)
-			return OF_ORDERED_ASCENDING;
-		return OF_ORDERED_SAME;
+			return OFOrderedAscending;
+		return OFOrderedSame;
 	}
 
 	if (compare > 0)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 	else
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
+- (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
 	const char *otherCString;
 	size_t otherCStringLength, minimumCStringLength;
@@ -839,7 +839,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	int compare;
 
 	if (string == self)
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 
 	otherCString = string.UTF8String;
 	otherCStringLength = string.UTF8StringLength;
@@ -853,16 +853,16 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		if ((compare = memcasecmp(_s->cString, otherCString,
 		    minimumCStringLength)) == 0) {
 			if (_s->cStringLength > otherCStringLength)
-				return OF_ORDERED_DESCENDING;
+				return OFOrderedDescending;
 			if (_s->cStringLength < otherCStringLength)
-				return OF_ORDERED_ASCENDING;
-			return OF_ORDERED_SAME;
+				return OFOrderedAscending;
+			return OFOrderedSame;
 		}
 
 		if (compare > 0)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		else
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 #ifdef OF_HAVE_UNICODE_TABLES
 	}
 
@@ -897,21 +897,21 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		}
 
 		if (c1 > c2)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (c1 < c2)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 
 		i += l1;
 		j += l2;
 	}
 
 	if (_s->cStringLength - i > otherCStringLength - j)
-		return OF_ORDERED_DESCENDING;
+		return OFOrderedDescending;
 	else if (_s->cStringLength - i < otherCStringLength - j)
-		return OF_ORDERED_ASCENDING;
+		return OFOrderedAscending;
 #endif
 
-	return OF_ORDERED_SAME;
+	return OFOrderedSame;
 }
 
 - (unsigned long)hash

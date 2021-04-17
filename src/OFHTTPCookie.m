@@ -185,7 +185,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				 */
 				if (characters[i] == ',' &&
 				    [name caseInsensitiveCompare: @"expires"] ==
-				    OF_ORDERED_SAME && value.length == 3 &&
+				    OFOrderedSame && value.length == 3 &&
 				    ([value isEqual: @"Mon"] ||
 				    [value isEqual: @"Tue"] ||
 				    [value isEqual: @"Wed"] ||

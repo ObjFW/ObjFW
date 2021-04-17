@@ -273,7 +273,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param date The date to compare the date to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFDate *)date;
+- (OFComparisonResult)compare: (OFDate *)date;
 
 /**
  * @brief Creates a string of the date with the specified format.

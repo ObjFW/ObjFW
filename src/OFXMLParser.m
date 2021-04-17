@@ -499,7 +499,7 @@ inProcessingInstructionState(OFXMLParser *self)
 		} else
 			target = PI;
 
-		if ([target caseInsensitiveCompare: @"xml"] == OF_ORDERED_SAME)
+		if ([target caseInsensitiveCompare: @"xml"] == OFOrderedSame)
 			if (!parseXMLProcessingInstruction(self, data))
 				@throw [OFMalformedXMLException
 				    exceptionWithParser: self];

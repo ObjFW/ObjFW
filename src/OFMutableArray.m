@@ -34,11 +34,11 @@ static struct {
 @interface OFMutableArrayPlaceholder: OFMutableArray
 @end
 
-static of_comparison_result_t
+static OFComparisonResult
 compare(id left, id right, SEL selector)
 {
-	of_comparison_result_t (*comparator)(id, SEL, id) =
-	    (of_comparison_result_t (*)(id, SEL, id))
+	OFComparisonResult (*comparator)(id, SEL, id) =
+	    (OFComparisonResult (*)(id, SEL, id))
 	    [left methodForSelector: selector];
 
 	return comparator(left, selector, right);
@@ -48,14 +48,14 @@ static void
 quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
     int options)
 {
-	of_comparison_result_t ascending, descending;
+	OFComparisonResult ascending, descending;
 
 	if (options & OF_ARRAY_SORT_DESCENDING) {
-		ascending = OF_ORDERED_DESCENDING;
-		descending = OF_ORDERED_ASCENDING;
+		ascending = OFOrderedDescending;
+		descending = OFOrderedAscending;
 	} else {
-		ascending = OF_ORDERED_ASCENDING;
-		descending = OF_ORDERED_DESCENDING;
+		ascending = OFOrderedAscending;
+		descending = OFOrderedDescending;
 	}
 
 	while (left < right) {
@@ -94,14 +94,14 @@ static void
 quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
     of_comparator_t comparator, int options)
 {
-	of_comparison_result_t ascending, descending;
+	OFComparisonResult ascending, descending;
 
 	if (options & OF_ARRAY_SORT_DESCENDING) {
-		ascending = OF_ORDERED_DESCENDING;
-		descending = OF_ORDERED_ASCENDING;
+		ascending = OFOrderedDescending;
+		descending = OFOrderedAscending;
 	} else {
-		ascending = OF_ORDERED_ASCENDING;
-		descending = OF_ORDERED_DESCENDING;
+		ascending = OFOrderedAscending;
+		descending = OFOrderedDescending;
 	}
 
 	while (left < right) {

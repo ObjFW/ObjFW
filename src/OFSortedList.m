@@ -45,7 +45,7 @@
 	of_list_object_t *iter;
 
 	for (iter = _lastListObject; iter != NULL; iter = iter->previous) {
-		if ([object compare: iter->object] != OF_ORDERED_ASCENDING)
+		if ([object compare: iter->object] != OFOrderedAscending)
 			return [super insertObject: object
 				   afterListObject: iter];
 	}

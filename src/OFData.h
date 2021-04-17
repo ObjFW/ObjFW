@@ -276,7 +276,7 @@ enum {
  * @param data Data to compare the data to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFData *)data;
+- (OFComparisonResult)compare: (OFData *)data;
 
 /**
  * @brief Returns a specific item of the OFData.

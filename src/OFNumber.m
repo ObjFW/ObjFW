@@ -942,7 +942,7 @@ isFloat(OFNumber *number)
 	return (number.unsignedLongLongValue == self.unsignedLongLongValue);
 }
 
-- (of_comparison_result_t)compare: (OFNumber *)number
+- (OFComparisonResult)compare: (OFNumber *)number
 {
 	if (![number isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException exception];
@@ -952,31 +952,31 @@ isFloat(OFNumber *number)
 		double double2 = number.doubleValue;
 
 		if (double1 > double2)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (double1 < double2)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 	} else if (isSigned(self) || isSigned(number)) {
 		long long int1 = self.longLongValue;
 		long long int2 = number.longLongValue;
 
 		if (int1 > int2)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (int1 < int2)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 	} else {
 		unsigned long long uint1 = self.unsignedLongLongValue;
 		unsigned long long uint2 = number.unsignedLongLongValue;
 
 		if (uint1 > uint2)
-			return OF_ORDERED_DESCENDING;
+			return OFOrderedDescending;
 		if (uint1 < uint2)
-			return OF_ORDERED_ASCENDING;
+			return OFOrderedAscending;
 
-		return OF_ORDERED_SAME;
+		return OFOrderedSame;
 	}
 }
 

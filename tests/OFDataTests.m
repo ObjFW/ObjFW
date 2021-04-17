@@ -63,10 +63,10 @@ const char *str = "Hello!";
 
 	TEST(@"-[compare]", [mutable compare: immutable] == 0 &&
 	    R([mutable removeLastItem]) &&
-	    [immutable compare: mutable] == OF_ORDERED_DESCENDING &&
-	    [mutable compare: immutable] == OF_ORDERED_ASCENDING &&
+	    [immutable compare: mutable] == OFOrderedDescending &&
+	    [mutable compare: immutable] == OFOrderedAscending &&
 	    [[OFData dataWithItems: "aa" count: 2] compare:
-	    [OFData dataWithItems: "z" count: 1]] == OF_ORDERED_ASCENDING)
+	    [OFData dataWithItems: "z" count: 1]] == OFOrderedAscending)
 
 	TEST(@"-[hash]", immutable.hash == 0x634A529F)
 

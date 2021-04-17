@@ -235,30 +235,30 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[isEqual:]", [s[0] isEqual: s[2]] &&
 	    ![s[0] isEqual: [[[OFObject alloc] init] autorelease]])
 
-	TEST(@"-[compare:]", [s[0] compare: s[2]] == OF_ORDERED_SAME &&
-	    [s[0] compare: @""] != OF_ORDERED_SAME &&
-	    [C(@"") compare: @"a"] == OF_ORDERED_ASCENDING &&
-	    [C(@"a") compare: @"b"] == OF_ORDERED_ASCENDING &&
-	    [C(@"cd") compare: @"bc"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ä") compare: @"ö"] == OF_ORDERED_ASCENDING &&
-	    [C(@"€") compare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"aa") compare: @"z"] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare:]", [s[0] compare: s[2]] == OFOrderedSame &&
+	    [s[0] compare: @""] != OFOrderedSame &&
+	    [C(@"") compare: @"a"] == OFOrderedAscending &&
+	    [C(@"a") compare: @"b"] == OFOrderedAscending &&
+	    [C(@"cd") compare: @"bc"] == OFOrderedDescending &&
+	    [C(@"ä") compare: @"ö"] == OFOrderedAscending &&
+	    [C(@"€") compare: @"ß"] == OFOrderedDescending &&
+	    [C(@"aa") compare: @"z"] == OFOrderedAscending)
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OF_ORDERED_SAME &&
-	    [C(@"я") caseInsensitiveCompare: @"Я"] == OF_ORDERED_SAME &&
-	    [C(@"€") caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ß") caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OFOrderedSame &&
+	    [C(@"я") caseInsensitiveCompare: @"Я"] == OFOrderedSame &&
+	    [C(@"€") caseInsensitiveCompare: @"ß"] == OFOrderedDescending &&
+	    [C(@"ß") caseInsensitiveCompare: @"→"] == OFOrderedAscending &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])
 #else
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])

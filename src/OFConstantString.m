@@ -179,7 +179,7 @@ struct {
 }
 
 /* From protocol OFComparing,  but overridden in OFString */
-- (of_comparison_result_t)compare: (OFString *)string
+- (OFComparisonResult)compare: (OFString *)string
 {
 	[self finishInitialization];
 	return [self compare: string];
@@ -245,7 +245,7 @@ struct {
 	return [self cStringLengthWithEncoding: encoding];
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
+- (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
 	[self finishInitialization];
 	return [self caseInsensitiveCompare: string];

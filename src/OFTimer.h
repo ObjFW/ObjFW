@@ -459,7 +459,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param timer The timer to compare the string to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFTimer *)timer;
+- (OFComparisonResult)compare: (OFTimer *)timer;
 
 /**
  * @brief Fires the timer, meaning it will execute the specified selector on the

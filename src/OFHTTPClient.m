@@ -321,7 +321,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	} else {
 		if (connectionHeader != nil)
 			keepAlive = ([connectionHeader caseInsensitiveCompare:
-			    @"keep-alive"] == OF_ORDERED_SAME);
+			    @"keep-alive"] == OFOrderedSame);
 		else
 			keepAlive = false;
 	}
@@ -348,16 +348,16 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		newURLScheme = newURL.scheme;
 
 		if ([newURLScheme caseInsensitiveCompare: @"http"] !=
-		    OF_ORDERED_SAME &&
+		    OFOrderedSame &&
 		    [newURLScheme caseInsensitiveCompare: @"https"] !=
-		    OF_ORDERED_SAME)
+		    OFOrderedSame)
 			follow = false;
 
 		if (!_client->_allowsInsecureRedirects &&
 		    [URL.scheme caseInsensitiveCompare: @"https"] ==
-		    OF_ORDERED_SAME &&
+		    OFOrderedSame &&
 		    [newURLScheme caseInsensitiveCompare: @"http"] ==
-		    OF_ORDERED_SAME)
+		    OFOrderedSame)
 			follow = false;
 
 		if (follow && [_client->_delegate respondsToSelector: @selector(
@@ -701,7 +701,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 		[_client close];
 
 		if ([URL.scheme caseInsensitiveCompare: @"https"] ==
-		    OF_ORDERED_SAME) {
+		    OFOrderedSame) {
 			if (of_tls_socket_class == Nil)
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
@@ -1240,8 +1240,8 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 	OFURL *URL = request.URL;
 	OFString *scheme = URL.scheme;
 
-	if ([scheme caseInsensitiveCompare: @"http"] != OF_ORDERED_SAME &&
-	    [scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME)
+	if ([scheme caseInsensitiveCompare: @"http"] != OFOrderedSame &&
+	    [scheme caseInsensitiveCompare: @"https"] != OFOrderedSame)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	if (_inProgress)

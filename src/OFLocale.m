@@ -197,16 +197,16 @@ evaluateCondition(OFString *condition_, OFDictionary *variables)
 				    ![first isEqual: second]];
 			else if ([token isEqual: @"<"])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] == OF_ORDERED_ASCENDING];
+				    compare: second] == OFOrderedAscending];
 			else if ([token isEqual: @"<="])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] != OF_ORDERED_DESCENDING];
+				    compare: second] != OFOrderedDescending];
 			else if ([token isEqual: @">"])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] == OF_ORDERED_DESCENDING];
+				    compare: second] == OFOrderedDescending];
 			else if ([token isEqual: @">="])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] != OF_ORDERED_ASCENDING];
+				    compare: second] != OFOrderedAscending];
 			else if ([token isEqual: @"+"])
 				var = [OFNumber numberWithDouble:
 				    [first doubleValue] + [second doubleValue]];
