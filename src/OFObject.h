@@ -30,7 +30,6 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#include "block.h"
 #include "macros.h"
 #include "once.h"
 
@@ -1316,6 +1315,8 @@ extern uint64_t of_random64(void);
 #endif
 
 OF_ASSUME_NONNULL_END
+
+#include "OFBlock.h"
 
 #ifdef __OBJC__
 # import "OFObject+KeyValueCoding.h"

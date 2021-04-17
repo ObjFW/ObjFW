@@ -170,7 +170,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFSerialization.h			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\
-	    block.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
