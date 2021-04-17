@@ -64,12 +64,12 @@ typedef id _Nullable (^OFThreadBlock)(void);
     <OFCopying>
 {
 @private
-	of_thread_t _thread;
-	of_thread_attr_t _attr;
-	enum of_thread_running {
-		OF_THREAD_NOT_RUNNING,
-		OF_THREAD_RUNNING,
-		OF_THREAD_WAITING_FOR_JOIN
+	OFPlainThread _thread;
+	OFPlainThreadAttributes _attr;
+	enum OFThreadState {
+		OFThreadStateNotRunning,
+		OFThreadStateRunning,
+		OFThreadStateWaitingForJoin
 	} _running;
 # ifndef OF_OBJFW_RUNTIME
 	void *_pool;

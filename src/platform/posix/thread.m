@@ -75,7 +75,7 @@ functionWrapper(void *data)
 	struct thread_ctx *ctx = data;
 
 	if (ctx->name != NULL)
-		of_thread_set_name(ctx->name);
+		OFSetThreadName(ctx->name);
 
 	pthread_cleanup_push(free, data);
 
@@ -86,7 +86,7 @@ functionWrapper(void *data)
 }
 
 int
-of_thread_attr_init(of_thread_attr_t *attr)
+OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr)
 {
 	int error;
 	pthread_attr_t POSIXAttr;
@@ -109,8 +109,8 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 int
-of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
-    id object, const of_thread_attr_t *attr)
+OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
+    id object, const OFPlainThreadAttributes *attr)
 {
 	int error = 0;
 	pthread_attr_t POSIXAttr;
@@ -184,7 +184,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 }
 
 int
-of_thread_join(of_thread_t thread)
+OFPlainThreadJoin(OFPlainThread thread)
 {
 	void *ret;
 
@@ -192,13 +192,13 @@ of_thread_join(of_thread_t thread)
 }
 
 int
-of_thread_detach(of_thread_t thread)
+OFPlainThreadDetach(OFPlainThread thread)
 {
 	return pthread_detach(thread);
 }
 
 void
-of_thread_set_name(const char *name)
+OFSetThreadName(const char *name)
 {
 #if defined(OF_HAIKU)
 	rename_thread(find_thread(NULL), name);

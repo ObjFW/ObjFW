@@ -82,7 +82,7 @@ extern int of_rmutex_free(of_rmutex_t *rmutex);
 /* Spinlocks are inlined for performance. */
 
 static OF_INLINE void
-of_thread_yield(void)
+OFYieldThread(void)
 {
 #if defined(OF_HAVE_SCHED_YIELD)
 	sched_yield();
@@ -132,7 +132,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 			return 0;
 
 	while (of_spinlock_trylock(spinlock) == EBUSY)
-		of_thread_yield();
+		OFYieldThread();
 
 	return 0;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)

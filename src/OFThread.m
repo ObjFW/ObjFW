@@ -111,10 +111,10 @@ callMain(id object)
 
 	name = thread.name;
 	if (name != nil)
-		of_thread_set_name(
+		OFSetThreadName(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(object_getClassName(thread));
+		OFSetThreadName(object_getClassName(thread));
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
@@ -149,7 +149,7 @@ callMain(id object)
 		of_socket_deinit();
 #endif
 
-	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
+	thread->_running = OFThreadStateWaitingForJoin;
 
 	[thread release];
 }
@@ -337,10 +337,10 @@ callMain(id object)
 	[OFThread currentThread].name = name;
 
 	if (name != nil)
-		of_thread_set_name(
+		OFSetThreadName(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(class_getName([self class]));
+		OFSetThreadName(class_getName([self class]));
 }
 
 + (OFString *)name
@@ -351,8 +351,8 @@ callMain(id object)
 + (void)of_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
-	mainThread->_thread = of_thread_current();
-	mainThread->_running = OF_THREAD_RUNNING;
+	mainThread->_thread = OFCurrentPlainThread();
+	mainThread->_running = OFThreadStateRunning;
 
 	if (OFTLSKeySet(threadSelfKey, mainThread) != 0)
 		@throw [OFInitializationFailedException
@@ -364,7 +364,7 @@ callMain(id object)
 	self = [super init];
 
 	@try {
-		if (of_thread_attr_init(&_attr) != 0)
+		if (OFPlainThreadAttributesInit(&_attr) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
@@ -417,20 +417,20 @@ callMain(id object)
 {
 	int error;
 
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
-	if (_running == OF_THREAD_WAITING_FOR_JOIN) {
-		of_thread_detach(_thread);
+	if (_running == OFThreadStateWaitingForJoin) {
+		OFPlainThreadDetach(_thread);
 		[_returnValue release];
 	}
 
 	[self retain];
 
-	_running = OF_THREAD_RUNNING;
+	_running = OFThreadStateRunning;
 
-	if ((error = of_thread_new(&_thread, [_name cStringWithEncoding:
+	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
 		[self release];
 		@throw [OFThreadStartFailedException
@@ -443,16 +443,16 @@ callMain(id object)
 {
 	int error;
 
-	if (_running == OF_THREAD_NOT_RUNNING)
+	if (_running == OFThreadStateNotRunning)
 		@throw [OFThreadJoinFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
-	if ((error = of_thread_join(_thread)) != 0)
+	if ((error = OFPlainThreadJoin(_thread)) != 0)
 		@throw [OFThreadJoinFailedException exceptionWithThread: self
 								  errNo: error];
 
-	_running = OF_THREAD_NOT_RUNNING;
+	_running = OFThreadStateNotRunning;
 
 	return _returnValue;
 }
@@ -488,7 +488,7 @@ callMain(id object)
 
 - (void)setPriority: (float)priority
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -502,7 +502,7 @@ callMain(id object)
 
 - (void)setStackSize: (size_t)stackSize
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -516,7 +516,7 @@ callMain(id object)
 
 - (void)setSupportsSockets: (bool)supportsSockets
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -525,7 +525,7 @@ callMain(id object)
 
 - (void)dealloc
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -533,8 +533,8 @@ callMain(id object)
 	 * We should not be running anymore, but call detach in order to free
 	 * the resources.
 	 */
-	if (_running == OF_THREAD_WAITING_FOR_JOIN)
-		of_thread_detach(_thread);
+	if (_running == OFThreadStateWaitingForJoin)
+		OFPlainThreadDetach(_thread);
 
 	[_returnValue release];
 # ifdef OF_HAVE_BLOCKS

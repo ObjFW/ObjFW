@@ -36,7 +36,7 @@ functionWrapper(struct thread_context *context)
 }
 
 int
-of_thread_attr_init(of_thread_attr_t *attr)
+OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr)
 {
 	attr->priority = 0;
 	attr->stackSize = 0;
@@ -45,8 +45,8 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 int
-of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
-    id object, const of_thread_attr_t *attr)
+OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
+    id object, const OFPlainThreadAttributes *attr)
 {
 	DWORD priority = THREAD_PRIORITY_NORMAL;
 	struct thread_context *context;
@@ -100,7 +100,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 }
 
 int
-of_thread_join(of_thread_t thread)
+OFPlainThreadJoin(OFPlainThread thread)
 {
 	switch (WaitForSingleObject(thread, INFINITE)) {
 	case WAIT_OBJECT_0:
@@ -119,7 +119,7 @@ of_thread_join(of_thread_t thread)
 }
 
 int
-of_thread_detach(of_thread_t thread)
+OFPlainThreadDetach(OFPlainThread thread)
 {
 	CloseHandle(thread);
 
@@ -127,6 +127,6 @@ of_thread_detach(of_thread_t thread)
 }
 
 void
-of_thread_set_name(const char *name)
+OFSetThreadName(const char *name)
 {
 }

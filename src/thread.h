@@ -26,10 +26,10 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-typedef pthread_t of_thread_t;
+typedef pthread_t OFPlainThread;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-typedef HANDLE of_thread_t;
+typedef HANDLE OFPlainThread;
 #elif defined(OF_AMIGAOS)
 # include <exec/tasks.h>
 # include <exec/semaphores.h>
@@ -41,34 +41,57 @@ typedef struct {
 	struct Task *joinTask;
 	unsigned char joinSigBit;
 	bool detached, done;
-} *of_thread_t;
+} *OFPlainThread;
 #endif
 
-typedef struct of_thread_attr_t {
+typedef struct OFPlainThreadAttributes {
 	float priority;
 	size_t stackSize;
-} of_thread_attr_t;
+} OFPlainThreadAttributes;
 
 #if defined(OF_HAVE_PTHREADS)
-# define of_thread_is_current(t) pthread_equal(t, pthread_self())
-# define of_thread_current() pthread_self()
+static OF_INLINE OFPlainThread
+OFCurrentPlainThread(void)
+{
+	return pthread_self();
+}
+
+static OF_INLINE bool
+OFPlainThreadIsCurrent(OFPlainThread thread)
+{
+	return pthread_equal(thread, pthread_self());
+}
 #elif defined(OF_WINDOWS)
-# define of_thread_is_current(t) (t == GetCurrentThread())
-# define of_thread_current() GetCurrentThread()
+static OF_INLINE OFPlainThread
+OFCurrentPlainThread(void)
+{
+	return GetCurrentThread();
+}
+
+static OF_INLINE bool
+OFPlainThreadIsCurrent(OFPlainThread thread)
+{
+	return (thread == GetCurrentThread());
+}
 #elif defined(OF_AMIGAOS)
-# define of_thread_is_current(t) (t->thread == FindTask(NULL))
-extern of_thread_t of_thread_current(void);
+extern OFPlainThread OFCurrentPlainThread(void);
+
+static OF_INLINE bool
+OFPlainThreadIsCurrent(OFPlainThread thread)
+{
+	return (thread->thread == FindTask(NULL));
+}
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_thread_attr_init(of_thread_attr_t *attr);
-extern int of_thread_new(of_thread_t *thread, const char *name,
-    void (*function)(id), id object, const of_thread_attr_t *attr);
-extern void of_thread_set_name(const char *name);
-extern int of_thread_join(of_thread_t thread);
-extern int of_thread_detach(of_thread_t thread);
+extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
+extern int OFPlainThreadNew(OFPlainThread *thread, const char *name,
+    void (*function)(id), id object, const OFPlainThreadAttributes *attr);
+extern void OFSetThreadName(const char *name);
+extern int OFPlainThreadJoin(OFPlainThread thread);
+extern int OFPlainThreadDetach(OFPlainThread thread);
 #ifdef __cplusplus
 }
 #endif

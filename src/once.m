@@ -51,7 +51,7 @@ of_once(of_once_t *control, void (*func)(void))
 		of_atomic_int_inc(control);
 	} else
 		while (*control == 1)
-			of_thread_yield();
+			OFYieldThread();
 #elif defined(OF_AMIGAOS)
 	bool run = false;
 
