@@ -647,12 +647,12 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[old release];
 }
 
-- (of_time_interval_t)timeout
+- (OFTimeInterval)timeout
 {
 	return _settings->_timeout;
 }
 
-- (void)setTimeout: (of_time_interval_t)timeout
+- (void)setTimeout: (OFTimeInterval)timeout
 {
 	_settings->_timeout = timeout;
 }
@@ -689,12 +689,12 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	_settings->_usesTCP = usesTCP;
 }
 
-- (of_time_interval_t)configReloadInterval
+- (OFTimeInterval)configReloadInterval
 {
 	return _settings->_configReloadInterval;
 }
 
-- (void)setConfigReloadInterval: (of_time_interval_t)configReloadInterval
+- (void)setConfigReloadInterval: (OFTimeInterval)configReloadInterval
 {
 	_settings->_configReloadInterval = configReloadInterval;
 }

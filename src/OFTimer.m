@@ -33,7 +33,7 @@
 @implementation OFTimer
 @synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 				       repeats: (bool)repeats
@@ -54,7 +54,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object
@@ -77,7 +77,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -102,7 +102,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -129,7 +129,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -159,7 +159,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 				       repeats: (bool)repeats
 					 block: (of_timer_block_t)block
 {
@@ -179,7 +179,7 @@
 }
 #endif
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			      repeats: (bool)repeats
@@ -198,7 +198,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object
@@ -219,7 +219,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -242,7 +242,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -267,7 +267,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -295,7 +295,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			      repeats: (bool)repeats
 				block: (of_timer_block_t)block
 {
@@ -319,7 +319,7 @@
 }
 
 - (instancetype)of_initWithFireDate: (OFDate *)fireDate
-			   interval: (of_time_interval_t)interval
+			   interval: (OFTimeInterval)interval
 			     target: (id)target
 			   selector: (SEL)selector
 			     object: (id)object1
@@ -356,7 +356,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			 repeats: (bool)repeats
@@ -374,7 +374,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object
@@ -393,7 +393,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -413,7 +413,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -434,7 +434,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -457,7 +457,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			 repeats: (bool)repeats
 			   block: (of_timer_block_t)block
 {
@@ -540,7 +540,7 @@
 	if (_repeats && _valid) {
 		int64_t missedIntervals =
 		    -_fireDate.timeIntervalSinceNow / _interval;
-		of_time_interval_t newFireDate;
+		OFTimeInterval newFireDate;
 		OFRunLoop *runLoop;
 
 		/* In case the clock was changed backwards */

@@ -91,16 +91,16 @@ initDistantPast(void)
 	    initWithTimeIntervalSince1970: -62167219200.0];
 }
 
-static of_time_interval_t
+static OFTimeInterval
 now(void)
 {
 	struct timeval tv;
-	of_time_interval_t seconds;
+	OFTimeInterval seconds;
 
 	OF_ENSURE(gettimeofday(&tv, NULL) == 0);
 
 	seconds = tv.tv_sec;
-	seconds += (of_time_interval_t)tv.tv_usec / 1000000;
+	seconds += (OFTimeInterval)tv.tv_usec / 1000000;
 
 	return seconds;
 }
@@ -122,7 +122,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm tm;							\
 									\
@@ -134,7 +134,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 									\
 	return tm.field;
 # define LOCALTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm tm;							\
 									\
@@ -148,7 +148,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 #else
 # ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
@@ -166,7 +166,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 		[mutex unlock];						\
 	}
 #  define LOCALTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
@@ -185,7 +185,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 	}
 # else
 #  define GMTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
@@ -197,7 +197,7 @@ static __time64_t (*func__mktime64)(struct tm *);
 									\
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;	\
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
 	time_t seconds = (time_t)timeInterval;				\
 	struct tm *tm;							\
 									\
@@ -288,7 +288,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
 # pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #endif
-- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
 	uint64_t value;
@@ -323,7 +323,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
 @implementation OFTaggedPointerDate
-- (of_time_interval_t)timeIntervalSince1970
+- (OFTimeInterval)timeIntervalSince1970
 {
 	uint64_t value = (uint64_t)object_getTaggedPointerValue(self);
 
@@ -382,13 +382,13 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)dateWithTimeIntervalSince1970: (of_time_interval_t)seconds
++ (instancetype)dateWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: seconds] autorelease];
 }
 
-+ (instancetype)dateWithTimeIntervalSinceNow: (of_time_interval_t)seconds
++ (instancetype)dateWithTimeIntervalSinceNow: (OFTimeInterval)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSinceNow: seconds] autorelease];
@@ -427,7 +427,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return [self initWithTimeIntervalSince1970: now()];
 }
 
-- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
 	self = [super init];
 
@@ -436,7 +436,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return self;
 }
 
-- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSinceNow: (OFTimeInterval)seconds
 {
 	return [self initWithTimeIntervalSince1970: now() + seconds];
 }
@@ -470,7 +470,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	 * contains a time zone.
 	 */
 	short tz = SHRT_MAX;
-	of_time_interval_t seconds;
+	OFTimeInterval seconds;
 
 	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
@@ -498,7 +498,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	of_time_interval_t seconds;
+	OFTimeInterval seconds;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -605,7 +605,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 - (OFData *)messagePackRepresentation
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 	int64_t seconds = (int64_t)timeInterval;
 	uint32_t nanoseconds =
 	    (uint32_t)((timeInterval - trunc(timeInterval)) * 1000000000);
@@ -658,7 +658,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (unsigned long)microsecond
 {
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 
 	return (unsigned long)((timeInterval - trunc(timeInterval)) * 1000000);
 }
@@ -741,7 +741,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 - (OFString *)dateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
@@ -801,7 +801,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 - (OFString *)localDateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
-	of_time_interval_t timeInterval = self.timeIntervalSince1970;
+	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
@@ -880,30 +880,30 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return self;
 }
 
-- (of_time_interval_t)timeIntervalSince1970
+- (OFTimeInterval)timeIntervalSince1970
 {
 	return _seconds;
 }
 
-- (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate
+- (OFTimeInterval)timeIntervalSinceDate: (OFDate *)otherDate
 {
 	return self.timeIntervalSince1970 - otherDate.timeIntervalSince1970;
 }
 
-- (of_time_interval_t)timeIntervalSinceNow
+- (OFTimeInterval)timeIntervalSinceNow
 {
 	struct timeval t;
-	of_time_interval_t seconds;
+	OFTimeInterval seconds;
 
 	OF_ENSURE(gettimeofday(&t, NULL) == 0);
 
 	seconds = t.tv_sec;
-	seconds += (of_time_interval_t)t.tv_usec / 1000000;
+	seconds += (OFTimeInterval)t.tv_usec / 1000000;
 
 	return self.timeIntervalSince1970 - seconds;
 }
 
-- (OFDate *)dateByAddingTimeInterval: (of_time_interval_t)seconds
+- (OFDate *)dateByAddingTimeInterval: (OFTimeInterval)seconds
 {
 	return [OFDate dateWithTimeIntervalSince1970:
 	    self.timeIntervalSince1970 + seconds];

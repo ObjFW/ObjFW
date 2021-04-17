@@ -235,7 +235,7 @@ callMain(id object)
 }
 #endif
 
-+ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval
++ (void)sleepForTimeInterval: (OFTimeInterval)timeInterval
 {
 	if (timeInterval < 0)
 		return;

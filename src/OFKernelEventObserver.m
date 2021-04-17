@@ -245,7 +245,7 @@ enum {
 	[self observeForTimeInterval: -1];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

@@ -187,7 +187,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	OFNull *nullObject = [OFNull null];
 	struct epoll_event eventList[EVENTLIST_SIZE];

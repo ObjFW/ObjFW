@@ -124,7 +124,7 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 int
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
-    of_time_interval_t timeout)
+    OFTimeInterval timeout)
 {
 	ULONG signalMask = 0;
 
@@ -134,7 +134,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 
 int
 of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
-    of_time_interval_t timeout, ULONG *signalMask)
+    OFTimeInterval timeout, ULONG *signalMask)
 {
 	struct of_condition_waiting_task waitingTask = {
 		.task = FindTask(NULL),

@@ -140,7 +140,7 @@ OFEqualRanges(OFRange range1, OFRange range2)
 /**
  * @brief A time interval in seconds.
  */
-typedef double of_time_interval_t;
+typedef double OFTimeInterval;
 
 /**
  * @struct of_point_t OFObject.h ObjFW/OFObject.h
@@ -823,7 +823,7 @@ OF_ROOT_CLASS
  * @param selector The selector to perform
  * @param delay The delay after which the selector will be performed
  */
-- (void)performSelector: (SEL)selector afterDelay: (of_time_interval_t)delay;
+- (void)performSelector: (SEL)selector afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified object after the
@@ -836,7 +836,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	     withObject: (nullable id)object
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -852,7 +852,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -871,7 +871,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -893,7 +893,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 # ifdef OF_HAVE_THREADS
 /**
@@ -1074,7 +1074,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1089,7 +1089,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1107,7 +1107,7 @@ OF_ROOT_CLASS
 	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1128,7 +1128,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1152,7 +1152,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 # endif
 
 /**

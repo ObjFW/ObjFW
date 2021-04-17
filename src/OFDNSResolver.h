@@ -165,7 +165,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The timeout, in seconds, after which the next name server should be
  *	  tried.
  */
-@property (nonatomic) of_time_interval_t timeout;
+@property (nonatomic) OFTimeInterval timeout;
 
 /**
  * @brief The number of attempts before giving up to resolve a host.
@@ -189,7 +189,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * Setting this to 0 disables config reloading.
  */
-@property (nonatomic) of_time_interval_t configReloadInterval;
+@property (nonatomic) OFTimeInterval configReloadInterval;
 
 /**
  * @brief Creates a new, autoreleased OFDNSResolver.

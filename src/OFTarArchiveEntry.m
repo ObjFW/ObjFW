@@ -104,7 +104,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    header + 124, 12, ULLONG_MAX);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
-		    (of_time_interval_t)octalValueFromBuffer(
+		    (OFTimeInterval)octalValueFromBuffer(
 		    header + 136, 12, ULLONG_MAX)];
 		_type = header[156];
 

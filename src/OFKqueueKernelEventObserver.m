@@ -153,7 +153,7 @@
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];

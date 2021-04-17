@@ -43,7 +43,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 
 int
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
-    of_time_interval_t timeout)
+    OFTimeInterval timeout)
 {
 	struct timespec ts;
 

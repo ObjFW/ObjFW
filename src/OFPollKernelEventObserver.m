@@ -162,7 +162,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	void *pool;
 	struct pollfd *FDs;

@@ -213,7 +213,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param timeInterval The time to wait for an event, in seconds
  */
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval;
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval;
 
 /**
  * @brief Observes all objects until an event happens on an object or the

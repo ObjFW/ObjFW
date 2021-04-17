@@ -169,7 +169,7 @@
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	fd_set readFDs;
 	fd_set writeFDs;

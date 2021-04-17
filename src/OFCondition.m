@@ -86,7 +86,7 @@
 }
 #endif
 
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 {
 	int error = of_condition_timed_wait(&_condition, &_mutex, timeInterval);
 
@@ -102,7 +102,7 @@
 }
 
 #ifdef OF_AMIGAOS
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
 	int error = of_condition_timed_wait_or_signal(&_condition, &_mutex,

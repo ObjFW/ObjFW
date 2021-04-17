@@ -1622,7 +1622,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 		/* Watch for I/O events until the next timer is due */
 		if (nextTimer != nil || deadline != nil) {
-			of_time_interval_t timeout;
+			OFTimeInterval timeout;
 
 			if (nextTimer != nil && deadline == nil)
 				timeout = nextTimer.timeIntervalSinceNow;

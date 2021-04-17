@@ -217,7 +217,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @param timeInterval The number of seconds to sleep
  */
-+ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval;
++ (void)sleepForTimeInterval: (OFTimeInterval)timeInterval;
 
 /**
  * @brief Suspends execution of the current thread until the specified date.

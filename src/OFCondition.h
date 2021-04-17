@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param timeInterval The time interval until the timeout is reached
  * @return Whether the condition has been signaled
  */
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval;
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval;
 
 #ifdef OF_AMIGAOS
 /**
@@ -86,7 +86,7 @@ OF_SUBCLASSING_RESTRICTED
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
  */
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask;
 #endif
 

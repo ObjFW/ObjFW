@@ -89,10 +89,10 @@
 typedef struct {
 	of_offset_t st_size;
 	unsigned int st_mode;
-	of_time_interval_t st_atime, st_mtime, st_ctime;
+	OFTimeInterval st_atime, st_mtime, st_ctime;
 # ifdef OF_WINDOWS
 #  define HAVE_STRUCT_STAT_ST_BIRTHTIME
-	of_time_interval_t st_birthtime;
+	OFTimeInterval st_birthtime;
 	DWORD fileAttributes;
 # endif
 } of_stat_t;
@@ -134,7 +134,7 @@ static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
 #endif
 
 #ifdef OF_WINDOWS
-static of_time_interval_t
+static OFTimeInterval
 filetimeToTimeInterval(const FILETIME *filetime)
 {
 	return (double)((int64_t)filetime->dwHighDateTime << 32 |
@@ -262,7 +262,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 # else
 	struct FileInfoBlock fib;
 # endif
-	of_time_interval_t timeInterval;
+	OFTimeInterval timeInterval;
 	struct Locale *locale;
 	struct DateStamp *date;
 
@@ -315,7 +315,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 # endif
 	timeInterval += date->ds_Days * 86400.0;
 	timeInterval += date->ds_Minute * 60.0;
-	timeInterval += date->ds_Tick / (of_time_interval_t)TICKS_PER_SECOND;
+	timeInterval += date->ds_Tick / (OFTimeInterval)TICKS_PER_SECOND;
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
 
@@ -703,7 +703,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	}
 #elif defined(OF_AMIGAOS)
 	/* AmigaOS does not support access time. */
-	of_time_interval_t modificationTime =
+	OFTimeInterval modificationTime =
 	    modificationDate.timeIntervalSince1970;
 	struct Locale *locale;
 	struct DateStamp date;
@@ -739,9 +739,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		     failedAttribute: attributeKey
 			       errNo: retrieveError()];
 #else
-	of_time_interval_t lastAccessTime =
-	    lastAccessDate.timeIntervalSince1970;
-	of_time_interval_t modificationTime =
+	OFTimeInterval lastAccessTime = lastAccessDate.timeIntervalSince1970;
+	OFTimeInterval modificationTime =
 	    modificationDate.timeIntervalSince1970;
 	struct timeval times[2] = {
 		{
