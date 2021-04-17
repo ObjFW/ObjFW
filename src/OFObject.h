@@ -190,47 +190,47 @@ OFEqualPoints(OFPoint point1, OFPoint point2)
 }
 
 /**
- * @struct of_dimension_t OFObject.h ObjFW/OFObject.h
+ * @struct OFSize OFObject.h ObjFW/OFObject.h
  *
- * @brief A dimension.
+ * @brief A size.
  */
-struct OF_BOXABLE of_dimension_t {
-	/** The width of the dimension */
+struct OF_BOXABLE OFSize {
+	/** The width of the size */
 	float width;
-	/** The height of the dimension */
+	/** The height of the size */
 	float height;
 };
-typedef struct of_dimension_t of_dimension_t;
+typedef struct OFSize OFSize;
 
 /**
- * @brief Creates a new of_dimension_t.
+ * @brief Creates a new OFSize.
  *
- * @param width The width of the dimension
- * @param height The height of the dimension
- * @return An of_dimension_t with the specified width and height
+ * @param width The width of the size
+ * @param height The height of the size
+ * @return An OFSize with the specified width and height
  */
-static OF_INLINE of_dimension_t OF_CONST_FUNC
-of_dimension(float width, float height)
+static OF_INLINE OFSize OF_CONST_FUNC
+OFMakeSize(float width, float height)
 {
-	of_dimension_t dimension = { width, height };
+	OFSize size = { width, height };
 
-	return dimension;
+	return size;
 }
 
 /**
- * @brief Returns whether the two dimensions are equal.
+ * @brief Returns whether the two sizes are equal.
  *
- * @param dimension1 The first dimension for the comparison
- * @param dimension2 The second dimension for the comparison
- * @return Whether the two dimensions are equal
+ * @param size1 The first size for the comparison
+ * @param size2 The second size for the comparison
+ * @return Whether the two sizes are equal
  */
 static OF_INLINE bool
-of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
+OFEqualSizes(OFSize size1, OFSize size2)
 {
-	if (dimension1.width != dimension2.width)
+	if (size1.width != size2.width)
 		return false;
 
-	if (dimension1.height != dimension2.height)
+	if (size1.height != size2.height)
 		return false;
 
 	return true;
@@ -245,7 +245,7 @@ struct OF_BOXABLE of_rectangle_t {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
-	of_dimension_t size;
+	OFSize size;
 };
 typedef struct of_rectangle_t of_rectangle_t;
 
@@ -263,7 +263,7 @@ of_rectangle(float x, float y, float width, float height)
 {
 	of_rectangle_t rectangle = {
 		OFMakePoint(x, y),
-		of_dimension(width, height)
+		OFMakeSize(width, height)
 	};
 
 	return rectangle;
@@ -282,7 +282,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 	if (!OFEqualPoints(rectangle1.origin, rectangle2.origin))
 		return false;
 
-	if (!of_dimension_equal(rectangle1.size, rectangle2.size))
+	if (!OFEqualSizes(rectangle1.size, rectangle2.size))
 		return false;
 
 	return true;

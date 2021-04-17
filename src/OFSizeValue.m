@@ -13,41 +13,40 @@
  * file.
  */
 
-#import "OFDimensionValue.h"
+#import "OFSizeValue.h"
 #import "OFMethodSignature.h"
 #import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFDimensionValue
-@synthesize dimensionValue = _dimension;
+@implementation OFSizeValue
+@synthesize sizeValue = _size;
 
-- (instancetype)initWithDimension: (of_dimension_t)dimension
+- (instancetype)initWithSize: (OFSize)size
 {
 	self = [super init];
 
-	_dimension = dimension;
+	_size = size;
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return @encode(of_dimension_t);
+	return @encode(OFSize);
 }
 
 - (void)getValue: (void *)value size: (size_t)size
 {
-	if (size != sizeof(_dimension))
+	if (size != sizeof(_size))
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_dimension, sizeof(_dimension));
+	memcpy(value, &_size, sizeof(_size));
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFValue: of_dimension_t { %f, %f }>",
-	    _dimension.width, _dimension.height];
+	    @"<OFValue: OFSize { %f, %f }>", _size.width, _size.height];
 }
 @end

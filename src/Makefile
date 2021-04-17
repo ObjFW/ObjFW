@@ -181,7 +181,6 @@ SRCS += OFAdjacentArray.m		\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCountedMapTableSet.m		\
-	OFDimensionValue.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -197,6 +196,7 @@ SRCS += OFAdjacentArray.m		\
 	OFRangeValue.m			\
 	OFRectangleValue.m		\
 	OFSandbox.m			\
+	OFSizeValue.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\

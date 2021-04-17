@@ -15,13 +15,13 @@
 
 #import "OFValue.h"
 #import "OFBytesValue.h"
-#import "OFDimensionValue.h"
 #import "OFMethodSignature.h"
 #import "OFNonretainedObjectValue.h"
 #import "OFPointValue.h"
 #import "OFPointerValue.h"
 #import "OFRangeValue.h"
 #import "OFRectangleValue.h"
+#import "OFSizeValue.h"
 #import "OFString.h"
 
 #import "OFOutOfMemoryException.h"
@@ -63,10 +63,9 @@
 	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
 }
 
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension
++ (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[OFDimensionValue alloc]
-	    initWithDimension: dimension] autorelease];
+	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
 }
 
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
@@ -187,9 +186,9 @@
 	return ret;
 }
 
-- (of_dimension_t)dimensionValue
+- (OFSize)sizeValue
 {
-	of_dimension_t ret;
+	OFSize ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }

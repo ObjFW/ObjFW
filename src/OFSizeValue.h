@@ -17,12 +17,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFDimensionValue: OFValue
+@interface OFSizeValue: OFValue
 {
-	of_dimension_t _dimension;
+	OFSize _size;
 }
 
-- (instancetype)initWithDimension: (of_dimension_t)dimension;
+- (instancetype)initWithSize: (OFSize)size;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -131,7 +131,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
 + (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
 + (instancetype)valueWithPoint: (OFPoint)point OF_UNAVAILABLE;
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
++ (instancetype)valueWithSize: (OFSize)size OF_UNAVAILABLE;
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
 

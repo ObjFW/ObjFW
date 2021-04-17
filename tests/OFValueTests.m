@@ -27,7 +27,7 @@ static OFString *module = @"OFValue";
 	void *pool = objc_autoreleasePoolPush();
 	OFRange range = OFMakeRange(1, 64), range2;
 	OFPoint point = OFMakePoint(1.5f, 3.0f), point2;
-	of_dimension_t dimension = of_dimension(4.5f, 5.0f), dimension2;
+	OFSize size = OFMakeSize(4.5f, 5.0f), size2;
 	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
 	of_rectangle_t rectangle2;
 	OFValue *value;
@@ -111,24 +111,24 @@ static OFString *module = @"OFValue";
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] pointValue])
 
-	TEST(@"+[valueWithDimension:]",
-	    (value = [OFValue valueWithDimension: dimension]))
+	TEST(@"+[valueWithSize:]",
+	    (value = [OFValue valueWithSize: size]))
 
-	TEST(@"-[dimensionValue]",
-	    of_dimension_equal(value.dimensionValue, dimension) &&
-	    (value = [OFValue valueWithBytes: &dimension
-				    objCType: @encode(of_dimension_t)]) &&
-	    of_dimension_equal(value.dimensionValue, dimension))
+	TEST(@"-[sizeValue]",
+	    OFEqualSizes(value.sizeValue, size) &&
+	    (value = [OFValue valueWithBytes: &size
+				    objCType: @encode(OFSize)]) &&
+	    OFEqualSizes(value.sizeValue, size))
 
-	TEST(@"-[getValue:size:] for OFDimensionValue",
-	    (value = [OFValue valueWithDimension: dimension]) &&
-	    R([value getValue: &dimension2 size: sizeof(dimension2)]) &&
-	    of_dimension_equal(dimension2, dimension))
+	TEST(@"-[getValue:size:] for OFSizeValue",
+	    (value = [OFValue valueWithSize: size]) &&
+	    R([value getValue: &size2 size: sizeof(size2)]) &&
+	    OFEqualSizes(size2, size))
 
-	EXPECT_EXCEPTION(@"-[dimensionValue] with wrong size throws",
+	EXPECT_EXCEPTION(@"-[sizeValue] with wrong size throws",
 	    OFOutOfRangeException,
 	    [[OFValue valueWithBytes: "a"
-			    objCType: @encode(char)] dimensionValue])
+			    objCType: @encode(char)] sizeValue])
 
 	TEST(@"+[valueWithRectangle:]",
 	    (value = [OFValue valueWithRectangle: rectangle]))

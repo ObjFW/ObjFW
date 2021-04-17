@@ -47,25 +47,25 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) id nonretainedObjectValue;
 
 /**
- * @brief The value as a range.
+ * @brief The value as an OFRange.
  *
- * If the value is not range-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFRange-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) OFRange rangeValue;
 
 /**
- * @brief The value as a point.
+ * @brief The value as an OFPoint.
  *
- * If the value is not point-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFPoint-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) OFPoint pointValue;
 
 /**
- * @brief The value as a dimension.
+ * @brief The value as an OFSize.
  *
- * If the value is not dimension-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFSize-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_dimension_t dimensionValue;
+@property (readonly, nonatomic) OFSize sizeValue;
 
 /**
  * @brief The value as a rectangle.
@@ -124,13 +124,12 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)valueWithPoint: (OFPoint)point;
 
 /**
- * @brief Creates a new, autoreleased OFValue containing the specified
- *	  dimension.
+ * @brief Creates a new, autoreleased OFValue containing the specified size.
  *
- * @param dimension The dimension the OFValue should contain
+ * @param size The size the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension;
++ (instancetype)valueWithSize: (OFSize)size;
 
 /**
  * @brief Creates a new, autoreleased OFValue containing the specified
