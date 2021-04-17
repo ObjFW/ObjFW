@@ -58,7 +58,7 @@
 	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
 }
 
-+ (instancetype)valueWithPoint: (of_point_t)point
++ (instancetype)valueWithPoint: (OFPoint)point
 {
 	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
 }
@@ -180,9 +180,9 @@
 	return ret;
 }
 
-- (of_point_t)pointValue
+- (OFPoint)pointValue
 {
-	of_point_t ret;
+	OFPoint ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }

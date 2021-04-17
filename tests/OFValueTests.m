@@ -26,7 +26,7 @@ static OFString *module = @"OFValue";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRange range = OFMakeRange(1, 64), range2;
-	of_point_t point = of_point(1.5f, 3.0f), point2;
+	OFPoint point = OFMakePoint(1.5f, 3.0f), point2;
 	of_dimension_t dimension = of_dimension(4.5f, 5.0f), dimension2;
 	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
 	of_rectangle_t rectangle2;
@@ -96,15 +96,15 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithPoint: point]))
 
 	TEST(@"-[pointValue]",
-	    of_point_equal(value.pointValue, point) &&
+	    OFEqualPoints(value.pointValue, point) &&
 	    (value = [OFValue valueWithBytes: &point
-				    objCType: @encode(of_point_t)]) &&
-	    of_point_equal(value.pointValue, point))
+				    objCType: @encode(OFPoint)]) &&
+	    OFEqualPoints(value.pointValue, point))
 
 	TEST(@"-[getValue:size:] for OFPointValue",
 	    (value = [OFValue valueWithPoint: point]) &&
 	    R([value getValue: &point2 size: sizeof(point2)]) &&
-	    of_point_equal(point2, point))
+	    OFEqualPoints(point2, point))
 
 	EXPECT_EXCEPTION(@"-[pointValue] with wrong size throws",
 	    OFOutOfRangeException,

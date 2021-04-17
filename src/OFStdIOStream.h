@@ -118,7 +118,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setCursorPosition: (of_point_t)position;
+- (void)setCursorPosition: (OFPoint)position;
 
 /**
  * @brief Moves the cursor to the specified relative position. Does nothing if
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setRelativeCursorPosition: (of_point_t)position;
+- (void)setRelativeCursorPosition: (OFPoint)position;
 @end
 
 #ifdef __cplusplus

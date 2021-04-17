@@ -130,7 +130,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
 + (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
-+ (instancetype)valueWithPoint: (of_point_t)point OF_UNAVAILABLE;
++ (instancetype)valueWithPoint: (OFPoint)point OF_UNAVAILABLE;
 + (instancetype)valueWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
 + (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
@@ -246,7 +246,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithPointer: (const void *)pointer OF_UNAVAILABLE;
 - (instancetype)initWithNonretainedObject: (id)object OF_UNAVAILABLE;
 - (instancetype)initWithRange: (OFRange)range OF_UNAVAILABLE;
-- (instancetype)initWithPoint: (of_point_t)point OF_UNAVAILABLE;
+- (instancetype)initWithPoint: (OFPoint)point OF_UNAVAILABLE;
 - (instancetype)initWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
 - (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif

@@ -582,7 +582,7 @@ codepageToEncoding(UINT codepage)
 	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
 }
 
-- (void)setCursorPosition: (of_point_t)position
+- (void)setCursorPosition: (OFPoint)position
 {
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
@@ -590,7 +590,7 @@ codepageToEncoding(UINT codepage)
 	SetConsoleCursorPosition(_handle, (COORD){ position.x, position.y });
 }
 
-- (void)setRelativeCursorPosition: (of_point_t)position
+- (void)setRelativeCursorPosition: (OFPoint)position
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 

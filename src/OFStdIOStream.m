@@ -493,7 +493,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setCursorPosition: (of_point_t)position
+- (void)setCursorPosition: (OFPoint)position
 {
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
@@ -507,7 +507,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setRelativeCursorPosition: (of_point_t)position
+- (void)setRelativeCursorPosition: (OFPoint)position
 {
 #ifdef HAVE_ISATTY
 	if (!isatty(_fd))

@@ -143,29 +143,29 @@ OFEqualRanges(OFRange range1, OFRange range2)
 typedef double OFTimeInterval;
 
 /**
- * @struct of_point_t OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint OFObject.h ObjFW/OFObject.h
  *
  * @brief A point.
  */
-struct OF_BOXABLE of_point_t {
+struct OF_BOXABLE OFPoint {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
 	float y;
 };
-typedef struct of_point_t of_point_t;
+typedef struct OFPoint OFPoint;
 
 /**
- * @brief Creates a new of_point_t.
+ * @brief Creates a new OFPoint.
  *
  * @param x The x coordinate of the point
  * @param y The x coordinate of the point
- * @return An of_point_t with the specified coordinates
+ * @return An OFPoint with the specified coordinates
  */
-static OF_INLINE of_point_t OF_CONST_FUNC
-of_point(float x, float y)
+static OF_INLINE OFPoint OF_CONST_FUNC
+OFMakePoint(float x, float y)
 {
-	of_point_t point = { x, y };
+	OFPoint point = { x, y };
 
 	return point;
 }
@@ -178,7 +178,7 @@ of_point(float x, float y)
  * @return Whether the two points are equal
  */
 static OF_INLINE bool
-of_point_equal(of_point_t point1, of_point_t point2)
+OFEqualPoints(OFPoint point1, OFPoint point2)
 {
 	if (point1.x != point2.x)
 		return false;
@@ -243,7 +243,7 @@ of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
  */
 struct OF_BOXABLE of_rectangle_t {
 	/** The point from where the rectangle originates */
-	of_point_t origin;
+	OFPoint origin;
 	/** The size of the rectangle */
 	of_dimension_t size;
 };
@@ -262,7 +262,7 @@ static OF_INLINE of_rectangle_t OF_CONST_FUNC
 of_rectangle(float x, float y, float width, float height)
 {
 	of_rectangle_t rectangle = {
-		of_point(x, y),
+		OFMakePoint(x, y),
 		of_dimension(width, height)
 	};
 
@@ -279,7 +279,7 @@ of_rectangle(float x, float y, float width, float height)
 static OF_INLINE bool
 of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 {
-	if (!of_point_equal(rectangle1.origin, rectangle2.origin))
+	if (!OFEqualPoints(rectangle1.origin, rectangle2.origin))
 		return false;
 
 	if (!of_dimension_equal(rectangle1.size, rectangle2.size))

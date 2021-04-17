@@ -19,10 +19,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFPointValue: OFValue
 {
-	of_point_t _point;
+	OFPoint _point;
 }
 
-- (instancetype)initWithPoint: (of_point_t)point;
+- (instancetype)initWithPoint: (OFPoint)point;
 @end
 
 OF_ASSUME_NONNULL_END
