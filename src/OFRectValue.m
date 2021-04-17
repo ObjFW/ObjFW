@@ -13,42 +13,42 @@
  * file.
  */
 
-#import "OFRectangleValue.h"
+#import "OFRectValue.h"
 #import "OFMethodSignature.h"
 #import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFRectangleValue
-@synthesize rectangleValue = _rectangle;
+@implementation OFRectValue
+@synthesize rectValue = _rect;
 
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
+- (instancetype)initWithRect: (OFRect)rect
 {
 	self = [super init];
 
-	_rectangle = rectangle;
+	_rect = rect;
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return @encode(of_rectangle_t);
+	return @encode(OFRect);
 }
 
 - (void)getValue: (void *)value size: (size_t)size
 {
-	if (size != sizeof(_rectangle))
+	if (size != sizeof(_rect))
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_rectangle, sizeof(_rectangle));
+	memcpy(value, &_rect, sizeof(_rect));
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFValue: of_rectangle_t { %f, %f, %f, %f }>",
-	    _rectangle.origin.x, _rectangle.origin.y,
-	    _rectangle.size.width, _rectangle.size.height];
+	    @"<OFValue: OFRect { %f, %f, %f, %f }>",
+	    _rect.origin.x, _rect.origin.y,
+	    _rect.size.width, _rect.size.height];
 }
 @end

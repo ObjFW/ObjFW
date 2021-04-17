@@ -237,52 +237,52 @@ OFEqualSizes(OFSize size1, OFSize size2)
 }
 
 /**
- * @struct of_rectangle_t OFObject.h ObjFW/OFObject.h
+ * @struct OFRect OFObject.h ObjFW/OFObject.h
  *
  * @brief A rectangle.
  */
-struct OF_BOXABLE of_rectangle_t {
+struct OF_BOXABLE OFRect {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
 	OFSize size;
 };
-typedef struct of_rectangle_t of_rectangle_t;
+typedef struct OFRect OFRect;
 
 /**
- * @brief Creates a new of_rectangle_t.
+ * @brief Creates a new OFRect.
  *
  * @param x The x coordinate of the top left corner of the rectangle
  * @param y The y coordinate of the top left corner of the rectangle
  * @param width The width of the rectangle
  * @param height The height of the rectangle
- * @return An of_rectangle_t with the specified origin and size
+ * @return An OFRect with the specified origin and size
  */
-static OF_INLINE of_rectangle_t OF_CONST_FUNC
-of_rectangle(float x, float y, float width, float height)
+static OF_INLINE OFRect OF_CONST_FUNC
+OFMakeRect(float x, float y, float width, float height)
 {
-	of_rectangle_t rectangle = {
+	OFRect rect = {
 		OFMakePoint(x, y),
 		OFMakeSize(width, height)
 	};
 
-	return rectangle;
+	return rect;
 }
 
 /**
  * @brief Returns whether the two rectangles are equal.
  *
- * @param rectangle1 The first rectangle for the comparison
- * @param rectangle2 The second rectangle for the comparison
+ * @param rect1 The first rectangle for the comparison
+ * @param rect2 The second rectangle for the comparison
  * @return Whether the two rectangles are equal
  */
 static OF_INLINE bool
-of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
+OFEqualRects(OFRect rect1, OFRect rect2)
 {
-	if (!OFEqualPoints(rectangle1.origin, rectangle2.origin))
+	if (!OFEqualPoints(rect1.origin, rect2.origin))
 		return false;
 
-	if (!OFEqualSizes(rectangle1.size, rectangle2.size))
+	if (!OFEqualSizes(rect1.size, rect2.size))
 		return false;
 
 	return true;

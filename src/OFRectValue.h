@@ -17,12 +17,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFRectangleValue: OFValue
+@interface OFRectValue: OFValue
 {
-	of_rectangle_t _rectangle;
+	OFRect _rect;
 }
 
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle;
+- (instancetype)initWithRect: (OFRect)rect;
 @end
 
 OF_ASSUME_NONNULL_END

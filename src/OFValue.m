@@ -20,7 +20,7 @@
 #import "OFPointValue.h"
 #import "OFPointerValue.h"
 #import "OFRangeValue.h"
-#import "OFRectangleValue.h"
+#import "OFRectValue.h"
 #import "OFSizeValue.h"
 #import "OFString.h"
 
@@ -68,10 +68,9 @@
 	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
 }
 
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
++ (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[OFRectangleValue alloc]
-	    initWithRectangle: rectangle] autorelease];
+	return [[[OFRectValue alloc] initWithRect: rect] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
@@ -193,9 +192,9 @@
 	return ret;
 }
 
-- (of_rectangle_t)rectangleValue
+- (OFRect)rectValue
 {
-	of_rectangle_t ret;
+	OFRect ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }

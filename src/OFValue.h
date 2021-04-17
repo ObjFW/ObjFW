@@ -68,11 +68,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFSize sizeValue;
 
 /**
- * @brief The value as a rectangle.
+ * @brief The value as a OFRect.
  *
- * If the value is not rectangle-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFRect-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_rectangle_t rectangleValue;
+@property (readonly, nonatomic) OFRect rectValue;
 
 /**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -135,10 +135,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased OFValue containing the specified
  *	  rectangle.
  *
- * @param rectangle The rectangle the OFValue should contain
+ * @param rect The rectangle the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle;
++ (instancetype)valueWithRect: (OFRect)rect;
 
 /**
  * @brief Initializes an already allocated OFValue with the specified bytes of

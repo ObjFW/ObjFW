@@ -194,7 +194,7 @@ SRCS += OFAdjacentArray.m		\
 	OFPointerValue.m		\
 	OFRangeCharacterSet.m		\
 	OFRangeValue.m			\
-	OFRectangleValue.m		\
+	OFRectValue.m			\
 	OFSandbox.m			\
 	OFSizeValue.m			\
 	OFSubarray.m			\

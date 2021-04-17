@@ -28,8 +28,7 @@ static OFString *module = @"OFValue";
 	OFRange range = OFMakeRange(1, 64), range2;
 	OFPoint point = OFMakePoint(1.5f, 3.0f), point2;
 	OFSize size = OFMakeSize(4.5f, 5.0f), size2;
-	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
-	of_rectangle_t rectangle2;
+	OFRect rect = OFMakeRect(1.5f, 3.0f, 4.5f, 6.0f), rect2;
 	OFValue *value;
 	void *pointer = &value;
 
@@ -130,29 +129,28 @@ static OFString *module = @"OFValue";
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] sizeValue])
 
-	TEST(@"+[valueWithRectangle:]",
-	    (value = [OFValue valueWithRectangle: rectangle]))
+	TEST(@"+[valueWithRect:]",
+	    (value = [OFValue valueWithRect: rect]))
 
-	TEST(@"-[rectangleValue]",
-	    of_rectangle_equal(value.rectangleValue, rectangle) &&
-	    (value = [OFValue valueWithBytes: &rectangle
-				    objCType: @encode(of_rectangle_t)]) &&
-	    of_rectangle_equal(value.rectangleValue, rectangle))
+	TEST(@"-[rectValue]",
+	    OFEqualRects(value.rectValue, rect) &&
+	    (value = [OFValue valueWithBytes: &rect
+				    objCType: @encode(OFRect)]) &&
+	    OFEqualRects(value.rectValue, rect))
 
-	TEST(@"-[getValue:size:] for OFRectangleValue",
-	    (value = [OFValue valueWithRectangle: rectangle]) &&
-	    R([value getValue: &rectangle2 size: sizeof(rectangle2)]) &&
-	    of_rectangle_equal(rectangle2, rectangle))
+	TEST(@"-[getValue:size:] for OFRectValue",
+	    (value = [OFValue valueWithRect: rect]) &&
+	    R([value getValue: &rect2 size: sizeof(rect2)]) &&
+	    OFEqualRects(rect2, rect))
 
-	EXPECT_EXCEPTION(@"-[rectangleValue] with wrong size throws",
+	EXPECT_EXCEPTION(@"-[rectValue] with wrong size throws",
 	    OFOutOfRangeException,
-	    [[OFValue valueWithBytes: "a"
-			    objCType: @encode(char)] rectangleValue])
+	    [[OFValue valueWithBytes: "a" objCType: @encode(char)] rectValue])
 
 	TEST(@"-[isEqual:]",
-	    [[OFValue valueWithRectangle: rectangle]
-	    isEqual: [OFValue valueWithBytes: &rectangle
-				    objCType: @encode(of_rectangle_t)]] &&
+	    [[OFValue valueWithRect: rect]
+	    isEqual: [OFValue valueWithBytes: &rect
+				    objCType: @encode(OFRect)]] &&
 	    ![[OFValue valueWithBytes: "a" objCType: @encode(signed char)]
 	    isEqual: [OFValue valueWithBytes: "a"
 				    objCType: @encode(unsigned char)]] &&
