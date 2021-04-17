@@ -63,7 +63,7 @@ static OFString *module = @"OFIPXSocket";
 	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
 	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketaddressHash(&address1) == OFSocketaddressHash(&address2))
+	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }

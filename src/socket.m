@@ -680,7 +680,7 @@ OFSocketAddressHash(const OFSocketAddress *address)
 }
 
 static OFString *
-IPv4AddressString(const OFSocketAddress *address)
+IPv4String(const OFSocketAddress *address)
 {
 	const struct sockaddr_in *addrIn = &address->sockaddr.in;
 	uint32_t addr = OF_BSWAP32_IF_LE(addrIn->sin_addr.s_addr);
@@ -694,7 +694,7 @@ IPv4AddressString(const OFSocketAddress *address)
 }
 
 static OFString *
-IPv6AddressString(const OFSocketAddress *address)
+IPv6String(const OFSocketAddress *address)
 {
 	OFMutableString *string = [OFMutableString string];
 	const struct sockaddr_in6 *addrIn6 = &address->sockaddr.in6;
@@ -765,9 +765,9 @@ OFSocketAddressString(const OFSocketAddress *address)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
-		return IPv4AddressString(address);
+		return IPv4String(address);
 	case OFSocketAddressFamilyIPv6:
-		return IPv6AddressString(address);
+		return IPv6String(address);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}

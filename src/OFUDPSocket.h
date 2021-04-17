@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFSocketAddressString to get the IP address string for an address and
  * @ref OFSocketAddressPort to get the port for an address. If you want to
  * compare two addresses, you can use
- * @ref OFEqualSocketAddress and you can use @ref OFSocketAddressHash to get a
+ * @ref OFSocketAddressEqual and you can use @ref OFSocketAddressHash to get a
  * hash to use in e.g. @ref OFMapTable.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
