@@ -98,7 +98,7 @@ const char *str = "Hello!";
 	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							count: 1
 						     itemSize: 2]
-			       options: OF_DATA_SEARCH_BACKWARDS
+			       options: OFDataSearchBackwards
 				 range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #2",
 	    range.location == 5 && range.length == 1)
@@ -130,7 +130,7 @@ const char *str = "Hello!";
 	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
 							count: 1
 						     itemSize: 2]
-			       options: OF_DATA_SEARCH_BACKWARDS
+			       options: OFDataSearchBackwards
 				 range: OFMakeRange(0, 5)];
 	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)

@@ -395,7 +395,7 @@ static struct {
 }
 
 - (OFString *)componentsJoinedByString: (OFString *)separator
-			       options: (int)options
+			       options: (OFArrayJoinOptions)options
 {
 	return [self componentsJoinedByString: separator
 				usingSelector: @selector(description)
@@ -412,7 +412,7 @@ static struct {
 
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector
-			       options: (int)options
+			       options: (OFArrayJoinOptions)options
 {
 	OFMutableString *ret;
 
@@ -434,7 +434,7 @@ static struct {
 
 	ret = [OFMutableString string];
 
-	if (options & OF_ARRAY_SKIP_EMPTY) {
+	if (options & OFArraySkipEmptyComponents) {
 		for (id object in self) {
 			void *pool = objc_autoreleasePoolPush();
 			OFString *component =
@@ -714,7 +714,7 @@ static struct {
 }
 
 - (OFArray *)sortedArrayUsingSelector: (SEL)selector
-			      options: (int)options
+			      options: (OFArraySortOptions)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 	[new sortUsingSelector: selector options: options];
@@ -724,7 +724,7 @@ static struct {
 
 #ifdef OF_HAVE_BLOCKS
 - (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
-				options: (int)options
+				options: (OFArraySortOptions)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 	[new sortUsingComparator: comparator options: options];
@@ -772,7 +772,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	size_t i = 0;
 	bool stop = false;
@@ -818,7 +818,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block
+- (OFArray *)mappedArrayUsingBlock: (OFArrayMapBlock)block
 {
 	OFArray *ret;
 	size_t count = self.count;
@@ -838,7 +838,7 @@ static struct {
 	return ret;
 }
 
-- (OFArray *)filteredArrayUsingBlock: (of_array_filter_block_t)block
+- (OFArray *)filteredArrayUsingBlock: (OFArrayFilterBlock)block
 {
 	OFArray *ret;
 	size_t count = self.count;
@@ -861,7 +861,7 @@ static struct {
 	return ret;
 }
 
-- (id)foldUsingBlock: (of_array_fold_block_t)block
+- (id)foldUsingBlock: (OFArrayFoldBlock)block
 {
 	size_t count = self.count;
 	__block id current;

@@ -46,11 +46,11 @@ compare(id left, id right, SEL selector)
 
 static void
 quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
-    int options)
+    OFArraySortOptions options)
 {
 	OFComparisonResult ascending, descending;
 
-	if (options & OF_ARRAY_SORT_DESCENDING) {
+	if (options & OFArraySortDescending) {
 		ascending = OFOrderedDescending;
 		descending = OFOrderedAscending;
 	} else {
@@ -92,11 +92,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 #ifdef OF_HAVE_BLOCKS
 static void
 quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
-    OFComparator comparator, int options)
+    OFComparator comparator, OFArraySortOptions options)
 {
 	OFComparisonResult ascending, descending;
 
-	if (options & OF_ARRAY_SORT_DESCENDING) {
+	if (options & OFArraySortDescending) {
 		ascending = OFOrderedDescending;
 		descending = OFOrderedAscending;
 	} else {
@@ -384,7 +384,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block
 {
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {
@@ -416,7 +416,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 - (void)sortUsingSelector: (SEL)selector
-		  options: (int)options
+		  options: (OFArraySortOptions)options
 {
 	size_t count = self.count;
 
@@ -427,7 +427,8 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)sortUsingComparator: (OFComparator)comparator options: (int)options
+- (void)sortUsingComparator: (OFComparator)comparator
+		    options: (OFArraySortOptions)options
 {
 	size_t count = self.count;
 

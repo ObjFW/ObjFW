@@ -239,7 +239,7 @@ static OFString *c_ary[] = {
 	    [[m[1] sortedArray] isEqual: [arrayClass arrayWithObjects:
 	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
 	    [[m[1] sortedArrayUsingSelector: @selector(compare:)
-				    options: OF_ARRAY_SORT_DESCENDING]
+				    options: OFArraySortDescending]
 	    isEqual: [arrayClass arrayWithObjects:
 	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 
@@ -259,8 +259,9 @@ static OFString *c_ary[] = {
 
 	TEST(@"-[componentsJoinedByString:options]",
 	    (a[1] = [arrayClass arrayWithObjects: @"", @"foo", @"", @"", @"bar",
-	    @"", nil]) && [[a[1] componentsJoinedByString: @" "
-						  options: OF_ARRAY_SKIP_EMPTY]
+	    @"", nil]) &&
+	    [[a[1] componentsJoinedByString: @" "
+				    options: OFArraySkipEmptyComponents]
 	    isEqual: @"foo bar"])
 
 	m[0] = [[a[0] mutableCopy] autorelease];

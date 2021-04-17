@@ -30,6 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * This is a bit mask.
  */
 typedef enum OFDataSearchOptions {
+	/** Search backwards in the data */
 	OFDataSearchBackwards = 1
 } OFDataSearchOptions;
 
