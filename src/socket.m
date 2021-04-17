@@ -348,19 +348,19 @@ of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
 }
 #endif
 
-of_socket_address_t
-of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
+OFSocketAddress
+OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
-	of_socket_address_t ret;
+	OFSocketAddress ret;
 	struct sockaddr_in *addrIn = &ret.sockaddr.in;
 	OFArray OF_GENERIC(OFString *) *components;
 	uint32_t addr;
 
 	memset(&ret, '\0', sizeof(ret));
-	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+	ret.family = OFSocketAddressFamilyIPv4;
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	ret.length = 8;
 #else
@@ -422,16 +422,16 @@ parseIPv6Component(OFString *component)
 	return (uint16_t)number;
 }
 
-of_socket_address_t
-of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
+OFSocketAddress
+OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_socket_address_t ret;
+	OFSocketAddress ret;
 	struct sockaddr_in6 *addrIn6 = &ret.sockaddr.in6;
 	size_t doubleColon;
 
 	memset(&ret, '\0', sizeof(ret));
-	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+	ret.family = OFSocketAddressFamilyIPv6;
 	ret.length = sizeof(ret.sockaddr.in6);
 
 #ifdef AF_INET6
@@ -501,28 +501,28 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 	return ret;
 }
 
-of_socket_address_t
-of_socket_address_parse_ip(OFString *IP, uint16_t port)
+OFSocketAddress
+OFSocketAddressParseIP(OFString *IP, uint16_t port)
 {
-	of_socket_address_t ret;
+	OFSocketAddress ret;
 
 	@try {
-		ret = of_socket_address_parse_ipv6(IP, port);
+		ret = OFSocketAddressParseIPv6(IP, port);
 	} @catch (OFInvalidFormatException *e) {
-		ret = of_socket_address_parse_ipv4(IP, port);
+		ret = OFSocketAddressParseIPv4(IP, port);
 	}
 
 	return ret;
 }
 
-of_socket_address_t
-of_socket_address_ipx(const unsigned char node[IPX_NODE_LEN], uint32_t network,
+OFSocketAddress
+OFSocketAddressMakeIPX(const unsigned char node[IPX_NODE_LEN], uint32_t network,
     uint16_t port)
 {
-	of_socket_address_t ret;
+	OFSocketAddress ret;
 
 	memset(&ret, '\0', sizeof(ret));
-	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	ret.family = OFSocketAddressFamilyIPX;
 	ret.length = sizeof(ret.sockaddr.ipx);
 
 #ifdef AF_IPX
@@ -540,8 +540,8 @@ of_socket_address_ipx(const unsigned char node[IPX_NODE_LEN], uint32_t network,
 }
 
 bool
-of_socket_address_equal(const of_socket_address_t *address1,
-    const of_socket_address_t *address2)
+OFSocketAddressEqual(const OFSocketAddress *address1,
+    const OFSocketAddress *address2)
 {
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
@@ -551,7 +551,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 		return false;
 
 	switch (address1->family) {
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 		if (address1->length < 8 || address2->length < 8)
 			@throw [OFInvalidArgumentException exception];
@@ -570,7 +570,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 			return false;
 
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_in6) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
@@ -586,7 +586,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 			return false;
 
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPX:
+	case OFSocketAddressFamilyIPX:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_ipx) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_ipx))
 			@throw [OFInvalidArgumentException exception];
@@ -612,7 +612,7 @@ of_socket_address_equal(const of_socket_address_t *address1,
 }
 
 unsigned long
-of_socket_address_hash(const of_socket_address_t *address)
+OFSocketAddressHash(const OFSocketAddress *address)
 {
 	uint32_t hash;
 
@@ -620,7 +620,7 @@ of_socket_address_hash(const of_socket_address_t *address)
 	OF_HASH_ADD(hash, address->family);
 
 	switch (address->family) {
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 		if (address->length < 8)
 			@throw [OFInvalidArgumentException exception];
@@ -637,7 +637,7 @@ of_socket_address_hash(const of_socket_address_t *address)
 		OF_HASH_ADD(hash, address->sockaddr.in.sin_addr.s_addr);
 
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		if (address->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
@@ -650,7 +650,7 @@ of_socket_address_hash(const of_socket_address_t *address)
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
 
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPX:;
+	case OFSocketAddressFamilyIPX:;
 		unsigned char network[
 		    sizeof(address->sockaddr.ipx.sipx_network)];
 
@@ -680,7 +680,7 @@ of_socket_address_hash(const of_socket_address_t *address)
 }
 
 static OFString *
-IPv4String(const of_socket_address_t *address, uint16_t *port)
+IPv4AddressString(const OFSocketAddress *address)
 {
 	const struct sockaddr_in *addrIn = &address->sockaddr.in;
 	uint32_t addr = OF_BSWAP32_IF_LE(addrIn->sin_addr.s_addr);
@@ -690,14 +690,11 @@ IPv4String(const of_socket_address_t *address, uint16_t *port)
 	    (addr & 0xFF000000) >> 24, (addr & 0x00FF0000) >> 16,
 	    (addr & 0x0000FF00) >>  8, addr & 0x000000FF];
 
-	if (port != NULL)
-		*port = OF_BSWAP16_IF_LE(addrIn->sin_port);
-
 	return string;
 }
 
 static OFString *
-IPv6String(const of_socket_address_t *address, uint16_t *port)
+IPv6AddressString(const OFSocketAddress *address)
 {
 	OFMutableString *string = [OFMutableString string];
 	const struct sockaddr_in6 *addrIn6 = &address->sockaddr.in6;
@@ -760,36 +757,33 @@ IPv6String(const of_socket_address_t *address, uint16_t *port)
 
 	[string makeImmutable];
 
-	if (port != NULL)
-		*port = OF_BSWAP16_IF_LE(addrIn6->sin6_port);
-
 	return string;
 }
 
 OFString *
-of_socket_address_ip_string(const of_socket_address_t *address, uint16_t *port)
+OFSocketAddressString(const OFSocketAddress *address)
 {
 	switch (address->family) {
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-		return IPv4String(address, port);
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
-		return IPv6String(address, port);
+	case OFSocketAddressFamilyIPv4:
+		return IPv4AddressString(address);
+	case OFSocketAddressFamilyIPv6:
+		return IPv6AddressString(address);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 }
 
 void
-of_socket_address_set_port(of_socket_address_t *address, uint16_t port)
+OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
 {
 	switch (address->family) {
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 		address->sockaddr.in.sin_port = OF_BSWAP16_IF_LE(port);
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		address->sockaddr.in6.sin6_port = OF_BSWAP16_IF_LE(port);
 		break;
-	case OF_SOCKET_ADDRESS_FAMILY_IPX:
+	case OFSocketAddressFamilyIPX:
 		address->sockaddr.ipx.sipx_port = OF_BSWAP16_IF_LE(port);
 		break;
 	default:
@@ -798,14 +792,14 @@ of_socket_address_set_port(of_socket_address_t *address, uint16_t port)
 }
 
 uint16_t
-of_socket_address_get_port(const of_socket_address_t *address)
+OFSocketAddressPort(const OFSocketAddress *address)
 {
 	switch (address->family) {
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
-	case OF_SOCKET_ADDRESS_FAMILY_IPX:
+	case OFSocketAddressFamilyIPX:
 		return OF_BSWAP16_IF_LE(address->sockaddr.ipx.sipx_port);
 	default:
 		@throw [OFInvalidArgumentException exception];
@@ -813,10 +807,9 @@ of_socket_address_get_port(const of_socket_address_t *address)
 }
 
 void
-of_socket_address_set_ipx_network(of_socket_address_t *address,
-    uint32_t network)
+OFSocketAddressSetIPXNetwork(OFSocketAddress *address, uint32_t network)
 {
-	if (address->family != OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
 	network = OF_BSWAP32_IF_LE(network);
@@ -825,11 +818,11 @@ of_socket_address_set_ipx_network(of_socket_address_t *address,
 }
 
 uint32_t
-of_socket_address_get_ipx_network(const of_socket_address_t *address)
+OFSocketAddressIPXNetwork(const OFSocketAddress *address)
 {
 	uint32_t network;
 
-	if (address->family != OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(&network, &address->sockaddr.ipx.sipx_network, sizeof(network));
@@ -838,20 +831,20 @@ of_socket_address_get_ipx_network(const of_socket_address_t *address)
 }
 
 void
-of_socket_address_set_ipx_node(of_socket_address_t *address,
+OFSocketAddressSetIPXNode(OFSocketAddress *address,
     const unsigned char node[IPX_NODE_LEN])
 {
-	if (address->family != OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(address->sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 }
 
 void
-of_socket_address_get_ipx_node(const of_socket_address_t *address,
+OFSocketAddressIPXNode(const OFSocketAddress *address,
     unsigned char node[IPX_NODE_LEN])
 {
-	if (address->family != OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);

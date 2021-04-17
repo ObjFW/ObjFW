@@ -173,7 +173,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFDatagramSocketAsyncSendDataBlock _block;
 # endif
 	OFData *_data;
-	of_socket_address_t _receiver;
+	OFSocketAddress _receiver;
 }
 @end
 
@@ -790,7 +790,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleObject: (id)object
 {
 	size_t length;
-	of_socket_address_t address;
+	OFSocketAddress address;
 	id exception = nil;
 
 	@try {
@@ -1240,7 +1240,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
       data: (OFData *)data
-  receiver: (const of_socket_address_t *)receiver
+  receiver: (const OFSocketAddress *)receiver
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (OFDatagramSocketAsyncSendDataBlock)block

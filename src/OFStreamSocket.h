@@ -68,7 +68,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 {
 	OFSocketHandle _socket;
 	bool _atEndOfStream, _listening;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	OF_RESERVE_IVARS(OFStreamSocket, 4)
 }
 
@@ -82,7 +82,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  *
  * @note This only works for accepted sockets!
  */
-@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
+@property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.

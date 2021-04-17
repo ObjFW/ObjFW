@@ -129,7 +129,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 {
 	OFSocketHandle _socket;
 	bool _canBlock, _listening;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	id _Nullable _delegate;
 	OF_RESERVE_IVARS(OFSequencedPacketSocket, 4)
 }
@@ -151,7 +151,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @note This only works for accepted sockets!
  */
-@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
+@property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.

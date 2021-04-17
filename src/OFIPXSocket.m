@@ -32,11 +32,10 @@
 @implementation OFIPXSocket
 @dynamic delegate;
 
-- (of_socket_address_t)bindToPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
+- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType
 {
 	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
-	of_socket_address_t address;
+	OFSocketAddress address;
 	int protocol = 0;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
@@ -45,7 +44,7 @@
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;
@@ -81,7 +80,7 @@
 	}
 
 	memset(&address, 0, sizeof(address));
-	address.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
 	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
@@ -113,14 +112,14 @@
 #ifndef OF_WINDOWS
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver
+	  receiver: (const OFSocketAddress *)receiver
 {
-	of_socket_address_t fixedReceiver;
+	OFSocketAddress fixedReceiver;
 
 	memcpy(&fixedReceiver, receiver, sizeof(fixedReceiver));
 
 	/* If it's not IPX, no fix-up needed - it will fail anyway. */
-	if (fixedReceiver.family == OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (fixedReceiver.family == OFSocketAddressFamilyIPX)
 		fixedReceiver.sockaddr.ipx.sipx_type = _packetType;
 
 	[super sendBuffer: buffer length: length receiver: &fixedReceiver];

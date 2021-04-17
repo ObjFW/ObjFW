@@ -75,7 +75,7 @@ typedef struct of_http_request_protocol_version_t
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
 	OF_RESERVE_IVARS(OFHTTPRequest, 4)
 }
@@ -111,8 +111,7 @@ typedef struct of_http_request_protocol_version_t
  *
  * @note The setter creates a copy of the remote address.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic)
-    const of_socket_address_t *remoteAddress;
+@property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief Creates a new OFHTTPRequest.

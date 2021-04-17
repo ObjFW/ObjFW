@@ -20,9 +20,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @protocol OFIPSocketAsyncConnecting
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+- (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
 - (void)of_closeSocket;
 @end

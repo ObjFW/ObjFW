@@ -101,7 +101,7 @@ typedef enum of_dns_resolver_error_t {
  *
  * @param resolver The acting resolver
  * @param host The host the resolver resolved
- * @param addresses OFData containing several of_socket_address_t
+ * @param addresses OFData containing several OFSocketAddress
  * @param exception The exception that occurred during resolving, or nil on
  *		    success
  */
@@ -259,7 +259,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param host The host to resolve
  * @param addressFamily The desired socket address family
- * @return OFData containing several of_socket_address_t
+ * @return OFData containing several OFSocketAddress
  */
 - (OFData *)resolveAddressesForHost: (OFString *)host
 		      addressFamily: (OFSocketAddressFamily)addressFamily;

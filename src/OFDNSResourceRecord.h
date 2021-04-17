@@ -124,13 +124,13 @@ typedef enum {
 OF_SUBCLASSING_RESTRICTED
 @interface OFADNSResourceRecord: OFDNSResourceRecord
 {
-	of_socket_address_t _address;
+	OFSocketAddress _address;
 }
 
 /**
  * @brief The IPv4 address of the resource record.
  */
-@property (readonly, nonatomic) const of_socket_address_t *address;
+@property (readonly, nonatomic) const OFSocketAddress *address;
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
@@ -147,7 +147,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -160,13 +160,13 @@ OF_SUBCLASSING_RESTRICTED
 OF_SUBCLASSING_RESTRICTED
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord
 {
-	of_socket_address_t _address;
+	OFSocketAddress _address;
 }
 
 /**
  * @brief The IPv6 address of the resource record.
  */
-@property (readonly, nonatomic) const of_socket_address_t *address;
+@property (readonly, nonatomic) const OFSocketAddress *address;
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
@@ -183,7 +183,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFAAAADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 

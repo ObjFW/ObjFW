@@ -73,8 +73,8 @@ static OFString *module = @"OFSPXStreamSocket";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSPXStreamSocket *sockClient, *sockServer, *sockAccepted;;
-	of_socket_address_t address1;
-	const of_socket_address_t *address2;
+	OFSocketAddress address1;
+	const OFSocketAddress *address2;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 	uint32_t network;
 	uint16_t port;
@@ -115,9 +115,9 @@ static OFString *module = @"OFSPXStreamSocket";
 		return;
 	}
 
-	of_socket_address_get_ipx_node(&address1, node);
-	network = of_socket_address_get_ipx_network(&address1);
-	port = of_socket_address_get_port(&address1);
+	OFSocketAddressIPXNode(&address1, node);
+	network = OFSocketAddressIPXNetwork(&address1);
+	port = OFSocketAddressPort(&address1);
 
 	TEST(@"-[listen]", R([sockServer listen]))
 
@@ -138,9 +138,9 @@ static OFString *module = @"OFSPXStreamSocket";
 
 	TEST(@"-[remoteAddress]",
 	    (address2 = sockAccepted.remoteAddress) &&
-	    R(of_socket_address_get_ipx_node(address2, node2)) &&
+	    R(OFSocketAddressIPXNode(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0 &&
-	    of_socket_address_get_ipx_network(address2) == network)
+	    OFSocketAddressIPXNetwork(address2) == network)
 
 	delegate = [[[SPXStreamSocketDelegate alloc] init] autorelease];
 
@@ -156,11 +156,11 @@ static OFString *module = @"OFSPXStreamSocket";
 	[sockServer listen];
 	[sockServer asyncAccept];
 
-	of_socket_address_get_ipx_node(&address1, node);
+	OFSocketAddressIPXNode(&address1, node);
 	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
 	delegate->_expectedNetwork = network =
-	    of_socket_address_get_ipx_network(&address1);
-	delegate->_expectedPort = port = of_socket_address_get_port(&address1);
+	    OFSocketAddressIPXNetwork(&address1);
+	delegate->_expectedPort = port = OFSocketAddressPort(&address1);
 
 	@try {
 		[sockClient asyncConnectToNode: node

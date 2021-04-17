@@ -196,7 +196,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 }
 
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
@@ -209,7 +209,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return self;
 }
 
-- (const of_socket_address_t *)address
+- (const OFSocketAddress *)address
 {
 	return &_address;
 }
@@ -235,7 +235,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	if (record->_recordType != _recordType)
 		return false;
 
-	if (!of_socket_address_equal(&record->_address, &_address))
+	if (!OFSocketAddressEqual(&record->_address, &_address))
 		return false;
 
 	return true;
@@ -252,7 +252,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
+	OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_address));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -267,8 +267,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_socket_address_ip_string(&_address, NULL), _TTL];
+	    self.className, _name, OFSocketAddressString(&_address), _TTL];
 }
 @end
 
@@ -282,7 +281,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 }
 
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
@@ -295,7 +294,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return self;
 }
 
-- (const of_socket_address_t *)address
+- (const OFSocketAddress *)address
 {
 	return &_address;
 }
@@ -321,7 +320,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	if (record->_recordType != _recordType)
 		return false;
 
-	if (!of_socket_address_equal(&record->_address, &_address))
+	if (!OFSocketAddressEqual(&record->_address, &_address))
 		return false;
 
 	return true;
@@ -338,7 +337,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
+	OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_address));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -353,8 +352,7 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_socket_address_ip_string(&_address, NULL), _TTL];
+	    self.className, _name, OFSocketAddressString(&_address), _TTL];
 }
 @end
 

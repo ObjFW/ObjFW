@@ -97,7 +97,7 @@ OF_DIRECT_MEMBERS
   delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
       data: (OFData *)data
-  receiver: (const of_socket_address_t *)receiver
+  receiver: (const OFSocketAddress *)receiver
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFDatagramSocketAsyncSendDataBlock)block

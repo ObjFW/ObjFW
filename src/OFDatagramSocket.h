@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
-    const of_socket_address_t *_Nonnull sender, id _Nullable exception);
+    const OFSocketAddress *_Nonnull sender, id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
@@ -49,7 +49,7 @@ typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
-    OFData *_Nonnull data, const of_socket_address_t *_Nonnull receiver,
+    OFData *_Nonnull data, const OFSocketAddress *_Nonnull receiver,
     id _Nullable exception);
 #endif
 
@@ -75,7 +75,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 -	  (bool)socket: (OFDatagramSocket *)socket
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (const of_socket_address_t *_Nonnull)sender
+		sender: (const OFSocketAddress *_Nonnull)sender
 	     exception: (nullable id)exception;
 
 /**
@@ -89,7 +89,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (nullable OFData *)socket: (OFDatagramSocket *)socket
 		didSendData: (OFData *)data
-		   receiver: (const of_socket_address_t *_Nonnull)receiver
+		   receiver: (const OFSocketAddress *_Nonnull)receiver
 		  exception: (nullable id)exception;
 @end
 
@@ -152,13 +152,13 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  *
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
- * @param sender A pointer to an @ref of_socket_address_t, which will be set to
- *		 the address of the sender
+ * @param sender A pointer to an @ref OFSocketAddress, which will be set to the
+ *		 address of the sender
  * @return The length of the received datagram
  */
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_socket_address_t *)sender;
+		     sender: (OFSocketAddress *)sender;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -232,33 +232,33 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  *
  * @param buffer The buffer to send as a datagram
  * @param length The length of the buffer
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent
  */
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver;
+	  receiver: (const OFSocketAddress *)receiver;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver;
+	     receiver: (const OFSocketAddress *)receiver;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datgram
+ *		   should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 	  runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
@@ -266,29 +266,29 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 		block: (OFDatagramSocketAsyncSendDataBlock)block;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block;
 #endif

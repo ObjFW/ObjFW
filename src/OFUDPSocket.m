@@ -41,25 +41,22 @@
 @implementation OFUDPSocket
 @dynamic delegate;
 
-- (uint16_t)of_bindToAddress: (of_socket_address_t *)address
+- (uint16_t)of_bindToAddress: (OFSocketAddress *)address
 		   extraType: (int)extraType OF_DIRECT
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *host;
 	uint16_t port;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == INVALID_SOCKET) {
-		host = of_socket_address_ip_string(address, &port);
+	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == INVALID_SOCKET)
 		@throw [OFBindFailedException
-		    exceptionWithHost: host
-				 port: port
+		    exceptionWithHost: OFSocketAddressString(address)
+				 port: OFSocketAddressPort(address)
 			       socket: self
 				errNo: of_socket_errno()];
-	}
 
 	_canBlock = true;
 
@@ -71,7 +68,7 @@
 #endif
 
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
-	if (of_socket_address_get_port(address) != 0) {
+	if (OFSocketAddressPort(address) != 0) {
 #endif
 		if (bind(_socket, &address->sockaddr.sockaddr,
 		    address->length) != 0) {
@@ -80,11 +77,11 @@
 			closesocket(_socket);
 			_socket = INVALID_SOCKET;
 
-			host = of_socket_address_ip_string(address, &port);
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self
-								  errNo: errNo];
+			@throw [OFBindFailedException
+			    exceptionWithHost: OFSocketAddressString(address)
+					 port: OFSocketAddressPort(address)
+				       socket: self
+					errNo: errNo];
 		}
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
@@ -95,7 +92,7 @@
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			of_socket_address_set_port(address, rnd);
+			OFSocketAddressSetPort(address, rnd);
 
 			if ((ret = bind(_socket, &address->sockaddr.sockaddr,
 			    address->length)) == 0) {
@@ -105,12 +102,12 @@
 
 			if (of_socket_errno() != EADDRINUSE) {
 				int errNo = of_socket_errno();
+				OFString *host = OFSocketAddressString(address);
+				uint16_t port = OFSocketAddressPort(port);
 
 				closesocket(_socket);
 				_socket = INVALID_SOCKET;
 
-				host = of_socket_address_ip_string(
-				    address, &port);
 				@throw [OFBindFailedException
 				    exceptionWithHost: host
 						 port: port
@@ -123,7 +120,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	if ((port = of_socket_address_get_port(address)) > 0)
+	if ((port = OFSocketAddressPort(address)) > 0)
 		return port;
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -137,11 +134,11 @@
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
-		host = of_socket_address_ip_string(address, &port);
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindFailedException
+		    exceptionWithHost: OFSocketAddressString(address)
+				 port: OFSocketAddressPort(address)
+			       socket: self
+				errNo: errNo];
 	}
 
 	if (address->sockaddr.sockaddr.sa_family == AF_INET)
@@ -154,21 +151,21 @@
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
-		host = of_socket_address_ip_string(address, &port);
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindFailedException
+		    exceptionWithHost: OFSocketAddressString(address)
+				 port: OFSocketAddressPort(address)
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 #else
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 
-	host = of_socket_address_ip_string(address, &port);
-	@throw [OFBindFailedException exceptionWithHost: host
-						   port: port
-						 socket: self
-						  errNo: EADDRNOTAVAIL];
+	@throw [OFBindFailedException
+	    exceptionWithHost: OFSocketAddressString(address)
+			 port: OFSocketAddressPort(address)
+		       socket: self
+			errNo: EADDRNOTAVAIL];
 #endif
 }
 
@@ -176,17 +173,17 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
-	of_socket_address_t address;
+	OFSocketAddress address;
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+		      addressFamily: OFSocketAddressFamilyAny];
 
-	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
-	of_socket_address_set_port(&address, port);
+	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
+	OFSocketAddressSetPort(&address, port);
 
 	port = [self of_bindToAddress: &address extraType: 0];
 

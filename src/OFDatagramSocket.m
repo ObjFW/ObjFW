@@ -167,7 +167,7 @@
 
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_socket_address_t *)sender
+		     sender: (OFSocketAddress *)sender
 {
 	ssize_t ret;
 
@@ -197,20 +197,20 @@
 
 	switch (sender->sockaddr.sockaddr.sa_family) {
 	case AF_INET:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		sender->family = OFSocketAddressFamilyIPv4;
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		sender->family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
 #ifdef OF_HAVE_IPX
 	case AF_IPX:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		sender->family = OFSocketAddressFamilyIPX;
 		break;
 #endif
 	default:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		sender->family = OFSocketAddressFamilyUnknown;
 		break;
 	}
 
@@ -265,7 +265,7 @@
 
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver
+	  receiver: (const OFSocketAddress *)receiver
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -307,7 +307,7 @@
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 {
 	[self asyncSendData: data
 		   receiver: receiver
@@ -315,7 +315,7 @@
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
@@ -330,7 +330,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
@@ -340,7 +340,7 @@
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {

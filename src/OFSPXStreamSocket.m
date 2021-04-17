@@ -36,9 +36,9 @@
 #define SPX_PACKET_TYPE 5
 
 @interface OFSPXStreamSocket ()
-- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+- (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
 - (void)of_closeSocket;
 @end
@@ -106,8 +106,8 @@ OF_DIRECT_MEMBERS
 
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	of_socket_address_t address =
-	    of_socket_address_ipx(_node, _network, _port);
+	OFSocketAddress address =
+	    OFSocketAddressMakeIPX(_node, _network, _port);
 	id exception = nil;
 	int errNo;
 
@@ -176,7 +176,7 @@ inform_delegate:
 @implementation OFSPXStreamSocket
 @dynamic delegate;
 
-- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+- (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
@@ -200,7 +200,7 @@ inform_delegate:
 	return true;
 }
 
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
 	if (_socket == INVALID_SOCKET)
@@ -225,8 +225,7 @@ inform_delegate:
 	      network: (uint32_t)network
 		 port: (uint16_t)port
 {
-	of_socket_address_t address =
-	    of_socket_address_ipx(node, network, port);
+	OFSocketAddress address = OFSocketAddressMakeIPX(node, network, port);
 	int errNo;
 
 	if (![self of_createSocketForAddress: &address errNo: &errNo])
@@ -312,10 +311,10 @@ inform_delegate:
 }
 #endif
 
-- (of_socket_address_t)bindToPort: (uint16_t)port
+- (OFSocketAddress)bindToPort: (uint16_t)port
 {
 	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
-	of_socket_address_t address;
+	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
 #endif
@@ -323,7 +322,7 @@ inform_delegate:
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET)
@@ -353,7 +352,7 @@ inform_delegate:
 	}
 
 	memset(&address, 0, sizeof(address));
-	address.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
 	if (of_getsockname(_socket, &address.sockaddr.sockaddr,

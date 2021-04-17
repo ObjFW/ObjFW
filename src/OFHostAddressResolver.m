@@ -66,19 +66,19 @@ isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
 
 static bool
 addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
-    const of_socket_address_t **address, OFSocketAddressFamily addressFamily)
+    const OFSocketAddress **address, OFSocketAddressFamily addressFamily)
 {
 	switch ([record recordType]) {
 #ifdef OF_HAVE_IPV6
 	case OF_DNS_RECORD_TYPE_AAAA:
-		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV6 &&
-		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+		if (addressFamily != OFSocketAddressFamilyIPv6 &&
+		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
 		break;
 #endif
 	case OF_DNS_RECORD_TYPE_A:
-		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV4 &&
-		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+		if (addressFamily != OFSocketAddressFamilyIPv4 &&
+		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
 		break;
 	default:
@@ -162,8 +162,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 		domainName = _host;
 
 #ifdef OF_HAVE_IPV6
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+	if (_addressFamily == OFSocketAddressFamilyIPv6 ||
+	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
 			       DNSClass: OF_DNS_CLASS_IN
@@ -175,8 +175,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	}
 #endif
 
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+	if (_addressFamily == OFSocketAddressFamilyIPv4 ||
+	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
 			       DNSClass: OF_DNS_CLASS_IN
@@ -206,7 +206,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 	for (OF_KINDOF(OFDNSResourceRecord *) record in
 	    [response.answerRecords objectForKey: query.domainName]) {
-		const of_socket_address_t *address = NULL;
+		const OFSocketAddress *address = NULL;
 		OFDNSQuery *CNAMEQuery;
 
 		if ([record DNSClass] != OF_DNS_CLASS_IN)
@@ -268,13 +268,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	OFArray OF_GENERIC(OFString *) *aliases;
 
 	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, 0);
+		OFSocketAddress address = OFSocketAddressParseIP(_host, 0);
 		OFData *addresses = nil;
 		id exception = nil;
 
 		if (_addressFamily == address.family ||
-		    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
+		    _addressFamily == OFSocketAddressFamilyAny)
 			addresses = [OFData dataWithItems: &address
 						    count: 1
 						 itemSize: sizeof(address)];
@@ -291,20 +290,20 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 	if ((aliases = [_settings->_staticHosts objectForKey: _host]) != nil) {
 		OFMutableData *addresses = [OFMutableData
-		    dataWithItemSize: sizeof(of_socket_address_t)];
+		    dataWithItemSize: sizeof(OFSocketAddress)];
 		id exception = nil;
 
 		for (OFString *alias in aliases) {
-			of_socket_address_t address;
+			OFSocketAddress address;
 
 			@try {
-				address = of_socket_address_parse_ip(alias, 0);
+				address = OFSocketAddressParseIP(alias, 0);
 			} @catch (OFInvalidFormatException *e) {
 				continue;
 			}
 
 			if (_addressFamily != address.family &&
-			    _addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+			    _addressFamily != OFSocketAddressFamilyAny)
 				continue;
 
 			[addresses addItem: &address];
@@ -329,7 +328,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 	_isFQDN = isFQDN(_host, _settings->_minNumberOfDotsInAbsoluteName);
 	_addresses = [[OFMutableData alloc]
-	    initWithItemSize: sizeof(of_socket_address_t)];
+	    initWithItemSize: sizeof(OFSocketAddress)];
 
 	[self sendQueries];
 

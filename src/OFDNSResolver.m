@@ -74,7 +74,7 @@ OF_DIRECT_MEMBERS
 	unsigned int _attempt;
 	id <OFDNSResolverQueryDelegate> _delegate;
 	OFData *_queryData;
-	of_socket_address_t _usedNameServer;
+	OFSocketAddress _usedNameServer;
 	OFTCPSocket *_TCPSocket;
 	OFMutableData *_TCPQueryData;
 	void *_TCPBuffer;
@@ -173,13 +173,13 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
     size_t length, size_t i, uint16_t dataLength)
 {
 	if (recordType == OF_DNS_RECORD_TYPE_A && DNSClass == OF_DNS_CLASS_IN) {
-		of_socket_address_t address;
+		OFSocketAddress address;
 
 		if (dataLength != 4)
 			@throw [OFInvalidServerReplyException exception];
 
 		memset(&address, 0, sizeof(address));
-		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		address.family = OFSocketAddressFamilyIPv4;
 		address.length = sizeof(address.sockaddr.in);
 
 		address.sockaddr.in.sin_family = AF_INET;
@@ -360,13 +360,13 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			      TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RECORD_TYPE_AAAA &&
 	    DNSClass == OF_DNS_CLASS_IN) {
-		of_socket_address_t address;
+		OFSocketAddress address;
 
 		if (dataLength != 16)
 			@throw [OFInvalidServerReplyException exception];
 
 		memset(&address, 0, sizeof(address));
-		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		address.family = OFSocketAddressFamilyIPv6;
 		address.length = sizeof(address.sockaddr.in6);
 
 #ifdef AF_INET6
@@ -737,14 +737,14 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		return;
 	}
 
-	context->_usedNameServer = of_socket_address_parse_ip(nameServer, 53);
+	context->_usedNameServer = OFSocketAddressParseIP(nameServer, 53);
 
 	switch (context->_usedNameServer.family) {
 #ifdef OF_HAVE_IPV6
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		if (_IPv6Socket == nil) {
-			of_socket_address_t address =
-			    of_socket_address_parse_ip(@"::", 0);
+			OFSocketAddress address =
+			    OFSocketAddressParseIPv6(@"::", 0);
 
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket of_bindToAddress: &address
@@ -756,10 +756,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		sock = _IPv6Socket;
 		break;
 #endif
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 		if (_IPv4Socket == nil) {
-			of_socket_address_t address =
-			    of_socket_address_parse_ip(@"0.0.0.0", 0);
+			OFSocketAddress address =
+			    OFSocketAddressParseIPv4(@"0.0.0.0", 0);
 
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket of_bindToAddress: &address
@@ -881,7 +881,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (bool)of_handleResponseBuffer: (unsigned char *)buffer
 			 length: (size_t)length
-			 sender: (const of_socket_address_t *)sender
+			 sender: (const OFSocketAddress *)sender
 {
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
@@ -903,7 +903,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_TCPSocket != nil) {
 		if ([_TCPQueries objectForKey: context->_TCPSocket] != context)
 			return true;
-	} else if (!of_socket_address_equal(sender, &context->_usedNameServer))
+	} else if (!OFSocketAddressEqual(sender, &context->_usedNameServer))
 		return true;
 
 	[context->_cancelTimer invalidate];
@@ -1043,7 +1043,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 -	  (bool)socket: (OFDatagramSocket *)sock
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (const of_socket_address_t *)sender
+		sender: (const OFSocketAddress *)sender
 	     exception: (id)exception
 {
 	if (exception != nil)
@@ -1181,7 +1181,7 @@ done:
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
-			     addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+			     addressFamily: OFSocketAddressFamilyAny
 			       runLoopMode: OFDefaultRunLoopMode
 				  delegate: delegate];
 }

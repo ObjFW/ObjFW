@@ -159,7 +159,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  *	       pick one and return it.
  * @return The address on which this socket can be reached
  */
-- (of_socket_address_t)bindToPort: (uint16_t)port;
+- (OFSocketAddress)bindToPort: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

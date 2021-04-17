@@ -134,11 +134,11 @@
 
 - (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	of_socket_address_t address = *(const of_socket_address_t *)
+	OFSocketAddress address = *(const OFSocketAddress *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
 	int errNo;
 
-	of_socket_address_set_port(&address, _port);
+	OFSocketAddressSetPort(&address, _port);
 
 	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {
@@ -226,8 +226,7 @@
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, _port);
+		OFSocketAddress address = OFSocketAddressParseIP(_host, _port);
 
 		_socketAddresses = [[OFData alloc]
 		    initWithItems: &address
@@ -241,7 +240,7 @@
 
 	[[OFThread DNSResolver]
 	    asyncResolveAddressesForHost: _host
-			   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+			   addressFamily: OFSocketAddressFamilyAny
 			     runLoopMode: runLoopMode
 				delegate: self];
 }

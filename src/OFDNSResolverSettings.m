@@ -76,7 +76,7 @@ domainFromHostname(OFString *hostname)
 		return nil;
 
 	@try {
-		of_socket_address_parse_ip(hostname, 0);
+		OFSocketAddressParseIP(hostname, 0);
 
 		/*
 		 * If we are still here, the host name is a valid IP address.

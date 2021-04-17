@@ -26,7 +26,7 @@ static OFString *module = @"OFIPXSocket";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
-	of_socket_address_t address1, address2;
+	OFSocketAddress address1, address2;
 	char buffer[5];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
@@ -62,9 +62,8 @@ static OFString *module = @"OFIPXSocket";
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
 	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
-	    of_socket_address_equal(&address1, &address2) &&
-	    of_socket_address_hash(&address1) ==
-	    of_socket_address_hash(&address2))
+	    OFSocketAddressEqual(&address1, &address2) &&
+	    OFSocketaddressHash(&address1) == OFSocketaddressHash(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }

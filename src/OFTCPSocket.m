@@ -136,7 +136,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+- (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
@@ -160,7 +160,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return true;
 }
 
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
 	if (_socket == INVALID_SOCKET)
@@ -302,7 +302,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
-	of_socket_address_t address;
+	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
@@ -316,10 +316,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+		      addressFamily: OFSocketAddressFamilyAny];
 
-	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
-	of_socket_address_set_port(&address, port);
+	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
+	OFSocketAddressSetPort(&address, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET)
@@ -363,7 +363,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			of_socket_address_set_port(&address, rnd);
+			OFSocketAddressSetPort(&address, rnd);
 
 			if ((ret = bind(_socket, &address.sockaddr.sockaddr,
 			    address.length)) == 0) {

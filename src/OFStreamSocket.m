@@ -288,21 +288,20 @@
 
 	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
 	case AF_INET:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPv4;
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
 #ifdef OF_HAVE_IPX
 	case AF_IPX:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPX;
 		break;
 #endif
 	default:
-		client->_remoteAddress.family =
-		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		client->_remoteAddress.family = OFSocketAddressFamilyUnknown;
 		break;
 	}
 
@@ -338,7 +337,7 @@
 }
 #endif
 
-- (const of_socket_address_t *)remoteAddress
+- (const OFSocketAddress *)remoteAddress
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];

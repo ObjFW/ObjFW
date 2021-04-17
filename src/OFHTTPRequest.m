@@ -123,7 +123,7 @@ of_http_request_method_from_string(OFString *string)
 	[super dealloc];
 }
 
-- (void)setRemoteAddress: (const of_socket_address_t *)remoteAddress
+- (void)setRemoteAddress: (const OFSocketAddress *)remoteAddress
 {
 	_hasRemoteAddress = (remoteAddress != NULL);
 
@@ -131,7 +131,7 @@ of_http_request_method_from_string(OFString *string)
 		_remoteAddress = *remoteAddress;
 }
 
-- (const of_socket_address_t *)remoteAddress
+- (const OFSocketAddress *)remoteAddress
 {
 	if (_hasRemoteAddress)
 		return &_remoteAddress;
@@ -177,7 +177,7 @@ of_http_request_method_from_string(OFString *string)
 		return false;
 
 	if (request.remoteAddress != self.remoteAddress &&
-	    !of_socket_address_equal(request.remoteAddress, self.remoteAddress))
+	    !OFSocketAddressEqual(request.remoteAddress, self.remoteAddress))
 		return false;
 
 	return true;
@@ -195,7 +195,7 @@ of_http_request_method_from_string(OFString *string)
 	OF_HASH_ADD_HASH(hash, _URL.hash);
 	OF_HASH_ADD_HASH(hash, _headers.hash);
 	if (_hasRemoteAddress)
-		OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
+		OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_remoteAddress));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -260,8 +260,7 @@ of_http_request_method_from_string(OFString *string)
 				      withString: @"\n\t"];
 
 	if (_hasRemoteAddress)
-		remoteAddress =
-		    of_socket_address_ip_string(&_remoteAddress, NULL);
+		remoteAddress = OFSocketAddressString(&_remoteAddress);
 	else
 		remoteAddress = nil;
 

@@ -84,15 +84,15 @@ typedef u_short in_port_t;
  */
 typedef enum {
 	/** An unknown address family. */
-	OF_SOCKET_ADDRESS_FAMILY_UNKNOWN,
+	OFSocketAddressFamilyUnknown,
 	/** IPv4 */
-	OF_SOCKET_ADDRESS_FAMILY_IPV4,
+	OFSocketAddressFamilyIPv4,
 	/** IPv6 */
-	OF_SOCKET_ADDRESS_FAMILY_IPV6,
+	OFSocketAddressFamilyIPv6,
 	/** IPX */
-	OF_SOCKET_ADDRESS_FAMILY_IPX,
+	OFSocketAddressFamilyIPX,
 	/** Any address family */
-	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
+	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
 
 #ifndef OF_HAVE_IPV6
@@ -126,11 +126,11 @@ struct sockaddr_ipx {
 #endif
 
 /**
- * @struct of_socket_address_t socket.h ObjFW/socket.h
+ * @struct OFSocketAddress socket.h ObjFW/socket.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-struct OF_BOXABLE of_socket_address_t {
+struct OF_BOXABLE OFSocketAddress {
 	/*
 	 * Even though struct sockaddr contains the family, we need to use our
 	 * own family, as we need to support storing an IPv6 address on systems
@@ -147,40 +147,38 @@ struct OF_BOXABLE of_socket_address_t {
 	} sockaddr;
 	socklen_t length;
 };
-typedef struct of_socket_address_t of_socket_address_t;
+typedef struct OFSocketAddress OFSocketAddress;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /**
- * @brief Parses the specified IP and port into an of_socket_address_t.
+ * @brief Parses the specified IP (either v4 or v6) and port into an
+ *	  @ref OFSocketAddress.
  *
  * @param IP The IP to parse
  * @param port The port to use
- * @return The parsed IP and port as an of_socket_address_t
+ * @return The parsed IP and port as an OFSocketAddress
  */
-extern of_socket_address_t of_socket_address_parse_ip(
-    OFString *IP, uint16_t port);
+extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
 
 /**
- * @brief Parses the specified IPv4 and port into an of_socket_address_t.
+ * @brief Parses the specified IPv4 and port into an @ref OFSocketAddress.
  *
  * @param IP The IPv4 to parse
  * @param port The port to use
- * @return The parsed IPv4 and port as an of_socket_address_t
+ * @return The parsed IPv4 and port as an OFSocketAddress
  */
-extern of_socket_address_t of_socket_address_parse_ipv4(
-    OFString *IP, uint16_t port);
+extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 
 /**
- * @brief Parses the specified IPv6 and port into an of_socket_address_t.
+ * @brief Parses the specified IPv6 and port into an @ref OFSocketAddress.
  *
  * @param IP The IPv6 to parse
  * @param port The port to use
- * @return The parsed IPv6 and port as an of_socket_address_t
+ * @return The parsed IPv6 and port as an OFSocketAddress
  */
-extern of_socket_address_t of_socket_address_parse_ipv6(
-    OFString *IP, uint16_t port);
+extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 
 /**
  * @brief Creates an IPX address for the specified network, node and port.
@@ -189,97 +187,91 @@ extern of_socket_address_t of_socket_address_parse_ipv6(
  * @param network The IPX network
  * @param port The IPX port (sometimes called socket number) on the node
  */
-extern of_socket_address_t of_socket_address_ipx(
+extern OFSocketAddress OFSocketAddressMakeIPX(
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
     uint16_t port);
 
 /**
- * @brief Compares two of_socket_address_t for equality.
+ * @brief Compares two OFSocketAddress for equality.
  *
  * @param address1 The address to compare with the second address
  * @param address2 The second address
  * @return Whether the two addresses are equal
  */
-extern bool of_socket_address_equal(
-    const of_socket_address_t *_Nonnull address1,
-    const of_socket_address_t *_Nonnull address2);
+extern bool OFSocketAddressEqual(const OFSocketAddress *_Nonnull address1,
+    const OFSocketAddress *_Nonnull address2);
 
 /**
- * @brief Returns the hash for the specified of_socket_address_t.
+ * @brief Returns the hash for the specified @ref OFSocketAddress.
  *
  * @param address The address to hash
- * @return The hash for the specified of_socket_address_t
+ * @return The hash for the specified OFSocketAddress
  */
-extern unsigned long of_socket_address_hash(
-    const of_socket_address_t *_Nonnull address);
+extern unsigned long OFSocketAddressHash(
+    const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Converts the specified of_socket_address_t to an IP string and port.
+ * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @param port A pointer to an uint16_t which should be set to the port of the
- *	       address or NULL if the port is not needed
  * @return The address as an IP string
  */
-extern OFString *_Nonnull of_socket_address_ip_string(
-    const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port);
+extern OFString *_Nonnull OFSocketAddressString(
+    const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the port of the specified of_socket_address_t, independent of
+ * @brief Sets the port of the specified @ref OFSocketAddress, independent of
  *	  the address family used.
  *
  * @param address The address on which to set the port
  * @param port The port to set on the address
  */
-extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
+extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
     uint16_t port);
 
 /**
- * @brief Returns the port of the specified of_socket_address_t, independent of
+ * @brief Returns the port of the specified @ref OFSocketAddress, independent of
  *	  the address family used.
  *
  * @param address The address on which to get the port
  * @return The port of the address
  */
-extern uint16_t of_socket_address_get_port(
-    const of_socket_address_t *_Nonnull address);
+extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the IPX network of the specified of_socket_address_t.
+ * @brief Sets the IPX network of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the IPX network
  * @param network The IPX network to set on the address
  */
-extern void of_socket_address_set_ipx_network(
-    of_socket_address_t *_Nonnull address, uint32_t network);
+extern void OFSocketAddressSetIPXNetwork(OFSocketAddress *_Nonnull address,
+    uint32_t network);
 
 /**
- * @brief Returns the IPX network of the specified of_socket_address_t.
+ * @brief Returns the IPX network of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to get the IPX network
  * @return The IPX network of the address
  */
-extern uint32_t of_socket_address_get_ipx_network(
-    const of_socket_address_t *_Nonnull address);
+extern uint32_t OFSocketAddressIPXNetwork(
+    const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the IPX node of the specified of_socket_address_t.
+ * @brief Sets the IPX node of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the IPX node
  * @param node The IPX node to set on the address
  */
-extern void of_socket_address_set_ipx_node(
-    of_socket_address_t *_Nonnull address,
+extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
     const unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 /**
- * @brief Gets the IPX node of the specified of_socket_address_t.
+ * @brief Gets the IPX node of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to get the IPX node
  * @param node A byte array to store the IPX node of the address
  */
-extern void of_socket_address_get_ipx_node(
-    const of_socket_address_t *_Nonnull address,
+extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 extern bool of_socket_init(void);
