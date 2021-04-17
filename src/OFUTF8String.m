@@ -39,27 +39,27 @@
 #import "of_asprintf.h"
 #import "unicode.h"
 
-extern const of_char16_t of_iso_8859_2_table[];
+extern const OFChar16 of_iso_8859_2_table[];
 extern const size_t of_iso_8859_2_table_offset;
-extern const of_char16_t of_iso_8859_3_table[];
+extern const OFChar16 of_iso_8859_3_table[];
 extern const size_t of_iso_8859_3_table_offset;
-extern const of_char16_t of_iso_8859_15_table[];
+extern const OFChar16 of_iso_8859_15_table[];
 extern const size_t of_iso_8859_15_table_offset;
-extern const of_char16_t of_windows_1251_table[];
+extern const OFChar16 of_windows_1251_table[];
 extern const size_t of_windows_1251_table_offset;
-extern const of_char16_t of_windows_1252_table[];
+extern const OFChar16 of_windows_1252_table[];
 extern const size_t of_windows_1252_table_offset;
-extern const of_char16_t of_codepage_437_table[];
+extern const OFChar16 of_codepage_437_table[];
 extern const size_t of_codepage_437_table_offset;
-extern const of_char16_t of_codepage_850_table[];
+extern const OFChar16 of_codepage_850_table[];
 extern const size_t of_codepage_850_table_offset;
-extern const of_char16_t of_codepage_858_table[];
+extern const OFChar16 of_codepage_858_table[];
 extern const size_t of_codepage_858_table_offset;
-extern const of_char16_t of_mac_roman_table[];
+extern const OFChar16 of_mac_roman_table[];
 extern const size_t of_mac_roman_table_offset;
-extern const of_char16_t of_koi8_r_table[];
+extern const OFChar16 of_koi8_r_table[];
 extern const size_t of_koi8_r_table_offset;
-extern const of_char16_t of_koi8_u_table[];
+extern const OFChar16 of_koi8_u_table[];
 extern const size_t of_koi8_u_table_offset;
 
 static inline int
@@ -233,7 +233,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	self = [super init];
 
 	@try {
-		const of_char16_t *table;
+		const OFChar16 *table;
 		size_t tableOffset, j;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
@@ -505,7 +505,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return self;
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -542,7 +542,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				@throw [OFInvalidEncodingException exception];
 
 			if ((character & 0xFC00) == 0xD800) {
-				of_char16_t nextCharacter;
+				OFChar16 nextCharacter;
 
 				if (length <= i + 1)
 					@throw [OFInvalidEncodingException
@@ -590,7 +590,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return self;
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)characters
+- (instancetype)initWithUTF32String: (const OFChar32 *)characters
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -1179,13 +1179,13 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			       freeWhenDone: true] items];
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
+- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
-	of_char32_t *buffer = of_alloc(_s->length + 1, sizeof(of_char32_t));
+	OFChar32 *buffer = of_alloc(_s->length + 1, sizeof(OFChar32));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {
-		of_char32_t c;
+		OFChar32 c;
 		ssize_t cLen;
 
 		cLen = of_string_utf8_decode(_s->cString + i,
@@ -1207,7 +1207,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 	return [[OFData dataWithItemsNoCopy: buffer
 				      count: _s->length + 1
-				   itemSize: sizeof(of_char32_t)
+				   itemSize: sizeof(OFChar32)
 			       freeWhenDone: true] items];
 }
 

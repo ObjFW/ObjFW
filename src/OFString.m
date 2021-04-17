@@ -316,7 +316,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, OFUnichar *ret)
 }
 
 size_t
-of_string_utf16_length(const of_char16_t *string)
+of_string_utf16_length(const OFChar16 *string)
 {
 	size_t length = 0;
 
@@ -327,7 +327,7 @@ of_string_utf16_length(const of_char16_t *string)
 }
 
 size_t
-of_string_utf32_length(const of_char32_t *string)
+of_string_utf32_length(const OFChar32 *string)
 {
 	size_t length = 0;
 
@@ -481,26 +481,26 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						     length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
 	return (id)[[OFUTF8String alloc] initWithUTF16String: string];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFUTF8String alloc] initWithUTF16String: string
 						      length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFUTF8String alloc] initWithUTF16String: string
 						   byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -509,26 +509,26 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						   byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
 	return (id)[[OFUTF8String alloc] initWithUTF32String: string];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFUTF8String alloc] initWithUTF32String: string
 						      length: length];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFUTF8String alloc] initWithUTF32String: string
 						   byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -702,26 +702,26 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					  length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const OFChar16 *)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
@@ -730,26 +730,26 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const OFChar32 *)string
 {
 	return [[[self alloc] initWithUTF32String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF32String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
 	return [[[self alloc] initWithUTF32String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
@@ -895,14 +895,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
 	return [self initWithUTF16String: string
 				  length: of_string_utf16_length(string)
 			       byteOrder: OFByteOrderNative];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 {
 	return [self initWithUTF16String: string
@@ -910,7 +910,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: OFByteOrderNative];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return [self initWithUTF16String: string
@@ -918,21 +918,21 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
 	return [self initWithUTF32String: string
 				  length: of_string_utf32_length(string)
 			       byteOrder: OFByteOrderNative];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 {
 	return [self initWithUTF32String: string
@@ -940,7 +940,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: OFByteOrderNative];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return [self initWithUTF32String: string
@@ -948,7 +948,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -2542,22 +2542,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 }
 
-- (const of_char16_t *)UTF16String
+- (const OFChar16 *)UTF16String
 {
 	return [self UTF16StringWithByteOrder: OFByteOrderNative];
 }
 
-- (const of_char16_t *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
+- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
-	of_char16_t *buffer;
+	OFChar16 *buffer;
 	size_t j;
 	bool swap = (byteOrder != OFByteOrderNative);
 
 	/* Allocate memory for the worst case */
-	buffer = of_alloc((length + 1) * 2, sizeof(of_char16_t));
+	buffer = of_alloc((length + 1) * 2, sizeof(OFChar16));
 
 	j = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -2587,7 +2587,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	buffer[j] = 0;
 
 	@try {
-		buffer = of_realloc(buffer, j + 1, sizeof(of_char16_t));
+		buffer = of_realloc(buffer, j + 1, sizeof(OFChar16));
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
 	}
@@ -2597,7 +2597,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: j + 1
-					   itemSize: sizeof(of_char16_t)
+					   itemSize: sizeof(OFChar16)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);
@@ -2619,17 +2619,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return UTF16StringLength;
 }
 
-- (const of_char32_t *)UTF32String
+- (const OFChar32 *)UTF32String
 {
 	return [self UTF32StringWithByteOrder: OFByteOrderNative];
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
+- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	size_t length = self.length;
-	of_char32_t *buffer;
+	OFChar32 *buffer;
 
-	buffer = of_alloc(length + 1, sizeof(of_char32_t));
+	buffer = of_alloc(length + 1, sizeof(OFChar32));
 	@try {
 		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 		buffer[length] = 0;
@@ -2640,7 +2640,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: length + 1
-					   itemSize: sizeof(of_char32_t)
+					   itemSize: sizeof(OFChar32)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
 		free(buffer);

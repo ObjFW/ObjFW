@@ -223,7 +223,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 #if defined(OF_WINDOWS)
 		if ([OFSystemInfo isWindowsNT]) {
-			of_char16_t *env, *env0;
+			OFChar16 *env, *env0;
 			env = env0 = GetEnvironmentStringsW();
 
 			while (*env != 0) {

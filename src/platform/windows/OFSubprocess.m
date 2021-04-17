@@ -35,7 +35,7 @@
 #include <windows.h>
 
 @interface OFSubprocess ()
-- (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
+- (OFChar16 *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
 - (char *)of_environmentForDictionary: (OFDictionary *)environment;
 @end
 
@@ -182,7 +182,7 @@
 
 		if ([OFSystemInfo isWindowsNT]) {
 			size_t length;
-			of_char16_t *argumentsCopy;
+			OFChar16 *argumentsCopy;
 			STARTUPINFOW si;
 
 			memset(&si, 0, sizeof(si));
@@ -194,7 +194,7 @@
 
 			length = argumentsString.UTF16StringLength;
 			argumentsCopy = of_alloc(length + 1,
-			    sizeof(of_char16_t));
+			    sizeof(OFChar16));
 			memcpy(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
 			@try {
@@ -251,18 +251,18 @@
 	[super dealloc];
 }
 
-- (of_char16_t *)of_wideEnvironmentForDictionary: (OFDictionary *)environment
+- (OFChar16 *)of_wideEnvironmentForDictionary: (OFDictionary *)environment
 {
 	OFMutableData *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
-	const of_char16_t equal = '=';
-	const of_char16_t zero[2] = { 0, 0 };
+	const OFChar16 equal = '=';
+	const OFChar16 zero[2] = { 0, 0 };
 
 	if (environment == nil)
 		return NULL;
 
-	env = [OFMutableData dataWithItemSize: sizeof(of_char16_t)];
+	env = [OFMutableData dataWithItemSize: sizeof(OFChar16)];
 
 	keyEnumerator = [environment keyEnumerator];
 	objectEnumerator = [environment objectEnumerator];

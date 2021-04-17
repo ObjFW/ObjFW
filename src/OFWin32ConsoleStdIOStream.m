@@ -128,13 +128,13 @@ codepageToEncoding(UINT codepage)
 {
 	void *pool = objc_autoreleasePoolPush();
 	char *buffer = buffer_;
-	of_char16_t *UTF16;
+	OFChar16 *UTF16;
 	size_t j = 0;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	UTF16 = of_alloc(length, sizeof(of_char16_t));
+	UTF16 = of_alloc(length, sizeof(OFChar16));
 	@try {
 		DWORD UTF16Len;
 		OFMutableData *rest = nil;
@@ -206,7 +206,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if ((c & 0xFC00) == 0xD800) {
-				of_char16_t next;
+				OFChar16 next;
 
 				if (UTF16Len <= i + 1) {
 					_incompleteUTF16Surrogate = c;
@@ -264,7 +264,7 @@ codepageToEncoding(UINT codepage)
 - (size_t)lowlevelWriteBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const char *buffer = buffer_;
-	of_char16_t *tmp;
+	OFChar16 *tmp;
 	size_t i = 0, j = 0;
 
 	if (length > SIZE_MAX / 2)
@@ -272,7 +272,7 @@ codepageToEncoding(UINT codepage)
 
 	if (_incompleteUTF8SurrogateLen > 0) {
 		OFUnichar c;
-		of_char16_t UTF16[2];
+		OFChar16 UTF16[2];
 		ssize_t UTF8Len;
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
@@ -357,7 +357,7 @@ codepageToEncoding(UINT codepage)
 		i += toCopy;
 	}
 
-	tmp = of_alloc(length * 2, sizeof(of_char16_t));
+	tmp = of_alloc(length * 2, sizeof(OFChar16));
 	@try {
 		DWORD bytesWritten;
 

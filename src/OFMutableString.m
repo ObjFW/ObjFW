@@ -83,26 +83,26 @@ static struct {
 							    length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -111,26 +111,26 @@ static struct {
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							     length: length];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {

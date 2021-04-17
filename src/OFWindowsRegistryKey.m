@@ -287,7 +287,7 @@ OF_DIRECT_MEMBERS
 		@throw [OFInvalidFormatException exception];
 
 	if ([OFSystemInfo isWindowsNT]) {
-		const of_char16_t *UTF16String = data.items;
+		const OFChar16 *UTF16String = data.items;
 		size_t length = data.count;
 
 		if (length % 2 == 1)
@@ -351,7 +351,7 @@ OF_DIRECT_MEMBERS
 	if ([OFSystemInfo isWindowsNT])
 		data = [OFData dataWithItems: string.UTF16String
 				       count: string.UTF16StringLength + 1
-				    itemSize: sizeof(of_char16_t)];
+				    itemSize: sizeof(OFChar16)];
 	else {
 		of_string_encoding_t encoding = [OFLocale encoding];
 		const char *cString = [string cStringWithEncoding: encoding];

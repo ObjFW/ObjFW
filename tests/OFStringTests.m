@@ -108,7 +108,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)UTF16String
+- (instancetype)initWithUTF16String: (const OFChar16 *)UTF16String
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
@@ -127,7 +127,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)UTF32String
+- (instancetype)initWithUTF32String: (const OFChar32 *)UTF32String
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {

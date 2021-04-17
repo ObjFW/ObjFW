@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	HANDLE _handle;
 	WORD _attributes;
-	of_char16_t _incompleteUTF16Surrogate;
+	OFChar16 _incompleteUTF16Surrogate;
 	char _incompleteUTF8Surrogate[4];
 	size_t _incompleteUTF8SurrogateLen;
 }
