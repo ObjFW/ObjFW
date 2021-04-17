@@ -359,70 +359,65 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 static void
-setTypeAttribute(of_mutable_file_attributes_t attributes, of_stat_t *s)
+setTypeAttribute(OFMutableFileAttributes attributes, of_stat_t *s)
 {
 	if (S_ISREG(s->st_mode))
-		[attributes setObject: of_file_type_regular
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeRegular forKey: OFFileType];
 	else if (S_ISDIR(s->st_mode))
-		[attributes setObject: of_file_type_directory
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeDirectory forKey: OFFileType];
 #ifdef S_ISLNK
 	else if (S_ISLNK(s->st_mode))
-		[attributes setObject: of_file_type_symbolic_link
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeSymbolicLink
+			       forKey: OFFileType];
 #endif
 #ifdef S_ISFIFO
 	else if (S_ISFIFO(s->st_mode))
-		[attributes setObject: of_file_type_fifo
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeFIFO forKey: OFFileType];
 #endif
 #ifdef S_ISCHR
 	else if (S_ISCHR(s->st_mode))
-		[attributes setObject: of_file_type_character_special
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeCharacterSpecial
+			       forKey: OFFileType];
 #endif
 #ifdef S_ISBLK
 	else if (S_ISBLK(s->st_mode))
-		[attributes setObject: of_file_type_block_special
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeBlockSpecial
+			       forKey: OFFileType];
 #endif
 #ifdef S_ISSOCK
 	else if (S_ISSOCK(s->st_mode))
-		[attributes setObject: of_file_type_socket
-			       forKey: of_file_attribute_key_type];
+		[attributes setObject: OFFileTypeSocket forKey: OFFileType];
 #endif
 }
 
 static void
-setDateAttributes(of_mutable_file_attributes_t attributes, of_stat_t *s)
+setDateAttributes(OFMutableFileAttributes attributes, of_stat_t *s)
 {
 	/* FIXME: We could be more precise on some OSes */
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_atime]
-	       forKey: of_file_attribute_key_last_access_date];
+	       forKey: OFFileLastAccessDate];
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_mtime]
-	       forKey: of_file_attribute_key_modification_date];
+	       forKey: OFFileModificationDate];
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_ctime]
-	       forKey: of_file_attribute_key_status_change_date];
+	       forKey: OFFileStatusChangeDate];
 #ifdef HAVE_STRUCT_STAT_ST_BIRTHTIME
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_birthtime]
-	       forKey: of_file_attribute_key_creation_date];
+	       forKey: OFFileCreationDate];
 #endif
 }
 
 static void
-setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
-    of_stat_t *s)
+setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, of_stat_t *s)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_uid]
-		       forKey: of_file_attribute_key_posix_uid];
+		       forKey: OFFileOwnerAccountID];
 	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_gid]
-		       forKey: of_file_attribute_key_posix_gid];
+		       forKey: OFFileGroupOwnerAccountID];
 
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
@@ -438,7 +433,7 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 				     encoding: encoding];
 
 			[attributes setObject: owner
-				       forKey: of_file_attribute_key_owner];
+				       forKey: OFFileOwnerAccountName];
 		}
 
 		if (group_ != NULL) {
@@ -447,7 +442,7 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 				     encoding: encoding];
 
 			[attributes setObject: group
-				       forKey: of_file_attribute_key_group];
+				       forKey: OFFileGroupOwnerAccountName];
 		}
 # ifdef OF_HAVE_THREADS
 	} @finally {
@@ -459,7 +454,7 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 static void
-setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
+setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
     OFURL *URL)
 {
 	OFString *path = URL.fileSystemRepresentation;
@@ -468,7 +463,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	char destinationC[PATH_MAX];
 	ssize_t length;
 	OFString *destination;
-	of_file_attribute_key_t key;
 
 	length = readlink([path cStringWithEncoding: encoding], destinationC,
 	    PATH_MAX);
@@ -482,8 +476,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 					 encoding: encoding
 					   length: length];
 
-	key = of_file_attribute_key_symbolic_link_destination;
-	[attributes setObject: destination forKey: key];
+	[attributes setObject: destination
+		       forKey: OFFileSymbolicLinkDestination];
 # else
 	HANDLE handle;
 	OFString *destination;
@@ -505,7 +499,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		} buffer;
 		DWORD size;
 		wchar_t *tmp;
-		of_file_attribute_key_t key;
 
 		if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, NULL, 0,
 		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
@@ -528,10 +521,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				   length: slrb.SubstituteNameLength /
 					   sizeof(wchar_t)];
 
-		[attributes setObject: of_file_type_symbolic_link
-			       forKey: of_file_attribute_key_type];
-		key = of_file_attribute_key_symbolic_link_destination;
-		[attributes setObject: destination forKey: key];
+		[attributes setObject: OFFileTypeSymbolicLink
+			       forKey: OFFileType];
+		[attributes setObject: destination
+			       forKey: OFFileSymbolicLinkDestination];
 #  undef slrb
 	} @finally {
 		CloseHandle(handle);
@@ -604,9 +597,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return [file autorelease];
 }
 
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
 {
-	of_mutable_file_attributes_t ret = [OFMutableDictionary dictionary];
+	OFMutableFileAttributes ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 	int error;
@@ -629,12 +622,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		@throw [OFOutOfRangeException exception];
 
 	[ret setObject: [NSNumber numberWithUnsignedLongLong: s.st_size]
-		forKey: of_file_attribute_key_size];
+		forKey: OFFileSize];
 
 	setTypeAttribute(ret, &s);
 
 	[ret setObject: [NSNumber numberWithUnsignedLong: s.st_mode]
-		forKey: of_file_attribute_key_posix_permissions];
+		forKey: OFFilePOSIXPermissions];
 
 	setOwnerAndGroupAttributes(ret, &s);
 	setDateAttributes(ret, &s);
@@ -652,12 +645,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (void)of_setLastAccessDate: (OFDate *)lastAccessDate
 	 andModificationDate: (OFDate *)modificationDate
 		 ofItemAtURL: (OFURL *)URL
-		  attributes: (of_file_attributes_t)attributes OF_DIRECT
+		  attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 	OFString *path = URL.fileSystemRepresentation;
-	of_file_attribute_key_t attributeKey = (modificationDate != nil
-	    ? of_file_attribute_key_modification_date
-	    : of_file_attribute_key_last_access_date);
+	OFFileAttributeKey attributeKey = (modificationDate != nil
+	    ? OFFileModificationDate : OFFileLastAccessDate);
 
 	if (lastAccessDate == nil)
 		lastAccessDate = modificationDate;
@@ -766,7 +758,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
 		   ofItemAtURL: (OFURL *)URL
-		    attributes: (of_file_attributes_t)attributes OF_DIRECT
+		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
@@ -785,18 +777,18 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithURL: URL
 			  attributes: attributes
-		     failedAttribute: of_file_attribute_key_posix_permissions
+		     failedAttribute: OFFilePOSIXPermissions
 			       errNo: errno];
 #else
 	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
-- (void)of_setOwner: (OFString *)owner
-	   andGroup: (OFString *)group
-	ofItemAtURL: (OFURL *)URL
-       attributeKey: (of_file_attribute_key_t)attributeKey
-	 attributes: (of_file_attributes_t)attributes OF_DIRECT
+- (void)of_setOwnerAccountName: (OFString *)owner
+      andGroupOwnerAccountName: (OFString *)group
+		   ofItemAtURL: (OFURL *)URL
+		  attributeKey: (OFFileAttributeKey)attributeKey
+		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 	OFString *path = URL.fileSystemRepresentation;
@@ -857,13 +849,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 }
 
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator OF_GENERIC(of_file_attribute_key_t) *keyEnumerator;
+	OFEnumerator OF_GENERIC(OFFileAttributeKey) *keyEnumerator;
 	OFEnumerator *objectEnumerator;
-	of_file_attribute_key_t key;
+	OFFileAttributeKey key;
 	id object;
 	OFDate *lastAccessDate, *modificationDate;
 
@@ -878,35 +869,33 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: of_file_attribute_key_modification_date] ||
-		    [key isEqual: of_file_attribute_key_last_access_date])
+		if ([key isEqual: OFFileModificationDate] ||
+		    [key isEqual: OFFileLastAccessDate])
 			continue;
-		else if ([key isEqual: of_file_attribute_key_posix_permissions])
+		else if ([key isEqual: OFFilePOSIXPermissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtURL: URL
 					  attributes: attributes];
-		else if ([key isEqual: of_file_attribute_key_owner])
-			[self of_setOwner: object
-				 andGroup: nil
-			      ofItemAtURL: URL
-			     attributeKey: key
-			       attributes: attributes];
-		else if ([key isEqual: of_file_attribute_key_group])
-			[self of_setOwner: nil
-				 andGroup: object
-			      ofItemAtURL: URL
-			     attributeKey: key
-			       attributes: attributes];
+		else if ([key isEqual: OFFileOwnerAccountName])
+			[self of_setOwnerAccountName: object
+			    andGroupOwnerAccountName: nil
+					 ofItemAtURL: URL
+					attributeKey: key
+					  attributes: attributes];
+		else if ([key isEqual: OFFileGroupOwnerAccountName])
+			[self of_setOwnerAccountName: nil
+			    andGroupOwnerAccountName: object
+					 ofItemAtURL: URL
+					attributeKey: key
+					  attributes: attributes];
 		else
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];
 	}
 
-	lastAccessDate = [attributes
-	    objectForKey: of_file_attribute_key_last_access_date];
-	modificationDate = [attributes
-	    objectForKey: of_file_attribute_key_modification_date];
+	lastAccessDate = [attributes objectForKey: OFFileLastAccessDate];
+	modificationDate = [attributes objectForKey: OFFileModificationDate];
 
 	if (lastAccessDate != nil || modificationDate != nil)
 		[self of_setLastAccessDate: lastAccessDate

@@ -71,39 +71,30 @@
 @interface OFDefaultFileManager: OFFileManager
 @end
 
-const of_file_attribute_key_t of_file_attribute_key_size =
-    @"of_file_attribute_key_size";
-const of_file_attribute_key_t of_file_attribute_key_type =
-    @"of_file_attribute_key_type";
-const of_file_attribute_key_t of_file_attribute_key_posix_permissions =
-    @"of_file_attribute_key_posix_permissions";
-const of_file_attribute_key_t of_file_attribute_key_posix_uid =
-    @"of_file_attribute_key_posix_uid";
-const of_file_attribute_key_t of_file_attribute_key_posix_gid =
-    @"of_file_attribute_key_posix_gid";
-const of_file_attribute_key_t of_file_attribute_key_owner =
-    @"of_file_attribute_key_owner";
-const of_file_attribute_key_t of_file_attribute_key_group =
-    @"of_file_attribute_key_group";
-const of_file_attribute_key_t of_file_attribute_key_last_access_date =
-    @"of_file_attribute_key_last_access_date";
-const of_file_attribute_key_t of_file_attribute_key_modification_date =
-    @"of_file_attribute_key_modification_date";
-const of_file_attribute_key_t of_file_attribute_key_status_change_date =
-    @"of_file_attribute_key_status_change_date";
-const of_file_attribute_key_t of_file_attribute_key_creation_date =
-    @"of_file_attribute_key_creation_date";
-const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
-    @"of_file_attribute_key_symbolic_link_destination";
+const OFFileAttributeKey OFFileSize = @"OFFileSize";
+const OFFileAttributeKey OFFileType = @"OFFileType";
+const OFFileAttributeKey OFFilePOSIXPermissions = @"OFFilePOSIXPermissions";
+const OFFileAttributeKey OFFileOwnerAccountID = @"OFFileOwnerAccountID";
+const OFFileAttributeKey OFFileGroupOwnerAccountID =
+    @"OFFileGroupOwnerAccountID";
+const OFFileAttributeKey OFFileOwnerAccountName = @"OFFileOwnerAccountName";
+const OFFileAttributeKey OFFileGroupOwnerAccountName =
+    @"OFFileGroupOwnerAccountName";
+const OFFileAttributeKey OFFileLastAccessDate = @"OFFileLastAccessDate";
+const OFFileAttributeKey OFFileModificationDate = @"OFFileModificationDate";
+const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
+const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
+const OFFileAttributeKey OFFileSymbolicLinkDestination =
+    @"OFFileSymbolicLinkDestination";
 
-const of_file_type_t of_file_type_regular = @"of_file_type_regular";
-const of_file_type_t of_file_type_directory = @"of_file_type_directory";
-const of_file_type_t of_file_type_symbolic_link = @"of_file_type_symbolic_link";
-const of_file_type_t of_file_type_fifo = @"of_file_type_fifo";
-const of_file_type_t of_file_type_character_special =
-    @"of_file_type_character_special";
-const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
-const of_file_type_t of_file_type_socket = @"of_file_type_socket";
+const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
+const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
+const OFFileAttributeType OFFileTypeSymbolicLink = @"OFFileTypeSymbolicLink";
+const OFFileAttributeType OFFileTypeFIFO = @"OFFileTypeFIFO";
+const OFFileAttributeType OFFileTypeCharacterSpecial =
+    @"OFFileTypeCharacterSpecial";
+const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
+const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
 
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)
@@ -123,8 +114,7 @@ OF_DESTRUCTOR()
 #endif
 
 static id
-attributeForKeyOrException(of_file_attributes_t attributes,
-    of_file_attribute_key_t key)
+attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	id object = [attributes objectForKey: key];
 
@@ -231,7 +221,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -245,10 +235,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 
 #ifdef OF_HAVE_FILES
-- (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path
+- (OFFileAttributes)attributesOfItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_file_attributes_t ret;
+	OFFileAttributes ret;
 
 	ret = [self attributesOfItemAtURL: [OFURL fileURLWithPath: path]];
 
@@ -260,8 +250,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -275,7 +264,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 
 #ifdef OF_HAVE_FILES
-- (void)setAttributes: (of_file_attributes_t)attributes
+- (void)setAttributes: (OFFileAttributes)attributes
 	 ofItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -569,8 +558,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 {
 	void *pool;
 	OFURLHandler *URLHandler;
-	of_file_attributes_t attributes;
-	of_file_type_t type;
+	OFFileAttributes attributes;
+	OFFileAttributeType type;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -601,18 +590,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	type = attributes.fileType;
 
-	if ([type isEqual: of_file_type_directory]) {
+	if ([type isEqual: OFFileTypeDirectory]) {
 		OFArray OF_GENERIC(OFURL *) *contents;
 
 		@try {
 			[self createDirectoryAtURL: destination];
 
 			@try {
-				of_file_attribute_key_t key =
-				    of_file_attribute_key_posix_permissions;
+				OFFileAttributeKey key = OFFilePOSIXPermissions;
 				OFNumber *permissions =
 				    [attributes objectForKey: key];
-				of_file_attributes_t destinationAttributes;
+				OFFileAttributes destinationAttributes;
 
 				if (permissions != nil) {
 					destinationAttributes = [OFDictionary
@@ -652,7 +640,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 			objc_autoreleasePoolPop(pool2);
 		}
-	} else if ([type isEqual: of_file_type_regular]) {
+	} else if ([type isEqual: OFFileTypeRegular]) {
 		size_t pageSize = [OFSystemInfo pageSize];
 		OFStream *sourceStream = nil;
 		OFStream *destinationStream = nil;
@@ -678,11 +666,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			}
 
 			@try {
-				of_file_attribute_key_t key =
-				    of_file_attribute_key_posix_permissions;
+				OFFileAttributeKey key = OFFilePOSIXPermissions;
 				OFNumber *permissions = [attributes
 				    objectForKey: key];
-				of_file_attributes_t destinationAttributes;
+				OFFileAttributes destinationAttributes;
 
 				if (permissions != nil) {
 					destinationAttributes = [OFDictionary
@@ -713,7 +700,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			[destinationStream close];
 			free(buffer);
 		}
-	} else if ([type isEqual: of_file_type_symbolic_link]) {
+	} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 		@try {
 			OFString *linkDestination =
 			    attributes.fileSymbolicLinkDestination;
@@ -914,70 +901,65 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 @implementation OFDictionary (FileAttributes)
 - (unsigned long long)fileSize
 {
-	return [attributeForKeyOrException(self, of_file_attribute_key_size)
+	return [attributeForKeyOrException(self, OFFileSize)
 	    unsignedLongLongValue];
 }
 
-- (of_file_type_t)fileType
+- (OFFileAttributeType)fileType
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_type);
+	return attributeForKeyOrException(self, OFFileType);
 }
 
 - (unsigned long)filePOSIXPermissions
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_permissions) unsignedLongValue];
+	    OFFilePOSIXPermissions) unsignedLongValue];
 }
 
-- (unsigned long)filePOSIXUID
+- (unsigned long)fileOwnerAccountID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_uid) unsignedLongValue];
+	    OFFileOwnerAccountID) unsignedLongValue];
 }
 
-- (unsigned long)filePOSIXGID
+- (unsigned long)fileGroupOwnerAccountID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_gid) unsignedLongValue];
+	    OFFileGroupOwnerAccountID) unsignedLongValue];
 }
 
-- (OFString *)fileOwner
+- (OFString *)fileOwnerAccountName
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_owner);
+	return attributeForKeyOrException(self, OFFileOwnerAccountName);
 }
 
-- (OFString *)fileGroup
+- (OFString *)fileGroupOwnerAccountName
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_group);
+	return attributeForKeyOrException(self, OFFileGroupOwnerAccountName);
 }
 
 - (OFDate *)fileLastAccessDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_last_access_date);
+	return attributeForKeyOrException(self, OFFileLastAccessDate);
 }
 
 - (OFDate *)fileModificationDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_modification_date);
+	return attributeForKeyOrException(self, OFFileModificationDate);
 }
 
 - (OFDate *)fileStatusChangeDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_status_change_date);
+	return attributeForKeyOrException(self, OFFileStatusChangeDate);
 }
 
 - (OFDate *)fileCreationDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_creation_date);
+	return attributeForKeyOrException(self, OFFileCreationDate);
 }
 
 - (OFString *)fileSymbolicLinkDestination
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_symbolic_link_destination);
+	return attributeForKeyOrException(self, OFFileSymbolicLinkDestination);
 }
 @end

@@ -44,10 +44,9 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
 		OFNumber *mode = [OFNumber numberWithUnsignedShort:
 		    (entry.versionSpecificAttributes >> 16) & 0777];
-		of_file_attribute_key_t key =
-		    of_file_attribute_key_posix_permissions;
-		of_file_attributes_t attributes =
-		    [OFDictionary dictionaryWithObject: mode forKey: key];
+		OFFileAttributes attributes = [OFDictionary
+		    dictionaryWithObject: mode
+				  forKey: OFFilePOSIXPermissions];
 
 		[[OFFileManager defaultManager] setAttributes: attributes
 						 ofItemAtPath: path];
@@ -59,14 +58,14 @@ static void
 setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFDate *modificationDate = entry.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -414,7 +413,7 @@ outer_loop_end:
 		void *pool = objc_autoreleasePoolPush();
 		OFArray OF_GENERIC (OFString *) *components;
 		OFString *fileName;
-		of_file_attributes_t attributes;
+		OFFileAttributes attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
 		unsigned long long size;
@@ -426,7 +425,7 @@ outer_loop_end:
 		attributes = [fileManager
 		    attributesOfItemAtPath: localFileName];
 
-		if ([attributes.fileType isEqual: of_file_type_directory]) {
+		if ([attributes.fileType isEqual: OFFileTypeDirectory]) {
 			isDirectory = true;
 			fileName = [fileName stringByAppendingString: @"/"];
 		}

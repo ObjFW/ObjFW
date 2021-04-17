@@ -30,8 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSetItemAttributesFailedException: OFException
 {
 	OFURL *_URL;
-	of_file_attributes_t _attributes;
-	of_file_attribute_key_t _failedAttribute;
+	OFFileAttributes _attributes;
+	OFFileAttributeKey _failedAttribute;
 	int _errNo;
 }
 
@@ -48,12 +48,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The attributes that should have been set.
  */
-@property (readonly, nonatomic) of_file_attributes_t attributes;
+@property (readonly, nonatomic) OFFileAttributes attributes;
 
 /**
  * @brief The first attribute that could not be set.
  */
-@property (readonly, nonatomic) of_file_attribute_key_t failedAttribute;
+@property (readonly, nonatomic) OFFileAttributeKey failedAttribute;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
@@ -68,8 +68,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased set item attributes failed exception
  */
 + (instancetype)exceptionWithURL: (OFURL *)URL
-		      attributes: (of_file_attributes_t)attributes
-		 failedAttribute: (of_file_attribute_key_t)failedAttribute
+		      attributes: (OFFileAttributes)attributes
+		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -85,8 +85,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized set item attributes failed exception
  */
 - (instancetype)initWithURL: (OFURL *)URL
-		 attributes: (of_file_attributes_t)attributes
-	    failedAttribute: (of_file_attribute_key_t)failedAttribute
+		 attributes: (OFFileAttributes)attributes
+	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 

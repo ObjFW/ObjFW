@@ -30,10 +30,10 @@ setPermissions(OFString *destination, OFString *source)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	of_file_attributes_t attributes =
-	    [fileManager attributesOfItemAtPath: source];
-	of_file_attribute_key_t key = of_file_attribute_key_posix_permissions;
-	of_file_attributes_t destinationAttributes = [OFDictionary
+	OFFileAttributes attributes = [fileManager
+	    attributesOfItemAtPath: source];
+	OFFileAttributeKey key = OFFilePOSIXPermissions;
+	OFFileAttributes destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
 			  forKey: key];
 
@@ -46,14 +46,14 @@ static void
 setModificationDate(OFString *path, OFGZIPStream *stream)
 {
 	OFDate *modificationDate = stream.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }

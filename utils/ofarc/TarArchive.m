@@ -34,9 +34,9 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
-	of_file_attributes_t attributes = [OFDictionary
+	OFFileAttributes attributes = [OFDictionary
 	    dictionaryWithObject: mode
-			  forKey: of_file_attribute_key_posix_permissions];
+			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
@@ -47,14 +47,14 @@ static void
 setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 {
 	OFDate *modificationDate = entry.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -464,8 +464,8 @@ outer_loop_end:
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
-		of_file_attributes_t attributes;
-		of_file_type_t type;
+		OFFileAttributes attributes;
+		OFFileAttributeType type;
 		OFMutableTarArchiveEntry *entry;
 		OFStream *output;
 
@@ -485,18 +485,18 @@ outer_loop_end:
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = attributes.filePOSIXUID;
-		entry.GID = attributes.filePOSIXGID;
-		entry.owner = attributes.fileOwner;
-		entry.group = attributes.fileGroup;
+		entry.UID = attributes.fileOwnerAccountID;
+		entry.GID = attributes.fileGroupOwnerAccountID;
+		entry.owner = attributes.fileOwnerAccountName;
+		entry.group = attributes.fileGroupOwnerAccountName;
 #endif
 
-		if ([type isEqual: of_file_type_regular])
+		if ([type isEqual: OFFileTypeRegular])
 			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
-		else if ([type isEqual: of_file_type_directory]) {
+		else if ([type isEqual: OFFileTypeDirectory]) {
 			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY;
 			entry.size = 0;
-		} else if ([type isEqual: of_file_type_symbolic_link]) {
+		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;

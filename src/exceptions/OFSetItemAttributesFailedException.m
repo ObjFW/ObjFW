@@ -29,8 +29,8 @@
 }
 
 + (instancetype)exceptionWithURL: (OFURL *)URL
-		      attributes: (of_file_attributes_t)attributes
-		 failedAttribute: (of_file_attribute_key_t)failedAttribute
+		      attributes: (OFFileAttributes)attributes
+		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo
 {
 	return [[[self alloc] initWithURL: URL
@@ -45,8 +45,8 @@
 }
 
 - (instancetype)initWithURL: (OFURL *)URL
-		 attributes: (of_file_attributes_t)attributes
-	    failedAttribute: (of_file_attribute_key_t)failedAttribute
+		 attributes: (OFFileAttributes)attributes
+	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo
 {
 	self = [super init];
