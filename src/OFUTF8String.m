@@ -352,7 +352,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		j = 0;
 		for (size_t i = 0; i < cStringLength; i++) {
 			unsigned char character = (unsigned char)cString[i];
-			of_unichar_t unichar;
+			OFUnichar unichar;
 			char buffer[4];
 			size_t byteLength;
 
@@ -461,7 +461,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return self;
 }
 
-- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+- (instancetype)initWithCharacters: (const OFUnichar *)characters
 			    length: (size_t)length
 {
 	self = [super init];
@@ -533,7 +533,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
-			of_unichar_t character =
+			OFUnichar character =
 			    (swap ? OF_BSWAP16(string[i]) : string[i]);
 			size_t len;
 
@@ -869,7 +869,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	i = j = 0;
 
 	while (i < _s->cStringLength && j < otherCStringLength) {
-		of_unichar_t c1, c2;
+		OFUnichar c1, c2;
 		ssize_t l1, l2;
 
 		l1 = of_string_utf8_decode(_s->cString + i,
@@ -881,7 +881,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			@throw [OFInvalidEncodingException exception];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			of_unichar_t tc =
+			OFUnichar tc =
 			    of_unicode_casefolding_table[c1 >> 8][c1 & 0xFF];
 
 			if (tc)
@@ -889,7 +889,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		}
 
 		if (c2 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
-			of_unichar_t tc =
+			OFUnichar tc =
 			    of_unicode_casefolding_table[c2 >> 8][c2 & 0xFF];
 
 			if (tc)
@@ -924,7 +924,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	OF_HASH_INIT(hash);
 
 	for (size_t i = 0; i < _s->cStringLength; i++) {
-		of_unichar_t c;
+		OFUnichar c;
 		ssize_t length;
 
 		if ((length = of_string_utf8_decode(_s->cString + i,
@@ -946,9 +946,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return hash;
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
-	of_unichar_t character;
+	OFUnichar character;
 
 	if (idx >= _s->length)
 		@throw [OFOutOfRangeException exception];
@@ -965,18 +965,18 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return character;
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range
 {
 	/* TODO: Could be slightly optimized */
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	memcpy(buffer, characters + range.location,
-	    range.length * sizeof(of_unichar_t));
+	    range.length * sizeof(OFUnichar));
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1152,13 +1152,13 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return array;
 }
 
-- (const of_unichar_t *)characters
+- (const OFUnichar *)characters
 {
-	of_unichar_t *buffer = of_alloc(_s->length, sizeof(of_unichar_t));
+	OFUnichar *buffer = of_alloc(_s->length, sizeof(OFUnichar));
 	size_t i = 0, j = 0;
 
 	while (i < _s->cStringLength) {
-		of_unichar_t c;
+		OFUnichar c;
 		ssize_t cLen;
 
 		cLen = of_string_utf8_decode(_s->cString + i,
@@ -1175,7 +1175,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 	return [[OFData dataWithItemsNoCopy: buffer
 				      count: _s->length
-				   itemSize: sizeof(of_unichar_t)
+				   itemSize: sizeof(OFUnichar)
 			       freeWhenDone: true] items];
 }
 

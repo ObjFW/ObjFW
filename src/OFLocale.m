@@ -110,7 +110,7 @@ evaluateCondition(OFString *condition_, OFDictionary *variables)
 	    componentsSeparatedByString: @" "
 				options: OF_STRING_SKIP_EMPTY]) {
 		unsigned precedence;
-		of_unichar_t c;
+		OFUnichar c;
 
 		if ([token isEqual: @"("]) {
 			[operators addObject: @"("];

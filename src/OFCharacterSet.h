@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    character set
  * @return Whether the specified character is a member of the character set.
  */
-- (bool)characterIsMember: (of_unichar_t)character;
+- (bool)characterIsMember: (OFUnichar)character;
 @end
 
 OF_ASSUME_NONNULL_END

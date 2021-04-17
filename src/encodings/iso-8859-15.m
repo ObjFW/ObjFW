@@ -60,11 +60,11 @@ static const unsigned char page20[] = {
 static const uint8_t page20Start = 0xAC;
 
 bool
-of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
+of_unicode_to_iso_8859_15(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {
-		of_unichar_t c = input[i];
+		OFUnichar c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

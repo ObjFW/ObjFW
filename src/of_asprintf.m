@@ -419,7 +419,7 @@ formatConversionSpecifierState(struct context *ctx)
 		{
 			char buffer[5];
 			size_t len = of_string_utf8_encode(
-			    va_arg(ctx->arguments, of_unichar_t), buffer);
+			    va_arg(ctx->arguments, OFUnichar), buffer);
 
 			if (len == 0)
 				return false;
@@ -436,8 +436,8 @@ formatConversionSpecifierState(struct context *ctx)
 		ctx->subformat[ctx->subformatLen - 1] = 's';
 
 		{
-			const of_unichar_t *arg =
-			    va_arg(ctx->arguments, const of_unichar_t *);
+			const OFUnichar *arg =
+			    va_arg(ctx->arguments, const OFUnichar *);
 			size_t j, len = of_string_utf32_length(arg);
 			char *buffer;
 

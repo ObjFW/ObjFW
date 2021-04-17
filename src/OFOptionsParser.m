@@ -155,7 +155,7 @@ stringEqual(void *object1, void *object2)
 	[super dealloc];
 }
 
-- (of_unichar_t)nextOption
+- (OFUnichar)nextOption
 {
 	of_options_parser_option_t *iter;
 	OFString *argument;

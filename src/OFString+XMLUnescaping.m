@@ -27,7 +27,7 @@ int _OFString_XMLUnescaping_reference;
 static OF_INLINE OFString *
 parseNumericEntity(const char *entity, size_t length)
 {
-	of_unichar_t c;
+	OFUnichar c;
 	size_t i;
 	char buffer[5];
 

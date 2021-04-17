@@ -190,7 +190,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 			/* Parse Unicode escape sequence */
 			case 'u':;
 				of_char16_t c1, c2;
-				of_unichar_t c;
+				OFUnichar c;
 				size_t l;
 
 				c1 = parseUnicodeEscape(*pointer - 1, stop);
@@ -308,7 +308,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			(*pointer)++;
 		} else if (**pointer == '\\') {
 			of_char16_t c1, c2;
-			of_unichar_t c;
+			OFUnichar c;
 			size_t l;
 
 			if (++(*pointer) >= stop || **pointer != 'u') {

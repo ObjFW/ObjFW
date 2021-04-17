@@ -60,7 +60,7 @@ typedef char32_t of_char32_t;
 typedef uint_least16_t of_char16_t;
 typedef uint_least32_t of_char32_t;
 #endif
-typedef of_char32_t of_unichar_t;
+typedef of_char32_t OFUnichar;
 
 /**
  * @brief The encoding of a string.
@@ -217,7 +217,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  */
-@property (readonly, nonatomic) const of_unichar_t *characters
+@property (readonly, nonatomic) const OFUnichar *characters
     OF_RETURNS_INNER_POINTER;
 
 /**
@@ -392,7 +392,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the Unicode character array
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithCharacters: (const of_unichar_t *)characters
++ (instancetype)stringWithCharacters: (const OFUnichar *)characters
 			      length: (size_t)length;
 
 /**
@@ -487,8 +487,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a format string.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A string used as format to initialize the OFString
  * @return A new autoreleased OFString
@@ -650,7 +650,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the Unicode character array
  * @return An initialized OFString
  */
-- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+- (instancetype)initWithCharacters: (const OFUnichar *)characters
 			    length: (size_t)length;
 
 /**
@@ -745,8 +745,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
@@ -757,8 +757,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a format string.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A string used as format to initialize the OFString
  * @param arguments The arguments used in the format string
@@ -905,7 +905,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param index The index of the Unicode character to return
  * @return The Unicode character at the specified index
  */
-- (of_unichar_t)characterAtIndex: (size_t)index;
+- (OFUnichar)characterAtIndex: (size_t)index;
 
 /**
  * @brief Copies the Unicode characters in the specified range to the specified
@@ -914,7 +914,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param buffer The buffer to store the Unicode characters
  * @param range The range of the Unicode characters to copy
  */
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range;
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range;
 
 /**
  * @brief Returns the range of the first occurrence of the string.
@@ -1281,8 +1281,8 @@ extern "C" {
 #endif
 extern of_string_encoding_t of_string_parse_encoding(OFString *);
 extern OFString *_Nullable of_string_name_of_encoding(of_string_encoding_t);
-extern size_t of_string_utf8_encode(of_unichar_t, char *);
-extern ssize_t of_string_utf8_decode(const char *, size_t, of_unichar_t *);
+extern size_t of_string_utf8_encode(OFUnichar, char *);
+extern ssize_t of_string_utf8_decode(const char *, size_t, OFUnichar *);
 extern size_t of_string_utf16_length(const of_char16_t *);
 extern size_t of_string_utf32_length(const of_char32_t *);
 #ifdef __cplusplus

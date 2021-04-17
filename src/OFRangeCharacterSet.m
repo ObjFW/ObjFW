@@ -43,7 +43,7 @@
 	return self;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character >= _range.location &&
 	    character < _range.location + _range.length);

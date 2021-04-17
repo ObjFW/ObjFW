@@ -1369,8 +1369,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A string used as format
  * @return The number of bytes written
@@ -1381,8 +1381,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string

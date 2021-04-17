@@ -174,7 +174,7 @@ OF_DIRECT_MEMBERS
 	return OF_RETAIN_COUNT_MAX;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;

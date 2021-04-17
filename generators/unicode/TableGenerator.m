@@ -103,7 +103,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray OF_GENERIC(OFString *) *components;
-		of_unichar_t codePoint;
+		OFUnichar codePoint;
 
 		if (line.length == 0)
 			continue;
@@ -116,17 +116,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		codePoint = (of_unichar_t)[[components objectAtIndex: 0]
+		codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_uppercaseTable[codePoint] = (of_unichar_t)[[components
+		_uppercaseTable[codePoint] = (OFUnichar)[[components
 		    objectAtIndex: 12] unsignedLongLongValueWithBase: 16];
-		_lowercaseTable[codePoint] = (of_unichar_t)[[components
+		_lowercaseTable[codePoint] = (OFUnichar)[[components
 		    objectAtIndex: 13] unsignedLongLongValueWithBase: 16];
-		_titlecaseTable[codePoint] = (of_unichar_t)[[components
+		_titlecaseTable[codePoint] = (OFUnichar)[[components
 		    objectAtIndex: 14] unsignedLongLongValueWithBase: 16];
 
 		if ([[components objectAtIndex: 5] length] > 0) {
@@ -144,7 +144,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			string = [OFMutableString string];
 
 			for (OFString *character in decomposed) {
-				of_unichar_t unichar = (of_unichar_t)[character
+				OFUnichar unichar = (OFUnichar)[character
 				    unsignedLongLongValueWithBase: 16];
 
 				[string appendCharacters: &unichar
@@ -182,7 +182,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray OF_GENERIC(OFString *) *components;
-		of_unichar_t codePoint;
+		OFUnichar codePoint;
 
 		if (line.length == 0 || [line hasPrefix: @"#"])
 			continue;
@@ -199,13 +199,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		    ![[components objectAtIndex: 1] isEqual: @"C"])
 			continue;
 
-		codePoint = (of_unichar_t)[[components objectAtIndex: 0]
+		codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_casefoldingTable[codePoint] = (of_unichar_t)[[components
+		_casefoldingTable[codePoint] = (OFUnichar)[[components
 		    objectAtIndex: 2] unsignedLongLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
@@ -223,9 +223,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	do {
 		done = true;
 
-		for (of_unichar_t i = 0; i < 0x110000; i++) {
+		for (OFUnichar i = 0; i < 0x110000; i++) {
 			void *pool;
-			const of_unichar_t *characters;
+			const OFUnichar *characters;
 			size_t length;
 			OFMutableString *replacement;
 			bool changed = false;
@@ -295,15 +295,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
-	    @"static const of_unichar_t emptyPage[0x100] = { 0 };\n"
+	    @"static const OFUnichar emptyPage[0x100] = { 0 };\n"
 	    @"static const char *emptyDecompositionPage[0x100] = { NULL };\n"
 	    @"\n"];
 
 	/* Write uppercasePage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_uppercaseTable[j] != 0) {
 				isEmpty = false;
 				_uppercaseTableSize = i >> 8;
@@ -315,11 +315,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (!isEmpty) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[file writeFormat: @"static const of_unichar_t "
+			[file writeFormat: @"static const OFUnichar "
 					   @"uppercasePage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j += 8)
+			for (OFUnichar j = i; j < i + 0x100; j += 8)
 				[file writeFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _uppercaseTable[j],
@@ -338,10 +338,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write lowercasePage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_lowercaseTable[j] != 0) {
 				isEmpty = false;
 				_lowercaseTableSize = i >> 8;
@@ -353,11 +353,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (!isEmpty) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[file writeFormat: @"static const of_unichar_t "
+			[file writeFormat: @"static const OFUnichar "
 					   @"lowercasePage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j += 8)
+			for (OFUnichar j = i; j < i + 0x100; j += 8)
 				[file writeFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _lowercaseTable[j],
@@ -376,14 +376,14 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write titlecasePage%u if it does NOT match uppercasePage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_titlecaseTable[j] != 0) {
 				isEmpty = !memcmp(_uppercaseTable + i,
 				    _titlecaseTable + i,
-				    256 * sizeof(of_unichar_t));
+				    256 * sizeof(OFUnichar));
 				_titlecaseTableSize = i >> 8;
 				_titlecaseTableUsed[_titlecaseTableSize] =
 				    (isEmpty ? 2 : 1);
@@ -394,11 +394,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (!isEmpty) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[file writeFormat: @"static const of_unichar_t "
+			[file writeFormat: @"static const OFUnichar "
 					   @"titlecasePage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j += 8)
+			for (OFUnichar j = i; j < i + 0x100; j += 8)
 				[file writeFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _titlecaseTable[j],
@@ -417,14 +417,14 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write casefoldingPage%u if it does NOT match lowercasePage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_casefoldingTable[j] != 0) {
 				isEmpty = !memcmp(_lowercaseTable + i,
 				    _casefoldingTable + i,
-				    256 * sizeof(of_unichar_t));
+				    256 * sizeof(OFUnichar));
 				_casefoldingTableSize = i >> 8;
 				_casefoldingTableUsed[_casefoldingTableSize] =
 				    (isEmpty ? 2 : 1);
@@ -435,11 +435,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		if (!isEmpty) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[file writeFormat: @"static const of_unichar_t "
+			[file writeFormat: @"static const OFUnichar "
 					   @"casefoldingPage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j += 8)
+			for (OFUnichar j = i; j < i + 0x100; j += 8)
 				[file writeFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _casefoldingTable[j],
@@ -458,10 +458,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write decompositionPage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_decompositionTable[j] != nil) {
 				isEmpty = false;
 				_decompositionTableSize = i >> 8;
@@ -478,7 +478,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 					   @"decompositionPage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j++) {
+			for (OFUnichar j = i; j < i + 0x100; j++) {
 				if ((j - i) % 2 == 0)
 					[file writeString: @"\t"];
 				else
@@ -512,10 +512,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write decompCompatPage%u if it does NOT match decompositionPage%u */
-	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
+	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (of_unichar_t j = i; j < i + 0x100; j++) {
+		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_decompositionCompatTable[j] != 0) {
 				/*
 				 * We bulk-compare pointers via memcmp here.
@@ -541,7 +541,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 					   @"decompCompatPage%u[0x100] = {\n",
 					   i >> 8];
 
-			for (of_unichar_t j = i; j < i + 0x100; j++) {
+			for (OFUnichar j = i; j < i + 0x100; j++) {
 				if ((j - i) % 2 == 0)
 					[file writeString: @"\t"];
 				else
@@ -588,11 +588,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	_decompositionCompatTableSize++;
 
 	/* Write of_unicode_uppercase_table */
-	[file writeFormat: @"const of_unichar_t *const "
+	[file writeFormat: @"const OFUnichar *const "
 			   @"of_unicode_uppercase_table[0x%X] = {\n\t",
 			   _uppercaseTableSize];
 
-	for (of_unichar_t i = 0; i < _uppercaseTableSize; i++) {
+	for (OFUnichar i = 0; i < _uppercaseTableSize; i++) {
 		if (_uppercaseTableUsed[i])
 			[file writeFormat: @"uppercasePage%u", i];
 		else
@@ -609,11 +609,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_lowercase_table */
-	[file writeFormat: @"const of_unichar_t *const "
+	[file writeFormat: @"const OFUnichar *const "
 			   @"of_unicode_lowercase_table[0x%X] = {\n\t",
 			   _lowercaseTableSize];
 
-	for (of_unichar_t i = 0; i < _lowercaseTableSize; i++) {
+	for (OFUnichar i = 0; i < _lowercaseTableSize; i++) {
 		if (_lowercaseTableUsed[i])
 			[file writeFormat: @"lowercasePage%u", i];
 		else
@@ -630,11 +630,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_titlecase_table */
-	[file writeFormat: @"const of_unichar_t *const "
+	[file writeFormat: @"const OFUnichar *const "
 			   @"of_unicode_titlecase_table[0x%X] = {\n\t",
 			   _titlecaseTableSize];
 
-	for (of_unichar_t i = 0; i < _titlecaseTableSize; i++) {
+	for (OFUnichar i = 0; i < _titlecaseTableSize; i++) {
 		if (_titlecaseTableUsed[i] == 1)
 			[file writeFormat: @"titlecasePage%u", i];
 		else if (_titlecaseTableUsed[i] == 2)
@@ -653,11 +653,11 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: @"\n};\n\n"];
 
 	/* Write of_unicode_casefolding_table */
-	[file writeFormat: @"const of_unichar_t *const "
+	[file writeFormat: @"const OFUnichar *const "
 			   @"of_unicode_casefolding_table[0x%X] = {\n\t",
 			   _casefoldingTableSize];
 
-	for (of_unichar_t i = 0; i < _casefoldingTableSize; i++) {
+	for (OFUnichar i = 0; i < _casefoldingTableSize; i++) {
 		if (_casefoldingTableUsed[i] == 1)
 			[file writeFormat: @"casefoldingPage%u", i];
 		else if (_casefoldingTableUsed[i] == 2)
@@ -680,7 +680,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			   @"*of_unicode_decomposition_table[0x%X] = {\n\t",
 			   _decompositionTableSize];
 
-	for (of_unichar_t i = 0; i < _decompositionTableSize; i++) {
+	for (OFUnichar i = 0; i < _decompositionTableSize; i++) {
 		if (_decompositionTableUsed[i])
 			[file writeFormat: @"decompositionPage%u", i];
 		else
@@ -702,7 +702,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			   @"\n\t",
 			   _decompositionCompatTableSize];
 
-	for (of_unichar_t i = 0; i < _decompositionCompatTableSize; i++) {
+	for (OFUnichar i = 0; i < _decompositionCompatTableSize; i++) {
 		if (_decompositionCompatTableUsed[i] == 1)
 			[file writeFormat: @"decompCompatPage%u", i];
 		else if (_decompositionCompatTableUsed[i] == 2)
@@ -747,16 +747,16 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#ifdef __cplusplus\n"
 	    @"extern \"C\" {\n"
 	    @"#endif\n"
-	    @"extern const of_unichar_t *const _Nonnull\n"
+	    @"extern const OFUnichar *const _Nonnull\n"
 	    @"    of_unicode_uppercase_table["
 	    @"OF_UNICODE_UPPERCASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t *const _Nonnull\n"
+	    @"extern const OFUnichar *const _Nonnull\n"
 	    @"    of_unicode_lowercase_table["
 	    @"OF_UNICODE_LOWERCASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t *const _Nonnull\n"
+	    @"extern const OFUnichar *const _Nonnull\n"
 	    @"    of_unicode_titlecase_table["
 	    @"OF_UNICODE_TITLECASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t *const _Nonnull\n"
+	    @"extern const OFUnichar *const _Nonnull\n"
 	    @"    of_unicode_casefolding_table["
 	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"
 	    @"extern const char *const _Nullable *const _Nonnull\n"

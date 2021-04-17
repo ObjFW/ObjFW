@@ -32,11 +32,11 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const of_unichar_t *characters = string.characters;
+		const OFUnichar *characters = string.characters;
 		size_t length = string.length;
 
 		for (size_t i = 0; i < length; i++) {
-			of_unichar_t c = characters[i];
+			OFUnichar c = characters[i];
 
 			if (c / CHAR_BIT >= _size) {
 				size_t newSize;
@@ -73,7 +73,7 @@
 	[super dealloc];
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character / CHAR_BIT >= _size)
 		return false;

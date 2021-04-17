@@ -64,12 +64,12 @@
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
-		     wordMiddleTable: (const of_unichar_t *const [])middleTable
+- (void)of_convertWithWordStartTable: (const OFUnichar *const [])startTable
+		     wordMiddleTable: (const OFUnichar *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
 		 wordMiddleTableSize: (size_t)middleTableSize
 {
-	of_unichar_t *unicodeString;
+	OFUnichar *unicodeString;
 	size_t unicodeLen, newCStringLength;
 	size_t i, j;
 	char *newCString;
@@ -77,7 +77,7 @@
 
 	if (!_s->isUTF8) {
 		uint8_t t;
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 
 		assert(startTableSize >= 1 && middleTableSize >= 1);
 
@@ -99,15 +99,15 @@
 	}
 
 	unicodeLen = self.length;
-	unicodeString = of_alloc(unicodeLen, sizeof(of_unichar_t));
+	unicodeString = of_alloc(unicodeLen, sizeof(OFUnichar));
 
 	i = j = 0;
 	newCStringLength = 0;
 
 	while (i < _s->cStringLength) {
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 		size_t tableSize;
-		of_unichar_t c;
+		OFUnichar c;
 		ssize_t cLen;
 
 		if (isStart) {
@@ -129,7 +129,7 @@
 		isStart = of_ascii_isspace(c);
 
 		if (c >> 8 < tableSize) {
-			of_unichar_t tc = table[c >> 8][c & 0xFF];
+			OFUnichar tc = table[c >> 8][c & 0xFF];
 
 			if (tc)
 				c = tc;
@@ -189,10 +189,10 @@
 }
 #endif
 
-- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)idx
+- (void)setCharacter: (OFUnichar)character atIndex: (size_t)idx
 {
 	char buffer[4];
-	of_unichar_t c;
+	OFUnichar c;
 	size_t lenNew;
 	ssize_t lenOld;
 
@@ -369,7 +369,7 @@
 		_s->isUTF8 = true;
 }
 
-- (void)appendCharacters: (const of_unichar_t *)characters
+- (void)appendCharacters: (const OFUnichar *)characters
 		  length: (size_t)length
 {
 	char *tmp = of_alloc((length * 4) + 1, 1);

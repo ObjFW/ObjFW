@@ -22,10 +22,10 @@
     OFHTTPClientDelegate>
 {
 	OFHTTPClient *_HTTPClient;
-	of_unichar_t _uppercaseTable[0x110000];
-	of_unichar_t _lowercaseTable[0x110000];
-	of_unichar_t _titlecaseTable[0x110000];
-	of_unichar_t _casefoldingTable[0x110000];
+	OFUnichar _uppercaseTable[0x110000];
+	OFUnichar _lowercaseTable[0x110000];
+	OFUnichar _titlecaseTable[0x110000];
+	OFUnichar _casefoldingTable[0x110000];
 	OFString *_decompositionTable[0x110000];
 	OFString *_decompositionCompatTable[0x110000];
 	char _uppercaseTableUsed[0x1100];

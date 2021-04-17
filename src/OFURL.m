@@ -101,7 +101,7 @@ OF_DIRECT_MEMBERS
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
-	bool (*_characterIsMember)(id, SEL, of_unichar_t);
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
 }
 
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
@@ -150,7 +150,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;
@@ -179,7 +179,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLSchemeAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;
@@ -196,7 +196,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLPathAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;
@@ -228,7 +228,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLQueryOrFragmentAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;
@@ -261,7 +261,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLQueryKeyValueAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && of_ascii_isalnum(character))
 		return true;
@@ -298,7 +298,7 @@ of_url_is_ipv6_host(OFString *host)
 
 	@try {
 		_characterSet = [characterSet retain];
-		_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
@@ -316,7 +316,7 @@ of_url_is_ipv6_host(OFString *host)
 	[super dealloc];
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character != '%' && !_characterIsMember(_characterSet,
 	    @selector(characterIsMember:), character));

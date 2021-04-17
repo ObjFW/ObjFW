@@ -92,7 +92,7 @@ help(OFStream *stream, bool full, int status)
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
 	OFOptionsParser *optionsParser;
-	of_unichar_t option;
+	OFUnichar option;
 	OFArray OF_GENERIC(OFString *) *remainingArguments;
 	OFDNSResolver *resolver;
 	of_dns_class_t DNSClass;

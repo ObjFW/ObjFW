@@ -111,11 +111,11 @@ static const unsigned char page25[] = {
 static const uint8_t page25Start = 0x00;
 
 bool
-of_unicode_to_codepage_858(const of_unichar_t *input, unsigned char *output,
+of_unicode_to_codepage_858(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {
-		of_unichar_t c = input[i];
+		OFUnichar c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

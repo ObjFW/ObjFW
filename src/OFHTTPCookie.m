@@ -68,7 +68,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
 	OFString *domain = URL.host;
-	const of_unichar_t *characters = string.characters;
+	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {
 		STATE_PRE_NAME,

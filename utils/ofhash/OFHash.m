@@ -82,7 +82,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	};
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: options];
-	of_unichar_t option;
+	OFUnichar option;
 	OFMD5Hash *MD5Hash = nil;
 	OFRIPEMD160Hash *RIPEMD160Hash = nil;
 	OFSHA1Hash *SHA1Hash = nil;

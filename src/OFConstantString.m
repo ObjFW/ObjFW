@@ -251,13 +251,13 @@ struct {
 	return [self caseInsensitiveCompare: string];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
 	[self finishInitialization];
 	return [self characterAtIndex: idx];
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (OFRange)range
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range
 {
 	[self finishInitialization];
 	[self getCharacters: buffer inRange: range];
@@ -506,7 +506,7 @@ struct {
 	return self.doubleValue;
 }
 
-- (const of_unichar_t *)characters
+- (const OFUnichar *)characters
 {
 	[self finishInitialization];
 	return self.characters;

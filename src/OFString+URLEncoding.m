@@ -34,14 +34,14 @@ int _OFString_URLEncoding_reference;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
-	bool (*characterIsMember)(id, SEL, of_unichar_t) =
-	    (bool (*)(id, SEL, of_unichar_t))[allowedCharacters
+	bool (*characterIsMember)(id, SEL, OFUnichar) =
+	    (bool (*)(id, SEL, OFUnichar))[allowedCharacters
 	    methodForSelector: @selector(characterIsMember:)];
 
 	for (size_t i = 0; i < length; i++) {
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (characterIsMember(allowedCharacters,
 		    @selector(characterIsMember:), c))

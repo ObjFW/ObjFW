@@ -355,7 +355,7 @@ normalizedKey(OFString *key)
 	@try {
 		OFString *version = [line
 		    substringWithRange: OFMakeRange(line.length - 9, 9)];
-		of_unichar_t tmp;
+		OFUnichar tmp;
 
 		if (![version hasPrefix: @" HTTP/1."])
 			return [self sendErrorAndClose: 505];

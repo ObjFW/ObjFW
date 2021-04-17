@@ -34,10 +34,10 @@ static OFString *whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
-static of_unichar_t ucstr[] = {
+static OFUnichar ucstr[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
 };
-static of_unichar_t sucstr[] = {
+static OFUnichar sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
 };
@@ -169,7 +169,7 @@ static uint16_t sutf16str[] = {
 	[super dealloc];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
 	return [_string characterAtIndex: idx];
 }
@@ -217,7 +217,7 @@ static uint16_t sutf16str[] = {
 	OFString *is;
 	OFArray *a;
 	size_t i;
-	const of_unichar_t *ua;
+	const OFUnichar *ua;
 	const uint16_t *u16a;
 	OFCharacterSet *cs;
 	EntityHandler *h;

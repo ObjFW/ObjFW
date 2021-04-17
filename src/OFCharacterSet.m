@@ -139,7 +139,7 @@ initWhitespaceCharacterSet(void)
 	OF_INVALID_INIT_METHOD
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -171,7 +171,7 @@ initWhitespaceCharacterSet(void)
 	return OF_RETAIN_COUNT_MAX;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	switch (character) {
 	case 0x0009:

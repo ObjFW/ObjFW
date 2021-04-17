@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 struct of_options_parser_option_t {
 	/** The short version (e.g. `-v`) of the option or `\0` for none. */
-	of_unichar_t shortOption;
+	OFUnichar shortOption;
 
 	/**
 	 * The long version (e.g. `--verbose`) of the option or `nil` for none.
@@ -72,7 +72,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFMapTable *_longOptions;
 	OFArray OF_GENERIC(OFString *) *_arguments;
 	size_t _index, _subIndex;
-	of_unichar_t _lastOption;
+	OFUnichar _lastOption;
 	OFString *_Nullable _lastLongOption, *_Nullable _argument;
 	bool _done;
 }
@@ -85,7 +85,7 @@ OF_SUBCLASSING_RESTRICTED
  * If this returns `-`, the last option is only available as a long option (see
  * lastLongOption).
  */
-@property (readonly, nonatomic) of_unichar_t lastOption;
+@property (readonly, nonatomic) OFUnichar lastOption;
 
 /**
  * @brief The long option for the last parsed option, or `nil` if the last
@@ -160,7 +160,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The next option
  */
-- (of_unichar_t)nextOption;
+- (OFUnichar)nextOption;
 @end
 
 OF_ASSUME_NONNULL_END

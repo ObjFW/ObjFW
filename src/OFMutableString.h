@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param character The character to set
  * @param index The index where to set the character
  */
-- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)index;
+- (void)setCharacter: (OFUnichar)character atIndex: (size_t)index;
 
 /**
  * @brief Appends another OFString to the OFMutableString.
@@ -48,8 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param characters An array of characters to append
  * @param length The length of the array of characters
  */
-- (void)appendCharacters: (const of_unichar_t *)characters
-		  length: (size_t)length;
+- (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length;
 
 /**
  * @brief Appends a UTF-8 encoded C string to the OFMutableString.
@@ -93,8 +92,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See `printf` for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A format string which generates the string to append
  */
@@ -104,8 +103,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Appends a formatted string to the OFMutableString.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
  *
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string

@@ -173,7 +173,7 @@ codepageToEncoding(UINT codepage)
 		}
 
 		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
-			of_unichar_t c =
+			OFUnichar c =
 			    (((_incompleteUTF16Surrogate & 0x3FF) << 10) |
 			    (UTF16[0] & 0x3FF)) + 0x10000;
 			char UTF8[4];
@@ -197,7 +197,7 @@ codepageToEncoding(UINT codepage)
 		}
 
 		for (; i < UTF16Len; i++) {
-			of_unichar_t c = UTF16[i];
+			OFUnichar c = UTF16[i];
 			char UTF8[4];
 			size_t UTF8Len;
 
@@ -271,7 +271,7 @@ codepageToEncoding(UINT codepage)
 		@throw [OFOutOfRangeException exception];
 
 	if (_incompleteUTF8SurrogateLen > 0) {
-		of_unichar_t c;
+		OFUnichar c;
 		of_char16_t UTF16[2];
 		ssize_t UTF8Len;
 		size_t toCopy;
@@ -362,7 +362,7 @@ codepageToEncoding(UINT codepage)
 		DWORD bytesWritten;
 
 		while (i < length) {
-			of_unichar_t c;
+			OFUnichar c;
 			ssize_t UTF8Len;
 
 			UTF8Len = of_string_utf8_decode(buffer + i, length - i,

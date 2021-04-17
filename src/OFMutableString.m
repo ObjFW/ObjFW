@@ -76,7 +76,7 @@ static struct {
 	return (id)[[OFMutableUTF8String alloc] initWithString: string];
 }
 
-- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+- (instancetype)initWithCharacters: (const OFUnichar *)characters
 			    length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCharacters: characters
@@ -228,20 +228,20 @@ static struct {
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
-		     wordMiddleTable: (const of_unichar_t *const [])middleTable
+- (void)of_convertWithWordStartTable: (const OFUnichar *const [])startTable
+		     wordMiddleTable: (const OFUnichar *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
 		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 		size_t tableSize;
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (isStart) {
 			table = startTable;
@@ -265,14 +265,14 @@ convert(OFMutableString *self, char (*startFunction)(char),
     char (*middleFunction)(char))
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
 		char (*function)(char) =
 		    (isStart ? startFunction : middleFunction);
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (c <= 0x7F)
 			[self setCharacter: (int)function(c) atIndex: i];
@@ -284,7 +284,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 }
 #endif
 
-- (void)setCharacter: (of_unichar_t)character atIndex: (size_t)idx
+- (void)setCharacter: (OFUnichar)character atIndex: (size_t)idx
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string =
@@ -298,7 +298,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self insertString: string atIndex: self.length];
 }
 
-- (void)appendCharacters: (const of_unichar_t *)characters
+- (void)appendCharacters: (const OFUnichar *)characters
 		  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -382,7 +382,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	size_t i, j, length = self.length;
 
 	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
-		of_unichar_t tmp = [self characterAtIndex: j];
+		OFUnichar tmp = [self characterAtIndex: j];
 		[self setCharacter: [self characterAtIndex: i] atIndex: j];
 		[self setCharacter: tmp atIndex: i];
 	}
@@ -460,8 +460,8 @@ convert(OFMutableString *self, char (*startFunction)(char),
 			     range: (OFRange)range
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
-	const of_unichar_t *characters;
-	const of_unichar_t *searchCharacters = string.characters;
+	const OFUnichar *characters;
+	const OFUnichar *searchCharacters = string.characters;
 	size_t searchLength = string.length;
 	size_t replacementLength = replacement.length;
 
@@ -482,7 +482,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	for (size_t i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(of_unichar_t)) != 0)
+		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;
 
 		[self replaceCharactersInRange: OFMakeRange(i, searchLength)
@@ -505,11 +505,11 @@ convert(OFMutableString *self, char (*startFunction)(char),
 - (void)deleteLeadingWhitespaces
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
 
 	for (i = 0; i < length; i++) {
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (!of_ascii_isspace(c))
 			break;
@@ -523,7 +523,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 - (void)deleteTrailingWhitespaces
 {
 	void *pool;
-	const of_unichar_t *characters, *p;
+	const OFUnichar *characters, *p;
 	size_t length, d;
 
 	length = self.length;

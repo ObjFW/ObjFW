@@ -431,7 +431,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
-	of_unichar_t option;
+	OFUnichar option;
 
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [OFSandbox sandbox];

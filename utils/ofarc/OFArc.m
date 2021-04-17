@@ -81,8 +81,8 @@ help(OFStream *stream, bool full, int status)
 }
 
 static void
-mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
-    of_unichar_t shortOption2, OFString *longOption2)
+mutuallyExclusiveError(OFUnichar shortOption1, OFString *longOption1,
+    OFUnichar shortOption2, OFString *longOption2)
 {
 	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
 								shortOption1];
@@ -101,11 +101,11 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 }
 
 static void
-mutuallyExclusiveError5(of_unichar_t shortOption1, OFString *longOption1,
-    of_unichar_t shortOption2, OFString *longOption2,
-    of_unichar_t shortOption3, OFString *longOption3,
-    of_unichar_t shortOption4, OFString *longOption4,
-    of_unichar_t shortOption5, OFString *longOption5)
+mutuallyExclusiveError5(OFUnichar shortOption1, OFString *longOption1,
+    OFUnichar shortOption2, OFString *longOption2,
+    OFUnichar shortOption3, OFString *longOption3,
+    OFUnichar shortOption4, OFString *longOption4,
+    OFUnichar shortOption5, OFString *longOption5)
 {
 	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
 								shortOption1];
@@ -165,7 +165,7 @@ writingNotSupported(OFString *type)
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	of_unichar_t option, mode = '\0';
+	OFUnichar option, mode = '\0';
 	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
 	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
