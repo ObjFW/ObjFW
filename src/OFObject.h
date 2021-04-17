@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A result of a comparison.
  */
-typedef enum {
+typedef enum OFComparisonResult {
 	/** The left object is smaller than the right */
 	OFOrderedAscending = -1,
 	/** Both objects are equal */
@@ -77,7 +77,7 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 /**
  * @brief An enum for storing endianess.
  */
-typedef enum {
+typedef enum OFByteOrder {
 	/** Most significant byte first (big endian) */
 	OFByteOrderBigEndian,
 	/** Least significant byte first (little endian) */
