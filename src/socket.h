@@ -93,7 +93,7 @@ typedef enum {
 	OF_SOCKET_ADDRESS_FAMILY_IPX,
 	/** Any address family */
 	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
-} of_socket_address_family_t;
+} OFSocketAddressFamily;
 
 #ifndef OF_HAVE_IPV6
 struct sockaddr_in6 {
@@ -138,7 +138,7 @@ struct OF_BOXABLE of_socket_address_t {
 	 * can't just define it, as the value is system-dependent and might
 	 * clash with an existing value.
 	 */
-	of_socket_address_family_t family;
+	OFSocketAddressFamily family;
 	union {
 		struct sockaddr sockaddr;
 		struct sockaddr_in in;

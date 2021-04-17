@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFHostAddressResolver: OFObject <OFDNSResolverQueryDelegate>
 {
 	OFString *_host;
-	of_socket_address_family_t _addressFamily;
+	OFSocketAddressFamily _addressFamily;
 	OFDNSResolver *_resolver;
 	OFDNSResolverSettings *_settings;
 	OFRunLoopMode _Nullable _runLoopMode;
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
 		 runLoopMode: (nullable OFRunLoopMode)runLoopMode

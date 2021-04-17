@@ -23,7 +23,7 @@
 @synthesize host = _host, addressFamily = _addressFamily, error = _error;
 
 + (instancetype)exceptionWithHost: (OFString *)host
-		    addressFamily: (of_socket_address_family_t)addressFamily
+		    addressFamily: (OFSocketAddressFamily)addressFamily
 			    error: (of_dns_resolver_error_t)error
 {
 	return [[[self alloc] initWithHost: host
@@ -32,7 +32,7 @@
 }
 
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		       error: (of_dns_resolver_error_t)error
 {
 	self = [super init];

@@ -238,7 +238,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /**
@@ -250,7 +250,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
@@ -262,7 +262,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return OFData containing several of_socket_address_t
  */
 - (OFData *)resolveAddressesForHost: (OFString *)host
-		      addressFamily: (of_socket_address_family_t)addressFamily;
+		      addressFamily: (OFSocketAddressFamily)addressFamily;
 
 /**
  * @brief Closes all sockets and cancels all ongoing queries.

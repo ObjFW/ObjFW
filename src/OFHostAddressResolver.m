@@ -66,8 +66,7 @@ isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
 
 static bool
 addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
-    const of_socket_address_t **address,
-    of_socket_address_family_t addressFamily)
+    const of_socket_address_t **address, OFSocketAddressFamily addressFamily)
 {
 	switch ([record recordType]) {
 #ifdef OF_HAVE_IPV6
@@ -114,7 +113,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 @implementation OFHostAddressResolver: OFObject
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
 		 runLoopMode: (OFRunLoopMode)runLoopMode

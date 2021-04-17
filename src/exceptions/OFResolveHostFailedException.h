@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFResolveHostFailedException: OFException
 {
 	OFString *_host;
-	of_socket_address_family_t _addressFamily;
+	OFSocketAddressFamily _addressFamily;
 	of_dns_resolver_error_t _error;
 }
 
@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The address family for which the host could not be resolved.
  */
-@property (readonly, nonatomic) of_socket_address_family_t addressFamily;
+@property (readonly, nonatomic) OFSocketAddressFamily addressFamily;
 
 /**
  * @brief The error from the resolver.
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased address translation failed exception
  */
 + (instancetype)exceptionWithHost: (OFString *)host
-		    addressFamily: (of_socket_address_family_t)addressFamily
+		    addressFamily: (OFSocketAddressFamily)addressFamily
 			    error: (of_dns_resolver_error_t)error;
 
 /**
@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized address translation failed exception
  */
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		       error: (of_dns_resolver_error_t)error;
 @end
 

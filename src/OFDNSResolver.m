@@ -1187,7 +1187,7 @@ done:
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
@@ -1197,7 +1197,7 @@ done:
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
@@ -1216,7 +1216,7 @@ done:
 }
 
 - (OFData *)resolveAddressesForHost: (OFString *)host
-		      addressFamily: (of_socket_address_family_t)addressFamily
+		      addressFamily: (OFSocketAddressFamily)addressFamily
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHostAddressResolver *resolver = [[[OFHostAddressResolver alloc]
