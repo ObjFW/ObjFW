@@ -544,7 +544,7 @@ _references_to_categories_of_OFData(void)
 }
 
 - (OFRange)rangeOfData: (OFData *)data
-	       options: (int)options
+	       options: (OFDataSearchOptions)options
 		 range: (OFRange)range
 {
 	const char *search;
@@ -565,7 +565,7 @@ _references_to_categories_of_OFData(void)
 
 	search = data.items;
 
-	if (options & OF_DATA_SEARCH_BACKWARDS) {
+	if (options & OFDataSearchBackwards) {
 		for (size_t i = range.length - searchLength;; i--) {
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)

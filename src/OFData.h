@@ -17,14 +17,21 @@
 #import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
+/*! @file */
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 @class OFURL;
 
-enum {
-	OF_DATA_SEARCH_BACKWARDS = 1
-};
+/**
+ * @brief Options for searching in data.
+ *
+ * This is a bit mask.
+ */
+typedef enum OFDataSearchOptions {
+	OFDataSearchBackwards = 1
+} OFDataSearchOptions;
 
 /**
  * @class OFData OFData.h ObjFW/OFData.h
@@ -298,17 +305,13 @@ enum {
  * @brief Returns the range of the data.
  *
  * @param data The data to search for
- * @param options Options modifying search behavior.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-----------------------------
- *		  `OF_DATA_SEARCH_BACKWARDS` | Search backwards in the data
+ * @param options Options modifying search behavior
  * @param range The range in which to search
  * @return The range of the first occurrence of the data or a range with
  *	   `OFNotFound` as start position if it was not found.
  */
 - (OFRange)rangeOfData: (OFData *)data
-	       options: (int)options
+	       options: (OFDataSearchOptions)options
 		 range: (OFRange)range;
 
 #ifdef OF_HAVE_FILES
