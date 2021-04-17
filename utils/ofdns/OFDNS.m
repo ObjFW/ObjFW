@@ -83,7 +83,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFString *DNSClassString, *server;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'c', @"class", 1, NULL, &DNSClassString },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 's', @"server", 1, NULL, &server },

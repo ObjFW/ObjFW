@@ -149,7 +149,7 @@ writingNotSupported(OFString *type)
 - (void)applicationDidFinishLaunching
 {
 	OFString *outputDir, *encodingString, *type;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
 		{ 'c', @"create", 0, NULL, NULL },
 		{ 'C', @"directory", 1, NULL, &outputDir },

@@ -414,7 +414,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 - (void)applicationDidFinishLaunching
 {
 	OFString *outputPath;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'b', @"body",	1, NULL, NULL },
 		{ 'c', @"continue", 0, &_continue, NULL },
 		{ 'f', @"force", 0, &_force, NULL },

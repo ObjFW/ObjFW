@@ -38,7 +38,7 @@ stringEqual(void *object1, void *object2)
 @synthesize lastOption = _lastOption, lastLongOption = _lastLongOption;
 @synthesize argument = _argument;
 
-+ (instancetype)parserWithOptions: (const of_options_parser_option_t *)options
++ (instancetype)parserWithOptions: (const OFOptionsParserOption *)options
 {
 	return [[[self alloc] initWithOptions: options] autorelease];
 }
@@ -48,14 +48,14 @@ stringEqual(void *object1, void *object2)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithOptions: (const of_options_parser_option_t *)options
+- (instancetype)initWithOptions: (const OFOptionsParserOption *)options
 {
 	self = [super init];
 
 	@try {
 		size_t count = 0;
-		const of_options_parser_option_t *iter;
-		of_options_parser_option_t *iter2;
+		const OFOptionsParserOption *iter;
+		OFOptionsParserOption *iter2;
 		const of_map_table_functions_t keyFunctions = {
 			.hash = stringHash,
 			.equal = stringEqual
@@ -141,7 +141,7 @@ stringEqual(void *object1, void *object2)
 - (void)dealloc
 {
 	if (_options != NULL)
-		for (of_options_parser_option_t *iter = _options;
+		for (OFOptionsParserOption *iter = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++)
 			[iter->longOption release];
@@ -157,7 +157,7 @@ stringEqual(void *object1, void *object2)
 
 - (OFUnichar)nextOption
 {
-	of_options_parser_option_t *iter;
+	OFOptionsParserOption *iter;
 	OFString *argument;
 
 	if (_done || _index >= _arguments.count)
@@ -186,7 +186,7 @@ stringEqual(void *object1, void *object2)
 		if ([argument hasPrefix: @"--"]) {
 			void *pool = objc_autoreleasePoolPush();
 			size_t pos;
-			of_options_parser_option_t *option;
+			OFOptionsParserOption *option;
 
 			_lastOption = '-';
 			_index++;

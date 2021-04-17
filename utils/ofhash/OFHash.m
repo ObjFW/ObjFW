@@ -70,7 +70,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
 	bool calculateSHA256, calculateSHA384, calculateSHA512;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
