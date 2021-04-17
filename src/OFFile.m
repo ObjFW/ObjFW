@@ -79,14 +79,14 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-static struct of_file_handle {
-	of_file_handle_t previous, next;
+static struct OFFileHandle
+	OFFileHandle previous, next;
 	BPTR handle;
 	bool append;
 } *firstHandle = NULL;
 
 static void
-closeHandle(of_file_handle_t handle)
+closeHandle(OFFileHandle handle)
 {
 	Close(handle->handle);
 
@@ -103,7 +103,7 @@ closeHandle(of_file_handle_t handle)
 
 OF_DESTRUCTOR()
 {
-	for (of_file_handle_t iter = firstHandle; iter != NULL;
+	for (OFFileHandle iter = firstHandle; iter != NULL;
 	    iter = iter->next)
 		Close(iter->handle);
 }
@@ -192,7 +192,7 @@ parseMode(const char *mode, bool *append)
 	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithHandle: (of_file_handle_t)handle
++ (instancetype)fileWithHandle: (OFFileHandle)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
 }
@@ -204,7 +204,7 @@ parseMode(const char *mode, bool *append)
 
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
-	of_file_handle_t handle;
+	OFFileHandle handle;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -340,7 +340,7 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithHandle: (of_file_handle_t)handle
+- (instancetype)initWithHandle: (OFFileHandle)handle
 {
 	self = [super init];
 
