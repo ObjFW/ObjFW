@@ -108,7 +108,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 @interface OFDatagramSocket: OFObject <OFCopying, OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _canBlock;
 #ifdef OF_WII
 	bool _canSendToBroadcastAddresses;

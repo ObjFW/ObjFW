@@ -99,7 +99,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET((of_socket_t)fd, &_readFDs);
+	FD_SET((OFSocketHandle)fd, &_readFDs);
 
 	[super addObjectForReading: object];
 }
@@ -123,7 +123,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET((of_socket_t)fd, &_writeFDs);
+	FD_SET((OFSocketHandle)fd, &_writeFDs);
 
 	[super addObjectForWriting: object];
 }
@@ -143,7 +143,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((of_socket_t)fd, &_readFDs);
+	FD_CLR((OFSocketHandle)fd, &_readFDs);
 
 	[super removeObjectForReading: object];
 }
@@ -164,7 +164,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((of_socket_t)fd, &_writeFDs);
+	FD_CLR((OFSocketHandle)fd, &_writeFDs);
 
 	[super removeObjectForWriting: object];
 }
@@ -260,7 +260,7 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForReading;
 
-		if (FD_ISSET((of_socket_t)fd, &readFDs) &&
+		if (FD_ISSET((OFSocketHandle)fd, &readFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
 			[_delegate objectIsReadyForReading: object];
@@ -273,7 +273,7 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 
-		if (FD_ISSET((of_socket_t)fd, &writeFDs) &&
+		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
 			[_delegate objectIsReadyForWriting: object];

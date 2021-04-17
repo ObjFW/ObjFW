@@ -128,7 +128,7 @@ OF_ASSUME_NONNULL_BEGIN
 #elif defined(OF_HAVE_PIPE)
 	int _cancelFD[2];
 #else
-	of_socket_t _cancelFD[2];
+	OFSocketHandle _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_AMIGAOS

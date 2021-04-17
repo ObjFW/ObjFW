@@ -331,7 +331,7 @@ of_socket_errno()
 
 #ifndef OF_WII
 int
-of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
+of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen)
 {
 	int ret;

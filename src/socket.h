@@ -64,9 +64,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #ifndef OF_WINDOWS
-typedef int of_socket_t;
+typedef int OFSocketHandle;
 #else
-typedef SOCKET of_socket_t;
+typedef SOCKET OFSocketHandle;
 #endif
 
 #ifdef OF_WII
@@ -288,7 +288,7 @@ extern void of_socket_deinit(void);
 #endif
 extern int of_socket_errno(void);
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
+extern int of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen);
 #endif
 

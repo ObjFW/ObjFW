@@ -66,7 +66,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 @interface OFStreamSocket: OFStream <OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _atEndOfStream, _listening;
 	of_socket_address_t _remoteAddress;
 	OF_RESERVE_IVARS(OFStreamSocket, 4)

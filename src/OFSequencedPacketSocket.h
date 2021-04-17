@@ -127,7 +127,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 @interface OFSequencedPacketSocket: OFObject <OFCopying,
     OFReadyForReadingObserving, OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _canBlock, _listening;
 	of_socket_address_t _remoteAddress;
 	id _Nullable _delegate;
