@@ -507,7 +507,7 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
