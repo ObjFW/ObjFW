@@ -60,8 +60,9 @@ static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryKeyValueAllowedCharacterSet = nil;
 
-static of_once_t URLAllowedCharacterSetOnce = OF_ONCE_INIT;
-static of_once_t URLQueryOrFragmentAllowedCharacterSetOnce = OF_ONCE_INIT;
+static OFOnceControl URLAllowedCharacterSetOnce = OFOnceControlInitValue;
+static OFOnceControl URLQueryOrFragmentAllowedCharacterSetOnce =
+    OFOnceControlInitValue;
 
 static void
 initURLAllowedCharacterSet(void)
@@ -340,44 +341,44 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 @implementation OFCharacterSet (URLCharacterSets)
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLSchemeAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLSchemeAllowedCharacterSet);
 
 	return URLSchemeAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLHostAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLUserAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPasswordAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLPathAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLPathAllowedCharacterSet);
 
 	return URLPathAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLQueryAllowedCharacterSet
 {
-	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
 	    initURLQueryOrFragmentAllowedCharacterSet);
 
 	return URLQueryOrFragmentAllowedCharacterSet;
@@ -385,15 +386,15 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 + (OFCharacterSet *)URLQueryKeyValueAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
 
 	return URLQueryKeyValueAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet
 {
-	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
 	    initURLQueryOrFragmentAllowedCharacterSet);
 
 	return URLQueryOrFragmentAllowedCharacterSet;

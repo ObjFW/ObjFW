@@ -19,20 +19,20 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-typedef pthread_once_t of_once_t;
-# define OF_ONCE_INIT PTHREAD_ONCE_INIT
+typedef pthread_once_t OFOnceControl;
+# define OFOnceControlInitValue PTHREAD_ONCE_INIT
 #elif defined(OF_HAVE_ATOMIC_OPS)
-typedef volatile int of_once_t;
-# define OF_ONCE_INIT 0
+typedef volatile int OFOnceControl;
+# define OFOnceControlInitValue 0
 #elif defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
-typedef int of_once_t;
-# define OF_ONCE_INIT 0
+typedef int OFOnceControl;
+# define OFOnceControlInitValue 0
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void of_once(of_once_t *control, void (*func)(void));
+extern void OFOnce(OFOnceControl *control, void (*func)(void));
 #ifdef __cplusplus
 }
 #endif

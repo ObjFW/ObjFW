@@ -295,8 +295,8 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #endif
 
 	if (seconds == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, initZeroDate);
+		static OFOnceControl once = OFOnceControlInitValue;
+		OFOnce(&once, initZeroDate);
 		return (id)zeroDate;
 	}
 
@@ -410,15 +410,15 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 + (instancetype)distantFuture
 {
-	static of_once_t once = OF_ONCE_INIT;
-	of_once(&once, initDistantFuture);
+	static OFOnceControl once = OFOnceControlInitValue;
+	OFOnce(&once, initDistantFuture);
 	return distantFuture;
 }
 
 + (instancetype)distantPast
 {
-	static of_once_t once = OF_ONCE_INIT;
-	of_once(&once, initDistantPast);
+	static OFOnceControl once = OFOnceControlInitValue;
+	OFOnce(&once, initDistantPast);
 	return distantPast;
 }
 

@@ -107,8 +107,8 @@ initWhitespaceCharacterSet(void)
 
 + (OFCharacterSet *)whitespaceCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initWhitespaceCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initWhitespaceCharacterSet);
 
 	return whitespaceCharacterSet;
 }

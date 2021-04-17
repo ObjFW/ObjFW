@@ -163,8 +163,8 @@ bool
 of_socket_init(void)
 {
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, init);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, init);
 
 	return initSuccessful;
 #else

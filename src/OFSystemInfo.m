@@ -333,16 +333,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)operatingSystemName
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initOperatingSystemName);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initOperatingSystemName);
 
 	return operatingSystemName;
 }
 
 + (OFString *)operatingSystemVersion
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initOperatingSystemVersion);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initOperatingSystemVersion);
 
 	return operatingSystemVersion;
 }

@@ -177,9 +177,8 @@ of_random16(void)
 
 	return buffer;
 #else
-	static of_once_t onceControl = OF_ONCE_INIT;
-
-	of_once(&onceControl, initRandom);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initRandom);
 # ifdef HAVE_RANDOM
 	return random() & 0xFFFF;
 # else

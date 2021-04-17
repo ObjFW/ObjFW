@@ -150,12 +150,12 @@ isFloat(OFNumber *number)
 - (instancetype)initWithBool: (bool)value
 {
 	if (value) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, trueNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, trueNumberInit);
 		return (id)trueNumber;
 	} else {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, falseNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, falseNumberInit);
 		return (id)falseNumber;
 	}
 }
@@ -167,8 +167,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithChar: (signed char)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, charZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, charZeroNumberInit);
 		return (id)charZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned char)value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -186,8 +186,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithShort: (short)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, shortZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, shortZeroNumberInit);
 		return (id)shortZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned short)value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -205,8 +205,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithInt: (int)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, intZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, intZeroNumberInit);
 		return (id)intZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned int)value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -224,8 +224,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithLong: (long)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, longZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, longZeroNumberInit);
 		return (id)longZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned long)value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -243,8 +243,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithLongLong: (long long)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, longLongZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, longLongZeroNumberInit);
 		return (id)longLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned long long)value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -263,8 +263,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithUnsignedChar: (unsigned char)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, unsignedCharZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, unsignedCharZeroNumberInit);
 		return (id)unsignedCharZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -282,8 +282,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithUnsignedShort: (unsigned short)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, unsignedShortZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, unsignedShortZeroNumberInit);
 		return (id)unsignedShortZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -301,8 +301,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithUnsignedInt: (unsigned int)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, unsignedIntZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, unsignedIntZeroNumberInit);
 		return (id)unsignedIntZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -320,8 +320,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithUnsignedLong: (unsigned long)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, unsignedLongZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, unsignedLongZeroNumberInit);
 		return (id)unsignedLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -339,8 +339,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, unsignedLongLongZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, unsignedLongLongZeroNumberInit);
 		return (id)unsignedLongLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> TAG_BITS)) {
@@ -358,8 +358,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithFloat: (float)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, floatZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, floatZeroNumberInit);
 		return (id)floatZeroNumber;
 	}
 
@@ -369,8 +369,8 @@ isFloat(OFNumber *number)
 - (instancetype)initWithDouble: (double)value
 {
 	if (value == 0) {
-		static of_once_t once = OF_ONCE_INIT;
-		of_once(&once, doubleZeroNumberInit);
+		static OFOnceControl onceControl = OFOnceControlInitValue;
+		OFOnce(&onceControl, doubleZeroNumberInit);
 		return (id)doubleZeroNumber;
 	}
 

@@ -35,8 +35,8 @@ init(void)
 void
 objc_global_mutex_lock(void)
 {
-	static of_once_t once_control = OF_ONCE_INIT;
-	of_once(&once_control, init);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, init);
 
 	if (of_rmutex_lock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to lock global mutex!");

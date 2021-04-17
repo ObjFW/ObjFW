@@ -29,7 +29,7 @@
 #endif
 
 void
-of_once(of_once_t *control, void (*func)(void))
+OFOnce(OFOnceControl *control, void (*func)(void))
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*control == 0) {
@@ -80,6 +80,6 @@ of_once(of_once_t *control, void (*func)(void))
 		*control = 2;
 	}
 #else
-# error No of_once available
+# error No OFOnce available
 #endif
 }

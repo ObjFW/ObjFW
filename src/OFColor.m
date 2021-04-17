@@ -22,24 +22,24 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFColor
-#define PREDEFINED_COLOR(name, r, g, b)					\
-	static OFColor *name##Color = nil;				\
-									\
-	static void							\
-	initPredefinedColor_##name(void)				\
-	{								\
-		name##Color = [[OFColor alloc] initWithRed: r		\
-						     green: g		\
-						      blue: b		\
-						     alpha: 1];		\
-	}								\
-									\
-	+ (OFColor *)name						\
-	{								\
-		static of_once_t onceControl = OF_ONCE_INIT;		\
-		of_once(&onceControl, initPredefinedColor_##name);	\
-									\
-		return name##Color;					\
+#define PREDEFINED_COLOR(name, redValue, greenValue, blueValue)		   \
+	static OFColor *name##Color = nil;				   \
+									   \
+	static void							   \
+	initPredefinedColor_##name(void)				   \
+	{								   \
+		name##Color = [[OFColor alloc] initWithRed: redValue	   \
+						     green: greenValue	   \
+						      blue: blueValue	   \
+						     alpha: 1];		   \
+	}								   \
+									   \
+	+ (OFColor *)name						   \
+	{								   \
+		static OFOnceControl onceControl = OFOnceControlInitValue; \
+		OFOnce(&onceControl, initPredefinedColor_##name);	   \
+									   \
+		return name##Color;					   \
 	}
 
 PREDEFINED_COLOR(black,   0.00f, 0.00f, 0.00f)
