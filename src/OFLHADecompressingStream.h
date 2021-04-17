@@ -17,14 +17,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE 4096
+#define OFLHADecompressingStreamBufferSize 4096
 
 OF_DIRECT_MEMBERS
 @interface OFLHADecompressingStream: OFStream
 {
 	OFStream *_stream;
 	uint8_t _distanceBits, _dictionaryBits;
-	unsigned char _buffer[OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE];
+	unsigned char _buffer[OFLHADecompressingStreamBufferSize];
 	uint32_t _bytesConsumed;
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;

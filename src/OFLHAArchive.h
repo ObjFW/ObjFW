@@ -32,9 +32,9 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	enum {
-		OF_LHA_ARCHIVE_MODE_READ,
-		OF_LHA_ARCHIVE_MODE_WRITE,
-		OF_LHA_ARCHIVE_MODE_APPEND
+		OFLHAArchiveModeRead,
+		OFLHAArchiveModeWrite,
+		OFLHAArchiveModeAppend
 	} _mode;
 	OFStringEncoding _encoding;
 	OFStream *_Nullable _lastReturnedStream;

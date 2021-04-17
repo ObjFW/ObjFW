@@ -26,73 +26,73 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-extern uint32_t of_zip_archive_read_field32(const uint8_t **, uint16_t *);
-extern uint64_t of_zip_archive_read_field64(const uint8_t **, uint16_t *);
+extern uint32_t OFZIPArchiveReadField32(const uint8_t **, uint16_t *);
+extern uint64_t OFZIPArchiveReadField64(const uint8_t **, uint16_t *);
 
 OFString *
-of_zip_archive_entry_version_to_string(uint16_t version)
+OFZIPArchiveEntryVersionToString(uint16_t version)
 {
 	const char *attrCompat = NULL;
 
 	switch (version >> 8) {
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS:
+	case OFZIPArchiveEntryAttributeCompatibilityMSDOS:
 		attrCompat = "MS-DOS or OS/2";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA:
+	case OFZIPArchiveEntryAttributeCompatibilityAmiga:
 		attrCompat = "Amiga";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS:
+	case OFZIPArchiveEntryAttributeCompatibilityOpenVMS:
 		attrCompat = "OpenVMS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX:
+	case OFZIPArchiveEntryAttributeCompatibilityUNIX:
 		attrCompat = "UNIX";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS:
+	case OFZIPArchiveEntryAttributeCompatibilityVM_CMS:
 		attrCompat = "VM/CMS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST:
+	case OFZIPArchiveEntryAttributeCompatibilityAtariST:
 		attrCompat = "Atari ST";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS:
+	case OFZIPArchiveEntryAttributeCompatibilityOS2HPFS:
 		attrCompat = "OS/2 HPFS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH:
+	case OFZIPArchiveEntryAttributeCompatibilityMacintosh:
 		attrCompat = "Macintosh";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM:
+	case OFZIPArchiveEntryAttributeCompatibilityZSystem:
 		attrCompat = "Z-System";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M:
+	case OFZIPArchiveEntryAttributeCompatibilityCPM:
 		attrCompat = "CP/M";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS:
+	case OFZIPArchiveEntryAttributeCompatibilityWindowsNTFS:
 		attrCompat = "Windows NTFS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS:
+	case OFZIPArchiveEntryAttributeCompatibilityMVS:
 		attrCompat = "MVS (OS/390 - Z/OS)";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE:
+	case OFZIPArchiveEntryAttributeCompatibilityVSE:
 		attrCompat = "VSE";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC_OS:
+	case OFZIPArchiveEntryAttributeCompatibilityAcornRISCOS:
 		attrCompat = "Acorn RISC OS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT:
+	case OFZIPArchiveEntryAttributeCompatibilityVFAT:
 		attrCompat = "VFAT";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS:
+	case OFZIPArchiveEntryAttributeCompatibilityAlternateMVS:
 		attrCompat = "Alternate MVS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS:
+	case OFZIPArchiveEntryAttributeCompatibilityBeOS:
 		attrCompat = "BeOS";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM:
+	case OFZIPArchiveEntryAttributeCompatibilityTandem:
 		attrCompat = "Tandem";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400:
+	case OFZIPArchiveEntryAttributeCompatibilityOS400:
 		attrCompat = "OS/400";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X:
+	case OFZIPArchiveEntryAttributeCompatibilityOSX:
 		attrCompat = "OS X (Darwin)";
 		break;
 	}
@@ -108,34 +108,35 @@ of_zip_archive_entry_version_to_string(uint16_t version)
 }
 
 OFString *
-of_zip_archive_entry_compression_method_to_string(uint16_t compressionMethod)
+OFZIPArchiveEntryCompressionMethodName(
+    OFZIPArchiveEntryCompressionMethod compressionMethod)
 {
 	switch (compressionMethod) {
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
+	case OFZIPArchiveEntryCompressionMethodNone:
 		return @"none";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_SHRINK:
+	case OFZIPArchiveEntryCompressionMethodShrink:
 		return @"Shrink";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_1:
+	case OFZIPArchiveEntryCompressionMethodReduceFactor1:
 		return @"Reduce (factor 1)";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_2:
+	case OFZIPArchiveEntryCompressionMethodReduceFactor2:
 		return @"Reduce (factor 2)";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_3:
+	case OFZIPArchiveEntryCompressionMethodReduceFactor3:
 		return @"Reduce (factor 3)";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_4:
+	case OFZIPArchiveEntryCompressionMethodReduceFactor4:
 		return @"Reduce (factor 4)";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_IMPLODE:
+	case OFZIPArchiveEntryCompressionMethodImplode:
 		return @"Implode";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
+	case OFZIPArchiveEntryCompressionMethodDeflate:
 		return @"Deflate";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
+	case OFZIPArchiveEntryCompressionMethodDeflate64:
 		return @"Deflate64";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_BZIP2:
+	case OFZIPArchiveEntryCompressionMethodBZIP2:
 		return @"BZip2";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_LZMA:
+	case OFZIPArchiveEntryCompressionMethodLZMA:
 		return @"LZMA";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_WAVPACK:
+	case OFZIPArchiveEntryCompressionMethodWavPack:
 		return @"WavPack";
-	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_PPMD:
+	case OFZIPArchiveEntryCompressionMethodPPMd:
 		return @"PPMd";
 	default:
 		return @"unknown";
@@ -143,8 +144,8 @@ of_zip_archive_entry_compression_method_to_string(uint16_t compressionMethod)
 }
 
 size_t
-of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
-    uint16_t *size)
+OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
+    OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size)
 {
 	const uint8_t *bytes = extraField.items;
 	size_t count = extraField.count;
@@ -250,8 +251,8 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 			    readStringWithLength: fileCommentLength
 					encoding: encoding] copy];
 
-		ZIP64Index = of_zip_archive_entry_extra_field_find(extraField,
-		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
+		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
+		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
 		if (ZIP64Index != OFNotFound) {
 			const uint8_t *ZIP64 =
@@ -260,17 +261,16 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 			    OFRangeMake(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = of_zip_archive_read_field64(
+				_uncompressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = of_zip_archive_read_field64(
+				_compressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_localFileHeaderOffset == 0xFFFFFFFF)
 				_localFileHeaderOffset =
-				    of_zip_archive_read_field64(&ZIP64,
-				    &ZIP64Size);
+				    OFZIPArchiveReadField64(&ZIP64, &ZIP64Size);
 			if (_startDiskNumber == 0xFFFF)
-				_startDiskNumber = of_zip_archive_read_field32(
+				_startDiskNumber = OFZIPArchiveReadField32(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0 || _localFileHeaderOffset < 0)
@@ -351,12 +351,12 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	return _extraField;
 }
 
-- (uint16_t)versionMadeBy
+- (OFZIPArchiveEntryAttributeCompatibility)versionMadeBy
 {
 	return _versionMadeBy;
 }
 
-- (uint16_t)minVersionNeeded
+- (OFZIPArchiveEntryAttributeCompatibility)minVersionNeeded
 {
 	return _minVersionNeeded;
 }
@@ -385,7 +385,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	return [date autorelease];
 }
 
-- (uint16_t)compressionMethod
+- (OFZIPArchiveEntryCompressionMethod)compressionMethod
 {
 	return _compressionMethod;
 }
@@ -434,8 +434,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *compressionMethod =
-	    of_zip_archive_entry_compression_method_to_string(
-	    _compressionMethod);
+	    OFZIPArchiveEntryCompressionMethodName(_compressionMethod);
 	OFString *ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
@@ -490,7 +489,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	[stream writeString: _fileName];
 	size += (uint64_t)_fileName.UTF8StringLength;
 
-	[stream writeLittleEndianInt16: OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64];
+	[stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
 	[stream writeLittleEndianInt16: 28];
 	[stream writeLittleEndianInt64: _uncompressedSize];
 	[stream writeLittleEndianInt64: _compressedSize];

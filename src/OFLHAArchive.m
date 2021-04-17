@@ -95,20 +95,20 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OF_LHA_ARCHIVE_MODE_READ;
+			_mode = OFLHAArchiveModeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_LHA_ARCHIVE_MODE_WRITE;
+			_mode = OFLHAArchiveModeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_LHA_ARCHIVE_MODE_APPEND;
+			_mode = OFLHAArchiveModeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_mode == OF_LHA_ARCHIVE_MODE_WRITE ||
-		    _mode == OF_LHA_ARCHIVE_MODE_APPEND) &&
+		if ((_mode == OFLHAArchiveModeWrite ||
+		    _mode == OFLHAArchiveModeAppend) &&
 		    ![_stream isKindOfClass: [OFSeekableStream class]])
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OF_LHA_ARCHIVE_MODE_APPEND)
+		if (_mode == OFLHAArchiveModeAppend)
 			[(OFSeekableStream *)_stream seekToOffset: 0
 							   whence: SEEK_END];
 
@@ -155,7 +155,7 @@ OF_DIRECT_MEMBERS
 	char header[21];
 	size_t headerLen;
 
-	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+	if (_mode != OFLHAArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -196,7 +196,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+	if (_mode != OFLHAArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_lastReturnedStream == nil)
@@ -210,8 +210,7 @@ OF_DIRECT_MEMBERS
 {
 	OFString *compressionMethod;
 
-	if (_mode != OF_LHA_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_LHA_ARCHIVE_MODE_APPEND)
+	if (_mode != OFLHAArchiveModeWrite && _mode != OFLHAArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	compressionMethod = entry.compressionMethod;

@@ -130,27 +130,27 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFXMLParser: OFObject
 {
 	id <OFXMLParserDelegate> _Nullable _delegate;
-	enum of_xml_parser_state {
-		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
-		OF_XMLPARSER_OUTSIDE_TAG,
-		OF_XMLPARSER_TAG_OPENED,
-		OF_XMLPARSER_IN_PROCESSING_INSTRUCTION,
-		OF_XMLPARSER_IN_TAG_NAME,
-		OF_XMLPARSER_IN_CLOSE_TAG_NAME,
-		OF_XMLPARSER_IN_TAG,
-		OF_XMLPARSER_IN_ATTRIBUTE_NAME,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER,
-		OF_XMLPARSER_IN_ATTRIBUTE_VALUE,
-		OF_XMLPARSER_EXPECT_TAG_CLOSE,
-		OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE,
-		OF_XMLPARSER_IN_EXCLAMATION_MARK,
-		OF_XMLPARSER_IN_CDATA_OPENING,
-		OF_XMLPARSER_IN_CDATA,
-		OF_XMLPARSER_IN_COMMENT_OPENING,
-		OF_XMLPARSER_IN_COMMENT_1,
-		OF_XMLPARSER_IN_COMMENT_2,
-		OF_XMLPARSER_IN_DOCTYPE
+	enum {
+		OFXMLParserStateInByteOrderMark,
+		OFXMLParserStateOutsideTag,
+		OFXMLParserStateTagOpened,
+		OFXMLParserStateInProcessingInstruction,
+		OFXMLParserStateInTagName,
+		OFXMLParserStateInCloseTagName,
+		OFXMLParserStateInTag,
+		OFXMLParserStateInAttributeName,
+		OFXMLParserStateExpectAttributeEqualSign,
+		OFXMLParserStateExpectAttributeDelimiter,
+		OFXMLParserStateInAttributeValue,
+		OFXMLParserStateExpectTagClose,
+		OFXMLParserStateExpectSpaceOrTagClose,
+		OFXMLParserStateInExclamationMark,
+		OFXMLParserStateInCDATAOpening,
+		OFXMLParserStateInCDATA,
+		OFXMLParserStateInCommentOpening,
+		OFXMLParserStateInComment1,
+		OFXMLParserStateInComment2,
+		OFXMLParserStateInDOCTYPE
 	} _state;
 	size_t _i, _last;
 	const char *_Nullable _data;

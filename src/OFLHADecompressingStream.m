@@ -60,7 +60,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 				    stream->_buffer[stream->_bufferIndex++];
 			else {
 				const size_t bufferLength =
-				    OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE;
+				    OFLHADecompressingStreamBufferSize;
 				size_t length = [stream->_stream
 				    readIntoBuffer: stream->_buffer
 					    length: bufferLength];

@@ -33,7 +33,7 @@ typedef enum OFGZIPStreamOperatingSystem {
 	OFGZIPStreamOperatingSystemHPFS	       =   6,
 	OFGZIPStreamOperatingSystemMacintosh   =   7,
 	OFGZIPStreamOperatingSystemZSystem     =   8,
-	OFGZIPStreamOperatingSystemCP_M	       =   9,
+	OFGZIPStreamOperatingSystemCPM	       =   9,
 	OFGZIPStreamOperatingSystemTOPS20      =  10,
 	OFGZIPStreamOperatingSystemNTFS	       =  11,
 	OFGZIPStreamOperatingSystemQDO	       =  12,

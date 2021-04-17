@@ -103,7 +103,7 @@ OF_DIRECT_MEMBERS
 @end
 
 uint32_t
-of_zip_archive_read_field32(const uint8_t **data, uint16_t *size)
+OFZIPArchiveReadField32(const uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
 
@@ -120,7 +120,7 @@ of_zip_archive_read_field32(const uint8_t **data, uint16_t *size)
 }
 
 uint64_t
-of_zip_archive_read_field64(const uint8_t **data, uint16_t *size)
+OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
 
@@ -176,11 +176,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	@try {
 		if ([mode isEqual: @"r"])
-			_mode = OF_ZIP_ARCHIVE_MODE_READ;
+			_mode = OFZIPArchiveModeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_ZIP_ARCHIVE_MODE_WRITE;
+			_mode = OFZIPArchiveModeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_ZIP_ARCHIVE_MODE_APPEND;
+			_mode = OFZIPArchiveModeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
@@ -188,8 +188,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_entries = [[OFMutableArray alloc] init];
 		_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
-		if (_mode == OF_ZIP_ARCHIVE_MODE_READ ||
-		    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFZIPArchiveModeRead ||
+		    _mode == OFZIPArchiveModeAppend) {
 			if (![stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
@@ -197,7 +197,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			[self of_readEntries];
 		}
 
-		if (_mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFZIPArchiveModeAppend) {
 			_offset = _centralDirectoryOffset;
 			seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
 			    (OFFileOffset)_offset, SEEK_SET);
@@ -401,8 +401,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		/* Might have already been closed by the user - that's fine. */
 	}
 
-	if ((_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) &&
+	if ((_mode == OFZIPArchiveModeWrite ||
+	    _mode == OFZIPArchiveModeAppend) &&
 	    [_lastReturnedStream isKindOfClass:
 	    [OFZIPArchiveFileWriteStream class]]) {
 		OFZIPArchiveFileWriteStream *stream =
@@ -431,7 +431,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
-	if (_mode != OF_ZIP_ARCHIVE_MODE_READ)
+	if (_mode != OFZIPArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
@@ -481,8 +481,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
 
-	if (_mode != OF_ZIP_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
+	if (_mode != OFZIPArchiveModeWrite && _mode != OFZIPArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -494,8 +493,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 				 mode: @"w"
 				errNo: EEXIST];
 
-	if (entry.compressionMethod !=
-	    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE)
+	if (entry.compressionMethod != OFZIPArchiveEntryCompressionMethodNone)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
@@ -535,8 +533,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeString: fileName];
 	offsetAdd += fileNameLength;
 
-	[_stream writeLittleEndianInt16:
-	    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64];
+	[_stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
 	[_stream writeLittleEndianInt16: 16];
 	/* We use the data descriptor */
 	[_stream writeLittleEndianInt64: 0];
@@ -617,8 +614,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[self of_closeLastReturnedStream];
 
-	if (_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND)
+	if (_mode == OFZIPArchiveModeWrite || _mode == OFZIPArchiveModeAppend)
 		[self of_writeCentralDirectory];
 
 	[_stream release];
@@ -661,8 +657,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			extraField = [[[stream readDataWithCount:
 			    extraFieldLength] mutableCopy] autorelease];
 
-		ZIP64Index = of_zip_archive_entry_extra_field_find(extraField,
-		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
+		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
+		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
 		if (ZIP64Index != OFNotFound) {
 			const uint8_t *ZIP64 =
@@ -671,10 +667,10 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			    OFRangeMake(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = of_zip_archive_read_field64(
+				_uncompressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = of_zip_archive_read_field64(
+				_compressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0)
@@ -735,14 +731,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_stream = [stream retain];
 
 		switch (entry.compressionMethod) {
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
+		case OFZIPArchiveEntryCompressionMethodNone:
 			_decompressedStream = [stream retain];
 			break;
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
+		case OFZIPArchiveEntryCompressionMethodDeflate:
 			_decompressedStream = [[OFInflateStream alloc]
 			    initWithStream: stream];
 			break;
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
+		case OFZIPArchiveEntryCompressionMethodDeflate64:
 			_decompressedStream = [[OFInflate64Stream alloc]
 			    initWithStream: stream];
 			break;

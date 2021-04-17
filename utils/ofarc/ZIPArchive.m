@@ -41,7 +41,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
-	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
 		OFNumber *mode = [OFNumber numberWithUnsignedShort:
 		    (entry.versionSpecificAttributes >> 16) & 0777];
 		OFFileAttributes attributes = [OFDictionary
@@ -125,7 +125,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			    stringWithFormat: @"%" PRIu64,
 					      entry.uncompressedSize];
 			OFString *compressionMethod =
-			    of_zip_archive_entry_compression_method_to_string(
+			    OFZIPArchiveEntryCompressionMethodName(
 			    entry.compressionMethod);
 			OFString *CRC32 = [OFString
 			    stringWithFormat: @"%08" PRIX32, entry.CRC32];
@@ -171,24 +171,25 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 			if (app->_outputLevel >= 2) {
 				uint16_t versionMadeBy = entry.versionMadeBy;
+				OFZIPArchiveEntryAttributeCompatibility UNIX =
+				    OFZIPArchiveEntryAttributeCompatibilityUNIX;
 
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_version_made_by",
 				    @"Version made by: %[version]",
 				    @"version",
-				    of_zip_archive_entry_version_to_string(
+				    OFZIPArchiveEntryVersionToString(
 				    versionMadeBy))];
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_min_version_needed",
 				    @"Minimum version needed: %[version]",
 				    @"version",
-				    of_zip_archive_entry_version_to_string(
+				    OFZIPArchiveEntryVersionToString(
 				    entry.minVersionNeeded))];
 
-				if ((versionMadeBy >> 8) ==
-				    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+				if ((versionMadeBy >> 8) == UNIX) {
 					uint32_t mode = entry
 					    .versionSpecificAttributes >> 16;
 					OFString *modeString = [OFString
@@ -445,7 +446,7 @@ outer_loop_end:
 		entry.uncompressedSize = (int64_t)size;
 
 		entry.compressionMethod =
-		    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE;
+		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
 
 		[entry makeImmutable];

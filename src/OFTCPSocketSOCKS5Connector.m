@@ -106,7 +106,7 @@
 
 	data = [OFData dataWithItems: "\x05\x01\x00" count: 3];
 
-	_SOCKS5State = OF_SOCKS5_STATE_SEND_AUTHENTICATION;
+	_SOCKS5State = OFSOCKS5StateSendAuthentication;
 	[_socket asyncWriteData: data
 		    runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 }
@@ -131,7 +131,7 @@
 	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
-	case OF_SOCKS5_STATE_READ_VERSION:
+	case OFSOCKS5StateReadVersion:
 		SOCKSVersion = buffer;
 
 		if (SOCKSVersion[0] != 5 || SOCKSVersion[1] != 0) {
@@ -157,10 +157,10 @@
 		port[1] = _port & 0xFF;
 		[_request addItems: port count: 2];
 
-		_SOCKS5State = OF_SOCKS5_STATE_SEND_REQUEST;
+		_SOCKS5State = OFSOCKS5StateSendRequest;
 		[_socket asyncWriteData: _request runLoopMode: runLoopMode];
 		return false;
-	case OF_SOCKS5_STATE_READ_RESPONSE:
+	case OFSOCKS5StateReadResponse:
 		response = buffer;
 
 		if (response[0] != 5 || response[2] != 0) {
@@ -219,19 +219,19 @@
 		/* Skip the rest of the response */
 		switch (response[3]) {
 		case 1: /* IPv4 */
-			_SOCKS5State = OF_SOCKS5_STATE_READ_ADDRESS;
+			_SOCKS5State = OFSOCKS5StateReadAddress;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 4 + 2
 					 runLoopMode: runLoopMode];
 			return false;
 		case 3: /* Domain name */
-			_SOCKS5State = OF_SOCKS5_STATE_READ_ADDRESS_LENGTH;
+			_SOCKS5State = OFSOCKS5StateReadAddressLength;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 1
 					 runLoopMode: runLoopMode];
 			return false;
 		case 4: /* IPv6 */
-			_SOCKS5State = OF_SOCKS5_STATE_READ_ADDRESS;
+			_SOCKS5State = OFSOCKS5StateReadAddress;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 16 + 2
 					 runLoopMode: runLoopMode];
@@ -247,13 +247,13 @@
 		}
 
 		return false;
-	case OF_SOCKS5_STATE_READ_ADDRESS:
+	case OFSOCKS5StateReadAddress:
 		[self didConnect];
 		return false;
-	case OF_SOCKS5_STATE_READ_ADDRESS_LENGTH:
+	case OFSOCKS5StateReadAddressLength:
 		addressLength = buffer;
 
-		_SOCKS5State = OF_SOCKS5_STATE_READ_ADDRESS;
+		_SOCKS5State = OFSOCKS5StateReadAddress;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: addressLength[0] + 2
 				 runLoopMode: runLoopMode];
@@ -280,17 +280,17 @@
 	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
-	case OF_SOCKS5_STATE_SEND_AUTHENTICATION:
-		_SOCKS5State = OF_SOCKS5_STATE_READ_VERSION;
+	case OFSOCKS5StateSendAuthentication:
+		_SOCKS5State = OFSOCKS5StateReadVersion;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 2
 				 runLoopMode: runLoopMode];
 		return nil;
-	case OF_SOCKS5_STATE_SEND_REQUEST:
+	case OFSOCKS5StateSendRequest:
 		[_request release];
 		_request = nil;
 
-		_SOCKS5State = OF_SOCKS5_STATE_READ_RESPONSE;
+		_SOCKS5State = OFSOCKS5StateReadResponse;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 4
 				 runLoopMode: runLoopMode];
