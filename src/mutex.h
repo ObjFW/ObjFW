@@ -108,7 +108,7 @@ static OF_INLINE int
 OFSpinlockTryLock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	if (of_atomic_int_cmpswap(spinlock, 0, 1)) {
+	if (OFAtomicIntCompareAndSwap(spinlock, 0, 1)) {
 		of_memory_barrier_acquire();
 		return 0;
 	}
@@ -146,7 +146,7 @@ static OF_INLINE int
 OFSpinlockUnlock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	bool ret = of_atomic_int_cmpswap(spinlock, 1, 0);
+	bool ret = OFAtomicIntCompareAndSwap(spinlock, 1, 0);
 
 	of_memory_barrier_release();
 

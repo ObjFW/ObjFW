@@ -75,9 +75,9 @@ OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 	if ((error = OFPlainMutexUnlock(mutex)) != 0)
 		return error;
 
-	of_atomic_int_inc(&condition->count);
+	OFAtomicIntIncrease(&condition->count);
 	status = WaitForSingleObject(condition->event, INFINITE);
-	of_atomic_int_dec(&condition->count);
+	OFAtomicIntDecrease(&condition->count);
 
 	switch (status) {
 	case WAIT_OBJECT_0:
@@ -104,9 +104,9 @@ OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
 	if ((error = OFPlainMutexUnlock(mutex)) != 0)
 		return error;
 
-	of_atomic_int_inc(&condition->count);
+	OFAtomicIntIncrease(&condition->count);
 	status = WaitForSingleObject(condition->event, timeout * 1000);
-	of_atomic_int_dec(&condition->count);
+	OFAtomicIntDecrease(&condition->count);
 
 	switch (status) {
 	case WAIT_OBJECT_0:

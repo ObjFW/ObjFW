@@ -43,12 +43,12 @@ OFOnce(OFOnceControl *control, void (*func)(void))
 	if (*control == 2)
 		return;
 
-	if (of_atomic_int_cmpswap(control, 0, 1)) {
+	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
 		func();
 
 		of_memory_barrier();
 
-		of_atomic_int_inc(control);
+		OFAtomicIntIncrease(control);
 	} else
 		while (*control == 1)
 			OFYieldThread();

@@ -1099,7 +1099,7 @@ _references_to_categories_of_OFObject(void)
 - (instancetype)retain
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	of_atomic_int_inc(&PRE_IVARS->retainCount);
+	OFAtomicIntIncrease(&PRE_IVARS->retainCount);
 #elif defined(OF_AMIGAOS)
 	/*
 	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
@@ -1133,7 +1133,7 @@ _references_to_categories_of_OFObject(void)
 #if defined(OF_HAVE_ATOMIC_OPS)
 	of_memory_barrier_release();
 
-	if (of_atomic_int_dec(&PRE_IVARS->retainCount) <= 0) {
+	if (OFAtomicIntDecrease(&PRE_IVARS->retainCount) <= 0) {
 		of_memory_barrier_acquire();
 
 		[self dealloc];

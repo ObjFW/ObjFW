@@ -200,7 +200,7 @@ _Block_copy(const void *block_)
 
 	if ([(id)block isMemberOfClass: (Class)&_NSConcreteMallocBlock]) {
 #ifdef OF_HAVE_ATOMIC_OPS
-		of_atomic_int_inc(&block->flags);
+		OFAtomicIntIncrease(&block->flags);
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
@@ -222,7 +222,8 @@ _Block_release(const void *block_)
 		return;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-	if ((of_atomic_int_dec(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
+	if ((OFAtomicIntDecrease(&block->flags) &
+	    OF_BLOCK_REFCOUNT_MASK) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 
@@ -286,8 +287,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				src->byref_keep(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
-			if (!of_atomic_ptr_cmpswap((void **)&src->forwarding,
-			    src, *dst)) {
+			if (!OFAtomicPointerCompareAndSwap(
+			    (void **)&src->forwarding, src, *dst)) {
 				src->byref_dispose(*dst);
 				free(*dst);
 
@@ -312,7 +313,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			*dst = src;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-		of_atomic_int_inc(&(*dst)->flags);
+		OFAtomicIntIncrease(&(*dst)->flags);
 #else
 		unsigned hash = SPINLOCK_HASH(*dst);
 
@@ -347,7 +348,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 		object = object->forwarding;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-		if ((of_atomic_int_dec(&object->flags) &
+		if ((OFAtomicIntDecrease(&object->flags) &
 		    OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				object->byref_dispose(object);

@@ -14,7 +14,7 @@
  */
 
 static OF_INLINE int
-of_atomic_int_add(volatile int *_Nonnull p, int i)
+OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -31,7 +31,7 @@ of_atomic_int_add(volatile int *_Nonnull p, int i)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
+OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -48,7 +48,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 }
 
 static OF_INLINE void *_Nullable
-of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
+OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -65,7 +65,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 }
 
 static OF_INLINE int
-of_atomic_int_sub(volatile int *_Nonnull p, int i)
+OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -82,7 +82,7 @@ of_atomic_int_sub(volatile int *_Nonnull p, int i)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
+OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -99,7 +99,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 }
 
 static OF_INLINE void *_Nullable
-of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
+OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -116,7 +116,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 }
 
 static OF_INLINE int
-of_atomic_int_inc(volatile int *_Nonnull p)
+OFAtomicIntIncrease(volatile int *_Nonnull p)
 {
 	int i;
 
@@ -135,7 +135,7 @@ of_atomic_int_inc(volatile int *_Nonnull p)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_inc(volatile int32_t *_Nonnull p)
+OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 {
 	int32_t i;
 
@@ -154,7 +154,7 @@ of_atomic_int32_inc(volatile int32_t *_Nonnull p)
 }
 
 static OF_INLINE int
-of_atomic_int_dec(volatile int *_Nonnull p)
+OFAtomicIntDecrease(volatile int *_Nonnull p)
 {
 	int i;
 
@@ -173,7 +173,7 @@ of_atomic_int_dec(volatile int *_Nonnull p)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_dec(volatile int32_t *_Nonnull p)
+OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 {
 	int32_t i;
 
@@ -192,7 +192,7 @@ of_atomic_int32_dec(volatile int32_t *_Nonnull p)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_or(volatile unsigned int *_Nonnull p, unsigned int i)
+OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -209,7 +209,7 @@ of_atomic_int_or(volatile unsigned int *_Nonnull p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_or(volatile uint32_t *_Nonnull p, uint32_t i)
+OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -226,7 +226,7 @@ of_atomic_int32_or(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_and(volatile unsigned int *_Nonnull p, unsigned int i)
+OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -243,7 +243,7 @@ of_atomic_int_and(volatile unsigned int *_Nonnull p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_and(volatile uint32_t *_Nonnull p, uint32_t i)
+OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -260,7 +260,7 @@ of_atomic_int32_and(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_xor(volatile unsigned int *_Nonnull p, unsigned int i)
+OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -277,7 +277,7 @@ of_atomic_int_xor(volatile unsigned int *_Nonnull p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_xor(volatile uint32_t *_Nonnull p, uint32_t i)
+OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 {
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -294,7 +294,7 @@ of_atomic_int32_xor(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE bool
-of_atomic_int_cmpswap(volatile int *_Nonnull p, int o, int n)
+OFAtomicIntCompAndSwap(volatile int *_Nonnull p, int o, int n)
 {
 	int r;
 
@@ -320,7 +320,7 @@ of_atomic_int_cmpswap(volatile int *_Nonnull p, int o, int n)
 }
 
 static OF_INLINE bool
-of_atomic_int32_cmpswap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
+OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 {
 	int r;
 
@@ -346,7 +346,7 @@ of_atomic_int32_cmpswap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 }
 
 static OF_INLINE bool
-of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
+OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
     void *_Nullable o, void *_Nullable n)
 {
 	int r;

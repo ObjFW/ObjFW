@@ -468,7 +468,8 @@ callMain(id object)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
-		if (!of_atomic_ptr_cmpswap((void **)&_runLoop, nil, tmp))
+		if (!OFAtomicPointerCompareAndSwap(
+		    (void **)&_runLoop, nil, tmp))
 			[tmp release];
 	}
 # else
