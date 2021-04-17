@@ -26,7 +26,7 @@
  */
 #import "runtime/private.h"
 
-static of_tlskey_t firstKey = NULL, lastKey = NULL;
+static OFTLSKey firstKey = NULL, lastKey = NULL;
 static struct SignalSemaphore semaphore;
 static bool semaphoreInitialized = false;
 
@@ -51,7 +51,7 @@ OF_CONSTRUCTOR()
 }
 
 int
-of_tlskey_new(of_tlskey_t *key)
+OFTLSKeyNew(OFTLSKey *key)
 {
 	if (!semaphoreInitialized) {
 		/*
@@ -89,7 +89,7 @@ of_tlskey_new(of_tlskey_t *key)
 }
 
 int
-of_tlskey_free(of_tlskey_t key)
+OFTLSKeyFree(OFTLSKey key)
 {
 	ObtainSemaphore(&semaphore);
 	@try {
@@ -113,7 +113,7 @@ of_tlskey_free(of_tlskey_t key)
 }
 
 void *
-of_tlskey_get(of_tlskey_t key)
+OFTLSKeyGet(OFTLSKey key)
 {
 	void *ret;
 
@@ -131,7 +131,7 @@ of_tlskey_get(of_tlskey_t key)
 }
 
 int
-of_tlskey_set(of_tlskey_t key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *ptr)
 {
 	ObtainSemaphore(&semaphore);
 	@try {
@@ -152,14 +152,13 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 }
 
 void
-of_tlskey_thread_exited(void)
+OFTLSKeyThreadExited(void)
 {
 	ObtainSemaphore(&semaphore);
 	@try {
 		struct Task *task = FindTask(NULL);
 
-		for (of_tlskey_t iter = firstKey; iter != NULL;
-		    iter = iter->next)
+		for (OFTLSKey iter = firstKey; iter != NULL; iter = iter->next)
 			if (iter->table != NULL)
 				objc_hashtable_delete(iter->table, task);
 	} @finally {

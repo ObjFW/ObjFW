@@ -58,7 +58,7 @@ typedef of_mutex_t of_spinlock_t;
 # import "tlskey.h"
 typedef struct {
 	of_mutex_t mutex;
-	of_tlskey_t count;
+	OFTLSKey count;
 } of_rmutex_t;
 #endif
 

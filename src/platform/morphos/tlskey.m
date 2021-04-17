@@ -18,7 +18,7 @@
 #import "tlskey.h"
 
 int
-of_tlskey_new(of_tlskey_t *key)
+OFTLSKeyNew(OFTLSKeyT *key)
 {
 	*key = TLSAllocA(NULL);
 
@@ -29,7 +29,7 @@ of_tlskey_new(of_tlskey_t *key)
 }
 
 int
-of_tlskey_free(of_tlskey_t key)
+OFTLSKeyFree(OFTLSKeyT key)
 {
 	return (TLSFree(key) ? 0 : EINVAL);
 }

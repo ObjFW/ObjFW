@@ -72,9 +72,9 @@ static bool initSuccessful = false;
 
 #ifdef OF_AMIGAOS
 # if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
-of_tlskey_t of_socket_base_key;
+OFTLSKey of_socket_base_key;
 #  ifdef OF_AMIGAOS4
-of_tlskey_t of_socket_interface_key;
+OFTLSKey of_socket_interface_key;
 #  endif
 # else
 struct Library *SocketBase;
@@ -87,11 +87,11 @@ struct SocketIFace *ISocket = NULL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
-	if (of_tlskey_new(&of_socket_base_key) != 0)
+	if (OFTLSKeyNew(&of_socket_base_key) != 0)
 		@throw [OFInitializationFailedException exception];
 
 # ifdef OF_AMIGAOS4
-	if (of_tlskey_new(&of_socket_interface_key) != 0)
+	if (OFTLSKeyNew(&of_socket_interface_key) != 0)
 		@throw [OFInitializationFailedException exception];
 # endif
 }
@@ -174,9 +174,9 @@ of_socket_init(void)
 # endif
 
 # ifdef OF_AMIGAOS4
-	if ((socketInterface = of_tlskey_get(of_socket_interface_key)) != NULL)
+	if ((socketInterface = OFTLSKeyGet(of_socket_interface_key)) != NULL)
 # else
-	if ((socketBase = of_tlskey_get(of_socket_base_key)) != NULL)
+	if ((socketBase = OFTLSKeyGet(of_socket_base_key)) != NULL)
 # endif
 		return true;
 
@@ -191,7 +191,7 @@ of_socket_init(void)
 	}
 # endif
 
-	if (of_tlskey_set(of_socket_base_key, socketBase) != 0) {
+	if (OFTLSKeySet(of_socket_base_key, socketBase) != 0) {
 		CloseLibrary(socketBase);
 # ifdef OF_AMIGAOS4
 		DropInterface((struct Interface *)socketInterface);
@@ -200,7 +200,7 @@ of_socket_init(void)
 	}
 
 # ifdef OF_AMIGAOS4
-	if (of_tlskey_set(of_socket_interface_key, socketInterface) != 0) {
+	if (OFTLSKeySet(of_socket_interface_key, socketInterface) != 0) {
 		CloseLibrary(socketBase);
 		DropInterface((struct Interface *)socketInterface);
 		return false;
@@ -215,10 +215,10 @@ of_socket_init(void)
 void
 of_socket_deinit(void)
 {
-	struct Library *socketBase = of_tlskey_get(of_socket_base_key);
+	struct Library *socketBase = OFTLSKeyGet(of_socket_base_key);
 # ifdef OF_AMIGAOS4
 	struct SocketIFace *socketInterface =
-	    of_tlskey_get(of_socket_interface_key);
+	    OFTLSKeyGet(of_socket_interface_key);
 
 	if (socketInterface != NULL)
 		DropInterface((struct Interface *)socketInterface);

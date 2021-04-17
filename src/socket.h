@@ -285,9 +285,9 @@ extern int of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
 #endif
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern of_tlskey_t of_socket_base_key;
+extern OFTLSKey of_socket_base_key;
 # ifdef OF_AMIGAOS4
-extern of_tlskey_t of_socket_interface_key;
+extern OFTLSKey of_socket_interface_key;
 # endif
 #endif
 #ifdef __cplusplus

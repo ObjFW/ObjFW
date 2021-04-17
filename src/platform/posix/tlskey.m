@@ -18,13 +18,13 @@
 #import "tlskey.h"
 
 int
-of_tlskey_new(of_tlskey_t *key)
+OFTLSKeyNew(OFTLSKey *key)
 {
 	return pthread_key_create(key, NULL);
 }
 
 int
-of_tlskey_free(of_tlskey_t key)
+OFTLSKeyFree(OFTLSKey key)
 {
 	return pthread_key_delete(key);
 }

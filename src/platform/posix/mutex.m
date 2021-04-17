@@ -102,7 +102,7 @@ of_rmutex_new(of_rmutex_t *rmutex)
 	if ((error = of_mutex_new(&rmutex->mutex)) != 0)
 		return error;
 
-	if ((error = of_tlskey_new(&rmutex->count)) != 0)
+	if ((error = OFTLSKeyNew(&rmutex->count)) != 0)
 		return error;
 
 	return 0;
@@ -111,11 +111,11 @@ of_rmutex_new(of_rmutex_t *rmutex)
 int
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
-	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
 
 	if (count > 0) {
-		if ((error = of_tlskey_set(rmutex->count,
+		if ((error = OFTLSKeySet(rmutex->count,
 		    (void *)(count + 1))) != 0)
 			return error;
 
@@ -125,7 +125,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 	if ((error = of_mutex_lock(&rmutex->mutex)) != 0)
 		return error;
 
-	if ((error = of_tlskey_set(rmutex->count, (void *)1)) != 0) {
+	if ((error = OFTLSKeySet(rmutex->count, (void *)1)) != 0) {
 		of_mutex_unlock(&rmutex->mutex);
 		return error;
 	}
@@ -136,11 +136,11 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 int
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
-	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
 
 	if (count > 0) {
-		if ((error = of_tlskey_set(rmutex->count,
+		if ((error = OFTLSKeySet(rmutex->count,
 		    (void *)(count + 1))) != 0)
 			return error;
 
@@ -150,7 +150,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 	if ((error = of_mutex_trylock(&rmutex->mutex)) != 0)
 		return error;
 
-	if ((error = of_tlskey_set(rmutex->count, (void *)1)) != 0) {
+	if ((error = OFTLSKeySet(rmutex->count, (void *)1)) != 0) {
 		of_mutex_unlock(&rmutex->mutex);
 		return error;
 	}
@@ -161,18 +161,18 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 int
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
-	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+	uintptr_t count = (uintptr_t)OFTLSKeyGet(rmutex->count);
 	int error;
 
 	if (count > 1) {
-		if ((error = of_tlskey_set(rmutex->count,
+		if ((error = OFTLSKeySet(rmutex->count,
 		    (void *)(count - 1))) != 0)
 			return error;
 
 		return 0;
 	}
 
-	if ((error = of_tlskey_set(rmutex->count, (void *)0)) != 0)
+	if ((error = OFTLSKeySet(rmutex->count, (void *)0)) != 0)
 		return error;
 
 	if ((error = of_mutex_unlock(&rmutex->mutex)) != 0)
@@ -189,7 +189,7 @@ of_rmutex_free(of_rmutex_t *rmutex)
 	if ((error = of_mutex_free(&rmutex->mutex)) != 0)
 		return error;
 
-	if ((error = of_tlskey_free(rmutex->count)) != 0)
+	if ((error = OFTLSKeyFree(rmutex->count)) != 0)
 		return error;
 
 	return 0;

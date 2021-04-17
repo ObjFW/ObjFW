@@ -87,7 +87,7 @@
 #  import "socket.h"
 # endif
 
-static of_tlskey_t threadSelfKey;
+static OFTLSKey threadSelfKey;
 static OFThread *mainThread;
 #elif defined(OF_HAVE_SOCKETS)
 static OFDNSResolver *DNSResolver;
@@ -101,7 +101,7 @@ callMain(id object)
 	OFThread *thread = (OFThread *)object;
 	OFString *name;
 
-	if (of_tlskey_set(threadSelfKey, thread) != 0)
+	if (OFTLSKeySet(threadSelfKey, thread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: thread.class];
 
@@ -164,7 +164,7 @@ callMain(id object)
 	if (self != [OFThread class])
 		return;
 
-	if (of_tlskey_new(&threadSelfKey) != 0)
+	if (OFTLSKeyNew(&threadSelfKey) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -183,7 +183,7 @@ callMain(id object)
 
 + (OFThread *)currentThread
 {
-	return of_tlskey_get(threadSelfKey);
+	return OFTLSKeyGet(threadSelfKey);
 }
 
 + (OFThread *)mainThread
@@ -196,12 +196,12 @@ callMain(id object)
 	if (mainThread == nil)
 		return false;
 
-	return (of_tlskey_get(threadSelfKey) == mainThread);
+	return (OFTLSKeyGet(threadSelfKey) == mainThread);
 }
 
 + (OFMutableDictionary *)threadDictionary
 {
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == nil)
 		return nil;
@@ -217,7 +217,7 @@ callMain(id object)
 + (OFDNSResolver *)DNSResolver
 {
 # ifdef OF_HAVE_THREADS
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == nil)
 		return nil;
@@ -319,7 +319,7 @@ callMain(id object)
 
 + (void)terminateWithObject: (id)object
 {
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == mainThread)
 		@throw [OFInvalidArgumentException exception];
@@ -354,7 +354,7 @@ callMain(id object)
 	mainThread->_thread = of_thread_current();
 	mainThread->_running = OF_THREAD_RUNNING;
 
-	if (of_tlskey_set(threadSelfKey, mainThread) != 0)
+	if (OFTLSKeySet(threadSelfKey, mainThread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }

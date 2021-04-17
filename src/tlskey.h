@@ -28,25 +28,25 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-typedef pthread_key_t of_tlskey_t;
+typedef pthread_key_t OFTLSKey;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-typedef DWORD of_tlskey_t;
+typedef DWORD OFTLSKey;
 #elif defined(OF_MORPHOS)
 # include <proto/exec.h>
-typedef ULONG of_tlskey_t;
+typedef ULONG OFTLSKey;
 #elif defined(OF_AMIGAOS)
-typedef struct of_tlskey {
+typedef struct OFTLSKey {
 	struct objc_hashtable *table;
-	struct of_tlskey *next, *previous;
-} *of_tlskey_t;
+	struct OFTLSKey *next, *previous;
+} *OFTLSKey;
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_tlskey_new(of_tlskey_t *key);
-extern int of_tlskey_free(of_tlskey_t key);
+extern int OFTLSKeyNew(OFTLSKey *key);
+extern int OFTLSKeyFree(OFTLSKey key);
 #ifdef __cplusplus
 }
 #endif
@@ -55,37 +55,37 @@ extern int of_tlskey_free(of_tlskey_t key);
 
 #if defined(OF_HAVE_PTHREADS)
 static OF_INLINE void *
-of_tlskey_get(of_tlskey_t key)
+OFTLSKeyGet(OFTLSKey key)
 {
 	return pthread_getspecific(key);
 }
 
 static OF_INLINE int
-of_tlskey_set(of_tlskey_t key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *ptr)
 {
 	return pthread_setspecific(key, ptr);
 }
 #elif defined(OF_WINDOWS)
 static OF_INLINE void *
-of_tlskey_get(of_tlskey_t key)
+OFTLSKeyGet(OFTLSKey key)
 {
 	return TlsGetValue(key);
 }
 
 static OF_INLINE int
-of_tlskey_set(of_tlskey_t key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *ptr)
 {
 	return (TlsSetValue(key, ptr) ? 0 : EINVAL);
 }
 #elif defined(OF_MORPHOS)
 static OF_INLINE void *
-of_tlskey_get(of_tlskey_t key)
+OFTLSKeyGet(OFTLSKey key)
 {
 	return (void *)TLSGetValue(key);
 }
 
 static OF_INLINE int
-of_tlskey_set(of_tlskey_t key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *ptr)
 {
 	return (TLSSetValue(key, (APTR)ptr) ? 0 : EINVAL);
 }
@@ -94,8 +94,8 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 # ifdef __cplusplus
 extern "C" {
 # endif
-extern void *of_tlskey_get(of_tlskey_t key);
-extern int of_tlskey_set(of_tlskey_t key, void *ptr);
+extern void *OFTLSKeyGet(OFTLSKey key);
+extern int OFTLSKeySet(OFTLSKey key, void *ptr);
 # ifdef __cplusplus
 }
 # endif

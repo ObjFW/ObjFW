@@ -28,13 +28,13 @@
 #include <proto/exec.h>
 
 #ifndef OF_MORPHOS
-extern void of_tlskey_thread_exited(void);
+extern void OFTLSKeyThreadExited(void);
 #endif
-static of_tlskey_t threadKey;
+static OFTLSKey threadKey;
 
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(of_tlskey_new(&threadKey) == 0);
+	OF_ENSURE(OFTLSKeyNew(&threadKey) == 0);
 }
 
 static void
@@ -43,7 +43,7 @@ functionWrapper(void)
 	bool detached = false;
 	of_thread_t thread =
 	    (of_thread_t)((struct Process *)FindTask(NULL))->pr_ExitData;
-	OF_ENSURE(of_tlskey_set(threadKey, thread) == 0);
+	OF_ENSURE(OFTLSKeySet(threadKey, thread) == 0);
 
 	thread->function(thread->object);
 
@@ -52,7 +52,7 @@ functionWrapper(void)
 		thread->done = true;
 
 #ifndef OF_MORPHOS
-		of_tlskey_thread_exited();
+		OFTLSKeyThreadExited();
 #endif
 
 		if (thread->detached)
@@ -158,7 +158,7 @@ of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
 of_thread_t
 of_thread_current(void)
 {
-	return of_tlskey_get(threadKey);
+	return OFTLSKeyGet(threadKey);
 }
 
 int
