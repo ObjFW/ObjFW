@@ -116,7 +116,7 @@ of_http_status_code_to_string(short code)
 	}
 }
 
-static of_string_encoding_t
+static OFStringEncoding
 encodingForContentType(OFString *contentType)
 {
 	const char *UTF8String = contentType.UTF8String;
@@ -131,7 +131,7 @@ encodingForContentType(OFString *contentType)
 		STATE_AFTER_PARAM_VALUE
 	} state = STATE_TYPE;
 	OFString *name = nil, *value = nil, *charset = nil;
-	of_string_encoding_t ret;
+	OFStringEncoding ret;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -201,7 +201,7 @@ encodingForContentType(OFString *contentType)
 				state = STATE_BEFORE_PARAM_NAME;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ')
-				return OF_STRING_ENCODING_AUTODETECT;
+				return OFStringEncodingAutodetect;
 			break;
 		}
 	}
@@ -215,9 +215,9 @@ encodingForContentType(OFString *contentType)
 	}
 
 	@try {
-		ret = of_string_parse_encoding(charset);
+		ret = OFParseStringEncodingName(charset);
 	} @catch (OFInvalidArgumentException *e) {
-		ret = OF_STRING_ENCODING_AUTODETECT;
+		ret = OFStringEncodingAutodetect;
 	}
 
 	return ret;
@@ -298,21 +298,21 @@ encodingForContentType(OFString *contentType)
 
 - (OFString *)string
 {
-	return [self stringWithEncoding: OF_STRING_ENCODING_AUTODETECT];
+	return [self stringWithEncoding: OFStringEncodingAutodetect];
 }
 
-- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)stringWithEncoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *contentType, *contentLengthString, *ret;
 	OFData *data;
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
+	if (encoding == OFStringEncodingAutodetect &&
 	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil)
 		encoding = encodingForContentType(contentType);
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT)
-		encoding = OF_STRING_ENCODING_UTF_8;
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
 
 	data = [self readDataUntilEndOfStream];
 

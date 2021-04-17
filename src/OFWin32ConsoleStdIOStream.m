@@ -60,20 +60,20 @@
 
 #include <windows.h>
 
-static of_string_encoding_t
+static OFStringEncoding
 codepageToEncoding(UINT codepage)
 {
 	switch (codepage) {
 	case 437:
-		return OF_STRING_ENCODING_CODEPAGE_437;
+		return OFStringEncodingCodepage437;
 	case 850:
-		return OF_STRING_ENCODING_CODEPAGE_850;
+		return OFStringEncodingCodepage850;
 	case 858:
-		return OF_STRING_ENCODING_CODEPAGE_858;
+		return OFStringEncodingCodepage858;
 	case 1251:
-		return OF_STRING_ENCODING_WINDOWS_1251;
+		return OFStringEncodingWindows1251;
 	case 1252:
-		return OF_STRING_ENCODING_WINDOWS_1252;
+		return OFStringEncodingWindows1252;
 	default:
 		@throw [OFInvalidEncodingException exception];
 	}
@@ -148,7 +148,7 @@ codepageToEncoding(UINT codepage)
 					requestedLength: length * 2
 						  errNo: EIO];
 		} else {
-			of_string_encoding_t encoding;
+			OFStringEncoding encoding;
 			OFString *string;
 			size_t stringLen;
 
@@ -326,7 +326,7 @@ codepageToEncoding(UINT codepage)
 			OFString *string = [OFString
 			    stringWithUTF16String: UTF16
 					   length: UTF16Len];
-			of_string_encoding_t encoding =
+			OFStringEncoding encoding =
 			    codepageToEncoding(GetConsoleOutputCP());
 			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];
@@ -409,7 +409,7 @@ codepageToEncoding(UINT codepage)
 			void *pool = objc_autoreleasePoolPush();
 			OFString *string = [OFString stringWithUTF16String: tmp
 								    length: j];
-			of_string_encoding_t encoding =
+			OFStringEncoding encoding =
 			    codepageToEncoding(GetConsoleOutputCP());
 			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];

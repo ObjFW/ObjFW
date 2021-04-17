@@ -166,7 +166,7 @@ writingNotSupported(OFString *type)
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFUnichar option, mode = '\0';
-	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
+	OFStringEncoding encoding = OFStringEncodingAutodetect;
 	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
@@ -296,7 +296,7 @@ writingNotSupported(OFString *type)
 
 	@try {
 		if (encodingString != nil)
-			encoding = of_string_parse_encoding(encodingString);
+			encoding = OFParseStringEncodingName(encodingString);
 	} @catch (OFInvalidArgumentException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"invalid_encoding",
@@ -464,7 +464,7 @@ writingNotSupported(OFString *type)
 - (id <Archive>)openArchiveWithPath: (OFString *)path
 			       type: (OFString *)type
 			       mode: (char)mode
-			   encoding: (of_string_encoding_t)encoding
+			   encoding: (OFStringEncoding)encoding
 {
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;

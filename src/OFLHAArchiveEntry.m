@@ -55,7 +55,7 @@ parseMSDOSDate(uint32_t MSDOSDate)
 
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	[entry->_fileName release];
 	entry->_fileName = nil;
@@ -68,7 +68,7 @@ parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableData *data = [[extension mutableCopy] autorelease];
@@ -99,7 +99,7 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	[entry->_fileComment release];
 	entry->_fileComment = nil;
@@ -112,7 +112,7 @@ parseCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	uint16_t mode;
 
@@ -130,7 +130,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	uint16_t UID, GID;
 
@@ -155,7 +155,7 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	[entry->_group release];
 	entry->_group = nil;
@@ -168,7 +168,7 @@ parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	[entry->_owner release];
 	entry->_owner = nil;
@@ -181,7 +181,7 @@ parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	uint32_t modificationDate;
 
@@ -200,9 +200,9 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding, bool allowFileName)
+    OFStringEncoding encoding, bool allowFileName)
 {
-	void (*function)(OFLHAArchiveEntry *, OFData *, of_string_encoding_t) =
+	void (*function)(OFLHAArchiveEntry *, OFData *, OFStringEncoding) =
 	    NULL;
 
 	switch (*(char *)[extension itemAtIndex: 0]) {
@@ -242,7 +242,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
-    of_string_encoding_t encoding, bool allowFileName)
+    OFStringEncoding encoding, bool allowFileName)
 {
 	uint16_t size;
 
@@ -267,8 +267,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 }
 
 static void
-getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
-    of_string_encoding_t encoding,
+getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
     const char **fileName, size_t *fileNameLength,
     const char **directoryName, size_t *directoryNameLength)
 {
@@ -333,7 +332,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 
 - (instancetype)of_initWithHeader: (char [21])header
 			   stream: (OFStream *)stream
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -342,7 +341,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 
 		_compressionMethod = [[OFString alloc]
 		    initWithCString: header + 2
-			   encoding: OF_STRING_ENCODING_ASCII
+			   encoding: OFStringEncodingASCII
 			     length: 5];
 
 		memcpy(&_compressedSize, header + 7, 4);
@@ -555,7 +554,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 }
 
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableData *data = [OFMutableData dataWithCapacity: 24];
@@ -566,7 +565,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	size_t headerSize;
 
 	if ([_compressionMethod cStringLengthWithEncoding:
-	    OF_STRING_ENCODING_ASCII] != 5)
+	    OFStringEncodingASCII] != 5)
 		@throw [OFInvalidArgumentException exception];
 
 	getFileNameAndDirectoryName(self, encoding, &fileName, &fileNameLength,
@@ -580,7 +579,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	[data increaseCountBy: 2];
 
 	[data addItems: [_compressionMethod
-			    cStringWithEncoding: OF_STRING_ENCODING_ASCII]
+			    cStringWithEncoding: OFStringEncodingASCII]
 		 count: 5];
 
 	tmp32 = OF_BSWAP32_IF_BE(_compressedSize);

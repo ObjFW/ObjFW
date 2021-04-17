@@ -74,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param encoding The encoding of the C string
  */
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding;
+	     encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Appends a C string with the specified encoding and length to the
@@ -85,7 +85,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param cStringLength The length of the UTF-8 encoded C string
  */
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 	       length: (size_t)cStringLength;
 
 /**

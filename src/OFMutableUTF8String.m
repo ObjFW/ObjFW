@@ -316,7 +316,7 @@
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 {
 	[self appendCString: cString
 		   encoding: encoding
@@ -324,10 +324,10 @@
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 	       length: (size_t)cStringLength
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8)
+	if (encoding == OFStringEncodingUTF8)
 		[self appendUTF8String: cString length: cStringLength];
 	else {
 		void *pool = objc_autoreleasePoolPush();

@@ -310,7 +310,7 @@ SIGNAL_HANDLER(SIGUSR2)
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =
 		    [fileManager contentsOfDirectoryAtPath: @"ENV:"];
-		const of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		struct Process *proc;
 		struct LocalVar *firstLocalVar;
 
@@ -376,8 +376,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 
 		if (env != NULL) {
-			const of_string_encoding_t encoding =
-			    [OFLocale encoding];
+			OFStringEncoding encoding = [OFLocale encoding];
 
 			for (; *env != NULL; env++) {
 				void *pool = objc_autoreleasePoolPush();
@@ -468,7 +467,7 @@ SIGNAL_HANDLER(SIGUSR2)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	_argc = argc;
 	_argv = argv;
@@ -607,7 +606,7 @@ SIGNAL_HANDLER(SIGUSR2)
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
 	size_t unveiledPathsCount;
 	const char *promises;

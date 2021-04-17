@@ -59,7 +59,7 @@ of_base64_encode(const void *data, size_t length)
 		tb[3] = of_base64_encode_table[sb & 0x00003F];
 
 		[ret appendCString: tb
-			  encoding: OF_STRING_ENCODING_ASCII
+			  encoding: OFStringEncodingASCII
 			    length: 4];
 	}
 
@@ -70,7 +70,7 @@ of_base64_encode(const void *data, size_t length)
 		tb[2] = tb[3] = '=';
 
 		[ret appendCString: tb
-			  encoding: OF_STRING_ENCODING_ASCII
+			  encoding: OFStringEncodingASCII
 			    length: 4];
 
 		break;
@@ -83,7 +83,7 @@ of_base64_encode(const void *data, size_t length)
 		tb[3] = '=';
 
 		[ret appendCString: tb
-			  encoding: OF_STRING_ENCODING_ASCII
+			  encoding: OFStringEncodingASCII
 			    length: 4];
 
 		break;

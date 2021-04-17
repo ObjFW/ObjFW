@@ -282,7 +282,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	commentLength = [_stream readLittleEndianInt16];
 	_archiveComment = [[_stream
 	    readStringWithLength: commentLength
-			encoding: OF_STRING_ENCODING_CODEPAGE_437] copy];
+			encoding: OFStringEncodingCodepage437] copy];
 
 	if (_diskNumber == 0xFFFF ||
 	    _centralDirectoryDisk == 0xFFFF ||
@@ -635,7 +635,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableData *extraField = nil;
 		uint16_t fileNameLength, extraFieldLength;
-		of_string_encoding_t encoding;
+		OFStringEncoding encoding;
 		size_t ZIP64Index;
 		uint16_t ZIP64Size;
 
@@ -653,8 +653,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		fileNameLength = [stream readLittleEndianInt16];
 		extraFieldLength = [stream readLittleEndianInt16];
 		encoding = (_generalPurposeBitFlag & (1u << 11)
-		    ? OF_STRING_ENCODING_UTF_8
-		    : OF_STRING_ENCODING_CODEPAGE_437);
+		    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];

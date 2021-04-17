@@ -55,7 +55,7 @@ OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFMutableLHAArchiveEntry *_entry;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
 	of_offset_t _headerOffset;
 	uint32_t _bytesWritten;
@@ -64,7 +64,7 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (of_string_encoding_t)encoding;
+			 encoding: (OFStringEncoding)encoding;
 @end
 
 @implementation OFLHAArchive
@@ -112,7 +112,7 @@ OF_DIRECT_MEMBERS
 			[(OFSeekableStream *)_stream seekToOffset: 0
 							   whence: SEEK_END];
 
-		_encoding = OF_STRING_ENCODING_ISO_8859_1;
+		_encoding = OFStringEncodingISO8859_1;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -434,7 +434,7 @@ OF_DIRECT_MEMBERS
 @implementation OFLHAArchiveFileWriteStream
 - (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 

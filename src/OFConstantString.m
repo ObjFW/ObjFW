@@ -213,7 +213,7 @@ struct {
 
 - (size_t)getCString: (char *)cString_
 	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding
+	    encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self getCString: cString_
@@ -221,7 +221,7 @@ struct {
 		       encoding: encoding];
 }
 
-- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self cStringWithEncoding: encoding];
@@ -239,7 +239,7 @@ struct {
 	return self.UTF8StringLength;
 }
 
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self cStringLengthWithEncoding: encoding];
@@ -542,7 +542,7 @@ struct {
 	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
-- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self dataWithEncoding: encoding];
@@ -577,7 +577,7 @@ struct {
 	[self writeToFile: path];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	[self writeToFile: path encoding: encoding];
@@ -590,7 +590,7 @@ struct {
 	[self writeToURL: URL];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	[self writeToURL: URL encoding: encoding];

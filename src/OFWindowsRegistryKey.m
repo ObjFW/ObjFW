@@ -353,7 +353,7 @@ OF_DIRECT_MEMBERS
 				       count: string.UTF16StringLength + 1
 				    itemSize: sizeof(OFChar16)];
 	else {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		const char *cString = [string cStringWithEncoding: encoding];
 		size_t length = [string cStringLengthWithEncoding: encoding];
 

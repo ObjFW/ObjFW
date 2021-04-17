@@ -273,7 +273,7 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		size_t count = [string
-		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII];
+		    cStringLengthWithEncoding: OFStringEncodingASCII];
 		const char *cString;
 
 		if (count % 2 != 0)
@@ -286,8 +286,7 @@ _references_to_categories_of_OFData(void)
 		_itemSize = 1;
 		_freeWhenDone = true;
 
-		cString = [string
-		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
+		cString = [string cStringWithEncoding: OFStringEncodingASCII];
 
 		for (size_t i = 0; i < count; i++) {
 			uint8_t c1 = cString[2 * i];
@@ -335,9 +334,8 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		if (!of_base64_decode((OFMutableData *)self,
-		    [string cStringWithEncoding: OF_STRING_ENCODING_ASCII],
-		    [string cStringLengthWithEncoding:
-		    OF_STRING_ENCODING_ASCII]))
+		    [string cStringWithEncoding: OFStringEncodingASCII],
+		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		[self release];

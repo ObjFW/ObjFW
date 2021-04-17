@@ -90,7 +90,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithStream: stream
 					mode: mode
@@ -99,7 +99,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -107,7 +107,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		_archive = [[OFLHAArchive alloc] initWithStream: stream
 							   mode: mode];
 
-		if (encoding != OF_STRING_ENCODING_AUTODETECT)
+		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
 		[self release];

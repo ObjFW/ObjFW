@@ -422,7 +422,7 @@ parseNetStackArray(OFString *string)
 #ifdef OF_WINDOWS
 - (void)obtainWindowsSystemConfig
 {
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFMutableArray *nameServers;
 	/*
 	 * We need more space than FIXED_INFO in case we have more than one
@@ -509,7 +509,7 @@ parseNetStackArray(OFString *string)
 - (void)obtainAmigaOS4SystemConfig
 {
 	OFMutableArray *nameServers = [OFMutableArray array];
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	struct List *nameServerList = ObtainDomainNameServerList();
 	char buffer[MAXHOSTNAMELEN];
 

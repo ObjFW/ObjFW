@@ -622,11 +622,11 @@
 - (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
-				 encoding: OF_STRING_ENCODING_UTF_8];
+				 encoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)readStringWithLength: (size_t)length
-			  encoding: (of_string_encoding_t)encoding
+			  encoding: (OFStringEncoding)encoding
 {
 	OFString *ret;
 	char *buffer = of_alloc(length + 1, 1);
@@ -642,7 +642,7 @@
 	return ret;
 }
 
-- (OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)tryReadLineWithEncoding: (OFStringEncoding)encoding
 {
 	size_t pageSize, bufferLength;
 	char *buffer, *readBuffer;
@@ -791,10 +791,10 @@
 
 - (OFString *)readLine
 {
-	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self readLineWithEncoding: OFStringEncodingUTF8];
 }
 
-- (OFString *)readLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)readLineWithEncoding: (OFStringEncoding)encoding
 {
 	OFString *line = nil;
 
@@ -808,17 +808,17 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncReadLine
 {
-	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
 			    runLoopMode: of_run_loop_mode_default];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 {
 	[self asyncReadLineWithEncoding: encoding
 			    runLoopMode: of_run_loop_mode_default];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -836,12 +836,12 @@
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
 {
-	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
 			    runLoopMode: of_run_loop_mode_default
 				  block: block];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 			    block: (of_stream_async_read_line_block_t)block
 {
 	[self asyncReadLineWithEncoding: encoding
@@ -849,7 +849,7 @@
 				  block: block];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode
 			    block: (of_stream_async_read_line_block_t)block
 {
@@ -867,11 +867,11 @@
 
 - (OFString *)tryReadLine
 {
-	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)tryReadTillDelimiter: (OFString *)delimiter
-			  encoding: (of_string_encoding_t)encoding
+			  encoding: (OFStringEncoding)encoding
 {
 	const char *delimiterCString;
 	size_t j, delimiterLength, pageSize, bufferLength;
@@ -1034,11 +1034,11 @@
 - (OFString *)readTillDelimiter: (OFString *)delimiter
 {
 	return [self readTillDelimiter: delimiter
-			      encoding: OF_STRING_ENCODING_UTF_8];
+			      encoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)readTillDelimiter: (OFString *)delimiter
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
 	OFString *ret = nil;
 
@@ -1053,7 +1053,7 @@
 - (OFString *)tryReadTillDelimiter: (OFString *)delimiter
 {
 	return [self tryReadTillDelimiter: delimiter
-				 encoding: OF_STRING_ENCODING_UTF_8];
+				 encoding: OFStringEncodingUTF8];
 }
 
 - (void)flushWriteBuffer
@@ -1117,12 +1117,12 @@
 - (void)asyncWriteString: (OFString *)string
 {
 	[self asyncWriteString: string
-		      encoding: OF_STRING_ENCODING_UTF_8
+		      encoding: OFStringEncodingUTF8
 		   runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 {
 	[self asyncWriteString: string
 		      encoding: encoding
@@ -1130,7 +1130,7 @@
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
@@ -1173,13 +1173,13 @@
 		   block: (of_stream_async_write_string_block_t)block
 {
 	[self asyncWriteString: string
-		      encoding: OF_STRING_ENCODING_UTF_8
+		      encoding: OFStringEncodingUTF8
 		   runLoopMode: of_run_loop_mode_default
 			 block: block];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   block: (of_stream_async_write_string_block_t)block
 {
 	[self asyncWriteString: string
@@ -1189,7 +1189,7 @@
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode
 		   block: (of_stream_async_write_string_block_t)block
 {
@@ -1561,11 +1561,10 @@
 
 - (size_t)writeString: (OFString *)string
 {
-	return [self writeString: string encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeString: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeString: (OFString *)string
-	     encoding: (of_string_encoding_t)encoding
+- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	void *pool;
 	size_t length;
@@ -1586,10 +1585,10 @@
 
 - (size_t)writeLine: (OFString *)string
 {
-	return [self writeLine: string encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeLine: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeLine: (OFString *)string encoding: (of_string_encoding_t)encoding
+- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;

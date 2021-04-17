@@ -213,7 +213,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableData *extraField = nil;
 		uint16_t fileNameLength, extraFieldLength, fileCommentLength;
-		of_string_encoding_t encoding;
+		OFStringEncoding encoding;
 		size_t ZIP64Index;
 		uint16_t ZIP64Size;
 
@@ -238,8 +238,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 		_localFileHeaderOffset = [stream readLittleEndianInt32];
 
 		encoding = (_generalPurposeBitFlag & (1u << 11)
-		    ? OF_STRING_ENCODING_UTF_8
-		    : OF_STRING_ENCODING_CODEPAGE_437);
+		    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];

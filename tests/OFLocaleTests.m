@@ -31,7 +31,7 @@
 	    [OFLocale territory]];
 
 	[of_stdout writeFormat: @"[OFLocale] Encoding: %@\n",
-	    of_string_name_of_encoding([OFLocale encoding])];
+	    OFStringEncodingName([OFLocale encoding])];
 
 	[of_stdout writeFormat: @"[OFLocale] Decimal point: %@\n",
 	    [OFLocale decimalPoint]];

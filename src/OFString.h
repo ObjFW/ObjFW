@@ -65,42 +65,42 @@ typedef OFChar32 OFUnichar;
 /**
  * @brief The encoding of a string.
  */
-typedef enum of_string_encoding_t {
+typedef enum OFStringEncoding {
 	/*
 	 * UTF-8 *has* to be 0, so that if the current @ref OFLocale is
 	 * `nil`, `[OFLocale encoding]` returns UTF-8.
 	 */
 	/** UTF-8 */
-	OF_STRING_ENCODING_UTF_8,
+	OFStringEncodingUTF8,
 	/** ASCII */
-	OF_STRING_ENCODING_ASCII,
+	OFStringEncodingASCII,
 	/** ISO 8859-1 */
-	OF_STRING_ENCODING_ISO_8859_1,
+	OFStringEncodingISO8859_1,
 	/** ISO 8859-2 */
-	OF_STRING_ENCODING_ISO_8859_2,
+	OFStringEncodingISO8859_2,
 	/** ISO 8859-3 */
-	OF_STRING_ENCODING_ISO_8859_3,
+	OFStringEncodingISO8859_3,
 	/** ISO 8859-15 */
-	OF_STRING_ENCODING_ISO_8859_15,
+	OFStringEncodingISO8859_15,
 	/** Windows-1251 */
-	OF_STRING_ENCODING_WINDOWS_1251,
+	OFStringEncodingWindows1251,
 	/** Windows-1252 */
-	OF_STRING_ENCODING_WINDOWS_1252,
+	OFStringEncodingWindows1252,
 	/** Codepage 437 */
-	OF_STRING_ENCODING_CODEPAGE_437,
+	OFStringEncodingCodepage437,
 	/** Codepage 850 */
-	OF_STRING_ENCODING_CODEPAGE_850,
+	OFStringEncodingCodepage850,
 	/** Codepage 858 */
-	OF_STRING_ENCODING_CODEPAGE_858,
+	OFStringEncodingCodepage858,
 	/** Mac OS Roman */
-	OF_STRING_ENCODING_MAC_ROMAN,
+	OFStringEncodingMacRoman,
 	/** KOI8-R */
-	OF_STRING_ENCODING_KOI8_R,
+	OFStringEncodingKOI8R,
 	/** KOI8-U */
-	OF_STRING_ENCODING_KOI8_U,
+	OFStringEncodingKOI8U,
 	/** Try to automatically detect the encoding */
-	OF_STRING_ENCODING_AUTODETECT = 0xFF
-} of_string_encoding_t;
+	OFStringEncodingAutodetect = 0xFF
+} OFStringEncoding;
 
 enum {
 	OF_STRING_SEARCH_BACKWARDS = 1,
@@ -351,7 +351,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithCString: (const char *)cString
-			 encoding: (of_string_encoding_t)encoding;
+			 encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Creates a new OFString from a C string with the specified encoding
@@ -363,7 +363,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithCString: (const char *)cString
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 			   length: (size_t)cStringLength;
 
 /**
@@ -374,7 +374,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An new autoreleased OFString
  */
 + (instancetype)stringWithData: (OFData *)data
-		      encoding: (of_string_encoding_t)encoding;
+		      encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Creates a new OFString from another string.
@@ -514,7 +514,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithContentsOfFile: (OFString *)path
-				encoding: (of_string_encoding_t)encoding;
+				encoding: (OFStringEncoding)encoding;
 # endif
 
 /**
@@ -540,7 +540,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithContentsOfURL: (OFURL *)URL
-			       encoding: (of_string_encoding_t)encoding;
+			       encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -608,7 +608,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding;
+		       encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Initializes an already allocated OFString from a C string with the
@@ -620,7 +620,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength;
 
 /**
@@ -632,7 +632,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithData: (OFData *)data
-		    encoding: (of_string_encoding_t)encoding;
+		    encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Initializes an already allocated OFString with another string.
@@ -786,7 +786,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithContentsOfFile: (OFString *)path
-			      encoding: (of_string_encoding_t)encoding;
+			      encoding: (OFStringEncoding)encoding;
 # endif
 
 /**
@@ -813,7 +813,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
-			     encoding: (of_string_encoding_t)encoding;
+			     encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes the OFString into the specified C string with the specified
@@ -828,7 +828,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding;
+	    encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes the OFString into the specified C string with the specified
@@ -844,7 +844,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (size_t)getLossyCString: (char *)cString
 		maxLength: (size_t)maxLength
-		 encoding: (of_string_encoding_t)encoding;
+		 encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the OFString as a C string in the specified encoding.
@@ -856,7 +856,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
     OF_RETURNS_INNER_POINTER;
 
 /**
@@ -871,7 +871,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)lossyCStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
     OF_RETURNS_INNER_POINTER;
 
 /**
@@ -881,7 +881,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding for the string
  * @return The number of bytes the string needs in the specified encoding.
  */
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
+- (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Compares the string to another string.
@@ -1230,7 +1230,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding to use for the returned OFData
  * @return The string as OFData with the specified encoding
  */
-- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding;
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding;
 
 # ifdef OF_HAVE_FILES
 /**
@@ -1247,7 +1247,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path of the file to write to
  * @param encoding The encoding to use to write the string into the file
  */
-- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding;
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
 # endif
 
 /**
@@ -1263,7 +1263,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param URL The URL to write to
  * @param encoding The encoding to use to write the string to the URL
  */
-- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding;
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -1279,8 +1279,26 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern of_string_encoding_t of_string_parse_encoding(OFString *);
-extern OFString *_Nullable of_string_name_of_encoding(of_string_encoding_t);
+/**
+ * @brief Parses the specified string encoding name and returns the
+ *	  OFStringEncoding for it.
+ *
+ * Throws @ref OFInvalidArgumentException if the specified name is not a valid
+ * encoding name.
+ *
+ * @param name The name to parse as a string encoding
+ * @return The OFStringEncoding for the specified name
+ */
+extern OFStringEncoding OFParseStringEncodingName(OFString *name);
+
+/**
+ * @brief Returns the name of the specified OFStringEncoding.
+ *
+ * @param encoding The encoding for which to return the name
+ * @return The name of the specified OFStringEncoding
+ */
+extern OFString *_Nullable OFStringEncodingName(OFStringEncoding encoding);
+
 extern size_t of_string_utf8_encode(OFUnichar, char *);
 extern ssize_t of_string_utf8_decode(const char *, size_t, OFUnichar *);
 extern size_t of_string_utf16_length(const OFChar16 *);

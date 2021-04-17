@@ -428,7 +428,7 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 	[passwdMutex lock];
 	@try {
 # endif
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		struct passwd *passwd = getpwuid(s->st_uid);
 		struct group *group_ = getgrgid(s->st_gid);
 
@@ -464,7 +464,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 {
 	OFString *path = URL.fileSystemRepresentation;
 # ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	char destinationC[PATH_MAX];
 	ssize_t length;
 	OFString *destination;
@@ -802,7 +802,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFString *path = URL.fileSystemRepresentation;
 	uid_t uid = -1;
 	gid_t gid = -1;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	if (owner == nil && group == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -1067,7 +1067,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			FindClose(handle);
 		}
 	} else {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		WIN32_FIND_DATA fd;
 
 		if ((handle = FindFirstFileA(
@@ -1107,7 +1107,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		}
 	}
 #elif defined(OF_AMIGAOS)
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	BPTR lock;
 
 	if ((lock = Lock([path cStringWithEncoding: encoding],
@@ -1177,7 +1177,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		UnLock(lock);
 	}
 #else
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	DIR *dir;
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
@@ -1359,7 +1359,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	destinationPath = destination.fileSystemRepresentation;
 
 # ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 
 	if (link([sourcePath cStringWithEncoding: encoding],
 	    [destinationPath cStringWithEncoding: encoding]) != 0)
@@ -1400,7 +1400,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	path = URL.fileSystemRepresentation;
 
 # ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 
 	if (symlink([target cStringWithEncoding: encoding],
 	    [path cStringWithEncoding: encoding]) != 0)
@@ -1441,7 +1441,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	pool = objc_autoreleasePoolPush();
 
 #ifdef OF_AMIGAOS
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 
 	if (!Rename([source.fileSystemRepresentation
 	    cStringWithEncoding: encoding],
@@ -1460,7 +1460,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    destination.fileSystemRepresentation.UTF16String);
 	else {
 # endif
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 
 		status = rename([source.fileSystemRepresentation
 		    cStringWithEncoding: encoding],

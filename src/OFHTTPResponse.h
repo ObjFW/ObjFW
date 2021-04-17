@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The reply as a string
  */
-- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding;
+- (OFString *)stringWithEncoding: (OFStringEncoding)encoding;
 @end
 
 #ifdef __cplusplus

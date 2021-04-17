@@ -116,7 +116,7 @@ OF_DIRECT_MEMBERS
 							  whence: SEEK_END];
 		}
 
-		_encoding = OF_STRING_ENCODING_UTF_8;
+		_encoding = OFStringEncodingUTF8;
 	} @catch (id e) {
 		[self release];
 		@throw e;

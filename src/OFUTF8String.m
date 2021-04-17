@@ -227,7 +227,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	self = [super init];
@@ -236,7 +236,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		const OFChar16 *table;
 		size_t tableOffset, j;
 
-		if (encoding == OF_STRING_ENCODING_UTF_8 &&
+		if (encoding == OFStringEncodingUTF8 &&
 		    cStringLength >= 3 &&
 		    memcmp(cString, "\xEF\xBB\xBF", 3) == 0) {
 			cString += 3;
@@ -249,12 +249,12 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cStringLength = cStringLength;
 		_s->freeWhenDone = true;
 
-		if (encoding == OF_STRING_ENCODING_UTF_8 ||
-		    encoding == OF_STRING_ENCODING_ASCII) {
+		if (encoding == OFStringEncodingUTF8 ||
+		    encoding == OFStringEncodingASCII) {
 			switch (of_string_utf8_check(cString, cStringLength,
 			    &_s->length)) {
 			case 1:
-				if (encoding == OF_STRING_ENCODING_ASCII)
+				if (encoding == OFStringEncodingASCII)
 					@throw [OFInvalidEncodingException
 					    exception];
 
@@ -273,7 +273,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		/* All other encodings we support are single byte encodings */
 		_s->length = cStringLength;
 
-		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
+		if (encoding == OFStringEncodingISO8859_1) {
 			j = 0;
 			for (size_t i = 0; i < cStringLength; i++) {
 				char buffer[4];
@@ -312,37 +312,37 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			tableOffset = var##_offset;	\
 			break;
 #ifdef HAVE_ISO_8859_2
-		CASE(OF_STRING_ENCODING_ISO_8859_2, of_iso_8859_2_table)
+		CASE(OFStringEncodingISO8859_2, of_iso_8859_2_table)
 #endif
 #ifdef HAVE_ISO_8859_3
-		CASE(OF_STRING_ENCODING_ISO_8859_3, of_iso_8859_3_table)
+		CASE(OFStringEncodingISO8859_3, of_iso_8859_3_table)
 #endif
 #ifdef HAVE_ISO_8859_15
-		CASE(OF_STRING_ENCODING_ISO_8859_15, of_iso_8859_15_table)
+		CASE(OFStringEncodingISO8859_15, of_iso_8859_15_table)
 #endif
 #ifdef HAVE_WINDOWS_1251
-		CASE(OF_STRING_ENCODING_WINDOWS_1251, of_windows_1251_table)
+		CASE(OFStringEncodingWindows1251, of_windows_1251_table)
 #endif
 #ifdef HAVE_WINDOWS_1252
-		CASE(OF_STRING_ENCODING_WINDOWS_1252, of_windows_1252_table)
+		CASE(OFStringEncodingWindows1252, of_windows_1252_table)
 #endif
 #ifdef HAVE_CODEPAGE_437
-		CASE(OF_STRING_ENCODING_CODEPAGE_437, of_codepage_437_table)
+		CASE(OFStringEncodingCodepage437, of_codepage_437_table)
 #endif
 #ifdef HAVE_CODEPAGE_850
-		CASE(OF_STRING_ENCODING_CODEPAGE_850, of_codepage_850_table)
+		CASE(OFStringEncodingCodepage850, of_codepage_850_table)
 #endif
 #ifdef HAVE_CODEPAGE_858
-		CASE(OF_STRING_ENCODING_CODEPAGE_858, of_codepage_858_table)
+		CASE(OFStringEncodingCodepage858, of_codepage_858_table)
 #endif
 #ifdef HAVE_MAC_ROMAN
-		CASE(OF_STRING_ENCODING_MAC_ROMAN, of_mac_roman_table)
+		CASE(OFStringEncodingMacRoman, of_mac_roman_table)
 #endif
 #ifdef HAVE_KOI8_R
-		CASE(OF_STRING_ENCODING_KOI8_R, of_koi8_r_table)
+		CASE(OFStringEncodingKOI8R, of_koi8_r_table)
 #endif
 #ifdef HAVE_KOI8_U
-		CASE(OF_STRING_ENCODING_KOI8_U, of_koi8_u_table)
+		CASE(OFStringEncodingKOI8U, of_koi8_u_table)
 #endif
 #undef CASE
 		default:
@@ -711,14 +711,14 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding
+	    encoding: (OFStringEncoding)encoding
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_ASCII:
+	case OFStringEncodingASCII:
 		if (_s->isUTF8)
 			@throw [OFInvalidEncodingException exception];
 		/* intentional fall-through */
-	case OF_STRING_ENCODING_UTF_8:
+	case OFStringEncodingUTF8:
 		if (_s->cStringLength + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -732,14 +732,14 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	}
 }
 
-- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_ASCII:
+	case OFStringEncodingASCII:
 		if (_s->isUTF8)
 			@throw [OFInvalidEncodingException exception];
 		/* intentional fall-through */
-	case OF_STRING_ENCODING_UTF_8:
+	case OFStringEncodingUTF8:
 		return _s->cString;
 	default:
 		return [super cStringWithEncoding: encoding];
@@ -756,11 +756,11 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return _s->length;
 }
 
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:
-	case OF_STRING_ENCODING_ASCII:
+	case OFStringEncodingUTF8:
+	case OFStringEncodingASCII:
 		return _s->cStringLength;
 	default:
 		return [super cStringLengthWithEncoding: encoding];

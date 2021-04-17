@@ -573,7 +573,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (_insecure)
 		_HTTPClient.allowsInsecureRedirects = true;
 
-	_useUnicode = ([OFLocale encoding] == OF_STRING_ENCODING_UTF_8);
+	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 
 	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }

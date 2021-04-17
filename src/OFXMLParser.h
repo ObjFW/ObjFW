@@ -167,7 +167,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _acceptProlog;
 	size_t _lineNumber;
 	bool _lastCarriageReturn, _finishedParsing;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	size_t _depthLimit;
 }
 

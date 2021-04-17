@@ -91,9 +91,9 @@ static state_function_t lookupTable[] = {
 
 static OF_INLINE void
 appendToBuffer(OFMutableData *buffer, const char *string,
-    of_string_encoding_t encoding, size_t length)
+    OFStringEncoding encoding, size_t length)
 {
-	if OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8)
+	if OF_LIKELY(encoding == OFStringEncodingUTF8)
 		[buffer addItems: string count: length];
 	else {
 		void *pool = objc_autoreleasePoolPush();
@@ -211,7 +211,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		_acceptProlog = true;
 		_lineNumber = 1;
-		_encoding = OF_STRING_ENCODING_UTF_8;
+		_encoding = OFStringEncodingUTF8;
 		_depthLimit = 32;
 
 		objc_autoreleasePoolPop(pool);
@@ -450,7 +450,7 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 			if ([attribute isEqual: @"encoding"]) {
 				@try {
 					self->_encoding =
-					    of_string_parse_encoding(value);
+					    OFParseStringEncodingName(value);
 				} @catch (OFInvalidArgumentException *e) {
 					@throw [OFInvalidEncodingException
 					    exception];

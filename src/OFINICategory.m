@@ -468,7 +468,7 @@ unescapeString(OFString *string)
 }
 
 - (bool)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   first: (bool)first
 {
 	if (_lines.count == 0)

@@ -114,7 +114,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	of_stream_async_read_line_block_t _block;
 # endif
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 }
 @end
 
@@ -136,7 +136,7 @@ static OFRunLoop *mainRunLoop = nil;
 	of_stream_async_write_string_block_t _block;
 # endif
 	OFString *_string;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	size_t _writtenLength;
 }
 @end
@@ -1130,7 +1130,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
-			    encoding: (of_string_encoding_t)encoding
+			    encoding: (OFStringEncoding)encoding
 				mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (of_stream_async_read_line_block_t)block
@@ -1171,7 +1171,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   string: (OFString *)string
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (of_stream_async_write_string_block_t)block

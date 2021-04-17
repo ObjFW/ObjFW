@@ -39,14 +39,14 @@ static OFDictionary *operatorPrecedences = nil;
 
 #ifndef OF_AMIGAOS
 static void
-parseLocale(char *locale, of_string_encoding_t *encoding,
+parseLocale(char *locale, OFStringEncoding *encoding,
     OFString **language, OFString **territory)
 {
 	if ((locale = of_strdup(locale)) == NULL)
 		return;
 
 	@try {
-		const of_string_encoding_t enc = OF_STRING_ENCODING_ASCII;
+		OFStringEncoding enc = OFStringEncodingASCII;
 		char *tmp;
 
 		/* We don't care for extras behind the @ */
@@ -59,7 +59,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 			@try {
 				if (encoding != NULL)
-					*encoding = of_string_parse_encoding(
+					*encoding = OFParseStringEncodingName(
 					    [OFString stringWithCString: tmp
 							       encoding: enc]);
 			} @catch (OFInvalidArgumentException *e) {
@@ -351,7 +351,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.territory;
 }
 
-+ (of_string_encoding_t)encoding
++ (OFStringEncoding)encoding
 {
 	return currentLocale.encoding;
 }
@@ -380,7 +380,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		_encoding = OF_STRING_ENCODING_UTF_8;
+		_encoding = OFStringEncodingUTF8;
 		_decimalPoint = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
@@ -424,17 +424,17 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 # else
 		if (0) {
 # endif
-			of_string_encoding_t ASCII = OF_STRING_ENCODING_ASCII;
+			OFStringEncoding ASCII = OFStringEncodingASCII;
 
 			@try {
-				_encoding = of_string_parse_encoding(
+				_encoding = OFStringEncodingForName(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
 			} @catch (OFInvalidArgumentException *e) {
-				_encoding = OF_STRING_ENCODING_ISO_8859_1;
+				_encoding = OFStringEncodingISO8859_1;
 			}
 		} else
-			_encoding = OF_STRING_ENCODING_ISO_8859_1;
+			_encoding = OFStringEncodingISO8859_1;
 
 		/*
 		 * Get it via localeconv() instead of from the Locale struct,

@@ -238,7 +238,7 @@ extern char **environ;
 {
 	OFString *const *objects = arguments.objects;
 	size_t i, count = arguments.count;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	*argv = of_alloc(count + 2, sizeof(char *));
 
@@ -257,7 +257,7 @@ extern char **environ;
 {
 	char **envp;
 	size_t count;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	if (environment == nil)
 		return NULL;

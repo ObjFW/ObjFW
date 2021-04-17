@@ -241,7 +241,7 @@ uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
 	OFArray *backtrace = nil;
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [description cStringWithEncoding: encoding]);
@@ -407,7 +407,7 @@ _references_to_categories_of_OFObject(void)
 + (OFString *)className
 {
 	return [OFString stringWithCString: class_getName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
 }
 
 + (bool)isSubclassOfClass: (Class)class
@@ -562,7 +562,7 @@ _references_to_categories_of_OFObject(void)
 - (OFString *)className
 {
 	return [OFString stringWithCString: object_getClassName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
 }
 
 - (bool)isKindOfClass: (Class)class

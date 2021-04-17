@@ -569,7 +569,7 @@ defaultShouldFollow(of_http_request_method_t method, short statusCode)
 
 - (OFString *)stream: (OFStream *)stream
       didWriteString: (OFString *)string
-	    encoding: (of_string_encoding_t)encoding
+	    encoding: (OFStringEncoding)encoding
 	bytesWritten: (size_t)bytesWritten
 	   exception: (id)exception
 {

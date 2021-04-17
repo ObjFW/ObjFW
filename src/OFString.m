@@ -89,9 +89,9 @@ static locale_t cLocale;
 @interface OFString ()
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
-	       encoding: (of_string_encoding_t)encoding
+	       encoding: (OFStringEncoding)encoding
 		  lossy: (bool)lossy OF_DIRECT;
-- (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
 				 lossy: (bool)lossy OF_DIRECT;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
@@ -145,53 +145,53 @@ _reference_to_OFConstantString(void)
 	[OFConstantString class];
 }
 
-of_string_encoding_t
-of_string_parse_encoding(OFString *string)
+OFStringEncoding
+OFParseStringEncodingName(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	string = string.lowercaseString;
 
 	if ([string isEqual: @"utf8"] || [string isEqual: @"utf-8"])
-		encoding = OF_STRING_ENCODING_UTF_8;
+		encoding = OFStringEncodingUTF8;
 	else if ([string isEqual: @"ascii"] || [string isEqual: @"us-ascii"])
-		encoding = OF_STRING_ENCODING_ASCII;
+		encoding = OFStringEncodingASCII;
 	else if ([string isEqual: @"iso-8859-1"] ||
 	    [string isEqual: @"iso_8859-1"])
-		encoding = OF_STRING_ENCODING_ISO_8859_1;
+		encoding = OFStringEncodingISO8859_1;
 	else if ([string isEqual: @"iso-8859-2"] ||
 	    [string isEqual: @"iso_8859-2"])
-		encoding = OF_STRING_ENCODING_ISO_8859_2;
+		encoding = OFStringEncodingISO8859_2;
 	else if ([string isEqual: @"iso-8859-3"] ||
 	    [string isEqual: @"iso_8859-3"])
-		encoding = OF_STRING_ENCODING_ISO_8859_3;
+		encoding = OFStringEncodingISO8859_3;
 	else if ([string isEqual: @"iso-8859-15"] ||
 	    [string isEqual: @"iso_8859-15"])
-		encoding = OF_STRING_ENCODING_ISO_8859_15;
+		encoding = OFStringEncodingISO8859_15;
 	else if ([string isEqual: @"windows-1251"] ||
 	    [string isEqual: @"cp1251"] || [string isEqual: @"cp-1251"] ||
 	    [string isEqual: @"1251"])
-		encoding = OF_STRING_ENCODING_WINDOWS_1251;
+		encoding = OFStringEncodingWindows1251;
 	else if ([string isEqual: @"windows-1252"] ||
 	    [string isEqual: @"cp1252"] || [string isEqual: @"cp-1252"] ||
 	    [string isEqual: @"1252"])
-		encoding = OF_STRING_ENCODING_WINDOWS_1252;
+		encoding = OFStringEncodingWindows1252;
 	else if ([string isEqual: @"cp437"] || [string isEqual: @"cp-437"] ||
 	    [string isEqual: @"ibm437"] || [string isEqual: @"437"])
-		encoding = OF_STRING_ENCODING_CODEPAGE_437;
+		encoding = OFStringEncodingCodepage437;
 	else if ([string isEqual: @"cp850"] || [string isEqual: @"cp-850"] ||
 	    [string isEqual: @"ibm850"] || [string isEqual: @"850"])
-		encoding = OF_STRING_ENCODING_CODEPAGE_850;
+		encoding = OFStringEncodingCodepage850;
 	else if ([string isEqual: @"cp858"] || [string isEqual: @"cp-858"] ||
 	    [string isEqual: @"ibm858"] || [string isEqual: @"858"])
-		encoding = OF_STRING_ENCODING_CODEPAGE_858;
+		encoding = OFStringEncodingCodepage858;
 	else if ([string isEqual: @"macintosh"] || [string isEqual: @"mac"])
-		encoding = OF_STRING_ENCODING_MAC_ROMAN;
+		encoding = OFStringEncodingMacRoman;
 	else if ([string isEqual: @"koi8-r"])
-		encoding = OF_STRING_ENCODING_KOI8_R;
+		encoding = OFStringEncodingKOI8R;
 	else if ([string isEqual: @"koi8-u"])
-		encoding = OF_STRING_ENCODING_KOI8_U;
+		encoding = OFStringEncodingKOI8U;
 	else
 		@throw [OFInvalidArgumentException exception];
 
@@ -201,38 +201,38 @@ of_string_parse_encoding(OFString *string)
 }
 
 OFString *
-of_string_name_of_encoding(of_string_encoding_t encoding)
+OFStringEncodingName(OFStringEncoding encoding)
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:
+	case OFStringEncodingUTF8:
 		return @"UTF-8";
-	case OF_STRING_ENCODING_ASCII:
+	case OFStringEncodingASCII:
 		return @"ASCII";
-	case OF_STRING_ENCODING_ISO_8859_1:
+	case OFStringEncodingISO8859_1:
 		return @"ISO 8859-1";
-	case OF_STRING_ENCODING_ISO_8859_2:
+	case OFStringEncodingISO8859_2:
 		return @"ISO 8859-2";
-	case OF_STRING_ENCODING_ISO_8859_3:
+	case OFStringEncodingISO8859_3:
 		return @"ISO 8859-3";
-	case OF_STRING_ENCODING_ISO_8859_15:
+	case OFStringEncodingISO8859_15:
 		return @"ISO 8859-15";
-	case OF_STRING_ENCODING_WINDOWS_1251:
+	case OFStringEncodingWindows1251:
 		return @"Windows-1251";
-	case OF_STRING_ENCODING_WINDOWS_1252:
+	case OFStringEncodingWindows1252:
 		return @"Windows-1252";
-	case OF_STRING_ENCODING_CODEPAGE_437:
+	case OFStringEncodingCodepage437:
 		return @"Codepage 437";
-	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OFStringEncodingCodepage850:
 		return @"Codepage 850";
-	case OF_STRING_ENCODING_CODEPAGE_858:
+	case OFStringEncodingCodepage858:
 		return @"Codepage 858";
-	case OF_STRING_ENCODING_MAC_ROMAN:
+	case OFStringEncodingMacRoman:
 		return @"Mac Roman";
-	case OF_STRING_ENCODING_KOI8_R:
+	case OFStringEncodingKOI8R:
 		return @"KOI8-R";
-	case OF_STRING_ENCODING_KOI8_U:
+	case OFStringEncodingKOI8U:
 		return @"KOI8-U";
-	case OF_STRING_ENCODING_AUTODETECT:
+	case OFStringEncodingAutodetect:
 		return @"autodetect";
 	}
 
@@ -421,9 +421,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8) {
+	if (encoding == OFStringEncodingUTF8) {
 		OFUTF8String *string;
 		size_t length;
 		void *storage;
@@ -442,10 +442,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8) {
+	if (encoding == OFStringEncodingUTF8) {
 		OFUTF8String *string;
 		void *storage;
 
@@ -463,7 +463,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithData: (OFData *)data
-		    encoding: (of_string_encoding_t)encoding
+		    encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFUTF8String alloc] initWithData: data
 					     encoding: encoding];
@@ -564,7 +564,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
-			      encoding: (of_string_encoding_t)encoding
+			      encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFUTF8String alloc] initWithContentsOfFile: path
 						       encoding: encoding];
@@ -577,7 +577,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
-			     encoding: (of_string_encoding_t)encoding
+			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL
 						      encoding: encoding];
@@ -668,14 +668,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 + (instancetype)stringWithCString: (const char *)cString
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithCString: cString
 				     encoding: encoding] autorelease];
 }
 
 + (instancetype)stringWithCString: (const char *)cString
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 			   length: (size_t)cStringLength
 {
 	return [[[self alloc] initWithCString: cString
@@ -684,7 +684,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 + (instancetype)stringWithData: (OFData *)data
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithData: data
 				  encoding: encoding] autorelease];
@@ -778,7 +778,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 + (instancetype)stringWithContentsOfFile: (OFString *)path
-				encoding: (of_string_encoding_t)encoding
+				encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithContentsOfFile: path
 					    encoding: encoding] autorelease];
@@ -791,7 +791,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 + (instancetype)stringWithContentsOfURL: (OFURL *)URL
-			       encoding: (of_string_encoding_t)encoding
+			       encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];
@@ -816,7 +816,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 {
 	return [self initWithCString: UTF8String
-			    encoding: OF_STRING_ENCODING_UTF_8
+			    encoding: OFStringEncodingUTF8
 			      length: strlen(UTF8String)];
 }
 
@@ -824,7 +824,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			    length: (size_t)UTF8StringLength
 {
 	return [self initWithCString: UTF8String
-			    encoding: OF_STRING_ENCODING_UTF_8
+			    encoding: OFStringEncodingUTF8
 			      length: UTF8StringLength];
 }
 
@@ -852,7 +852,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
 	return [self initWithCString: cString
 			    encoding: encoding
@@ -860,14 +860,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithData: (OFData *)data
-		    encoding: (of_string_encoding_t)encoding
+		    encoding: (OFStringEncoding)encoding
 {
 	@try {
 		if (data.itemSize != 1)
@@ -977,11 +977,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	return [self initWithContentsOfFile: path
-				   encoding: OF_STRING_ENCODING_UTF_8];
+				   encoding: OFStringEncodingUTF8];
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
-			      encoding: (of_string_encoding_t)encoding
+			      encoding: (OFStringEncoding)encoding
 {
 	char *tmp;
 	unsigned long long fileSize;
@@ -1032,7 +1032,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@throw e;
 	}
 
-	if (encoding == OF_STRING_ENCODING_UTF_8) {
+	if (encoding == OFStringEncodingUTF8) {
 		@try {
 			self = [self initWithUTF8StringNoCopy: tmp
 						       length: (size_t)fileSize
@@ -1058,11 +1058,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	return [self initWithContentsOfURL: URL
-				  encoding: OF_STRING_ENCODING_AUTODETECT];
+				  encoding: OFStringEncodingAutodetect];
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
-			     encoding: (of_string_encoding_t)encoding
+			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
@@ -1115,14 +1115,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
-	       encoding: (of_string_encoding_t)encoding
+	       encoding: (OFStringEncoding)encoding
 		  lossy: (bool)lossy
 {
 	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
 
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:;
+	case OFStringEncodingUTF8:;
 		size_t j = 0;
 
 		for (i = 0; i < length; i++) {
@@ -1159,7 +1159,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		cString[j] = '\0';
 
 		return j;
-	case OF_STRING_ENCODING_ASCII:
+	case OFStringEncodingASCII:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1177,7 +1177,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		cString[i] = '\0';
 
 		return length;
-	case OF_STRING_ENCODING_ISO_8859_1:
+	case OFStringEncodingISO8859_1:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1196,7 +1196,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		return length;
 #ifdef HAVE_ISO_8859_2
-	case OF_STRING_ENCODING_ISO_8859_2:
+	case OFStringEncodingISO8859_2:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1209,7 +1209,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_ISO_8859_3
-	case OF_STRING_ENCODING_ISO_8859_3:
+	case OFStringEncodingISO8859_3:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1222,7 +1222,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_ISO_8859_15
-	case OF_STRING_ENCODING_ISO_8859_15:
+	case OFStringEncodingISO8859_15:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1235,7 +1235,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_WINDOWS_1251
-	case OF_STRING_ENCODING_WINDOWS_1251:
+	case OFStringEncodingWindows1251:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1248,7 +1248,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_WINDOWS_1252
-	case OF_STRING_ENCODING_WINDOWS_1252:
+	case OFStringEncodingWindows1252:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1261,7 +1261,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_437
-	case OF_STRING_ENCODING_CODEPAGE_437:
+	case OFStringEncodingCodepage437:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1274,7 +1274,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_850
-	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OFStringEncodingCodepage850:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1287,7 +1287,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_858
-	case OF_STRING_ENCODING_CODEPAGE_858:
+	case OFStringEncodingCodepage858:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1300,7 +1300,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_MAC_ROMAN
-	case OF_STRING_ENCODING_MAC_ROMAN:
+	case OFStringEncodingMacRoman:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1313,7 +1313,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_KOI8_R
-	case OF_STRING_ENCODING_KOI8_R:
+	case OFStringEncodingKOI8R:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1326,7 +1326,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 #ifdef HAVE_KOI8_U
-	case OF_STRING_ENCODING_KOI8_U:
+	case OFStringEncodingKOI8U:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
@@ -1346,7 +1346,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding
+	    encoding: (OFStringEncoding)encoding
 {
 	return [self of_getCString: cString
 			 maxLength: maxLength
@@ -1356,7 +1356,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (size_t)getLossyCString: (char *)cString
 		maxLength: (size_t)maxLength
-		 encoding: (of_string_encoding_t)encoding
+		 encoding: (OFStringEncoding)encoding
 {
 	return [self of_getCString: cString
 			 maxLength: maxLength
@@ -1364,7 +1364,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			     lossy: true];
 }
 
-- (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
 				 lossy: (bool)lossy
 {
 	size_t length = self.length;
@@ -1372,14 +1372,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t cStringLength;
 
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:
+	case OFStringEncodingUTF8:
 		cString = of_alloc((length * 4) + 1, 1);
 
 		@try {
 			cStringLength = [self
 			    of_getCString: cString
 				maxLength: (length * 4) + 1
-				 encoding: OF_STRING_ENCODING_UTF_8
+				 encoding: OFStringEncodingUTF8
 				    lossy: lossy];
 		} @catch (id e) {
 			free(cString);
@@ -1393,19 +1393,19 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		}
 
 		break;
-	case OF_STRING_ENCODING_ASCII:
-	case OF_STRING_ENCODING_ISO_8859_1:
-	case OF_STRING_ENCODING_ISO_8859_2:
-	case OF_STRING_ENCODING_ISO_8859_3:
-	case OF_STRING_ENCODING_ISO_8859_15:
-	case OF_STRING_ENCODING_WINDOWS_1251:
-	case OF_STRING_ENCODING_WINDOWS_1252:
-	case OF_STRING_ENCODING_CODEPAGE_437:
-	case OF_STRING_ENCODING_CODEPAGE_850:
-	case OF_STRING_ENCODING_CODEPAGE_858:
-	case OF_STRING_ENCODING_MAC_ROMAN:
-	case OF_STRING_ENCODING_KOI8_R:
-	case OF_STRING_ENCODING_KOI8_U:
+	case OFStringEncodingASCII:
+	case OFStringEncodingISO8859_1:
+	case OFStringEncodingISO8859_2:
+	case OFStringEncodingISO8859_3:
+	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1251:
+	case OFStringEncodingWindows1252:
+	case OFStringEncodingCodepage437:
+	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage858:
+	case OFStringEncodingMacRoman:
+	case OFStringEncodingKOI8R:
+	case OFStringEncodingKOI8U:
 		cString = of_alloc(length + 1, 1);
 
 		@try {
@@ -1433,19 +1433,19 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 }
 
-- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
 	return [self of_cStringWithEncoding: encoding lossy: false];
 }
 
-- (const char *)lossyCStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
 {
 	return [self of_cStringWithEncoding: encoding lossy: true];
 }
 
 - (const char *)UTF8String
 {
-	return [self cStringWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self cStringWithEncoding: OFStringEncodingUTF8];
 }
 
 - (size_t)length
@@ -1453,10 +1453,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding
 {
 	switch (encoding) {
-	case OF_STRING_ENCODING_UTF_8:;
+	case OFStringEncodingUTF8:;
 		const OFUnichar *characters;
 		size_t length, UTF8StringLength = 0;
 
@@ -1475,19 +1475,19 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		}
 
 		return UTF8StringLength;
-	case OF_STRING_ENCODING_ASCII:
-	case OF_STRING_ENCODING_ISO_8859_1:
-	case OF_STRING_ENCODING_ISO_8859_2:
-	case OF_STRING_ENCODING_ISO_8859_3:
-	case OF_STRING_ENCODING_ISO_8859_15:
-	case OF_STRING_ENCODING_WINDOWS_1251:
-	case OF_STRING_ENCODING_WINDOWS_1252:
-	case OF_STRING_ENCODING_CODEPAGE_437:
-	case OF_STRING_ENCODING_CODEPAGE_850:
-	case OF_STRING_ENCODING_CODEPAGE_858:
-	case OF_STRING_ENCODING_MAC_ROMAN:
-	case OF_STRING_ENCODING_KOI8_R:
-	case OF_STRING_ENCODING_KOI8_U:
+	case OFStringEncodingASCII:
+	case OFStringEncodingISO8859_1:
+	case OFStringEncodingISO8859_2:
+	case OFStringEncodingISO8859_3:
+	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1251:
+	case OFStringEncodingWindows1252:
+	case OFStringEncodingCodepage437:
+	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage858:
+	case OFStringEncodingMacRoman:
+	case OFStringEncodingKOI8R:
+	case OFStringEncodingKOI8U:
 		return self.length;
 	default:
 		@throw [OFInvalidEncodingException exception];
@@ -1496,7 +1496,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (size_t)UTF8StringLength
 {
-	return [self cStringLengthWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self cStringLengthWithEncoding: OFStringEncodingUTF8];
 }
 
 - (OFUnichar)characterAtIndex: (size_t)idx
@@ -2648,7 +2648,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 }
 
-- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data =
@@ -2690,7 +2690,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return [OFString stringWithUTF16String: buffer
 						length: length - 1];
 	} else {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		char buffer[512];
 		size_t length;
 
@@ -2709,10 +2709,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {
-	[self writeToFile: path encoding: OF_STRING_ENCODING_UTF_8];
+	[self writeToFile: path encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
@@ -2723,10 +2723,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (void)writeToURL: (OFURL *)URL
 {
-	[self writeToURL: URL encoding: OF_STRING_ENCODING_UTF_8];
+	[self writeToURL: URL encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURLHandler *URLHandler;

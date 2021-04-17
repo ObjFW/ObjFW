@@ -91,7 +91,7 @@ static uint16_t sutf16str[] = {
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)length
 {
 	self = [super init];
@@ -350,12 +350,12 @@ static uint16_t sutf16str[] = {
 #ifdef OF_HAVE_FILES
 	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [stringClass
 	    stringWithContentsOfFile: @"testfile.txt"
-			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+			    encoding: OFStringEncodingISO8859_1]) &&
 	    [is isEqual: @"testäöü"])
 
 	TEST(@"+[stringWithContentsOfURL:encoding]", (is = [stringClass
 	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
-			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+			   encoding: OFStringEncodingISO8859_1]) &&
 	    [is isEqual: @"testäöü"])
 #endif
 
@@ -372,13 +372,13 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"Conversion of ISO 8859-1 to Unicode",
 	    [[stringClass stringWithCString: "\xE4\xF6\xFC"
-				   encoding: OF_STRING_ENCODING_ISO_8859_1]
+				   encoding: OFStringEncodingISO8859_1]
 	    isEqual: @"äöü"])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of ISO 8859-15 to Unicode",
 	    [[stringClass stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
-				   encoding: OF_STRING_ENCODING_ISO_8859_15]
+				   encoding: OFStringEncodingISO8859_15]
 	    isEqual: @"€ŠšŽžŒœŸ"])
 #endif
 
@@ -388,90 +388,90 @@ static uint16_t sutf16str[] = {
 					     "\x89\x8A\x8B\x8C\x8E\x91\x92\x93"
 					     "\x94\x95\x96\x97\x98\x99\x9A\x9B"
 					     "\x9C\x9E\x9F"
-				   encoding: OF_STRING_ENCODING_WINDOWS_1252]
+				   encoding: OFStringEncodingWindows1252]
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Codepage 437 to Unicode",
 	    [[stringClass stringWithCString: "\xB0\xB1\xB2\xDB"
-				   encoding: OF_STRING_ENCODING_CODEPAGE_437]
+				   encoding: OFStringEncodingCodepage437]
 	    isEqual: @"░▒▓█"])
 #endif
 
 	TEST(@"Conversion of Unicode to ASCII #1",
 	    !strcmp([C(@"This is a test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a test"))
+	    OFStringEncodingASCII], "This is a test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ASCII #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is a tést")
-	    cStringWithEncoding: OF_STRING_ENCODING_ASCII])
+	    cStringWithEncoding: OFStringEncodingASCII])
 
 	TEST(@"Conversion of Unicode to ISO-8859-1 #1",
 	    !strcmp([C(@"This is ä test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 test"))
+	    OFStringEncodingISO8859_1], "This is \xE4 test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-1 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1])
+	    OFStringEncodingISO8859_1])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of Unicode to ISO-8859-15 #1",
 	    !strcmp([C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-15 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15])
+	    OFStringEncodingISO8859_15])
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Conversion of Unicode to Windows-1252 #1",
 	    !strcmp([C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Windows-1252 #2",
 	    OFInvalidEncodingException, [C(@"This is ä t€st…‼")
-	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
+	    cStringWithEncoding: OFStringEncodingWindows1252])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Unicode to Codepage 437 #1",
 	    !strcmp([C(@"Tést strîng ░▒▓") cStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Codepage 437 #2",
 	    OFInvalidEncodingException, [C(@"T€st strîng ░▒▓")
-	    cStringWithEncoding: OF_STRING_ENCODING_CODEPAGE_437])
+	    cStringWithEncoding: OFStringEncodingCodepage437])
 #endif
 
 	TEST(@"Lossy conversion of Unicode to ASCII",
 	    !strcmp([C(@"This is a tést") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
+	    OFStringEncodingASCII], "This is a t?st"))
 
 	TEST(@"Lossy conversion of Unicode to ISO-8859-1",
 	    !strcmp([C(@"This is ä t€st") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 t?st"))
+	    OFStringEncodingISO8859_1], "This is \xE4 t?st"))
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Lossy conversion of Unicode to ISO-8859-15",
 	    !strcmp([C(@"This is ä t€st…") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st?"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st?"))
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Lossy conversion of Unicode to Windows-1252",
 	    !strcmp([C(@"This is ä t€st…‼") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85?"))
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Lossy conversion of Unicode to Codepage 437",
 	    !strcmp([C(@"T€st strîng ░▒▓") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T?st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T?st str\x8Cng \xB0\xB1\xB2"))
 #endif
 
 	TEST(@"+[stringWithFormat:]",

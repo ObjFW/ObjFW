@@ -161,7 +161,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (nullable OFString *)stream: (OFStream *)stream
 	       didWriteString: (OFString *)string
-		     encoding: (of_string_encoding_t)encoding
+		     encoding: (OFStringEncoding)encoding
 		 bytesWritten: (size_t)bytesWritten
 		    exception: (nullable id)exception;
 @end
@@ -792,7 +792,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return A string with the specified length
  */
 - (OFString *)readStringWithLength: (size_t)length
-			  encoding: (of_string_encoding_t)encoding;
+			  encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads until a newline, `\0` or end of stream occurs.
@@ -810,7 +810,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)readLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)readLineWithEncoding: (OFStringEncoding)encoding;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -831,7 +831,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *
  * @param encoding The encoding used by the stream
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -843,7 +843,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param encoding The encoding used by the stream
  * @param runLoopMode The run loop mode in which to perform the async read
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
@@ -876,7 +876,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 			    block: (of_stream_async_read_line_block_t)block;
 
 /**
@@ -894,7 +894,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode
 			    block: (of_stream_async_read_line_block_t)block;
 # endif
@@ -918,7 +918,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
-- (nullable OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)tryReadLineWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -940,7 +940,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *	   stream has been reached.
  */
 - (nullable OFString *)readTillDelimiter: (OFString *)delimiter
-				encoding: (of_string_encoding_t)encoding;
+				encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to reads until the specified string or `\0` is found or the end
@@ -964,7 +964,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *	   stream has been reached.
  */
 - (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter
-				   encoding: (of_string_encoding_t)encoding;
+				   encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes everything in the write buffer to the stream.
@@ -1026,7 +1026,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		   stream
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding;
+		encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1041,7 +1041,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param runLoopMode The run loop mode in which to perform the async write
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
@@ -1104,7 +1104,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   block: (of_stream_async_write_string_block_t)block;
 
 /**
@@ -1123,7 +1123,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode
 		   block: (of_stream_async_write_string_block_t)block;
 # endif
@@ -1343,8 +1343,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param encoding The encoding in which to write the string to the stream
  * @return The number of bytes written
  */
-- (size_t)writeString: (OFString *)string
-	     encoding: (of_string_encoding_t)encoding;
+- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a string into the stream with a trailing newline.
@@ -1362,8 +1361,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param encoding The encoding in which to write the string to the stream
  * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString *)string
-	   encoding: (of_string_encoding_t)encoding;
+- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a formatted string into the stream.

@@ -209,7 +209,7 @@
 				free(argumentsCopy);
 			}
 		} else {
-			of_string_encoding_t encoding = [OFLocale encoding];
+			OFStringEncoding encoding = [OFLocale encoding];
 			STARTUPINFO si;
 
 			memset(&si, 0, sizeof(si));
@@ -281,7 +281,7 @@
 
 - (char *)of_environmentForDictionary: (OFDictionary *)environment
 {
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFMutableData *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;

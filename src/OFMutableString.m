@@ -56,14 +56,14 @@ static struct {
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
 						       encoding: encoding];
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
@@ -166,7 +166,7 @@ static struct {
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
-			      encoding: (of_string_encoding_t)encoding
+			      encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfFile: path
@@ -180,7 +180,7 @@ static struct {
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
-			     encoding: (of_string_encoding_t)encoding
+			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfURL: URL
@@ -324,7 +324,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self appendString: [OFString stringWithCString: cString
@@ -333,7 +333,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 	       length: (size_t)cStringLength
 {
 	void *pool = objc_autoreleasePoolPush();

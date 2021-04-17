@@ -164,7 +164,7 @@ initOperatingSystemVersion(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		char systemDir[PATH_MAX];
 		UINT systemDirLen;
 		OFString *systemDirString;
@@ -541,7 +541,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	buffer[2] = regs.ecx;
 
 	return [OFString stringWithCString: (char *)buffer
-				  encoding: OF_STRING_ENCODING_ASCII
+				  encoding: OFStringEncodingASCII
 				    length: 12];
 #else
 	return nil;
@@ -565,7 +565,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	}
 
 	return [OFString stringWithCString: (char *)buffer
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
 #elif defined(OF_AMIGAOS4)
 	CONST_STRPTR model, version;
 
@@ -576,7 +576,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 		return [OFString stringWithFormat: @"%s V%s", model, version];
 	else
 		return [OFString stringWithCString: model
-					  encoding: OF_STRING_ENCODING_ASCII];
+					  encoding: OFStringEncodingASCII];
 #else
 	return nil;
 #endif

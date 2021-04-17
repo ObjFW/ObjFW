@@ -55,7 +55,7 @@ OF_DIRECT_MEMBERS
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
-			    encoding: (of_string_encoding_t)encoding
+			    encoding: (OFStringEncoding)encoding
 				mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (nullable
@@ -75,7 +75,7 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   string: (OFString *)string
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
 			    block: (nullable
