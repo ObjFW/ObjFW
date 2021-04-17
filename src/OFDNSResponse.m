@@ -24,11 +24,10 @@
 @synthesize authorityRecords = _authorityRecords;
 @synthesize additionalRecords = _additionalRecords;
 
-+ (instancetype)
-    responseWithDomainName: (OFString *)domainName
-	     answerRecords: (of_dns_response_records_t)answerRecords
-	  authorityRecords: (of_dns_response_records_t)authorityRecords
-	 additionalRecords: (of_dns_response_records_t)additionalRecords
++ (instancetype)responseWithDomainName: (OFString *)domainName
+			 answerRecords: (OFDNSResponseRecords)answerRecords
+		      authorityRecords: (OFDNSResponseRecords)authorityRecords
+		     additionalRecords: (OFDNSResponseRecords)additionalRecords
 {
 	return [[[self alloc]
 	    initWithDomainName: domainName
@@ -38,9 +37,9 @@
 }
 
 - (instancetype)initWithDomainName: (OFString *)domainName
-		     answerRecords: (of_dns_response_records_t)answerRecords
-		  authorityRecords: (of_dns_response_records_t)authorityRecords
-		 additionalRecords: (of_dns_response_records_t)additionalRecords
+		     answerRecords: (OFDNSResponseRecords)answerRecords
+		  authorityRecords: (OFDNSResponseRecords)authorityRecords
+		 additionalRecords: (OFDNSResponseRecords)additionalRecords
 {
 	self = [super init];
 

@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
-    OF_KINDOF(OFDNSResourceRecord *)) *) *of_dns_response_records_t;
+    OF_KINDOF(OFDNSResourceRecord *)) *) *OFDNSResponseRecords;
 
 /**
  * @class OFDNSResponse OFDNSResponse.h ObjFW/OFDNSResponse.h
@@ -32,9 +32,8 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 @interface OFDNSResponse: OFObject
 {
 	OFString *_domainName;
-	of_dns_response_records_t _answerRecords;
-	of_dns_response_records_t _authorityRecords;
-	of_dns_response_records_t _additionalRecords;
+	OFDNSResponseRecords _answerRecords, _authorityRecords;
+	OFDNSResponseRecords _additionalRecords;
 	OF_RESERVE_IVARS(OFDNSResponse, 4)
 }
 
@@ -49,7 +48,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  * This is a dictionary with the key being the domain name and the value being
  * an array of @ref OFDNSResourceRecord.
  */
-@property (readonly, nonatomic) of_dns_response_records_t answerRecords;
+@property (readonly, nonatomic) OFDNSResponseRecords answerRecords;
 
 /**
  * @brief The authority records of the response.
@@ -57,7 +56,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  * This is a dictionary with the key being the domain name and the value being
  * an array of @ref OFDNSResourceRecord.
  */
-@property (readonly, nonatomic) of_dns_response_records_t authorityRecords;
+@property (readonly, nonatomic) OFDNSResponseRecords authorityRecords;
 
 /**
  * @brief The additional records of the response.
@@ -65,7 +64,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  * This is a dictionary with the key being the domain name and the value being
  * an array of @ref OFDNSResourceRecord.
  */
-@property (readonly, nonatomic) of_dns_response_records_t additionalRecords;
+@property (readonly, nonatomic) OFDNSResponseRecords additionalRecords;
 
 /**
  * @brief Creates a new, autoreleased OFDNSResponse.
@@ -76,11 +75,10 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  * @param additionalRecords The additional records of the response
  * @return A new, autoreleased OFDNSResponse
  */
-+ (instancetype)
-    responseWithDomainName: (OFString *)domainName
-	     answerRecords: (of_dns_response_records_t)answerRecords
-	  authorityRecords: (of_dns_response_records_t)authorityRecords
-	 additionalRecords: (of_dns_response_records_t)additionalRecords;
++ (instancetype)responseWithDomainName: (OFString *)domainName
+			 answerRecords: (OFDNSResponseRecords)answerRecords
+		      authorityRecords: (OFDNSResponseRecords)authorityRecords
+		     additionalRecords: (OFDNSResponseRecords)additionalRecords;
 
 /**
  * @brief Initializes an already allocated OFDNSResponse.
@@ -91,11 +89,10 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  * @param additionalRecords The additional records of the response
  * @return An initialized OFDNSResponse
  */
-- (instancetype)
-    initWithDomainName: (OFString *)domainName
-	 answerRecords: (of_dns_response_records_t)answerRecords
-      authorityRecords: (of_dns_response_records_t)authorityRecords
-     additionalRecords: (of_dns_response_records_t)additionalRecords
+- (instancetype)initWithDomainName: (OFString *)domainName
+		     answerRecords: (OFDNSResponseRecords)answerRecords
+		  authorityRecords: (OFDNSResponseRecords)authorityRecords
+		 additionalRecords: (OFDNSResponseRecords)additionalRecords
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;
