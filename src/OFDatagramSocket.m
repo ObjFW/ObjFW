@@ -241,7 +241,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (of_datagram_socket_async_receive_block_t)block
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
@@ -252,7 +252,7 @@
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			 block: (of_datagram_socket_async_receive_block_t)block
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
@@ -331,7 +331,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-		block: (of_datagram_socket_async_send_data_block_t)block
+		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
 		   receiver: receiver
@@ -342,7 +342,7 @@
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_datagram_socket_async_send_data_block_t)block
+		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data

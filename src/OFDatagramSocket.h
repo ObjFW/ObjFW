@@ -36,9 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
-typedef bool (^of_datagram_socket_async_receive_block_t)(
-    size_t length, const of_socket_address_t *_Nonnull sender,
-    id _Nullable exception);
+typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
+    const of_socket_address_t *_Nonnull sender, id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
@@ -49,7 +48,7 @@ typedef bool (^of_datagram_socket_async_receive_block_t)(
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
+typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
     OFData *_Nonnull data, const of_socket_address_t *_Nonnull receiver,
     id _Nullable exception);
 #endif
@@ -204,7 +203,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (of_datagram_socket_async_receive_block_t)block;
+			 block: (OFDatagramSocketAsyncReceiveBlock)block;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -225,7 +224,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			 block: (of_datagram_socket_async_receive_block_t)block;
+			 block: (OFDatagramSocketAsyncReceiveBlock)block;
 #endif
 
 /**
@@ -275,7 +274,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
-		block: (of_datagram_socket_async_send_data_block_t)block;
+		block: (OFDatagramSocketAsyncSendDataBlock)block;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
@@ -291,7 +290,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const of_socket_address_t *)receiver
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_datagram_socket_async_send_data_block_t)block;
+		block: (OFDatagramSocketAsyncSendDataBlock)block;
 #endif
 
 /**

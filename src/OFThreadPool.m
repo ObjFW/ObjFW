@@ -31,7 +31,7 @@ OF_DIRECT_MEMBERS
 	SEL _selector;
 	id _object;
 #ifdef OF_HAVE_BLOCKS
-	of_thread_pool_block_t _block;
+	OFThreadPoolBlock _block;
 #endif
 }
 
@@ -39,7 +39,7 @@ OF_DIRECT_MEMBERS
 		      selector: (SEL)selector
 			object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithBlock: (of_thread_pool_block_t)block;
+- (instancetype)initWithBlock: (OFThreadPoolBlock)block;
 #endif
 - (void)perform;
 @end
@@ -64,7 +64,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithBlock: (of_thread_pool_block_t)block
+- (instancetype)initWithBlock: (OFThreadPoolBlock)block
 {
 	self = [super init];
 
@@ -342,7 +342,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)dispatchWithBlock: (of_thread_pool_block_t)block
+- (void)dispatchWithBlock: (OFThreadPoolBlock)block
 {
 	OFThreadPoolJob *job = [[OFThreadPoolJob alloc] initWithBlock: block];
 	@try {

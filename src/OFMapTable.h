@@ -47,7 +47,7 @@ typedef struct of_map_table_functions_t of_map_table_functions_t;
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_map_table_enumeration_block_t)(void *_Nullable key,
+typedef void (^OFMapTableEnumerationBlock)(void *_Nullable key,
     void *_Nullable object, bool *stop);
 
 /**
@@ -57,7 +57,7 @@ typedef void (^of_map_table_enumeration_block_t)(void *_Nullable key,
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
+typedef void *_Nullable (^OFMapTableReplaceBlock)(void *_Nullable key,
     void *_Nullable object);
 #endif
 
@@ -217,15 +217,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param block The block to execute for each key / object pair.
  */
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_map_table_enumeration_block_t)block;
+- (void)enumerateKeysAndObjectsUsingBlock: (OFMapTableEnumerationBlock)block;
 
 /**
  * @brief Replaces each object with the object returned by the block.
  *
  * @param block The block which returns a new object for each object
  */
-- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block;
+- (void)replaceObjectsUsingBlock: (OFMapTableReplaceBlock)block;
 #endif
 @end
 

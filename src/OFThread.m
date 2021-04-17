@@ -175,7 +175,7 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock
++ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock
 {
 	return [[[self alloc] initWithThreadBlock: threadBlock] autorelease];
 }
@@ -376,7 +376,7 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock
+- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock
 {
 	self = [self init];
 

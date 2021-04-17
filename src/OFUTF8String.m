@@ -1212,7 +1212,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+- (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block
 {
 	void *pool;
 	const char *cString = _s->cString;

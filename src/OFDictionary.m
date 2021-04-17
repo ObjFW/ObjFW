@@ -537,8 +537,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block
 {
 	bool stop = false;
 
@@ -550,7 +549,7 @@ OF_DIRECT_MEMBERS
 	}
 }
 
-- (OFDictionary *)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
+- (OFDictionary *)mappedDictionaryUsingBlock: (OFDictionaryMapBlock)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
@@ -564,8 +563,7 @@ OF_DIRECT_MEMBERS
 	return new;
 }
 
-- (OFDictionary *)filteredDictionaryUsingBlock:
-    (of_dictionary_filter_block_t)block
+- (OFDictionary *)filteredDictionaryUsingBlock: (OFDictionaryFilterBlock)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 

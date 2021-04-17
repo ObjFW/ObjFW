@@ -323,14 +323,14 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncAcceptWithBlock: (of_stream_socket_async_accept_block_t)block
+- (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
 {
 	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
 				   block: block];
 }
 
 - (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			     block: (of_stream_socket_async_accept_block_t)block
+			     block: (OFStreamSocketAsyncAcceptBlock)block
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode

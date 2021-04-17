@@ -428,7 +428,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block
 {
 	bool stop = false;
 
@@ -440,7 +440,7 @@ static struct {
 	}
 }
 
-- (OFSet *)filteredSetUsingBlock: (of_set_filter_block_t)block
+- (OFSet *)filteredSetUsingBlock: (OFSetFilterBlock)block
 {
 	OFMutableSet *ret = [OFMutableSet set];
 

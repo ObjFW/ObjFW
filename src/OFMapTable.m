@@ -602,8 +602,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_map_table_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFMapTableEnumerationBlock)block
 {
 	bool stop = false;
 	unsigned long mutations = _mutations;
@@ -618,7 +617,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	}
 }
 
-- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFMapTableReplaceBlock)block
 {
 	unsigned long mutations = _mutations;
 

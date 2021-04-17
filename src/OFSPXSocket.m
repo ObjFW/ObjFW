@@ -51,7 +51,7 @@ OF_DIRECT_MEMBERS
 	uint32_t _network;
 	uint16_t _port;
 #ifdef OF_HAVE_BLOCKS
-	of_spx_socket_async_connect_block_t _block;
+	OFSPXSocketAsyncConnectBlock _block;
 #endif
 }
 
@@ -60,7 +60,7 @@ OF_DIRECT_MEMBERS
 		       network: (uint32_t)network
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (of_spx_socket_async_connect_block_t)block
+			 block: (OFSPXSocketAsyncConnectBlock)block
 #endif
 ;
 - (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
@@ -72,7 +72,7 @@ OF_DIRECT_MEMBERS
 		       network: (uint32_t)network
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (of_spx_socket_async_connect_block_t)block
+			 block: (OFSPXSocketAsyncConnectBlock)block
 #endif
 {
 	self = [super init];
@@ -281,7 +281,7 @@ inform_delegate:
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-		     block: (of_spx_socket_async_connect_block_t)block
+		     block: (OFSPXSocketAsyncConnectBlock)block
 {
 	[self asyncConnectToNode: node
 			 network: network
@@ -294,7 +294,7 @@ inform_delegate:
 		   network: (uint32_t)network
 		      port: (uint16_t)port
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_spx_socket_async_connect_block_t)block
+		     block: (OFSPXSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 

@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param timer The timer which fired
  */
-typedef void (^of_timer_block_t)(OFTimer *timer);
+typedef void (^OFTimerBlock)(OFTimer *timer);
 #endif
 
 /**
@@ -51,7 +51,7 @@ OF_SUBCLASSING_RESTRICTED
 	unsigned char _arguments;
 	bool _repeats;
 #ifdef OF_HAVE_BLOCKS
-	of_timer_block_t _block;
+	OFTimerBlock _block;
 #endif
 	bool _valid;
 #ifdef OF_HAVE_THREADS
@@ -198,7 +198,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 				       repeats: (bool)repeats
-					 block: (of_timer_block_t)block;
+					 block: (OFTimerBlock)block;
 #endif
 
 /**
@@ -311,7 +311,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			      repeats: (bool)repeats
-				block: (of_timer_block_t)block;
+				block: (OFTimerBlock)block;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -450,7 +450,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithFireDate: (OFDate *)fireDate
 			interval: (OFTimeInterval)interval
 			 repeats: (bool)repeats
-			   block: (of_timer_block_t)block;
+			   block: (OFTimerBlock)block;
 #endif
 
 /**

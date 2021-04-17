@@ -198,11 +198,9 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)
-    asyncReceiveIntoBuffer: (void *)buffer
-		    length: (size_t)length
-		     block: (of_sequenced_packet_socket_async_receive_block_t)
-				block
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
@@ -214,8 +212,7 @@
     asyncReceiveIntoBuffer: (void *)buffer
 		    length: (size_t)length
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_sequenced_packet_socket_async_receive_block_t)
-				block
+		     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
 	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
 						       buffer: buffer
@@ -283,7 +280,7 @@
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
-		block: (of_sequenced_packet_socket_async_send_data_block_t)block
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
 		runLoopMode: of_run_loop_mode_default
@@ -292,7 +289,7 @@
 
 - (void)asyncSendData: (OFData *)data
 	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_sequenced_packet_socket_async_send_data_block_t)block
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
 						      data: data
@@ -403,15 +400,15 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncAcceptWithBlock: (of_sequenced_packet_socket_async_accept_block_t)
-				  block
+- (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
 	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
 				   block: block];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-    block: (of_sequenced_packet_socket_async_accept_block_t)block
+- (void)
+    asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode

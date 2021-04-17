@@ -30,8 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_spx_stream_socket_async_connect_block_t)(
-    id _Nullable exception);
+typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
@@ -138,7 +137,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-		     block: (of_spx_stream_socket_async_connect_block_t)block;
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block;
 
 /**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
@@ -155,7 +154,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 		   network: (uint32_t)network
 		      port: (uint16_t)port
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_spx_stream_socket_async_connect_block_t)block;
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block;
 #endif
 
 /**

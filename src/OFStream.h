@@ -46,8 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(size_t length,
-    id _Nullable exception);
+typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception);
 
 /**
  * @brief A block which is called when a line was read asynchronously from a
@@ -59,7 +58,7 @@ typedef bool (^of_stream_async_read_block_t)(size_t length,
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
+typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
     id _Nullable exception);
 
 /**
@@ -74,8 +73,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
  *		    success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OFData *_Nonnull data, size_t bytesWritten, id _Nullable exception);
+typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(OFData *_Nonnull data,
+    size_t bytesWritten, id _Nullable exception);
 
 /**
  * @brief A block which is called when a string was written asynchronously to a
@@ -89,7 +88,7 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  *		    success
  * @return The string to repeat the write with or nil if it should not repeat
  */
-typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
+typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
     OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
 #endif
 
@@ -382,7 +381,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads *at most* ref size bytes from the stream into a
@@ -413,7 +412,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -438,7 +437,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -465,7 +464,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 # endif
 #endif
 
@@ -860,7 +859,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
+- (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -877,7 +876,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		block.
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-			    block: (of_stream_async_read_line_block_t)block;
+			    block: (OFStreamAsyncReadLineBlock)block;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -896,7 +895,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode
-			    block: (of_stream_async_read_line_block_t)block;
+			    block: (OFStreamAsyncReadLineBlock)block;
 # endif
 #endif
 
@@ -1057,7 +1056,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-		 block: (of_stream_async_write_data_block_t)block;
+		 block: (OFStreamAsyncWriteDataBlock)block;
 
 /**
  * @brief Asynchronously writes data into the stream.
@@ -1073,7 +1072,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 block: (of_stream_async_write_data_block_t)block;
+		 block: (OFStreamAsyncWriteDataBlock)block;
 
 /**
  * @brief Asynchronously writes a string into the stream.
@@ -1087,7 +1086,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		   block: (of_stream_async_write_string_block_t)block;
+		   block: (OFStreamAsyncWriteStringBlock)block;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1105,7 +1104,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-		   block: (of_stream_async_write_string_block_t)block;
+		   block: (OFStreamAsyncWriteStringBlock)block;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1125,7 +1124,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   block: (of_stream_async_write_string_block_t)block;
+		   block: (OFStreamAsyncWriteStringBlock)block;
 # endif
 #endif
 

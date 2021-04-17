@@ -90,7 +90,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_block_t _block;
+	OFStreamAsyncReadBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -101,7 +101,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_block_t _block;
+	OFStreamAsyncReadBlock _block;
 # endif
 	void *_buffer;
 	size_t _exactLength, _readLength;
@@ -112,7 +112,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_line_block_t _block;
+	OFStreamAsyncReadLineBlock _block;
 # endif
 	OFStringEncoding _encoding;
 }
@@ -122,7 +122,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_write_data_block_t _block;
+	OFStreamAsyncWriteDataBlock _block;
 # endif
 	OFData *_data;
 	size_t _writtenLength;
@@ -133,7 +133,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_write_string_block_t _block;
+	OFStreamAsyncWriteStringBlock _block;
 # endif
 	OFString *_string;
 	OFStringEncoding _encoding;
@@ -159,7 +159,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_datagram_socket_async_receive_block_t _block;
+	OFDatagramSocketAsyncReceiveBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -170,7 +170,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_datagram_socket_async_send_data_block_t _block;
+	OFDatagramSocketAsyncSendDataBlock _block;
 # endif
 	OFData *_data;
 	of_socket_address_t _receiver;
@@ -181,7 +181,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_sequenced_packet_socket_async_receive_block_t _block;
+	OFSequencedPacketSocketAsyncReceiveBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -192,7 +192,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_sequenced_packet_socket_async_send_data_block_t _block;
+	OFSequencedPacketSocketAsyncSendDataBlock _block;
 # endif
 	OFData *_data;
 }
@@ -754,12 +754,11 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
 		if ([object isKindOfClass: [OFStreamSocket class]])
-			return ((of_stream_socket_async_accept_block_t)
-			    _block)(acceptedSocket, exception);
+			return ((OFStreamSocketAsyncAcceptBlock)_block)(
+			    acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
-			return
-			    ((of_sequenced_packet_socket_async_accept_block_t)
+			return ((OFSequencedPacketSocketAsyncAcceptBlock)
 			    _block)(acceptedSocket, exception);
 		else
 			OF_ENSURE(0);
@@ -1090,7 +1089,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (of_stream_async_read_block_t)block
+			   block: (OFStreamAsyncReadBlock)block
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1112,7 +1111,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 		     exactLength: (size_t)exactLength
 			    mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (of_stream_async_read_block_t)block
+			   block: (OFStreamAsyncReadBlock)block
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1133,7 +1132,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 			    encoding: (OFStringEncoding)encoding
 				mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (of_stream_async_read_line_block_t)block
+			       block: (OFStreamAsyncReadLineBlock)block
 # endif
 			    delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1153,7 +1152,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (of_stream_async_write_data_block_t)block
+			    block: (OFStreamAsyncWriteDataBlock)block
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1174,7 +1173,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
 			 encoding: (OFStringEncoding)encoding
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (of_stream_async_write_string_block_t)block
+			    block: (OFStreamAsyncWriteStringBlock)block
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1223,7 +1222,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
     length: (size_t)length
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_datagram_socket_async_receive_block_t)block
+     block: (OFDatagramSocketAsyncReceiveBlock)block
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1244,7 +1243,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
   receiver: (const of_socket_address_t *)receiver
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_datagram_socket_async_send_data_block_t)block
+     block: (OFDatagramSocketAsyncSendDataBlock)block
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1266,7 +1265,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
     length: (size_t)length
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_sequenced_packet_socket_async_receive_block_t)block
+     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {
@@ -1286,7 +1285,7 @@ stateForMode(OFRunLoop *self, of_run_loop_mode_t mode, bool create)
       data: (OFData *)data
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_sequenced_packet_socket_async_send_data_block_t)block
+     block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {

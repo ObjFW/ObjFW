@@ -130,7 +130,7 @@ typedef enum OFStringSeparationOptions {
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
+typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #endif
 
 #ifdef __OBJC__
@@ -1263,7 +1263,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @brief block The block to call for each line
  */
-- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block;
+- (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block;
 # endif
 @end
 #endif

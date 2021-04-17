@@ -41,7 +41,7 @@ OF_DIRECT_MEMBERS
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable of_stream_async_read_block_t)block
+			   block: (nullable OFStreamAsyncReadBlock)block
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -50,7 +50,7 @@ OF_DIRECT_MEMBERS
 		     exactLength: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable of_stream_async_read_block_t)block
+			   block: (nullable OFStreamAsyncReadBlock)block
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -58,9 +58,7 @@ OF_DIRECT_MEMBERS
 			    encoding: (OFStringEncoding)encoding
 				mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (nullable
-					  of_stream_async_read_line_block_t)
-					  block
+			       block: (nullable OFStreamAsyncReadLineBlock)block
 # endif
 			    delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -68,8 +66,7 @@ OF_DIRECT_MEMBERS
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable of_stream_async_write_data_block_t)
-				       block
+			    block: (nullable OFStreamAsyncWriteDataBlock)block
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -78,9 +75,7 @@ OF_DIRECT_MEMBERS
 			 encoding: (OFStringEncoding)encoding
 			     mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable
-				       of_stream_async_write_string_block_t)
-				       block
+			    block: (nullable OFStreamAsyncWriteStringBlock)block
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -97,7 +92,7 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable of_datagram_socket_async_receive_block_t)block
+     block: (nullable OFDatagramSocketAsyncReceiveBlock)block
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
@@ -105,7 +100,7 @@ OF_DIRECT_MEMBERS
   receiver: (const of_socket_address_t *)receiver
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable of_datagram_socket_async_send_data_block_t)block
+     block: (nullable OFDatagramSocketAsyncSendDataBlock)block
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncReceiveForSequencedPacketSocket:
@@ -114,7 +109,7 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable of_sequenced_packet_socket_async_receive_block_t)block
+     block: (nullable OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>) delegate;
 + (void)of_addAsyncSendForSequencedPacketSocket:
@@ -122,7 +117,7 @@ OF_DIRECT_MEMBERS
       data: (OFData *)data
       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable of_sequenced_packet_socket_async_send_data_block_t)block
+     block: (nullable OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_cancelAsyncRequestsForObject: (id)object

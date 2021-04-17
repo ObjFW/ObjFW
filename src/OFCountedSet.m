@@ -214,8 +214,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsAndCountUsingBlock:
-    (of_counted_set_enumeration_block_t)block
+- (void)enumerateObjectsAndCountUsingBlock: (OFCountedSetEnumerationBlock)block
 {
 	[self enumerateObjectsUsingBlock: ^ (id object, bool *stop) {
 		block(object, [self countForObject: object], stop);

@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The object which should be returned when the thread is joined
  */
-typedef id _Nullable (^of_thread_block_t)(void);
+typedef id _Nullable (^OFThreadBlock)(void);
 #endif
 
 /**
@@ -75,7 +75,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	void *_pool;
 # endif
 # ifdef OF_HAVE_BLOCKS
-	of_thread_block_t _Nullable _threadBlock;
+	OFThreadBlock _Nullable _threadBlock;
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
@@ -119,8 +119,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /**
  * @brief The block to execute in the thread.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    of_thread_block_t threadBlock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock threadBlock;
 # endif
 
 /**
@@ -169,7 +168,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param threadBlock A block which is executed by the thread
  * @return A new, autoreleased thread
  */
-+ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock;
++ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock;
 # endif
 
 /**
@@ -269,7 +268,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param threadBlock A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock;
+- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock;
 # endif
 
 /**

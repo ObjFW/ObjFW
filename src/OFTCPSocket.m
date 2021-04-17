@@ -255,7 +255,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (of_tcp_socket_async_connect_block_t)block
+		     block: (OFTCPSocketAsyncConnectBlock)block
 {
 	[self asyncConnectToHost: host
 			    port: port
@@ -266,7 +266,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_tcp_socket_async_connect_block_t)block
+		     block: (OFTCPSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;

@@ -34,10 +34,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
-     bool *stop);
-typedef bool (^of_dictionary_filter_block_t)(id key, id object);
-typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
+typedef void (^OFDictionaryEnumerationBlock)(id key, id object, bool *stop);
+typedef bool (^OFDictionaryFilterBlock)(id key, id object);
+typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 #endif
 
 /**
@@ -272,8 +271,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param block The block to execute for each key / object pair.
  */
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block;
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block;
 
 /**
  * @brief Creates a new dictionary, mapping each object using the specified
@@ -282,8 +280,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param block A block which maps an object for each object
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, id) *)mappedDictionaryUsingBlock:
-    (of_dictionary_map_block_t)block;
+- (OFDictionary OF_GENERIC(KeyType, id) *)
+    mappedDictionaryUsingBlock: (OFDictionaryMapBlock)block;
 
 /**
  * @brief Creates a new dictionary, only containing the objects for which the
@@ -293,8 +291,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *		dictionary
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, ObjectType) *)filteredDictionaryUsingBlock:
-    (of_dictionary_filter_block_t)block;
+- (OFDictionary OF_GENERIC(KeyType, ObjectType) *)
+    filteredDictionaryUsingBlock: (OFDictionaryFilterBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef KeyType

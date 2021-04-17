@@ -418,8 +418,7 @@ static const of_map_table_functions_t objectFunctions = {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:

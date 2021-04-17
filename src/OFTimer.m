@@ -161,7 +161,7 @@
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 				       repeats: (bool)repeats
-					 block: (of_timer_block_t)block
+					 block: (OFTimerBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
@@ -297,7 +297,7 @@
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			      repeats: (bool)repeats
-				block: (of_timer_block_t)block
+				block: (OFTimerBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
@@ -459,7 +459,7 @@
 - (instancetype)initWithFireDate: (OFDate *)fireDate
 			interval: (OFTimeInterval)interval
 			 repeats: (bool)repeats
-			   block: (of_timer_block_t)block
+			   block: (OFTimerBlock)block
 {
 	self = [super init];
 

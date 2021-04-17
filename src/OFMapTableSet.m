@@ -286,7 +286,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:

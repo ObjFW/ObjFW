@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _port;
 	id <OFTCPSocketDelegate> _Nullable _delegate;
 #ifdef OF_HAVE_BLOCKS
-	of_tcp_socket_async_connect_block_t _Nullable _block;
+	OFTCPSocketAsyncConnectBlock _Nullable _block;
 #endif
 	id _Nullable _exception;
 	enum {
@@ -47,8 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  port: (uint16_t)port
 		      delegate: (nullable id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (nullable of_tcp_socket_async_connect_block_t)
-				    block
+			 block: (nullable OFTCPSocketAsyncConnectBlock)block
 #endif
 ;
 - (void)didConnect;

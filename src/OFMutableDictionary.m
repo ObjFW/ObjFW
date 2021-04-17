@@ -201,7 +201,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFDictionaryReplaceBlock)block
 {
 	[self enumerateKeysAndObjectsUsingBlock: ^ (id key, id object,
 	    bool *stop) {

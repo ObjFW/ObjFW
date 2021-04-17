@@ -190,7 +190,7 @@ lookupUsingDelegate(void *context, OFString *self, OFString *entity)
 static id
 lookupUsingBlock(void *context, OFString *self, OFString *entity)
 {
-	of_string_xml_unescaping_block_t block = context;
+	OFStringXMLUnescapingBlock block = context;
 
 	if (block == NULL)
 		return nil;
@@ -212,8 +212,7 @@ lookupUsingBlock(void *context, OFString *self, OFString *entity)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFString *)stringByXMLUnescapingWithBlock:
-    (of_string_xml_unescaping_block_t)block
+- (OFString *)stringByXMLUnescapingWithBlock: (OFStringXMLUnescapingBlock)block
 {
 	return parseEntities(self, lookupUsingBlock, block);
 }

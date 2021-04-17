@@ -69,8 +69,7 @@
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((of_tcp_socket_async_connect_block_t)_block)(
-			    _exception);
+			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
 		else
 			OF_ENSURE(0);
 	} else {

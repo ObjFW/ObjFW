@@ -2743,7 +2743,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+- (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;

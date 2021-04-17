@@ -31,7 +31,7 @@
 			  port: (uint16_t)port
 		      delegate: (id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (of_tcp_socket_async_connect_block_t)block
+			 block: (OFTCPSocketAsyncConnectBlock)block
 #endif
 {
 	self = [super init];

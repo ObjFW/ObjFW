@@ -598,7 +598,7 @@ struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+- (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block
 {
 	[self finishInitialization];
 	[self enumerateLinesUsingBlock: block];

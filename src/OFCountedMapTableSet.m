@@ -169,8 +169,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsAndCountUsingBlock:
-    (of_counted_set_enumeration_block_t)block
+- (void)enumerateObjectsAndCountUsingBlock: (OFCountedSetEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:
