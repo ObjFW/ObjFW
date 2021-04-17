@@ -30,7 +30,7 @@ OF_DIRECT_MEMBERS
 @interface OFListEnumerator: OFEnumerator
 {
 	OFList *_list;
-	of_list_object_t *_Nullable _current;
+	OFListItem *_Nullable _current;
 	unsigned long _mutations;
 	unsigned long *_Nullable _mutationsPtr;
 }
@@ -40,8 +40,7 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFList
-@synthesize firstListObject = _firstListObject;
-@synthesize lastListObject = _lastListObject;
+@synthesize firstListItem = _firstListItem, lastListItem = _lastListItem;
 
 + (instancetype)list
 {
@@ -79,10 +78,9 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	of_list_object_t *next;
+	OFListItem *next;
 
-	for (of_list_object_t *iter = _firstListObject;
-	    iter != NULL; iter = next) {
+	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
 		free(iter);
@@ -91,126 +89,123 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (of_list_object_t *)appendObject: (id)object
+- (OFListItem *)appendObject: (id)object
 {
-	of_list_object_t *listObject;
+	OFListItem *listItem;
 
-	listObject = of_alloc(1, sizeof(of_list_object_t));
-	listObject->object = [object retain];
-	listObject->next = NULL;
-	listObject->previous = _lastListObject;
+	listItem = of_alloc(1, sizeof(OFListItem));
+	listItem->object = [object retain];
+	listItem->next = NULL;
+	listItem->previous = _lastListItem;
 
-	if (_lastListObject != NULL)
-		_lastListObject->next = listObject;
+	if (_lastListItem != NULL)
+		_lastListItem->next = listItem;
 
-	_lastListObject = listObject;
+	_lastListItem = listItem;
 
-	if (_firstListObject == NULL)
-		_firstListObject = listObject;
+	if (_firstListItem == NULL)
+		_firstListItem = listItem;
 
 	_count++;
 	_mutations++;
 
-	return listObject;
+	return listItem;
 }
 
-- (of_list_object_t *)prependObject: (id)object
+- (OFListItem *)prependObject: (id)object
 {
-	of_list_object_t *listObject;
+	OFListItem *listItem = of_alloc(1, sizeof(OFListItem));
 
-	listObject = of_alloc(1, sizeof(of_list_object_t));
-	listObject->object = [object retain];
-	listObject->next = _firstListObject;
-	listObject->previous = NULL;
+	listItem->object = [object retain];
+	listItem->next = _firstListItem;
+	listItem->previous = NULL;
 
-	if (_firstListObject != NULL)
-		_firstListObject->previous = listObject;
+	if (_firstListItem != NULL)
+		_firstListItem->previous = listItem;
 
-	_firstListObject = listObject;
-	if (_lastListObject == NULL)
-		_lastListObject = listObject;
+	_firstListItem = listItem;
+	if (_lastListItem == NULL)
+		_lastListItem = listItem;
 
 	_count++;
 	_mutations++;
 
-	return listObject;
+	return listItem;
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		  beforeListObject: (of_list_object_t *)listObject
+- (OFListItem *)insertObject: (id)object
+	      beforeListItem: (OFListItem *)listItem
 {
-	of_list_object_t *newListObject;
+	OFListItem *newListItem = of_alloc(1, sizeof(OFListItem));
 
-	newListObject = of_alloc(1, sizeof(of_list_object_t));
-	newListObject->object = [object retain];
-	newListObject->next = listObject;
-	newListObject->previous = listObject->previous;
+	newListItem->object = [object retain];
+	newListItem->next = listItem;
+	newListItem->previous = listItem->previous;
 
-	if (listObject->previous != NULL)
-		listObject->previous->next = newListObject;
+	if (listItem->previous != NULL)
+		listItem->previous->next = newListItem;
 
-	listObject->previous = newListObject;
+	listItem->previous = newListItem;
 
-	if (listObject == _firstListObject)
-		_firstListObject = newListObject;
+	if (listItem == _firstListItem)
+		_firstListItem = newListItem;
 
 	_count++;
 	_mutations++;
 
-	return newListObject;
+	return newListItem;
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		   afterListObject: (of_list_object_t *)listObject
+- (OFListItem *)insertObject: (id)object
+	       afterListItem: (OFListItem *)listItem
 {
-	of_list_object_t *newListObject;
+	OFListItem *newListItem = of_alloc(1, sizeof(OFListItem));
 
-	newListObject = of_alloc(1, sizeof(of_list_object_t));
-	newListObject->object = [object retain];
-	newListObject->next = listObject->next;
-	newListObject->previous = listObject;
+	newListItem->object = [object retain];
+	newListItem->next = listItem->next;
+	newListItem->previous = listItem;
 
-	if (listObject->next != NULL)
-		listObject->next->previous = newListObject;
+	if (listItem->next != NULL)
+		listItem->next->previous = newListItem;
 
-	listObject->next = newListObject;
+	listItem->next = newListItem;
 
-	if (listObject == _lastListObject)
-		_lastListObject = newListObject;
+	if (listItem == _lastListItem)
+		_lastListItem = newListItem;
 
 	_count++;
 	_mutations++;
 
-	return newListObject;
+	return newListItem;
 }
 
-- (void)removeListObject: (of_list_object_t *)listObject
+- (void)removeListItem: (OFListItem *)listItem
 {
-	if (listObject->previous != NULL)
-		listObject->previous->next = listObject->next;
-	if (listObject->next != NULL)
-		listObject->next->previous = listObject->previous;
+	if (listItem->previous != NULL)
+		listItem->previous->next = listItem->next;
+	if (listItem->next != NULL)
+		listItem->next->previous = listItem->previous;
 
-	if (_firstListObject == listObject)
-		_firstListObject = listObject->next;
-	if (_lastListObject == listObject)
-		_lastListObject = listObject->previous;
+	if (_firstListItem == listItem)
+		_firstListItem = listItem->next;
+	if (_lastListItem == listItem)
+		_lastListItem = listItem->previous;
 
 	_count--;
 	_mutations++;
 
-	[listObject->object release];
-	free(listObject);
+	[listItem->object release];
+	free(listItem);
 }
 
 - (id)firstObject
 {
-	return (_firstListObject != NULL ? _firstListObject->object : nil);
+	return (_firstListItem != NULL ? _firstListItem->object : nil);
 }
 
 - (id)lastObject
 {
-	return (_lastListObject != NULL ? _lastListObject->object : nil);
+	return (_lastListItem != NULL ? _lastListItem->object : nil);
 }
 
 - (size_t)count
@@ -221,7 +216,7 @@ OF_DIRECT_MEMBERS
 - (bool)isEqual: (id)object
 {
 	OFList *list;
-	of_list_object_t *iter, *iter2;
+	OFListItem *iter, *iter2;
 
 	if (object == self)
 		return true;
@@ -234,7 +229,7 @@ OF_DIRECT_MEMBERS
 	if (list.count != _count)
 		return false;
 
-	for (iter = _firstListObject, iter2 = list.firstListObject;
+	for (iter = _firstListItem, iter2 = list.firstListItem;
 	    iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
@@ -251,8 +246,7 @@ OF_DIRECT_MEMBERS
 	if (_count == 0)
 		return false;
 
-	for (of_list_object_t *iter = _firstListObject;
-	    iter != NULL; iter = iter->next)
+	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
 		if ([iter->object isEqual: object])
 			return true;
 
@@ -264,8 +258,7 @@ OF_DIRECT_MEMBERS
 	if (_count == 0)
 		return false;
 
-	for (of_list_object_t *iter = _firstListObject;
-	    iter != NULL; iter = iter->next)
+	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
 		if (iter->object == object)
 			return true;
 
@@ -274,51 +267,50 @@ OF_DIRECT_MEMBERS
 
 - (void)removeAllObjects
 {
-	of_list_object_t *next;
+	OFListItem *next;
 
 	_mutations++;
 
-	for (of_list_object_t *iter = _firstListObject;
-	    iter != NULL; iter = next) {
+	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
 		free(iter);
 	}
 
-	_firstListObject = _lastListObject = NULL;
+	_firstListItem = _lastListItem = NULL;
 }
 
 - (id)copy
 {
 	OFList *copy = [[[self class] alloc] init];
-	of_list_object_t *listObject, *previous;
+	OFListItem *listItem, *previous;
 
-	listObject = NULL;
+	listItem = NULL;
 	previous = NULL;
 
 	@try {
-		for (of_list_object_t *iter = _firstListObject;
+		for (OFListItem *iter = _firstListItem;
 		    iter != NULL; iter = iter->next) {
-			listObject = of_alloc(1, sizeof(of_list_object_t));
-			listObject->object = [iter->object retain];
-			listObject->next = NULL;
-			listObject->previous = previous;
+			listItem = of_alloc(1, sizeof(OFListItem));
+			listItem->object = [iter->object retain];
+			listItem->next = NULL;
+			listItem->previous = previous;
 
-			if (copy->_firstListObject == NULL)
-				copy->_firstListObject = listObject;
+			if (copy->_firstListItem == NULL)
+				copy->_firstListItem = listItem;
 			if (previous != NULL)
-				previous->next = listObject;
+				previous->next = listItem;
 
 			copy->_count++;
 
-			previous = listObject;
+			previous = listItem;
 		}
 	} @catch (id e) {
 		[copy release];
 		@throw e;
 	}
 
-	copy->_lastListObject = listObject;
+	copy->_lastListItem = listItem;
 
 	return copy;
 }
@@ -329,7 +321,7 @@ OF_DIRECT_MEMBERS
 
 	OF_HASH_INIT(hash);
 
-	for (of_list_object_t *iter = _firstListObject;
+	for (OFListItem *iter = _firstListItem;
 	    iter != NULL; iter = iter->next)
 		OF_HASH_ADD_HASH(hash, [iter->object hash]);
 
@@ -347,7 +339,7 @@ OF_DIRECT_MEMBERS
 
 	ret = [OFMutableString stringWithString: @"[\n"];
 
-	for (of_list_object_t *iter = _firstListObject;
+	for (OFListItem *iter = _firstListItem;
 	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -372,7 +364,7 @@ OF_DIRECT_MEMBERS
 	    [OFXMLElement elementWithName: self.className
 				namespace: OF_SERIALIZATION_NS];
 
-	for (of_list_object_t *iter = _firstListObject;
+	for (OFListItem *iter = _firstListItem;
 	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -388,27 +380,27 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
-	of_list_object_t *listObject;
+	OFListItem *listItem;
 
-	memcpy(&listObject, state->extra, sizeof(listObject));
+	memcpy(&listItem, state->extra, sizeof(listItem));
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &_mutations;
 
 	if (state->state == 0) {
-		listObject = _firstListObject;
+		listItem = _firstListItem;
 		state->state = 1;
 	}
 
 	for (int i = 0; i < count; i++) {
-		if (listObject == NULL)
+		if (listItem == NULL)
 			return i;
 
-		objects[i] = listObject->object;
-		listObject = listObject->next;
+		objects[i] = listItem->object;
+		listItem = listItem->next;
 	}
 
-	memcpy(state->extra, &listObject, sizeof(listObject));
+	memcpy(state->extra, &listItem, sizeof(listItem));
 
 	return count;
 }
@@ -428,7 +420,7 @@ OF_DIRECT_MEMBERS
 	self = [super init];
 
 	_list = [list retain];
-	_current = _list.firstListObject;
+	_current = _list.firstListItem;
 	_mutations = *mutationsPtr;
 	_mutationsPtr = mutationsPtr;
 

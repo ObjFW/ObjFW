@@ -162,16 +162,16 @@ OF_DIRECT_MEMBERS
 
 		[_queueCondition lock];
 		@try {
-			of_list_object_t *listObject;
+			OFListItem *listItem;
 
 			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
-			listObject = _queue.firstListObject;
+			listItem = _queue.firstListItem;
 
-			while (listObject == NULL) {
+			while (listItem == NULL) {
 				[_queueCondition wait];
 
 				if (_terminate) {
@@ -179,11 +179,11 @@ OF_DIRECT_MEMBERS
 					return nil;
 				}
 
-				listObject = _queue.firstListObject;
+				listItem = _queue.firstListItem;
 			}
 
-			job = [[listObject->object retain] autorelease];
-			[_queue removeListObject: listObject];
+			job = [[listItem->object retain] autorelease];
+			[_queue removeListItem: listItem];
 		} @finally {
 			[_queueCondition unlock];
 		}

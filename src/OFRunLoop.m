@@ -276,23 +276,23 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			of_list_object_t *listObject = queue.firstListObject;
+			OFListItem *listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
 			 * so that our queue is now empty, in which case we
 			 * should do nothing.
 			 */
-			if (listObject != NULL) {
+			if (listItem != NULL) {
 				/*
 				 * Make sure we keep the target until after we
 				 * are done removing the object. The reason for
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listObject->object retain] autorelease];
+				[[listItem->object retain] autorelease];
 
-				[queue removeListObject: listObject];
+				[queue removeListItem: listItem];
 
 				if (queue.count == 0) {
 					[_kernelEventObserver
@@ -319,23 +319,23 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			of_list_object_t *listObject = queue.firstListObject;
+			OFListItem *listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
 			 * so that our queue is now empty, in which case we
 			 * should do nothing.
 			 */
-			if (listObject != NULL) {
+			if (listItem != NULL) {
 				/*
 				 * Make sure we keep the target until after we
 				 * are done removing the object. The reason for
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listObject->object retain] autorelease];
+				[[listItem->object retain] autorelease];
 
-				[queue removeListObject: listObject];
+				[queue removeListItem: listItem];
 
 				if (queue.count == 0) {
 					[_kernelEventObserver
@@ -1420,12 +1420,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	[state->_timersQueueMutex lock];
 	@try {
 #endif
-		of_list_object_t *iter;
-
-		for (iter = state->_timersQueue.firstListObject; iter != NULL;
-		    iter = iter->next) {
+		for (OFListItem *iter = state->_timersQueue.firstListItem;
+		    iter != NULL; iter = iter->next) {
 			if ([iter->object isEqual: timer]) {
-				[state->_timersQueue removeListObject: iter];
+				[state->_timersQueue removeListItem: iter];
 				break;
 			}
 		}
@@ -1579,16 +1577,16 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 			[state->_timersQueueMutex lock];
 			@try {
 #endif
-				of_list_object_t *listObject =
-				    state->_timersQueue.firstListObject;
+				OFListItem *listItem =
+				    state->_timersQueue.firstListItem;
 
-				if (listObject != NULL && [listObject->object
+				if (listItem != NULL && [listItem->object
 				    fireDate].timeIntervalSinceNow <= 0) {
-					timer = [[listObject->object
+					timer = [[listItem->object
 					    retain] autorelease];
 
 					[state->_timersQueue
-					    removeListObject: listObject];
+					    removeListItem: listItem];
 
 					[timer of_setInRunLoop: nil mode: nil];
 				} else

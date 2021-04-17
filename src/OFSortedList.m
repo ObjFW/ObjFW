@@ -18,36 +18,35 @@
 #import "OFSortedList.h"
 
 @implementation OFSortedList
-- (of_list_object_t *)appendObject: (id)object
+- (OFListItem *)appendObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)prependObject: (id)object
+- (OFListItem *)prependObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		  beforeListObject: (of_list_object_t *)listObject
+- (OFListItem *)insertObject: (id)object
+	      beforeListItem: (OFListItem *)listItem
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		   afterListObject: (of_list_object_t *)listObject
+- (OFListItem *)insertObject: (id)object
+	       afterListItem: (OFListItem *)listItem
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id <OFComparing>)object
+- (OFListItem *)insertObject: (id <OFComparing>)object
 {
-	of_list_object_t *iter;
+	OFListItem *iter;
 
-	for (iter = _lastListObject; iter != NULL; iter = iter->previous) {
+	for (iter = _lastListItem; iter != NULL; iter = iter->previous) {
 		if ([object compare: iter->object] != OFOrderedAscending)
-			return [super insertObject: object
-				   afterListObject: iter];
+			return [super insertObject: object afterListItem: iter];
 	}
 
 	return [super prependObject: object];
