@@ -82,7 +82,7 @@ extern struct stret of_forward_stret(id, SEL, ...);
 struct pre_ivar {
 	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	of_spinlock_t retainCountSpinlock;
+	OFSpinlock retainCountSpinlock;
 #endif
 };
 
@@ -308,7 +308,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	((struct pre_ivar *)instance)->retainCount = 1;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	if OF_UNLIKELY (of_spinlock_new(
+	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct pre_ivar *)instance)->retainCountSpinlock) != 0) {
 		free(instance);
 		@throw [OFInitializationFailedException
@@ -1114,9 +1114,9 @@ _references_to_categories_of_OFObject(void)
 	Permit();
 # endif
 #else
-	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OF_ENSURE(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	PRE_IVARS->retainCount++;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OF_ENSURE(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 #endif
 
 	return self;
@@ -1150,9 +1150,9 @@ _references_to_categories_of_OFObject(void)
 #else
 	int retainCount;
 
-	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OF_ENSURE(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	retainCount = --PRE_IVARS->retainCount;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OF_ENSURE(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 
 	if (retainCount == 0)
 		[self dealloc];

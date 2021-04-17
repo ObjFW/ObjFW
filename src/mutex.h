@@ -39,12 +39,12 @@ typedef struct SignalSemaphore OFPlainMutex;
 
 #if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
-typedef volatile int of_spinlock_t;
+typedef volatile int OFSpinlock;
 # define OF_SPINCOUNT 10
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-typedef pthread_spinlock_t of_spinlock_t;
+typedef pthread_spinlock_t OFSpinlock;
 #else
-typedef OFPlainMutex of_spinlock_t;
+typedef OFPlainMutex OFSpinlock;
 #endif
 
 #ifdef OF_HAVE_SCHED_YIELD
@@ -92,7 +92,7 @@ OFYieldThread(void)
 }
 
 static OF_INLINE int
-of_spinlock_new(of_spinlock_t *spinlock)
+OFSpinlockNew(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	*spinlock = 0;
@@ -105,7 +105,7 @@ of_spinlock_new(of_spinlock_t *spinlock)
 }
 
 static OF_INLINE int
-of_spinlock_trylock(of_spinlock_t *spinlock)
+OFSpinlockTryLock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	if (of_atomic_int_cmpswap(spinlock, 0, 1)) {
@@ -122,16 +122,16 @@ of_spinlock_trylock(of_spinlock_t *spinlock)
 }
 
 static OF_INLINE int
-of_spinlock_lock(of_spinlock_t *spinlock)
+OFSpinlockLock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	size_t i;
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
-		if (of_spinlock_trylock(spinlock) == 0)
+		if (OFSpinlockTryLock(spinlock) == 0)
 			return 0;
 
-	while (of_spinlock_trylock(spinlock) == EBUSY)
+	while (OFSpinlockTryLock(spinlock) == EBUSY)
 		OFYieldThread();
 
 	return 0;
@@ -143,7 +143,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 }
 
 static OF_INLINE int
-of_spinlock_unlock(of_spinlock_t *spinlock)
+OFSpinlockUnlock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	bool ret = of_atomic_int_cmpswap(spinlock, 1, 0);
@@ -159,7 +159,7 @@ of_spinlock_unlock(of_spinlock_t *spinlock)
 }
 
 static OF_INLINE int
-of_spinlock_free(of_spinlock_t *spinlock)
+OFSpinlockFree(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	return 0;

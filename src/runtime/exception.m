@@ -242,11 +242,11 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
 static objc_uncaught_exception_handler_t uncaughtExceptionHandler;
 static struct objc_exception emergencyExceptions[NUM_EMERGENCY_EXCEPTIONS];
 #ifdef OF_HAVE_THREADS
-static of_spinlock_t emergencyExceptionsSpinlock;
+static OFSpinlock emergencyExceptionsSpinlock;
 
 OF_CONSTRUCTOR()
 {
-	if (of_spinlock_new(&emergencyExceptionsSpinlock) != 0)
+	if (OFSpinlockNew(&emergencyExceptionsSpinlock) != 0)
 		OBJC_ERROR("Cannot create spinlock!");
 }
 #endif
@@ -711,14 +711,14 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
     struct _Unwind_Exception *ex)
 {
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_lock(&emergencyExceptionsSpinlock) != 0)
+	if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
 		OBJC_ERROR("Cannot lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_unlock(&emergencyExceptionsSpinlock) != 0)
+	if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
 		OBJC_ERROR("Cannot unlock spinlock!");
 #endif
 }
@@ -731,7 +731,7 @@ objc_exception_throw(id object)
 
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
-		if (of_spinlock_lock(&emergencyExceptionsSpinlock) != 0)
+		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
 			OBJC_ERROR("Cannot lock spinlock!");
 #endif
 
@@ -746,7 +746,7 @@ objc_exception_throw(id object)
 		}
 
 #ifdef OF_HAVE_THREADS
-		if (of_spinlock_unlock(&emergencyExceptionsSpinlock) != 0)
+		if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
 			OBJC_ERROR("Cannot lock spinlock!");
 #endif
 	}

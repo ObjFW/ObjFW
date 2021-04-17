@@ -137,7 +137,7 @@ init(void)
 	atexit(releaseMutex);
 
 #  ifdef OF_WII
-	if (of_spinlock_new(&spinlock) != 0)
+	if (OFSpinlockNew(&spinlock) != 0)
 		return;
 #  endif
 # endif
