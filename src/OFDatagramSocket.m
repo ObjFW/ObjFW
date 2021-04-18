@@ -70,7 +70,7 @@
 			abort();
 		}
 
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 		_canBlock = true;
 	} @catch (id e) {
 		[self release];
@@ -82,7 +82,7 @@
 
 - (void)dealloc
 {
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		[self close];
 
 	[super dealloc];
@@ -170,7 +170,7 @@
 {
 	ssize_t ret;
 
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	sender->length = (socklen_t)sizeof(sender->sockaddr);
@@ -266,7 +266,7 @@
 	    length: (size_t)length
 	  receiver: (const OFSocketAddress *)receiver
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
@@ -363,7 +363,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -378,7 +378,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -390,10 +390,10 @@
 
 - (void)close
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 @end

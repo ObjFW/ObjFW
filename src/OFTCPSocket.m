@@ -142,11 +142,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET) {
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
 		*errNo = OFSocketErrNo();
 		return false;
 	}
@@ -162,7 +162,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	/* Cast needed for AmigaOS, where the argument is declared non-const */
@@ -178,7 +178,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)of_closeSocket
 {
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 
 - (void)connectToHost: (OFString *)host port: (uint16_t)port
@@ -222,7 +222,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
@@ -270,7 +270,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
@@ -306,7 +306,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil)
@@ -321,7 +321,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	OFSocketAddressSetPort(&address, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET)
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: host
 				 port: port
@@ -346,7 +346,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			int errNo = OFSocketErrNo();
 
 			closesocket(_socket);
-			_socket = INVALID_SOCKET;
+			_socket = OFInvalidSocketHandle;
 
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
@@ -374,7 +374,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				int errNo = OFSocketErrNo();
 
 				closesocket(_socket);
-				_socket = INVALID_SOCKET;
+				_socket = OFInvalidSocketHandle;
 
 				@throw [OFBindFailedException
 				    exceptionWithHost: host
@@ -400,7 +400,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -416,7 +416,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 	else {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -425,7 +425,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 #else
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
 						 socket: self

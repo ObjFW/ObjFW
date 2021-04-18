@@ -63,8 +63,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifndef OF_WINDOWS
 typedef int OFSocketHandle;
+static const OFSocketHandle OFInvalidSocketHandle = -1;
 #else
 typedef SOCKET OFSocketHandle;
+static const OFSocketHandle OFInvalidSocketHandle = INVALID_SOCKET;
 #endif
 
 #ifdef OF_WII

@@ -50,7 +50,7 @@
 #endif
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == INVALID_SOCKET)
+	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressPort(address)
@@ -74,7 +74,7 @@
 			int errNo = OFSocketErrNo();
 
 			closesocket(_socket);
-			_socket = INVALID_SOCKET;
+			_socket = OFInvalidSocketHandle;
 
 			@throw [OFBindFailedException
 			    exceptionWithHost: OFSocketAddressString(address)
@@ -105,7 +105,7 @@
 				uint16_t port = OFSocketAddressPort(port);
 
 				closesocket(_socket);
-				_socket = INVALID_SOCKET;
+				_socket = OFInvalidSocketHandle;
 
 				@throw [OFBindFailedException
 				    exceptionWithHost: host
@@ -131,7 +131,7 @@
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
@@ -148,7 +148,7 @@
 # endif
 	else {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
@@ -158,7 +158,7 @@
 	}
 #else
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 
 	@throw [OFBindFailedException
 	    exceptionWithHost: OFSocketAddressString(address)
@@ -174,7 +174,7 @@
 	OFData *socketAddresses;
 	OFSocketAddress address;
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	socketAddresses = [[OFThread DNSResolver]

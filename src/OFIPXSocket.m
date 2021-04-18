@@ -40,7 +40,7 @@
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
@@ -52,7 +52,7 @@
 #endif
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == INVALID_SOCKET)
+	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
@@ -70,7 +70,7 @@
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType
@@ -87,7 +87,7 @@
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType
@@ -97,7 +97,7 @@
 
 	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType

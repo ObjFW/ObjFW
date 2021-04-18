@@ -118,7 +118,7 @@ enum {
 #elif !defined(OF_AMIGAOS)
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
-		if (_cancelFD[0] == INVALID_SOCKET)
+		if (_cancelFD[0] == OFInvalidSocketHandle)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 

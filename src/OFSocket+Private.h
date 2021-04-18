@@ -26,10 +26,6 @@
 
 #include "OFSocket.h"
 
-#ifndef INVALID_SOCKET
-# define INVALID_SOCKET -1
-#endif
-
 #ifndef INADDR_NONE
 # define INADDR_NONE ((in_addr_t)-1)
 #endif

@@ -180,11 +180,12 @@ inform_delegate:
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
-	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET) {
+	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
+	    OFInvalidSocketHandle) {
 		*errNo = OFSocketErrNo();
 		return false;
 	}
@@ -200,7 +201,7 @@ inform_delegate:
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (connect(_socket, &address->sockaddr.sockaddr,
@@ -215,7 +216,7 @@ inform_delegate:
 - (void)of_closeSocket
 {
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 
 - (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
@@ -316,13 +317,14 @@ inform_delegate:
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET)
+	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
+	    OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
 			   packetType: SPX_PACKET_TYPE
@@ -340,7 +342,7 @@ inform_delegate:
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: SPX_PACKET_TYPE
@@ -357,7 +359,7 @@ inform_delegate:
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: SPX_PACKET_TYPE
@@ -367,7 +369,7 @@ inform_delegate:
 
 	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: SPX_PACKET_TYPE
