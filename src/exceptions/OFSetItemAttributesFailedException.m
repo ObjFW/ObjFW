@@ -77,6 +77,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set attribute %@ for item %@: %@",
-	    _failedAttribute, _URL, of_strerror(_errNo)];
+	    _failedAttribute, _URL, OFStrError(_errNo)];
 }
 @end

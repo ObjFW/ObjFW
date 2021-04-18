@@ -82,7 +82,7 @@ OF_DESTRUCTOR()
 #endif
 
 OFString *
-of_strerror(int errNo)
+OFStrError(int errNo)
 {
 	OFString *ret;
 #ifdef HAVE_STRERROR_R
@@ -211,7 +211,7 @@ of_strerror(int errNo)
 
 #ifdef OF_WINDOWS
 OFString *
-of_windows_status_to_string(LSTATUS status)
+OFWindowsStatusToString(LSTATUS status)
 {
 	OFString *string = nil;
 	void *buffer;

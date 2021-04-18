@@ -560,7 +560,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (self != [OFDNSResolver class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }

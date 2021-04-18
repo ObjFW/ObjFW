@@ -207,8 +207,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				/* Normal character */
 				if ((c1 & 0xFC00) != 0xD800) {
-					l = of_string_utf8_encode(c1,
-					    buffer + i);
+					l = OFUTF8StringEncode(c1, buffer + i);
 					if (l == 0) {
 						OFFreeMemory(buffer);
 						return nil;
@@ -234,7 +233,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				c = (((c1 & 0x3FF) << 10) |
 				    (c2 & 0x3FF)) + 0x10000;
 
-				l = of_string_utf8_encode(c, buffer + i);
+				l = OFUTF8StringEncode(c, buffer + i);
 				if (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
@@ -330,7 +329,7 @@ parseIdentifier(const char **pointer, const char *stop)
 
 			/* Normal character */
 			if ((c1 & 0xFC00) != 0xD800) {
-				l = of_string_utf8_encode(c1, buffer + i);
+				l = OFUTF8StringEncode(c1, buffer + i);
 				if (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
@@ -355,7 +354,7 @@ parseIdentifier(const char **pointer, const char *stop)
 
 			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
 
-			l = of_string_utf8_encode(c, buffer + i);
+			l = OFUTF8StringEncode(c, buffer + i);
 			if (l == 0) {
 				OFFreeMemory(buffer);
 				return nil;

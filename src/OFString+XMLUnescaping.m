@@ -64,7 +64,7 @@ parseNumericEntity(const char *entity, size_t length)
 		}
 	}
 
-	if ((i = of_string_utf8_encode(c, buffer)) == 0)
+	if ((i = OFUTF8StringEncode(c, buffer)) == 0)
 		return nil;
 	buffer[i] = 0;
 

@@ -1194,18 +1194,18 @@ static uint16_t sutf16str[] = {
 # define SWAPPED_BYTE_ORDER OFByteOrderBigEndian
 #endif
 	TEST(@"-[UTF16String]", (u16a = C(@"fööbär🀺").UTF16String) &&
-	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
+	    !memcmp(u16a, utf16str + 1, OFUTF16StringLength(utf16str) * 2) &&
 	    (u16a = [C(@"fööbär🀺")
 	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
+	    !memcmp(u16a, sutf16str + 1, OFUTF16StringLength(sutf16str) * 2))
 
 	TEST(@"-[UTF16StringLength]", C(@"fööbär🀺").UTF16StringLength == 8)
 
 	TEST(@"-[UTF32String]", (ua = C(@"fööbär🀺").UTF32String) &&
-	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
+	    !memcmp(ua, ucstr + 1, OFUTF32StringLength(ucstr) * 4) &&
 	    (ua = [C(@"fööbär🀺") UTF32StringWithByteOrder:
 	    SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
+	    !memcmp(ua, sucstr + 1, OFUTF32StringLength(sucstr) * 4))
 #undef SWAPPED_BYTE_ORDER
 
 	TEST(@"-[stringByMD5Hashing]", [C(@"asdfoobar").stringByMD5Hashing

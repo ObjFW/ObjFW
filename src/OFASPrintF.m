@@ -418,7 +418,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 		{
 			char buffer[5];
-			size_t len = of_string_utf8_encode(
+			size_t len = OFUTF8StringEncode(
 			    va_arg(ctx->arguments, OFUnichar), buffer);
 
 			if (len == 0)
@@ -438,7 +438,7 @@ formatConversionSpecifierState(struct context *ctx)
 		{
 			const OFUnichar *arg =
 			    va_arg(ctx->arguments, const OFUnichar *);
-			size_t j, len = of_string_utf32_length(arg);
+			size_t j, len = OFUTF32StringLength(arg);
 			char *buffer;
 
 			if (SIZE_MAX / 4 < len || (SIZE_MAX / 4) - len < 1)
@@ -449,7 +449,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 			j = 0;
 			for (size_t i = 0; i < len; i++) {
-				size_t clen = of_string_utf8_encode(arg[i],
+				size_t clen = OFUTF8StringEncode(arg[i],
 				    buffer + j);
 
 				if (clen == 0) {

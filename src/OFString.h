@@ -1291,10 +1291,10 @@ extern OFStringEncoding OFStringEncodingParseName(OFString *name);
  */
 extern OFString *_Nullable OFStringEncodingName(OFStringEncoding encoding);
 
-extern size_t of_string_utf8_encode(OFUnichar, char *);
-extern ssize_t of_string_utf8_decode(const char *, size_t, OFUnichar *);
-extern size_t of_string_utf16_length(const OFChar16 *);
-extern size_t of_string_utf32_length(const OFChar32 *);
+extern size_t OFUTF8StringEncode(OFUnichar, char *);
+extern ssize_t OFUTF8StringDecode(const char *, size_t, OFUnichar *);
+extern size_t OFUTF16StringLength(const OFChar16 *);
+extern size_t OFUTF32StringLength(const OFChar32 *);
 #ifdef __cplusplus
 }
 #endif

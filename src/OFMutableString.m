@@ -391,26 +391,26 @@ convert(OFMutableString *self, char (*startFunction)(char),
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
-	[self of_convertWithWordStartTable: of_unicode_uppercase_table
-			   wordMiddleTable: of_unicode_uppercase_table
-			wordStartTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeUppercaseTable
+			   wordMiddleTable: OFUnicodeUppercaseTable
+			wordStartTableSize: OFUnicodeUppercaseTableSize
+		       wordMiddleTableSize: OFUnicodeUppercaseTableSize];
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartTable: of_unicode_lowercase_table
-			   wordMiddleTable: of_unicode_lowercase_table
-			wordStartTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeLowercaseTable
+			   wordMiddleTable: OFUnicodeLowercaseTable
+			wordStartTableSize: OFUnicodeLowercaseTableSize
+		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartTable: of_unicode_titlecase_table
-			   wordMiddleTable: of_unicode_lowercase_table
-			wordStartTableSize: OF_UNICODE_TITLECASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeTitlecaseTable
+			   wordMiddleTable: OFUnicodeLowercaseTable
+			wordStartTableSize: OFUnicodeTitlecaseTableSize
+		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
 }
 #else
 - (void)uppercase

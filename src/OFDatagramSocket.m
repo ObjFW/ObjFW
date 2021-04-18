@@ -50,7 +50,7 @@
 	if (self != [OFDatagramSocket class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -123,7 +123,7 @@
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_canBlock = canBlock;
 #else
@@ -139,7 +139,7 @@
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 #ifdef OF_WII
 	_canSendToBroadcastAddresses = canSendToBroadcastAddresses;
@@ -156,7 +156,7 @@
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	return v;
 #else
@@ -181,7 +181,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -191,7 +191,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	switch (sender->sockaddr.sockaddr.sa_family) {
@@ -282,7 +282,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	int bytesWritten;
 
@@ -295,7 +295,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	if ((size_t)bytesWritten != length)

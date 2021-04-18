@@ -174,9 +174,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *of_strerror(int errNo);
+extern OFString *OFStrError(int errNo);
 #ifdef OF_WINDOWS
-extern OFString *of_windows_status_to_string(LSTATUS status);
+extern OFString *OFWindowsStatusToString(LSTATUS status);
 #endif
 #ifdef __cplusplus
 }

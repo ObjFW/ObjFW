@@ -71,9 +71,9 @@ static bool initSuccessful = false;
 
 #ifdef OF_AMIGAOS
 # if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
-OFTLSKey of_socket_base_key;
+OFTLSKey OFSocketBaseKey;
 #  ifdef OF_AMIGAOS4
-OFTLSKey of_socket_interface_key;
+OFTLSKey OFSocketInterfaceKey;
 #  endif
 # else
 struct Library *SocketBase;
@@ -86,11 +86,11 @@ struct SocketIFace *ISocket = NULL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
-	if (OFTLSKeyNew(&of_socket_base_key) != 0)
+	if (OFTLSKeyNew(&OFSocketBaseKey) != 0)
 		@throw [OFInitializationFailedException exception];
 
 # ifdef OF_AMIGAOS4
-	if (OFTLSKeyNew(&of_socket_interface_key) != 0)
+	if (OFTLSKeyNew(&OFSocketInterfaceKey) != 0)
 		@throw [OFInitializationFailedException exception];
 # endif
 }
@@ -159,7 +159,7 @@ OF_DESTRUCTOR()
 #endif
 
 bool
-of_socket_init(void)
+OFSocketInit(void)
 {
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -173,9 +173,9 @@ of_socket_init(void)
 # endif
 
 # ifdef OF_AMIGAOS4
-	if ((socketInterface = OFTLSKeyGet(of_socket_interface_key)) != NULL)
+	if ((socketInterface = OFTLSKeyGet(OFSocketInterfaceKey)) != NULL)
 # else
-	if ((socketBase = OFTLSKeyGet(of_socket_base_key)) != NULL)
+	if ((socketBase = OFTLSKeyGet(OFSocketBaseKey)) != NULL)
 # endif
 		return true;
 
@@ -190,7 +190,7 @@ of_socket_init(void)
 	}
 # endif
 
-	if (OFTLSKeySet(of_socket_base_key, socketBase) != 0) {
+	if (OFTLSKeySet(OFSocketBaseKey, socketBase) != 0) {
 		CloseLibrary(socketBase);
 # ifdef OF_AMIGAOS4
 		DropInterface((struct Interface *)socketInterface);
@@ -199,7 +199,7 @@ of_socket_init(void)
 	}
 
 # ifdef OF_AMIGAOS4
-	if (OFTLSKeySet(of_socket_interface_key, socketInterface) != 0) {
+	if (OFTLSKeySet(OFSocketInterfaceKey, socketInterface) != 0) {
 		CloseLibrary(socketBase);
 		DropInterface((struct Interface *)socketInterface);
 		return false;
@@ -212,12 +212,11 @@ of_socket_init(void)
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 void
-of_socket_deinit(void)
+OFSocketDeinit(void)
 {
-	struct Library *socketBase = OFTLSKeyGet(of_socket_base_key);
+	struct Library *socketBase = OFTLSKeyGet(OFSocketBaseKey);
 # ifdef OF_AMIGAOS4
-	struct SocketIFace *socketInterface =
-	    OFTLSKeyGet(of_socket_interface_key);
+	struct SocketIFace *socketInterface = OFTLSKeyGet(OFSocketInterfaceKey);
 
 	if (socketInterface != NULL)
 		DropInterface((struct Interface *)socketInterface);
@@ -228,7 +227,7 @@ of_socket_deinit(void)
 #endif
 
 int
-of_socket_errno()
+OFSocketErrNo()
 {
 #if defined(OF_WINDOWS)
 	switch (WSAGetLastError()) {
@@ -330,7 +329,7 @@ of_socket_errno()
 
 #ifndef OF_WII
 int
-of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
+OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen)
 {
 	int ret;

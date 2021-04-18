@@ -57,7 +57,7 @@
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -67,7 +67,7 @@
 #endif
 
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
@@ -82,9 +82,9 @@
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;

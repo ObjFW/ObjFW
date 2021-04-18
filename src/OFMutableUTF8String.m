@@ -118,7 +118,7 @@
 			tableSize = middleTableSize;
 		}
 
-		cLen = of_string_utf8_decode(_s->cString + i,
+		cLen = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
@@ -164,7 +164,7 @@
 	for (i = 0; i < unicodeLen; i++) {
 		size_t d;
 
-		if ((d = of_string_utf8_encode(unicodeString[i],
+		if ((d = OFUTF8StringEncode(unicodeString[i],
 		    newCString + j)) == 0) {
 			OFFreeMemory(unicodeString);
 			OFFreeMemory(newCString);
@@ -197,7 +197,7 @@
 	ssize_t lenOld;
 
 	if (_s->isUTF8)
-		idx = of_string_utf8_get_position(_s->cString, idx,
+		idx = OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
 	if (idx >= _s->cStringLength)
@@ -210,10 +210,10 @@
 		return;
 	}
 
-	if ((lenNew = of_string_utf8_encode(character, buffer)) == 0)
+	if ((lenNew = OFUTF8StringEncode(character, buffer)) == 0)
 		@throw [OFInvalidEncodingException exception];
 
-	if ((lenOld = of_string_utf8_decode(_s->cString + idx,
+	if ((lenOld = OFUTF8StringDecode(_s->cString + idx,
 	    _s->cStringLength - idx, &c)) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
@@ -267,7 +267,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
+	switch (OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -296,7 +296,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
+	switch (OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -378,8 +378,7 @@
 		bool isUTF8 = false;
 
 		for (size_t i = 0; i < length; i++) {
-			size_t len = of_string_utf8_encode(characters[i],
-			    tmp + j);
+			size_t len = OFUTF8StringEncode(characters[i], tmp + j);
 
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -514,7 +513,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8)
-		idx = of_string_utf8_get_position(_s->cString, idx,
+		idx = OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
 	newCStringLength = _s->cStringLength + string.UTF8StringLength;
@@ -547,9 +546,9 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		start = of_string_utf8_get_position(_s->cString, start,
+		start = OFUTF8StringIndexToPosition(_s->cString, start,
 		    _s->cStringLength);
-		end = of_string_utf8_get_position(_s->cString, end,
+		end = OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
 
@@ -584,9 +583,9 @@
 	newLength = _s->length - range.length + replacement.length;
 
 	if (_s->isUTF8) {
-		start = of_string_utf8_get_position(_s->cString, start,
+		start = OFUTF8StringIndexToPosition(_s->cString, start,
 		    _s->cStringLength);
-		end = of_string_utf8_get_position(_s->cString, end,
+		end = OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
 
@@ -651,9 +650,9 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		range.location = of_string_utf8_get_position(_s->cString,
+		range.location = OFUTF8StringIndexToPosition(_s->cString,
 		    range.location, _s->cStringLength);
-		range.length = of_string_utf8_get_position(
+		range.length = OFUTF8StringIndexToPosition(
 		    _s->cString + range.location, range.length,
 		    _s->cStringLength - range.location);
 	}

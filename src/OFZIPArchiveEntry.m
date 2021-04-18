@@ -26,9 +26,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-extern uint32_t OFZIPArchiveReadField32(const uint8_t **, uint16_t *);
-extern uint64_t OFZIPArchiveReadField64(const uint8_t **, uint16_t *);
-
 OFString *
 OFZIPArchiveEntryVersionToString(uint16_t version)
 {

@@ -70,7 +70,7 @@ enum {
 	if (self != [OFKernelEventObserver class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -136,7 +136,7 @@ enum {
 			    exceptionWithClass: self.class];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (of_getsockname(_cancelFD[0],
+		if (OFGetSockName(_cancelFD[0],
 		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -156,7 +156,7 @@ enum {
 			if (ret == 0)
 				break;
 
-			if (of_socket_errno() != EADDRINUSE)
+			if (OFSocketErrNo() != EADDRINUSE)
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
 		}

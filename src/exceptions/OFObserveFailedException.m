@@ -66,6 +66,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"An observer of class %@ failed to observe: %@",
-	    _observer.class, of_strerror(_errNo)];
+	    _observer.class, OFStrError(_errNo)];
 }
 @end

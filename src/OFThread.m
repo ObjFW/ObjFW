@@ -117,7 +117,7 @@ callMain(id object)
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		if (!of_socket_init())
+		if (!OFSocketInit())
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: thread.class];
 #endif
@@ -145,7 +145,7 @@ callMain(id object)
 
 #if defined(OF_AMIGAOS) && !defined(OF_MORPHOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		of_socket_deinit();
+		OFSocketDeinit();
 #endif
 
 	thread->_running = OFThreadStateWaitingForJoin;

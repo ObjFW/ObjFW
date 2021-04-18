@@ -185,7 +185,7 @@ inform_delegate:
 
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET) {
-		*errNo = of_socket_errno();
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -205,7 +205,7 @@ inform_delegate:
 
 	if (connect(_socket, &address->sockaddr.sockaddr,
 	    address->length) != 0) {
-		*errNo = of_socket_errno();
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -327,7 +327,7 @@ inform_delegate:
 		    exceptionWithPort: port
 			   packetType: SPX_PACKET_TYPE
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -337,7 +337,7 @@ inform_delegate:
 #endif
 
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
@@ -352,9 +352,9 @@ inform_delegate:
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;

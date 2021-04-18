@@ -272,20 +272,20 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
 extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
 
-extern bool of_socket_init(void);
+extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern void of_socket_deinit(void);
+extern void OFSocketDeinit(void);
 #endif
-extern int of_socket_errno(void);
+extern int OFSocketErrNo(void);
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int of_getsockname(OFSocketHandle sock, struct sockaddr *restrict addr,
+extern int OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen);
 #endif
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern OFTLSKey of_socket_base_key;
+extern OFTLSKey OFSocketBaseKey;
 # ifdef OF_AMIGAOS4
-extern OFTLSKey of_socket_interface_key;
+extern OFTLSKey OFSocketInterfaceKey;
 # endif
 #endif
 #ifdef __cplusplus

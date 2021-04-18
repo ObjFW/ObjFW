@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for providing standard input, output and error as OFStream.
  *
- * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
+ * The global variables @ref OFStdIn, @ref OFStdOut and @ref OFStdErr are
  * instances of this class and need no initialization.
  */
 #ifdef OF_STDIO_STREAM_WIN32_CONSOLE_H
@@ -137,25 +137,25 @@ extern "C" {
 /**
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdin;
+extern OFStdIOStream *_Nullable OFStdIn;
 
 /**
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdout;
+extern OFStdIOStream *_Nullable OFStdOut;
 
 /**
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stderr;
+extern OFStdIOStream *_Nullable OFStdErr;
 
 /**
- * @brief Log the specified printf-style format to @ref of_stderr.
+ * @brief Log the specified printf-style format to @ref OFStdErr.
  *
  * This prefixes the output with the date, timestamp, process name and PID and
  * allows `%@` as a printf-style formatted to print objects.
  */
-extern void of_log(OFConstantString *format, ...);
+extern void OFLog(OFConstantString *format, ...);
 #ifdef __cplusplus
 }
 #endif

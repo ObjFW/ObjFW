@@ -53,7 +53,7 @@
 	if (self != [OFSequencedPacketSocket class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -99,7 +99,7 @@
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
 	    &len) != 0)
-		return of_socket_errno();
+		return OFSocketErrNo();
 
 	return errNo;
 }
@@ -140,7 +140,7 @@
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_canBlock = canBlock;
 #else
@@ -160,7 +160,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -169,7 +169,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	return ret;
@@ -238,7 +238,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	int bytesWritten;
 
@@ -250,7 +250,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	if ((size_t)bytesWritten != length)
@@ -311,7 +311,7 @@
 		@throw [OFListenFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_listening = true;
 }
@@ -336,21 +336,21 @@
 	    INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket,
 	    &client->_remoteAddress.sockaddr.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    &client->_remoteAddress.sockaddr.sockaddr,
 	    &client->_remoteAddress.length)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)

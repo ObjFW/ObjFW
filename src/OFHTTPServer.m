@@ -905,10 +905,10 @@ normalizedKey(OFString *key)
 	if (_usesTLS) {
 		OFTCPSocket <OFTLSSocket> *TLSSocket;
 
-		if (of_tls_socket_class == Nil)
+		if (OFTLSSocketClass == Nil)
 			@throw [OFUnsupportedProtocolException exception];
 
-		TLSSocket = [[of_tls_socket_class alloc] init];
+		TLSSocket = [[OFTLSSocketClass alloc] init];
 		_listeningSocket = TLSSocket;
 
 		TLSSocket.certificateFile = _certificateFile;

@@ -699,11 +699,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 		if ([URL.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame) {
-			if (of_tls_socket_class == Nil)
+			if (OFTLSSocketClass == Nil)
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
 
-			sock = [[[of_tls_socket_class alloc] init] autorelease];
+			sock = [[[OFTLSSocketClass alloc] init] autorelease];
 			port = 443;
 		} else {
 			sock = [OFTCPSocket socket];

@@ -52,12 +52,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @end
  * @endcode
  */
-#define OF_APPLICATION_DELEGATE(class_)					\
-	int								\
-	main(int argc, char *argv[])					\
-	{								\
-		return of_application_main(&argc, &argv,		\
-		    (class_ *)[[class_ alloc] init]);			\
+#define OF_APPLICATION_DELEGATE(class_)			\
+	int						\
+	main(int argc, char *argv[])			\
+	{						\
+		return OFApplicationMain(&argc, &argv,	\
+		    (class_ *)[[class_ alloc] init]);	\
 	}
 
 #ifdef OF_HAVE_PLEDGE
@@ -282,8 +282,8 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int *_Nonnull,
-    char *_Nullable *_Nonnull[_Nonnull], id <OFApplicationDelegate>);
+extern int OFApplicationMain(int *_Nonnull, char *_Nullable *_Nonnull[_Nonnull],
+    id <OFApplicationDelegate>);
 #ifdef __cplusplus
 }
 #endif

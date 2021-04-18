@@ -213,7 +213,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern Class _Nullable of_tls_socket_class;
+extern Class _Nullable OFTLSSocketClass;
 #ifdef __cplusplus
 }
 #endif

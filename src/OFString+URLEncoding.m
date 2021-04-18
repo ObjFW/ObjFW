@@ -50,7 +50,7 @@ int _OFString_URLEncoding_reference;
 			char buffer[4];
 			size_t bufferLen;
 
-			if ((bufferLen = of_string_utf8_encode(c, buffer)) == 0)
+			if ((bufferLen = OFUTF8StringEncode(c, buffer)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			for (size_t j = 0; j < bufferLen; j++) {

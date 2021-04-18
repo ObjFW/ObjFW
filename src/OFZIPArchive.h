@@ -172,4 +172,15 @@ OF_SUBCLASSING_RESTRICTED
 - (void)close;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern uint32_t OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull);
+extern uint64_t OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

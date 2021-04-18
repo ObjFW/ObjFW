@@ -54,10 +54,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFPluginHandle OFDlopen(OFString *path, int flags);
-extern void *OFDlsym(OFPluginHandle handle, const char *symbol);
-extern OFString *_Nullable OFDlerror(void);
-extern void OFDlclose(OFPluginHandle handle);
+extern OFPluginHandle OFDlOpen(OFString *path, int flags);
+extern void *OFDlSym(OFPluginHandle handle, const char *symbol);
+extern OFString *_Nullable OFDlError(void);
+extern void OFDlClose(OFPluginHandle handle);
 #ifdef __cplusplus
 }
 #endif

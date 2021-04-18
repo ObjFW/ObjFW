@@ -97,7 +97,7 @@
 	if (strcmp([object objCType], objCType) != 0)
 		return false;
 
-	size = of_sizeof_type_encoding(objCType);
+	size = OFSizeOfTypeEncoding(objCType);
 
 	value = OFAllocMemory(1, size);
 	@try {
@@ -121,7 +121,7 @@
 
 - (unsigned long)hash
 {
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
 	unsigned long hash;
 
@@ -203,7 +203,7 @@
 {
 	OFMutableString *ret =
 	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
 
 	value = OFAllocMemory(1, size);

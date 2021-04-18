@@ -62,6 +62,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to create directory %@: %@", _URL, of_strerror(_errNo)];
+	    @"Failed to create directory %@: %@", _URL, OFStrError(_errNo)];
 }
 @end

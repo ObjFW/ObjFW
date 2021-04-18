@@ -27,8 +27,9 @@
 
 #import "macros.h"
 
-static size_t alignofEncoding(const char **type, size_t *length, bool inStruct);
-static size_t sizeofEncoding(const char **type, size_t *length);
+static size_t alignmentOfEncoding(const char **type, size_t *length,
+    bool inStruct);
+static size_t sizeOfEncoding(const char **type, size_t *length);
 
 static size_t
 alignofArray(const char **type, size_t *length)
@@ -45,7 +46,7 @@ alignofArray(const char **type, size_t *length)
 		(*length)--;
 	}
 
-	align = alignofEncoding(type, length, true);
+	align = alignmentOfEncoding(type, length, true);
 
 	if (*length == 0 || **type != ']')
 		@throw [OFInvalidFormatException exception];
@@ -83,7 +84,7 @@ alignofStruct(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != '}') {
-		size_t fieldAlign = alignofEncoding(type, length, true);
+		size_t fieldAlign = alignmentOfEncoding(type, length, true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 		if (!first && fieldAlign > 4)
@@ -129,7 +130,7 @@ alignofUnion(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != ')') {
-		size_t fieldAlign = alignofEncoding(type, length, true);
+		size_t fieldAlign = alignmentOfEncoding(type, length, true);
 
 		if (fieldAlign > align)
 			align = fieldAlign;
@@ -145,7 +146,7 @@ alignofUnion(const char **type, size_t *length)
 }
 
 static size_t
-alignofEncoding(const char **type, size_t *length, bool inStruct)
+alignmentOfEncoding(const char **type, size_t *length, bool inStruct)
 {
 	size_t align;
 
@@ -239,7 +240,7 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 		/* Just to skip over the rest */
 		(*type)++;
 		(*length)--;
-		alignofEncoding(type, length, false);
+		alignmentOfEncoding(type, length, false);
 
 		return OF_ALIGNOF(void *);
 #ifndef __STDC_NO_COMPLEX__
@@ -302,7 +303,7 @@ sizeofArray(const char **type, size_t *length)
 	if (count == 0)
 		@throw [OFInvalidFormatException exception];
 
-	size = sizeofEncoding(type, length);
+	size = sizeOfEncoding(type, length);
 
 	if (*length == 0 || **type != ']')
 		@throw [OFInvalidFormatException exception];
@@ -350,8 +351,8 @@ sizeofStruct(const char **type, size_t *length)
 
 		typeCopy = *type;
 		lengthCopy = *length;
-		fieldSize = sizeofEncoding(type, length);
-		fieldAlign = alignofEncoding(&typeCopy, &lengthCopy, true);
+		fieldSize = sizeOfEncoding(type, length);
+		fieldAlign = alignmentOfEncoding(&typeCopy, &lengthCopy, true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 		if (!first && fieldAlign > 4)
@@ -417,7 +418,7 @@ sizeofUnion(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != ')') {
-		size_t fieldSize = sizeofEncoding(type, length);
+		size_t fieldSize = sizeOfEncoding(type, length);
 
 		if (fieldSize > size)
 			size = fieldSize;
@@ -433,7 +434,7 @@ sizeofUnion(const char **type, size_t *length)
 }
 
 static size_t
-sizeofEncoding(const char **type, size_t *length)
+sizeOfEncoding(const char **type, size_t *length)
 {
 	size_t size;
 
@@ -512,7 +513,7 @@ sizeofEncoding(const char **type, size_t *length)
 		/* Just to skip over the rest */
 		(*type)++;
 		(*length)--;
-		sizeofEncoding(type, length);
+		sizeOfEncoding(type, length);
 
 		return sizeof(void *);
 #ifndef __STDC_NO_COMPLEX__
@@ -550,10 +551,10 @@ sizeofEncoding(const char **type, size_t *length)
 }
 
 size_t
-of_sizeof_type_encoding(const char *type)
+OFSizeOfTypeEncoding(const char *type)
 {
 	size_t length = strlen(type);
-	size_t ret = sizeofEncoding(&type, &length);
+	size_t ret = sizeOfEncoding(&type, &length);
 
 	if (length > 0)
 		@throw [OFInvalidFormatException exception];
@@ -562,10 +563,10 @@ of_sizeof_type_encoding(const char *type)
 }
 
 size_t
-of_alignof_type_encoding(const char *type)
+OFAlignmentOfTypeEncoding(const char *type)
 {
 	size_t length = strlen(type);
-	size_t ret = alignofEncoding(&type, &length, false);
+	size_t ret = alignmentOfEncoding(&type, &length, false);
 
 	if (length > 0)
 		@throw [OFInvalidFormatException exception];

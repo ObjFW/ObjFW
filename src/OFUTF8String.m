@@ -39,28 +39,28 @@
 
 #import "unicode.h"
 
-extern const OFChar16 of_iso_8859_2_table[];
-extern const size_t of_iso_8859_2_table_offset;
-extern const OFChar16 of_iso_8859_3_table[];
-extern const size_t of_iso_8859_3_table_offset;
-extern const OFChar16 of_iso_8859_15_table[];
-extern const size_t of_iso_8859_15_table_offset;
-extern const OFChar16 of_windows_1251_table[];
-extern const size_t of_windows_1251_table_offset;
-extern const OFChar16 of_windows_1252_table[];
-extern const size_t of_windows_1252_table_offset;
-extern const OFChar16 of_codepage_437_table[];
-extern const size_t of_codepage_437_table_offset;
-extern const OFChar16 of_codepage_850_table[];
-extern const size_t of_codepage_850_table_offset;
-extern const OFChar16 of_codepage_858_table[];
-extern const size_t of_codepage_858_table_offset;
-extern const OFChar16 of_mac_roman_table[];
-extern const size_t of_mac_roman_table_offset;
-extern const OFChar16 of_koi8_r_table[];
-extern const size_t of_koi8_r_table_offset;
-extern const OFChar16 of_koi8_u_table[];
-extern const size_t of_koi8_u_table_offset;
+extern const OFChar16 OFISO8859_2Table[];
+extern const size_t OFISO8859_2TableOffset;
+extern const OFChar16 OFISO8859_3Table[];
+extern const size_t OFISO8859_3TableOffset;
+extern const OFChar16 OFISO8859_15Table[];
+extern const size_t OFISO8859_15TableOffset;
+extern const OFChar16 OFWindows1251Table[];
+extern const size_t OFWindows1251TableOffset;
+extern const OFChar16 OFWindows1252Table[];
+extern const size_t OFWindows1252TableOffset;
+extern const OFChar16 OFCodepage437Table[];
+extern const size_t OFCodepage437TableOffset;
+extern const OFChar16 OFCodepage850Table[];
+extern const size_t OFCodepage850TableOffset;
+extern const OFChar16 OFCodepage858Table[];
+extern const size_t OFCodepage858TableOffset;
+extern const OFChar16 OFMacRomanTable[];
+extern const size_t OFMacRomanTableOffset;
+extern const OFChar16 OFKOI8RTable[];
+extern const size_t OFKOI8RTableOffset;
+extern const OFChar16 OFKOI8UTable[];
+extern const size_t OFKOI8UTableOffset;
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
@@ -82,7 +82,7 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 int
-of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
+OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length)
 {
 	size_t tmpLength = UTF8Length;
 	int isUTF8 = 0;
@@ -149,7 +149,7 @@ of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
 }
 
 size_t
-of_string_utf8_get_index(const char *string, size_t position)
+positionToIndex(const char *string, size_t position)
 {
 	size_t idx = position;
 
@@ -161,7 +161,7 @@ of_string_utf8_get_index(const char *string, size_t position)
 }
 
 size_t
-of_string_utf8_get_position(const char *string, size_t idx, size_t length)
+OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 {
 	for (size_t i = 0; i <= idx; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
@@ -207,7 +207,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cString = storage;
 		_s->cStringLength = UTF8StringLength;
 
-		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
+		switch (OFUTF8StringCheck(UTF8String, UTF8StringLength,
 		    &_s->length)) {
 		case 1:
 			_s->isUTF8 = true;
@@ -251,7 +251,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		if (encoding == OFStringEncodingUTF8 ||
 		    encoding == OFStringEncodingASCII) {
-			switch (of_string_utf8_check(cString, cStringLength,
+			switch (OFUTF8StringCheck(cString, cStringLength,
 			    &_s->length)) {
 			case 1:
 				if (encoding == OFStringEncodingASCII)
@@ -285,7 +285,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				}
 
 				_s->isUTF8 = true;
-				bytes = of_string_utf8_encode(
+				bytes = OFUTF8StringEncode(
 				    (uint8_t)cString[i], buffer);
 
 				if (bytes == 0)
@@ -309,40 +309,40 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 #define CASE(encoding, var)				\
 		case encoding:				\
 			table = var;			\
-			tableOffset = var##_offset;	\
+			tableOffset = var##Offset;	\
 			break;
 #ifdef HAVE_ISO_8859_2
-		CASE(OFStringEncodingISO8859_2, of_iso_8859_2_table)
+		CASE(OFStringEncodingISO8859_2, OFISO8859_2Table)
 #endif
 #ifdef HAVE_ISO_8859_3
-		CASE(OFStringEncodingISO8859_3, of_iso_8859_3_table)
+		CASE(OFStringEncodingISO8859_3, OFISO8859_3Table)
 #endif
 #ifdef HAVE_ISO_8859_15
-		CASE(OFStringEncodingISO8859_15, of_iso_8859_15_table)
+		CASE(OFStringEncodingISO8859_15, OFISO8859_15Table)
 #endif
 #ifdef HAVE_WINDOWS_1251
-		CASE(OFStringEncodingWindows1251, of_windows_1251_table)
+		CASE(OFStringEncodingWindows1251, OFWindows1251Table)
 #endif
 #ifdef HAVE_WINDOWS_1252
-		CASE(OFStringEncodingWindows1252, of_windows_1252_table)
+		CASE(OFStringEncodingWindows1252, OFWindows1252Table)
 #endif
 #ifdef HAVE_CODEPAGE_437
-		CASE(OFStringEncodingCodepage437, of_codepage_437_table)
+		CASE(OFStringEncodingCodepage437, OFCodepage437Table)
 #endif
 #ifdef HAVE_CODEPAGE_850
-		CASE(OFStringEncodingCodepage850, of_codepage_850_table)
+		CASE(OFStringEncodingCodepage850, OFCodepage850Table)
 #endif
 #ifdef HAVE_CODEPAGE_858
-		CASE(OFStringEncodingCodepage858, of_codepage_858_table)
+		CASE(OFStringEncodingCodepage858, OFCodepage858Table)
 #endif
 #ifdef HAVE_MAC_ROMAN
-		CASE(OFStringEncodingMacRoman, of_mac_roman_table)
+		CASE(OFStringEncodingMacRoman, OFMacRomanTable)
 #endif
 #ifdef HAVE_KOI8_R
-		CASE(OFStringEncodingKOI8R, of_koi8_r_table)
+		CASE(OFStringEncodingKOI8R, OFKOI8RTable)
 #endif
 #ifdef HAVE_KOI8_U
-		CASE(OFStringEncodingKOI8U, of_koi8_u_table)
+		CASE(OFStringEncodingKOI8U, OFKOI8UTable)
 #endif
 #undef CASE
 		default:
@@ -367,7 +367,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				@throw [OFInvalidEncodingException exception];
 
 			_s->isUTF8 = true;
-			byteLength = of_string_utf8_encode(unichar, buffer);
+			byteLength = OFUTF8StringEncode(unichar, buffer);
 
 			if (byteLength == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -413,7 +413,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			UTF8StringLength -= 3;
 		}
 
-		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
+		switch (OFUTF8StringCheck(UTF8String, UTF8StringLength,
 		    &_s->length)) {
 		case 1:
 			_s->isUTF8 = true;
@@ -477,7 +477,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
-			size_t len = of_string_utf8_encode(characters[i],
+			size_t len = OFUTF8StringEncode(characters[i],
 			    _s->cString + j);
 
 			if (len == 0)
@@ -563,7 +563,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 				_s->length--;
 			}
 
-			len = of_string_utf8_encode(character, _s->cString + j);
+			len = OFUTF8StringEncode(character, _s->cString + j);
 
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -619,7 +619,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode((swap
+			size_t len = OFUTF8StringEncode((swap
 			    ? OFByteSwap32(characters[i])
 			    : characters[i]),
 			    buffer);
@@ -679,7 +679,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		_s->cStringLength = cStringLength;
 
 		@try {
-			switch (of_string_utf8_check(tmp, cStringLength,
+			switch (OFUTF8StringCheck(tmp, cStringLength,
 			    &_s->length)) {
 			case 1:
 				_s->isUTF8 = true;
@@ -873,25 +873,25 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		OFUnichar c1, c2;
 		ssize_t l1, l2;
 
-		l1 = of_string_utf8_decode(_s->cString + i,
+		l1 = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c1);
-		l2 = of_string_utf8_decode(otherCString + j,
+		l2 = OFUTF8StringDecode(otherCString + j,
 		    otherCStringLength - j, &c2);
 
 		if (l1 <= 0 || l2 <= 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
 			@throw [OFInvalidEncodingException exception];
 
-		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+		if (c1 >> 8 < OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    of_unicode_casefolding_table[c1 >> 8][c1 & 0xFF];
+			    OFUnicodeCaseFoldingTable[c1 >> 8][c1 & 0xFF];
 
 			if (tc)
 				c1 = tc;
 		}
 
-		if (c2 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+		if (c2 >> 8 < OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    of_unicode_casefolding_table[c2 >> 8][c2 & 0xFF];
+			    OFUnicodeCaseFoldingTable[c2 >> 8][c2 & 0xFF];
 
 			if (tc)
 				c2 = tc;
@@ -928,7 +928,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		OFUnichar c;
 		ssize_t length;
 
-		if ((length = of_string_utf8_decode(_s->cString + i,
+		if ((length = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c)) <= 0)
 			@throw [OFInvalidEncodingException exception];
 
@@ -957,10 +957,10 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	if (!_s->isUTF8)
 		return _s->cString[idx];
 
-	idx = of_string_utf8_get_position(_s->cString, idx, _s->cStringLength);
+	idx = OFUTF8StringIndexToPosition(_s->cString, idx, _s->cStringLength);
 
-	if (of_string_utf8_decode(_s->cString + idx,
-	    _s->cStringLength - idx, &character) <= 0)
+	if (OFUTF8StringDecode(_s->cString + idx, _s->cStringLength - idx,
+	    &character) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
 	return character;
@@ -995,9 +995,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		rangeLocation = of_string_utf8_get_position(
+		rangeLocation = OFUTF8StringIndexToPosition(
 		    _s->cString, range.location, _s->cStringLength);
-		rangeLength = of_string_utf8_get_position(
+		rangeLength = OFUTF8StringIndexToPosition(
 		    _s->cString + rangeLocation, range.length,
 		    _s->cStringLength - rangeLocation);
 	} else {
@@ -1015,7 +1015,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		for (size_t i = rangeLength - cStringLength;; i--) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength) == 0) {
-				range.location += of_string_utf8_get_index(
+				range.location += positionToIndex(
 				    _s->cString + rangeLocation, i);
 				range.length = string.length;
 
@@ -1030,7 +1030,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength) == 0) {
-				range.location += of_string_utf8_get_index(
+				range.location += positionToIndex(
 				    _s->cString + rangeLocation, i);
 				range.length = string.length;
 
@@ -1069,9 +1069,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		start = of_string_utf8_get_position(_s->cString, start,
+		start = OFUTF8StringIndexToPosition(_s->cString, start,
 		    _s->cStringLength);
-		end = of_string_utf8_get_position(_s->cString, end,
+		end = OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
 
@@ -1162,7 +1162,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		OFUnichar c;
 		ssize_t cLen;
 
-		cLen = of_string_utf8_decode(_s->cString + i,
+		cLen = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
@@ -1189,7 +1189,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		OFChar32 c;
 		ssize_t cLen;
 
-		cLen = of_string_utf8_decode(_s->cString + i,
+		cLen = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {

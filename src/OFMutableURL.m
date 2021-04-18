@@ -26,8 +26,6 @@
 
 #import "OFInvalidFormatException.h"
 
-extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
-
 @implementation OFMutableURL
 @dynamic scheme, URLEncodedScheme, host, URLEncodedHost, port, user;
 @dynamic URLEncodedUser, password, URLEncodedPassword, path, URLEncodedPath;
@@ -57,7 +55,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedScheme != nil)
-		of_url_verify_escaped(URLEncodedScheme,
+		OFURLVerifyEscaped(URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 	old = _URLEncodedScheme;
@@ -70,7 +68,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _URLEncodedHost;
 
-	if (of_url_is_ipv6_host(host))
+	if (OFURLIsIPv6Host(host))
 		_URLEncodedHost = [[OFString alloc]
 		    initWithFormat: @"[%@]", host];
 	else
@@ -89,11 +87,11 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 	if ([URLEncodedHost hasPrefix: @"["] &&
 	    [URLEncodedHost hasSuffix: @"]"]) {
-		if (!of_url_is_ipv6_host([URLEncodedHost substringWithRange:
+		if (!OFURLIsIPv6Host([URLEncodedHost substringWithRange:
 		    OFRangeMake(1, URLEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (URLEncodedHost != nil)
-		of_url_verify_escaped(URLEncodedHost,
+		OFURLVerifyEscaped(URLEncodedHost,
 		    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 	old = _URLEncodedHost;
@@ -126,7 +124,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedUser != nil)
-		of_url_verify_escaped(URLEncodedUser,
+		OFURLVerifyEscaped(URLEncodedUser,
 		    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 	old = _URLEncodedUser;
@@ -153,7 +151,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedPassword != nil)
-		of_url_verify_escaped(URLEncodedPassword,
+		OFURLVerifyEscaped(URLEncodedPassword,
 		    [OFCharacterSet URLPasswordAllowedCharacterSet]);
 
 	old = _URLEncodedPassword;
@@ -179,7 +177,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedPath != nil)
-		of_url_verify_escaped(URLEncodedPath,
+		OFURLVerifyEscaped(URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 	old = _URLEncodedPath;
@@ -225,7 +223,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedQuery != nil)
-		of_url_verify_escaped(URLEncodedQuery,
+		OFURLVerifyEscaped(URLEncodedQuery,
 		    [OFCharacterSet URLQueryAllowedCharacterSet]);
 
 	old = _URLEncodedQuery;
@@ -293,7 +291,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedFragment != nil)
-		of_url_verify_escaped(URLEncodedFragment,
+		OFURLVerifyEscaped(URLEncodedFragment,
 		    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 
 	old = _URLEncodedFragment;

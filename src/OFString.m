@@ -101,27 +101,27 @@ static locale_t cLocale;
 @interface OFStringPlaceholder: OFString
 @end
 
-extern bool of_unicode_to_iso_8859_2(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_iso_8859_3(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_iso_8859_15(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_windows_1251(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_windows_1252(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_437(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_850(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_858(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_mac_roman(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_koi8_r(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToKOI8R(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_koi8_u(const OFUnichar *, unsigned char *,
+extern bool OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
     size_t, bool);
 
 /* References for static linking */
@@ -241,7 +241,7 @@ OFStringEncodingName(OFStringEncoding encoding)
 }
 
 size_t
-of_string_utf8_encode(OFUnichar character, char *buffer)
+OFUTF8StringEncode(OFUnichar character, char *buffer)
 {
 	if (character < 0x80) {
 		buffer[0] = character;
@@ -267,7 +267,7 @@ of_string_utf8_encode(OFUnichar character, char *buffer)
 }
 
 ssize_t
-of_string_utf8_decode(const char *buffer_, size_t length, OFUnichar *ret)
+OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 {
 	const unsigned char *buffer = (const unsigned char *)buffer_;
 
@@ -317,7 +317,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, OFUnichar *ret)
 }
 
 size_t
-of_string_utf16_length(const OFChar16 *string)
+OFUTF16StringLength(const OFChar16 *string)
 {
 	size_t length = 0;
 
@@ -328,7 +328,7 @@ of_string_utf16_length(const OFChar16 *string)
 }
 
 size_t
-of_string_utf32_length(const OFChar32 *string)
+OFUTF32StringLength(const OFChar32 *string)
 {
 	size_t length = 0;
 
@@ -899,7 +899,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
 	return [self initWithUTF16String: string
-				  length: of_string_utf16_length(string)
+				  length: OFUTF16StringLength(string)
 			       byteOrder: OFByteOrderNative];
 }
 
@@ -915,7 +915,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return [self initWithUTF16String: string
-				  length: of_string_utf16_length(string)
+				  length: OFUTF16StringLength(string)
 			       byteOrder: byteOrder];
 }
 
@@ -929,7 +929,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
 	return [self initWithUTF32String: string
-				  length: of_string_utf32_length(string)
+				  length: OFUTF32StringLength(string)
 			       byteOrder: OFByteOrderNative];
 }
 
@@ -945,7 +945,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	return [self initWithUTF32String: string
-				  length: of_string_utf32_length(string)
+				  length: OFUTF32StringLength(string)
 			       byteOrder: byteOrder];
 }
 
@@ -1128,8 +1128,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode(characters[i],
-			    buffer);
+			size_t len = OFUTF8StringEncode(characters[i], buffer);
 
 			/*
 			 * Check for one more than the current index, as we
@@ -1201,8 +1200,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_iso_8859_2(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToISO8859_2(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1214,8 +1213,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_iso_8859_3(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToISO8859_3(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1227,8 +1226,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_iso_8859_15(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToISO8859_15(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1240,7 +1239,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_windows_1251(characters,
+		if (!OFUnicodeToWindows1251(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1253,7 +1252,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_windows_1252(characters,
+		if (!OFUnicodeToWindows1252(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1266,7 +1265,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_437(characters,
+		if (!OFUnicodeToCodepage437(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1279,7 +1278,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_850(characters,
+		if (!OFUnicodeToCodepage850(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1292,7 +1291,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_858(characters,
+		if (!OFUnicodeToCodepage858(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1305,8 +1304,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_mac_roman(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToMacRoman(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1318,8 +1317,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_koi8_r(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToKOI8R(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1331,8 +1330,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_koi8_u(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!OFUnicodeToKOI8U(characters, (unsigned char *)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1466,8 +1465,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode(characters[i],
-			    buffer);
+			size_t len = OFUTF8StringEncode(characters[i], buffer);
 
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -1620,16 +1618,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		OFUnichar oc = otherCharacters[i];
 
 #ifdef OF_HAVE_UNICODE_TABLES
-		if (c >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+		if (c >> 8 < OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    of_unicode_casefolding_table[c >> 8][c & 0xFF];
+			    OFUnicodeCaseFoldingTable[c >> 8][c & 0xFF];
 
 			if (tc)
 				c = tc;
 		}
-		if (oc >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
+		if (oc >> 8 < OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    of_unicode_casefolding_table[oc >> 8][oc & 0xFF];
+			    OFUnicodeCaseFoldingTable[oc >> 8][oc & 0xFF];
 
 			if (tc)
 				oc = tc;
@@ -2670,14 +2668,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 #ifdef OF_HAVE_UNICODE_TABLES
 - (OFString *)decomposedStringWithCanonicalMapping
 {
-	return decomposedString(self, of_unicode_decomposition_table,
-	    OF_UNICODE_DECOMPOSITION_TABLE_SIZE);
+	return decomposedString(self, OFUnicodeDecompositionTable,
+	    OFUnicodeDecompositionTableSize);
 }
 
 - (OFString *)decomposedStringWithCompatibilityMapping
 {
-	return decomposedString(self, of_unicode_decomposition_compat_table,
-	    OF_UNICODE_DECOMPOSITION_COMPAT_TABLE_SIZE);
+	return decomposedString(self, OFUnicodeDecompositionCompatTable,
+	    OFUnicodeDecompositionCompatTableSize);
 }
 #endif
 

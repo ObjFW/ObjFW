@@ -58,6 +58,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"The sandbox could not be applied: %@", of_strerror(_errNo)];
+	    @"The sandbox could not be applied: %@", OFStrError(_errNo)];
 }
 @end

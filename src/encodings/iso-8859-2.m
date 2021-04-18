@@ -19,7 +19,7 @@
 
 #import "common.h"
 
-const OFChar16 of_iso_8859_2_table[] = {
+const OFChar16 OFISO8859_2Table[] = {
 	0x00A0, 0x0104, 0x02D8, 0x0141, 0x00A4, 0x013D, 0x015A, 0x00A7,
 	0x00A8, 0x0160, 0x015E, 0x0164, 0x0179, 0x00AD, 0x017D, 0x017B,
 	0x00B0, 0x0105, 0x02DB, 0x0142, 0x00B4, 0x013E, 0x015B, 0x02C7,
@@ -33,8 +33,8 @@ const OFChar16 of_iso_8859_2_table[] = {
 	0x0111, 0x0144, 0x0148, 0x00F3, 0x00F4, 0x0151, 0x00F6, 0x00F7,
 	0x0159, 0x016F, 0x00FA, 0x0171, 0x00FC, 0x00FD, 0x0163, 0x02D9
 };
-const size_t of_iso_8859_2_table_offset =
-    256 - (sizeof(of_iso_8859_2_table) / sizeof(*of_iso_8859_2_table));
+const size_t OFISO8859_2TableOffset =
+    256 - (sizeof(OFISO8859_2Table) / sizeof(*OFISO8859_2Table));
 
 static const unsigned char page0[] = {
 	0xA0, 0x00, 0x00, 0x00, 0xA4, 0x00, 0x00, 0xA7,
@@ -80,7 +80,7 @@ static const unsigned char page2[] = {
 static const uint8_t page2Start = 0xC7;
 
 bool
-of_unicode_to_iso_8859_2(const OFUnichar *input, unsigned char *output,
+OFUnicodeToISO8859_2(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {

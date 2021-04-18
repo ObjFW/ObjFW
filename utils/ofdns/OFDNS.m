@@ -35,7 +35,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[of_stderr writeLine:
+	[OFStdErr writeLine:
 	    OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
@@ -67,9 +67,9 @@ help(OFStream *stream, bool full, int status)
 	_inFlight--;
 
 	if (exception == nil)
-		[of_stdout writeFormat: @"%@\n", response];
+		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
@@ -126,11 +126,11 @@ help(OFStream *stream, bool full, int status)
 			[recordTypes addObject: optionsParser.argument];
 			break;
 		case 'h':
-			help(of_stdout, true, 0);
+			help(OFStdOut, true, 0);
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"long_option_required_argument",
 				    @"%[prog]: Option --%[opt] requires an "
 				    @"argument",
@@ -140,7 +140,7 @@ help(OFStream *stream, bool full, int status)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"option_requires_argument",
 				    @"%[prog]: Option -%[opt] requires an "
 				    @"argument",
@@ -152,7 +152,7 @@ help(OFStream *stream, bool full, int status)
 			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -161,7 +161,7 @@ help(OFStream *stream, bool full, int status)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"Unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -176,7 +176,7 @@ help(OFStream *stream, bool full, int status)
 	remainingArguments = optionsParser.remainingArguments;
 
 	if (remainingArguments.count < 1)
-		help(of_stderr, false, 1);
+		help(OFStdErr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
 	DNSClass = (DNSClassString != nil

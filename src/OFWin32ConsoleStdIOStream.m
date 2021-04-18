@@ -26,7 +26,7 @@
  * read.
  *
  * Therefore, instead of just using the UTF-8 codepage, this captures all reads
- * and writes to of_std{in,out,err} on the low level, interprets the buffer as
+ * and writes to OFStd{In,Out,Err} on the low level, interprets the buffer as
  * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
  * Doing so is safe, as the console only supports text anyway and thus it does
  * not matter if binary gets garbled by the conversion (e.g. because invalid
@@ -88,13 +88,13 @@ codepageToEncoding(UINT codepage)
 		return;
 
 	if ((fd = _fileno(stdin)) >= 0)
-		of_stdin = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdIn = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = _fileno(stdout)) >= 0)
-		of_stdout = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdOut = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = _fileno(stderr)) >= 0)
-		of_stderr = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdErr = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 }
 
@@ -179,7 +179,7 @@ codepageToEncoding(UINT codepage)
 			char UTF8[4];
 			size_t UTF8Len;
 
-			if ((UTF8Len = of_string_utf8_encode(c, UTF8)) == 0)
+			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
@@ -236,7 +236,7 @@ codepageToEncoding(UINT codepage)
 				i++;
 			}
 
-			if ((UTF8Len = of_string_utf8_encode(c, UTF8)) == 0)
+			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
@@ -277,7 +277,7 @@ codepageToEncoding(UINT codepage)
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
 
-		UTF8Len = -of_string_utf8_decode(
+		UTF8Len = -OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		OFEnsure(UTF8Len > 0);
@@ -293,7 +293,7 @@ codepageToEncoding(UINT codepage)
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
 			return 0;
 
-		UTF8Len = of_string_utf8_decode(
+		UTF8Len = OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
@@ -365,7 +365,7 @@ codepageToEncoding(UINT codepage)
 			OFUnichar c;
 			ssize_t UTF8Len;
 
-			UTF8Len = of_string_utf8_decode(buffer + i, length - i,
+			UTF8Len = OFUTF8StringDecode(buffer + i, length - i,
 			    &c);
 
 			if (UTF8Len < 0 && UTF8Len >= -4) {

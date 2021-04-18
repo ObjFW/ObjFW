@@ -106,7 +106,7 @@ struct {
 - (void)finishInitialization
 {
 	@synchronized (self) {
-		struct of_string_utf8_ivars *ivars;
+		struct OFUTF8StringIvars *ivars;
 
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
@@ -115,8 +115,8 @@ struct {
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 
-		switch (of_string_utf8_check(ivars->cString,
-		    ivars->cStringLength, &ivars->length)) {
+		switch (OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
+		    &ivars->length)) {
 		case 1:
 			ivars->isUTF8 = true;
 			break;

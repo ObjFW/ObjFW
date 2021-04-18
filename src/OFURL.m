@@ -107,7 +107,7 @@ OF_DIRECT_MEMBERS
 @end
 
 bool
-of_url_is_ipv6_host(OFString *host)
+OFURLIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
@@ -323,7 +323,7 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 void
-of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
+OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -462,7 +462,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		    initWithUTF8String: UTF8String
 				length: tmp - UTF8String];
 
-		of_url_verify_escaped(_URLEncodedScheme,
+		OFURLVerifyEscaped(_URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 		UTF8String = tmp + 3;
@@ -487,14 +487,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedPassword = [[OFString alloc]
 				    initWithUTF8String: tmp3];
 
-				of_url_verify_escaped(_URLEncodedPassword,
+				OFURLVerifyEscaped(_URLEncodedPassword,
 				    [OFCharacterSet
 				    URLPasswordAllowedCharacterSet]);
 			} else
 				_URLEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
 
-			of_url_verify_escaped(_URLEncodedUser,
+			OFURLVerifyEscaped(_URLEncodedUser,
 			    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 			UTF8String = tmp2;
@@ -567,7 +567,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			    initWithUTF8String: UTF8String];
 
 		if (!isIPv6Host)
-			of_url_verify_escaped(_URLEncodedHost,
+			OFURLVerifyEscaped(_URLEncodedHost,
 			    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 		if ((UTF8String = tmp) != NULL) {
@@ -577,7 +577,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedFragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				of_url_verify_escaped(_URLEncodedFragment,
+				OFURLVerifyEscaped(_URLEncodedFragment,
 				    [OFCharacterSet
 				    URLFragmentAllowedCharacterSet]);
 			}
@@ -588,7 +588,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedQuery = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				of_url_verify_escaped(_URLEncodedQuery,
+				OFURLVerifyEscaped(_URLEncodedQuery,
 				    [OFCharacterSet
 				    URLQueryAllowedCharacterSet]);
 			}
@@ -599,7 +599,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			of_url_verify_escaped(_URLEncodedPath,
+			OFURLVerifyEscaped(_URLEncodedPath,
 			    [OFCharacterSet URLPathAllowedCharacterSet]);
 		}
 
@@ -645,7 +645,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedFragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			of_url_verify_escaped(_URLEncodedFragment,
+			OFURLVerifyEscaped(_URLEncodedFragment,
 			    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 		}
 
@@ -654,7 +654,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedQuery = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			of_url_verify_escaped(_URLEncodedQuery,
+			OFURLVerifyEscaped(_URLEncodedQuery,
 			    [OFCharacterSet URLQueryAllowedCharacterSet]);
 		}
 
@@ -694,7 +694,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			}
 		}
 
-		of_url_verify_escaped(_URLEncodedPath,
+		OFURLVerifyEscaped(_URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);
@@ -880,7 +880,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		OFString *host = [_URLEncodedHost substringWithRange:
 		    OFRangeMake(1, _URLEncodedHost.length - 2)];
 
-		if (!of_url_is_ipv6_host(host))
+		if (!OFURLIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;

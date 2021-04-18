@@ -94,13 +94,12 @@ atexitHandler(void)
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-	of_socket_deinit();
+	OFSocketDeinit();
 #endif
 }
 
 int
-of_application_main(int *argc, char **argv[],
-    id <OFApplicationDelegate> delegate)
+OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
 #ifdef OF_WINDOWS
 	wchar_t **wargv, **wenvp;
@@ -231,7 +230,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				OFString *tmp, *key, *value;
 				size_t length, pos;
 
-				length = of_string_utf16_length(env);
+				length = OFUTF16StringLength(env);
 				tmp = [OFString stringWithUTF16String: env
 							       length: length];
 				env += length + 1;

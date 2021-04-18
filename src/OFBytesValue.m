@@ -27,7 +27,7 @@
 	self = [super init];
 
 	@try {
-		_size = of_sizeof_type_encoding(objCType);
+		_size = OFSizeOfTypeEncoding(objCType);
 		_objCType = objCType;
 		_bytes = OFAllocMemory(1, _size);
 
