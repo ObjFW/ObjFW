@@ -14,9 +14,8 @@
  */
 
 #import "OFObject.h"
+#import "OFSocket.h"
 #import "OFString.h"
-
-#import "socket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

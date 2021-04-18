@@ -43,11 +43,10 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFOnce.h"
 #import "OFString.h"
 
 #import "OFNotImplementedException.h"
-
-#import "once.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H

@@ -24,6 +24,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFLocale.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
@@ -52,8 +53,6 @@
 # include <rexx/errors.h>
 # include <rexx/storage.h>
 #endif
-
-#import "socket_helpers.h"
 
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"

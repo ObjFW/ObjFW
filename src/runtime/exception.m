@@ -26,7 +26,7 @@
 
 #import "macros.h"
 #ifdef OF_HAVE_THREADS
-# include "mutex.h"
+# include "OFPlainMutex.h"
 #endif
 
 #ifdef HAVE_SEH_EXCEPTIONS

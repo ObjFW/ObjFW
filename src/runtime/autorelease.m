@@ -27,7 +27,7 @@
 
 #import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-# import "tlskey.h"
+# import "OFTLSKey.h"
 #endif
 
 #ifndef OF_OBJFW_RUNTIME

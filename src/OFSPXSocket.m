@@ -20,14 +20,13 @@
 #import "OFSPXSocket.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFNotOpenException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 #ifndef NSPROTO_SPX
 # define NSPROTO_SPX 0

@@ -16,10 +16,9 @@
 #include "config.h"
 
 #import "OFGZIPStream.h"
-#import "OFInflateStream.h"
+#import "OFCRC32.h"
 #import "OFDate.h"
-
-#import "crc32.h"
+#import "OFInflateStream.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidFormatException.h"
@@ -239,7 +238,7 @@
 				    readIntoBuffer: buffer
 					    length: length];
 
-				_CRC32 = of_crc32(_CRC32, buffer, bytesRead);
+				_CRC32 = OFCRC32(_CRC32, buffer, bytesRead);
 				_uncompressedSize += bytesRead;
 
 				return bytesRead;

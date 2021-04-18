@@ -26,11 +26,10 @@
 
 #import "OFPollKernelEventObserver.h"
 #import "OFData.h"
+#import "OFSocket+Private.h"
 
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
-
-#import "socket_helpers.h"
 
 #ifdef OF_WII
 # define pollfd pollsd

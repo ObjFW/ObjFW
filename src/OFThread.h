@@ -16,9 +16,8 @@
 #include <setjmp.h>
 
 #import "OFObject.h"
-
 #ifdef OF_HAVE_THREADS
-# import "thread.h"
+# import "OFPlainThread.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

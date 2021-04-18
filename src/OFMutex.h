@@ -15,8 +15,7 @@
 
 #import "OFObject.h"
 #import "OFLocking.h"
-
-#import "mutex.h"
+#import "OFPlainMutex.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

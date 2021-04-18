@@ -14,9 +14,8 @@
  */
 
 #import "OFObject.h"
-
 #ifdef OF_HAVE_SOCKETS
-# import "socket.h"
+# import "OFSocket.h"
 #endif
 
 #ifdef OF_AMIGAOS

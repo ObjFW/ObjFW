@@ -31,9 +31,16 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 #import "OFLocale.h"
 #import "OFMethodSignature.h"
 #import "OFRunLoop.h"
+#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
+# import "OFPlainMutex.h"	/* For OFSpinlock */
+#endif
+#import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
 
@@ -58,14 +65,6 @@
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
-#endif
-
-#import "OFString.h"
-
-#if defined(OF_HAVE_ATOMIC_OPS)
-# import "atomic.h"
-#elif defined(OF_HAVE_THREADS)
-# import "mutex.h"
 #endif
 
 #ifdef OF_APPLE_RUNTIME

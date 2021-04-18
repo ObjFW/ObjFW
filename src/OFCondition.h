@@ -14,8 +14,7 @@
  */
 
 #import "OFMutex.h"
-
-#import "condition.h"
+#import "OFPlainCondition.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

@@ -25,16 +25,15 @@
 #import "OFSecureData.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#ifdef OF_HAVE_THREADS
+# import "OFTLSKey.h"
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-
-#ifdef OF_HAVE_THREADS
-# import "tlskey.h"
-#endif
 
 #define CHUNK_SIZE 16
 

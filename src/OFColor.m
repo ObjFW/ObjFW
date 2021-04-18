@@ -16,8 +16,7 @@
 #include "config.h"
 
 #import "OFColor.h"
-
-#import "once.h"
+#import "OFOnce.h"
 
 #import "OFInvalidArgumentException.h"
 

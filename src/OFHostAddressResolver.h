@@ -16,8 +16,7 @@
 #import "OFObject.h"
 #import "OFDNSResolver.h"
 #import "OFRunLoop.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

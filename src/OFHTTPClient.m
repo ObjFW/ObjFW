@@ -28,6 +28,7 @@
 #import "OFKernelEventObserver.h"
 #import "OFNumber.h"
 #import "OFRunLoop.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFURL.h"
@@ -46,8 +47,6 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
-
-#import "socket_helpers.h"
 
 #define REDIRECTS_DEFAULT 10
 

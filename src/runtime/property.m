@@ -21,7 +21,7 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
+# import "OFPlainMutex.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
 static OFSpinlock spinlocks[NUM_SPINLOCKS];

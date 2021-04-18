@@ -30,13 +30,12 @@
 #import "OFUDPSocket+Private.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 @implementation OFUDPSocket
 @dynamic delegate;

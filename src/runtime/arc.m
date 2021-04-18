@@ -19,7 +19,7 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
+# import "OFPlainMutex.h"
 #endif
 
 struct weakref {

@@ -30,6 +30,7 @@
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
 #import "OFXMLElement.h"
@@ -39,8 +40,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-
-#import "of_strptime.h"
 
 #ifdef OF_AMIGAOS_M68K
 /* amiga-gcc does not have trunc() */
@@ -449,7 +448,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	struct tm tm = { .tm_isdst = -1 };
 	short tz = 0;
 
-	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
+	if (OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 
@@ -465,14 +464,14 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
 	/*
-	 * of_strptime() can never set this to SHRT_MAX, no matter what is
+	 * OFStrPTime() can never set this to SHRT_MAX, no matter what is
 	 * passed to it, so this is a safe way to figure out if the date
 	 * contains a time zone.
 	 */
 	short tz = SHRT_MAX;
 	OFTimeInterval seconds;
 
-	if (of_strptime(UTF8String, format.UTF8String, &tm, &tz) !=
+	if (OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 

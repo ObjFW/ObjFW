@@ -20,6 +20,7 @@
 #include <limits.h>
 
 #import "OFData.h"
+#import "OFBase64.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -39,8 +40,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
-
-#import "base64.h"
 
 /* References for static linking */
 void
@@ -334,7 +333,7 @@ _references_to_categories_of_OFData(void)
 	self = [(OFMutableData *)self initWithCapacity: string.length / 3];
 
 	@try {
-		if (!of_base64_decode((OFMutableData *)self,
+		if (!OFBase64Decode((OFMutableData *)self,
 		    [string cStringWithEncoding: OFStringEncodingASCII],
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
@@ -541,7 +540,7 @@ _references_to_categories_of_OFData(void)
 
 - (OFString *)stringByBase64Encoding
 {
-	return of_base64_encode(_items, _count * _itemSize);
+	return OFBase64Encode(_items, _count * _itemSize);
 }
 
 - (OFRange)rangeOfData: (OFData *)data
@@ -624,7 +623,7 @@ _references_to_categories_of_OFData(void)
 	element = [OFXMLElement
 	    elementWithName: self.className
 		  namespace: OF_SERIALIZATION_NS
-		stringValue: of_base64_encode(_items, _count * _itemSize)];
+		stringValue: OFBase64Encode(_items, _count * _itemSize)];
 
 	[element retain];
 

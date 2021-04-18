@@ -31,12 +31,11 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
+#import "OFSocket+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
-
-#import "socket_helpers.h"
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>

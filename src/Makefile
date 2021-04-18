@@ -10,9 +10,13 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFApplication.m			\
+SRCS = OFASPrintF.m			\
+       OFApplication.m			\
        OFArray.m			\
+       OFBase64.m			\
        OFBlock.m			\
+       OFCRC16.m			\
+       OFCRC32.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\
@@ -26,6 +30,7 @@ SRCS = OFApplication.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
+       OFHuffmanTree.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -33,8 +38,8 @@ SRCS = OFApplication.m			\
        OFLHAArchiveEntry.m		\
        OFList.m				\
        OFLocale.m			\
-       OFMapTable.m			\
        OFMD5Hash.m			\
+       OFMapTable.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
@@ -53,13 +58,12 @@ SRCS = OFApplication.m			\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
        OFObject+Serialization.m		\
+       OFOnce.m				\
        OFOptionsParser.m		\
+       OFPBKDF2.m			\
        OFPair.m				\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
-       OFSecureData.m			\
-       OFSeekableStream.m		\
-       OFSet.m				\
        OFSHA1Hash.m			\
        OFSHA224Hash.m			\
        OFSHA224Or256Hash.m		\
@@ -67,8 +71,13 @@ SRCS = OFApplication.m			\
        OFSHA384Hash.m			\
        OFSHA384Or512Hash.m		\
        OFSHA512Hash.m			\
+       OFScrypt.m			\
+       OFSecureData.m			\
+       OFSeekableStream.m		\
+       OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
+       OFStrPTime.m			\
        OFStream.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
@@ -100,15 +109,6 @@ SRCS = OFApplication.m			\
        OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
-       base64.m				\
-       crc16.m				\
-       crc32.m				\
-       huffman_tree.m			\
-       of_asprintf.m			\
-       of_strptime.m			\
-       once.m				\
-       pbkdf2.m				\
-       scrypt.m				\
        ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
@@ -136,29 +136,29 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
 	       OFSequencedPacketSocket.m	\
+	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       socket.m				\
 	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
+	       OFPlainCondition.m	\
+	       OFPlainMutex.m		\
+	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m		\
-	       condition.m		\
-	       mutex.m			\
-	       thread.m			\
-	       tlskey.m
+	       OFTLSKey.m		\
+	       OFThreadPool.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
-INCLUDES_ATOMIC = atomic.h			\
-		  atomic_builtins.h		\
-		  atomic_no_threads.h		\
-		  atomic_osatomic.h		\
-		  atomic_powerpc.h		\
-		  atomic_sync_builtins.h	\
-		  atomic_x86.h
+INCLUDES_ATOMIC = OFAtomic.h			\
+		  OFAtomic_builtins.h		\
+		  OFAtomic_no_threads.h		\
+		  OFAtomic_osatomic.h		\
+		  OFAtomic_powerpc.h		\
+		  OFAtomic_sync_builtins.h	\
+		  OFAtomic_x86.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\

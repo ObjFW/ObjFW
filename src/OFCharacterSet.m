@@ -18,9 +18,8 @@
 #import "OFCharacterSet.h"
 #import "OFBitSetCharacterSet.h"
 #import "OFInvertedCharacterSet.h"
+#import "OFOnce.h"
 #import "OFRangeCharacterSet.h"
-
-#import "once.h"
 
 @interface OFPlaceholderCharacterSet: OFCharacterSet
 @end

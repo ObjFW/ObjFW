@@ -20,13 +20,12 @@
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
 #import "OFArray.h"
+#import "OFCRC16.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
-
-#import "crc16.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -724,7 +723,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	tmp16 = OFToLittleEndian16(headerSize);
 	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
-	tmp16 = of_crc16(0, data.items, data.count);
+	tmp16 = OFCRC16(0, data.items, data.count);
 	tmp16 = OFToLittleEndian16(tmp16);
 	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 

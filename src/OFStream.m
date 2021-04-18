@@ -28,10 +28,6 @@
 # include <fcntl.h>
 #endif
 
-#ifdef OF_HAVE_SOCKETS
-# import "socket_helpers.h"
-#endif
-
 #include "platform.h"
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
@@ -40,10 +36,14 @@
 
 #import "OFStream.h"
 #import "OFStream+Private.h"
+#import "OFASPrintF.h"
 #import "OFData.h"
 #import "OFKernelEventObserver.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFSocket+Private.h"
+#endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
@@ -55,8 +55,6 @@
 #import "OFSetOptionFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
-
-#import "of_asprintf.h"
 
 #define MIN_READ_SIZE 512
 
@@ -1629,7 +1627,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((length = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 

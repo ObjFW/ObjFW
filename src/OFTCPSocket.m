@@ -37,6 +37,8 @@
 #import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFTCPSocketSOCKS5Connector.h"
 #import "OFThread.h"
@@ -47,9 +49,6 @@
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 static const OFRunLoopMode connectRunLoopMode =
     @"OFTCPSocketConnectRunLoopMode";

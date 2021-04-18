@@ -27,16 +27,15 @@
 #import "OFException.h"
 #import "OFArray.h"
 #import "OFLocale.h"
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
-
-#ifdef OF_HAVE_THREADS
-# import "mutex.h"
-#endif
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # include <winerror.h>

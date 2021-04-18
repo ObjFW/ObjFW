@@ -25,6 +25,7 @@
 
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
+#import "OFASPrintF.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFMutableUTF8String.h"
@@ -36,7 +37,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 extern const OFChar16 of_iso_8859_2_table[];
@@ -672,7 +672,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		if ((cStringLength = of_vasprintf(&tmp, format.UTF8String,
+		if ((cStringLength = OFVASPrintF(&tmp, format.UTF8String,
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException exception];
 

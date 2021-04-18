@@ -20,6 +20,12 @@
 #include <string.h>
 
 #import "OFBlock.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
 
 #import "OFAllocFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -28,14 +34,7 @@
 # import "runtime/private.h"
 #endif
 
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "atomic.h"
-#endif
-#ifdef OF_HAVE_THREADS
-# import "mutex.h"
-#endif
-
-struct block {
+struct Block {
 	Class isa;
 	int flags;
 	int reserved;
@@ -49,9 +48,9 @@ struct block {
 	} *descriptor;
 };
 
-struct byref {
+struct Byref {
 	Class isa;
-	struct byref *forwarding;
+	struct Byref *forwarding;
 	int flags;
 	int size;
 	void (*byref_keep)(void *dest, void *src);
@@ -89,7 +88,7 @@ static struct objc_class _NSConcreteStackBlock_metaclass = {
 
 struct objc_class _NSConcreteStackBlock = {
 	&_NSConcreteStackBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFStackBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct block),
+	"OFStackBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
@@ -100,7 +99,7 @@ static struct objc_class _NSConcreteGlobalBlock_metaclass = {
 
 struct objc_class _NSConcreteGlobalBlock = {
 	&_NSConcreteGlobalBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFGlobalBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct block),
+	"OFGlobalBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
@@ -111,7 +110,7 @@ static struct objc_class _NSConcreteMallocBlock_metaclass = {
 
 struct objc_class _NSConcreteMallocBlock = {
 	&_NSConcreteMallocBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFMallocBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct block),
+	"OFMallocBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
@@ -176,10 +175,10 @@ static OFSpinlock byrefSpinlocks[NUM_SPINLOCKS];
 void *
 _Block_copy(const void *block_)
 {
-	struct block *block = (struct block *)block_;
+	struct Block *block = (struct Block *)block_;
 
 	if ([(id)block isMemberOfClass: (Class)&_NSConcreteStackBlock]) {
-		struct block *copy;
+		struct Block *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
 			alloc_failed_exception.isa =
@@ -216,7 +215,7 @@ _Block_copy(const void *block_)
 void
 _Block_release(const void *block_)
 {
-	struct block *block = (struct block *)block_;
+	struct Block *block = (struct Block *)block_;
 
 	if (object_getClass((id)block) != (Class)&_NSConcreteMallocBlock)
 		return;
@@ -258,15 +257,15 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		*(struct block **)dst_ = _Block_copy(src_);
+		*(struct Block **)dst_ = _Block_copy(src_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
 		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
 			*(id *)dst_ = [(id)src_ retain];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		struct byref *src = (struct byref *)src_;
-		struct byref **dst = (struct byref **)dst_;
+		struct Byref *src = (struct Byref *)src_;
+		struct Byref **dst = (struct Byref **)dst_;
 
 		src = src->forwarding;
 
@@ -342,7 +341,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 			[(id)object_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		struct byref *object = (struct byref *)object_;
+		struct Byref *object = (struct Byref *)object_;
 
 		object = object->forwarding;
 
@@ -475,7 +474,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 - (unsigned int)retainCount
 {
 	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
-		return ((struct block *)self)->flags &
+		return ((struct Block *)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
 	return OF_RETAIN_COUNT_MAX;

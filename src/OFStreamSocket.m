@@ -29,6 +29,7 @@
 #import "OFStreamSocket+Private.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket+Private.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -40,8 +41,6 @@
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
-
-#import "socket_helpers.h"
 
 @implementation OFStreamSocket
 @dynamic delegate;

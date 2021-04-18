@@ -21,20 +21,18 @@
 #import "OFURL.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
-
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
 # import "OFFileURLHandler.h"
 #endif
+#import "OFNumber.h"
+#import "OFOnce.h"
+#import "OFString.h"
+#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
-
-#import "once.h"
 
 @interface OFURLAllowedCharacterSetBase: OFCharacterSet
 @end

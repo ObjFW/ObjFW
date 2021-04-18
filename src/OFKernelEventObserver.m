@@ -23,17 +23,11 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFStream.h"
-#import "OFStream+Private.h"
-#ifndef OF_HAVE_PIPE
-# import "OFStreamSocket.h"
-#endif
-
-#ifdef HAVE_KQUEUE
-# import "OFKqueueKernelEventObserver.h"
-#endif
 #ifdef HAVE_EPOLL
 # import "OFEpollKernelEventObserver.h"
+#endif
+#ifdef HAVE_KQUEUE
+# import "OFKqueueKernelEventObserver.h"
 #endif
 #ifdef HAVE_POLL
 # import "OFPollKernelEventObserver.h"
@@ -41,13 +35,17 @@
 #ifdef HAVE_SELECT
 # import "OFSelectKernelEventObserver.h"
 #endif
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
+#import "OFStream.h"
+#import "OFStream+Private.h"
+#ifndef OF_HAVE_PIPE
+# import "OFStreamSocket.h"
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>

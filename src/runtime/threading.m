@@ -20,8 +20,9 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-#import "mutex.h"
-#import "once.h"
+
+#import "OFOnce.h"
+#import "OFPlainMutex.h"
 
 static OFPlainRecursiveMutex globalMutex;
 

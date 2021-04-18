@@ -30,6 +30,7 @@
 #endif
 
 #import "OFString.h"
+#import "OFASPrintF.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFData.h"
@@ -59,7 +60,6 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 /*

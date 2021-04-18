@@ -21,6 +21,7 @@
 #include <assert.h>
 
 #import "OFMutableUTF8String.h"
+#import "OFASPrintF.h"
 #import "OFString.h"
 #import "OFUTF8String.h"
 
@@ -30,7 +31,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 @implementation OFMutableUTF8String
@@ -415,7 +415,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 

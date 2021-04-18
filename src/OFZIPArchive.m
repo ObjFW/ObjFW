@@ -20,6 +20,7 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
+#import "OFCRC32.h"
 #import "OFData.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -30,8 +31,6 @@
 #endif
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
-
-#import "crc32.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -801,7 +800,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC32 = of_crc32(_CRC32, buffer, ret);
+	_CRC32 = OFCRC32(_CRC32, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -886,7 +885,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	bytesWritten = [_stream writeBuffer: buffer length: length];
 
 	_bytesWritten += (int64_t)bytesWritten;
-	_CRC32 = of_crc32(_CRC32, buffer, length);
+	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
 	return bytesWritten;
 }

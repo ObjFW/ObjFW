@@ -28,8 +28,10 @@
 
 #import "OFDatagramSocket.h"
 #import "OFData.h"
-#import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFGetOptionFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -39,9 +41,6 @@
 #import "OFSetOptionFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 @implementation OFDatagramSocket
 @synthesize delegate = _delegate;

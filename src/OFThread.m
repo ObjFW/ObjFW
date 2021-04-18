@@ -48,6 +48,9 @@
 
 #import "OFThread.h"
 #import "OFThread+Private.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
@@ -77,14 +80,10 @@
 # import "OFThreadStillRunningException.h"
 #endif
 
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "atomic.h"
-#endif
-
 #if defined(OF_HAVE_THREADS)
-# import "tlskey.h"
+# import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
-#  import "socket.h"
+#  import "OFSocket.h"
 # endif
 
 static OFTLSKey threadSelfKey;

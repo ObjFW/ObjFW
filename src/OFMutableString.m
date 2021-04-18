@@ -20,13 +20,13 @@
 #include <string.h>
 
 #import "OFString.h"
+#import "OFASPrintF.h"
 #import "OFMutableUTF8String.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 static struct {
@@ -361,7 +361,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 

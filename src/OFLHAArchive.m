@@ -18,6 +18,7 @@
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
+#import "OFCRC16.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -25,8 +26,6 @@
 #import "OFStream.h"
 #import "OFSeekableStream.h"
 #import "OFString.h"
-
-#import "crc16.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -334,7 +333,7 @@ OF_DIRECT_MEMBERS
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC16 = of_crc16(_CRC16, buffer, ret);
+	_CRC16 = OFCRC16(_CRC16, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -482,13 +481,13 @@ OF_DIRECT_MEMBERS
 						       length: length];
 	} @catch (OFWriteFailedException *e) {
 		_bytesWritten += e.bytesWritten;
-		_CRC16 = of_crc16(_CRC16, buffer, e.bytesWritten);
+		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		@throw e;
 	}
 
 	_bytesWritten += (uint32_t)bytesWritten;
-	_CRC16 = of_crc16(_CRC16, buffer, bytesWritten);
+	_CRC16 = OFCRC16(_CRC16, buffer, bytesWritten);
 
 	return bytesWritten;
 }

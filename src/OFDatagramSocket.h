@@ -16,8 +16,7 @@
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
 #import "OFRunLoop.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

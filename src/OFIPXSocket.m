@@ -22,12 +22,11 @@
 #endif
 
 #import "OFIPXSocket.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 @implementation OFIPXSocket
 @dynamic delegate;

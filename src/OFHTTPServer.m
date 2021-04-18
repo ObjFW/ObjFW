@@ -26,6 +26,7 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFNumber.h"
+#import "OFSocket+Private.h"
 #import "OFTCPSocket.h"
 #import "OFTLSSocket.h"
 #import "OFThread.h"
@@ -42,8 +43,6 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
-
-#import "socket_helpers.h"
 
 #define BUFFER_SIZE 1024
 

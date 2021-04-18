@@ -14,6 +14,7 @@
  */
 
 #import "OFStream.h"
+#import "OFHuffmanTree.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -34,8 +35,8 @@ OF_DIRECT_MEMBERS
 	uint32_t _slidingWindowIndex, _slidingWindowMask;
 	int _state;
 	uint16_t _symbolsLeft;
-	struct of_huffman_tree *_Nullable _codeLenTree, *_Nullable _litLenTree;
-	struct of_huffman_tree *_Nullable _distTree, *_Nullable _treeIter;
+	OFHuffmanTree *_Nullable _codeLenTree, *_Nullable _litLenTree;
+	OFHuffmanTree *_Nullable _distTree, *_Nullable _treeIter;
 	uint16_t _codesCount, _codesReceived;
 	bool _currentIsExtendedLength, _skip;
 	uint8_t *_Nullable _codesLengths;

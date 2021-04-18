@@ -32,6 +32,8 @@
 #import "OFData.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -42,9 +44,6 @@
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
-
-#import "socket.h"
-#import "socket_helpers.h"
 
 @implementation OFSequencedPacketSocket
 @synthesize listening = _listening, delegate = _delegate;

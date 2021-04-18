@@ -31,7 +31,8 @@
 #include <limits.h>
 
 #include "macros.h"
-#include "once.h"
+
+#include "OFOnce.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
