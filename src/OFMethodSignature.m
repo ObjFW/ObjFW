@@ -32,9 +32,9 @@ static size_t alignmentOfEncoding(const char **type, size_t *length,
 static size_t sizeOfEncoding(const char **type, size_t *length);
 
 static size_t
-alignofArray(const char **type, size_t *length)
+alignmentOfArray(const char **type, size_t *length)
 {
-	size_t align;
+	size_t alignment;
 
 	assert(*length > 0);
 
@@ -46,7 +46,7 @@ alignofArray(const char **type, size_t *length)
 		(*length)--;
 	}
 
-	align = alignmentOfEncoding(type, length, true);
+	alignment = alignmentOfEncoding(type, length, true);
 
 	if (*length == 0 || **type != ']')
 		@throw [OFInvalidFormatException exception];
@@ -54,13 +54,13 @@ alignofArray(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-	return align;
+	return alignment;
 }
 
 static size_t
-alignofStruct(const char **type, size_t *length)
+alignmentOfStruct(const char **type, size_t *length)
 {
-	size_t align = 0;
+	size_t alignment = 0;
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 	bool first = true;
 #endif
@@ -84,17 +84,17 @@ alignofStruct(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != '}') {
-		size_t fieldAlign = alignmentOfEncoding(type, length, true);
+		size_t fieldAlignment = alignmentOfEncoding(type, length, true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
-		if (!first && fieldAlign > 4)
-			fieldAlign = 4;
+		if (!first && fieldAlignment > 4)
+			fieldAlignment = 4;
 
 		first = false;
 #endif
 
-		if (fieldAlign > align)
-			align = fieldAlign;
+		if (fieldAlignment > alignment)
+			alignment = fieldAlignment;
 	}
 
 	if (*length == 0 || **type != '}')
@@ -103,13 +103,13 @@ alignofStruct(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-	return align;
+	return alignment;
 }
 
 static size_t
-alignofUnion(const char **type, size_t *length)
+alignmentOfUnion(const char **type, size_t *length)
 {
-	size_t align = 0;
+	size_t alignment = 0;
 
 	assert(*length > 0);
 
@@ -130,10 +130,10 @@ alignofUnion(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != ')') {
-		size_t fieldAlign = alignmentOfEncoding(type, length, true);
+		size_t fieldAlignment = alignmentOfEncoding(type, length, true);
 
-		if (fieldAlign > align)
-			align = fieldAlign;
+		if (fieldAlignment > alignment)
+			alignment = fieldAlignment;
 	}
 
 	if (*length == 0 || **type != ')')
@@ -142,13 +142,13 @@ alignofUnion(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-	return align;
+	return alignment;
 }
 
 static size_t
 alignmentOfEncoding(const char **type, size_t *length, bool inStruct)
 {
-	size_t align;
+	size_t alignment;
 
 	if (*length == 0)
 		@throw [OFInvalidFormatException exception];
@@ -164,78 +164,78 @@ alignmentOfEncoding(const char **type, size_t *length, bool inStruct)
 	switch (**type) {
 	case 'c':
 	case 'C':
-		align = OF_ALIGNOF(char);
+		alignment = OF_ALIGNOF(char);
 		break;
 	case 'i':
 	case 'I':
-		align = OF_ALIGNOF(int);
+		alignment = OF_ALIGNOF(int);
 		break;
 	case 's':
 	case 'S':
-		align = OF_ALIGNOF(short);
+		alignment = OF_ALIGNOF(short);
 		break;
 	case 'l':
 	case 'L':
-		align = OF_ALIGNOF(long);
+		alignment = OF_ALIGNOF(long);
 		break;
 	case 'q':
 	case 'Q':
 #if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
-			align = 4;
+			alignment = 4;
 		else
 #endif
-			align = OF_ALIGNOF(long long);
+			alignment = OF_ALIGNOF(long long);
 		break;
 #ifdef __SIZEOF_INT128__
 	case 't':
 	case 'T':
-		align = __extension__ OF_ALIGNOF(__int128);
+		alignment = __extension__ OF_ALIGNOF(__int128);
 		break;
 #endif
 	case 'f':
-		align = OF_ALIGNOF(float);
+		alignment = OF_ALIGNOF(float);
 		break;
 	case 'd':
 #if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
-			align = 4;
+			alignment = 4;
 		else
 #endif
-			align = OF_ALIGNOF(double);
+			alignment = OF_ALIGNOF(double);
 		break;
 	case 'D':
 #if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
-			align = 4;
+			alignment = 4;
 		else
 #endif
-			align = OF_ALIGNOF(long double);
+			alignment = OF_ALIGNOF(long double);
 		break;
 	case 'B':
-		align = OF_ALIGNOF(_Bool);
+		alignment = OF_ALIGNOF(_Bool);
 		break;
 	case 'v':
-		align = 0;
+		alignment = 0;
 		break;
 	case '*':
-		align = OF_ALIGNOF(char *);
+		alignment = OF_ALIGNOF(char *);
 		break;
 	case '@':
-		align = OF_ALIGNOF(id);
+		alignment = OF_ALIGNOF(id);
 		break;
 	case '#':
-		align = OF_ALIGNOF(Class);
+		alignment = OF_ALIGNOF(Class);
 		break;
 	case ':':
-		align = OF_ALIGNOF(SEL);
+		alignment = OF_ALIGNOF(SEL);
 		break;
 	case '[':
-		return alignofArray(type, length);
+		return alignmentOfArray(type, length);
 	case '{':
-		return alignofStruct(type, length);
+		return alignmentOfStruct(type, length);
 	case '(':
-		return alignofUnion(type, length);
+		return alignmentOfUnion(type, length);
 	case '^':
 		/* Just to skip over the rest */
 		(*type)++;
@@ -253,18 +253,18 @@ alignmentOfEncoding(const char **type, size_t *length, bool inStruct)
 
 		switch (**type) {
 		case 'f':
-			align = OF_ALIGNOF(float _Complex);
+			alignment = OF_ALIGNOF(float _Complex);
 			break;
 		case 'd':
 # if defined(OF_X86) && !defined(OF_WINDOWS)
 			if (inStruct)
-				align = 4;
+				alignment = 4;
 			else
 # endif
-				align = OF_ALIGNOF(double _Complex);
+				alignment = OF_ALIGNOF(double _Complex);
 			break;
 		case 'D':
-			align = OF_ALIGNOF(long double _Complex);
+			alignment = OF_ALIGNOF(long double _Complex);
 			break;
 		default:
 			@throw [OFInvalidFormatException exception];
@@ -279,11 +279,11 @@ alignmentOfEncoding(const char **type, size_t *length, bool inStruct)
 	(*type)++;
 	(*length)--;
 
-	return align;
+	return alignment;
 }
 
 static size_t
-sizeofArray(const char **type, size_t *length)
+sizeOfArray(const char **type, size_t *length)
 {
 	size_t count = 0;
 	size_t size;
@@ -318,12 +318,12 @@ sizeofArray(const char **type, size_t *length)
 }
 
 static size_t
-sizeofStruct(const char **type, size_t *length)
+sizeOfStruct(const char **type, size_t *length)
 {
 	size_t size = 0;
 	const char *typeCopy = *type;
 	size_t lengthCopy = *length;
-	size_t alignment = alignofStruct(&typeCopy, &lengthCopy);
+	size_t alignment = alignmentOfStruct(&typeCopy, &lengthCopy);
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 	bool first = true;
 #endif
@@ -347,22 +347,24 @@ sizeofStruct(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != '}') {
-		size_t fieldSize, fieldAlign;
+		size_t fieldSize, fieldAlignment;
 
 		typeCopy = *type;
 		lengthCopy = *length;
 		fieldSize = sizeOfEncoding(type, length);
-		fieldAlign = alignmentOfEncoding(&typeCopy, &lengthCopy, true);
+		fieldAlignment = alignmentOfEncoding(&typeCopy, &lengthCopy,
+		    true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
-		if (!first && fieldAlign > 4)
-			fieldAlign = 4;
+		if (!first && fieldAlignment > 4)
+			fieldAlignment = 4;
 
 		first = false;
 #endif
 
-		if (size % fieldAlign != 0) {
-			size_t padding = fieldAlign - (size % fieldAlign);
+		if (size % fieldAlignment != 0) {
+			size_t padding =
+			    fieldAlignment - (size % fieldAlignment);
 
 			if (SIZE_MAX - size < padding)
 				@throw [OFOutOfRangeException exception];
@@ -395,7 +397,7 @@ sizeofStruct(const char **type, size_t *length)
 }
 
 static size_t
-sizeofUnion(const char **type, size_t *length)
+sizeOfUnion(const char **type, size_t *length)
 {
 	size_t size = 0;
 
@@ -504,11 +506,11 @@ sizeOfEncoding(const char **type, size_t *length)
 		size = sizeof(SEL);
 		break;
 	case '[':
-		return sizeofArray(type, length);
+		return sizeOfArray(type, length);
 	case '{':
-		return sizeofStruct(type, length);
+		return sizeOfStruct(type, length);
 	case '(':
-		return sizeofUnion(type, length);
+		return sizeOfUnion(type, length);
 	case '^':
 		/* Just to skip over the rest */
 		(*type)++;

@@ -32,7 +32,7 @@
 # define NSPROTO_SPX 0
 #endif
 
-#define SPX_PACKET_TYPE 5
+static const uint8_t SPXPacketType = 5;
 
 @interface OFSPXStreamSocket ()
 - (int)of_createSocketForAddress: (const OFSocketAddress *)address
@@ -328,7 +328,7 @@ inform_delegate:
 	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
-			   packetType: SPX_PACKET_TYPE
+			   packetType: SPXPacketType
 			       socket: self
 				errNo: OFSocketErrNo()];
 
@@ -346,7 +346,7 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: errNo];
 	}
@@ -363,7 +363,7 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: errNo];
 	}
@@ -373,7 +373,7 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: EAFNOSUPPORT];
 	}

@@ -323,7 +323,7 @@ OFURLIsIPv6Host(OFString *host)
 @end
 
 void
-OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
+OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -462,7 +462,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 		    initWithUTF8String: UTF8String
 				length: tmp - UTF8String];
 
-		OFURLVerifyEscaped(_URLEncodedScheme,
+		OFURLVerifyIsEscaped(_URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 		UTF8String = tmp + 3;
@@ -487,14 +487,14 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedPassword = [[OFString alloc]
 				    initWithUTF8String: tmp3];
 
-				OFURLVerifyEscaped(_URLEncodedPassword,
+				OFURLVerifyIsEscaped(_URLEncodedPassword,
 				    [OFCharacterSet
 				    URLPasswordAllowedCharacterSet]);
 			} else
 				_URLEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
 
-			OFURLVerifyEscaped(_URLEncodedUser,
+			OFURLVerifyIsEscaped(_URLEncodedUser,
 			    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 			UTF8String = tmp2;
@@ -567,7 +567,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 			    initWithUTF8String: UTF8String];
 
 		if (!isIPv6Host)
-			OFURLVerifyEscaped(_URLEncodedHost,
+			OFURLVerifyIsEscaped(_URLEncodedHost,
 			    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 		if ((UTF8String = tmp) != NULL) {
@@ -577,7 +577,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedFragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				OFURLVerifyEscaped(_URLEncodedFragment,
+				OFURLVerifyIsEscaped(_URLEncodedFragment,
 				    [OFCharacterSet
 				    URLFragmentAllowedCharacterSet]);
 			}
@@ -588,7 +588,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedQuery = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				OFURLVerifyEscaped(_URLEncodedQuery,
+				OFURLVerifyIsEscaped(_URLEncodedQuery,
 				    [OFCharacterSet
 				    URLQueryAllowedCharacterSet]);
 			}
@@ -599,7 +599,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			OFURLVerifyEscaped(_URLEncodedPath,
+			OFURLVerifyIsEscaped(_URLEncodedPath,
 			    [OFCharacterSet URLPathAllowedCharacterSet]);
 		}
 
@@ -645,7 +645,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedFragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			OFURLVerifyEscaped(_URLEncodedFragment,
+			OFURLVerifyIsEscaped(_URLEncodedFragment,
 			    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 		}
 
@@ -654,7 +654,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedQuery = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			OFURLVerifyEscaped(_URLEncodedQuery,
+			OFURLVerifyIsEscaped(_URLEncodedQuery,
 			    [OFCharacterSet URLQueryAllowedCharacterSet]);
 		}
 
@@ -694,7 +694,7 @@ OFURLVerifyEscaped(OFString *string, OFCharacterSet *characterSet)
 			}
 		}
 
-		OFURLVerifyEscaped(_URLEncodedPath,
+		OFURLVerifyIsEscaped(_URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);

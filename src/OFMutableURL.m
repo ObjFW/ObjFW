@@ -55,7 +55,7 @@
 	OFString *old;
 
 	if (URLEncodedScheme != nil)
-		OFURLVerifyEscaped(URLEncodedScheme,
+		OFURLVerifyIsEscaped(URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 	old = _URLEncodedScheme;
@@ -91,7 +91,7 @@
 		    OFRangeMake(1, URLEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (URLEncodedHost != nil)
-		OFURLVerifyEscaped(URLEncodedHost,
+		OFURLVerifyIsEscaped(URLEncodedHost,
 		    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 	old = _URLEncodedHost;
@@ -124,7 +124,7 @@
 	OFString *old;
 
 	if (URLEncodedUser != nil)
-		OFURLVerifyEscaped(URLEncodedUser,
+		OFURLVerifyIsEscaped(URLEncodedUser,
 		    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 	old = _URLEncodedUser;
@@ -151,7 +151,7 @@
 	OFString *old;
 
 	if (URLEncodedPassword != nil)
-		OFURLVerifyEscaped(URLEncodedPassword,
+		OFURLVerifyIsEscaped(URLEncodedPassword,
 		    [OFCharacterSet URLPasswordAllowedCharacterSet]);
 
 	old = _URLEncodedPassword;
@@ -177,7 +177,7 @@
 	OFString *old;
 
 	if (URLEncodedPath != nil)
-		OFURLVerifyEscaped(URLEncodedPath,
+		OFURLVerifyIsEscaped(URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 	old = _URLEncodedPath;
@@ -223,7 +223,7 @@
 	OFString *old;
 
 	if (URLEncodedQuery != nil)
-		OFURLVerifyEscaped(URLEncodedQuery,
+		OFURLVerifyIsEscaped(URLEncodedQuery,
 		    [OFCharacterSet URLQueryAllowedCharacterSet]);
 
 	old = _URLEncodedQuery;
@@ -291,7 +291,7 @@
 	OFString *old;
 
 	if (URLEncodedFragment != nil)
-		OFURLVerifyEscaped(URLEncodedFragment,
+		OFURLVerifyIsEscaped(URLEncodedFragment,
 		    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 
 	old = _URLEncodedFragment;

@@ -368,7 +368,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern bool OFURLIsIPv6Host(OFString *host);
-extern void OFURLVerifyEscaped(OFString *, OFCharacterSet *);
+extern void OFURLVerifyIsEscaped(OFString *, OFCharacterSet *);
 #ifdef __cplusplus
 }
 #endif
