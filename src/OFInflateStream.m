@@ -39,7 +39,7 @@
 # define bufferSize OFInflate64StreamBufferSize
 #endif
 
-enum state {
+enum State {
 	StateBlockHeader,
 	StateUncompressedBlockHeader,
 	StateUncompressedBlock,
@@ -47,13 +47,13 @@ enum state {
 	StateHuffmanBlock
 };
 
-enum huffman_state {
-	WRITE_VALUE,
-	AWAIT_CODE,
-	AWAIT_LENGTH_EXTRA_BITS,
-	AWAIT_DISTANCE,
-	AWAIT_DISTANCE_EXTRA_BITS,
-	PROCESS_PAIR
+enum HuffmanState {
+	HuffmanStateWriteValue,
+	HuffmanStateAwaitCode,
+	HuffmanStateAwaitLengthExtraBits,
+	HuffmanStateAwaitDistance,
+	HuffmanStateAwaitDistanceExtraBits,
+	HuffmanStateProcessPair
 };
 
 #ifndef OF_INFLATE64_STREAM_M
@@ -242,7 +242,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 		return 0;
 
 start:
-	switch ((enum state)_state) {
+	switch ((enum State)_state) {
 	case StateBlockHeader:
 		if OF_UNLIKELY (_inLastBlock) {
 			[_stream unreadFromBuffer: _buffer + _bufferIndex
@@ -268,7 +268,7 @@ start:
 			break;
 		case 1: /* Fixed Huffman */
 			_state = StateHuffmanBlock;
-			_context.huffman.state = AWAIT_CODE;
+			_context.huffman.state = HuffmanStateAwaitCode;
 			_context.huffman.litLenTree = fixedLitLenTree;
 			_context.huffman.distTree = fixedDistTree;
 			_context.huffman.treeIter = fixedLitLenTree;
@@ -490,7 +490,7 @@ start:
 		 * set them.
 		 */
 		_state = StateHuffmanBlock;
-		_context.huffman.state = AWAIT_CODE;
+		_context.huffman.state = HuffmanStateAwaitCode;
 		_context.huffman.treeIter = CTX.litLenTree;
 
 		goto start;
@@ -500,7 +500,7 @@ start:
 		for (;;) {
 			uint8_t extraBits, lengthCodeIndex;
 
-			if OF_UNLIKELY (CTX.state == WRITE_VALUE) {
+			if OF_UNLIKELY (CTX.state == HuffmanStateWriteValue) {
 				if OF_UNLIKELY (length == 0)
 					return bytesWritten;
 
@@ -512,23 +512,24 @@ start:
 				    (_slidingWindowIndex + 1) &
 				    _slidingWindowMask;
 
-				CTX.state = AWAIT_CODE;
+				CTX.state = HuffmanStateAwaitCode;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
-			if OF_UNLIKELY (CTX.state == AWAIT_LENGTH_EXTRA_BITS) {
+			if OF_UNLIKELY (CTX.state ==
+			    HuffmanStateAwaitLengthExtraBits) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
 				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.length += bits;
 
-				CTX.state = AWAIT_DISTANCE;
+				CTX.state = HuffmanStateAwaitDistance;
 				CTX.treeIter = CTX.distTree;
 			}
 
 			/* Distance of length distance pair */
-			if (CTX.state == AWAIT_DISTANCE) {
+			if (CTX.state == HuffmanStateAwaitDistance) {
 				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value))
 					return bytesWritten;
@@ -543,8 +544,9 @@ start:
 				if (extraBits > 0) {
 					if OF_UNLIKELY (!tryReadBits(self,
 					    &bits, extraBits)) {
-						CTX.state =
-						    AWAIT_DISTANCE_EXTRA_BITS;
+#define HSADEB HuffmanStateAwaitDistanceExtraBits
+						CTX.state = HSADEB;
+#undef HSADEB
 						CTX.extraBits = extraBits;
 						return bytesWritten;
 					}
@@ -552,19 +554,20 @@ start:
 					CTX.distance += bits;
 				}
 
-				CTX.state = PROCESS_PAIR;
-			} else if (CTX.state == AWAIT_DISTANCE_EXTRA_BITS) {
+				CTX.state = HuffmanStateProcessPair;
+			} else if (CTX.state ==
+			    HuffmanStateAwaitDistanceExtraBits) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
 				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.distance += bits;
 
-				CTX.state = PROCESS_PAIR;
+				CTX.state = HuffmanStateProcessPair;
 			}
 
 			/* Length distance pair */
-			if (CTX.state == PROCESS_PAIR) {
+			if (CTX.state == HuffmanStateProcessPair) {
 				for (uint_fast16_t j = 0; j < CTX.length; j++) {
 					uint16_t idx;
 
@@ -587,7 +590,7 @@ start:
 					    _slidingWindowMask;
 				}
 
-				CTX.state = AWAIT_CODE;
+				CTX.state = HuffmanStateAwaitCode;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
@@ -609,7 +612,7 @@ start:
 			/* Literal byte */
 			if OF_LIKELY (value < 256) {
 				if OF_UNLIKELY (length == 0) {
-					CTX.state = WRITE_VALUE;
+					CTX.state = HuffmanStateWriteValue;
 					CTX.value = value;
 					return bytesWritten;
 				}
@@ -638,7 +641,8 @@ start:
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
 				    extraBits)) {
 					CTX.extraBits = extraBits;
-					CTX.state = AWAIT_LENGTH_EXTRA_BITS;
+					CTX.state =
+					    HuffmanStateAwaitLengthExtraBits;
 					return bytesWritten;
 				}
 
@@ -646,7 +650,7 @@ start:
 			}
 
 			CTX.treeIter = CTX.distTree;
-			CTX.state = AWAIT_DISTANCE;
+			CTX.state = HuffmanStateAwaitDistance;
 		}
 
 		break;
