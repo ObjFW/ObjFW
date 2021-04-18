@@ -21,11 +21,11 @@
 .fpu vfp
 #endif
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 #ifdef HAVE_VFP2
 	vstmdb	sp!, {d0-d7}
 #endif
@@ -76,11 +76,11 @@ of_forward:
 #ifdef HAVE_VFP2
 	vldmia	sp!, {d0-d7}
 #endif
-	b	of_method_not_found(PLT)
-.type of_forward, %function
-.size of_forward, .-of_forward
+	b	OFMethodNotFound(PLT)
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 #ifdef HAVE_VFP2
 	vstmdb	sp!, {d0-d7}
 #endif
@@ -132,9 +132,9 @@ of_forward_stret:
 #ifdef HAVE_VFP2
 	vldmia	sp!, {d0-d7}
 #endif
-	b	of_method_not_found_stret(PLT)
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+	b	OFMethodNotFound_stret(PLT)
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	ldr	r0, module$indirect_.L2

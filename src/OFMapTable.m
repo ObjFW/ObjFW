@@ -154,8 +154,8 @@ OF_DIRECT_MEMBERS
 
 		_buckets = OFAllocZeroedMemory(_capacity, sizeof(*_buckets));
 
-		if (of_hash_seed != 0)
-			_rotate = of_random16() & 31;
+		if (OFHashSeed != 0)
+			_rotate = OFRandom16() & 31;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -526,8 +526,8 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	 * Get a new random value for _rotate, so that it is not less secure
 	 * than creating a new hash map.
 	 */
-	if (of_hash_seed != 0)
-		_rotate = of_random16() & 31;
+	if (OFHashSeed != 0)
+		_rotate = OFRandom16() & 31;
 }
 
 - (bool)containsObject: (void *)object

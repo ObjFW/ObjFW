@@ -111,7 +111,7 @@ of_forward:
 	 restore
 
 0:
-	call	of_method_not_found
+	call	OFMethodNotFound
 	 restore
 .type of_forward, %function
 .size of_forward, .-of_forward
@@ -204,7 +204,7 @@ of_forward_stret:
 	 restore
 
 0:
-	call	of_method_not_found_stret
+	call	OFMethodNotFound_stret
 	 restore
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret

@@ -75,7 +75,7 @@ of_forward:
 	jmp	*%eax
 
 0:
-	leal	of_method_not_found@GOTOFF(%ebx), %eax
+	leal	OFMethodNotFound@GOTOFF(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -139,7 +139,7 @@ of_forward_stret:
 	jmp	*%eax
 
 0:
-	leal	of_method_not_found_stret@GOTOFF(%ebx), %eax
+	leal	OFMethodNotFound_stret@GOTOFF(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx

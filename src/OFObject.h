@@ -1311,14 +1311,31 @@ extern id _Nullable objc_constructInstance(Class _Nullable class_,
 extern void *_Nullable objc_destructInstance(id _Nullable object);
 # endif
 #endif
-extern id of_alloc_object(Class class_, size_t extraSize,
-    size_t extraAlignment, void *_Nullable *_Nullable extra);
-extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
-extern uint32_t of_hash_seed;
-/* These do *NOT* provide cryptographically secure randomness! */
-extern uint16_t of_random16(void);
-extern uint32_t of_random32(void);
-extern uint64_t of_random64(void);
+extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
+    void *_Nullable *_Nullable extra);
+extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
+extern uint32_t OFHashSeed;
+
+/**
+ * @brief Returns 16 bit or non-cryptographical randomness.
+ *
+ * @return 16 bit or non-cryptographical randomness
+ */
+extern uint16_t OFRandom16(void);
+
+/**
+ * @brief Returns 32 bit or non-cryptographical randomness.
+ *
+ * @return 32 bit or non-cryptographical randomness
+ */
+extern uint32_t OFRandom32(void);
+
+/**
+ * @brief Returns 64 bit or non-cryptographical randomness.
+ *
+ * @return 64 bit or non-cryptographical randomness
+ */
+extern uint64_t OFRandom64(void);
 #ifdef __cplusplus
 }
 #endif

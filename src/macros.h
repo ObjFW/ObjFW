@@ -371,13 +371,13 @@
 	} while (0)
 #endif
 
-#define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
+#define OF_UNRECOGNIZED_SELECTOR OFMethodNotFound(self, _cmd);
 #if __has_feature(objc_arc)
-# define OF_INVALID_INIT_METHOD of_method_not_found(self, _cmd);
+# define OF_INVALID_INIT_METHOD OFMethodNotFound(self, _cmd);
 #else
 # define OF_INVALID_INIT_METHOD				\
 	@try {						\
-		of_method_not_found(self, _cmd);	\
+		OFMethodNotFound(self, _cmd);		\
 	} @catch (id e) {				\
 		[self release];				\
 		@throw e;				\
@@ -768,7 +768,7 @@ of_le_double_ptr_write(void *_Nonnull ptr, double value)
 
 #define OF_ROUND_UP_POW2(pow2, value) (((value) + (pow2) - 1) & ~((pow2) - 1))
 
-#define OF_HASH_INIT(hash) hash = of_hash_seed;
+#define OF_HASH_INIT(hash) hash = OFHashSeed;
 #define OF_HASH_ADD(hash, byte)			\
 	{					\
 		hash += (uint8_t)(byte);	\

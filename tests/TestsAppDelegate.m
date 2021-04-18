@@ -90,7 +90,7 @@ main(int argc, char *argv[])
 #endif
 
 	/* We need deterministic hashes for tests */
-	of_hash_seed = 0;
+	OFHashSeed = 0;
 
 #ifdef OF_WII
 	GXRModeObj *rmode;

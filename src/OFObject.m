@@ -72,11 +72,11 @@
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
-extern id of_forward(id, SEL, ...);
-extern struct stret of_forward_stret(id, SEL, ...);
+extern id OFForward(id, SEL, ...);
+extern struct stret OFForward_stret(id, SEL, ...);
 #else
-# define of_forward of_method_not_found
-# define of_forward_stret of_method_not_found_stret
+# define OFForward OFMethodNotFound
+# define OFForward_stret OFMethodNotFound_stret
 #endif
 
 struct pre_ivar {
@@ -94,7 +94,7 @@ static struct {
 	Class isa;
 } allocFailedException;
 
-uint32_t of_hash_seed;
+uint32_t OFHashSeed;
 
 void *
 OFAllocMemory(size_t count, size_t size)
@@ -172,7 +172,7 @@ initRandom(void)
 #endif
 
 uint16_t
-of_random16(void)
+OFRandom16(void)
 {
 #if defined(HAVE_ARC4RANDOM)
 	return arc4random();
@@ -194,7 +194,7 @@ of_random16(void)
 }
 
 uint32_t
-of_random32(void)
+OFRandom32(void)
 {
 #if defined(HAVE_ARC4RANDOM)
 	return arc4random();
@@ -205,12 +205,12 @@ of_random32(void)
 
 	return buffer;
 #else
-	return ((uint32_t)of_random16() << 16) | of_random16();
+	return ((uint32_t)OFRandom16() << 16) | OFRandom16();
 #endif
 }
 
 uint64_t
-of_random64(void)
+OFRandom64(void)
 {
 #if defined(HAVE_ARC4RANDOM_BUF)
 	uint64_t buffer;
@@ -225,7 +225,7 @@ of_random64(void)
 
 	return buffer;
 #else
-	return ((uint64_t)of_random32() << 32) | of_random32();
+	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
 }
 
@@ -271,7 +271,7 @@ enumerationMutationHandler(id object)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found(id object, SEL selector)
+OFMethodNotFound(id object, SEL selector)
 {
 	[object doesNotRecognizeSelector: selector];
 
@@ -285,13 +285,13 @@ of_method_not_found(id object, SEL selector)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found_stret(void *stret, id object, SEL selector)
+OFMethodNotFound_stret(void *stret, id object, SEL selector)
 {
-	of_method_not_found(object, selector);
+	OFMethodNotFound(object, selector);
 }
 
 id
-of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
+OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
     void **extra)
 {
 	OFObject *instance;
@@ -368,21 +368,21 @@ _references_to_categories_of_OFObject(void)
 	 * already been set, so this is the best we can do.
 	 */
 	if (dlsym(RTLD_DEFAULT, "NSFoundationVersionNumber") == NULL)
-		objc_setForwardHandler((void *)&of_forward,
-		    (void *)&of_forward_stret);
+		objc_setForwardHandler((void *)&OFForward,
+		    (void *)&OFForward_stret);
 #else
-	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
+	objc_setForwardHandler((IMP)&OFForward, (IMP)&OFForward_stret);
 #endif
 
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 
 	do {
-		of_hash_seed = of_random32();
-	} while (of_hash_seed == 0);
+		OFHashSeed = OFRandom32();
+	} while (OFHashSeed == 0);
 
 #ifdef OF_OBJFW_RUNTIME
 	objc_setTaggedPointerSecret(sizeof(uintptr_t) == 4
-	    ? (uintptr_t)of_random32() : (uintptr_t)of_random64());
+	    ? (uintptr_t)OFRandom32() : (uintptr_t)OFRandom64());
 #endif
 }
 
@@ -396,7 +396,7 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return of_alloc_object(self, 0, 0, NULL);
+	return OFAllocObject(self, 0, 0, NULL);
 }
 
 + (instancetype)new

@@ -382,7 +382,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	void *storage;
 
 	length = strlen(UTF8String);
-	string = of_alloc_object([OFUTF8String class], length + 1, 1, &storage);
+	string = OFAllocObject([OFUTF8String class], length + 1, 1, &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
 					  length: length
@@ -395,7 +395,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	OFUTF8String *string;
 	void *storage;
 
-	string = of_alloc_object([OFUTF8String class], UTF8StringLength + 1, 1,
+	string = OFAllocObject([OFUTF8String class], UTF8StringLength + 1, 1,
 	    &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
@@ -430,7 +430,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		void *storage;
 
 		length = strlen(cString);
-		string = of_alloc_object([OFUTF8String class], length + 1, 1,
+		string = OFAllocObject([OFUTF8String class], length + 1, 1,
 		    &storage);
 
 		return (id)[string of_initWithUTF8String: cString
@@ -450,8 +450,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		OFUTF8String *string;
 		void *storage;
 
-		string = of_alloc_object([OFUTF8String class],
-		    cStringLength + 1, 1, &storage);
+		string = OFAllocObject([OFUTF8String class], cStringLength + 1,
+		    1, &storage);
 
 		return (id)[string of_initWithUTF8String: cString
 						  length: cStringLength

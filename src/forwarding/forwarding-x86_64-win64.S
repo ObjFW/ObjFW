@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -88,13 +88,13 @@ of_forward:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	of_method_not_found
-.def of_forward
+	jmp	OFMethodNotFound
+.def OFForward
 .scl 2
 .type 32
 .endef
 
-of_forward_stret:
+OFForward_stret:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -165,8 +165,8 @@ of_forward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	of_method_not_found_stret
-.def of_forward_stret
+	jmp	OFMethodNotFound_stret
+.def OFForward_stret
 .scl 2
 .type 32
 .endef
