@@ -144,7 +144,7 @@ of_url_is_ipv6_host(OFString *host)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 @end
 

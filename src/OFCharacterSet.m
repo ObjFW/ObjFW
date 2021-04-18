@@ -167,7 +167,7 @@ initWhitespaceCharacterSet(void)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (bool)characterIsMember: (OFUnichar)character

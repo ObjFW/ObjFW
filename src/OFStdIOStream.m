@@ -383,7 +383,7 @@ colorToANSI(OFColor *color)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (bool)hasTerminal

@@ -349,7 +349,7 @@
 # endif
 #endif
 
-#define OF_RETAIN_COUNT_MAX UINT_MAX
+#define OFMaxRetainCount UINT_MAX
 
 #ifdef OBJC_COMPILING_RUNTIME
 # define OFEnsure(cond)							\

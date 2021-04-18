@@ -894,7 +894,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 @end
 

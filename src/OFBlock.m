@@ -477,7 +477,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 		return ((struct Block *)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (void)release
