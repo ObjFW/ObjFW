@@ -71,7 +71,7 @@
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
 			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
 		else
-			OF_ENSURE(0);
+			OFEnsure(0);
 	} else {
 #endif
 		if ([_delegate respondsToSelector:

@@ -39,7 +39,7 @@ static OFString *module = @"OFSPXSocket";
   didAcceptSocket: (OFSequencedPacketSocket *)accepted
 	exception: (id)exception
 {
-	OF_ENSURE(!_accepted);
+	OFEnsure(!_accepted);
 
 	_accepted = (sock == _expectedServerSocket && accepted != nil &&
 	    exception == nil);
@@ -56,7 +56,7 @@ static OFString *module = @"OFSPXSocket";
 	      port: (uint16_t)port
 	 exception: (id)exception
 {
-	OF_ENSURE(!_connected);
+	OFEnsure(!_connected);
 
 	_connected = (sock == _expectedClientSocket &&
 	    memcmp(node, _expectedNode, IPX_NODE_LEN) == 0 &&

@@ -123,18 +123,18 @@
 {
 	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
-	uint32_t hash;
+	unsigned long hash;
 
 	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
 
-		OF_HASH_INIT(hash);
+		OFHashInit(&hash);
 
 		for (size_t i = 0; i < size; i++)
-			OF_HASH_ADD(hash, value[i]);
+			OFHashAdd(&hash, value[i]);
 
-		OF_HASH_FINALIZE(hash);
+		OFHashFinalize(&hash);
 	} @finally {
 		OFFreeMemory(value);
 	}

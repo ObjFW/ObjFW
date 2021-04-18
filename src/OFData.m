@@ -480,14 +480,14 @@ _references_to_categories_of_OFData(void)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		OF_HASH_ADD(hash, ((uint8_t *)_items)[i]);
+		OFHashAdd(&hash, ((uint8_t *)_items)[i]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -649,14 +649,14 @@ _references_to_categories_of_OFData(void)
 		[data addItem: &tmp];
 	} else if (_count <= UINT16_MAX) {
 		uint8_t type = 0xC5;
-		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)_count);
+		uint16_t tmp = OFToBigEndian16((uint16_t)_count);
 
 		data = [OFMutableData dataWithCapacity: _count + 3];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (_count <= UINT32_MAX) {
 		uint8_t type = 0xC6;
-		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)_count);
+		uint32_t tmp = OFToBigEndian32((uint32_t)_count);
 
 		data = [OFMutableData dataWithCapacity: _count + 5];
 		[data addItem: &type];

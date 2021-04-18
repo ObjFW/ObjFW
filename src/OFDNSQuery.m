@@ -93,13 +93,13 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _domainName.hash);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _domainName.hash);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

@@ -574,7 +574,7 @@ parseNetStackArray(OFString *string)
 		return;
 
 	for (uint_fast8_t i = 0; i < 2; i++) {
-		uint32_t ip = OF_BSWAP32_IF_LE(buffer.entries[i].ip.s_addr);
+		uint32_t ip = OFFromBigEndian32(buffer.entries[i].ip.s_addr);
 
 		if (ip == 0)
 			continue;

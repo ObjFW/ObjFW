@@ -1635,8 +1635,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				oc = tc;
 		}
 #else
-		c = of_ascii_toupper(c);
-		oc = of_ascii_toupper(oc);
+		c = OFASCIIToUpper(c);
+		oc = OFASCIIToUpper(oc);
 #endif
 
 		if (c > oc) {
@@ -1663,19 +1663,19 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < length; i++) {
 		const OFUnichar c = characters[i];
 
-		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
-		OF_HASH_ADD(hash, (c & 0x00FF00) >> 8);
-		OF_HASH_ADD(hash, c & 0x0000FF);
+		OFHashAdd(&hash, (c & 0xFF0000) >> 16);
+		OFHashAdd(&hash, (c & 0x00FF00) >> 8);
+		OFHashAdd(&hash, c & 0x0000FF);
 	}
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1738,7 +1738,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (options & OFJSONRepresentationOptionIsIdentifier) {
 			const char *cString = self.UTF8String;
 
-			if ((!of_ascii_isalpha(cString[0]) &&
+			if ((!OFASCIIIsAlpha(cString[0]) &&
 			    cString[0] != '_' && cString[0] != '$') ||
 			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
 				[JSON prependString: @"\""];
@@ -1781,14 +1781,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		[data addItem: &tmp];
 	} else if (length <= UINT16_MAX) {
 		uint8_t type = 0xDA;
-		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)length);
+		uint16_t tmp = OFToBigEndian16((uint16_t)length);
 
 		data = [OFMutableData dataWithCapacity: length + 3];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (length <= UINT32_MAX) {
 		uint8_t type = 0xDB;
-		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)length);
+		uint32_t tmp = OFToBigEndian32((uint32_t)length);
 
 		data = [OFMutableData dataWithCapacity: length + 5];
 		[data addItem: &type];
@@ -2284,7 +2284,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	bool negative = false;
 	long long value = 0;
 
-	while (of_ascii_isspace(*UTF8String))
+	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
 
 	switch (*UTF8String) {
@@ -2315,15 +2315,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		base = 10;
 
 	while (*UTF8String != '\0') {
-		unsigned char c = of_ascii_toupper(*UTF8String++);
+		unsigned char c = OFASCIIToUpper(*UTF8String++);
 
 		if (c >= '0' && c <= '9')
 			c -= '0';
 		else if (c >= 'A' && c <= 'Z')
 			c -= ('A' - 10);
-		else if (of_ascii_isspace(c)) {
+		else if (OFASCIIIsSpace(c)) {
 			while (*UTF8String != '\0')
-				if (!of_ascii_isspace(*UTF8String++))
+				if (!OFASCIIIsSpace(*UTF8String++))
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -2359,7 +2359,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	const char *UTF8String = self.UTF8String;
 	unsigned long long value = 0;
 
-	while (of_ascii_isspace(*UTF8String))
+	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
 
 	switch (*UTF8String) {
@@ -2390,15 +2390,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		base = 10;
 
 	while (*UTF8String != '\0') {
-		unsigned char c = of_ascii_toupper(*UTF8String++);
+		unsigned char c = OFASCIIToUpper(*UTF8String++);
 
 		if (c >= '0' && c <= '9')
 			c -= '0';
 		else if (c >= 'A' && c <= 'Z')
 			c -= ('A' - 10);
-		else if (of_ascii_isspace(c)) {
+		else if (OFASCIIIsSpace(c)) {
 			while (*UTF8String != '\0')
-				if (!of_ascii_isspace(*UTF8String++))
+				if (!OFASCIIIsSpace(*UTF8String++))
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -2575,10 +2575,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (swap) {
 			if (c > 0xFFFF) {
 				c -= 0x10000;
-				buffer[j++] = OF_BSWAP16(0xD800 | (c >> 10));
-				buffer[j++] = OF_BSWAP16(0xDC00 | (c & 0x3FF));
+				buffer[j++] = OFByteSwap16(0xD800 | (c >> 10));
+				buffer[j++] =
+				    OFByteSwap16(0xDC00 | (c & 0x3FF));
 			} else
-				buffer[j++] = OF_BSWAP16(c);
+				buffer[j++] = OFByteSwap16(c);
 		} else {
 			if (c > 0xFFFF) {
 				c -= 0x10000;
@@ -2640,7 +2641,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		if (byteOrder != OFByteOrderNative)
 			for (size_t i = 0; i < length; i++)
-				buffer[i] = OF_BSWAP32(buffer[i]);
+				buffer[i] = OFByteSwap32(buffer[i]);
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: length + 1

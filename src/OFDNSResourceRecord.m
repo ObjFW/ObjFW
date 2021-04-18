@@ -245,18 +245,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_address));
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, OFSocketAddressHash(&_address));
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -330,18 +330,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_address));
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, OFSocketAddressHash(&_address));
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -425,18 +425,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _alias.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _alias.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -527,19 +527,19 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _CPU.hash);
-	OF_HASH_ADD_HASH(hash, _OS.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _CPU.hash);
+	OFHashAddHash(&hash, _OS.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -631,20 +631,20 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD(hash, _preference >> 8);
-	OF_HASH_ADD(hash, _preference);
-	OF_HASH_ADD_HASH(hash, _mailExchange.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAdd(&hash, _preference >> 8);
+	OFHashAdd(&hash, _preference);
+	OFHashAddHash(&hash, _mailExchange.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -732,18 +732,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _authoritativeHost.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _authoritativeHost.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -830,18 +830,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _domainName.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _domainName.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -935,19 +935,19 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _mailbox.hash);
-	OF_HASH_ADD_HASH(hash, _TXTDomainName.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _mailbox.hash);
+	OFHashAddHash(&hash, _TXTDomainName.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1071,39 +1071,39 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _primaryNameServer.hash);
-	OF_HASH_ADD_HASH(hash, _responsiblePerson.hash);
-	OF_HASH_ADD(hash, _serialNumber >> 24);
-	OF_HASH_ADD(hash, _serialNumber >> 16);
-	OF_HASH_ADD(hash, _serialNumber >> 8);
-	OF_HASH_ADD(hash, _serialNumber);
-	OF_HASH_ADD(hash, _refreshInterval >> 24);
-	OF_HASH_ADD(hash, _refreshInterval >> 16);
-	OF_HASH_ADD(hash, _refreshInterval >> 8);
-	OF_HASH_ADD(hash, _refreshInterval);
-	OF_HASH_ADD(hash, _retryInterval >> 24);
-	OF_HASH_ADD(hash, _retryInterval >> 16);
-	OF_HASH_ADD(hash, _retryInterval >> 8);
-	OF_HASH_ADD(hash, _retryInterval);
-	OF_HASH_ADD(hash, _expirationInterval >> 24);
-	OF_HASH_ADD(hash, _expirationInterval >> 16);
-	OF_HASH_ADD(hash, _expirationInterval >> 8);
-	OF_HASH_ADD(hash, _expirationInterval);
-	OF_HASH_ADD(hash, _minTTL >> 24);
-	OF_HASH_ADD(hash, _minTTL >> 16);
-	OF_HASH_ADD(hash, _minTTL >> 8);
-	OF_HASH_ADD(hash, _minTTL);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _primaryNameServer.hash);
+	OFHashAddHash(&hash, _responsiblePerson.hash);
+	OFHashAdd(&hash, _serialNumber >> 24);
+	OFHashAdd(&hash, _serialNumber >> 16);
+	OFHashAdd(&hash, _serialNumber >> 8);
+	OFHashAdd(&hash, _serialNumber);
+	OFHashAdd(&hash, _refreshInterval >> 24);
+	OFHashAdd(&hash, _refreshInterval >> 16);
+	OFHashAdd(&hash, _refreshInterval >> 8);
+	OFHashAdd(&hash, _refreshInterval);
+	OFHashAdd(&hash, _retryInterval >> 24);
+	OFHashAdd(&hash, _retryInterval >> 16);
+	OFHashAdd(&hash, _retryInterval >> 8);
+	OFHashAdd(&hash, _retryInterval);
+	OFHashAdd(&hash, _expirationInterval >> 24);
+	OFHashAdd(&hash, _expirationInterval >> 16);
+	OFHashAdd(&hash, _expirationInterval >> 8);
+	OFHashAdd(&hash, _expirationInterval);
+	OFHashAdd(&hash, _minTTL >> 24);
+	OFHashAdd(&hash, _minTTL >> 16);
+	OFHashAdd(&hash, _minTTL >> 8);
+	OFHashAdd(&hash, _minTTL);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1212,24 +1212,24 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD(hash, _priority >> 8);
-	OF_HASH_ADD(hash, _priority);
-	OF_HASH_ADD(hash, _weight >> 8);
-	OF_HASH_ADD(hash, _weight);
-	OF_HASH_ADD_HASH(hash, _target.hash);
-	OF_HASH_ADD(hash, _port >> 8);
-	OF_HASH_ADD(hash, _port);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAdd(&hash, _priority >> 8);
+	OFHashAdd(&hash, _priority);
+	OFHashAdd(&hash, _weight >> 8);
+	OFHashAdd(&hash, _weight);
+	OFHashAddHash(&hash, _target.hash);
+	OFHashAdd(&hash, _port >> 8);
+	OFHashAdd(&hash, _port);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1317,18 +1317,18 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _DNSClass >> 8);
-	OF_HASH_ADD(hash, _DNSClass);
-	OF_HASH_ADD(hash, _recordType >> 8);
-	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, _textStrings.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAdd(&hash, _DNSClass >> 8);
+	OFHashAdd(&hash, _DNSClass);
+	OFHashAdd(&hash, _recordType >> 8);
+	OFHashAdd(&hash, _recordType);
+	OFHashAddHash(&hash, _textStrings.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

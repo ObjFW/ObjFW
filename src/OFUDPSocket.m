@@ -142,10 +142,10 @@
 	}
 
 	if (address->sockaddr.sockaddr.sa_family == AF_INET)
-		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
+		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
 	else if (address->sockaddr.sockaddr.sa_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
+		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
 # endif
 	else {
 		closesocket(_socket);

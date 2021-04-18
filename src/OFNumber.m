@@ -771,8 +771,8 @@ isFloat(OFNumber *number)
 			if (value > UINT64_MAX)
 				@throw [OFOutOfRangeException exception];
 
-			self = [self initWithDouble: OF_BSWAP_DOUBLE_IF_LE(
-			    OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(value)))];
+			self = [self initWithDouble: OFFromBigEndianDouble(
+			    OFRawUInt64ToDouble(OFToBigEndian64(value)))];
 		} else if ([typeString isEqual: @"signed"])
 			self = [self initWithLongLong: element.longLongValue];
 		else if ([typeString isEqual: @"unsigned"])
@@ -983,9 +983,9 @@ isFloat(OFNumber *number)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	if (isFloat(self)) {
 		double d;
@@ -993,21 +993,21 @@ isFloat(OFNumber *number)
 		if (isnan(self.doubleValue))
 			return 0;
 
-		d = OF_BSWAP_DOUBLE_IF_BE(self.doubleValue);
+		d = OFToLittleEndianDouble(self.doubleValue);
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OF_HASH_ADD(hash, ((char *)&d)[i]);
+			OFHashAdd(&hash, ((char *)&d)[i]);
 	} else if (isSigned(self) || isUnsigned(self)) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		while (value != 0) {
-			OF_HASH_ADD(hash, value & 0xFF);
+			OFHashAdd(&hash, value & 0xFF);
 			value >>= 8;
 		}
 	} else
 		@throw [OFInvalidFormatException exception];
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1052,7 +1052,7 @@ isFloat(OFNumber *number)
 		[element addAttributeWithName: @"type" stringValue: @"float"];
 		element.stringValue = [OFString
 		    stringWithFormat: @"%016" PRIx64,
-		    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+		    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
 		    self.doubleValue)))];
 	} else if (isSigned(self))
 		[element addAttributeWithName: @"type" stringValue: @"signed"];
@@ -1113,14 +1113,14 @@ isFloat(OFNumber *number)
 		data = [OFMutableData dataWithItems: &type count: 1];
 	} else if (*typeEncoding == 'f') {
 		uint8_t type = 0xCA;
-		float tmp = OF_BSWAP_FLOAT_IF_LE(self.floatValue);
+		float tmp = OFToBigEndianFloat(self.floatValue);
 
 		data = [OFMutableData dataWithCapacity: 5];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (*typeEncoding == 'd') {
 		uint8_t type = 0xCB;
-		double tmp = OF_BSWAP_DOUBLE_IF_LE(self.doubleValue);
+		double tmp = OFToBigEndianDouble(self.doubleValue);
 
 		data = [OFMutableData dataWithCapacity: 9];
 		[data addItem: &type];
@@ -1141,21 +1141,21 @@ isFloat(OFNumber *number)
 			[data addItem: &tmp];
 		} else if (value >= INT16_MIN && value <= INT16_MAX) {
 			uint8_t type = 0xD1;
-			int16_t tmp = OF_BSWAP16_IF_LE((int16_t)value);
+			int16_t tmp = OFToBigEndian16((int16_t)value);
 
 			data = [OFMutableData dataWithCapacity: 3];
 			[data addItem: &type];
 			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value >= INT32_MIN && value <= INT32_MAX) {
 			uint8_t type = 0xD2;
-			int32_t tmp = OF_BSWAP32_IF_LE((int32_t)value);
+			int32_t tmp = OFToBigEndian32((int32_t)value);
 
 			data = [OFMutableData dataWithCapacity: 5];
 			[data addItem: &type];
 			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value >= INT64_MIN && value <= INT64_MAX) {
 			uint8_t type = 0xD3;
-			int64_t tmp = OF_BSWAP64_IF_LE((int64_t)value);
+			int64_t tmp = OFToBigEndian64((int64_t)value);
 
 			data = [OFMutableData dataWithCapacity: 9];
 			[data addItem: &type];
@@ -1177,21 +1177,21 @@ isFloat(OFNumber *number)
 			[data addItem: &tmp];
 		} else if (value <= UINT16_MAX) {
 			uint8_t type = 0xCD;
-			uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)value);
+			uint16_t tmp = OFToBigEndian16((uint16_t)value);
 
 			data = [OFMutableData dataWithCapacity: 3];
 			[data addItem: &type];
 			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value <= UINT32_MAX) {
 			uint8_t type = 0xCE;
-			uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)value);
+			uint32_t tmp = OFToBigEndian32((uint32_t)value);
 
 			data = [OFMutableData dataWithCapacity: 5];
 			[data addItem: &type];
 			[data addItems: &tmp count: sizeof(tmp)];
 		} else if (value <= UINT64_MAX) {
 			uint8_t type = 0xCF;
-			uint64_t tmp = OF_BSWAP64_IF_LE((uint64_t)value);
+			uint64_t tmp = OFToBigEndian64((uint64_t)value);
 
 			data = [OFMutableData dataWithCapacity: 9];
 			[data addItem: &type];

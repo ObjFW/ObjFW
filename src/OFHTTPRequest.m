@@ -185,19 +185,19 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, _method);
-	OF_HASH_ADD(hash, _protocolVersion.major);
-	OF_HASH_ADD(hash, _protocolVersion.minor);
-	OF_HASH_ADD_HASH(hash, _URL.hash);
-	OF_HASH_ADD_HASH(hash, _headers.hash);
+	OFHashAdd(&hash, _method);
+	OFHashAdd(&hash, _protocolVersion.major);
+	OFHashAdd(&hash, _protocolVersion.minor);
+	OFHashAddHash(&hash, _URL.hash);
+	OFHashAddHash(&hash, _headers.hash);
 	if (_hasRemoteAddress)
-		OF_HASH_ADD_HASH(hash, OFSocketAddressHash(&_remoteAddress));
+		OFHashAddHash(&hash, OFSocketAddressHash(&_remoteAddress));
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

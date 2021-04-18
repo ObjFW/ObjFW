@@ -199,10 +199,10 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 				char buffer;
 
 #ifdef OF_HAVE_PIPE
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 #else
-				OF_ENSURE(recvfrom(_cancelFD[0], &buffer, 1,
-				    0, NULL, NULL) == 1);
+				OFEnsure(recvfrom(_cancelFD[0], &buffer, 1, 0,
+				    NULL, NULL) == 1);
 #endif
 				FDs[i].revents = 0;
 

@@ -122,28 +122,28 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 	float tmp;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_red);
+	tmp = OFToLittleEndianFloat(_red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_green);
+	tmp = OFToLittleEndianFloat(_green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_blue);
+	tmp = OFToLittleEndianFloat(_blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_alpha);
+	tmp = OFToLittleEndianFloat(_alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

@@ -34,7 +34,7 @@ static OFTLSKey threadKey;
 
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(OFTLSKeyNew(&threadKey) == 0);
+	OFEnsure(OFTLSKeyNew(&threadKey) == 0);
 }
 
 static void
@@ -43,7 +43,7 @@ functionWrapper(void)
 	bool detached = false;
 	OFPlainThread thread =
 	    (OFPlainThread)((struct Process *)FindTask(NULL))->pr_ExitData;
-	OF_ENSURE(OFTLSKeySet(threadKey, thread) == 0);
+	OFEnsure(OFTLSKeySet(threadKey, thread) == 0);
 
 	thread->function(thread->object);
 

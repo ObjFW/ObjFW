@@ -311,35 +311,35 @@
 {
 	uint16_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 2];
-	return OF_BSWAP16_IF_LE(ret);
+	return OFFromBigEndian16(ret);
 }
 
 - (uint32_t)readBigEndianInt32
 {
 	uint32_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP32_IF_LE(ret);
+	return OFFromBigEndian32(ret);
 }
 
 - (uint64_t)readBigEndianInt64
 {
 	uint64_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP64_IF_LE(ret);
+	return OFFromBigEndian64(ret);
 }
 
 - (float)readBigEndianFloat
 {
 	float ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP_FLOAT_IF_LE(ret);
+	return OFFromBigEndianFloat(ret);
 }
 
 - (double)readBigEndianDouble
 {
 	double ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP_DOUBLE_IF_LE(ret);
+	return OFFromBigEndianDouble(ret);
 }
 
 - (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer count: (size_t)count
@@ -355,7 +355,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP16(buffer[i]);
+		buffer[i] = OFByteSwap16(buffer[i]);
 #endif
 
 	return size;
@@ -374,7 +374,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP32(buffer[i]);
+		buffer[i] = OFByteSwap32(buffer[i]);
 #endif
 
 	return size;
@@ -393,7 +393,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP64(buffer[i]);
+		buffer[i] = OFByteSwap64(buffer[i]);
 #endif
 
 	return size;
@@ -412,7 +412,7 @@
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
+		buffer[i] = OFByteSwapFloat(buffer[i]);
 #endif
 
 	return size;
@@ -431,7 +431,7 @@
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
+		buffer[i] = OFByteSwapDouble(buffer[i]);
 #endif
 
 	return size;
@@ -441,35 +441,35 @@
 {
 	uint16_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 2];
-	return OF_BSWAP16_IF_BE(ret);
+	return OFFromLittleEndian16(ret);
 }
 
 - (uint32_t)readLittleEndianInt32
 {
 	uint32_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP32_IF_BE(ret);
+	return OFFromLittleEndian32(ret);
 }
 
 - (uint64_t)readLittleEndianInt64
 {
 	uint64_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP64_IF_BE(ret);
+	return OFFromLittleEndian64(ret);
 }
 
 - (float)readLittleEndianFloat
 {
 	float ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP_FLOAT_IF_BE(ret);
+	return OFFromLittleEndianFloat(ret);
 }
 
 - (double)readLittleEndianDouble
 {
 	double ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP_DOUBLE_IF_BE(ret);
+	return OFFromLittleEndianDouble(ret);
 }
 
 - (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
@@ -486,7 +486,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP16(buffer[i]);
+		buffer[i] = OFByteSwap16(buffer[i]);
 #endif
 
 	return size;
@@ -506,7 +506,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP32(buffer[i]);
+		buffer[i] = OFByteSwap32(buffer[i]);
 #endif
 
 	return size;
@@ -526,7 +526,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP64(buffer[i]);
+		buffer[i] = OFByteSwap64(buffer[i]);
 #endif
 
 	return size;
@@ -546,7 +546,7 @@
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
+		buffer[i] = OFByteSwapFloat(buffer[i]);
 #endif
 
 	return size;
@@ -566,7 +566,7 @@
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
+		buffer[i] = OFByteSwapDouble(buffer[i]);
 #endif
 
 	return size;
@@ -1214,31 +1214,31 @@
 
 - (void)writeBigEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_LE(int16);
+	int16 = OFToBigEndian16(int16);
 	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeBigEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_LE(int32);
+	int32 = OFToBigEndian32(int32);
 	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeBigEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_LE(int64);
+	int64 = OFToBigEndian64(int64);
 	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeBigEndianFloat: (float)float_
 {
-	float_ = OF_BSWAP_FLOAT_IF_LE(float_);
+	float_ = OFToBigEndianFloat(float_);
 	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeBigEndianDouble: (double)double_
 {
-	double_ = OF_BSWAP_DOUBLE_IF_LE(double_);
+	double_ = OFToBigEndianDouble(double_);
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
@@ -1258,7 +1258,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP16(buffer[i]);
+			tmp[i] = OFByteSwap16(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1285,7 +1285,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP32(buffer[i]);
+			tmp[i] = OFByteSwap32(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1312,7 +1312,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP64(buffer[i]);
+			tmp[i] = OFByteSwap64(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1339,7 +1339,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
+			tmp[i] = OFByteSwapFloat(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1366,7 +1366,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
+			tmp[i] = OFByteSwapDouble(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1379,31 +1379,31 @@
 
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_BE(int16);
+	int16 = OFToLittleEndian16(int16);
 	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeLittleEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_BE(int32);
+	int32 = OFToLittleEndian32(int32);
 	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeLittleEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_BE(int64);
+	int64 = OFToLittleEndian64(int64);
 	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeLittleEndianFloat: (float)float_
 {
-	float_ = OF_BSWAP_FLOAT_IF_BE(float_);
+	float_ = OFToLittleEndianFloat(float_);
 	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeLittleEndianDouble: (double)double_
 {
-	double_ = OF_BSWAP_DOUBLE_IF_BE(double_);
+	double_ = OFToLittleEndianDouble(double_);
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
@@ -1423,7 +1423,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP16(buffer[i]);
+			tmp[i] = OFByteSwap16(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1450,7 +1450,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP32(buffer[i]);
+			tmp[i] = OFByteSwap32(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1477,7 +1477,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP64(buffer[i]);
+			tmp[i] = OFByteSwap64(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1504,7 +1504,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
+			tmp[i] = OFByteSwapFloat(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
@@ -1531,7 +1531,7 @@
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
+			tmp[i] = OFByteSwapDouble(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {

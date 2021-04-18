@@ -508,14 +508,14 @@ static struct {
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (id object in self)
-		OF_HASH_ADD_HASH(hash, [object hash]);
+		OFHashAddHash(&hash, [object hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -658,13 +658,13 @@ static struct {
 		[data addItem: &tmp];
 	} else if (count <= UINT16_MAX) {
 		uint8_t type = 0xDC;
-		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
+		uint16_t tmp = OFToBigEndian16((uint16_t)count);
 
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xDD;
-		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
+		uint32_t tmp = OFToBigEndian32((uint32_t)count);
 
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];

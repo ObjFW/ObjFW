@@ -112,10 +112,10 @@
 {
 	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _target.hash);
-	OF_HASH_ADD_HASH(hash, _data.hash);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _target.hash);
+	OFHashAddHash(&hash, _data.hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

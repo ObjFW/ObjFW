@@ -62,8 +62,8 @@ static OFString *module = @"Socket";
 
 	TEST(@"Parsing an IPv4",
 	    R(addr = OFSocketAddressParseIP(@"127.0.0.1", 1234)) &&
-	    OF_BSWAP32_IF_LE(addr.sockaddr.in.sin_addr.s_addr) == 0x7F000001 &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in.sin_port) == 1234)
+	    OFFromBigEndian32(addr.sockaddr.in.sin_addr.s_addr) == 0x7F000001 &&
+	    OFFromBigEndian16(addr.sockaddr.in.sin_port) == 1234)
 
 	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #1", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"127.0.0.0.1", 1234))
@@ -93,27 +93,27 @@ static OFString *module = @"Socket";
 	    @"1122:3344:5566:7788:99aa:bbCc:ddee:ff00", 1234)) &&
 	    COMPARE_V6(addr,
 	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00) &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #2",
 	    R(addr = OFSocketAddressParseIP(@"::", 1234)) &&
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0) &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #3",
 	    R(addr = OFSocketAddressParseIP(@"aaAa::bBbb", 1234)) &&
 	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0xBBBB) &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #4",
 	    R(addr = OFSocketAddressParseIP(@"aaAa::", 1234)) &&
 	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0) &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #5",
 	    R(addr = OFSocketAddressParseIP(@"::aaAa", 1234)) &&
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0xAAAA) &&
-	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"1:::2", 1234))

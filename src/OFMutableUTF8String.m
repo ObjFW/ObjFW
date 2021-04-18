@@ -89,7 +89,7 @@
 			else
 				table = middleTable;
 
-			isStart = of_ascii_isspace(_s->cString[i]);
+			isStart = OFASCIIIsSpace(_s->cString[i]);
 
 			if ((t = table[0][(uint8_t)_s->cString[i]]) != 0)
 				_s->cString[i] = t;
@@ -126,7 +126,7 @@
 			@throw [OFInvalidEncodingException exception];
 		}
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 
 		if (c >> 8 < tableSize) {
 			OFUnichar tc = table[c >> 8][c & 0xFF];
@@ -721,7 +721,7 @@
 	size_t i;
 
 	for (i = 0; i < _s->cStringLength; i++)
-		if (!of_ascii_isspace(_s->cString[i]))
+		if (!OFASCIIIsSpace(_s->cString[i]))
 			break;
 
 	_s->hashed = false;
@@ -748,7 +748,7 @@
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		*p = '\0';
@@ -775,7 +775,7 @@
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		*p = '\0';
@@ -786,7 +786,7 @@
 	_s->length -= d;
 
 	for (i = 0; i < _s->cStringLength; i++)
-		if (!of_ascii_isspace(_s->cString[i]))
+		if (!OFASCIIIsSpace(_s->cString[i]))
 			break;
 
 	_s->cStringLength -= i;

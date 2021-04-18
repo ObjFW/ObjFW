@@ -54,7 +54,7 @@
 		int error = OFPlainMutexFree(&_mutex);
 
 		if (error != 0) {
-			OF_ENSURE(error == EBUSY);
+			OFEnsure(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}

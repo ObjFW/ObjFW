@@ -42,7 +42,7 @@ static void
 parseLocale(char *locale, OFStringEncoding *encoding,
     OFString **language, OFString **territory)
 {
-	if ((locale = of_strdup(locale)) == NULL)
+	if ((locale = OFStrdup(locale)) == NULL)
 		return;
 
 	@try {
@@ -221,7 +221,7 @@ evaluateCondition(OFString *condition_, OFDictionary *variables)
 				var = [OFNumber numberWithBool:
 				    [first boolValue] || [second boolValue]];
 			else
-				OF_ENSURE(0);
+				OFEnsure(0);
 
 			[stack replaceObjectAtIndex: stackSize - 2
 					 withObject: var];
@@ -238,7 +238,7 @@ evaluateCondition(OFString *condition_, OFDictionary *variables)
 				    ([first doubleValue] !=
 				    [first longLongValue])];
 			else
-				OF_ENSURE(0);
+				OFEnsure(0);
 
 			[stack replaceObjectAtIndex: stackSize - 1
 					 withObject: var];
@@ -457,7 +457,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 				size_t length;
 
 				territory =
-				    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
+				    OFToBigEndian32(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
 					if (((char *)&territory)[length] == 0)

@@ -204,9 +204,9 @@ _Block_copy(const void *block_)
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
-		OF_ENSURE(OFSpinlockLock(&blockSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&blockSpinlocks[hash]) == 0);
 		block->flags++;
-		OF_ENSURE(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
 #endif
 	}
 
@@ -232,9 +232,9 @@ _Block_release(const void *block_)
 #else
 	unsigned hash = SPINLOCK_HASH(block);
 
-	OF_ENSURE(OFSpinlockLock(&blockSpinlocks[hash]) == 0);
+	OFEnsure(OFSpinlockLock(&blockSpinlocks[hash]) == 0);
 	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-		OF_ENSURE(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
@@ -243,7 +243,7 @@ _Block_release(const void *block_)
 
 		return;
 	}
-	OF_ENSURE(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
+	OFEnsure(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
 #endif
 }
 
@@ -297,7 +297,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 #else
 			unsigned hash = SPINLOCK_HASH(src);
 
-			OF_ENSURE(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
@@ -306,8 +306,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 				*dst = src->forwarding;
 			}
-			OF_ENSURE(
-			    OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		} else
 			*dst = src;
@@ -317,9 +316,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 #else
 		unsigned hash = SPINLOCK_HASH(*dst);
 
-		OF_ENSURE(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
 		(*dst)->flags++;
-		OF_ENSURE(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}
@@ -358,17 +357,16 @@ _Block_object_dispose(const void *object_, const int flags_)
 #else
 		unsigned hash = SPINLOCK_HASH(object);
 
-		OF_ENSURE(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
 		if ((--object->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-			OF_ENSURE(
-			    OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 
 			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				object->byref_dispose(object);
 
 			free(object);
 		}
-		OF_ENSURE(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}

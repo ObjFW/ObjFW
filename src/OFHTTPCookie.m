@@ -363,18 +363,18 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _value.hash);
-	OF_HASH_ADD_HASH(hash, _domain.hash);
-	OF_HASH_ADD_HASH(hash, _path.hash);
-	OF_HASH_ADD_HASH(hash, _expires.hash);
-	OF_HASH_ADD(hash, _secure);
-	OF_HASH_ADD(hash, _HTTPOnly);
-	OF_HASH_ADD_HASH(hash, _extensions.hash);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _value.hash);
+	OFHashAddHash(&hash, _domain.hash);
+	OFHashAddHash(&hash, _path.hash);
+	OFHashAddHash(&hash, _expires.hash);
+	OFHashAdd(&hash, _secure);
+	OFHashAdd(&hash, _HTTPOnly);
+	OFHashAddHash(&hash, _extensions.hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

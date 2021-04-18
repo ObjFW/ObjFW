@@ -368,7 +368,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 #endif
 
 	addrIn->sin_family = AF_INET;
-	addrIn->sin_port = OF_BSWAP16_IF_LE(port);
+	addrIn->sin_port = OFToBigEndian16(port);
 #ifdef OF_WII
 	addrIn->sin_len = ret.length;
 #endif
@@ -398,7 +398,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 		addr = (addr << 8) | ((uint32_t)number & 0xFF);
 	}
 
-	addrIn->sin_addr.s_addr = OF_BSWAP32_IF_LE(addr);
+	addrIn->sin_addr.s_addr = OFToBigEndian32(addr);
 
 	objc_autoreleasePoolPop(pool);
 
@@ -439,7 +439,7 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 #else
 	addrIn6->sin6_family = AF_UNSPEC;
 #endif
-	addrIn6->sin6_port = OF_BSWAP16_IF_LE(port);
+	addrIn6->sin6_port = OFToBigEndian16(port);
 
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
 
@@ -531,10 +531,10 @@ OFSocketAddressMakeIPX(const unsigned char node[IPX_NODE_LEN], uint32_t network,
 	ret.sockaddr.ipx.sipx_family = AF_UNSPEC;
 #endif
 	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
-	network = OF_BSWAP32_IF_LE(network);
+	network = OFToBigEndian32(network);
 	memcpy(&ret.sockaddr.ipx.sipx_network, &network,
 	    sizeof(ret.sockaddr.ipx.sipx_network));
-	ret.sockaddr.ipx.sipx_port = OF_BSWAP16_IF_LE(port);
+	ret.sockaddr.ipx.sipx_port = OFToBigEndian16(port);
 
 	return ret;
 }
@@ -614,10 +614,10 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 unsigned long
 OFSocketAddressHash(const OFSocketAddress *address)
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD(hash, address->family);
+	OFHashInit(&hash);
+	OFHashAdd(&hash, address->family);
 
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
@@ -629,24 +629,24 @@ OFSocketAddressHash(const OFSocketAddress *address)
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_port >> 8);
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_port);
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_addr.s_addr >> 24);
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_addr.s_addr >> 16);
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_addr.s_addr >> 8);
-		OF_HASH_ADD(hash, address->sockaddr.in.sin_addr.s_addr);
+		OFHashAdd(&hash, address->sockaddr.in.sin_port >> 8);
+		OFHashAdd(&hash, address->sockaddr.in.sin_port);
+		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 24);
+		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 16);
+		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 8);
+		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr);
 
 		break;
 	case OFSocketAddressFamilyIPv6:
 		if (address->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		OF_HASH_ADD(hash, address->sockaddr.in6.sin6_port >> 8);
-		OF_HASH_ADD(hash, address->sockaddr.in6.sin6_port);
+		OFHashAdd(&hash, address->sockaddr.in6.sin6_port >> 8);
+		OFHashAdd(&hash, address->sockaddr.in6.sin6_port);
 
 		for (size_t i = 0;
 		    i < sizeof(address->sockaddr.in6.sin6_addr.s6_addr); i++)
-			OF_HASH_ADD(hash,
+			OFHashAdd(&hash,
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
 
 		break;
@@ -657,24 +657,24 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		if (address->length < (socklen_t)sizeof(struct sockaddr_ipx))
 			@throw [OFInvalidArgumentException exception];
 
-		OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_port >> 8);
-		OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_port);
+		OFHashAdd(&hash, address->sockaddr.ipx.sipx_port >> 8);
+		OFHashAdd(&hash, address->sockaddr.ipx.sipx_port);
 
 		memcpy(network, &address->sockaddr.ipx.sipx_network,
 		    sizeof(network));
 
 		for (size_t i = 0; i < sizeof(network); i++)
-			OF_HASH_ADD(hash, network[i]);
+			OFHashAdd(&hash, network[i]);
 
 		for (size_t i = 0; i < IPX_NODE_LEN; i++)
-			OF_HASH_ADD(hash, address->sockaddr.ipx.sipx_node[i]);
+			OFHashAdd(&hash, address->sockaddr.ipx.sipx_node[i]);
 
 		break;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -683,7 +683,7 @@ static OFString *
 IPv4String(const OFSocketAddress *address)
 {
 	const struct sockaddr_in *addrIn = &address->sockaddr.in;
-	uint32_t addr = OF_BSWAP32_IF_LE(addrIn->sin_addr.s_addr);
+	uint32_t addr = OFFromBigEndian32(addrIn->sin_addr.s_addr);
 	OFString *string;
 
 	string = [OFString stringWithFormat: @"%u.%u.%u.%u",
@@ -778,13 +778,13 @@ OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
-		address->sockaddr.in.sin_port = OF_BSWAP16_IF_LE(port);
+		address->sockaddr.in.sin_port = OFToBigEndian16(port);
 		break;
 	case OFSocketAddressFamilyIPv6:
-		address->sockaddr.in6.sin6_port = OF_BSWAP16_IF_LE(port);
+		address->sockaddr.in6.sin6_port = OFToBigEndian16(port);
 		break;
 	case OFSocketAddressFamilyIPX:
-		address->sockaddr.ipx.sipx_port = OF_BSWAP16_IF_LE(port);
+		address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
 		break;
 	default:
 		@throw [OFInvalidArgumentException exception];
@@ -796,11 +796,11 @@ OFSocketAddressPort(const OFSocketAddress *address)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
-		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
+		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 	case OFSocketAddressFamilyIPv6:
-		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
+		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
 	case OFSocketAddressFamilyIPX:
-		return OF_BSWAP16_IF_LE(address->sockaddr.ipx.sipx_port);
+		return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -812,7 +812,7 @@ OFSocketAddressSetIPXNetwork(OFSocketAddress *address, uint32_t network)
 	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
-	network = OF_BSWAP32_IF_LE(network);
+	network = OFToBigEndian32(network);
 	memcpy(&address->sockaddr.ipx.sipx_network, &network,
 	    sizeof(address->sockaddr.ipx.sipx_network));
 }
@@ -827,7 +827,7 @@ OFSocketAddressIPXNetwork(const OFSocketAddress *address)
 
 	memcpy(&network, &address->sockaddr.ipx.sipx_network, sizeof(network));
 
-	return OF_BSWAP32_IF_LE(network);
+	return OFFromBigEndian32(network);
 }
 
 void

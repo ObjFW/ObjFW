@@ -32,48 +32,48 @@ OFSalsa20_8Core(uint32_t buffer[16])
 	uint32_t tmp[16];
 
 	for (uint_fast8_t i = 0; i < 16; i++)
-		tmp[i] = OF_BSWAP32_IF_BE(buffer[i]);
+		tmp[i] = OFToLittleEndian32(buffer[i]);
 
 	for (uint_fast8_t i = 0; i < 8; i += 2) {
-		tmp[ 4] ^= OF_ROL(tmp[ 0] + tmp[12],  7);
-		tmp[ 8] ^= OF_ROL(tmp[ 4] + tmp[ 0],  9);
-		tmp[12] ^= OF_ROL(tmp[ 8] + tmp[ 4], 13);
-		tmp[ 0] ^= OF_ROL(tmp[12] + tmp[ 8], 18);
-		tmp[ 9] ^= OF_ROL(tmp[ 5] + tmp[ 1],  7);
-		tmp[13] ^= OF_ROL(tmp[ 9] + tmp[ 5],  9);
-		tmp[ 1] ^= OF_ROL(tmp[13] + tmp[ 9], 13);
-		tmp[ 5] ^= OF_ROL(tmp[ 1] + tmp[13], 18);
-		tmp[14] ^= OF_ROL(tmp[10] + tmp[ 6],  7);
-		tmp[ 2] ^= OF_ROL(tmp[14] + tmp[10],  9);
-		tmp[ 6] ^= OF_ROL(tmp[ 2] + tmp[14], 13);
-		tmp[10] ^= OF_ROL(tmp[ 6] + tmp[ 2], 18);
-		tmp[ 3] ^= OF_ROL(tmp[15] + tmp[11],  7);
-		tmp[ 7] ^= OF_ROL(tmp[ 3] + tmp[15],  9);
-		tmp[11] ^= OF_ROL(tmp[ 7] + tmp[ 3], 13);
-		tmp[15] ^= OF_ROL(tmp[11] + tmp[ 7], 18);
-		tmp[ 1] ^= OF_ROL(tmp[ 0] + tmp[ 3],  7);
-		tmp[ 2] ^= OF_ROL(tmp[ 1] + tmp[ 0],  9);
-		tmp[ 3] ^= OF_ROL(tmp[ 2] + tmp[ 1], 13);
-		tmp[ 0] ^= OF_ROL(tmp[ 3] + tmp[ 2], 18);
-		tmp[ 6] ^= OF_ROL(tmp[ 5] + tmp[ 4],  7);
-		tmp[ 7] ^= OF_ROL(tmp[ 6] + tmp[ 5],  9);
-		tmp[ 4] ^= OF_ROL(tmp[ 7] + tmp[ 6], 13);
-		tmp[ 5] ^= OF_ROL(tmp[ 4] + tmp[ 7], 18);
-		tmp[11] ^= OF_ROL(tmp[10] + tmp[ 9],  7);
-		tmp[ 8] ^= OF_ROL(tmp[11] + tmp[10],  9);
-		tmp[ 9] ^= OF_ROL(tmp[ 8] + tmp[11], 13);
-		tmp[10] ^= OF_ROL(tmp[ 9] + tmp[ 8], 18);
-		tmp[12] ^= OF_ROL(tmp[15] + tmp[14],  7);
-		tmp[13] ^= OF_ROL(tmp[12] + tmp[15],  9);
-		tmp[14] ^= OF_ROL(tmp[13] + tmp[12], 13);
-		tmp[15] ^= OF_ROL(tmp[14] + tmp[13], 18);
+		tmp[ 4] ^= OFRotateLeft(tmp[ 0] + tmp[12],  7);
+		tmp[ 8] ^= OFRotateLeft(tmp[ 4] + tmp[ 0],  9);
+		tmp[12] ^= OFRotateLeft(tmp[ 8] + tmp[ 4], 13);
+		tmp[ 0] ^= OFRotateLeft(tmp[12] + tmp[ 8], 18);
+		tmp[ 9] ^= OFRotateLeft(tmp[ 5] + tmp[ 1],  7);
+		tmp[13] ^= OFRotateLeft(tmp[ 9] + tmp[ 5],  9);
+		tmp[ 1] ^= OFRotateLeft(tmp[13] + tmp[ 9], 13);
+		tmp[ 5] ^= OFRotateLeft(tmp[ 1] + tmp[13], 18);
+		tmp[14] ^= OFRotateLeft(tmp[10] + tmp[ 6],  7);
+		tmp[ 2] ^= OFRotateLeft(tmp[14] + tmp[10],  9);
+		tmp[ 6] ^= OFRotateLeft(tmp[ 2] + tmp[14], 13);
+		tmp[10] ^= OFRotateLeft(tmp[ 6] + tmp[ 2], 18);
+		tmp[ 3] ^= OFRotateLeft(tmp[15] + tmp[11],  7);
+		tmp[ 7] ^= OFRotateLeft(tmp[ 3] + tmp[15],  9);
+		tmp[11] ^= OFRotateLeft(tmp[ 7] + tmp[ 3], 13);
+		tmp[15] ^= OFRotateLeft(tmp[11] + tmp[ 7], 18);
+		tmp[ 1] ^= OFRotateLeft(tmp[ 0] + tmp[ 3],  7);
+		tmp[ 2] ^= OFRotateLeft(tmp[ 1] + tmp[ 0],  9);
+		tmp[ 3] ^= OFRotateLeft(tmp[ 2] + tmp[ 1], 13);
+		tmp[ 0] ^= OFRotateLeft(tmp[ 3] + tmp[ 2], 18);
+		tmp[ 6] ^= OFRotateLeft(tmp[ 5] + tmp[ 4],  7);
+		tmp[ 7] ^= OFRotateLeft(tmp[ 6] + tmp[ 5],  9);
+		tmp[ 4] ^= OFRotateLeft(tmp[ 7] + tmp[ 6], 13);
+		tmp[ 5] ^= OFRotateLeft(tmp[ 4] + tmp[ 7], 18);
+		tmp[11] ^= OFRotateLeft(tmp[10] + tmp[ 9],  7);
+		tmp[ 8] ^= OFRotateLeft(tmp[11] + tmp[10],  9);
+		tmp[ 9] ^= OFRotateLeft(tmp[ 8] + tmp[11], 13);
+		tmp[10] ^= OFRotateLeft(tmp[ 9] + tmp[ 8], 18);
+		tmp[12] ^= OFRotateLeft(tmp[15] + tmp[14],  7);
+		tmp[13] ^= OFRotateLeft(tmp[12] + tmp[15],  9);
+		tmp[14] ^= OFRotateLeft(tmp[13] + tmp[12], 13);
+		tmp[15] ^= OFRotateLeft(tmp[14] + tmp[13], 18);
 	}
 
 	for (uint_fast8_t i = 0; i < 16; i++)
-		buffer[i] = OF_BSWAP32_IF_BE(OF_BSWAP32_IF_BE(buffer[i]) +
+		buffer[i] = OFToLittleEndian32(OFFromLittleEndian32(buffer[i]) +
 		    tmp[i]);
 
-	of_explicit_memset(tmp, 0, sizeof(tmp));
+	OFZeroMemory(tmp, sizeof(tmp));
 }
 
 void
@@ -102,7 +102,7 @@ OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 		memcpy(output + ((i / 2) + (i & 1) * blockSize) * 16, tmp, 64);
 	}
 
-	of_explicit_memset(tmp, 0, sizeof(tmp));
+	OFZeroMemory(tmp, sizeof(tmp));
 }
 
 void
@@ -124,8 +124,8 @@ OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
-		uint32_t j = OF_BSWAP32_IF_BE(tmp[(2 * blockSize - 1) * 16]) &
-		    (costFactor - 1);
+		uint32_t j = OFFromLittleEndian32(
+		    tmp[(2 * blockSize - 1) * 16]) & (costFactor - 1);
 
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];

@@ -324,7 +324,7 @@ callMain(id object)
 	if (thread == mainThread)
 		@throw [OFInvalidArgumentException exception];
 
-	OF_ENSURE(thread != nil);
+	OFEnsure(thread != nil);
 
 	thread->_returnValue = [object retain];
 	longjmp(thread->_exitEnv, 1);

@@ -209,7 +209,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 				continue;
 			}
 

@@ -39,7 +39,7 @@ isWhitespaceLine(OFString *line)
 	size_t length = line.UTF8StringLength;
 
 	for (size_t i = 0; i < length; i++)
-		if (!of_ascii_isspace(cString[i]))
+		if (!OFASCIIIsSpace(cString[i]))
 			return false;
 
 	return true;

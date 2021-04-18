@@ -115,7 +115,7 @@ of_url_is_ipv6_host(OFString *host)
 	bool hasColon = false;
 
 	while (*UTF8String != '\0') {
-		if (!of_ascii_isdigit(*UTF8String) && *UTF8String != ':' &&
+		if (!OFASCIIIsDigit(*UTF8String) && *UTF8String != ':' &&
 		    (*UTF8String < 'a' || *UTF8String > 'f') &&
 		    (*UTF8String < 'A' || *UTF8String > 'F'))
 			return false;
@@ -153,7 +153,7 @@ of_url_is_ipv6_host(OFString *host)
 @implementation OFURLAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -182,7 +182,7 @@ of_url_is_ipv6_host(OFString *host)
 @implementation OFURLSchemeAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -199,7 +199,7 @@ of_url_is_ipv6_host(OFString *host)
 @implementation OFURLPathAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -231,7 +231,7 @@ of_url_is_ipv6_host(OFString *host)
 @implementation OFURLQueryOrFragmentAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -264,7 +264,7 @@ of_url_is_ipv6_host(OFString *host)
 @implementation OFURLQueryKeyValueAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -444,7 +444,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		char *tmp, *tmp2;
 		bool isIPv6Host = false;
 
-		if ((UTF8String2 = of_strdup(string.UTF8String)) == NULL)
+		if ((UTF8String2 = OFStrdup(string.UTF8String)) == NULL)
 			@throw [OFOutOfMemoryException
 			     exceptionWithRequestedSize:
 			     string.UTF8StringLength];
@@ -458,7 +458,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			@throw [OFInvalidFormatException exception];
 
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
-			*tmp2 = of_ascii_tolower(*tmp2);
+			*tmp2 = OFASCIIToLower(*tmp2);
 
 		_URLEncodedScheme = [[OFString alloc]
 		    initWithUTF8String: UTF8String
@@ -505,7 +505,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		if (UTF8String[0] == '[') {
 			tmp2 = UTF8String++;
 
-			while (of_ascii_isdigit(*UTF8String) ||
+			while (OFASCIIIsDigit(*UTF8String) ||
 			    *UTF8String == ':' ||
 			    (*UTF8String >= 'a' && *UTF8String <= 'f') ||
 			    (*UTF8String >= 'A' && *UTF8String <= 'F'))
@@ -526,7 +526,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				tmp2 = ++UTF8String;
 
 				while (*UTF8String != '\0') {
-					if (!of_ascii_isdigit(*UTF8String))
+					if (!OFASCIIIsDigit(*UTF8String))
 						@throw [OFInvalidFormatException
 						    exception];
 
@@ -635,7 +635,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		_URLEncodedUser = [URL->_URLEncodedUser copy];
 		_URLEncodedPassword = [URL->_URLEncodedPassword copy];
 
-		if ((UTF8String2 = of_strdup(string.UTF8String)) == NULL)
+		if ((UTF8String2 = OFStrdup(string.UTF8String)) == NULL)
 			@throw [OFOutOfMemoryException
 			     exceptionWithRequestedSize:
 			     string.UTF8StringLength];
@@ -847,20 +847,20 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _URLEncodedScheme.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedHost.hash);
-	OF_HASH_ADD_HASH(hash, _port.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedUser.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedPassword.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedPath.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedQuery.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedFragment.hash);
+	OFHashAddHash(&hash, _URLEncodedScheme.hash);
+	OFHashAddHash(&hash, _URLEncodedHost.hash);
+	OFHashAddHash(&hash, _port.hash);
+	OFHashAddHash(&hash, _URLEncodedUser.hash);
+	OFHashAddHash(&hash, _URLEncodedPassword.hash);
+	OFHashAddHash(&hash, _URLEncodedPath.hash);
+	OFHashAddHash(&hash, _URLEncodedQuery.hash);
+	OFHashAddHash(&hash, _URLEncodedFragment.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

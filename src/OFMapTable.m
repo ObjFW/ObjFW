@@ -252,7 +252,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (key == NULL || object == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OF_ROL(hash, self->_rotate);
+	hash = OFRotateLeft(hash, self->_rotate);
 	last = self->_capacity;
 
 	for (i = hash & (self->_capacity - 1);
@@ -371,7 +371,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 
 	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			hash ^= OF_ROR(_buckets[i]->hash, _rotate);
+			hash ^= OFRotateRight(_buckets[i]->hash, _rotate);
 			hash ^= _objectFunctions.hash(_buckets[i]->object);
 		}
 	}
@@ -391,7 +391,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			if (_buckets[i] != NULL && _buckets[i] != &deleted)
 				setObject(copy, _buckets[i]->key,
 				    _buckets[i]->object,
-				    OF_ROR(_buckets[i]->hash, _rotate));
+				    OFRotateRight(_buckets[i]->hash, _rotate));
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -412,7 +412,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
@@ -452,7 +452,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {

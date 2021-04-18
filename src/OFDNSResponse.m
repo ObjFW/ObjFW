@@ -101,14 +101,14 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _domainName.hash);
-	OF_HASH_ADD_HASH(hash, [_answerRecords hash]);
-	OF_HASH_ADD_HASH(hash, [_authorityRecords hash]);
-	OF_HASH_ADD_HASH(hash, [_additionalRecords hash]);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _domainName.hash);
+	OFHashAddHash(&hash, [_answerRecords hash]);
+	OFHashAddHash(&hash, [_authorityRecords hash]);
+	OFHashAddHash(&hash, [_additionalRecords hash]);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

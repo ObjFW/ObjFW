@@ -535,7 +535,7 @@
 	id object3 = [[_object3 retain] autorelease];
 	id object4 = [[_object4 retain] autorelease];
 
-	OF_ENSURE(_arguments <= 4);
+	OFEnsure(_arguments <= 4);
 
 	if (_repeats && _valid) {
 		int64_t missedIntervals =

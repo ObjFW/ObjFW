@@ -99,7 +99,7 @@ static struct page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / CHUNK_SIZE) /
 	    CHAR_BIT;
 	struct page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -120,7 +120,7 @@ addPage(bool allowPreallocated)
 
 			numPreallocatedPages--;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-			OF_ENSURE(OFTLSKeySet(numPreallocatedPagesKey,
+			OFEnsure(OFTLSKeySet(numPreallocatedPagesKey,
 			    (void *)numPreallocatedPages) == 0);
 # endif
 
@@ -130,7 +130,7 @@ addPage(bool allowPreallocated)
 				OFFreeMemory(preallocatedPages);
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-				OF_ENSURE(OFTLSKeySet(preallocatedPagesKey,
+				OFEnsure(OFTLSKeySet(preallocatedPagesKey,
 				    preallocatedPages) == 0);
 # endif
 			}
@@ -153,7 +153,7 @@ addPage(bool allowPreallocated)
 		OFFreeMemory(page);
 		@throw e;
 	}
-	of_explicit_memset(page->page, 0, pageSize);
+	OFZeroMemory(page->page, pageSize);
 
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	lastPage = OFTLSKeyGet(lastPageKey);
@@ -171,10 +171,10 @@ addPage(bool allowPreallocated)
 	if (firstPage == NULL)
 		firstPage = page;
 # else
-	OF_ENSURE(OFTLSKeySet(lastPageKey, page) == 0);
+	OFEnsure(OFTLSKeySet(lastPageKey, page) == 0);
 
 	if (OFTLSKeyGet(firstPageKey) == NULL)
-		OF_ENSURE(OFTLSKeySet(firstPageKey, page) == 0);
+		OFEnsure(OFTLSKeySet(firstPageKey, page) == 0);
 # endif
 
 	return page;
@@ -185,7 +185,7 @@ removePageIfEmpty(struct page *page)
 {
 	unsigned char *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / CHUNK_SIZE) /
 	    CHAR_BIT;
 
 	for (size_t i = 0; i < mapSize; i++)
@@ -207,9 +207,9 @@ removePageIfEmpty(struct page *page)
 		lastPage = page->previous;
 # else
 	if (OFTLSKeyGet(firstPageKey) == page)
-		OF_ENSURE(OFTLSKeySet(firstPageKey, page->next) == 0);
+		OFEnsure(OFTLSKeySet(firstPageKey, page->next) == 0);
 	if (OFTLSKeyGet(lastPageKey) == page)
-		OF_ENSURE(OFTLSKeySet(lastPageKey, page->previous) == 0);
+		OFEnsure(OFTLSKeySet(lastPageKey, page->previous) == 0);
 # endif
 
 	OFFreeMemory(page);
@@ -220,13 +220,13 @@ allocateMemory(struct page *page, size_t bytes)
 {
 	size_t chunks, chunksLeft, pageSize, i, firstChunk;
 
-	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
+	bytes = OFRoundUpToPowerOf2(CHUNK_SIZE, bytes);
 	chunks = chunksLeft = bytes / CHUNK_SIZE;
 	firstChunk = 0;
 	pageSize = [OFSystemInfo pageSize];
 
 	for (i = 0; i < pageSize / CHUNK_SIZE; i++) {
-		if (of_bitset_isset(page->map, i)) {
+		if (OFBitsetIsSet(page->map, i)) {
 			chunksLeft = chunks;
 			firstChunk = i + 1;
 			continue;
@@ -238,7 +238,7 @@ allocateMemory(struct page *page, size_t bytes)
 
 	if (chunksLeft == 0) {
 		for (size_t j = firstChunk; j < firstChunk + chunks; j++)
-			of_bitset_set(page->map, j);
+			OFBitsetSet(page->map, j);
 
 		return page->page + (CHUNK_SIZE * firstChunk);
 	}
@@ -251,14 +251,14 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 	size_t chunks, chunkIndex;
 
-	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
+	bytes = OFRoundUpToPowerOf2(CHUNK_SIZE, bytes);
 	chunks = bytes / CHUNK_SIZE;
 	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / CHUNK_SIZE;
 
-	of_explicit_memset(pointer, 0, bytes);
+	OFZeroMemory(pointer, bytes);
 
 	for (size_t i = 0; i < chunks; i++)
-		of_bitset_clear(page->map, chunkIndex + i);
+		OFBitsetClear(page->map, chunkIndex + i);
 }
 #endif
 
@@ -284,7 +284,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t numPages = OF_ROUND_UP_POW2(pageSize, size) / pageSize;
+	size_t numPages = OFRoundUpToPowerOf2(pageSize, size) / pageSize;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct page **preallocatedPages = OFTLSKeyGet(preallocatedPagesKey);
 	size_t numPreallocatedPages;
@@ -296,7 +296,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	preallocatedPages = OFAllocZeroedMemory(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(OFTLSKeySet(preallocatedPagesKey, preallocatedPages) == 0);
+	OFEnsure(OFTLSKeySet(preallocatedPagesKey, preallocatedPages) == 0);
 # endif
 
 	@try {
@@ -314,7 +314,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	numPreallocatedPages = numPages;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(OFTLSKeySet(numPreallocatedPagesKey,
+	OFEnsure(OFTLSKeySet(numPreallocatedPagesKey,
 	    (void *)(uintptr_t)numPreallocatedPages) == 0);
 # endif
 #else
@@ -420,7 +420,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		} else if (count * itemSize >= pageSize)
-			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
+			_items = mapPages(OFRoundUpToPowerOf2(pageSize,
 			    count * itemSize) / pageSize);
 		else {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -530,7 +530,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 		if (_count * _itemSize > pageSize)
 			unmapPages(_items,
-			    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) /
+			    OFRoundUpToPowerOf2(pageSize, _count * _itemSize) /
 			    pageSize);
 		else if (_page != NULL) {
 			if (_items != NULL)
@@ -559,7 +559,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 - (void)zero
 {
-	of_explicit_memset(_items, 0, _count * _itemSize);
+	OFZeroMemory(_items, _count * _itemSize);
 }
 
 - (id)copy

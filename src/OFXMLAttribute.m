@@ -140,15 +140,15 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _namespace.hash);
-	OF_HASH_ADD_HASH(hash, _stringValue.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _namespace.hash);
+	OFHashAddHash(&hash, _stringValue.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

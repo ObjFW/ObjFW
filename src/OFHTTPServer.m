@@ -122,7 +122,7 @@ OF_DIRECT_MEMBERS
 static OF_INLINE OFString *
 normalizedKey(OFString *key)
 {
-	char *cString = of_strdup(key.UTF8String);
+	char *cString = OFStrdup(key.UTF8String);
 	unsigned char *tmp = (unsigned char *)cString;
 	bool firstLetter = true;
 
@@ -131,15 +131,14 @@ normalizedKey(OFString *key)
 		    exceptionWithRequestedSize: strlen(key.UTF8String)];
 
 	while (*tmp != '\0') {
-		if (!of_ascii_isalpha(*tmp)) {
+		if (!OFASCIIIsAlpha(*tmp)) {
 			firstLetter = true;
 			tmp++;
 			continue;
 		}
 
 		*tmp = (firstLetter
-		    ? of_ascii_toupper(*tmp)
-		    : of_ascii_tolower(*tmp));
+		    ? OFASCIIToUpper(*tmp) : OFASCIIToLower(*tmp));
 
 		firstLetter = false;
 		tmp++;
@@ -343,7 +342,7 @@ normalizedKey(OFString *key)
 		return false;
 	}
 
-	OF_ENSURE(0);
+	OFEnsure(0);
 }
 
 - (bool)parseProlog: (OFString *)line

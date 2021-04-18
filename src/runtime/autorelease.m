@@ -51,9 +51,9 @@ static uintptr_t size = 0;
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(OFTLSKeyNew(&objectsKey) == 0);
-	OF_ENSURE(OFTLSKeyNew(&countKey) == 0);
-	OF_ENSURE(OFTLSKeyNew(&sizeKey) == 0);
+	OFEnsure(OFTLSKeyNew(&objectsKey) == 0);
+	OFEnsure(OFTLSKeyNew(&countKey) == 0);
+	OFEnsure(OFTLSKeyNew(&sizeKey) == 0);
 }
 #endif
 
@@ -98,13 +98,13 @@ objc_autoreleasePoolPop(void *pool)
 #if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
 		size = 0;
 #else
-		OF_ENSURE(OFTLSKeySet(objectsKey, objects) == 0);
-		OF_ENSURE(OFTLSKeySet(sizeKey, (void *)0) == 0);
+		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
+		OFEnsure(OFTLSKeySet(sizeKey, (void *)0) == 0);
 #endif
 	}
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(OFTLSKeySet(countKey, (void *)count) == 0);
+	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
 #endif
 }
 
@@ -123,19 +123,19 @@ _objc_rootAutorelease(id object)
 		else
 			size *= 2;
 
-		OF_ENSURE((objects =
+		OFEnsure((objects =
 		    realloc(objects, size * sizeof(id))) != NULL);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-		OF_ENSURE(OFTLSKeySet(objectsKey, objects) == 0);
-		OF_ENSURE(OFTLSKeySet(sizeKey, (void *)size) == 0);
+		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
+		OFEnsure(OFTLSKeySet(sizeKey, (void *)size) == 0);
 #endif
 	}
 
 	objects[count++] = object;
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(OFTLSKeySet(countKey, (void *)count) == 0);
+	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
 #endif
 
 	return object;

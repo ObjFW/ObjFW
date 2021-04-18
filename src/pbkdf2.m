@@ -59,7 +59,7 @@ OFPBKDF2(OFPBKDF2Parameters param)
 	extendedSaltItems = extendedSalt.mutableItems;
 
 	@try {
-		uint32_t i = OF_BSWAP32_IF_LE(1);
+		uint32_t i = OFToBigEndian32(1);
 
 		[param.HMAC setKey: param.password
 			    length: param.passwordLength];
@@ -96,7 +96,7 @@ OFPBKDF2(OFPBKDF2Parameters param)
 			param.key += length;
 			param.keyLength -= length;
 
-			i = OF_BSWAP32_IF_LE(OF_BSWAP32_IF_LE(i) + 1);
+			i = OFToBigEndian32(OFFromBigEndian32(i) + 1);
 		}
 	} @catch (id e) {
 		[extendedSalt zero];

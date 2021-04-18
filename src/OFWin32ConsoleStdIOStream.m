@@ -280,7 +280,7 @@ codepageToEncoding(UINT codepage)
 		UTF8Len = -of_string_utf8_decode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
-		OF_ENSURE(UTF8Len > 0);
+		OFEnsure(UTF8Len > 0);
 
 		toCopy = UTF8Len - _incompleteUTF8SurrogateLen;
 		if (toCopy > length)
@@ -369,7 +369,7 @@ codepageToEncoding(UINT codepage)
 			    &c);
 
 			if (UTF8Len < 0 && UTF8Len >= -4) {
-				OF_ENSURE(length - i < 4);
+				OFEnsure(length - i < 4);
 
 				memcpy(_incompleteUTF8Surrogate, buffer + i,
 				    length - i);

@@ -490,13 +490,13 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* Header */
 
-		tmp = OF_BSWAP16_IF_LE(_ID.unsignedShortValue);
+		tmp = OFToBigEndian16(_ID.unsignedShortValue);
 		[queryData addItems: &tmp count: 2];
 		/* RD */
-		tmp = OF_BSWAP16_IF_LE(1u << 8);
+		tmp = OFToBigEndian16(1u << 8);
 		[queryData addItems: &tmp count: 2];
 		/* QDCOUNT */
-		tmp = OF_BSWAP16_IF_LE(1);
+		tmp = OFToBigEndian16(1);
 		[queryData addItems: &tmp count: 2];
 		/* ANCOUNT, NSCOUNT and ARCOUNT */
 		[queryData increaseCountBy: 6];
@@ -519,10 +519,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		}
 
 		/* QTYPE */
-		tmp = OF_BSWAP16_IF_LE(_query.recordType);
+		tmp = OFToBigEndian16(_query.recordType);
 		[queryData addItems: &tmp count: 2];
 		/* QCLASS */
-		tmp = OF_BSWAP16_IF_LE(_query.DNSClass);
+		tmp = OFToBigEndian16(_query.DNSClass);
 		[queryData addItems: &tmp count: 2];
 		[queryData makeImmutable];
 
@@ -725,7 +725,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	    objectAtIndex: context->_nameServersIndex];
 
 	if (context->_settings->_usesTCP) {
-		OF_ENSURE(context->_TCPSocket == nil);
+		OFEnsure(context->_TCPSocket == nil);
 
 		context->_TCPSocket = [[OFTCPSocket alloc] init];
 		[_TCPQueries setObject: context forKey: context->_TCPSocket];
@@ -1061,7 +1061,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 {
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1085,7 +1085,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		context->_TCPQueryData = [[OFMutableData alloc]
 		    initWithCapacity: queryDataCount + 2];
 
-		tmp = OF_BSWAP16_IF_LE(queryDataCount);
+		tmp = OFToBigEndian16(queryDataCount);
 		[context->_TCPQueryData addItems: &tmp count: sizeof(tmp)];
 		[context->_TCPQueryData addItems: context->_queryData.items
 					   count: queryDataCount];
@@ -1102,7 +1102,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFTCPSocket *sock = (OFTCPSocket *)stream;
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1131,7 +1131,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFTCPSocket *sock = (OFTCPSocket *)stream;
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1144,7 +1144,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_responseLength == 0) {
 		unsigned char *ucBuffer = buffer;
 
-		OF_ENSURE(length == 2);
+		OFEnsure(length == 2);
 
 		context->_responseLength = (ucBuffer[0] << 8) | ucBuffer[1];
 

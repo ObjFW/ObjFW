@@ -254,7 +254,7 @@ static struct {
 		if (c >> 8 < tableSize && table[c >> 8][c & 0xFF])
 			[self setCharacter: table[c >> 8][c & 0xFF] atIndex: i];
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -277,7 +277,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 		if (c <= 0x7F)
 			[self setCharacter: (int)function(c) atIndex: i];
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -415,17 +415,17 @@ convert(OFMutableString *self, char (*startFunction)(char),
 #else
 - (void)uppercase
 {
-	convert(self, of_ascii_toupper, of_ascii_toupper);
+	convert(self, OFASCIIToUpper, OFASCIIToUpper);
 }
 
 - (void)lowercase
 {
-	convert(self, of_ascii_tolower, of_ascii_tolower);
+	convert(self, OFASCIIToLower, OFASCIIToLower);
 }
 
 - (void)capitalize
 {
-	convert(self, of_ascii_toupper, of_ascii_tolower);
+	convert(self, OFASCIIToUpper, OFASCIIToLower);
 }
 #endif
 
@@ -511,7 +511,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	for (i = 0; i < length; i++) {
 		OFUnichar c = characters[i];
 
-		if (!of_ascii_isspace(c))
+		if (!OFASCIIIsSpace(c))
 			break;
 	}
 
@@ -536,7 +536,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	d = 0;
 	for (p = characters + length - 1; p >= characters; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		d++;

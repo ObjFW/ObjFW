@@ -97,7 +97,7 @@ now(void)
 	struct timeval tv;
 	OFTimeInterval seconds;
 
-	OF_ENSURE(gettimeofday(&tv, NULL) == 0);
+	OFEnsure(gettimeofday(&tv, NULL) == 0);
 
 	seconds = tv.tv_sec;
 	seconds += (OFTimeInterval)tv.tv_usec / 1000000;
@@ -301,7 +301,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	}
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-	value = OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+	value = OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
 	    seconds)));
 
 	/* Almost all dates fall into this range. */
@@ -329,7 +329,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 	value |= UINT64_C(4) << 60;
 
-	return OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(OF_BSWAP64_IF_LE(
+	return OFFromBigEndianDouble(OFRawUInt64ToDouble(OFToBigEndian64(
 	    value)));
 }
 @end
@@ -513,8 +513,8 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		if (value > UINT64_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		seconds = OF_BSWAP_DOUBLE_IF_LE(OF_INT_TO_DOUBLE_RAW(
-		    OF_BSWAP64_IF_LE(value)));
+		seconds = OFFromBigEndianDouble(OFRawUInt64ToDouble(
+		    OFToBigEndian64(value)));
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -545,17 +545,17 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 	double tmp;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	tmp = OF_BSWAP_DOUBLE_IF_BE(self.timeIntervalSince1970);
+	tmp = OFToLittleEndianDouble(self.timeIntervalSince1970);
 
 	for (size_t i = 0; i < sizeof(double); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -592,7 +592,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 				      namespace: OF_SERIALIZATION_NS];
 
 	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
-	    OF_BSWAP64_IF_LE(OF_DOUBLE_TO_INT_RAW(OF_BSWAP_DOUBLE_IF_LE(
+	    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
 	    self.timeIntervalSince1970)))];
 
 	[element retain];
@@ -616,7 +616,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 			uint32_t seconds32 = (uint32_t)seconds;
 			OFData *data;
 
-			seconds32 = OF_BSWAP32_IF_LE(seconds32);
+			seconds32 = OFToBigEndian32(seconds32);
 			data = [OFData dataWithItems: &seconds32
 					       count: sizeof(seconds32)];
 
@@ -628,7 +628,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 			    (uint64_t)seconds;
 			OFData *data;
 
-			combined = OF_BSWAP64_IF_LE(combined);
+			combined = OFToBigEndian64(combined);
 			data = [OFData dataWithItems: &combined
 					       count: sizeof(combined)];
 
@@ -639,9 +639,9 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	} else {
 		OFMutableData *data = [OFMutableData dataWithCapacity: 12];
 
-		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
+		nanoseconds = OFToBigEndian32(nanoseconds);
 		[data addItems: &nanoseconds count: sizeof(nanoseconds)];
-		seconds = OF_BSWAP64_IF_LE(seconds);
+		seconds = OFToBigEndian64(seconds);
 		[data addItems: &seconds count: sizeof(seconds)];
 
 		ret = [[OFMessagePackExtension
@@ -895,7 +895,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	struct timeval t;
 	OFTimeInterval seconds;
 
-	OF_ENSURE(gettimeofday(&t, NULL) == 0);
+	OFEnsure(gettimeofday(&t, NULL) == 0);
 
 	seconds = t.tv_sec;
 	seconds += (OFTimeInterval)t.tv_usec / 1000000;

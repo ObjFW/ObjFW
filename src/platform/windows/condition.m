@@ -40,7 +40,7 @@ OFPlainConditionSignal(OFPlainCondition *condition)
 		case ERROR_INVALID_HANDLE:
 			return EINVAL;
 		default:
-			OF_ENSURE(0);
+			OFEnsure(0);
 		}
 	}
 
@@ -58,7 +58,7 @@ OFPlainConditionBroadcast(OFPlainCondition *condition)
 			case ERROR_INVALID_HANDLE:
 				return EINVAL;
 			default:
-				OF_ENSURE(0);
+				OFEnsure(0);
 			}
 		}
 	}
@@ -87,10 +87,10 @@ OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 		case ERROR_INVALID_HANDLE:
 			return EINVAL;
 		default:
-			OF_ENSURE(0);
+			OFEnsure(0);
 		}
 	default:
-		OF_ENSURE(0);
+		OFEnsure(0);
 	}
 }
 
@@ -118,10 +118,10 @@ OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
 		case ERROR_INVALID_HANDLE:
 			return EINVAL;
 		default:
-			OF_ENSURE(0);
+			OFEnsure(0);
 		}
 	default:
-		OF_ENSURE(0);
+		OFEnsure(0);
 	}
 }
 

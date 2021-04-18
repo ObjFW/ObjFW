@@ -45,7 +45,7 @@
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OF_ROUND_UP_POW2(CHAR_BIT, c + 1) /
+				newSize = OFRoundUpToPowerOf2(CHAR_BIT, c + 1) /
 				    CHAR_BIT;
 
 				_bitset = OFResizeMemory(_bitset, newSize, 1);
@@ -54,7 +54,7 @@
 				_size = newSize;
 			}
 
-			of_bitset_set(_bitset, c);
+			OFBitsetSet(_bitset, c);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -78,6 +78,6 @@
 	if (character / CHAR_BIT >= _size)
 		return false;
 
-	return of_bitset_isset(_bitset, character);
+	return OFBitsetIsSet(_bitset, character);
 }
 @end

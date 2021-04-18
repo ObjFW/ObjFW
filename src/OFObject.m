@@ -94,7 +94,7 @@ static struct {
 	Class isa;
 } allocFailedException;
 
-uint32_t OFHashSeed;
+unsigned long OFHashSeed;
 
 void *
 OFAllocMemory(size_t count, size_t size)
@@ -179,7 +179,7 @@ OFRandom16(void)
 #elif defined(HAVE_GETRANDOM)
 	uint16_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
@@ -201,7 +201,7 @@ OFRandom32(void)
 #elif defined(HAVE_GETRANDOM)
 	uint32_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
@@ -221,7 +221,7 @@ OFRandom64(void)
 #elif defined(HAVE_GETRANDOM)
 	uint64_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
@@ -1070,16 +1070,16 @@ _references_to_categories_of_OFObject(void)
 - (unsigned long)hash
 {
 	uintptr_t ptr = (uintptr_t)self;
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(ptr); i++) {
-		OF_HASH_ADD(hash, ptr & 0xFF);
+		OFHashAdd(&hash, ptr & 0xFF);
 		ptr >>= 8;
 	}
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1120,9 +1120,9 @@ _references_to_categories_of_OFObject(void)
 	Permit();
 # endif
 #else
-	OF_ENSURE(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	PRE_IVARS->retainCount++;
-	OF_ENSURE(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 #endif
 
 	return self;
@@ -1156,9 +1156,9 @@ _references_to_categories_of_OFObject(void)
 #else
 	int retainCount;
 
-	OF_ENSURE(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	retainCount = --PRE_IVARS->retainCount;
-	OF_ENSURE(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
+	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 
 	if (retainCount == 0)
 		[self dealloc];

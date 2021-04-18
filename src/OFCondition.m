@@ -53,7 +53,7 @@
 		int error = OFPlainConditionFree(&_condition);
 
 		if (error != 0) {
-			OF_ENSURE(error == EBUSY);
+			OFEnsure(error == EBUSY);
 
 			@throw [OFConditionStillWaitingException
 			    exceptionWithCondition: self];

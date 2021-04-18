@@ -73,7 +73,7 @@ static OFPlainMutex mutex;
 
 OF_CONSTRUCTOR()
 {
-	OF_ENSURE(OFPlainMutexNew(&mutex) == 0);
+	OFEnsure(OFPlainMutexNew(&mutex) == 0);
 }
 
 OF_DESTRUCTOR()

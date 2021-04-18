@@ -69,8 +69,8 @@ memcasecmp(const char *first, const char *second, size_t length)
 		unsigned char f = first[i];
 		unsigned char s = second[i];
 
-		f = of_ascii_toupper(f);
-		s = of_ascii_toupper(s);
+		f = OFASCIIToUpper(f);
+		s = OFASCIIToUpper(s);
 
 		if (f > s)
 			return OFOrderedDescending;
@@ -534,7 +534,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
 			OFUnichar character =
-			    (swap ? OF_BSWAP16(string[i]) : string[i]);
+			    (swap ? OFByteSwap16(string[i]) : string[i]);
 			size_t len;
 
 			/* Missing high surrogate */
@@ -549,7 +549,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 					    exception];
 
 				nextCharacter = (swap
-				    ? OF_BSWAP16(string[i + 1])
+				    ? OFByteSwap16(string[i + 1])
 				    : string[i + 1]);
 
 				if ((nextCharacter & 0xFC00) != 0xDC00)
@@ -619,8 +619,9 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = of_string_utf8_encode(
-			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
+			size_t len = of_string_utf8_encode((swap
+			    ? OFByteSwap32(characters[i])
+			    : characters[i]),
 			    buffer);
 
 			switch (len) {
@@ -916,12 +917,12 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
 	if (_s->hashed)
 		return _s->hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < _s->cStringLength; i++) {
 		OFUnichar c;
@@ -931,14 +932,14 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		    _s->cStringLength - i, &c)) <= 0)
 			@throw [OFInvalidEncodingException exception];
 
-		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
-		OF_HASH_ADD(hash, (c & 0x00FF00) >> 8);
-		OF_HASH_ADD(hash, c & 0x0000FF);
+		OFHashAdd(&hash, (c & 0xFF0000) >> 16);
+		OFHashAdd(&hash, (c & 0x00FF00) >> 8);
+		OFHashAdd(&hash, c & 0x0000FF);
 
 		i += length - 1;
 	}
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	_s->hash = hash;
 	_s->hashed = true;
@@ -1197,7 +1198,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		}
 
 		if (byteOrder != OFByteOrderNative)
-			buffer[j++] = OF_BSWAP32(c);
+			buffer[j++] = OFByteSwap32(c);
 		else
 			buffer[j++] = c;
 

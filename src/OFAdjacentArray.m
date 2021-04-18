@@ -304,14 +304,14 @@
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < count; i++)
-		OF_HASH_ADD_HASH(hash, [objects[i] hash]);
+		OFHashAddHash(&hash, [objects[i] hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

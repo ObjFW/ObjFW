@@ -761,7 +761,7 @@ static OFRunLoop *mainRunLoop = nil;
 			return ((OFSequencedPacketSocketAsyncAcceptBlock)
 			    _block)(acceptedSocket, exception);
 		else
-			OF_ENSURE(0);
+			OFEnsure(0);
 	} else {
 # endif
 		if (![_delegate respondsToSelector:

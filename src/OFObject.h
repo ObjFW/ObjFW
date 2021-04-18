@@ -1314,7 +1314,6 @@ extern void *_Nullable objc_destructInstance(id _Nullable object);
 extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
     void *_Nullable *_Nullable extra);
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
-extern uint32_t OFHashSeed;
 
 /**
  * @brief Returns 16 bit or non-cryptographical randomness.

@@ -1014,18 +1014,18 @@ _references_to_categories_of_OFXMLElement(void)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _namespace.hash);
-	OF_HASH_ADD_HASH(hash, _defaultNamespace.hash);
-	OF_HASH_ADD_HASH(hash, _attributes.hash);
-	OF_HASH_ADD_HASH(hash, _namespaces.hash);
-	OF_HASH_ADD_HASH(hash, _children.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _namespace.hash);
+	OFHashAddHash(&hash, _defaultNamespace.hash);
+	OFHashAddHash(&hash, _attributes.hash);
+	OFHashAddHash(&hash, _namespaces.hash);
+	OFHashAddHash(&hash, _children.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

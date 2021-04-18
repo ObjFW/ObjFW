@@ -338,7 +338,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 
 	if (enc == DW_EH_PE_aligned) {
 		const uintptr_t *aligned = (const uintptr_t *)
-		    OF_ROUND_UP_POW2(sizeof(void *), (uintptr_t)*ptr);
+		    OFRoundUpToPowerOf2(sizeof(void *), (uintptr_t)*ptr);
 
 		*ptr = (const uint8_t *)(aligned + 1);
 

@@ -86,7 +86,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			error = EACCES;
 			break;
 		default:
-			OF_ENSURE(0);
+			OFEnsure(0);
 		}
 
 		free(context);
@@ -94,7 +94,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	}
 
 	if (attr != NULL && attr->priority != 0)
-		OF_ENSURE(!SetThreadPriority(*thread, priority));
+		OFEnsure(!SetThreadPriority(*thread, priority));
 
 	return 0;
 }
@@ -111,10 +111,10 @@ OFPlainThreadJoin(OFPlainThread thread)
 		case ERROR_INVALID_HANDLE:
 			return EINVAL;
 		default:
-			OF_ENSURE(0);
+			OFEnsure(0);
 		}
 	default:
-		OF_ENSURE(0);
+		OFEnsure(0);
 	}
 }
 

@@ -44,11 +44,11 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OF_ENSURE(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -67,7 +67,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
 		@try {
 #endif
 			id old = *ptr;
@@ -86,7 +86,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OF_ENSURE(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
 		}
 #endif
 
@@ -119,11 +119,11 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
 #endif
 
 		return;
@@ -140,11 +140,11 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
 #endif
 
 		return;
@@ -191,7 +191,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 	for (iter = class->propertyList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			properties[i++] = &iter->properties[j];
-	OF_ENSURE(i == count);
+	OFEnsure(i == count);
 	properties[count] = NULL;
 
 	if (outCount != NULL)
@@ -219,18 +219,18 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	switch (*name) {
 	case 'T':
-		ret = of_strdup(property->getter.typeEncoding);
+		ret = OFStrdup(property->getter.typeEncoding);
 		nullIsError = true;
 		break;
 	case 'G':
 		if (property->attributes & OBJC_PROPERTY_GETTER) {
-			ret = of_strdup(property->getter.name);
+			ret = OFStrdup(property->getter.name);
 			nullIsError = true;
 		}
 		break;
 	case 'S':
 		if (property->attributes & OBJC_PROPERTY_SETTER) {
-			ret = of_strdup(property->setter.name);
+			ret = OFStrdup(property->setter.name);
 			nullIsError = true;
 		}
 		break;

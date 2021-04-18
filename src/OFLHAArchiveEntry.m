@@ -120,7 +120,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		@throw [OFInvalidFormatException exception];
 
 	memcpy(&mode, (char *)extension.items + 1, 2);
-	mode = OF_BSWAP16_IF_BE(mode);
+	mode = OFFromLittleEndian16(mode);
 
 	[entry->_mode release];
 	entry->_mode = nil;
@@ -138,10 +138,10 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		@throw [OFInvalidFormatException exception];
 
 	memcpy(&GID, (char *)extension.items + 1, 2);
-	GID = OF_BSWAP16_IF_BE(GID);
+	GID = OFFromLittleEndian16(GID);
 
 	memcpy(&UID, (char *)extension.items + 3, 2);
-	UID = OF_BSWAP16_IF_BE(UID);
+	UID = OFFromLittleEndian16(UID);
 
 	[entry->_GID release];
 	entry->_GID = nil;
@@ -189,7 +189,7 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		@throw [OFInvalidFormatException exception];
 
 	memcpy(&modificationDate, (char *)extension.items + 1, 4);
-	modificationDate = OF_BSWAP32_IF_BE(modificationDate);
+	modificationDate = OFFromLittleEndian32(modificationDate);
 
 	[entry->_modificationDate release];
 	entry->_modificationDate = nil;
@@ -345,13 +345,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			     length: 5];
 
 		memcpy(&_compressedSize, header + 7, 4);
-		_compressedSize = OF_BSWAP32_IF_BE(_compressedSize);
+		_compressedSize = OFFromLittleEndian32(_compressedSize);
 
 		memcpy(&_uncompressedSize, header + 11, 4);
-		_uncompressedSize = OF_BSWAP32_IF_BE(_uncompressedSize);
+		_uncompressedSize = OFFromLittleEndian32(_uncompressedSize);
 
 		memcpy(&date, header + 15, 4);
-		date = OF_BSWAP32_IF_BE(date);
+		date = OFFromLittleEndian32(date);
 
 		_headerLevel = header[20];
 		_extensions = [[OFMutableArray alloc] init];
@@ -582,13 +582,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			    cStringWithEncoding: OFStringEncodingASCII]
 		 count: 5];
 
-	tmp32 = OF_BSWAP32_IF_BE(_compressedSize);
+	tmp32 = OFToLittleEndian32(_compressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OF_BSWAP32_IF_BE(_uncompressedSize);
+	tmp32 = OFToLittleEndian32(_uncompressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OF_BSWAP32_IF_BE((uint32_t)_date.timeIntervalSince1970);
+	tmp32 = OFToLittleEndian32((uint32_t)_date.timeIntervalSince1970);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	/* Reserved */
@@ -598,25 +598,25 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[data addItem: "\x02"];
 
 	/* CRC16 */
-	tmp16 = OF_BSWAP16_IF_BE(_CRC16);
+	tmp16 = OFToLittleEndian16(_CRC16);
 	[data addItems: &tmp16 count: sizeof(tmp16)];
 
 	/* Operating system identifier */
 	[data addItem: "U"];
 
 	/* Common header. Contains CRC16, which is written at the end. */
-	tmp16 = OF_BSWAP16_IF_BE(5);
+	tmp16 = OFToLittleEndian16(5);
 	[data addItems: &tmp16 count: sizeof(tmp16)];
 	[data addItem: "\x00"];
 	[data increaseCountBy: 2];
 
-	tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileNameLength + 3);
+	tmp16 = OFToLittleEndian16((uint16_t)fileNameLength + 3);
 	[data addItems: &tmp16 count: sizeof(tmp16)];
 	[data addItem: "\x01"];
 	[data addItems: fileName count: fileNameLength];
 
 	if (directoryNameLength > 0) {
-		tmp16 = OF_BSWAP16_IF_BE((uint16_t)directoryNameLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)directoryNameLength + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x02"];
 		[data addItems: directoryName count: directoryNameLength];
@@ -629,7 +629,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		if (fileCommentLength > UINT16_MAX - 3)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileCommentLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)fileCommentLength + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x3F"];
 		[data addItems: [_fileComment cStringWithEncoding: encoding]
@@ -637,11 +637,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	}
 
 	if (_mode != nil) {
-		tmp16 = OF_BSWAP16_IF_BE(5);
+		tmp16 = OFToLittleEndian16(5);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x50"];
 
-		tmp16 = OF_BSWAP16_IF_BE(_mode.unsignedShortValue);
+		tmp16 = OFToLittleEndian16(_mode.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
@@ -649,14 +649,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		if (_UID == nil || _GID == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		tmp16 = OF_BSWAP16_IF_BE(7);
+		tmp16 = OFToLittleEndian16(7);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x51"];
 
-		tmp16 = OF_BSWAP16_IF_BE(_GID.unsignedShortValue);
+		tmp16 = OFToLittleEndian16(_GID.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 
-		tmp16 = OF_BSWAP16_IF_BE(_UID.unsignedShortValue);
+		tmp16 = OFToLittleEndian16(_UID.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
@@ -667,7 +667,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		if (groupLength > UINT16_MAX - 3)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OF_BSWAP16_IF_BE((uint16_t)groupLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)groupLength + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x52"];
 		[data addItems: [_group cStringWithEncoding: encoding]
@@ -681,7 +681,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		if (ownerLength > UINT16_MAX - 3)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OF_BSWAP16_IF_BE((uint16_t)ownerLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)ownerLength + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x53"];
 		[data addItems: [_owner cStringWithEncoding: encoding]
@@ -689,11 +689,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	}
 
 	if (_modificationDate != nil) {
-		tmp16 = OF_BSWAP16_IF_BE(7);
+		tmp16 = OFToLittleEndian16(7);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x54"];
 
-		tmp32 = OF_BSWAP32_IF_BE(
+		tmp32 = OFToLittleEndian32(
 		    (uint32_t)_modificationDate.timeIntervalSince1970);
 		[data addItems: &tmp32 count: sizeof(tmp32)];
 	}
@@ -707,7 +707,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		if (extensionLength > UINT16_MAX - 2)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OF_BSWAP16_IF_BE((uint16_t)extensionLength + 2);
+		tmp16 = OFToLittleEndian16((uint16_t)extensionLength + 2);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItems: extension.items count: extension.count];
 	}
@@ -721,11 +721,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		@throw [OFOutOfRangeException exception];
 
 	/* Now fill in the size and CRC16 for the entire header */
-	tmp16 = OF_BSWAP16_IF_BE(headerSize);
+	tmp16 = OFToLittleEndian16(headerSize);
 	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
 	tmp16 = of_crc16(0, data.items, data.count);
-	tmp16 = OF_BSWAP16_IF_BE(tmp16);
+	tmp16 = OFToLittleEndian16(tmp16);
 	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 
 	[stream writeData: data];

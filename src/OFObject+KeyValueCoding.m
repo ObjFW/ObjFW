@@ -54,7 +54,7 @@ int _OFObject_KeyValueCoding_reference;
 			memcpy(name + 2, key.UTF8String, keyLength);
 			name[keyLength + 2] = '\0';
 
-			name[2] = of_ascii_toupper(name[2]);
+			name[2] = OFASCIIToUpper(name[2]);
 
 			selector = sel_registerName(name);
 		} @finally {
@@ -163,7 +163,7 @@ int _OFObject_KeyValueCoding_reference;
 		memcpy(name + 3, key.UTF8String, keyLength);
 		memcpy(name + keyLength + 3, ":", 2);
 
-		name[3] = of_ascii_toupper(name[3]);
+		name[3] = OFASCIIToUpper(name[3]);
 
 		selector = sel_registerName(name);
 	} @finally {

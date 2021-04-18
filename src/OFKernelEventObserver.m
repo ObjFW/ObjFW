@@ -150,7 +150,7 @@ enum {
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			_cancelAddr.sin_port = OF_BSWAP16_IF_LE(rnd);
+			_cancelAddr.sin_port = OFToBigEndian16(rnd);
 			ret = bind(_cancelFD[0],
 			    (struct sockaddr *)&_cancelAddr,
 			    sizeof(_cancelAddr));
@@ -267,12 +267,12 @@ enum {
 
 	Permit();
 #elif defined(OF_HAVE_PIPE)
-	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
+	OFEnsure(write(_cancelFD[1], "", 1) > 0);
 #elif defined(OF_WII)
-	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
+	OFEnsure(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, 8) > 0);
 #else
-	OF_ENSURE(sendto(_cancelFD[1], (void *)"", 1, 0,
+	OFEnsure(sendto(_cancelFD[1], (void *)"", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) > 0);
 #endif
 }

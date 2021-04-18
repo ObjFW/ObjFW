@@ -219,15 +219,14 @@ normalizeKey(char *str_)
 	bool firstLetter = true;
 
 	while (*str != '\0') {
-		if (!of_ascii_isalpha(*str)) {
+		if (!OFASCIIIsAlpha(*str)) {
 			firstLetter = true;
 			str++;
 			continue;
 		}
 
 		*str = (firstLetter
-		    ? of_ascii_toupper(*str)
-		    : of_ascii_tolower(*str));
+		    ? OFASCIIToUpper(*str) : OFASCIIToLower(*str));
 
 		firstLetter = false;
 		str++;

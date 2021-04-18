@@ -184,7 +184,7 @@
 			char buffer;
 
 			assert(eventList[i].filter == EVFILT_READ);
-			OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
 		}

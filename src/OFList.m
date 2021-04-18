@@ -317,15 +317,14 @@ OF_DIRECT_MEMBERS
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	for (OFListItem *iter = _firstListItem;
-	    iter != NULL; iter = iter->next)
-		OF_HASH_ADD_HASH(hash, [iter->object hash]);
+	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
+		OFHashAddHash(&hash, [iter->object hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
