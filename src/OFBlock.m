@@ -42,8 +42,8 @@ struct Block {
 	struct {
 		unsigned long reserved;
 		unsigned long size;
-		void (*_Nullable copy_helper)(void *dest, void *src);
-		void (*_Nullable dispose_helper)(void *src);
+		void (*_Nullable copyHelper)(void *dest, void *src);
+		void (*_Nullable disposeHelper)(void *src);
 		const char *signature;
 	} *descriptor;
 };
@@ -53,25 +53,25 @@ struct Byref {
 	struct Byref *forwarding;
 	int flags;
 	int size;
-	void (*byref_keep)(void *dest, void *src);
-	void (*byref_dispose)(void *);
+	void (*keepByref)(void *dest, void *src);
+	void (*disposeByref)(void *);
 };
 
 enum {
-	OF_BLOCK_HAS_COPY_DISPOSE = (1 << 25),
-	OF_BLOCK_HAS_CTOR	  = (1 << 26),
-	OF_BLOCK_IS_GLOBAL	  = (1 << 28),
-	OF_BLOCK_HAS_STRET	  = (1 << 29),
-	OF_BLOCK_HAS_SIGNATURE	  = (1 << 30)
+	OFBlockHasCopyDispose = (1 << 25),
+	OFBlockHasCtor	      = (1 << 26),
+	OFBlockIsGlobal	      = (1 << 28),
+	OFBlockHasStret	      = (1 << 29),
+	OFBlockHasSignature   = (1 << 30)
 };
-#define OF_BLOCK_REFCOUNT_MASK 0xFFFF
+#define OFBlockRefCountMask 0xFFFF
 
 enum {
-	OF_BLOCK_FIELD_IS_OBJECT =   3,
-	OF_BLOCK_FIELD_IS_BLOCK	 =   7,
-	OF_BLOCK_FIELD_IS_BYREF	 =   8,
-	OF_BLOCK_FIELD_IS_WEAK	 =  16,
-	OF_BLOCK_BYREF_CALLER	 = 128
+	OFBlockFieldIsObject =   3,
+	OFBlockFieldIsBlock  =   7,
+	OFBlockFieldIsByref  =   8,
+	OFBlockFieldIsWeak   =  16,
+	OFBlockByrefCaller   = 128
 };
 
 @protocol RetainRelease
@@ -191,8 +191,8 @@ _Block_copy(const void *block_)
 		object_setClass((id)copy, (Class)&_NSConcreteMallocBlock);
 		copy->flags++;
 
-		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-			block->descriptor->copy_helper(copy, block);
+		if (block->flags & OFBlockHasCopyDispose)
+			block->descriptor->copyHelper(copy, block);
 
 		return copy;
 	}
@@ -221,10 +221,9 @@ _Block_release(const void *block_)
 		return;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-	if ((OFAtomicIntDecrease(&block->flags) &
-	    OF_BLOCK_REFCOUNT_MASK) == 0) {
-		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-			block->descriptor->dispose_helper(block);
+	if ((OFAtomicIntDecrease(&block->flags) & OFBlockRefCountMask) == 0) {
+		if (block->flags & OFBlockHasCopyDispose)
+			block->descriptor->disposeHelper(block);
 
 		free(block);
 	}
@@ -232,11 +231,11 @@ _Block_release(const void *block_)
 	unsigned hash = SPINLOCK_HASH(block);
 
 	OFEnsure(OFSpinlockLock(&blockSpinlocks[hash]) == 0);
-	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+	if ((--block->flags & OFBlockRefCountMask) == 0) {
 		OFEnsure(OFSpinlockUnlock(&blockSpinlocks[hash]) == 0);
 
-		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-			block->descriptor->dispose_helper(block);
+		if (block->flags & OFBlockHasCopyDispose)
+			block->descriptor->disposeHelper(block);
 
 		free(block);
 
@@ -249,27 +248,27 @@ _Block_release(const void *block_)
 void
 _Block_object_assign(void *dst_, const void *src_, const int flags_)
 {
-	int flags = flags_ & (OF_BLOCK_FIELD_IS_BLOCK |
-	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
+	int flags = flags_ & (OFBlockFieldIsBlock | OFBlockFieldIsObject |
+	    OFBlockFieldIsByref);
 
 	if (src_ == NULL)
 		return;
 
 	switch (flags) {
-	case OF_BLOCK_FIELD_IS_BLOCK:
+	case OFBlockFieldIsBlock:
 		*(struct Block **)dst_ = _Block_copy(src_);
 		break;
-	case OF_BLOCK_FIELD_IS_OBJECT:
-		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
+	case OFBlockFieldIsObject:
+		if (!(flags_ & OFBlockByrefCaller))
 			*(id *)dst_ = [(id)src_ retain];
 		break;
-	case OF_BLOCK_FIELD_IS_BYREF:;
+	case OFBlockFieldIsByref:;
 		struct Byref *src = (struct Byref *)src_;
 		struct Byref **dst = (struct Byref **)dst_;
 
 		src = src->forwarding;
 
-		if ((src->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+		if ((src->flags & OFBlockRefCountMask) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
 				alloc_failed_exception.isa =
 				    [OFAllocFailedException class];
@@ -279,16 +278,16 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 			memcpy(*dst, src, src->size);
 			(*dst)->flags =
-			    ((*dst)->flags & ~OF_BLOCK_REFCOUNT_MASK) | 1;
+			    ((*dst)->flags & ~OFBlockRefCountMask) | 1;
 			(*dst)->forwarding = *dst;
 
-			if (src->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-				src->byref_keep(*dst, src);
+			if (src->flags & OFBlockHasCopyDispose)
+				src->keepByref(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
 			if (!OFAtomicPointerCompareAndSwap(
 			    (void **)&src->forwarding, src, *dst)) {
-				src->byref_dispose(*dst);
+				src->disposeByref(*dst);
 				free(*dst);
 
 				*dst = src->forwarding;
@@ -300,7 +299,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
-				src->byref_dispose(*dst);
+				src->disposeByref(*dst);
 				free(*dst);
 
 				*dst = src->forwarding;
@@ -326,30 +325,30 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 void
 _Block_object_dispose(const void *object_, const int flags_)
 {
-	const int flags = flags_ & (OF_BLOCK_FIELD_IS_BLOCK |
-	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
+	const int flags = flags_ & (OFBlockFieldIsBlock | OFBlockFieldIsObject |
+	    OFBlockFieldIsByref);
 
 	if (object_ == NULL)
 		return;
 
 	switch (flags) {
-	case OF_BLOCK_FIELD_IS_BLOCK:
+	case OFBlockFieldIsBlock:
 		_Block_release(object_);
 		break;
-	case OF_BLOCK_FIELD_IS_OBJECT:
-		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
+	case OFBlockFieldIsObject:
+		if (!(flags_ & OFBlockByrefCaller))
 			[(id)object_ release];
 		break;
-	case OF_BLOCK_FIELD_IS_BYREF:;
+	case OFBlockFieldIsByref:;
 		struct Byref *object = (struct Byref *)object_;
 
 		object = object->forwarding;
 
 #ifdef OF_HAVE_ATOMIC_OPS
 		if ((OFAtomicIntDecrease(&object->flags) &
-		    OF_BLOCK_REFCOUNT_MASK) == 0) {
-			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-				object->byref_dispose(object);
+		    OFBlockRefCountMask) == 0) {
+			if (object->flags & OFBlockHasCopyDispose)
+				object->disposeByref(object);
 
 			free(object);
 		}
@@ -357,11 +356,11 @@ _Block_object_dispose(const void *object_, const int flags_)
 		unsigned hash = SPINLOCK_HASH(object);
 
 		OFEnsure(OFSpinlockLock(&byrefSpinlocks[hash]) == 0);
-		if ((--object->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+		if ((--object->flags & OFBlockRefCountMask) == 0) {
 			OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 
-			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-				object->byref_dispose(object);
+			if (object->flags & OFBlockHasCopyDispose)
+				object->disposeByref(object);
 
 			free(object);
 		}
@@ -474,8 +473,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 - (unsigned int)retainCount
 {
 	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
-		return ((struct Block *)self)->flags &
-		    OF_BLOCK_REFCOUNT_MASK;
+		return ((struct Block *)self)->flags & OFBlockRefCountMask;
 
 	return OFMaxRetainCount;
 }
