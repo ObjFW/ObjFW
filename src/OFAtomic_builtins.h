@@ -132,19 +132,19 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier_full(void)
+OFMemoryBarrier(void)
 {
 	__atomic_thread_fence(__ATOMIC_SEQ_CST);
 }
 
 static OF_INLINE void
-of_memory_barrier_acquire(void)
+OFAcquireMemoryBarrier(void)
 {
 	__atomic_thread_fence(__ATOMIC_ACQUIRE);
 }
 
 static OF_INLINE void
-of_memory_barrier_release(void)
+OFReleaseMemoryBarrier(void)
 {
 	__atomic_thread_fence(__ATOMIC_RELEASE);
 }

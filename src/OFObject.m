@@ -1136,10 +1136,10 @@ _references_to_categories_of_OFObject(void)
 - (void)release
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	of_memory_barrier_release();
+	OFReleaseMemoryBarrier();
 
 	if (OFAtomicIntDecrease(&PRE_IVARS->retainCount) <= 0) {
-		of_memory_barrier_acquire();
+		OFAcquireMemoryBarrier();
 
 		[self dealloc];
 	}

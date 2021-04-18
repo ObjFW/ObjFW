@@ -109,7 +109,7 @@ OFSpinlockTryLock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	if (OFAtomicIntCompareAndSwap(spinlock, 0, 1)) {
-		of_memory_barrier_acquire();
+		OFAcquireMemoryBarrier();
 		return 0;
 	}
 
@@ -148,7 +148,7 @@ OFSpinlockUnlock(OFSpinlock *spinlock)
 #if defined(OF_HAVE_ATOMIC_OPS)
 	bool ret = OFAtomicIntCompareAndSwap(spinlock, 1, 0);
 
-	of_memory_barrier_release();
+	OFReleaseMemoryBarrier();
 
 	return (ret ? 0 : EINVAL);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)

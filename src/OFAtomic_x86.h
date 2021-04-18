@@ -480,7 +480,7 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier(void)
+OFMemoryBarrier(void)
 {
 	__asm__ __volatile__ (
 	    "mfence" ::: "memory"
@@ -488,13 +488,13 @@ of_memory_barrier(void)
 }
 
 static OF_INLINE void
-of_memory_barrier_acquire(void)
+OFAcquireMemoryBarrier(void)
 {
 	__asm__ __volatile__ ("" ::: "memory");
 }
 
 static OF_INLINE void
-of_memory_barrier_release(void)
+OFReleaseMemoryBarrier(void)
 {
 	__asm__ __volatile__ ("" ::: "memory");
 }

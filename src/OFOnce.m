@@ -45,7 +45,7 @@ OFOnce(OFOnceControl *control, void (*func)(void))
 	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
 		func();
 
-		of_memory_barrier();
+		OFMemoryBarrier();
 
 		OFAtomicIntIncrease(control);
 	} else

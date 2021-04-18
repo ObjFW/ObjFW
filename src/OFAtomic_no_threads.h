@@ -144,19 +144,19 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier(void)
+OFMemoryBarrier(void)
 {
 	/* nop */
 }
 
 static OF_INLINE void
-of_memory_barrier_acquire(void)
+OFAcquireMemoryBarrier(void)
 {
 	/* nop */
 }
 
 static OF_INLINE void
-of_memory_barrier_release(void)
+OFReleaseMemoryBarrier(void)
 {
 	/* nop */
 }
