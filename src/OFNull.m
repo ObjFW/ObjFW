@@ -50,7 +50,7 @@ static OFNull *null = nil;
 	pool = objc_autoreleasePoolPush();
 
 	if (![element.name isEqual: self.className] ||
-	    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+	    ![element.namespace isEqual: OFSerializationNS])
 		@throw [OFInvalidArgumentException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -74,7 +74,7 @@ static OFNull *null = nil;
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	[element retain];
 

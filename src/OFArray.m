@@ -554,10 +554,10 @@ static struct {
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		element = [OFXMLElement elementWithName: @"OFMutableArray"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFArray"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();

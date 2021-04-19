@@ -751,7 +751,7 @@ isFloat(OFNumber *number)
 		OFString *typeString;
 
 		if (![element.name isEqual: @"OFNumber"] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		typeString = [element attributeForName: @"type"].stringValue;
@@ -1043,7 +1043,7 @@ isFloat(OFNumber *number)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: @"OFNumber"
-				      namespace: OF_SERIALIZATION_NS
+				      namespace: OFSerializationNS
 				    stringValue: self.description];
 
 	if (*self.objCType == 'B')

@@ -33,7 +33,7 @@
 typedef OFPlugin *(*init_plugin_t)(void);
 
 OFPluginHandle
-OFDlOpen(OFString *path, int flags)
+OFDLOpen(OFString *path, OFDLOpenFlags flags)
 {
 #ifndef OF_WINDOWS
 	return dlopen([path cStringWithEncoding: [OFLocale encoding]], flags);
@@ -50,7 +50,7 @@ OFDlOpen(OFString *path, int flags)
 }
 
 void *
-OFDlSym(OFPluginHandle handle, const char *symbol)
+OFDLSym(OFPluginHandle handle, const char *symbol)
 {
 #ifndef OF_WINDOWS
 	return dlsym(handle, symbol);
@@ -60,7 +60,7 @@ OFDlSym(OFPluginHandle handle, const char *symbol)
 }
 
 void
-OFDlClose(OFPluginHandle handle)
+OFDLClose(OFPluginHandle handle)
 {
 #ifndef OF_WINDOWS
 	dlclose(handle);
@@ -70,7 +70,7 @@ OFDlClose(OFPluginHandle handle)
 }
 
 OFString *
-OFDlError(void)
+OFDLError(void)
 {
 #ifndef OF_WINDOWS
 	return [OFString stringWithCString: dlerror()
@@ -98,16 +98,16 @@ OFDlError(void)
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 #endif
 
-	if ((handle = OFDlOpen(path, OF_RTLD_LAZY)) == NULL)
+	if ((handle = OFDLOpen(path, OFDLOpenFlagLazy)) == NULL)
 		@throw [OFLoadPluginFailedException
 		    exceptionWithPath: path
-				error: OFDlError()];
+				error: OFDLError()];
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (init_plugin_t)(uintptr_t)OFDlSym(handle, "init_plugin");
+	initPlugin = (init_plugin_t)(uintptr_t)OFDLSym(handle, "init_plugin");
 	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
-		OFDlClose(handle);
+		OFDLClose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 	}
@@ -138,6 +138,6 @@ OFDlError(void)
 
 	[super dealloc];
 
-	OFDlClose(h);
+	OFDLClose(h);
 }
 @end

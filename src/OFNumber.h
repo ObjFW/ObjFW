@@ -46,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFNumber: OFValue <OFComparing, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
-	union of_number_value {
+	union {
 		double float_;
 		long long signed_;
 		unsigned long long unsigned_;

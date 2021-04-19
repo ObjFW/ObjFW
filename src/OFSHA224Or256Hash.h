@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	struct {
 		uint32_t state[8];
 		uint64_t bits;
-		union of_sha224_or_256_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[64];
 		} buffer;

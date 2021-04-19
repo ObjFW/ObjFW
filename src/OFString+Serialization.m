@@ -54,7 +54,7 @@ int _OFString_Serialization_reference;
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
 
-	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
+	elements = [root elementsForNamespace: OFSerializationNS];
 
 	if (elements.count != 1)
 		@throw [OFInvalidArgumentException exception];

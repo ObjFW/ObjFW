@@ -55,11 +55,11 @@ OF_DIRECT_MEMBERS
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
-		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
+		    [element elementsForNamespace: OFSerializationNS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			[self appendObject: child.objectByDeserializing];
@@ -361,7 +361,7 @@ OF_DIRECT_MEMBERS
 {
 	OFXMLElement *element =
 	    [OFXMLElement elementWithName: self.className
-				namespace: OF_SERIALIZATION_NS];
+				namespace: OFSerializationNS];
 
 	for (OFListItem *iter = _firstListItem;
 	    iter != NULL; iter = iter->next) {

@@ -270,7 +270,7 @@ _references_to_categories_of_OFXMLElement(void)
 		OFString *key, *object;
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_name = [[element attributeForName: @"name"].stringValue copy];
@@ -281,16 +281,16 @@ _references_to_categories_of_OFXMLElement(void)
 
 		attributesElement = [[element
 		    elementForName: @"attributes"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 		namespacesElement = [[element
 		    elementForName: @"namespaces"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 		childrenElement = [[element
 		    elementForName: @"children"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 
 		_attributes = [attributesElement.objectByDeserializing
 		    mutableCopy];
@@ -655,7 +655,7 @@ _references_to_categories_of_OFXMLElement(void)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	if (_name != nil)
 		[element addAttributeWithName: @"name" stringValue: _name];
@@ -673,7 +673,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		attributesElement =
 		    [OFXMLElement elementWithName: @"attributes"
-					namespace: OF_SERIALIZATION_NS];
+					namespace: OFSerializationNS];
 		[attributesElement addChild:
 		    _attributes.XMLElementBySerializing];
 		[element addChild: attributesElement];
@@ -692,7 +692,7 @@ _references_to_categories_of_OFXMLElement(void)
 		if (namespacesCopy.count > 0) {
 			namespacesElement =
 			    [OFXMLElement elementWithName: @"namespaces"
-						namespace: OF_SERIALIZATION_NS];
+						namespace: OFSerializationNS];
 			[namespacesElement addChild:
 			    namespacesCopy.XMLElementBySerializing];
 			[element addChild: namespacesElement];
@@ -704,7 +704,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		childrenElement =
 		    [OFXMLElement elementWithName: @"children"
-					namespace: OF_SERIALIZATION_NS];
+					namespace: OFSerializationNS];
 		[childrenElement addChild: _children.XMLElementBySerializing];
 		[element addChild: childrenElement];
 	}

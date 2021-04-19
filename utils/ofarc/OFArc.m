@@ -399,8 +399,12 @@ writingNotSupported(OFString *type)
 			for (OFString *path in files)
 				[sandbox unveilPath: path permissions: @"wc"];
 		else {
-			OFString *path = (outputDir != nil
-			    ? outputDir : OF_PATH_CURRENT_DIRECTORY);
+			OFString *path = outputDir;
+
+			if (path == nil)
+				path = [[OFFileManager defaultManager]
+				    currentDirectoryPath];
+
 			/* We need 'r' to change the directory to it. */
 			[sandbox unveilPath: path permissions: @"rwc"];
 		}

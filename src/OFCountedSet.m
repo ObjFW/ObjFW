@@ -183,7 +183,7 @@ static struct {
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: @"OFCountedSet"
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
@@ -197,7 +197,7 @@ static struct {
 
 		objectElement = [OFXMLElement
 		    elementWithName: @"object"
-			  namespace: OF_SERIALIZATION_NS];
+			  namespace: OFSerializationNS];
 		[objectElement addAttributeWithName: @"count"
 					stringValue: count];
 		[objectElement addChild: object.XMLElementBySerializing];

@@ -125,19 +125,19 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: @"OFCountedSet"] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *objectElement in
 		    [element elementsForName: @"object"
-				   namespace: OF_SERIALIZATION_NS]) {
+				   namespace: OFSerializationNS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
 			OFXMLAttribute *countAttribute;
 			unsigned long long count;
 
 			object = [objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 			countAttribute =
 			    [objectElement attributeForName: @"count"];
 

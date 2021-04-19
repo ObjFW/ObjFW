@@ -54,7 +54,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_text = [element.stringValue copy];
@@ -140,7 +140,7 @@
 - (OFXMLElement *)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: self.className
-				   namespace: OF_SERIALIZATION_NS
+				   namespace: OFSerializationNS
 				 stringValue: _text];
 }
 @end

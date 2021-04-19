@@ -369,10 +369,10 @@ static struct {
 
 	if ([self isKindOfClass: [OFMutableSet class]])
 		element = [OFXMLElement elementWithName: @"OFMutableSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();

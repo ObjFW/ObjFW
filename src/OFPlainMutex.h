@@ -40,7 +40,6 @@ typedef struct SignalSemaphore OFPlainMutex;
 #if defined(OF_HAVE_ATOMIC_OPS)
 # import "OFAtomic.h"
 typedef volatile int OFSpinlock;
-# define OF_SPINCOUNT 10
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 typedef pthread_spinlock_t OFSpinlock;
 #else
@@ -127,7 +126,7 @@ OFSpinlockLock(OFSpinlock *spinlock)
 #if defined(OF_HAVE_ATOMIC_OPS)
 	size_t i;
 
-	for (i = 0; i < OF_SPINCOUNT; i++)
+	for (i = 0; i < 10; i++)
 		if (OFSpinlockTryLock(spinlock) == 0)
 			return 0;
 

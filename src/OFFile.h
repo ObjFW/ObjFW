@@ -18,11 +18,11 @@
 
 #ifndef OF_AMIGAOS
 # define OF_FILE_HANDLE_IS_FD
-# define OF_INVALID_FILE_HANDLE (-1)
 typedef int OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-# define OF_INVALID_FILE_HANDLE NULL
 typedef struct OFFileHandle *OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

@@ -355,7 +355,7 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		stringValue = element.stringValue;
@@ -622,7 +622,7 @@ _references_to_categories_of_OFData(void)
 	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement
 	    elementWithName: self.className
-		  namespace: OF_SERIALIZATION_NS
+		  namespace: OFSerializationNS
 		stringValue: OFBase64Encode(_items, _count * _itemSize)];
 
 	[element retain];

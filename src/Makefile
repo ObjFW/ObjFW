@@ -74,6 +74,7 @@ SRCS = OFASPrintF.m			\
        OFScrypt.m			\
        OFSecureData.m			\
        OFSeekableStream.m		\
+       OFSerialization.m		\
        OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
@@ -167,7 +168,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFSerialization.h			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\
 	    macros.h				\

@@ -243,9 +243,9 @@ static const OFMapTableFunctions objectFunctions = {
 		OFXMLElement *keyElement, *objectElement;
 
 		keys = [element elementsForName: @"key"
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 		objects = [element elementsForName: @"object"
-					 namespace: OF_SERIALIZATION_NS];
+					 namespace: OFSerializationNS];
 
 		if (keys.count != objects.count)
 			@throw [OFInvalidFormatException exception];
@@ -263,9 +263,9 @@ static const OFMapTableFunctions objectFunctions = {
 			OFXMLElement *key, *object;
 
 			key = [keyElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 			object = [objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException exception];

@@ -351,7 +351,7 @@ parseMode(const char *mode, bool *append)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
@@ -361,7 +361,7 @@ parseMode(const char *mode, bool *append)
 {
 	ssize_t ret;
 
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -395,7 +395,7 @@ parseMode(const char *mode, bool *append)
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -455,7 +455,7 @@ parseMode(const char *mode, bool *append)
 {
 	OFFileOffset ret;
 
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_AMIGAOS
@@ -525,18 +525,18 @@ parseMode(const char *mode, bool *append)
 
 - (void)close
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	closeHandle(_handle);
-	_handle = OF_INVALID_FILE_HANDLE;
+	_handle = OFInvalidFileHandle;
 
 	[super close];
 }
 
 - (void)dealloc
 {
-	if (_handle != OF_INVALID_FILE_HANDLE)
+	if (_handle != OFInvalidFileHandle)
 		[self close];
 
 	[super dealloc];

@@ -190,11 +190,11 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 
 		if ((![element.name isEqual: @"OFSet"] &&
 		    ![element.name isEqual: @"OFMutableSet"]) ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
-		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
+		    [element elementsForNamespace: OFSerializationNS]) {
 			void *pool2  = objc_autoreleasePoolPush();
 
 			[_mapTable setObject: (void *)1

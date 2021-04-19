@@ -58,11 +58,11 @@
 		OFXMLAttribute *targetAttr;
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		targetAttr = [element attributeForName: @"target"
-					     namespace: OF_SERIALIZATION_NS];
+					     namespace: OFSerializationNS];
 		if (targetAttr.stringValue.length == 0)
 			@throw [OFInvalidArgumentException exception];
 
@@ -173,7 +173,7 @@
 - (OFXMLElement *)XMLElementBySerializing
 {
 	OFXMLElement *ret = [OFXMLElement elementWithName: self.className
-						namespace: OF_SERIALIZATION_NS
+						namespace: OFSerializationNS
 					      stringValue: _data];
 	void *pool = objc_autoreleasePoolPush();
 

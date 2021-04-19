@@ -774,7 +774,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		stringValue = element.stringValue;
@@ -1189,7 +1189,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS
+				      namespace: OFSerializationNS
 				    stringValue: self.string];
 
 	[element retain];

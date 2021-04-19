@@ -31,7 +31,7 @@ OF_SUBCLASSING_RESTRICTED
 	struct {
 		uint32_t state[5];
 		uint64_t bits;
-		union of_sha1_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[80];
 		} buffer;

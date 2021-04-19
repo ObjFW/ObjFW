@@ -285,7 +285,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		return;
 
 	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
-	OFDlOpen(@LIB_PREFIX @"objopenssl" @LIB_SUFFIX, OF_RTLD_LAZY);
+	OFDLOpen(@LIB_PREFIX @"objopenssl" @LIB_SUFFIX, OFDLOpenFlagLazy);
 }
 #endif
 
@@ -528,9 +528,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 #ifdef OF_HAVE_SANDBOX
-	[sandbox unveilPath: (outputPath != nil
-				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
-		permissions: (_continue ? @"rwc" : @"wc")];
+	if (outputPath != nil)
+		[sandbox unveilPath: outputPath
+			permissions: (_continue ? @"rwc" : @"wc")];
+	else
+		[sandbox unveilPath: [[OFFileManger defaultManager]
+					 currentDirectoryPath]
+			permissions: (_continue ? @"rwc" : @"wc")];
+
 	/* In case we use ObjOpenSSL for https later */
 	[sandbox unveilPath: @"/etc/ssl" permissions: @"r"];
 

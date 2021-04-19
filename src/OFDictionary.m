@@ -680,10 +680,10 @@ OF_DIRECT_MEMBERS
 
 	if ([self isKindOfClass: [OFMutableDictionary class]])
 		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFDictionary"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
@@ -694,12 +694,12 @@ OF_DIRECT_MEMBERS
 
 		keyElement = [OFXMLElement
 		    elementWithName: @"key"
-			  namespace: OF_SERIALIZATION_NS];
+			  namespace: OFSerializationNS];
 		[keyElement addChild: key.XMLElementBySerializing];
 
 		objectElement = [OFXMLElement
 		    elementWithName: @"object"
-			  namespace: OF_SERIALIZATION_NS];
+			  namespace: OFSerializationNS];
 		[objectElement addChild: object.XMLElementBySerializing];
 
 		[element addChild: keyElement];

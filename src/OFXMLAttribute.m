@@ -76,7 +76,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_name = [[element attributeForName: @"name"].stringValue copy];
@@ -159,7 +159,7 @@
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 	[element addAttributeWithName: @"name" stringValue: _name];
 
 	if (_namespace != nil)

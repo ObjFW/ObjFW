@@ -1090,7 +1090,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	OFString *stringValue;
 
 	@try {
-		if (![element.namespace isEqual: OF_SERIALIZATION_NS])
+		if (![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		if ([self isKindOfClass: [OFMutableString class]]) {
@@ -1695,7 +1695,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		className = @"OFString";
 
 	element = [OFXMLElement elementWithName: className
-				      namespace: OF_SERIALIZATION_NS
+				      namespace: OFSerializationNS
 				    stringValue: self];
 
 	[element retain];

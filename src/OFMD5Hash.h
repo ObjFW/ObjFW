@@ -31,7 +31,7 @@ OF_SUBCLASSING_RESTRICTED
 	struct {
 		uint32_t state[4];
 		uint64_t bits;
-		union of_md5_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[16];
 		} buffer;

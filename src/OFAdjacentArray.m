@@ -162,11 +162,11 @@
 
 		if ((![element.name isEqual: @"OFArray"] &&
 		    ![element.name isEqual: @"OFMutableArray"]) ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
-		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
+		    [element elementsForNamespace: OFSerializationNS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			id object;
 

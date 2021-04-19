@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_DNS_RESOLVER_BUFFER_LENGTH 512
+#define OFDNSResolverBufferLength 512
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolver;
@@ -129,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
 #endif
-	char _buffer[OF_DNS_RESOLVER_BUFFER_LENGTH];
+	char _buffer[OFDNSResolverBufferLength];
 	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverContext *)
 	    *_queries;
 	OFMutableDictionary OF_GENERIC(OFTCPSocket *, OFDNSResolverContext *)

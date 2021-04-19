@@ -19,14 +19,20 @@
 
 #ifndef OF_WINDOWS
 # include <dlfcn.h>
-# define OF_RTLD_LAZY RTLD_LAZY
-# define OF_RTLD_NOW  RTLD_NOW
 typedef void *OFPluginHandle;
+
+typedef enum OFDLOpenFlags {
+	OFDLOpenFlagLazy = RTLD_LAZY,
+	OFDLOpenFlagNow  = RTLD_NOW
+} OFDLOpenFlags;
 #else
 # include <windows.h>
-# define OF_RTLD_LAZY 0
-# define OF_RTLD_NOW  0
 typedef HMODULE OFPluginHandle;
+
+enum OFDLOpenFlags {
+	OFDLOpenFlagLazy = 0,
+	OFDLOpenFlagNow  = 0
+};
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -54,10 +60,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFPluginHandle OFDlOpen(OFString *path, int flags);
-extern void *OFDlSym(OFPluginHandle handle, const char *symbol);
-extern OFString *_Nullable OFDlError(void);
-extern void OFDlClose(OFPluginHandle handle);
+extern OFPluginHandle OFDLOpen(OFString *path, OFDLOpenFlags flags);
+extern void *OFDLSym(OFPluginHandle handle, const char *symbol);
+extern OFString *_Nullable OFDLError(void);
+extern void OFDLClose(OFPluginHandle handle);
 #ifdef __cplusplus
 }
 #endif

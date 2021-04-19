@@ -504,7 +504,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		unsigned long long value;
 
 		if (![element.name isEqual: @"OFDate"] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		value = [element unsignedLongLongValueWithBase: 16];
@@ -588,7 +588,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: @"OFDate"
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
 	    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(

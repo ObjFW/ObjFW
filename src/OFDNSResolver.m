@@ -46,8 +46,8 @@
 # define SOCK_DNS 0
 #endif
 
-#define BUFFER_LENGTH OF_DNS_RESOLVER_BUFFER_LENGTH
-#define MAX_DNS_RESPONSE_LENGTH 65536
+static const size_t bufferLength = OFDNSResolverBufferLength;
+static const size_t maxDNSResponseLength = 65536;
 
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
@@ -55,9 +55,7 @@
  * also want to limit it to avoid DoS. Limiting it to 16 levels of pointers and
  * immediately rejecting pointers to itself seems like a fair balance.
  */
-#define MAX_ALLOWED_POINTERS 16
-
-#define CNAME_RECURSION 3
+static const uint_fast8_t maxAllowedPointers = 16;
 
 @interface OFDNSResolver () <OFUDPSocketDelegate, OFTCPSocketDelegate>
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context;
@@ -192,7 +190,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 	} else if (recordType == OFDNSRecordTypeNS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -205,7 +203,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 	} else if (recordType == OFDNSRecordTypeCNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -218,7 +216,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 	} else if (recordType == OFDNSRecordTypeSOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 		OFString *responsiblePerson;
 		uint32_t serialNumber, refreshInterval, retryInterval;
 		uint32_t expirationInterval, minTTL;
@@ -227,7 +225,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		responsiblePerson = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (dataLength - (j - i) != 20)
 			@throw [OFInvalidServerReplyException exception];
@@ -259,7 +257,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 	} else if (recordType == OFDNSRecordTypePTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -300,7 +298,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 
 		j = i + 2;
 		mailExchange = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -340,14 +338,14 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 	} else if (recordType == OFDNSRecordTypeRP) {
 		size_t j = i;
 		OFString *mailbox = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 		OFString *TXTDomainName;
 
 		if (j > i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
 
 		TXTDomainName = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -394,7 +392,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		port = (buffer[i + 4] << 8) | buffer[i + 5];
 
 		j = i + 6;
-		target = parseName(buffer, length, &j, MAX_ALLOWED_POINTERS);
+		target = parseName(buffer, length, &j, maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -424,7 +422,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 		OFDNSClass DNSClass;
 		OFDNSRecordType recordType;
 		uint32_t TTL;
@@ -778,7 +776,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		   receiver: &context->_usedNameServer
 		runLoopMode: runLoopMode];
 	[sock asyncReceiveIntoBuffer: _buffer
-			      length: BUFFER_LENGTH
+			      length: bufferLength
 			 runLoopMode: runLoopMode];
 }
 
@@ -863,10 +861,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	 * trying to access the query once it no longer exists.
 	 */
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
+	[_IPv4Socket asyncReceiveIntoBuffer: _buffer length: bufferLength];
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
+	[_IPv6Socket asyncReceiveIntoBuffer: _buffer length: bufferLength];
 #endif
 
 	exception = [OFDNSQueryFailedException
@@ -1011,7 +1009,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		 * TODO: Compare to our query, just in case?
 		 */
 		for (uint_fast16_t j = 0; j < numQuestions; j++) {
-			parseName(buffer, length, &i, MAX_ALLOWED_POINTERS);
+			parseName(buffer, length, &i, maxAllowedPointers);
 			i += 4;
 		}
 
@@ -1117,7 +1115,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	}
 
 	if (context->_TCPBuffer == nil)
-		context->_TCPBuffer = OFAllocMemory(MAX_DNS_RESPONSE_LENGTH, 1);
+		context->_TCPBuffer = OFAllocMemory(maxDNSResponseLength, 1);
 
 	[sock asyncReadIntoBuffer: context->_TCPBuffer exactLength: 2];
 	return nil;
@@ -1148,7 +1146,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		context->_responseLength = (ucBuffer[0] << 8) | ucBuffer[1];
 
-		if (context->_responseLength > MAX_DNS_RESPONSE_LENGTH)
+		if (context->_responseLength > maxDNSResponseLength)
 			@throw [OFOutOfRangeException exception];
 
 		if (context->_responseLength == 0)
