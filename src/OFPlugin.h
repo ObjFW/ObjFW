@@ -29,10 +29,10 @@ typedef enum OFDLOpenFlags {
 # include <windows.h>
 typedef HMODULE OFPluginHandle;
 
-enum OFDLOpenFlags {
+typedef enum OFDLOpenFlags {
 	OFDLOpenFlagLazy = 0,
 	OFDLOpenFlagNow  = 0
-};
+} OFDLOpenFlags;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
