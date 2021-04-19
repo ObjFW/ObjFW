@@ -17,13 +17,13 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 #define BIAS 2047
 
 .section .text
-of_forward:
+OFForward:
 	save	%sp, -304, %sp
 
 	/*
@@ -113,10 +113,10 @@ of_forward:
 0:
 	call	OFMethodNotFound
 	 restore
-.type of_forward, %function
-.size of_forward, .-of_forward
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	save	%sp, -304, %sp
 
 	/*
@@ -206,8 +206,8 @@ of_forward_stret:
 0:
 	call	OFMethodNotFound_stret
 	 restore
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	save	%sp, -176, %sp
