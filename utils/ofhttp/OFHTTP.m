@@ -132,14 +132,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	const char *UTF8String;
 	size_t UTF8StringLength;
 	enum {
-		DISPOSITION_TYPE,
-		DISPOSITION_TYPE_SEMICOLON,
-		DISPOSITION_PARAM_NAME_SKIP_SPACE,
-		DISPOSITION_PARAM_NAME,
-		DISPOSITION_PARAM_VALUE,
-		DISPOSITION_PARAM_QUOTED,
-		DISPOSITION_PARAM_UNQUOTED,
-		DISPOSITION_EXPECT_SEMICOLON
+		StateDispositionType,
+		StateDispositionTypeSemicolon,
+		StateDispositionParamNameSkipSpace,
+		StateDispositionParamName,
+		StateDispositionParamValue,
+		StateDispositionParamQuoted,
+		StateDispositionParamUnquoted,
+		StateDispositionExpectSemicolon
 	} state;
 	size_t last;
 	OFString *type = nil, *paramName = nil, *paramValue;
@@ -153,60 +153,60 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	UTF8String = contentDisposition.UTF8String;
 	UTF8StringLength = contentDisposition.UTF8StringLength;
-	state = DISPOSITION_TYPE;
+	state = StateDispositionType;
 	params = [OFMutableDictionary dictionary];
 	last = 0;
 
 	for (size_t i = 0; i < UTF8StringLength; i++) {
 		switch (state) {
-		case DISPOSITION_TYPE:
+		case StateDispositionType:
 			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {
 				type = [OFString
 				    stringWithUTF8String: UTF8String
 						  length: i];
 
 				state = (UTF8String[i] == ';'
-				    ? DISPOSITION_PARAM_NAME_SKIP_SPACE
-				    : DISPOSITION_TYPE_SEMICOLON);
+				    ? StateDispositionParamNameSkipSpace
+				    : StateDispositionTypeSemicolon);
 				last = i + 1;
 			}
 			break;
-		case DISPOSITION_TYPE_SEMICOLON:
+		case StateDispositionTypeSemicolon:
 			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = StateDispositionParamNameSkipSpace;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ') {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 			break;
-		case DISPOSITION_PARAM_NAME_SKIP_SPACE:
+		case StateDispositionParamNameSkipSpace:
 			if (UTF8String[i] != ' ') {
-				state = DISPOSITION_PARAM_NAME;
+				state = StateDispositionParamName;
 				last = i;
 				i--;
 			}
 			break;
-		case DISPOSITION_PARAM_NAME:
+		case StateDispositionParamName:
 			if (UTF8String[i] == '=') {
 				paramName = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				state = DISPOSITION_PARAM_VALUE;
+				state = StateDispositionParamValue;
 			}
 			break;
-		case DISPOSITION_PARAM_VALUE:
+		case StateDispositionParamValue:
 			if (UTF8String[i] == '"') {
-				state = DISPOSITION_PARAM_QUOTED;
+				state = StateDispositionParamQuoted;
 				last = i + 1;
 			} else {
-				state = DISPOSITION_PARAM_UNQUOTED;
+				state = StateDispositionParamUnquoted;
 				last = i;
 				i--;
 			}
 			break;
-		case DISPOSITION_PARAM_QUOTED:
+		case StateDispositionParamQuoted:
 			if (UTF8String[i] == '"') {
 				paramValue = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -215,10 +215,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[params setObject: paramValue
 					   forKey: paramName.lowercaseString];
 
-				state = DISPOSITION_EXPECT_SEMICOLON;
+				state = StateDispositionExpectSemicolon;
 			}
 			break;
-		case DISPOSITION_PARAM_UNQUOTED:
+		case StateDispositionParamUnquoted:
 			if (UTF8String[i] <= 31 || UTF8String[i] >= 127)
 				return nil;
 
@@ -236,13 +236,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[params setObject: paramValue
 					   forKey: paramName.lowercaseString];
 
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = StateDispositionParamNameSkipSpace;
 				break;
 			}
 			break;
-		case DISPOSITION_EXPECT_SEMICOLON:
+		case StateDispositionExpectSemicolon:
 			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = StateDispositionParamNameSkipSpace;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ') {
 				objc_autoreleasePoolPop(pool);
@@ -252,14 +252,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		}
 	}
 
-	if (state == DISPOSITION_PARAM_UNQUOTED) {
+	if (state == StateDispositionParamUnquoted) {
 		paramValue = [OFString
 		    stringWithUTF8String: UTF8String + last
 				  length: UTF8StringLength - last];
 
 		[params setObject: paramValue
 			   forKey: paramName.lowercaseString];
-	} else if (state != DISPOSITION_EXPECT_SEMICOLON) {
+	} else if (state != StateDispositionExpectSemicolon) {
 		objc_autoreleasePoolPop(pool);
 		return nil;
 	}

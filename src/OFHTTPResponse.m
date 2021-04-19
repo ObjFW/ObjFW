@@ -122,54 +122,54 @@ encodingForContentType(OFString *contentType)
 	const char *UTF8String = contentType.UTF8String;
 	size_t last, length = contentType.UTF8StringLength;
 	enum {
-		STATE_TYPE,
-		STATE_BEFORE_PARAM_NAME,
-		STATE_PARAM_NAME,
-		STATE_PARAM_VALUE_OR_QUOTE,
-		STATE_PARAM_VALUE,
-		STATE_PARAM_QUOTED_VALUE,
-		STATE_AFTER_PARAM_VALUE
-	} state = STATE_TYPE;
+		StateType,
+		StateBeforeParamName,
+		StateParamName,
+		StateParamValueOrQuote,
+		StateParamValue,
+		StateParamQuotedValue,
+		StateAfterParamValue
+	} state = StateType;
 	OFString *name = nil, *value = nil, *charset = nil;
 	OFStringEncoding ret;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
-		case STATE_TYPE:
+		case StateType:
 			if (UTF8String[i] == ';') {
-				state = STATE_BEFORE_PARAM_NAME;
+				state = StateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case STATE_BEFORE_PARAM_NAME:
+		case StateBeforeParamName:
 			if (UTF8String[i] == ' ')
 				last = i + 1;
 			else {
-				state = STATE_PARAM_NAME;
+				state = StateParamName;
 				i--;
 			}
 			break;
-		case STATE_PARAM_NAME:
+		case StateParamName:
 			if (UTF8String[i] == '=') {
 				name = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				state = STATE_PARAM_VALUE_OR_QUOTE;
+				state = StateParamValueOrQuote;
 				last = i + 1;
 			}
 			break;
-		case STATE_PARAM_VALUE_OR_QUOTE:
+		case StateParamValueOrQuote:
 			if (UTF8String[i] == '"') {
-				state = STATE_PARAM_QUOTED_VALUE;
+				state = StateParamQuotedValue;
 				last = i + 1;
 			} else {
-				state = STATE_PARAM_VALUE;
+				state = StateParamValue;
 				i--;
 			}
 			break;
-		case STATE_PARAM_VALUE:
+		case StateParamValue:
 			if (UTF8String[i] == ';') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -180,11 +180,11 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = STATE_BEFORE_PARAM_NAME;
+				state = StateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case STATE_PARAM_QUOTED_VALUE:
+		case StateParamQuotedValue:
 			if (UTF8String[i] == '"') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -193,19 +193,19 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = STATE_AFTER_PARAM_VALUE;
+				state = StateAfterParamValue;
 			}
 			break;
-		case STATE_AFTER_PARAM_VALUE:
+		case StateAfterParamValue:
 			if (UTF8String[i] == ';') {
-				state = STATE_BEFORE_PARAM_NAME;
+				state = StateBeforeParamName;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ')
 				return OFStringEncodingAutodetect;
 			break;
 		}
 	}
-	if (state == STATE_PARAM_VALUE) {
+	if (state == StateParamValue) {
 		value = [OFString stringWithUTF8String: UTF8String + last
 						length: length - last];
 		value = value.stringByDeletingTrailingWhitespaces;

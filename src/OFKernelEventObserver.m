@@ -51,14 +51,6 @@
 # include <proto/exec.h>
 #endif
 
-enum {
-	QUEUE_ADD = 0,
-	QUEUE_REMOVE = 1,
-	QUEUE_READ = 0,
-	QUEUE_WRITE = 2
-};
-#define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
-
 @implementation OFKernelEventObserver
 @synthesize delegate = _delegate;
 #ifdef OF_AMIGAOS
