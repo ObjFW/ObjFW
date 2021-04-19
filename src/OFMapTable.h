@@ -73,7 +73,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
 	OFMapTableFunctions _keyFunctions, _objectFunctions;
-	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
+	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
 	unsigned long _count, _capacity;
 	unsigned char _rotate;
 	unsigned long _mutations;
@@ -235,7 +235,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMapTableEnumerator: OFObject
 {
 	OFMapTable *_mapTable;
-	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
+	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
 	unsigned long _capacity, _mutations, *_Nullable _mutationsPtr;
 	unsigned long _position;
 }

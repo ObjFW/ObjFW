@@ -28,7 +28,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFRIPEMD160Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
-	struct of_ripemd160_hash_ivars {
+	struct {
 		uint32_t state[5];
 		uint64_t bits;
 		union of_ripemd160_hash_buffer {

@@ -28,7 +28,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMD5Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
-	struct of_md5_hash_ivars {
+	struct {
 		uint32_t state[4];
 		uint64_t bits;
 		union of_md5_hash_buffer {

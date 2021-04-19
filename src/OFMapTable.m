@@ -30,11 +30,11 @@
 
 #define MIN_CAPACITY 16
 
-struct of_map_table_bucket {
+struct OFMapTableBucket {
 	void *key, *object;
 	unsigned long hash;
 };
-static struct of_map_table_bucket deleted = { 0 };
+static struct OFMapTableBucket deleted = { 0 };
 
 static void *
 defaultRetain(void *object)
@@ -62,7 +62,7 @@ defaultEqual(void *object1, void *object2)
 OF_DIRECT_MEMBERS
 @interface OFMapTableEnumerator ()
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
-			    buckets: (struct of_map_table_bucket **)buckets
+			    buckets: (struct OFMapTableBucket **)buckets
 			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
     OF_METHOD_FAMILY(init);
@@ -184,7 +184,7 @@ static void
 resizeForCount(OFMapTable *self, unsigned long count)
 {
 	unsigned long fullness, capacity;
-	struct of_map_table_bucket **buckets;
+	struct OFMapTableBucket **buckets;
 
 	if (count > ULONG_MAX / sizeof(*self->_buckets) ||
 	    count > ULONG_MAX / 8)
@@ -282,7 +282,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (i >= last || self->_buckets[i] == NULL ||
 	    self->_buckets[i] == &deleted ||
 	    !self->_keyFunctions.equal(self->_buckets[i]->key, key)) {
-		struct of_map_table_bucket *bucket;
+		struct OFMapTableBucket *bucket;
 
 		resizeForCount(self, self->_count + 1);
 
@@ -649,7 +649,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 }
 
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
-			    buckets: (struct of_map_table_bucket **)buckets
+			    buckets: (struct OFMapTableBucket **)buckets
 			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
 {
