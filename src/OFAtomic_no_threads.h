@@ -110,7 +110,7 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE bool
-OFAtomicIntCompareSwap(volatile int *_Nonnull p, int o, int n)
+OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 {
 	if (*p == o) {
 		*p = n;
