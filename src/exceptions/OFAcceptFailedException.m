@@ -57,6 +57,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to accept connection in socket of class %@: %@",
-	    [_socket class], of_strerror(_errNo)];
+	    [_socket class], OFStrError(_errNo)];
 }
 @end

@@ -63,6 +63,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to retrieve attributes for item %@: %@",
-	    _URL, of_strerror(_errNo)];
+	    _URL, OFStrError(_errNo)];
 }
 @end

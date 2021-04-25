@@ -14,7 +14,7 @@
  */
 
 #import "OFObject.h"
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -26,17 +26,17 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFHMAC: OFObject
 {
-	Class <OFCryptoHash> _hashClass;
+	Class <OFCryptographicHash> _hashClass;
 	bool _allowsSwappableMemory;
-	id <OFCryptoHash> _Nullable _outerHash, _innerHash;
-	id <OFCryptoHash> _Nullable _outerHashCopy, _innerHashCopy;
+	id <OFCryptographicHash> _Nullable _outerHash, _innerHash;
+	id <OFCryptographicHash> _Nullable _outerHashCopy, _innerHashCopy;
 	bool _calculated;
 }
 
 /**
  * @brief The class for the cryptographic hash used by the HMAC.
  */
-@property (readonly, nonatomic) Class <OFCryptoHash> hashClass;
+@property (readonly, nonatomic) Class <OFCryptographicHash> hashClass;
 
 /**
  * @brief Whether data may be stored in swappable memory.
@@ -64,7 +64,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param allowsSwappableMemory Whether data may be stored in swappable memory
  * @return A new, autoreleased OFHMAC
  */
-+ (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)hashClass
++ (instancetype)HMACWithHashClass: (Class <OFCryptographicHash>)hashClass
 	    allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param allowsSwappableMemory Whether data may be stored in swappable memory
  * @return An initialized OFHMAC
  */
-- (instancetype)initWithHashClass: (Class <OFCryptoHash>)hashClass
+- (instancetype)initWithHashClass: (Class <OFCryptographicHash>)hashClass
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 

@@ -24,6 +24,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFLocale.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
@@ -53,8 +54,6 @@
 # include <rexx/storage.h>
 #endif
 
-#import "socket_helpers.h"
-
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
@@ -76,7 +75,7 @@ domainFromHostname(OFString *hostname)
 		return nil;
 
 	@try {
-		of_socket_address_parse_ip(hostname, 0);
+		OFSocketAddressParseIP(hostname, 0);
 
 		/*
 		 * If we are still here, the host name is a valid IP address.
@@ -87,7 +86,7 @@ domainFromHostname(OFString *hostname)
 		/* Not an IP address -> we can use it if it contains a dot. */
 		size_t pos = [hostname rangeOfString: @"."].location;
 
-		if (pos == OF_NOT_FOUND)
+		if (pos == OFNotFound)
 			return nil;
 
 		return [hostname substringFromIndex: pos + 1];
@@ -175,7 +174,7 @@ parseNetStackArray(OFString *string)
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
 		return nil;
 
-	string = [string substringWithRange: of_range(1, string.length - 2)];
+	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
 
 	return [string componentsSeparatedByString: @"|"];
 }
@@ -267,19 +266,19 @@ parseNetStackArray(OFString *string)
 		OFString *address;
 
 		pos = [line rangeOfString: @"#"].location;
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
-						 options: OF_STRING_SKIP_EMPTY];
+		    options: OFStringSkipEmptyComponents];
 
 		if (components.count < 2)
 			continue;
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    of_range(1, components.count - 1)];
+		    OFRangeMake(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -368,12 +367,12 @@ parseNetStackArray(OFString *string)
 		OFString *option;
 
 		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OF_NOT_FOUND)
+		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
-						 options: OF_STRING_SKIP_EMPTY];
+		    options: OFStringSkipEmptyComponents];
 
 		if (components.count < 2) {
 			objc_autoreleasePoolPop(pool2);
@@ -382,7 +381,7 @@ parseNetStackArray(OFString *string)
 
 		option = components.firstObject;
 		arguments = [components objectsInRange:
-		    of_range(1, components.count - 1)];
+		    OFRangeMake(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
 			if (arguments.count != 1) {
@@ -422,7 +421,7 @@ parseNetStackArray(OFString *string)
 #ifdef OF_WINDOWS
 - (void)obtainWindowsSystemConfig
 {
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFMutableArray *nameServers;
 	/*
 	 * We need more space than FIXED_INFO in case we have more than one
@@ -481,7 +480,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    of_range(1, components.count - 1)];
+		    OFRangeMake(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -509,7 +508,7 @@ parseNetStackArray(OFString *string)
 - (void)obtainAmigaOS4SystemConfig
 {
 	OFMutableArray *nameServers = [OFMutableArray array];
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 	struct List *nameServerList = ObtainDomainNameServerList();
 	char buffer[MAXHOSTNAMELEN];
 
@@ -574,7 +573,7 @@ parseNetStackArray(OFString *string)
 		return;
 
 	for (uint_fast8_t i = 0; i < 2; i++) {
-		uint32_t ip = OF_BSWAP32_IF_LE(buffer.entries[i].ip.s_addr);
+		uint32_t ip = OFFromBigEndian32(buffer.entries[i].ip.s_addr);
 
 		if (ip == 0)
 			continue;

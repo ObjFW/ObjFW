@@ -27,7 +27,7 @@ static OFString *module = nil;
 @end
 
 @implementation SimpleCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character % 2 == 0);
 }
@@ -45,7 +45,7 @@ static OFString *module = nil;
 	cs = [[[SimpleCharacterSet alloc] init] autorelease];
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c % 2 == 0) {
 			if (![cs characterIsMember: c])
 				ok = false;
@@ -62,7 +62,7 @@ static OFString *module = nil;
 	    [cs isKindOfClass: [OFBitSetCharacterSet class]])
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
 			if (![cs characterIsMember: c])
 				ok = false;
@@ -74,11 +74,12 @@ static OFString *module = nil;
 	module = @"OFRangeCharacterSet";
 
 	TEST(@"+[characterSetWithRange:]",
-	    (cs = [OFCharacterSet characterSetWithRange: of_range('0', 10)]) &&
+	    (cs = [OFCharacterSet
+	    characterSetWithRange: OFRangeMake('0', 10)]) &&
 	    [cs isKindOfClass: [OFRangeCharacterSet class]])
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
 			if (![cs characterIsMember: c])
 				ok = false;
@@ -89,7 +90,7 @@ static OFString *module = nil;
 
 	ok = true;
 	ics = cs.invertedSet;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
 			if ([ics characterIsMember: c])
 				ok = false;

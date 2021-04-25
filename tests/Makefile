@@ -11,8 +11,6 @@ DISTCLEAN = Info.plist
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
-       OFASN1DERParsingTests.m		\
-       OFASN1DERRepresentationTests.m	\
        OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
@@ -60,7 +58,6 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
@@ -69,8 +66,7 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       SocketTests.m			\
-	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 

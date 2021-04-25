@@ -102,12 +102,6 @@
 # define OF_WEAK_REF(sym)
 #endif
 
-#ifdef OF_BIG_ENDIAN
-# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_BIG_ENDIAN
-#else
-# define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_LITTLE_ENDIAN
-#endif
-
 #if __STDC_VERSION__ >= 201112L
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
@@ -355,11 +349,10 @@
 # endif
 #endif
 
-#define OF_RETAIN_COUNT_MAX UINT_MAX
-#define OF_NOT_FOUND SIZE_MAX
+#define OFMaxRetainCount UINT_MAX
 
 #ifdef OBJC_COMPILING_RUNTIME
-# define OF_ENSURE(cond)						\
+# define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond))				\
 			objc_error("ObjFWRT @ " __FILE__ ":"		\
@@ -367,7 +360,7 @@
 			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
-# define OF_ENSURE(cond)						\
+# define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\
 			fprintf(stderr, "Failed to ensure condition "	\
@@ -378,13 +371,13 @@
 	} while (0)
 #endif
 
-#define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
+#define OF_UNRECOGNIZED_SELECTOR OFMethodNotFound(self, _cmd);
 #if __has_feature(objc_arc)
-# define OF_INVALID_INIT_METHOD of_method_not_found(self, _cmd);
+# define OF_INVALID_INIT_METHOD OFMethodNotFound(self, _cmd);
 #else
 # define OF_INVALID_INIT_METHOD				\
 	@try {						\
-		of_method_not_found(self, _cmd);	\
+		OFMethodNotFound(self, _cmd);		\
 	} @catch (id e) {				\
 		[self release];				\
 		@throw e;				\
@@ -418,20 +411,20 @@
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OF_BSWAP16_CONST(uint16_t i)
+OFByteSwap16Const(uint16_t i)
 {
 	return (i & 0xFF00) >> 8 | (i & 0x00FF) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OF_BSWAP32_CONST(uint32_t i)
+OFByteSwap32Const(uint32_t i)
 {
 	return (i & 0xFF000000) >> 24 | (i & 0x00FF0000) >> 8 |
 	    (i & 0x0000FF00) << 8 | (i & 0x000000FF) << 24;
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OF_BSWAP64_CONST(uint64_t i)
+OFByteSwap64Const(uint64_t i)
 {
 	return (i & 0xFF00000000000000) >> 56 | (i & 0x00FF000000000000) >> 40 |
 	    (i & 0x0000FF0000000000) >> 24 | (i & 0x000000FF00000000) >> 8 |
@@ -440,7 +433,7 @@ OF_BSWAP64_CONST(uint64_t i)
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OF_BSWAP16_NONCONST(uint16_t i)
+OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
@@ -470,7 +463,7 @@ OF_BSWAP16_NONCONST(uint16_t i)
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OF_BSWAP32_NONCONST(uint32_t i)
+OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
@@ -502,7 +495,7 @@ OF_BSWAP32_NONCONST(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OF_BSWAP64_NONCONST(uint64_t i)
+OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
@@ -521,27 +514,27 @@ OF_BSWAP64_NONCONST(uint64_t i)
 	    : "0"(i)
 	);
 #else
-	i = (uint64_t)OF_BSWAP32_NONCONST((uint32_t)(i & 0xFFFFFFFF)) << 32 |
-	    OF_BSWAP32_NONCONST((uint32_t)(i >> 32));
+	i = (uint64_t)OFByteSwap32NonConst((uint32_t)(i & 0xFFFFFFFF)) << 32 |
+	    OFByteSwap32NonConst((uint32_t)(i >> 32));
 #endif
 	return i;
 }
 
 #ifdef __GNUC__
-# define OF_BSWAP16(i) \
-    (__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
-# define OF_BSWAP32(i) \
-    (__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
-# define OF_BSWAP64(i) \
-    (__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
+# define OFByteSwap16(i) \
+    (__builtin_constant_p(i) ? OFByteSwap16Const(i) : OFByteSwap16NonConst(i))
+# define OFByteSwap32(i) \
+    (__builtin_constant_p(i) ? OFByteSwap32Const(i) : OFByteSwap32NonConst(i))
+# define OFByteSwap64(i) \
+    (__builtin_constant_p(i) ? OFByteSwap64Const(i) : OFByteSwap64NonConst(i))
 #else
-# define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
-# define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
-# define OF_BSWAP64(i) OF_BSWAP64_CONST(i)
+# define OFByteSwap16(i) OFByteSwap16Const(i)
+# define OFByteSwap32(i) OFByteSwap32Const(i)
+# define OFByteSwap64(i) OFByteSwap64Const(i)
 #endif
 
 static OF_INLINE uint32_t
-OF_FLOAT_TO_INT_RAW(float f)
+OFFloatToRawUInt32(float f)
 {
 	uint32_t ret;
 	memcpy(&ret, &f, 4);
@@ -549,7 +542,7 @@ OF_FLOAT_TO_INT_RAW(float f)
 }
 
 static OF_INLINE float
-OF_INT_TO_FLOAT_RAW(uint32_t uInt32)
+OFRawUInt32ToFloat(uint32_t uInt32)
 {
 	float ret;
 	memcpy(&ret, &uInt32, 4);
@@ -557,7 +550,7 @@ OF_INT_TO_FLOAT_RAW(uint32_t uInt32)
 }
 
 static OF_INLINE uint64_t
-OF_DOUBLE_TO_INT_RAW(double d)
+OFDoubleToRawUInt64(double d)
 {
 	uint64_t ret;
 	memcpy(&ret, &d, 8);
@@ -565,7 +558,7 @@ OF_DOUBLE_TO_INT_RAW(double d)
 }
 
 static OF_INLINE double
-OF_INT_TO_DOUBLE_RAW(uint64_t uInt64)
+OFRawUInt64ToDouble(uint64_t uInt64)
 {
 	double ret;
 	memcpy(&ret, &uInt64, 8);
@@ -573,304 +566,180 @@ OF_INT_TO_DOUBLE_RAW(uint64_t uInt64)
 }
 
 static OF_INLINE float OF_CONST_FUNC
-OF_BSWAP_FLOAT(float f)
+OFByteSwapFloat(float f)
 {
-	return OF_INT_TO_FLOAT_RAW(OF_BSWAP32(OF_FLOAT_TO_INT_RAW(f)));
+	return OFRawUInt32ToFloat(OFByteSwap32(OFFloatToRawUInt32(f)));
 }
 
 static OF_INLINE double OF_CONST_FUNC
-OF_BSWAP_DOUBLE(double d)
+OFByteSwapDouble(double d)
 {
-	return OF_INT_TO_DOUBLE_RAW(OF_BSWAP64(OF_DOUBLE_TO_INT_RAW(d)));
+	return OFRawUInt64ToDouble(OFByteSwap64(OFDoubleToRawUInt64(d)));
 }
 
 #ifdef OF_BIG_ENDIAN
-# define OF_BSWAP16_IF_BE(i) OF_BSWAP16(i)
-# define OF_BSWAP32_IF_BE(i) OF_BSWAP32(i)
-# define OF_BSWAP64_IF_BE(i) OF_BSWAP64(i)
-# define OF_BSWAP16_IF_LE(i) (i)
-# define OF_BSWAP32_IF_LE(i) (i)
-# define OF_BSWAP64_IF_LE(i) (i)
+# define OFFromBigEndian16(i) (i)
+# define OFFromBigEndian32(i) (i)
+# define OFFromBigEndian64(i) (i)
+# define OFFromLittleEndian16(i) OFByteSwap16(i)
+# define OFFromLittleEndian32(i) OFByteSwap32(i)
+# define OFFromLittleEndian64(i) OFByteSwap64(i)
+# define OFToBigEndian16(i) (i)
+# define OFToBigEndian32(i) (i)
+# define OFToBigEndian64(i) (i)
+# define OFToLittleEndian16(i) OFByteSwap16(i)
+# define OFToLittleEndian32(i) OFByteSwap32(i)
+# define OFToLittleEndian64(i) OFByteSwap64(i)
 #else
-# define OF_BSWAP16_IF_BE(i) (i)
-# define OF_BSWAP32_IF_BE(i) (i)
-# define OF_BSWAP64_IF_BE(i) (i)
-# define OF_BSWAP16_IF_LE(i) OF_BSWAP16(i)
-# define OF_BSWAP32_IF_LE(i) OF_BSWAP32(i)
-# define OF_BSWAP64_IF_LE(i) OF_BSWAP64(i)
+# define OFFromBigEndian16(i) OFByteSwap16(i)
+# define OFFromBigEndian32(i) OFByteSwap32(i)
+# define OFFromBigEndian64(i) OFByteSwap64(i)
+# define OFFromLittleEndian16(i) (i)
+# define OFFromLittleEndian32(i) (i)
+# define OFFromLittleEndian64(i) (i)
+# define OFToBigEndian16(i) OFByteSwap16(i)
+# define OFToBigEndian32(i) OFByteSwap32(i)
+# define OFToBigEndian64(i) OFByteSwap64(i)
+# define OFToLittleEndian16(i) (i)
+# define OFToLittleEndian32(i) (i)
+# define OFToLittleEndian64(i) (i)
 #endif
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-# define OF_BSWAP_FLOAT_IF_BE(i) OF_BSWAP_FLOAT(i)
-# define OF_BSWAP_DOUBLE_IF_BE(i) OF_BSWAP_DOUBLE(i)
-# define OF_BSWAP_FLOAT_IF_LE(i) (i)
-# define OF_BSWAP_DOUBLE_IF_LE(i) (i)
+# define OFFromBigEndianFloat(f) (f)
+# define OFFromBigEndianDouble(d) (d)
+# define OFFromLittleEndianFloat(f) OFByteSwapFloat(f)
+# define OFFromLittleEndianDouble(i) OFByteSwapDouble(d)
+# define OFToBigEndianFloat(f) (f)
+# define OFToBigEndianDouble(d) (d)
+# define OFToLittleEndianFloat(f) OFByteSwapFloat(f)
+# define OFToLittleEndianDouble(i) OFByteSwapDouble(d)
 #else
-# define OF_BSWAP_FLOAT_IF_BE(i) (i)
-# define OF_BSWAP_DOUBLE_IF_BE(i) (i)
-# define OF_BSWAP_FLOAT_IF_LE(i) OF_BSWAP_FLOAT(i)
-# define OF_BSWAP_DOUBLE_IF_LE(i) OF_BSWAP_DOUBLE(i)
+# define OFFromBigEndianFloat(f) OFByteSwapFloat(f)
+# define OFFromBigEndianDouble(d) OFByteSwapDouble(d)
+# define OFFromLittleEndianFloat(f) (f)
+# define OFFromLittleEndianDouble(d) (d)
+# define OFToBigEndianFloat(f) OFByteSwapFloat(f)
+# define OFToBigEndianDouble(d) OFByteSwapDouble(d)
+# define OFToLittleEndianFloat(f) (f)
+# define OFToLittleEndianDouble(d) (d)
 #endif
 
-static OF_INLINE uint16_t
-of_be16_ptr_read(void *_Nonnull ptr)
-{
-	uint16_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP16_IF_LE(value);
-}
-
-static OF_INLINE uint32_t
-of_be32_ptr_read(void *_Nonnull ptr)
-{
-	uint32_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP32_IF_LE(value);
-}
-
-static OF_INLINE uint64_t
-of_be64_ptr_read(void *_Nonnull ptr)
-{
-	uint64_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP64_IF_LE(value);
-}
-
-static OF_INLINE float
-of_be_float_ptr_read(void *_Nonnull ptr)
-{
-	float value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP_FLOAT_IF_LE(value);
-}
-
-static OF_INLINE double
-of_be_double_ptr_read(void *_Nonnull ptr)
-{
-	double value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP_DOUBLE_IF_LE(value);
-}
-
-static OF_INLINE uint16_t
-of_le16_ptr_read(void *_Nonnull ptr)
-{
-	uint16_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP16_IF_BE(value);
-}
-
-static OF_INLINE uint32_t
-of_le32_ptr_read(void *_Nonnull ptr)
-{
-	uint32_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP32_IF_BE(value);
-}
-
-static OF_INLINE uint64_t
-of_le64_ptr_read(void *_Nonnull ptr)
-{
-	uint64_t value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP64_IF_BE(value);
-}
-
-static OF_INLINE float
-of_le_float_ptr_read(void *_Nonnull ptr)
-{
-	float value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP_FLOAT_IF_BE(value);
-}
-
-static OF_INLINE double
-of_le_double_ptr_read(void *_Nonnull ptr)
-{
-	double value;
-	memcpy(&value, ptr, sizeof(value));
-	return OF_BSWAP_DOUBLE_IF_BE(value);
-}
-
-static OF_INLINE void
-of_be16_ptr_write(void *_Nonnull ptr, uint16_t value)
-{
-	value = OF_BSWAP16_IF_LE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_be32_ptr_write(void *_Nonnull ptr, uint32_t value)
-{
-	value = OF_BSWAP32_IF_LE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_be64_ptr_write(void *_Nonnull ptr, uint64_t value)
-{
-	value = OF_BSWAP64_IF_LE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_be_float_ptr_write(void *_Nonnull ptr, float value)
-{
-	value = OF_BSWAP_FLOAT_IF_LE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_be_double_ptr_write(void *_Nonnull ptr, double value)
-{
-	value = OF_BSWAP_DOUBLE_IF_LE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_le16_ptr_write(void *_Nonnull ptr, uint16_t value)
-{
-	value = OF_BSWAP16_IF_BE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_le32_ptr_write(void *_Nonnull ptr, uint32_t value)
-{
-	value = OF_BSWAP32_IF_BE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_le64_ptr_write(void *_Nonnull ptr, uint64_t value)
-{
-	value = OF_BSWAP64_IF_BE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_le_float_ptr_write(void *_Nonnull ptr, float value)
-{
-	value = OF_BSWAP_FLOAT_IF_BE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-static OF_INLINE void
-of_le_double_ptr_write(void *_Nonnull ptr, double value)
-{
-	value = OF_BSWAP_DOUBLE_IF_BE(value);
-	memcpy(ptr, &value, sizeof(value));
-}
-
-#define OF_ROL(value, bits)						\
+#define OFRotateLeft(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) << ((bits) % (sizeof(value) * 8))) |			\
     ((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
-#define OF_ROR(value, bits)						\
+#define OFRotateRight(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) >> ((bits) % (sizeof(value) * 8))) |			\
     ((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
 
-#define OF_ROUND_UP_POW2(pow2, value) (((value) + (pow2) - 1) & ~((pow2) - 1))
+#define OFRoundUpToPowerOf2(pow2, value)	\
+    (((value) + (pow2) - 1) & ~((pow2) - 1))
 
-#define OF_HASH_INIT(hash) hash = of_hash_seed;
-#define OF_HASH_ADD(hash, byte)			\
-	{					\
-		hash += (uint8_t)(byte);	\
-		hash += (hash << 10);		\
-		hash ^= (hash >> 6);		\
-	}
-#define OF_HASH_FINALIZE(hash)		\
-	{				\
-		hash += (hash << 3);	\
-		hash ^= (hash >> 11);	\
-		hash += (hash << 15);	\
-	}
-#define OF_HASH_ADD_HASH(hash, other)				\
-	{							\
-		uint32_t otherCopy = (uint32_t)other;		\
-		OF_HASH_ADD(hash, (otherCopy >> 24) & 0xFF);	\
-		OF_HASH_ADD(hash, (otherCopy >> 16) & 0xFF);	\
-		OF_HASH_ADD(hash, (otherCopy >>  8) & 0xFF);	\
-		OF_HASH_ADD(hash, otherCopy & 0xFF);		\
-	}
+extern unsigned long OFHashSeed;
+
+static OF_INLINE void
+OFHashInit(unsigned long *_Nonnull hash)
+{
+	*hash = OFHashSeed;
+}
+
+static OF_INLINE void
+OFHashAdd(unsigned long *_Nonnull hash, unsigned char byte)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += byte;
+	tmp += tmp << 10;
+	tmp ^= tmp >> 6;
+
+	*hash = tmp;
+}
+
+static OF_INLINE void
+OFHashAddHash(unsigned long *_Nonnull hash, unsigned long otherHash)
+{
+	OFHashAdd(hash, (otherHash >> 24) & 0xFF);
+	OFHashAdd(hash, (otherHash >> 16) & 0xFF);
+	OFHashAdd(hash, (otherHash >>  8) & 0xFF);
+	OFHashAdd(hash, otherHash & 0xFF);
+}
+
+static OF_INLINE void
+OFHashFinalize(unsigned long *_Nonnull hash)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += tmp << 3;
+	tmp ^= tmp >> 11;
+	tmp += tmp << 15;
+
+	*hash = tmp;
+}
 
 static OF_INLINE bool
-of_bitset_isset(unsigned char *_Nonnull storage, size_t idx)
+OFBitsetIsSet(unsigned char *_Nonnull storage, size_t idx)
 {
 	return storage[idx / CHAR_BIT] & (1u << (idx % CHAR_BIT));
 }
 
 static OF_INLINE void
-of_bitset_set(unsigned char *_Nonnull storage, size_t idx)
+OFBitsetSet(unsigned char *_Nonnull storage, size_t idx)
 {
 	storage[idx / CHAR_BIT] |= (1u << (idx % CHAR_BIT));
 }
 
 static OF_INLINE void
-of_bitset_clear(unsigned char *_Nonnull storage, size_t idx)
+OFBitsetClear(unsigned char *_Nonnull storage, size_t idx)
 {
 	storage[idx / CHAR_BIT] &= ~(1u << (idx % CHAR_BIT));
 }
 
-static OF_INLINE char *_Nullable
-of_strdup(const char *_Nonnull string)
-{
-	char *copy;
-	size_t length = strlen(string);
-
-	if ((copy = (char *)malloc(length + 1)) == NULL)
-		return NULL;
-
-	memcpy(copy, string, length + 1);
-
-	return copy;
-}
-
 static OF_INLINE void
-of_explicit_memset(void *_Nonnull buffer_, int character, size_t length)
+OFZeroMemory(void *_Nonnull buffer_, size_t length)
 {
 	volatile unsigned char *buffer = (volatile unsigned char *)buffer_;
 
 	while (buffer < (unsigned char *)buffer_ + length)
-		*buffer++ = character;
+		*buffer++ = '\0';
 }
 
 static OF_INLINE bool
-of_ascii_isalpha(char c)
+OFASCIIIsAlpha(char c)
 {
 	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 }
 
 static OF_INLINE bool
-of_ascii_isdigit(char c)
+OFASCIIIsDigit(char c)
 {
 	return (c >= '0' && c <= '9');
 }
 
 static OF_INLINE bool
-of_ascii_isalnum(char c)
+OFASCIIIsAlnum(char c)
 {
-	return (of_ascii_isalpha(c) || of_ascii_isdigit(c));
+	return (OFASCIIIsAlpha(c) || OFASCIIIsDigit(c));
 }
 
 static OF_INLINE bool
-of_ascii_isspace(char c)
+OFASCIIIsSpace(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' ||
 	    c == '\v');
 }
 
 static OF_INLINE char
-of_ascii_toupper(char c)
+OFASCIIToUpper(char c)
 {
 	return (c >= 'a' && c <= 'z' ? 'A' + (c - 'a') : c);
 }
 
 static OF_INLINE char
-of_ascii_tolower(char c)
+OFASCIIToLower(char c)
 {
 	return (c >= 'A' && c <= 'Z' ? 'a' + (c - 'A') : c);
 }

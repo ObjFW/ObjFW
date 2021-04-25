@@ -32,7 +32,7 @@ static OFString *module = @"PBKDF2";
 	/* Test vectors from RFC 6070 */
 
 	TEST(@"PBKDF2-SHA1, 1 iteration",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 1,
 		.salt                  = (unsigned char *)"salt",
@@ -46,7 +46,7 @@ static OFString *module = @"PBKDF2";
 		"\x24\xAF\x60\x12\x06\x2F\xE0\x37\xA6", 20) == 0)
 
 	TEST(@"PBKDF2-SHA1, 2 iterations",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 2,
 		.salt                  = (unsigned char *)"salt",
@@ -60,7 +60,7 @@ static OFString *module = @"PBKDF2";
 	        "\x2A\xCE\x1D\x41\xF0\xD8\xDE\x89\x57", 20) == 0)
 
 	TEST(@"PBKDF2-SHA1, 4096 iterations",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 4096,
 		.salt                  = (unsigned char *)"salt",
@@ -76,7 +76,7 @@ static OFString *module = @"PBKDF2";
 	/* This test takes too long, even on a fast machine. */
 #if 0
 	TEST(@"PBKDF2-SHA1, 16777216 iterations",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 16777216,
 		.salt                  = (unsigned char *)"salt",
@@ -91,7 +91,7 @@ static OFString *module = @"PBKDF2";
 #endif
 
 	TEST(@"PBKDF2-SHA1, 4096 iterations, key > 1 block",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 4096,
 		.salt                  = (unsigned char *)"saltSALTsaltSALTsalt"
@@ -107,7 +107,7 @@ static OFString *module = @"PBKDF2";
 	        "\xC0\xE4\x4A\x8B\x29\x1A\x96\x4C\xF2\xF0\x70\x38", 25) == 0)
 
 	TEST(@"PBKDF2-SHA1, 4096 iterations, key < 1 block",
-	    R(of_pbkdf2((of_pbkdf2_parameters_t){
+	    R(OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = HMAC,
 		.iterations            = 4096,
 		.salt                  = (unsigned char *)"sa\0lt",

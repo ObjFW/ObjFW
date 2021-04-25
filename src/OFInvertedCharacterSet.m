@@ -32,7 +32,7 @@
 
 	@try {
 		_characterSet = [characterSet retain];
-		_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
@@ -50,7 +50,7 @@
 	[super dealloc];
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return !_characterIsMember(_characterSet, @selector(characterIsMember:),
 	    character);

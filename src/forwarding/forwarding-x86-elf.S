@@ -17,11 +17,11 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -75,17 +75,17 @@ of_forward:
 	jmp	*%eax
 
 0:
-	leal	of_method_not_found@GOTOFF(%ebx), %eax
+	leal	OFMethodNotFound@GOTOFF(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
 	popl	%ebp
 
 	jmp	*%eax
-.type of_forward, %function
-.size of_forward, .-of_forward
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -139,15 +139,15 @@ of_forward_stret:
 	jmp	*%eax
 
 0:
-	leal	of_method_not_found_stret@GOTOFF(%ebx), %eax
+	leal	OFMethodNotFound_stret@GOTOFF(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
 	popl	%ebp
 
 	jmp	*%eax
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	pushl	%ebp

@@ -32,18 +32,18 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	enum {
-		OF_LHA_ARCHIVE_MODE_READ,
-		OF_LHA_ARCHIVE_MODE_WRITE,
-		OF_LHA_ARCHIVE_MODE_APPEND
+		OFLHAArchiveModeRead,
+		OFLHAArchiveModeWrite,
+		OFLHAArchiveModeAppend
 	} _mode;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	OFStream *_Nullable _lastReturnedStream;
 }
 
 /**
  * @brief The encoding to use for the archive. Defaults to ISO 8859-1.
  */
-@property (nonatomic) of_string_encoding_t encoding;
+@property (nonatomic) OFStringEncoding encoding;
 
 /**
  * @brief A stream for reading the current entry.

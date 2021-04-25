@@ -35,7 +35,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[of_stderr writeLine:
+	[OFStdErr writeLine:
 	    OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
@@ -67,9 +67,9 @@ help(OFStream *stream, bool full, int status)
 	_inFlight--;
 
 	if (exception == nil)
-		[of_stdout writeFormat: @"%@\n", response];
+		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
@@ -83,7 +83,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFString *DNSClassString, *server;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'c', @"class", 1, NULL, &DNSClassString },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 's', @"server", 1, NULL, &server },
@@ -92,10 +92,10 @@ help(OFStream *stream, bool full, int status)
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
 	OFOptionsParser *optionsParser;
-	of_unichar_t option;
+	OFUnichar option;
 	OFArray OF_GENERIC(OFString *) *remainingArguments;
 	OFDNSResolver *resolver;
-	of_dns_class_t DNSClass;
+	OFDNSClass DNSClass;
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
@@ -111,7 +111,7 @@ help(OFStream *stream, bool full, int status)
 		sandbox.allowsStdIO = true;
 		sandbox.allowsDNS = true;
 
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
 		[sandbox release];
 	}
@@ -126,11 +126,11 @@ help(OFStream *stream, bool full, int status)
 			[recordTypes addObject: optionsParser.argument];
 			break;
 		case 'h':
-			help(of_stdout, true, 0);
+			help(OFStdOut, true, 0);
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"long_option_required_argument",
 				    @"%[prog]: Option --%[opt] requires an "
 				    @"argument",
@@ -140,7 +140,7 @@ help(OFStream *stream, bool full, int status)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"option_requires_argument",
 				    @"%[prog]: Option -%[opt] requires an "
 				    @"argument",
@@ -152,7 +152,7 @@ help(OFStream *stream, bool full, int status)
 			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -161,7 +161,7 @@ help(OFStream *stream, bool full, int status)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"Unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -176,12 +176,11 @@ help(OFStream *stream, bool full, int status)
 	remainingArguments = optionsParser.remainingArguments;
 
 	if (remainingArguments.count < 1)
-		help(of_stderr, false, 1);
+		help(OFStdErr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
 	DNSClass = (DNSClassString != nil
-	    ? of_dns_class_parse(DNSClassString)
-	    : OF_DNS_CLASS_IN);
+	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
 	if (recordTypes.count == 0)
 		[recordTypes addObject: @"ALL"];
@@ -193,8 +192,8 @@ help(OFStream *stream, bool full, int status)
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {
-			of_dns_record_type_t recordType =
-			    of_dns_record_type_parse(recordTypeString);
+			OFDNSRecordType recordType =
+			    OFDNSRecordTypeParseName(recordTypeString);
 			OFDNSQuery *query =
 			    [OFDNSQuery queryWithDomainName: domainName
 						   DNSClass: DNSClass

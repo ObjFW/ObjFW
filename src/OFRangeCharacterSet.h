@@ -19,7 +19,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFRangeCharacterSet: OFCharacterSet
 {
-	of_range_t _range;
+	OFRange _range;
 }
 @end
 

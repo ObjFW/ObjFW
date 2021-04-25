@@ -26,11 +26,10 @@
 
 #import "OFPollKernelEventObserver.h"
 #import "OFData.h"
+#import "OFSocket+Private.h"
 
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
-
-#import "socket_helpers.h"
 
 #ifdef OF_WII
 # define pollfd pollsd
@@ -50,7 +49,7 @@
 		[_FDs addItem: &p];
 
 		_maxFD = _cancelFD[0];
-		_FDToObject = of_alloc((size_t)_maxFD + 1, sizeof(id));
+		_FDToObject = OFAllocMemory((size_t)_maxFD + 1, sizeof(id));
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -62,7 +61,7 @@
 - (void)dealloc
 {
 	[_FDs release];
-	free(_FDToObject);
+	OFFreeMemory(_FDToObject);
 
 	[super dealloc];
 }
@@ -95,7 +94,7 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 		if (fd > self->_maxFD) {
 			self->_maxFD = fd;
-			self->_FDToObject = of_realloc(self->_FDToObject,
+			self->_FDToObject = OFResizeMemory(self->_FDToObject,
 			    (size_t)self->_maxFD + 1, sizeof(id));
 		}
 
@@ -162,7 +161,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	void *pool;
 	struct pollfd *FDs;
@@ -199,10 +198,10 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 				char buffer;
 
 #ifdef OF_HAVE_PIPE
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 #else
-				OF_ENSURE(recvfrom(_cancelFD[0], &buffer, 1,
-				    0, NULL, NULL) == 1);
+				OFEnsure(recvfrom(_cancelFD[0], &buffer, 1, 0,
+				    NULL, NULL) == 1);
 #endif
 				FDs[i].revents = 0;
 

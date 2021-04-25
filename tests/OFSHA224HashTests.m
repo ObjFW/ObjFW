@@ -32,8 +32,8 @@ const uint8_t testfile_sha224[28] =
 	OFSHA224Hash *sha224, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
-	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
-	    (sha224 = [OFSHA224Hash cryptoHashWithAllowsSwappableMemory: true]))
+	TEST(@"+[hashWithAllowsSwappableMemory:]",
+	    (sha224 = [OFSHA224Hash hashWithAllowsSwappableMemory: true]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];

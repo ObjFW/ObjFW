@@ -20,6 +20,7 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
+#import "OFCRC32.h"
 #import "OFData.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -30,8 +31,6 @@
 #endif
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
-
-#import "crc32.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -103,7 +102,7 @@ OF_DIRECT_MEMBERS
 @end
 
 uint32_t
-of_zip_archive_read_field32(const uint8_t **data, uint16_t *size)
+OFZIPArchiveReadField32(const uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
 
@@ -120,7 +119,7 @@ of_zip_archive_read_field32(const uint8_t **data, uint16_t *size)
 }
 
 uint64_t
-of_zip_archive_read_field64(const uint8_t **data, uint16_t *size)
+OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
 
@@ -138,7 +137,7 @@ of_zip_archive_read_field64(const uint8_t **data, uint16_t *size)
 
 static void
 seekOrThrowInvalidFormat(OFSeekableStream *stream,
-    of_offset_t offset, int whence)
+    OFFileOffset offset, int whence)
 {
 	@try {
 		[stream seekToOffset: offset whence: whence];
@@ -176,11 +175,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	@try {
 		if ([mode isEqual: @"r"])
-			_mode = OF_ZIP_ARCHIVE_MODE_READ;
+			_mode = OFZIPArchiveModeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_ZIP_ARCHIVE_MODE_WRITE;
+			_mode = OFZIPArchiveModeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_ZIP_ARCHIVE_MODE_APPEND;
+			_mode = OFZIPArchiveModeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
@@ -188,8 +187,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_entries = [[OFMutableArray alloc] init];
 		_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
-		if (_mode == OF_ZIP_ARCHIVE_MODE_READ ||
-		    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFZIPArchiveModeRead ||
+		    _mode == OFZIPArchiveModeAppend) {
 			if (![stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
@@ -197,10 +196,10 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			[self of_readEntries];
 		}
 
-		if (_mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFZIPArchiveModeAppend) {
 			_offset = _centralDirectoryOffset;
 			seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-			    (of_offset_t)_offset, SEEK_SET);
+			    (OFFileOffset)_offset, SEEK_SET);
 		}
 	} @catch (id e) {
 		/*
@@ -256,7 +255,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
-	of_offset_t offset = -22;
+	OFFileOffset offset = -22;
 	bool valid = false;
 
 	do {
@@ -282,7 +281,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	commentLength = [_stream readLittleEndianInt16];
 	_archiveComment = [[_stream
 	    readStringWithLength: commentLength
-			encoding: OF_STRING_ENCODING_CODEPAGE_437] copy];
+			encoding: OFStringEncodingCodepage437] copy];
 
 	if (_diskNumber == 0xFFFF ||
 	    _centralDirectoryDisk == 0xFFFF ||
@@ -308,11 +307,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		[_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
 
-		if (offset64 < 0 || (of_offset_t)offset64 != offset64)
+		if (offset64 < 0 || (OFFileOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
 		seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-		    (of_offset_t)offset64, SEEK_SET);
+		    (OFFileOffset)offset64, SEEK_SET);
 
 		if ([_stream readLittleEndianInt32] != 0x06064B50)
 			@throw [OFInvalidFormatException exception];
@@ -335,7 +334,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_centralDirectoryOffset = [_stream readLittleEndianInt64];
 
 		if (_centralDirectoryOffset < 0 ||
-		    (of_offset_t)_centralDirectoryOffset !=
+		    (OFFileOffset)_centralDirectoryOffset !=
 		    _centralDirectoryOffset)
 			@throw [OFOutOfRangeException exception];
 	}
@@ -348,11 +347,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	void *pool = objc_autoreleasePoolPush();
 
 	if (_centralDirectoryOffset < 0 ||
-	    (of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
+	    (OFFileOffset)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-	    (of_offset_t)_centralDirectoryOffset, SEEK_SET);
+	    (OFFileOffset)_centralDirectoryOffset, SEEK_SET);
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
@@ -401,8 +400,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		/* Might have already been closed by the user - that's fine. */
 	}
 
-	if ((_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) &&
+	if ((_mode == OFZIPArchiveModeWrite ||
+	    _mode == OFZIPArchiveModeAppend) &&
 	    [_lastReturnedStream isKindOfClass:
 	    [OFZIPArchiveFileWriteStream class]]) {
 		OFZIPArchiveFileWriteStream *stream =
@@ -431,7 +430,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
-	if (_mode != OF_ZIP_ARCHIVE_MODE_READ)
+	if (_mode != OFZIPArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
@@ -442,11 +441,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[self of_closeLastReturnedStream];
 
 	offset64 = entry.of_localFileHeaderOffset;
-	if (offset64 < 0 || (of_offset_t)offset64 != offset64)
+	if (offset64 < 0 || (OFFileOffset)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-	    (of_offset_t)offset64, SEEK_SET);
+	    (OFFileOffset)offset64, SEEK_SET);
 	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 
@@ -481,8 +480,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
 
-	if (_mode != OF_ZIP_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
+	if (_mode != OFZIPArchiveModeWrite && _mode != OFZIPArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -494,8 +492,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 				 mode: @"w"
 				errNo: EEXIST];
 
-	if (entry.compressionMethod !=
-	    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE)
+	if (entry.compressionMethod != OFZIPArchiveEntryCompressionMethodNone)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
@@ -535,8 +532,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeString: fileName];
 	offsetAdd += fileNameLength;
 
-	[_stream writeLittleEndianInt16:
-	    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64];
+	[_stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
 	[_stream writeLittleEndianInt16: 16];
 	/* We use the data descriptor */
 	[_stream writeLittleEndianInt64: 0];
@@ -617,8 +613,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[self of_closeLastReturnedStream];
 
-	if (_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND)
+	if (_mode == OFZIPArchiveModeWrite || _mode == OFZIPArchiveModeAppend)
 		[self of_writeCentralDirectory];
 
 	[_stream release];
@@ -635,7 +630,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableData *extraField = nil;
 		uint16_t fileNameLength, extraFieldLength;
-		of_string_encoding_t encoding;
+		OFStringEncoding encoding;
 		size_t ZIP64Index;
 		uint16_t ZIP64Size;
 
@@ -653,8 +648,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		fileNameLength = [stream readLittleEndianInt16];
 		extraFieldLength = [stream readLittleEndianInt16];
 		encoding = (_generalPurposeBitFlag & (1u << 11)
-		    ? OF_STRING_ENCODING_UTF_8
-		    : OF_STRING_ENCODING_CODEPAGE_437);
+		    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
@@ -662,20 +656,20 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			extraField = [[[stream readDataWithCount:
 			    extraFieldLength] mutableCopy] autorelease];
 
-		ZIP64Index = of_zip_archive_entry_extra_field_find(extraField,
-		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
+		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
+		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
-		if (ZIP64Index != OF_NOT_FOUND) {
+		if (ZIP64Index != OFNotFound) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
-			of_range_t range =
-			    of_range(ZIP64Index - 4, ZIP64Size + 4);
+			OFRange range =
+			    OFRangeMake(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = of_zip_archive_read_field64(
+				_uncompressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = of_zip_archive_read_field64(
+				_compressedSize = OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0)
@@ -736,14 +730,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_stream = [stream retain];
 
 		switch (entry.compressionMethod) {
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
+		case OFZIPArchiveEntryCompressionMethodNone:
 			_decompressedStream = [stream retain];
 			break;
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
+		case OFZIPArchiveEntryCompressionMethodDeflate:
 			_decompressedStream = [[OFInflateStream alloc]
 			    initWithStream: stream];
 			break;
-		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
+		case OFZIPArchiveEntryCompressionMethodDeflate64:
 			_decompressedStream = [[OFInflate64Stream alloc]
 			    initWithStream: stream];
 			break;
@@ -806,7 +800,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC32 = of_crc32(_CRC32, buffer, ret);
+	_CRC32 = OFCRC32(_CRC32, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -891,7 +885,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	bytesWritten = [_stream writeBuffer: buffer length: length];
 
 	_bytesWritten += (int64_t)bytesWritten;
-	_CRC32 = of_crc32(_CRC32, buffer, length);
+	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
 	return bytesWritten;
 }

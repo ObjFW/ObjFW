@@ -20,12 +20,12 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFSubarray
-+ (instancetype)arrayWithArray: (OFArray *)array range: (of_range_t)range
++ (instancetype)arrayWithArray: (OFArray *)array range: (OFRange)range
 {
 	return [[[self alloc] initWithArray: array range: range] autorelease];
 }
 
-- (instancetype)initWithArray: (OFArray *)array range: (of_range_t)range
+- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range
 {
 	self = [super init];
 
@@ -61,7 +61,7 @@
 	return [_array objectAtIndex: idx + _range.location];
 }
 
-- (void)getObjects: (id *)buffer inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _range.length)
@@ -77,12 +77,12 @@
 	size_t idx = [_array indexOfObject: object];
 
 	if (idx < _range.location)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	idx -= _range.location;
 
 	if (idx >= _range.length)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	return idx;
 }
@@ -92,17 +92,17 @@
 	size_t idx = [_array indexOfObjectIdenticalTo: object];
 
 	if (idx < _range.location)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	idx -= _range.location;
 
 	if (idx >= _range.length)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	return idx;
 }
 
-- (OFArray *)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _range.length)

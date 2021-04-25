@@ -32,7 +32,7 @@ int _OFXMLElement_Serialization_reference;
 	id object;
 
 	if ((class = objc_getClass([_name cStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII])) == Nil)
+	    OFStringEncodingASCII])) == Nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])
