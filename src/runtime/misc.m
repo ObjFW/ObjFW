@@ -132,7 +132,7 @@ objc_error(const char *title, const char *format, ...)
 	OF_UNREACHABLE
 }
 
-static char *
+char *
 objc_strdup(const char *string)
 {
 	char *copy;
