@@ -35,9 +35,9 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 static const size_t chunkSize = 16;
 
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 struct page {
 	struct page *next, *previous;
 	void *map;

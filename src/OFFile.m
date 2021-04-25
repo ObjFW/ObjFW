@@ -80,7 +80,7 @@
 # define closeHandle(h) close(h)
 #else
 static struct OFFileHandle
-	OFFileHandle previous, next;
+	struct OFFileHandle *previous, *next;
 	BPTR handle;
 	bool append;
 } *firstHandle = NULL;
