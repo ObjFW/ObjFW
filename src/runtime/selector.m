@@ -83,7 +83,7 @@ sel_registerName(const char *name)
 	if ((selector = malloc(sizeof(*selector))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	if ((selector->UID = (uintptr_t)OFStrdup(name)) == 0)
+	if ((selector->UID = (uintptr_t)objc_strdup(name)) == 0)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	selector->typeEncoding = NULL;

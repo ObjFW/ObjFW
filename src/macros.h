@@ -698,20 +698,6 @@ OFBitsetClear(unsigned char *_Nonnull storage, size_t idx)
 	storage[idx / CHAR_BIT] &= ~(1u << (idx % CHAR_BIT));
 }
 
-static OF_INLINE char *_Nullable
-OFStrdup(const char *_Nonnull string)
-{
-	char *copy;
-	size_t length = strlen(string);
-
-	if ((copy = (char *)malloc(length + 1)) == NULL)
-		return NULL;
-
-	memcpy(copy, string, length + 1);
-
-	return copy;
-}
-
 static OF_INLINE void
 OFZeroMemory(void *_Nonnull buffer_, size_t length)
 {

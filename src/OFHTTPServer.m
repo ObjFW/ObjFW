@@ -119,13 +119,9 @@ OF_DIRECT_MEMBERS
 static OF_INLINE OFString *
 normalizedKey(OFString *key)
 {
-	char *cString = OFStrdup(key.UTF8String);
+	char *cString = OFStrDup(key.UTF8String);
 	unsigned char *tmp = (unsigned char *)cString;
 	bool firstLetter = true;
-
-	if (cString == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: strlen(key.UTF8String)];
 
 	while (*tmp != '\0') {
 		if (!OFASCIIIsAlpha(*tmp)) {

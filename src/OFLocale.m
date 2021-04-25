@@ -42,8 +42,7 @@ static void
 parseLocale(char *locale, OFStringEncoding *encoding,
     OFString **language, OFString **territory)
 {
-	if ((locale = OFStrdup(locale)) == NULL)
-		return;
+	locale = OFStrDup(locale);
 
 	@try {
 		OFStringEncoding enc = OFStringEncodingASCII;

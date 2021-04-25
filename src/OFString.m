@@ -338,6 +338,16 @@ OFUTF32StringLength(const OFChar32 *string)
 	return length;
 }
 
+char *
+OFStrDup(const char *string)
+{
+	size_t length = strlen(string);
+	char *copy = (char *)OFAllocMemory(1, length + 1);
+	memcpy(copy, string, length + 1);
+
+	return copy;
+}
+
 #ifdef OF_HAVE_UNICODE_TABLES
 static OFString *
 decomposedString(OFString *self, const char *const *const *table, size_t size)

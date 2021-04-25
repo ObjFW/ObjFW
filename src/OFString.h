@@ -1291,6 +1291,7 @@ extern OFStringEncoding OFStringEncodingParseName(OFString *name);
  */
 extern OFString *_Nullable OFStringEncodingName(OFStringEncoding encoding);
 
+extern char *_Nullable OFStrDup(const char *_Nonnull);
 extern size_t OFUTF8StringEncode(OFUnichar, char *);
 extern ssize_t OFUTF8StringDecode(const char *, size_t, OFUnichar *);
 extern size_t OFUTF16StringLength(const OFChar16 *);

@@ -442,12 +442,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		char *tmp, *tmp2;
 		bool isIPv6Host = false;
 
-		if ((UTF8String2 = OFStrdup(string.UTF8String)) == NULL)
-			@throw [OFOutOfMemoryException
-			     exceptionWithRequestedSize:
-			     string.UTF8StringLength];
-
-		UTF8String = UTF8String2;
+		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
 
 		if ((tmp = strchr(UTF8String, ':')) == NULL)
 			@throw [OFInvalidFormatException exception];
@@ -633,12 +628,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		_URLEncodedUser = [URL->_URLEncodedUser copy];
 		_URLEncodedPassword = [URL->_URLEncodedPassword copy];
 
-		if ((UTF8String2 = OFStrdup(string.UTF8String)) == NULL)
-			@throw [OFOutOfMemoryException
-			     exceptionWithRequestedSize:
-			     string.UTF8StringLength];
-
-		UTF8String = UTF8String2;
+		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';

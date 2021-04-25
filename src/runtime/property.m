@@ -219,18 +219,18 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	switch (*name) {
 	case 'T':
-		ret = OFStrdup(property->getter.typeEncoding);
+		ret = objc_strdup(property->getter.typeEncoding);
 		nullIsError = true;
 		break;
 	case 'G':
 		if (property->attributes & OBJC_PROPERTY_GETTER) {
-			ret = OFStrdup(property->getter.name);
+			ret = objc_strdup(property->getter.name);
 			nullIsError = true;
 		}
 		break;
 	case 'S':
 		if (property->attributes & OBJC_PROPERTY_SETTER) {
-			ret = OFStrdup(property->setter.name);
+			ret = objc_strdup(property->setter.name);
 			nullIsError = true;
 		}
 		break;
