@@ -42,7 +42,7 @@ OF_APPLICATION_DELEGATE(OFHash)
 static void
 help(void)
 {
-	[of_stderr writeLine: OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] [--md5|--ripemd160|--sha1|--sha224|--sha256|"
 	    @"--sha384|--sha512] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
@@ -56,12 +56,12 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	const unsigned char *digest = hash.digest;
 	size_t digestSize = hash.digestSize;
 
-	[of_stdout writeFormat: @"%@ ", algo];
+	[OFStdOut writeFormat: @"%@ ", algo];
 
 	for (size_t i = 0; i < digestSize; i++)
-		[of_stdout writeFormat: @"%02x", digest[i]];
+		[OFStdOut writeFormat: @"%02x", digest[i]];
 
-	[of_stdout writeFormat: @"  %@\n", path];
+	[OFStdOut writeFormat: @"  %@\n", path];
 }
 
 @implementation OFHash
@@ -70,7 +70,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
 	bool calculateSHA256, calculateSHA384, calculateSHA512;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
@@ -82,7 +82,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	};
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: options];
-	of_unichar_t option;
+	OFUnichar option;
 	OFMD5Hash *MD5Hash = nil;
 	OFRIPEMD160Hash *RIPEMD160Hash = nil;
 	OFSHA1Hash *SHA1Hash = nil;
@@ -101,7 +101,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		switch (option) {
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -109,7 +109,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 			else {
 				OFString *optStr = [OFString stringWithFormat:
 				    @"%c", optionsParser.lastOption];
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -168,7 +168,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		OFStream *file;
 
 		if ([path isEqual: @"-"])
-			file = of_stdin;
+			file = OFStdIn;
 		else {
 			@try {
 				file = [OFFile fileWithPath: path mode: @"r"];
@@ -177,7 +177,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
 				    @"Failed to open file %[file]: %[error]",
 				    @"file", e.path,
@@ -208,7 +208,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_read_file",
 				    @"Failed to read %[file]: %[error]",
 				    @"file", path,

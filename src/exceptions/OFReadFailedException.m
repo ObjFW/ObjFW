@@ -23,6 +23,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to read %zu bytes from an object of type %@: %@",
-	    _requestedLength, [_object class], of_strerror(_errNo)];
+	    _requestedLength, [_object class], OFStrError(_errNo)];
 }
 @end

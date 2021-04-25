@@ -332,6 +332,7 @@ extern void objc_global_mutex_free(void);
 # define objc_global_mutex_unlock()
 # define objc_global_mutex_free()
 #endif
+extern char *_Nullable objc_strdup(const char *_Nonnull string);
 
 static inline IMP _Nullable
 objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)

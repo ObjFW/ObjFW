@@ -20,31 +20,32 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-#import "mutex.h"
-#import "once.h"
 
-static of_rmutex_t globalMutex;
+#import "OFOnce.h"
+#import "OFPlainMutex.h"
+
+static OFPlainRecursiveMutex globalMutex;
 
 static void
 init(void)
 {
-	if (of_rmutex_new(&globalMutex) != 0)
+	if (OFPlainRecursiveMutexNew(&globalMutex) != 0)
 		OBJC_ERROR("Failed to create global mutex!");
 }
 
 void
 objc_global_mutex_lock(void)
 {
-	static of_once_t once_control = OF_ONCE_INIT;
-	of_once(&once_control, init);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, init);
 
-	if (of_rmutex_lock(&globalMutex) != 0)
+	if (OFPlainRecursiveMutexLock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to lock global mutex!");
 }
 
 void
 objc_global_mutex_unlock(void)
 {
-	if (of_rmutex_unlock(&globalMutex) != 0)
+	if (OFPlainRecursiveMutexUnlock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to unlock global mutex!");
 }

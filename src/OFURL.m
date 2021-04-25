@@ -21,20 +21,18 @@
 #import "OFURL.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
-
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
 # import "OFFileURLHandler.h"
 #endif
+#import "OFNumber.h"
+#import "OFOnce.h"
+#import "OFString.h"
+#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
-
-#import "once.h"
 
 @interface OFURLAllowedCharacterSetBase: OFCharacterSet
 @end
@@ -60,8 +58,9 @@ static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryKeyValueAllowedCharacterSet = nil;
 
-static of_once_t URLAllowedCharacterSetOnce = OF_ONCE_INIT;
-static of_once_t URLQueryOrFragmentAllowedCharacterSetOnce = OF_ONCE_INIT;
+static OFOnceControl URLAllowedCharacterSetOnce = OFOnceControlInitValue;
+static OFOnceControl URLQueryOrFragmentAllowedCharacterSetOnce =
+    OFOnceControlInitValue;
 
 static void
 initURLAllowedCharacterSet(void)
@@ -101,20 +100,20 @@ OF_DIRECT_MEMBERS
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
-	bool (*_characterIsMember)(id, SEL, of_unichar_t);
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
 }
 
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
 @end
 
 bool
-of_url_is_ipv6_host(OFString *host)
+OFURLIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
 
 	while (*UTF8String != '\0') {
-		if (!of_ascii_isdigit(*UTF8String) && *UTF8String != ':' &&
+		if (!OFASCIIIsDigit(*UTF8String) && *UTF8String != ':' &&
 		    (*UTF8String < 'a' || *UTF8String > 'f') &&
 		    (*UTF8String < 'A' || *UTF8String > 'F'))
 			return false;
@@ -145,14 +144,14 @@ of_url_is_ipv6_host(OFString *host)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 @end
 
 @implementation OFURLAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -179,9 +178,9 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLSchemeAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -196,9 +195,9 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLPathAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -228,9 +227,9 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLQueryOrFragmentAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -261,9 +260,9 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 @implementation OFURLQueryKeyValueAllowedCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -298,7 +297,7 @@ of_url_is_ipv6_host(OFString *host)
 
 	@try {
 		_characterSet = [characterSet retain];
-		_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
@@ -316,7 +315,7 @@ of_url_is_ipv6_host(OFString *host)
 	[super dealloc];
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character != '%' && !_characterIsMember(_characterSet,
 	    @selector(characterIsMember:), character));
@@ -324,14 +323,14 @@ of_url_is_ipv6_host(OFString *host)
 @end
 
 void
-of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
+OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
 	    initWithCharacterSet: characterSet] autorelease];
 
-	if ([string indexOfCharacterFromSet: characterSet] != OF_NOT_FOUND)
+	if ([string indexOfCharacterFromSet: characterSet] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -340,44 +339,44 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 @implementation OFCharacterSet (URLCharacterSets)
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLSchemeAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLSchemeAllowedCharacterSet);
 
 	return URLSchemeAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLHostAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLUserAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPasswordAllowedCharacterSet
 {
-	of_once(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
 
 	return URLAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLPathAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLPathAllowedCharacterSet);
 
 	return URLPathAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLQueryAllowedCharacterSet
 {
-	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
 	    initURLQueryOrFragmentAllowedCharacterSet);
 
 	return URLQueryOrFragmentAllowedCharacterSet;
@@ -385,15 +384,15 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 + (OFCharacterSet *)URLQueryKeyValueAllowedCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
 
 	return URLQueryKeyValueAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet
 {
-	of_once(&URLQueryOrFragmentAllowedCharacterSetOnce,
+	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
 	    initURLQueryOrFragmentAllowedCharacterSet);
 
 	return URLQueryOrFragmentAllowedCharacterSet;
@@ -443,12 +442,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		char *tmp, *tmp2;
 		bool isIPv6Host = false;
 
-		if ((UTF8String2 = of_strdup(string.UTF8String)) == NULL)
-			@throw [OFOutOfMemoryException
-			     exceptionWithRequestedSize:
-			     string.UTF8StringLength];
-
-		UTF8String = UTF8String2;
+		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
 
 		if ((tmp = strchr(UTF8String, ':')) == NULL)
 			@throw [OFInvalidFormatException exception];
@@ -457,13 +451,13 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			@throw [OFInvalidFormatException exception];
 
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
-			*tmp2 = of_ascii_tolower(*tmp2);
+			*tmp2 = OFASCIIToLower(*tmp2);
 
 		_URLEncodedScheme = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: tmp - UTF8String];
 
-		of_url_verify_escaped(_URLEncodedScheme,
+		OFURLVerifyIsEscaped(_URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 		UTF8String = tmp + 3;
@@ -488,14 +482,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedPassword = [[OFString alloc]
 				    initWithUTF8String: tmp3];
 
-				of_url_verify_escaped(_URLEncodedPassword,
+				OFURLVerifyIsEscaped(_URLEncodedPassword,
 				    [OFCharacterSet
 				    URLPasswordAllowedCharacterSet]);
 			} else
 				_URLEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
 
-			of_url_verify_escaped(_URLEncodedUser,
+			OFURLVerifyIsEscaped(_URLEncodedUser,
 			    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 			UTF8String = tmp2;
@@ -504,7 +498,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		if (UTF8String[0] == '[') {
 			tmp2 = UTF8String++;
 
-			while (of_ascii_isdigit(*UTF8String) ||
+			while (OFASCIIIsDigit(*UTF8String) ||
 			    *UTF8String == ':' ||
 			    (*UTF8String >= 'a' && *UTF8String <= 'f') ||
 			    (*UTF8String >= 'A' && *UTF8String <= 'F'))
@@ -525,7 +519,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				tmp2 = ++UTF8String;
 
 				while (*UTF8String != '\0') {
-					if (!of_ascii_isdigit(*UTF8String))
+					if (!OFASCIIIsDigit(*UTF8String))
 						@throw [OFInvalidFormatException
 						    exception];
 
@@ -568,7 +562,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			    initWithUTF8String: UTF8String];
 
 		if (!isIPv6Host)
-			of_url_verify_escaped(_URLEncodedHost,
+			OFURLVerifyIsEscaped(_URLEncodedHost,
 			    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 		if ((UTF8String = tmp) != NULL) {
@@ -578,7 +572,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedFragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				of_url_verify_escaped(_URLEncodedFragment,
+				OFURLVerifyIsEscaped(_URLEncodedFragment,
 				    [OFCharacterSet
 				    URLFragmentAllowedCharacterSet]);
 			}
@@ -589,7 +583,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				_URLEncodedQuery = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				of_url_verify_escaped(_URLEncodedQuery,
+				OFURLVerifyIsEscaped(_URLEncodedQuery,
 				    [OFCharacterSet
 				    URLQueryAllowedCharacterSet]);
 			}
@@ -600,7 +594,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			of_url_verify_escaped(_URLEncodedPath,
+			OFURLVerifyIsEscaped(_URLEncodedPath,
 			    [OFCharacterSet URLPathAllowedCharacterSet]);
 		}
 
@@ -609,7 +603,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		[self release];
 		@throw e;
 	} @finally {
-		free(UTF8String2);
+		OFFreeMemory(UTF8String2);
 	}
 
 	return self;
@@ -634,19 +628,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		_URLEncodedUser = [URL->_URLEncodedUser copy];
 		_URLEncodedPassword = [URL->_URLEncodedPassword copy];
 
-		if ((UTF8String2 = of_strdup(string.UTF8String)) == NULL)
-			@throw [OFOutOfMemoryException
-			     exceptionWithRequestedSize:
-			     string.UTF8StringLength];
-
-		UTF8String = UTF8String2;
+		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
 			_URLEncodedFragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			of_url_verify_escaped(_URLEncodedFragment,
+			OFURLVerifyIsEscaped(_URLEncodedFragment,
 			    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 		}
 
@@ -655,7 +644,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedQuery = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			of_url_verify_escaped(_URLEncodedQuery,
+			OFURLVerifyIsEscaped(_URLEncodedQuery,
 			    [OFCharacterSet URLQueryAllowedCharacterSet]);
 		}
 
@@ -676,11 +665,11 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				    (URL->_URLEncodedPath != nil
 				    ? URL->_URLEncodedPath
 				    : @"/")];
-				of_range_t range = [path
+				OFRange range = [path
 				    rangeOfString: @"/"
-					  options: OF_STRING_SEARCH_BACKWARDS];
+					  options: OFStringSearchBackwards];
 
-				if (range.location == OF_NOT_FOUND)
+				if (range.location == OFNotFound)
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -695,7 +684,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			}
 		}
 
-		of_url_verify_escaped(_URLEncodedPath,
+		OFURLVerifyIsEscaped(_URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);
@@ -703,7 +692,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		[self release];
 		@throw e;
 	} @finally {
-		free(UTF8String2);
+		OFFreeMemory(UTF8String2);
 	}
 
 	return self;
@@ -775,7 +764,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		stringValue = element.stringValue;
@@ -846,20 +835,20 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _URLEncodedScheme.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedHost.hash);
-	OF_HASH_ADD_HASH(hash, _port.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedUser.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedPassword.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedPath.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedQuery.hash);
-	OF_HASH_ADD_HASH(hash, _URLEncodedFragment.hash);
+	OFHashAddHash(&hash, _URLEncodedScheme.hash);
+	OFHashAddHash(&hash, _URLEncodedHost.hash);
+	OFHashAddHash(&hash, _port.hash);
+	OFHashAddHash(&hash, _URLEncodedUser.hash);
+	OFHashAddHash(&hash, _URLEncodedPassword.hash);
+	OFHashAddHash(&hash, _URLEncodedPath.hash);
+	OFHashAddHash(&hash, _URLEncodedQuery.hash);
+	OFHashAddHash(&hash, _URLEncodedFragment.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -879,9 +868,9 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	if ([_URLEncodedHost hasPrefix: @"["] &&
 	    [_URLEncodedHost hasSuffix: @"]"]) {
 		OFString *host = [_URLEncodedHost substringWithRange:
-		    of_range(1, _URLEncodedHost.length - 2)];
+		    OFRangeMake(1, _URLEncodedHost.length - 2)];
 
-		if (!of_url_is_ipv6_host(host))
+		if (!OFURLIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;
@@ -1190,7 +1179,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS
+				      namespace: OFSerializationNS
 				    stringValue: self.string];
 
 	[element retain];

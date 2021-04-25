@@ -25,17 +25,19 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLComment
-+ (instancetype)commentWithString: (OFString *)string
+@synthesize text = _text;
+
++ (instancetype)commentWithText: (OFString *)text
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return [[[self alloc] initWithText: text] autorelease];
 }
 
-- (instancetype)initWithString: (OFString *)string
+- (instancetype)initWithText: (OFString *)text
 {
 	self = [super of_init];
 
 	@try {
-		_comment = [string copy];
+		_text = [text copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -52,10 +54,10 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
-		_comment = [element.stringValue copy];
+		_text = [element.stringValue copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -68,7 +70,7 @@
 
 - (void)dealloc
 {
-	[_comment release];
+	[_text release];
 
 	[super dealloc];
 }
@@ -85,12 +87,12 @@
 
 	comment = object;
 
-	return ([comment->_comment isEqual: _comment]);
+	return ([comment->_text isEqual: _text]);
 }
 
 - (unsigned long)hash
 {
-	return _comment.hash;
+	return _text.hash;
 }
 
 - (OFString *)stringValue
@@ -100,12 +102,12 @@
 
 - (OFString *)XMLString
 {
-	return [OFString stringWithFormat: @"<!--%@-->", _comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _text];
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [OFString stringWithFormat: @"<!--%@-->", _comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _text];
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
@@ -114,32 +116,31 @@
 	OFString *ret;
 
 	if (indentation > 0 && level > 0) {
-		char *whitespaces = of_alloc((level * indentation) + 1, 1);
+		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 
 		@try {
 			ret = [OFString stringWithFormat: @"%s<!--%@-->",
-							  whitespaces,
-							  _comment];
+							  whitespaces, _text];
 		} @finally {
-			free(whitespaces);
+			OFFreeMemory(whitespaces);
 		}
 	} else
-		ret = [OFString stringWithFormat: @"<!--%@-->", _comment];
+		ret = [OFString stringWithFormat: @"<!--%@-->", _text];
 
 	return ret;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<!--%@-->", _comment];
+	return [OFString stringWithFormat: @"<!--%@-->", _text];
 }
 
 - (OFXMLElement *)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: self.className
-				   namespace: OF_SERIALIZATION_NS
-				 stringValue: _comment];
+				   namespace: OFSerializationNS
+				 stringValue: _text];
 }
 @end

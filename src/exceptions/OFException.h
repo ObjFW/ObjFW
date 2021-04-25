@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFString;
 
-#define OF_BACKTRACE_SIZE 16
+#define OFBacktraceSize 16
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # ifndef EADDRINUSE
@@ -145,7 +145,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFException: OFObject
 {
-	void *_backtrace[OF_BACKTRACE_SIZE];
+	void *_backtrace[OFBacktraceSize];
 }
 
 /**
@@ -174,9 +174,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *of_strerror(int errNo);
+extern OFString *OFStrError(int errNo);
 #ifdef OF_WINDOWS
-extern OFString *of_windows_status_to_string(LSTATUS status);
+extern OFString *OFWindowsStatusToString(LSTATUS status);
 #endif
 #ifdef __cplusplus
 }

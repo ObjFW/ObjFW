@@ -67,6 +67,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to delete value named %@: %@",
-	    _valueName, of_windows_status_to_string(_status)];
+	    _valueName, OFWindowsStatusToString(_status)];
 }
 @end

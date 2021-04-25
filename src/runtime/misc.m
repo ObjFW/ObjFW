@@ -131,3 +131,17 @@ objc_error(const char *title, const char *format, ...)
 
 	OF_UNREACHABLE
 }
+
+static char *
+objc_strdup(const char *string)
+{
+	char *copy;
+	size_t length = strlen(string);
+
+	if ((copy = (char *)malloc(length + 1)) == NULL)
+		return NULL;
+
+	memcpy(copy, string, length + 1);
+
+	return copy;
+}

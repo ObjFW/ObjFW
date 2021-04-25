@@ -317,7 +317,7 @@ other place, you are most likely using a mirror.
   the entry point to your own code. For example, you could add the following
   line there to create a "Hello World":
 
-    [of_stdout writeLine: @"Hello World!"];
+    [OFStdOut writeLine: @"Hello World!"];
 
   You can compile your new app using `objfw-compile`:
 

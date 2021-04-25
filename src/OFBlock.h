@@ -15,8 +15,6 @@
 
 #import "OFObject.h"
 
-#import "block.h"
-
 OF_ASSUME_NONNULL_BEGIN
 
 /**
@@ -40,5 +38,37 @@ OF_SUBCLASSING_RESTRICTED
 OF_SUBCLASSING_RESTRICTED
 @interface OFMallocBlock: OFBlock
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void *_Block_copy(const void *);
+extern void _Block_release(const void *);
+
+# if defined(OF_WINDOWS) && \
+    (defined(OF_NO_SHARED) || defined(OF_COMPILING_OBJFW))
+/*
+ * Clang has implicit declarations for these, but they are dllimport. When
+ * compiling ObjFW itself or using it as a static library, these need to be
+ * dllexport. Interestingly, this still works when using it as a shared library.
+ */
+extern __declspec(dllexport) struct objc_class _NSConcreteStackBlock;
+extern __declspec(dllexport) struct objc_class _NSConcreteGlobalBlock;
+extern __declspec(dllexport) void _Block_object_assign(void *, const void *,
+    const int);
+extern __declspec(dllexport) void _Block_object_dispose(const void *,
+    const int);
+# endif
+#ifdef __cplusplus
+}
+#endif
+
+#ifndef Block_copy
+# define Block_copy(...) \
+    ((__typeof__(__VA_ARGS__))_Block_copy((const void *)(__VA_ARGS__)))
+#endif
+#ifndef Block_release
+# define Block_release(...) _Block_release((const void *)(__VA_ARGS__))
+#endif
 
 OF_ASSUME_NONNULL_END

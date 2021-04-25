@@ -108,11 +108,11 @@
 		return [OFString stringWithFormat:
 		    @"Binding to port %" @PRIu16 @" on host %@ failed in "
 		    @"socket of type %@: %@",
-		    _port, _host, [_socket class], of_strerror(_errNo)];
+		    _port, _host, [_socket class], OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:
 		    @"Binding to port %" @PRIx16 @" for packet type %" @PRIx8
 		    @" failed in socket of type %@: %@",
-		    _port, _packetType, [_socket class], of_strerror(_errNo)];
+		    _port, _packetType, [_socket class], OFStrError(_errNo)];
 }
 @end

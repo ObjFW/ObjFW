@@ -28,7 +28,7 @@
 #import "OFUnsupportedVersionException.h"
 
 OFString *
-of_http_status_code_to_string(short code)
+OFHTTPStatusCodeString(short code)
 {
 	switch (code) {
 	case 100:
@@ -116,60 +116,60 @@ of_http_status_code_to_string(short code)
 	}
 }
 
-static of_string_encoding_t
+static OFStringEncoding
 encodingForContentType(OFString *contentType)
 {
 	const char *UTF8String = contentType.UTF8String;
 	size_t last, length = contentType.UTF8StringLength;
 	enum {
-		STATE_TYPE,
-		STATE_BEFORE_PARAM_NAME,
-		STATE_PARAM_NAME,
-		STATE_PARAM_VALUE_OR_QUOTE,
-		STATE_PARAM_VALUE,
-		STATE_PARAM_QUOTED_VALUE,
-		STATE_AFTER_PARAM_VALUE
-	} state = STATE_TYPE;
+		stateType,
+		stateBeforeParamName,
+		stateParamName,
+		stateParamValueOrQuote,
+		stateParamValue,
+		stateParamQuotedValue,
+		stateAfterParamValue
+	} state = stateType;
 	OFString *name = nil, *value = nil, *charset = nil;
-	of_string_encoding_t ret;
+	OFStringEncoding ret;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
-		case STATE_TYPE:
+		case stateType:
 			if (UTF8String[i] == ';') {
-				state = STATE_BEFORE_PARAM_NAME;
+				state = stateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case STATE_BEFORE_PARAM_NAME:
+		case stateBeforeParamName:
 			if (UTF8String[i] == ' ')
 				last = i + 1;
 			else {
-				state = STATE_PARAM_NAME;
+				state = stateParamName;
 				i--;
 			}
 			break;
-		case STATE_PARAM_NAME:
+		case stateParamName:
 			if (UTF8String[i] == '=') {
 				name = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				state = STATE_PARAM_VALUE_OR_QUOTE;
+				state = stateParamValueOrQuote;
 				last = i + 1;
 			}
 			break;
-		case STATE_PARAM_VALUE_OR_QUOTE:
+		case stateParamValueOrQuote:
 			if (UTF8String[i] == '"') {
-				state = STATE_PARAM_QUOTED_VALUE;
+				state = stateParamQuotedValue;
 				last = i + 1;
 			} else {
-				state = STATE_PARAM_VALUE;
+				state = stateParamValue;
 				i--;
 			}
 			break;
-		case STATE_PARAM_VALUE:
+		case stateParamValue:
 			if (UTF8String[i] == ';') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -180,11 +180,11 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = STATE_BEFORE_PARAM_NAME;
+				state = stateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case STATE_PARAM_QUOTED_VALUE:
+		case stateParamQuotedValue:
 			if (UTF8String[i] == '"') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -193,19 +193,19 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = STATE_AFTER_PARAM_VALUE;
+				state = stateAfterParamValue;
 			}
 			break;
-		case STATE_AFTER_PARAM_VALUE:
+		case stateAfterParamValue:
 			if (UTF8String[i] == ';') {
-				state = STATE_BEFORE_PARAM_NAME;
+				state = stateBeforeParamName;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ')
-				return OF_STRING_ENCODING_AUTODETECT;
+				return OFStringEncodingAutodetect;
 			break;
 		}
 	}
-	if (state == STATE_PARAM_VALUE) {
+	if (state == stateParamValue) {
 		value = [OFString stringWithUTF8String: UTF8String + last
 						length: length - last];
 		value = value.stringByDeletingTrailingWhitespaces;
@@ -215,9 +215,9 @@ encodingForContentType(OFString *contentType)
 	}
 
 	@try {
-		ret = of_string_parse_encoding(charset);
+		ret = OFStringEncodingParseName(charset);
 	} @catch (OFInvalidArgumentException *e) {
-		ret = OF_STRING_ENCODING_AUTODETECT;
+		ret = OFStringEncodingAutodetect;
 	}
 
 	return ret;
@@ -249,7 +249,7 @@ encodingForContentType(OFString *contentType)
 	[super dealloc];
 }
 
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
+- (void)setProtocolVersion: (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
@@ -260,7 +260,7 @@ encodingForContentType(OFString *contentType)
 	_protocolVersion = protocolVersion;
 }
 
-- (of_http_request_protocol_version_t)protocolVersion
+- (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	return _protocolVersion;
 }
@@ -270,7 +270,7 @@ encodingForContentType(OFString *contentType)
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
 	unsigned long long major, minor;
-	of_http_request_protocol_version_t protocolVersion;
+	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
@@ -298,21 +298,21 @@ encodingForContentType(OFString *contentType)
 
 - (OFString *)string
 {
-	return [self stringWithEncoding: OF_STRING_ENCODING_AUTODETECT];
+	return [self stringWithEncoding: OFStringEncodingAutodetect];
 }
 
-- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)stringWithEncoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *contentType, *contentLengthString, *ret;
 	OFData *data;
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
+	if (encoding == OFStringEncodingAutodetect &&
 	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil)
 		encoding = encodingForContentType(contentType);
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT)
-		encoding = OF_STRING_ENCODING_UTF_8;
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
 
 	data = [self readDataUntilEndOfStream];
 

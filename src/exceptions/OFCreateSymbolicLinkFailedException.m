@@ -71,6 +71,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to create symbolic link %@ with target %@: %@",
-	    _URL, _target, of_strerror(_errNo)];
+	    _URL, _target, OFStrError(_errNo)];
 }
 @end

@@ -31,7 +31,7 @@ OF_DIRECT_MEMBERS
 	SEL _selector;
 	id _object;
 #ifdef OF_HAVE_BLOCKS
-	of_thread_pool_block_t _block;
+	OFThreadPoolBlock _block;
 #endif
 }
 
@@ -39,7 +39,7 @@ OF_DIRECT_MEMBERS
 		      selector: (SEL)selector
 			object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithBlock: (of_thread_pool_block_t)block;
+- (instancetype)initWithBlock: (OFThreadPoolBlock)block;
 #endif
 - (void)perform;
 @end
@@ -64,7 +64,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithBlock: (of_thread_pool_block_t)block
+- (instancetype)initWithBlock: (OFThreadPoolBlock)block
 {
 	self = [super init];
 
@@ -162,16 +162,16 @@ OF_DIRECT_MEMBERS
 
 		[_queueCondition lock];
 		@try {
-			of_list_object_t *listObject;
+			OFListItem listItem;
 
 			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 
-			listObject = _queue.firstListObject;
+			listItem = _queue.firstListItem;
 
-			while (listObject == NULL) {
+			while (listItem == NULL) {
 				[_queueCondition wait];
 
 				if (_terminate) {
@@ -179,11 +179,11 @@ OF_DIRECT_MEMBERS
 					return nil;
 				}
 
-				listObject = _queue.firstListObject;
+				listItem = _queue.firstListItem;
 			}
 
-			job = [[listObject->object retain] autorelease];
-			[_queue removeListObject: listObject];
+			job = [[OFListItemObject(listItem) retain] autorelease];
+			[_queue removeListItem: listItem];
 		} @finally {
 			[_queueCondition unlock];
 		}
@@ -342,7 +342,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)dispatchWithBlock: (of_thread_pool_block_t)block
+- (void)dispatchWithBlock: (OFThreadPoolBlock)block
 {
 	OFThreadPoolJob *job = [[OFThreadPoolJob alloc] initWithBlock: block];
 	@try {

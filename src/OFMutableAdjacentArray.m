@@ -223,7 +223,7 @@
 	[_array removeAllItems];
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -233,7 +233,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = of_alloc(range.length, sizeof(*copy));
+	copy = OFAllocMemory(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
@@ -243,7 +243,7 @@
 		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
-		free(copy);
+		OFFreeMemory(copy);
 	}
 }
 
@@ -293,7 +293,7 @@
 	}
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count_
 {
@@ -330,7 +330,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -346,7 +346,7 @@
 	}
 }
 
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;
