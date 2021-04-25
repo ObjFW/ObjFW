@@ -107,9 +107,9 @@
 	if (_mode != nil)
 		return [OFString stringWithFormat:
 		    @"Failed to open item %@ with mode %@: %@",
-		    item, _mode, of_strerror(_errNo)];
+		    item, _mode, OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@: %@", item, of_strerror(_errNo)];
+		    @"Failed to open item %@: %@", item, OFStrError(_errNo)];
 }
 @end

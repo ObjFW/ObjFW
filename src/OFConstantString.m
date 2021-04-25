@@ -64,7 +64,7 @@ struct {
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (void)release
@@ -106,22 +106,22 @@ struct {
 - (void)finishInitialization
 {
 	@synchronized (self) {
-		struct of_string_utf8_ivars *ivars;
+		struct OFUTF8StringIvars *ivars;
 
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
 
-		ivars = of_alloc_zeroed(1, sizeof(*ivars));
+		ivars = OFAllocZeroedMemory(1, sizeof(*ivars));
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 
-		switch (of_string_utf8_check(ivars->cString,
-		    ivars->cStringLength, &ivars->length)) {
+		switch (OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
+		    &ivars->length)) {
 		case 1:
 			ivars->isUTF8 = true;
 			break;
 		case -1:
-			free(ivars);
+			OFFreeMemory(ivars);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -147,7 +147,7 @@ struct {
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (void)release
@@ -179,7 +179,7 @@ struct {
 }
 
 /* From protocol OFComparing,  but overridden in OFString */
-- (of_comparison_result_t)compare: (OFString *)string
+- (OFComparisonResult)compare: (OFString *)string
 {
 	[self finishInitialization];
 	return [self compare: string];
@@ -213,7 +213,7 @@ struct {
 
 - (size_t)getCString: (char *)cString_
 	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding
+	    encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self getCString: cString_
@@ -221,7 +221,7 @@ struct {
 		       encoding: encoding];
 }
 
-- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self cStringWithEncoding: encoding];
@@ -239,45 +239,46 @@ struct {
 	return self.UTF8StringLength;
 }
 
-- (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding
+- (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self cStringLengthWithEncoding: encoding];
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)string
+- (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
 	[self finishInitialization];
 	return [self caseInsensitiveCompare: string];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
 	[self finishInitialization];
 	return [self characterAtIndex: idx];
 }
 
-- (void)getCharacters: (of_unichar_t *)buffer inRange: (of_range_t)range
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range
 {
 	[self finishInitialization];
 	[self getCharacters: buffer inRange: range];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
+- (OFRange)rangeOfString: (OFString *)string
 {
 	[self finishInitialization];
 	return [self rangeOfString: string];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string options: (int)options
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
 	return [self rangeOfString: string options: options];
 }
 
-- (of_range_t)rangeOfString: (OFString *)string
-		    options: (int)options
-		      range: (of_range_t)range
+- (OFRange)rangeOfString: (OFString *)string
+		 options: (OFStringSearchOptions)options
+		   range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self rangeOfString: string options: options range: range];
@@ -290,15 +291,15 @@ struct {
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
+			  options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
 	return [self indexOfCharacterFromSet: characterSet options: options];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (int)options
-			    range: (of_range_t)range
+			  options: (OFStringSearchOptions)options
+			    range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self indexOfCharacterFromSet: characterSet
@@ -324,7 +325,7 @@ struct {
 	return [self substringToIndex: idx];
 }
 
-- (OFString *)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (OFRange)range
 {
 	[self finishInitialization];
 	return [self substringWithRange: range];
@@ -366,7 +367,7 @@ struct {
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 					   options: (int)options
-					     range: (of_range_t)range
+					     range: (OFRange)range
 {
 	[self finishInitialization];
 	return [self stringByReplacingOccurrencesOfString: string
@@ -430,7 +431,7 @@ struct {
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	[self finishInitialization];
 	return [self componentsSeparatedByString: delimiter options: options];
@@ -445,7 +446,7 @@ struct {
 
 - (OFArray *)
     componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
-				 options: (int)options
+				 options: (OFStringSeparationOptions)options
 {
 	[self finishInitialization];
 	return [self componentsSeparatedByCharactersInSet: characterSet
@@ -506,19 +507,19 @@ struct {
 	return self.doubleValue;
 }
 
-- (const of_unichar_t *)characters
+- (const OFUnichar *)characters
 {
 	[self finishInitialization];
 	return self.characters;
 }
 
-- (const of_char16_t *)UTF16String
+- (const OFChar16 *)UTF16String
 {
 	[self finishInitialization];
 	return self.UTF16String;
 }
 
-- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	[self finishInitialization];
 	return [self UTF16StringWithByteOrder: byteOrder];
@@ -530,19 +531,19 @@ struct {
 	return self.UTF16StringLength;
 }
 
-- (const of_char32_t *)UTF32String
+- (const OFChar32 *)UTF32String
 {
 	[self finishInitialization];
 	return self.UTF32String;
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	[self finishInitialization];
 	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
-- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	return [self dataWithEncoding: encoding];
@@ -577,7 +578,7 @@ struct {
 	[self writeToFile: path];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	[self writeToFile: path encoding: encoding];
@@ -590,14 +591,14 @@ struct {
 	[self writeToURL: URL];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (of_string_encoding_t)encoding
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
 	[self writeToURL: URL encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block
+- (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block
 {
 	[self finishInitialization];
 	[self enumerateLinesUsingBlock: block];

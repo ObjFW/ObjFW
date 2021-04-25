@@ -58,11 +58,11 @@
 		OFXMLAttribute *targetAttr;
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		targetAttr = [element attributeForName: @"target"
-					     namespace: OF_SERIALIZATION_NS];
+					     namespace: OFSerializationNS];
 		if (targetAttr.stringValue.length == 0)
 			@throw [OFInvalidArgumentException exception];
 
@@ -112,10 +112,10 @@
 {
 	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _target.hash);
-	OF_HASH_ADD_HASH(hash, _data.hash);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _target.hash);
+	OFHashAddHash(&hash, _data.hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -144,7 +144,7 @@
 {
 	if (indentation > 0 && level > 0) {
 		OFString *ret;
-		char *whitespaces = of_alloc((level * indentation) + 1, 1);
+		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 
@@ -157,7 +157,7 @@
 				ret = [OFString stringWithFormat:
 				    @"%s<?%@?>", whitespaces, _target];
 		} @finally {
-			free(whitespaces);
+			OFFreeMemory(whitespaces);
 		}
 
 		return ret;
@@ -173,7 +173,7 @@
 - (OFXMLElement *)XMLElementBySerializing
 {
 	OFXMLElement *ret = [OFXMLElement elementWithName: self.className
-						namespace: OF_SERIALIZATION_NS
+						namespace: OFSerializationNS
 					      stringValue: _data];
 	void *pool = objc_autoreleasePoolPush();
 

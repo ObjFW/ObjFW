@@ -15,13 +15,13 @@
 
 #import "OFValue.h"
 #import "OFBytesValue.h"
-#import "OFDimensionValue.h"
 #import "OFMethodSignature.h"
 #import "OFNonretainedObjectValue.h"
 #import "OFPointValue.h"
 #import "OFPointerValue.h"
 #import "OFRangeValue.h"
-#import "OFRectangleValue.h"
+#import "OFRectValue.h"
+#import "OFSizeValue.h"
 #import "OFString.h"
 
 #import "OFOutOfMemoryException.h"
@@ -53,26 +53,24 @@
 	    initWithNonretainedObject: object] autorelease];
 }
 
-+ (instancetype)valueWithRange: (of_range_t)range
++ (instancetype)valueWithRange: (OFRange)range
 {
 	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
 }
 
-+ (instancetype)valueWithPoint: (of_point_t)point
++ (instancetype)valueWithPoint: (OFPoint)point
 {
 	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
 }
 
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension
++ (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[OFDimensionValue alloc]
-	    initWithDimension: dimension] autorelease];
+	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
 }
 
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
++ (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[OFRectangleValue alloc]
-	    initWithRectangle: rectangle] autorelease];
+	return [[[OFRectValue alloc] initWithRect: rect] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
@@ -99,13 +97,13 @@
 	if (strcmp([object objCType], objCType) != 0)
 		return false;
 
-	size = of_sizeof_type_encoding(objCType);
+	size = OFSizeOfTypeEncoding(objCType);
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
-		otherValue = of_alloc(1, size);
+		otherValue = OFAllocMemory(1, size);
 	} @catch (id e) {
-		free(value);
+		OFFreeMemory(value);
 		@throw e;
 	}
 
@@ -114,8 +112,8 @@
 		[object getValue: otherValue size: size];
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		free(value);
-		free(otherValue);
+		OFFreeMemory(value);
+		OFFreeMemory(otherValue);
 	}
 
 	return ret;
@@ -123,22 +121,22 @@
 
 - (unsigned long)hash
 {
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
-	uint32_t hash;
+	unsigned long hash;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
 
-		OF_HASH_INIT(hash);
+		OFHashInit(&hash);
 
 		for (size_t i = 0; i < size; i++)
-			OF_HASH_ADD(hash, value[i]);
+			OFHashAdd(&hash, value[i]);
 
-		OF_HASH_FINALIZE(hash);
+		OFHashFinalize(&hash);
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	return hash;
@@ -173,30 +171,30 @@
 	return ret;
 }
 
-- (of_range_t)rangeValue
+- (OFRange)rangeValue
 {
-	of_range_t ret;
+	OFRange ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_point_t)pointValue
+- (OFPoint)pointValue
 {
-	of_point_t ret;
+	OFPoint ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_dimension_t)dimensionValue
+- (OFSize)sizeValue
 {
-	of_dimension_t ret;
+	OFSize ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_rectangle_t)rectangleValue
+- (OFRect)rectValue
 {
-	of_rectangle_t ret;
+	OFRect ret;
 	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
@@ -205,10 +203,10 @@
 {
 	OFMutableString *ret =
 	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
 
@@ -219,7 +217,7 @@
 			[ret appendFormat: @"%02x", value[i]];
 		}
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	[ret appendString: @">"];

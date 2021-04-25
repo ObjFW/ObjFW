@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block for a job which should be executed in a thread pool.
  */
-typedef void (^of_thread_pool_block_t)(void);
+typedef void (^OFThreadPoolBlock)(void);
 #endif
 
 @class OFCondition;
@@ -104,7 +104,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param block The block to execute
  */
-- (void)dispatchWithBlock: (of_thread_pool_block_t)block;
+- (void)dispatchWithBlock: (OFThreadPoolBlock)block;
 #endif
 
 /**

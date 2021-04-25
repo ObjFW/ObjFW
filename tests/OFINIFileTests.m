@@ -52,7 +52,7 @@ static OFString *module = @"OFINIFile";
 
 	TEST(@"+[fileWithPath:encoding:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"
-				   encoding: OF_STRING_ENCODING_CODEPAGE_437]))
+				   encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
 	foobar = [file categoryForName: @"foobar"];
@@ -121,10 +121,10 @@ static OFString *module = @"OFINIFile";
 # endif
 	TEST(@"-[writeToFile:encoding:]",
 	    R([file writeToFile: writePath
-		       encoding: OF_STRING_ENCODING_CODEPAGE_437]) &&
+		       encoding: OFStringEncodingCodepage437]) &&
 	    [[OFString
 		stringWithContentsOfFile: writePath
-				encoding: OF_STRING_ENCODING_CODEPAGE_437]
+				encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
 	[[OFFileManager defaultManager] removeItemAtPath: writePath];
 #else

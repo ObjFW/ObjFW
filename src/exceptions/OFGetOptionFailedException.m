@@ -57,6 +57,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Getting an option in an object of type %@ failed: %@",
-	    [_object class], of_strerror(_errNo)];
+	    [_object class], OFStrError(_errNo)];
 }
 @end

@@ -71,6 +71,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"Failed to copy item %@ to %@: %@",
-	    _sourceURL, _destinationURL, of_strerror(_errNo)];
+	    _sourceURL, _destinationURL, OFStrError(_errNo)];
 }
 @end

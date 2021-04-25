@@ -48,7 +48,7 @@
 
 			typeEncoding = [_methodSignature
 			    argumentTypeAtIndex: i];
-			typeSize = of_sizeof_type_encoding(typeEncoding);
+			typeSize = OFSizeOfTypeEncoding(typeEncoding);
 
 			data = [OFMutableData dataWithItemSize: typeSize
 						      capacity: 1];
@@ -57,7 +57,7 @@
 		}
 
 		typeEncoding = _methodSignature.methodReturnType;
-		typeSize = of_sizeof_type_encoding(typeEncoding);
+		typeSize = OFSizeOfTypeEncoding(typeEncoding);
 
 		if (typeSize > 0) {
 			_returnValue = [[OFMutableData alloc]

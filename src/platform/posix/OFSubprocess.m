@@ -207,12 +207,12 @@ extern char **environ;
 
 			close(_readPipe[1]);
 			close(_writePipe[0]);
-			free(argv);
+			OFFreeMemory(argv);
 
 			for (iter = env; *iter != NULL; iter++)
-				free(*iter);
+				OFFreeMemory(*iter);
 
-			free(env);
+			OFFreeMemory(env);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -238,9 +238,9 @@ extern char **environ;
 {
 	OFString *const *objects = arguments.objects;
 	size_t i, count = arguments.count;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
-	*argv = of_alloc(count + 2, sizeof(char *));
+	*argv = OFAllocMemory(count + 2, sizeof(char *));
 
 	encoding = [OFLocale encoding];
 
@@ -257,7 +257,7 @@ extern char **environ;
 {
 	char **envp;
 	size_t count;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	if (environment == nil)
 		return NULL;
@@ -265,7 +265,7 @@ extern char **environ;
 	encoding = [OFLocale encoding];
 
 	count = environment.count;
-	envp = of_alloc_zeroed(count + 1, sizeof(char *));
+	envp = OFAllocZeroedMemory(count + 1, sizeof(char *));
 
 	@try {
 		OFEnumerator *keyEnumerator = [environment keyEnumerator];
@@ -283,7 +283,7 @@ extern char **environ;
 			objectLen = [object
 			    cStringLengthWithEncoding: encoding];
 
-			envp[i] = of_alloc(keyLen + objectLen + 2, 1);
+			envp[i] = OFAllocMemory(keyLen + objectLen + 2, 1);
 
 			memcpy(envp[i],
 			    [key cStringWithEncoding: encoding], keyLen);
@@ -294,9 +294,9 @@ extern char **environ;
 		}
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
-			free(envp[i]);
+			OFFreeMemory(envp[i]);
 
-		free(envp);
+		OFFreeMemory(envp);
 
 		@throw e;
 	}

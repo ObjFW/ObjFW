@@ -17,11 +17,11 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -102,11 +102,11 @@ of_forward:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	of_method_not_found@PLT
-.type of_forward, %function
-.size of_forward, .-of_forward
+	jmp	OFMethodNotFound@PLT
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -189,9 +189,9 @@ of_forward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	of_method_not_found_stret@PLT
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+	jmp	OFMethodNotFound_stret@PLT
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	leaq	module(%rip), %rdi

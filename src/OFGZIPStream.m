@@ -16,10 +16,9 @@
 #include "config.h"
 
 #import "OFGZIPStream.h"
-#import "OFInflateStream.h"
+#import "OFCRC32.h"
 #import "OFDate.h"
-
-#import "crc32.h"
+#import "OFInflateStream.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidFormatException.h"
@@ -52,8 +51,7 @@
 					   object: nil];
 
 		_stream = [stream retain];
-		_operatingSystemMadeOn =
-		    OF_GZIP_STREAM_OPERATING_SYSTEM_UNKNOWN;
+		_operatingSystemMadeOn = OFGZIPStreamOperatingSystemUnknown;
 		_CRC32 = ~0;
 	} @catch (id e) {
 		[self release];
@@ -84,35 +82,35 @@
 		uint32_t CRC32, uncompressedSize;
 
 		if (_stream.atEndOfStream) {
-			if (_state != OF_GZIP_STREAM_ID1)
+			if (_state != OFGZIPStreamStateID1)
 				@throw [OFTruncatedDataException exception];
 
 			return 0;
 		}
 
 		switch (_state) {
-		case OF_GZIP_STREAM_ID1:
-		case OF_GZIP_STREAM_ID2:
-		case OF_GZIP_STREAM_COMPRESSION_METHOD:
+		case OFGZIPStreamStateID1:
+		case OFGZIPStreamStateID2:
+		case OFGZIPStreamStateCompressionMethod:
 			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
-			if ((_state == OF_GZIP_STREAM_ID1 && byte != 0x1F) ||
-			    (_state == OF_GZIP_STREAM_ID2 && byte != 0x8B) ||
-			    (_state == OF_GZIP_STREAM_COMPRESSION_METHOD &&
+			if ((_state == OFGZIPStreamStateID1 && byte != 0x1F) ||
+			    (_state == OFGZIPStreamStateID2 && byte != 0x8B) ||
+			    (_state == OFGZIPStreamStateCompressionMethod &&
 			    byte != 8))
 				@throw [OFInvalidFormatException exception];
 
 			_state++;
 			break;
-		case OF_GZIP_STREAM_FLAGS:
+		case OFGZIPStreamStateFlags:
 			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_flags = byte;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_MODIFICATION_TIME:
+		case OFGZIPStreamStateModificationDate:
 			_bytesRead += [_stream
 			    readIntoBuffer: _buffer + _bytesRead
 				    length: 4 - _bytesRead];
@@ -131,22 +129,22 @@
 			_bytesRead = 0;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_EXTRA_FLAGS:
+		case OFGZIPStreamStateExtraFlags:
 			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_extraFlags = byte;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_OPERATING_SYSTEM:
+		case OFGZIPStreamStateOperatingSystem:
 			if ([_stream readIntoBuffer: &byte length: 1] < 1)
 				return 0;
 
 			_operatingSystemMadeOn = byte;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_EXTRA_LENGTH:
-			if (!(_flags & OF_GZIP_STREAM_FLAG_EXTRA)) {
+		case OFGZIPStreamStateExtraLength:
+			if (!(_flags & OFGZIPStreamFlagExtra)) {
 				_state += 2;
 				break;
 			}
@@ -162,7 +160,7 @@
 			_bytesRead = 0;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_EXTRA:
+		case OFGZIPStreamStateExtra:
 			{
 				char tmp[512];
 				size_t toRead = _extraLength - _bytesRead;
@@ -180,8 +178,8 @@
 			_bytesRead = 0;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_NAME:
-			if (!(_flags & OF_GZIP_STREAM_FLAG_NAME)) {
+		case OFGZIPStreamStateName:
+			if (!(_flags & OFGZIPStreamFlagName)) {
 				_state++;
 				break;
 			}
@@ -194,8 +192,8 @@
 
 			_state++;
 			break;
-		case OF_GZIP_STREAM_COMMENT:
-			if (!(_flags & OF_GZIP_STREAM_FLAG_COMMENT)) {
+		case OFGZIPStreamStateComment:
+			if (!(_flags & OFGZIPStreamFlagComment)) {
 				_state++;
 				break;
 			}
@@ -208,8 +206,8 @@
 
 			_state++;
 			break;
-		case OF_GZIP_STREAM_HEADER_CRC16:
-			if (!(_flags & OF_GZIP_STREAM_FLAG_HEADER_CRC16)) {
+		case OFGZIPStreamStateHeaderCRC16:
+			if (!(_flags & OFGZIPStreamFlagHeaderCRC16)) {
 				_state++;
 				break;
 			}
@@ -230,7 +228,7 @@
 			_bytesRead = 0;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_DATA:
+		case OFGZIPStreamStateData:
 			if (_inflateStream == nil)
 				_inflateStream = [[OFInflateStream alloc]
 				    initWithStream: _stream];
@@ -240,7 +238,7 @@
 				    readIntoBuffer: buffer
 					    length: length];
 
-				_CRC32 = of_crc32(_CRC32, buffer, bytesRead);
+				_CRC32 = OFCRC32(_CRC32, buffer, bytesRead);
 				_uncompressedSize += bytesRead;
 
 				return bytesRead;
@@ -251,7 +249,7 @@
 
 			_state++;
 			break;
-		case OF_GZIP_STREAM_CRC32:
+		case OFGZIPStreamStateCRC32:
 			_bytesRead += [_stream readIntoBuffer: _buffer
 						       length: 4 - _bytesRead];
 
@@ -275,7 +273,7 @@
 			_CRC32 = ~0;
 			_state++;
 			break;
-		case OF_GZIP_STREAM_UNCOMPRESSED_SIZE:
+		case OFGZIPStreamStateUncompressedSize:
 			_bytesRead += [_stream readIntoBuffer: _buffer
 						       length: 4 - _bytesRead];
 
@@ -294,7 +292,7 @@
 
 			_bytesRead = 0;
 			_uncompressedSize = 0;
-			_state = OF_GZIP_STREAM_ID1;
+			_state = OFGZIPStreamStateID1;
 			break;
 		}
 	}
@@ -310,7 +308,7 @@
 
 - (bool)hasDataInReadBuffer
 {
-	if (_state == OF_GZIP_STREAM_DATA)
+	if (_state == OFGZIPStreamStateData)
 		return (super.hasDataInReadBuffer ||
 		    _inflateStream.hasDataInReadBuffer);
 

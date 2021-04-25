@@ -54,7 +54,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_text = [element.stringValue copy];
@@ -116,7 +116,7 @@
 	OFString *ret;
 
 	if (indentation > 0 && level > 0) {
-		char *whitespaces = of_alloc((level * indentation) + 1, 1);
+		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
 		memset(whitespaces, ' ', level * indentation);
 		whitespaces[level * indentation] = 0;
 
@@ -124,7 +124,7 @@
 			ret = [OFString stringWithFormat: @"%s<!--%@-->",
 							  whitespaces, _text];
 		} @finally {
-			free(whitespaces);
+			OFFreeMemory(whitespaces);
 		}
 	} else
 		ret = [OFString stringWithFormat: @"<!--%@-->", _text];
@@ -140,7 +140,7 @@
 - (OFXMLElement *)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: self.className
-				   namespace: OF_SERIALIZATION_NS
+				   namespace: OFSerializationNS
 				 stringValue: _text];
 }
 @end

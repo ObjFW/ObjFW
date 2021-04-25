@@ -20,8 +20,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFMutableUTF8String: OFMutableString
 {
-	struct of_string_utf8_ivars *restrict _s;
-	struct of_string_utf8_ivars _storage;
+	struct OFUTF8StringIvars *restrict _s;
+	struct OFUTF8StringIvars _storage;
 }
 @end
 

@@ -37,7 +37,7 @@
 {
 	self = [super init];
 
-	if (of_mutex_new(&_mutex) != 0) {
+	if (OFPlainMutexNew(&_mutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -51,10 +51,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		int error = of_mutex_free(&_mutex);
+		int error = OFPlainMutexFree(&_mutex);
 
 		if (error != 0) {
-			OF_ENSURE(error == EBUSY);
+			OFEnsure(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,7 +67,7 @@
 
 - (void)lock
 {
-	int error = of_mutex_lock(&_mutex);
+	int error = OFPlainMutexLock(&_mutex);
 
 	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
@@ -76,7 +76,7 @@
 
 - (bool)tryLock
 {
-	int error = of_mutex_trylock(&_mutex);
+	int error = OFPlainMutexTryLock(&_mutex);
 
 	if (error != 0) {
 		if (error == EBUSY)
@@ -91,7 +91,7 @@
 
 - (void)unlock
 {
-	int error = of_mutex_unlock(&_mutex);
+	int error = OFPlainMutexUnlock(&_mutex);
 
 	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self

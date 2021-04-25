@@ -47,32 +47,32 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) id nonretainedObjectValue;
 
 /**
- * @brief The value as a range.
+ * @brief The value as an OFRange.
  *
- * If the value is not range-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFRange-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_range_t rangeValue;
+@property (readonly, nonatomic) OFRange rangeValue;
 
 /**
- * @brief The value as a point.
+ * @brief The value as an OFPoint.
  *
- * If the value is not point-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFPoint-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_point_t pointValue;
+@property (readonly, nonatomic) OFPoint pointValue;
 
 /**
- * @brief The value as a dimension.
+ * @brief The value as an OFSize.
  *
- * If the value is not dimension-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFSize-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_dimension_t dimensionValue;
+@property (readonly, nonatomic) OFSize sizeValue;
 
 /**
- * @brief The value as a rectangle.
+ * @brief The value as a OFRect.
  *
- * If the value is not rectangle-sized, @ref OFOutOfRangeException is thrown.
+ * If the value is not OFRect-sized, @ref OFOutOfRangeException is thrown.
  */
-@property (readonly, nonatomic) of_rectangle_t rectangleValue;
+@property (readonly, nonatomic) OFRect rectValue;
 
 /**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -113,7 +113,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithRange: (of_range_t)range;
++ (instancetype)valueWithRange: (OFRange)range;
 
 /**
  * @brief Creates a new, autoreleased OFValue containing the specified point.
@@ -121,25 +121,24 @@ OF_ASSUME_NONNULL_BEGIN
  * @param point The point the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithPoint: (of_point_t)point;
++ (instancetype)valueWithPoint: (OFPoint)point;
 
 /**
- * @brief Creates a new, autoreleased OFValue containing the specified
- *	  dimension.
+ * @brief Creates a new, autoreleased OFValue containing the specified size.
  *
- * @param dimension The dimension the OFValue should contain
+ * @param size The size the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension;
++ (instancetype)valueWithSize: (OFSize)size;
 
 /**
  * @brief Creates a new, autoreleased OFValue containing the specified
  *	  rectangle.
  *
- * @param rectangle The rectangle the OFValue should contain
+ * @param rect The rectangle the OFValue should contain
  * @return A new, autoreleased OFValue
  */
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle;
++ (instancetype)valueWithRect: (OFRect)rect;
 
 /**
  * @brief Initializes an already allocated OFValue with the specified bytes of

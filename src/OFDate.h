@@ -33,7 +33,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
     OFMessagePackRepresentation>
 {
-	of_time_interval_t _seconds;
+	OFTimeInterval _seconds;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -124,12 +124,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The seconds since 1970-01-01T00:00:00Z.
  */
-@property (readonly, nonatomic) of_time_interval_t timeIntervalSince1970;
+@property (readonly, nonatomic) OFTimeInterval timeIntervalSince1970;
 
 /**
  * @brief The seconds the date is in the future.
  */
-@property (readonly, nonatomic) of_time_interval_t timeIntervalSinceNow;
+@property (readonly, nonatomic) OFTimeInterval timeIntervalSinceNow;
 
 /**
  * @brief Creates a new OFDate with the current date and time.
@@ -145,7 +145,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithTimeIntervalSince1970: (of_time_interval_t)seconds;
++ (instancetype)dateWithTimeIntervalSince1970: (OFTimeInterval)seconds;
 
 /**
  * @brief Creates a new OFDate with the specified date and time since now.
@@ -153,7 +153,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds since now
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
++ (instancetype)dateWithTimeIntervalSinceNow: (OFTimeInterval)seconds;
 
 /**
  * @brief Creates a new OFDate with the specified string in the specified
@@ -217,7 +217,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return An initialized OFDate with the specified date and time
  */
-- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -227,7 +227,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds since now
  * @return An initialized OFDate with the specified date and time
  */
-- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
+- (instancetype)initWithTimeIntervalSinceNow: (OFTimeInterval)seconds;
 
 /**
  * @brief Initializes an already allocated OFDate with the specified string in
@@ -273,7 +273,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param date The date to compare the date to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFDate *)date;
+- (OFComparisonResult)compare: (OFDate *)date;
 
 /**
  * @brief Creates a string of the date with the specified format.
@@ -321,7 +321,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param otherDate Date date to generate the difference with receiver
  * @return The seconds the receiver is after the date.
  */
-- (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate;
+- (OFTimeInterval)timeIntervalSinceDate: (OFDate *)otherDate;
 
 /**
  * @brief Creates a new date with the specified time interval added.
@@ -329,7 +329,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param seconds The seconds after the date
  * @return A new, autoreleased OFDate
  */
-- (OFDate *)dateByAddingTimeInterval: (of_time_interval_t)seconds;
+- (OFDate *)dateByAddingTimeInterval: (OFTimeInterval)seconds;
 @end
 
 OF_ASSUME_NONNULL_END

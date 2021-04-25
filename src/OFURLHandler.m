@@ -140,13 +140,12 @@ releaseMutex(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

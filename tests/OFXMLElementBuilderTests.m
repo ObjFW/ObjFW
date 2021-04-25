@@ -25,14 +25,14 @@ static size_t i = 0;
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
        didBuildElement: (OFXMLElement *)element
 {
-	OF_ENSURE(i == 0);
+	OFEnsure(i == 0);
 	nodes[i++] = [element retain];
 }
 
 -   (void)elementBuilder: (OFXMLElementBuilder *)builder
   didBuildParentlessNode: (OFXMLNode *)node
 {
-	OF_ENSURE(i == 1);
+	OFEnsure(i == 1);
 	nodes[i++] = [node retain];
 }
 

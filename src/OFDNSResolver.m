@@ -46,8 +46,8 @@
 # define SOCK_DNS 0
 #endif
 
-#define BUFFER_LENGTH OF_DNS_RESOLVER_BUFFER_LENGTH
-#define MAX_DNS_RESPONSE_LENGTH 65536
+static const size_t bufferLength = OFDNSResolverBufferLength;
+static const size_t maxDNSResponseLength = 65536;
 
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
@@ -55,9 +55,7 @@
  * also want to limit it to avoid DoS. Limiting it to 16 levels of pointers and
  * immediately rejecting pointers to itself seems like a fair balance.
  */
-#define MAX_ALLOWED_POINTERS 16
-
-#define CNAME_RECURSION 3
+static const uint_fast8_t maxAllowedPointers = 16;
 
 @interface OFDNSResolver () <OFUDPSocketDelegate, OFTCPSocketDelegate>
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context;
@@ -74,7 +72,7 @@ OF_DIRECT_MEMBERS
 	unsigned int _attempt;
 	id <OFDNSResolverQueryDelegate> _delegate;
 	OFData *_queryData;
-	of_socket_address_t _usedNameServer;
+	OFSocketAddress _usedNameServer;
 	OFTCPSocket *_TCPSocket;
 	OFMutableData *_TCPQueryData;
 	void *_TCPBuffer;
@@ -168,18 +166,18 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 static OF_KINDOF(OFDNSResourceRecord *)
-parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
-    of_dns_record_type_t recordType, uint32_t TTL, const unsigned char *buffer,
+parseResourceRecord(OFString *name, OFDNSClass DNSClass,
+    OFDNSRecordType recordType, uint32_t TTL, const unsigned char *buffer,
     size_t length, size_t i, uint16_t dataLength)
 {
-	if (recordType == OF_DNS_RECORD_TYPE_A && DNSClass == OF_DNS_CLASS_IN) {
-		of_socket_address_t address;
+	if (recordType == OFDNSRecordTypeA && DNSClass == OFDNSClassIN) {
+		OFSocketAddress address;
 
 		if (dataLength != 4)
 			@throw [OFInvalidServerReplyException exception];
 
 		memset(&address, 0, sizeof(address));
-		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		address.family = OFSocketAddressFamilyIPv4;
 		address.length = sizeof(address.sockaddr.in);
 
 		address.sockaddr.in.sin_family = AF_INET;
@@ -189,10 +187,10 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_NS) {
+	} else if (recordType == OFDNSRecordTypeNS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -202,10 +200,10 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     DNSClass: DNSClass
 		    authoritativeHost: authoritativeHost
 				  TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_CNAME) {
+	} else if (recordType == OFDNSRecordTypeCNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -215,10 +213,10 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 			   alias: alias
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_SOA) {
+	} else if (recordType == OFDNSRecordTypeSOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 		OFString *responsiblePerson;
 		uint32_t serialNumber, refreshInterval, retryInterval;
 		uint32_t expirationInterval, minTTL;
@@ -227,7 +225,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		responsiblePerson = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (dataLength - (j - i) != 20)
 			@throw [OFInvalidServerReplyException exception];
@@ -256,10 +254,10 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    expirationInterval: expirationInterval
 				minTTL: minTTL
 				   TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_PTR) {
+	} else if (recordType == OFDNSRecordTypePTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -269,7 +267,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 		      domainName: domainName
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_HINFO) {
+	} else if (recordType == OFDNSRecordTypeHINFO) {
 		size_t j = i;
 		OFString *CPU = parseString(buffer, length, &j);
 		OFString *OS;
@@ -288,7 +286,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     CPU: CPU
 			      OS: OS
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_MX) {
+	} else if (recordType == OFDNSRecordTypeMX) {
 		uint16_t preference;
 		size_t j;
 		OFString *mailExchange;
@@ -300,7 +298,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 
 		j = i + 2;
 		mailExchange = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -311,7 +309,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		      preference: preference
 		    mailExchange: mailExchange
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_TXT) {
+	} else if (recordType == OFDNSRecordTypeTXT) {
 		OFMutableArray *textStrings = [OFMutableArray array];
 
 		while (dataLength > 0) {
@@ -337,17 +335,17 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 		     textStrings: textStrings
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_RP) {
+	} else if (recordType == OFDNSRecordTypeRP) {
 		size_t j = i;
 		OFString *mailbox = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 		OFString *TXTDomainName;
 
 		if (j > i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
 
 		TXTDomainName = parseName(buffer, length, &j,
-		    MAX_ALLOWED_POINTERS);
+		    maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -358,15 +356,15 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			  mailbox: mailbox
 		    TXTDomainName: TXTDomainName
 			      TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_AAAA &&
-	    DNSClass == OF_DNS_CLASS_IN) {
-		of_socket_address_t address;
+	} else if (recordType == OFDNSRecordTypeAAAA &&
+	    DNSClass == OFDNSClassIN) {
+		OFSocketAddress address;
 
 		if (dataLength != 16)
 			@throw [OFInvalidServerReplyException exception];
 
 		memset(&address, 0, sizeof(address));
-		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		address.family = OFSocketAddressFamilyIPv6;
 		address.length = sizeof(address.sockaddr.in6);
 
 #ifdef AF_INET6
@@ -380,8 +378,8 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RECORD_TYPE_SRV &&
-	    DNSClass == OF_DNS_CLASS_IN) {
+	} else if (recordType == OFDNSRecordTypeSRV &&
+	    DNSClass == OFDNSClassIN) {
 		uint16_t priority, weight, port;
 		size_t j;
 		OFString *target;
@@ -394,7 +392,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		port = (buffer[i + 4] << 8) | buffer[i + 5];
 
 		j = i + 6;
-		target = parseName(buffer, length, &j, MAX_ALLOWED_POINTERS);
+		target = parseName(buffer, length, &j, maxAllowedPointers);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -424,9 +422,9 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
-		    MAX_ALLOWED_POINTERS);
-		of_dns_class_t DNSClass;
-		of_dns_record_type_t recordType;
+		    maxAllowedPointers);
+		OFDNSClass DNSClass;
+		OFDNSRecordType recordType;
 		uint32_t TTL;
 		uint16_t dataLength;
 		OFDNSResourceRecord *record;
@@ -490,13 +488,13 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* Header */
 
-		tmp = OF_BSWAP16_IF_LE(_ID.unsignedShortValue);
+		tmp = OFToBigEndian16(_ID.unsignedShortValue);
 		[queryData addItems: &tmp count: 2];
 		/* RD */
-		tmp = OF_BSWAP16_IF_LE(1u << 8);
+		tmp = OFToBigEndian16(1u << 8);
 		[queryData addItems: &tmp count: 2];
 		/* QDCOUNT */
-		tmp = OF_BSWAP16_IF_LE(1);
+		tmp = OFToBigEndian16(1);
 		[queryData addItems: &tmp count: 2];
 		/* ANCOUNT, NSCOUNT and ARCOUNT */
 		[queryData increaseCountBy: 6];
@@ -519,10 +517,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		}
 
 		/* QTYPE */
-		tmp = OF_BSWAP16_IF_LE(_query.recordType);
+		tmp = OFToBigEndian16(_query.recordType);
 		[queryData addItems: &tmp count: 2];
 		/* QCLASS */
-		tmp = OF_BSWAP16_IF_LE(_query.DNSClass);
+		tmp = OFToBigEndian16(_query.DNSClass);
 		[queryData addItems: &tmp count: 2];
 		[queryData makeImmutable];
 
@@ -546,7 +544,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_queryData release];
 	[_TCPSocket release];
 	[_TCPQueryData release];
-	free(_TCPBuffer);
+	OFFreeMemory(_TCPBuffer);
 	[_cancelTimer release];
 
 	[super dealloc];
@@ -560,7 +558,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (self != [OFDNSResolver class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -647,12 +645,12 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[old release];
 }
 
-- (of_time_interval_t)timeout
+- (OFTimeInterval)timeout
 {
 	return _settings->_timeout;
 }
 
-- (void)setTimeout: (of_time_interval_t)timeout
+- (void)setTimeout: (OFTimeInterval)timeout
 {
 	_settings->_timeout = timeout;
 }
@@ -689,18 +687,18 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	_settings->_usesTCP = usesTCP;
 }
 
-- (of_time_interval_t)configReloadInterval
+- (OFTimeInterval)configReloadInterval
 {
 	return _settings->_configReloadInterval;
 }
 
-- (void)setConfigReloadInterval: (of_time_interval_t)configReloadInterval
+- (void)setConfigReloadInterval: (OFTimeInterval)configReloadInterval
 {
 	_settings->_configReloadInterval = configReloadInterval;
 }
 
 - (void)of_sendQueryForContext: (OFDNSResolverContext *)context
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFUDPSocket *sock;
 	OFString *nameServer;
@@ -725,7 +723,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	    objectAtIndex: context->_nameServersIndex];
 
 	if (context->_settings->_usesTCP) {
-		OF_ENSURE(context->_TCPSocket == nil);
+		OFEnsure(context->_TCPSocket == nil);
 
 		context->_TCPSocket = [[OFTCPSocket alloc] init];
 		[_TCPQueries setObject: context forKey: context->_TCPSocket];
@@ -737,14 +735,14 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		return;
 	}
 
-	context->_usedNameServer = of_socket_address_parse_ip(nameServer, 53);
+	context->_usedNameServer = OFSocketAddressParseIP(nameServer, 53);
 
 	switch (context->_usedNameServer.family) {
 #ifdef OF_HAVE_IPV6
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+	case OFSocketAddressFamilyIPv6:
 		if (_IPv6Socket == nil) {
-			of_socket_address_t address =
-			    of_socket_address_parse_ip(@"::", 0);
+			OFSocketAddress address =
+			    OFSocketAddressParseIPv6(@"::", 0);
 
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket of_bindToAddress: &address
@@ -756,10 +754,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		sock = _IPv6Socket;
 		break;
 #endif
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OFSocketAddressFamilyIPv4:
 		if (_IPv4Socket == nil) {
-			of_socket_address_t address =
-			    of_socket_address_parse_ip(@"0.0.0.0", 0);
+			OFSocketAddress address =
+			    OFSocketAddressParseIPv4(@"0.0.0.0", 0);
 
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket of_bindToAddress: &address
@@ -778,7 +776,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		   receiver: &context->_usedNameServer
 		runLoopMode: runLoopMode];
 	[sock asyncReceiveIntoBuffer: _buffer
-			      length: BUFFER_LENGTH
+			      length: bufferLength
 			 runLoopMode: runLoopMode];
 }
 
@@ -786,12 +784,12 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	[self asyncPerformQuery: query
-		    runLoopMode: of_run_loop_mode_default
+		    runLoopMode: OFDefaultRunLoopMode
 		       delegate: delegate];
 }
 
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+	      runLoopMode: (OFRunLoopMode)runLoopMode
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -800,7 +798,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	/* Random, unused ID */
 	do {
-		ID = [OFNumber numberWithUnsignedShort: of_random16()];
+		ID = [OFNumber numberWithUnsignedShort: OFRandom16()];
 	} while ([_queries objectForKey: ID] != nil);
 
 	if (query.domainName.UTF8StringLength > 253)
@@ -809,7 +807,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (_settings->_nameServers.count == 0) {
 		id exception = [OFDNSQueryFailedException
 		    exceptionWithQuery: query
-				 error: OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER];
+			     errorCode: OFDNSResolverErrorCodeNoNameServer];
 		[delegate  resolver: self
 		    didPerformQuery: query
 			   response: nil
@@ -829,7 +827,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (void)of_contextTimedOut: (OFDNSResolverContext *)context
 {
-	of_run_loop_mode_t runLoopMode = [OFRunLoop currentRunLoop].currentMode;
+	OFRunLoopMode runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 	OFDNSQueryFailedException *exception;
 
 	if (context->_TCPSocket != nil) {
@@ -863,15 +861,15 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	 * trying to access the query once it no longer exists.
 	 */
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
+	[_IPv4Socket asyncReceiveIntoBuffer: _buffer length: bufferLength];
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket asyncReceiveIntoBuffer: _buffer length: BUFFER_LENGTH];
+	[_IPv6Socket asyncReceiveIntoBuffer: _buffer length: bufferLength];
 #endif
 
 	exception = [OFDNSQueryFailedException
 	    exceptionWithQuery: context->_query
-			 error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
+		     errorCode: OFDNSResolverErrorCodeTimeout];
 
 	[context->_delegate resolver: self
 		     didPerformQuery: context->_query
@@ -881,7 +879,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (bool)of_handleResponseBuffer: (unsigned char *)buffer
 			 length: (size_t)length
-			 sender: (const of_socket_address_t *)sender
+			 sender: (const OFSocketAddress *)sender
 {
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
@@ -903,7 +901,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_TCPSocket != nil) {
 		if ([_TCPQueries objectForKey: context->_TCPSocket] != context)
 			return true;
-	} else if (!of_socket_address_equal(sender, &context->_usedNameServer))
+	} else if (!OFSocketAddressEqual(sender, &context->_usedNameServer))
 		return true;
 
 	[context->_cancelTimer invalidate];
@@ -912,7 +910,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_queries removeObjectForKey: ID];
 
 	@try {
-		of_dns_resolver_error_t error = 0;
+		OFDNSResolverErrorCode errorCode = 0;
 		bool tryNextNameServer = false;
 		const unsigned char *queryDataBuffer;
 		size_t i;
@@ -938,7 +936,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* TC */
 		if (buffer[2] & 0x02) {
-			of_run_loop_mode_t runLoopMode;
+			OFRunLoopMode runLoopMode;
 
 			if (context->_settings->_usesTCP)
 				@throw [OFTruncatedDataException exception];
@@ -955,25 +953,25 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		case 0:
 			break;
 		case 1:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT;
+			errorCode = OFDNSResolverErrorCodeServerInvalidFormat;
 			break;
 		case 2:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_FAILURE;
+			errorCode = OFDNSResolverErrorCodeServerFailure;
 			tryNextNameServer = true;
 			break;
 		case 3:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
+			errorCode = OFDNSResolverErrorCodeServerNameError;
 			break;
 		case 4:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED;
+			errorCode = OFDNSResolverErrorCodeServerNotImplemented;
 			tryNextNameServer = true;
 			break;
 		case 5:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_REFUSED;
+			errorCode = OFDNSResolverErrorCodeServerRefused;
 			tryNextNameServer = true;
 			break;
 		default:
-			error = OF_DNS_RESOLVER_ERROR_UNKNOWN;
+			errorCode = OFDNSResolverErrorCodeUnknown;
 			tryNextNameServer = true;
 			break;
 		}
@@ -981,7 +979,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (tryNextNameServer) {
 			if (context->_nameServersIndex + 1 <
 			    context->_settings->_nameServers.count) {
-				of_run_loop_mode_t runLoopMode =
+				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
 
 				context->_nameServersIndex++;
@@ -995,7 +993,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (buffer[3] & 0x0F)
 			@throw [OFDNSQueryFailedException
 			    exceptionWithQuery: context->_query
-					 error: error];
+				     errorCode: errorCode];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
 		numAnswers = (buffer[6] << 8) | buffer[7];
@@ -1011,7 +1009,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		 * TODO: Compare to our query, just in case?
 		 */
 		for (uint_fast16_t j = 0; j < numQuestions; j++) {
-			parseName(buffer, length, &i, MAX_ALLOWED_POINTERS);
+			parseName(buffer, length, &i, maxAllowedPointers);
 			i += 4;
 		}
 
@@ -1043,7 +1041,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 -	  (bool)socket: (OFDatagramSocket *)sock
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (const of_socket_address_t *)sender
+		sender: (const OFSocketAddress *)sender
 	     exception: (id)exception
 {
 	if (exception != nil)
@@ -1061,7 +1059,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 {
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1085,7 +1083,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		context->_TCPQueryData = [[OFMutableData alloc]
 		    initWithCapacity: queryDataCount + 2];
 
-		tmp = OF_BSWAP16_IF_LE(queryDataCount);
+		tmp = OFToBigEndian16(queryDataCount);
 		[context->_TCPQueryData addItems: &tmp count: sizeof(tmp)];
 		[context->_TCPQueryData addItems: context->_queryData.items
 					   count: queryDataCount];
@@ -1102,7 +1100,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFTCPSocket *sock = (OFTCPSocket *)stream;
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1117,7 +1115,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	}
 
 	if (context->_TCPBuffer == nil)
-		context->_TCPBuffer = of_alloc(MAX_DNS_RESPONSE_LENGTH, 1);
+		context->_TCPBuffer = OFAllocMemory(maxDNSResponseLength, 1);
 
 	[sock asyncReadIntoBuffer: context->_TCPBuffer exactLength: 2];
 	return nil;
@@ -1131,7 +1129,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	OFTCPSocket *sock = (OFTCPSocket *)stream;
 	OFDNSResolverContext *context = [_TCPQueries objectForKey: sock];
 
-	OF_ENSURE(context != nil);
+	OFEnsure(context != nil);
 
 	if (exception != nil) {
 		/*
@@ -1144,11 +1142,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_responseLength == 0) {
 		unsigned char *ucBuffer = buffer;
 
-		OF_ENSURE(length == 2);
+		OFEnsure(length == 2);
 
 		context->_responseLength = (ucBuffer[0] << 8) | ucBuffer[1];
 
-		if (context->_responseLength > MAX_DNS_RESPONSE_LENGTH)
+		if (context->_responseLength > maxDNSResponseLength)
 			@throw [OFOutOfRangeException exception];
 
 		if (context->_responseLength == 0)
@@ -1181,24 +1179,24 @@ done:
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
-			     addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
-			       runLoopMode: of_run_loop_mode_default
+			     addressFamily: OFSocketAddressFamilyAny
+			       runLoopMode: OFDefaultRunLoopMode
 				  delegate: delegate];
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
 			     addressFamily: addressFamily
-			       runLoopMode: of_run_loop_mode_default
+			       runLoopMode: OFDefaultRunLoopMode
 				  delegate: delegate];
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
-			 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		       addressFamily: (OFSocketAddressFamily)addressFamily
+			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1216,7 +1214,7 @@ done:
 }
 
 - (OFData *)resolveAddressesForHost: (OFString *)host
-		      addressFamily: (of_socket_address_family_t)addressFamily
+		      addressFamily: (OFSocketAddressFamily)addressFamily
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHostAddressResolver *resolver = [[[OFHostAddressResolver alloc]
@@ -1257,7 +1255,7 @@ done:
 
 		exception = [OFDNSQueryFailedException
 		    exceptionWithQuery: context->_query
-				 error: OF_DNS_RESOLVER_ERROR_CANCELED];
+			     errorCode: OFDNSResolverErrorCodeCanceled];
 
 		[context->_delegate resolver: self
 			     didPerformQuery: context->_query

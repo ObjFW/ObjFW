@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index of the object to replace
  * @return The object to replace the object with
  */
-typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
+typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 #endif
 
 /**
@@ -159,7 +159,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param range The range of the objects to remove
  */
-- (void)removeObjectsInRange: (of_range_t)range;
+- (void)removeObjectsInRange: (OFRange)range;
 
 /**
  * @brief Removes the last object.
@@ -177,7 +177,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param block The block which returns a new object for each object
  */
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block;
 #endif
 
 /**
@@ -198,26 +198,19 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param selector The selector to use to sort the array. It's signature
  *		   should be the same as that of -[compare:].
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  */
-- (void)sortUsingSelector: (SEL)selector options: (int)options;
+- (void)sortUsingSelector: (SEL)selector options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Sorts the array using the specified comparator and options.
  *
  * @param comparator The comparator to use to sort the array
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  */
-- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options;
+- (void)sortUsingComparator: (OFComparator)comparator
+		    options: (OFArraySortOptions)options;
 #endif
 
 /**

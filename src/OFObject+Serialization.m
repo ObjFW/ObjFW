@@ -42,7 +42,7 @@ int _OFObject_Serialization_reference;
 	element = ((id <OFSerialization>)self).XMLElementBySerializing;
 
 	root = [OFXMLElement elementWithName: @"serialization"
-				   namespace: OF_SERIALIZATION_NS];
+				   namespace: OFSerializationNS];
 	[root addAttributeWithName: @"version" stringValue: @"1"];
 	[root addChild: element];
 

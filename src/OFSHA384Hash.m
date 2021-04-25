@@ -17,17 +17,17 @@
 
 #import "OFSHA384Hash.h"
 
-#define DIGEST_SIZE 48
+static const size_t digestSize = 48;
 
 @implementation OFSHA384Hash
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (void)of_resetState

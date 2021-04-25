@@ -19,71 +19,75 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
-enum {
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE		=  0,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_SHRINK		=  1,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_1 =  2,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_2 =  3,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_3 =  4,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_4 =  5,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_IMPLODE		=  6,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE		=  8,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64	=  9,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_BZIP2		= 12,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_LZMA		= 14,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_WAVPACK		= 97,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_PPMD		= 98
-};
+typedef enum OFZIPArchiveEntryCompressionMethod {
+	OFZIPArchiveEntryCompressionMethodNone		=  0,
+	OFZIPArchiveEntryCompressionMethodShrink	=  1,
+	OFZIPArchiveEntryCompressionMethodReduceFactor1 =  2,
+	OFZIPArchiveEntryCompressionMethodReduceFactor2 =  3,
+	OFZIPArchiveEntryCompressionMethodReduceFactor3 =  4,
+	OFZIPArchiveEntryCompressionMethodReduceFactor4 =  5,
+	OFZIPArchiveEntryCompressionMethodImplode	=  6,
+	OFZIPArchiveEntryCompressionMethodDeflate	=  8,
+	OFZIPArchiveEntryCompressionMethodDeflate64	=  9,
+	OFZIPArchiveEntryCompressionMethodBZIP2		= 12,
+	OFZIPArchiveEntryCompressionMethodLZMA		= 14,
+	OFZIPArchiveEntryCompressionMethodWavPack	= 97,
+	OFZIPArchiveEntryCompressionMethodPPMd		= 98
+} OFZIPArchiveEntryCompressionMethod;
 
 /**
  * @brief Attribute compatibility part of ZIP versions.
  */
-enum of_zip_archive_entry_attribute_compatibility {
+typedef enum OFZIPArchiveEntryAttributeCompatibility {
 	/** MS-DOS and OS/2 */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS	       =  0,
+	OFZIPArchiveEntryAttributeCompatibilityMSDOS	    =  0,
 	/** Amiga */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA	       =  1,
+	OFZIPArchiveEntryAttributeCompatibilityAmiga	    =  1,
 	/** OpenVMS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS       =  2,
+	OFZIPArchiveEntryAttributeCompatibilityOpenVMS	    =  2,
 	/** UNIX */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX	       =  3,
+	OFZIPArchiveEntryAttributeCompatibilityUNIX	    =  3,
 	/** VM/CMS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS	       =  4,
+	OFZIPArchiveEntryAttributeCompatibilityVM_CMS	    =  4,
 	/** Atari ST */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST      =  5,
+	OFZIPArchiveEntryAttributeCompatibilityAtariST	    =  5,
 	/** OS/2 HPFS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS      =  6,
+	OFZIPArchiveEntryAttributeCompatibilityOS2HPFS	    =  6,
 	/** Macintosh */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH     =  7,
+	OFZIPArchiveEntryAttributeCompatibilityMacintosh    =  7,
 	/** Z-System */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM      =  8,
+	OFZIPArchiveEntryAttributeCompatibilityZSystem	    =  8,
 	/** CP/M */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M	       =  9,
+	OFZIPArchiveEntryAttributeCompatibilityCPM	    =  9,
 	/** Windows NTFS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS  = 10,
+	OFZIPArchiveEntryAttributeCompatibilityWindowsNTFS  = 10,
 	/** MVS (OS/390 - Z/OS) */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS	       = 11,
+	OFZIPArchiveEntryAttributeCompatibilityMVS	    = 11,
 	/** VSE */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE	       = 12,
+	OFZIPArchiveEntryAttributeCompatibilityVSE	    = 12,
 	/** Acorn RISC OS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC_OS = 13,
+	OFZIPArchiveEntryAttributeCompatibilityAcornRISCOS  = 13,
 	/** VFAT */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT	       = 14,
+	OFZIPArchiveEntryAttributeCompatibilityVFAT	    = 14,
 	/** Alternate MVS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS = 15,
+	OFZIPArchiveEntryAttributeCompatibilityAlternateMVS = 15,
 	/** BeOS */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS	       = 16,
+	OFZIPArchiveEntryAttributeCompatibilityBeOS	    = 16,
 	/** Tandem */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM	       = 17,
+	OFZIPArchiveEntryAttributeCompatibilityTandem	    = 17,
 	/** OS/400 */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400	       = 18,
+	OFZIPArchiveEntryAttributeCompatibilityOS400	    = 18,
 	/** OS X (Darwin) */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X	       = 19
-};
+	OFZIPArchiveEntryAttributeCompatibilityOSX	    = 19
+} OFZIPArchiveEntryAttributeCompatibility;
 
-enum {
-	OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64 = 0x0001
-};
+/**
+ * @brief Tags for the extra field.
+ */
+typedef enum OFZIPArchiveEntryExtraFieldTag {
+	/** ZIP64 extra field tag */
+	OFZIPArchiveEntryExtraFieldTagZIP64 = 0x0001
+} OFZIPArchiveEntryExtraFieldTag;
 
 @class OFString;
 @class OFData;
@@ -98,8 +102,10 @@ enum {
  */
 @interface OFZIPArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
-	uint16_t _versionMadeBy, _minVersionNeeded, _generalPurposeBitFlag;
-	uint16_t _compressionMethod;
+	OFZIPArchiveEntryAttributeCompatibility _versionMadeBy;
+	OFZIPArchiveEntryAttributeCompatibility _minVersionNeeded;
+	uint16_t _generalPurposeBitFlag;
+	OFZIPArchiveEntryCompressionMethod _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
@@ -136,18 +142,20 @@ enum {
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
- * See @ref of_zip_archive_entry_attribute_compatibility.
+ * See @ref OFZIPArchiveEntryAttributeCompatibility.
  */
-@property (readonly, nonatomic) uint16_t versionMadeBy;
+@property (readonly, nonatomic)
+    OFZIPArchiveEntryAttributeCompatibility versionMadeBy;
 
 /**
  * @brief The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
- * See @ref of_zip_archive_entry_attribute_compatibility.
+ * See @ref OFZIPArchiveEntryAttributeCompatibility.
  */
-@property (readonly, nonatomic) uint16_t minVersionNeeded;
+@property (readonly, nonatomic)
+    OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
 
 /**
  * @brief The last modification date of the entry's file.
@@ -160,15 +168,16 @@ enum {
  * @brief The compression method of the entry.
  *
  * Supported values are:
- * Value                                             | Description
- * --------------------------------------------------|---------------
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE      | No compression
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE   | Deflate
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 | Deflate64
+ * Value                                       | Description
+ * --------------------------------------------|---------------
+ * OFZIPArchiveEntryCompressionMethodNone      | No compression
+ * OFZIPArchiveEntryCompressionMethodDeflate   | Deflate
+ * OFZIPArchiveEntryCompressionMethodDeflate64 | Deflate64
  *
  * Other values may be returned, but the file cannot be extracted then.
  */
-@property (readonly, nonatomic) uint16_t compressionMethod;
+@property (readonly, nonatomic)
+    OFZIPArchiveEntryCompressionMethod compressionMethod;
 
 /**
  * @brief The compressed size of the entry's file.
@@ -229,7 +238,7 @@ extern "C" {
  * @param version The ZIP entry version to convert to a string
  * @return The ZIP entry version as a string
  */
-extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
+extern OFString *OFZIPArchiveEntryVersionToString(uint16_t version);
 
 /**
  * @brief Convers the ZIP entry compression method to a string.
@@ -238,8 +247,8 @@ extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
  *			    string
  * @return The ZIP entry compression method as a string
  */
-extern OFString *of_zip_archive_entry_compression_method_to_string(
-    uint16_t compressionMethod);
+extern OFString *OFZIPArchiveEntryCompressionMethodName(
+    OFZIPArchiveEntryCompressionMethod compressionMethod);
 
 /**
  * @brief Gets a pointer to and the size of the extensible data field with the
@@ -250,10 +259,10 @@ extern OFString *of_zip_archive_entry_compression_method_to_string(
  * @param tag The tag to look for
  * @param size A pointer to an uint16_t that should be set to the size
  * @return The index at which the extra field content starts in the OFData, or
- *	   OF_NOT_FOUND
+ *	   `OFNotFound`
  */
-extern size_t of_zip_archive_entry_extra_field_find(OFData *extraField,
-    uint16_t tag, uint16_t *size);
+extern size_t OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
+    OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size);
 #ifdef __cplusplus
 }
 #endif

@@ -631,7 +631,7 @@ objc_copyClassList(unsigned int *length)
 		OBJC_ERROR("Failed to allocate memory for class list!");
 
 	count = objc_getClassList(ret, classesCount);
-	OF_ENSURE(count == classesCount);
+	OFEnsure(count == classesCount);
 
 	ret[count] = Nil;
 
@@ -976,7 +976,7 @@ objc_unregister_all_classes(void)
 		}
 	}
 
-	OF_ENSURE(classesCount == 0);
+	OFEnsure(classesCount == 0);
 
 	if (emptyDTable != NULL) {
 		objc_dtable_free(emptyDTable);
