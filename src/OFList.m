@@ -26,11 +26,16 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
+struct OFListItem {
+	OFListItem previous, next;
+	id object;
+};
+
 OF_DIRECT_MEMBERS
 @interface OFListEnumerator: OFEnumerator
 {
 	OFList *_list;
-	OFListItem *_Nullable _current;
+	OFListItem _Nullable _current;
 	unsigned long _mutations;
 	unsigned long *_Nullable _mutationsPtr;
 }
@@ -38,6 +43,24 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithList: (OFList *)list
 	    mutationsPointer: (unsigned long *)mutationsPtr;
 @end
+
+OFListItem
+OFListItemNext(OFListItem listItem)
+{
+	return listItem->next;
+}
+
+OFListItem
+OFListItemPrevious(OFListItem listItem)
+{
+	return listItem->previous;
+}
+
+id
+OFListItemObject(OFListItem listItem)
+{
+	return listItem->object;
+}
 
 @implementation OFList
 @synthesize firstListItem = _firstListItem, lastListItem = _lastListItem;
@@ -78,9 +101,9 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	OFListItem *next;
+	OFListItem next;
 
-	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
+	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
 		OFFreeMemory(iter);
@@ -89,11 +112,10 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (OFListItem *)appendObject: (id)object
+- (OFListItem)appendObject: (id)object
 {
-	OFListItem *listItem;
+	OFListItem listItem = OFAllocMemory(1, sizeof(*listItem));
 
-	listItem = OFAllocMemory(1, sizeof(OFListItem));
 	listItem->object = [object retain];
 	listItem->next = NULL;
 	listItem->previous = _lastListItem;
@@ -112,9 +134,9 @@ OF_DIRECT_MEMBERS
 	return listItem;
 }
 
-- (OFListItem *)prependObject: (id)object
+- (OFListItem)prependObject: (id)object
 {
-	OFListItem *listItem = OFAllocMemory(1, sizeof(OFListItem));
+	OFListItem listItem = OFAllocMemory(1, sizeof(*listItem));
 
 	listItem->object = [object retain];
 	listItem->next = _firstListItem;
@@ -133,10 +155,9 @@ OF_DIRECT_MEMBERS
 	return listItem;
 }
 
-- (OFListItem *)insertObject: (id)object
-	      beforeListItem: (OFListItem *)listItem
+- (OFListItem)insertObject: (id)object beforeListItem: (OFListItem)listItem
 {
-	OFListItem *newListItem = OFAllocMemory(1, sizeof(OFListItem));
+	OFListItem newListItem = OFAllocMemory(1, sizeof(*newListItem));
 
 	newListItem->object = [object retain];
 	newListItem->next = listItem;
@@ -156,10 +177,9 @@ OF_DIRECT_MEMBERS
 	return newListItem;
 }
 
-- (OFListItem *)insertObject: (id)object
-	       afterListItem: (OFListItem *)listItem
+- (OFListItem)insertObject: (id)object afterListItem: (OFListItem)listItem
 {
-	OFListItem *newListItem = OFAllocMemory(1, sizeof(OFListItem));
+	OFListItem newListItem = OFAllocMemory(1, sizeof(*newListItem));
 
 	newListItem->object = [object retain];
 	newListItem->next = listItem->next;
@@ -179,7 +199,7 @@ OF_DIRECT_MEMBERS
 	return newListItem;
 }
 
-- (void)removeListItem: (OFListItem *)listItem
+- (void)removeListItem: (OFListItem)listItem
 {
 	if (listItem->previous != NULL)
 		listItem->previous->next = listItem->next;
@@ -216,7 +236,7 @@ OF_DIRECT_MEMBERS
 - (bool)isEqual: (id)object
 {
 	OFList *list;
-	OFListItem *iter, *iter2;
+	OFListItem iter, iter2;
 
 	if (object == self)
 		return true;
@@ -246,7 +266,7 @@ OF_DIRECT_MEMBERS
 	if (_count == 0)
 		return false;
 
-	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
+	for (OFListItem iter = _firstListItem; iter != NULL; iter = iter->next)
 		if ([iter->object isEqual: object])
 			return true;
 
@@ -258,7 +278,7 @@ OF_DIRECT_MEMBERS
 	if (_count == 0)
 		return false;
 
-	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
+	for (OFListItem iter = _firstListItem; iter != NULL; iter = iter->next)
 		if (iter->object == object)
 			return true;
 
@@ -267,11 +287,11 @@ OF_DIRECT_MEMBERS
 
 - (void)removeAllObjects
 {
-	OFListItem *next;
+	OFListItem next;
 
 	_mutations++;
 
-	for (OFListItem *iter = _firstListItem; iter != NULL; iter = next) {
+	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
 		[iter->object release];
 		next = iter->next;
 		OFFreeMemory(iter);
@@ -283,15 +303,12 @@ OF_DIRECT_MEMBERS
 - (id)copy
 {
 	OFList *copy = [[[self class] alloc] init];
-	OFListItem *listItem, *previous;
-
-	listItem = NULL;
-	previous = NULL;
+	OFListItem listItem = NULL, previous = NULL;
 
 	@try {
-		for (OFListItem *iter = _firstListItem;
+		for (OFListItem iter = _firstListItem;
 		    iter != NULL; iter = iter->next) {
-			listItem = OFAllocMemory(1, sizeof(OFListItem));
+			listItem = OFAllocMemory(1, sizeof(*listItem));
 			listItem->object = [iter->object retain];
 			listItem->next = NULL;
 			listItem->previous = previous;
@@ -321,7 +338,7 @@ OF_DIRECT_MEMBERS
 
 	OFHashInit(&hash);
 
-	for (OFListItem *iter = _firstListItem; iter != NULL; iter = iter->next)
+	for (OFListItem iter = _firstListItem; iter != NULL; iter = iter->next)
 		OFHashAddHash(&hash, [iter->object hash]);
 
 	OFHashFinalize(&hash);
@@ -338,7 +355,7 @@ OF_DIRECT_MEMBERS
 
 	ret = [OFMutableString stringWithString: @"[\n"];
 
-	for (OFListItem *iter = _firstListItem;
+	for (OFListItem iter = _firstListItem;
 	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -363,7 +380,7 @@ OF_DIRECT_MEMBERS
 	    [OFXMLElement elementWithName: self.className
 				namespace: OFSerializationNS];
 
-	for (OFListItem *iter = _firstListItem;
+	for (OFListItem iter = _firstListItem;
 	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -379,7 +396,7 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
-	OFListItem *listItem;
+	OFListItem listItem;
 
 	memcpy(&listItem, state->extra, sizeof(listItem));
 

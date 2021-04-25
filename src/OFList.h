@@ -20,23 +20,48 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-typedef struct OFListItem OFListItem;
 /**
- * @struct OFListItem OFList.h ObjFW/OFList.h
+ * @typedef OFListItem OFList.h ObjFW/OFList.h
  *
  * @brief A list item.
  *
- * A struct that contains a pointer to the next list item, the previous list
- * item and the object.
+ * See @ref OFListItemNext, @ref OFListItemPrevious and @ref OFListItemObject.
  */
-struct OFListItem {
-	/** A pointer to the next list object in the list */
-	OFListItem *_Nullable next;
-	/** A pointer to the previous list object in the list */
-	OFListItem *_Nullable previous;
-	/** The object for the list object */
-	id __unsafe_unretained object;
-};
+typedef struct OFListItem *OFListItem;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief Returns the next list item of the list item.
+ *
+ * @param listItem The list item for which the next list item should be returned
+ * @return The next list item of the list item
+ */
+OFListItem OFListItemNext(OFListItem _Nonnull listItem);
+
+/*!
+ * @brief Returns the previous list item of the list item.
+ *
+ * @param listItem The list item for which the previous list item should be
+ *		   returned
+ * @return The previous list item of the list item
+ */
+OFListItem OFListItemPrevious(OFListItem _Nonnull listItem);
+
+/*!
+ * @brief Returns the object of the list item.
+ *
+ * @warning The returned object is not retained and autoreleased - this is the
+ *	    caller's responsibility!
+ *
+ * @param listItem The list item for which the object should be returned
+ * @return The object of the list item
+ */
+id OFListItemObject(OFListItem _Nonnull listItem);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @class OFList OFList.h ObjFW/OFList.h
@@ -49,8 +74,8 @@ struct OFListItem {
 # define ObjectType id
 #endif
 {
-	OFListItem *_Nullable _firstListItem;
-	OFListItem *_Nullable _lastListItem;
+	OFListItem _Nullable _firstListItem;
+	OFListItem _Nullable _lastListItem;
 	size_t _count;
 	unsigned long _mutations;
 	OF_RESERVE_IVARS(OFList, 4)
@@ -59,7 +84,7 @@ struct OFListItem {
 /**
  * @brief The first list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem *firstListItem;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem firstListItem;
 
 /**
  * @brief The first object of the list or `nil`.
@@ -72,7 +97,7 @@ struct OFListItem {
 /**
  * @brief The last list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem *lastListItem;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem lastListItem;
 
 /**
  * @brief The last object of the list or `nil`.
@@ -97,7 +122,7 @@ struct OFListItem {
  *	   For example, if you want to remove an object from the list, you need
  *	   its OFListItem.
  */
-- (OFListItem *)appendObject: (ObjectType)object;
+- (OFListItem)appendObject: (ObjectType)object;
 
 /**
  * @brief Prepends an object to the list.
@@ -107,7 +132,7 @@ struct OFListItem {
  *	   For example, if you want to remove an object from the list, you need
  *	   its OFListItem.
  */
-- (OFListItem *)prependObject: (ObjectType)object;
+- (OFListItem)prependObject: (ObjectType)object;
 
 /**
  * @brief Inserts an object before another list object.
@@ -119,8 +144,8 @@ struct OFListItem {
  *	   For example, if you want to remove an object from the list, you need
  *	   its OFListItem.
  */
-- (OFListItem *)insertObject: (ObjectType)object
-	      beforeListItem: (OFListItem *)listItem;
+- (OFListItem)insertObject: (ObjectType)object
+	    beforeListItem: (OFListItem)listItem;
 
 /**
  * @brief Inserts an object after another list object.
@@ -132,15 +157,15 @@ struct OFListItem {
  *	   For example, if you want to remove an object from the list, you need
  *	   its OFListItem.
  */
-- (OFListItem *)insertObject: (ObjectType)object
-	       afterListItem: (OFListItem *)listItem;
+- (OFListItem)insertObject: (ObjectType)object
+	     afterListItem: (OFListItem)listItem;
 
 /**
  * @brief Removes the object with the specified list object from the list.
  *
  * @param listItem The list object returned by append / prepend
  */
-- (void)removeListItem: (OFListItem *)listItem;
+- (void)removeListItem: (OFListItem)listItem;
 
 /**
  * @brief Checks whether the list contains an object equal to the specified

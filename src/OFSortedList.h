@@ -33,14 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFSortedList, 4)
 }
 
-- (OFListItem *)appendObject: (ObjectType)object OF_UNAVAILABLE;
-- (OFListItem *)prependObject: (ObjectType)object OF_UNAVAILABLE;
-- (OFListItem *)insertObject: (ObjectType)object
-	      beforeListItem: (OFListItem *)listItem
-    OF_UNAVAILABLE;
-- (OFListItem *)insertObject: (ObjectType)object
-	       afterListItem: (OFListItem *)listItem
-    OF_UNAVAILABLE;
+- (OFListItem)appendObject: (ObjectType)object OF_UNAVAILABLE;
+- (OFListItem)prependObject: (ObjectType)object OF_UNAVAILABLE;
+- (OFListItem)insertObject: (ObjectType)object
+	    beforeListItem: (OFListItem)listItem OF_UNAVAILABLE;
+- (OFListItem)insertObject: (ObjectType)object
+	     afterListItem: (OFListItem)listItem OF_UNAVAILABLE;
 
 /**
  * @brief Inserts the object to the list while keeping the list sorted.
@@ -48,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object to insert
  * @return The list object for the object just added
  */
-- (OFListItem *)insertObject: (ObjectType <OFComparing>)object;
+- (OFListItem)insertObject: (ObjectType <OFComparing>)object;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif

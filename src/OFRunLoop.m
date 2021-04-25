@@ -276,7 +276,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			OFListItem *listItem = queue.firstListItem;
+			OFListItem listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
@@ -290,7 +290,8 @@ static OFRunLoop *mainRunLoop = nil;
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listItem->object retain] autorelease];
+				[[OFListItemObject(listItem) retain]
+				    autorelease];
 
 				[queue removeListItem: listItem];
 
@@ -319,7 +320,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			OFListItem *listItem = queue.firstListItem;
+			OFListItem listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
@@ -333,7 +334,8 @@ static OFRunLoop *mainRunLoop = nil;
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listItem->object retain] autorelease];
+				[[OFListItemObject(listItem) retain]
+				    autorelease];
 
 				[queue removeListItem: listItem];
 
@@ -1420,9 +1422,9 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	[state->_timersQueueMutex lock];
 	@try {
 #endif
-		for (OFListItem *iter = state->_timersQueue.firstListItem;
-		    iter != NULL; iter = iter->next) {
-			if ([iter->object isEqual: timer]) {
+		for (OFListItem iter = state->_timersQueue.firstListItem;
+		    iter != NULL; iter = OFListItemNext(iter)) {
+			if ([OFListItemObject(iter) isEqual: timer]) {
 				[state->_timersQueue removeListItem: iter];
 				break;
 			}
@@ -1577,12 +1579,13 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 			[state->_timersQueueMutex lock];
 			@try {
 #endif
-				OFListItem *listItem =
+				OFListItem listItem =
 				    state->_timersQueue.firstListItem;
 
-				if (listItem != NULL && [listItem->object
-				    fireDate].timeIntervalSinceNow <= 0) {
-					timer = [[listItem->object
+				if (listItem != NULL &&
+				    [OFListItemObject(listItem) fireDate]
+				    .timeIntervalSinceNow <= 0) {
+					timer = [[OFListItemObject(listItem)
 					    retain] autorelease];
 
 					[state->_timersQueue

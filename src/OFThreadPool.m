@@ -162,7 +162,7 @@ OF_DIRECT_MEMBERS
 
 		[_queueCondition lock];
 		@try {
-			OFListItem *listItem;
+			OFListItem listItem;
 
 			if (_terminate) {
 				objc_autoreleasePoolPop(pool);
@@ -182,7 +182,7 @@ OF_DIRECT_MEMBERS
 				listItem = _queue.firstListItem;
 			}
 
-			job = [[listItem->object retain] autorelease];
+			job = [[OFListItemObject(listItem) retain] autorelease];
 			[_queue removeListItem: listItem];
 		} @finally {
 			[_queueCondition unlock];

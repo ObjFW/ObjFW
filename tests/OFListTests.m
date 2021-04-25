@@ -30,7 +30,7 @@ static OFString *strings[] = {
 	void *pool = objc_autoreleasePoolPush();
 	OFList *list;
 	OFEnumerator *enumerator;
-	OFListItem *iter;
+	OFListItem iter;
 	OFString *obj;
 	size_t i;
 	bool ok;
@@ -41,31 +41,34 @@ static OFString *strings[] = {
 	    [list appendObject: strings[1]] && [list appendObject: strings[2]])
 
 	TEST(@"-[firstListItem]",
-	    [list.firstListItem->object isEqual: strings[0]])
+	    [OFListItemObject(list.firstListItem) isEqual: strings[0]])
 
-	TEST(@"-[firstListItem]->next",
-	    [list.firstListItem->next->object isEqual: strings[1]])
+	TEST(@"OFListItemNext()",
+	    [OFListItemObject(OFListItemNext(list.firstListItem))
+	    isEqual: strings[1]])
 
 	TEST(@"-[lastListItem]",
-	    [list.lastListItem->object isEqual: strings[2]])
+	    [OFListItemObject(list.lastListItem) isEqual: strings[2]])
 
-	TEST(@"-[lastListItem]->previous",
-	    [list.lastListItem->previous->object isEqual: strings[1]])
+	TEST(@"OFListItemPrevious()",
+	    [OFListItemObject(OFListItemPrevious(list.lastListItem))
+	    isEqual: strings[1]])
 
 	TEST(@"-[removeListItem:]",
 	    R([list removeListItem: list.lastListItem]) &&
-	    [list.lastListItem->object isEqual: strings[1]] &&
+	    [list.lastObject isEqual: strings[1]] &&
 	    R([list removeListItem: list.firstListItem]) &&
-	    [list.firstListItem->object isEqual: list.lastListItem->object])
+	    [list.firstObject isEqual: list.lastObject])
 
 	TEST(@"-[insertObject:beforeListItem:]",
 	    [list insertObject: strings[0] beforeListItem: list.lastListItem] &&
-	    [list.lastListItem->previous->object isEqual: strings[0]])
+	    [OFListItemObject(OFListItemPrevious(list.lastListItem))
+	    isEqual: strings[0]])
 
 	TEST(@"-[insertObject:afterListItem:]",
 	    [list insertObject: strings[2]
-		 afterListItem: list.firstListItem->next] &&
-	    [list.lastListItem->object isEqual: strings[2]])
+		 afterListItem: OFListItemNext(list.firstListItem)] &&
+	    [list.lastObject isEqual: strings[2]])
 
 	TEST(@"-[count]", list.count == 3)
 
@@ -79,9 +82,10 @@ static OFString *strings[] = {
 	    [OFString stringWithString: strings[1]]])
 
 	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
-	    [list.firstListItem->object isEqual: strings[0]] &&
-	    [list.firstListItem->next->object isEqual: strings[1]] &&
-	    [list.lastListItem->object isEqual: strings[2]])
+	    [list.firstObject isEqual: strings[0]] &&
+	    [OFListItemObject(OFListItemNext(list.firstListItem))
+	    isEqual: strings[1]] &&
+	    [list.lastObject isEqual: strings[2]])
 
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 
@@ -94,10 +98,10 @@ static OFString *strings[] = {
 	i = 0;
 	ok = true;
 	while ((obj = [enumerator nextObject]) != nil) {
-		if (![obj isEqual: iter->object])
+		if (![obj isEqual: OFListItemObject(iter)])
 			ok = false;
 
-		iter = iter->next;
+		iter = OFListItemNext(iter);
 		i++;
 	}
 
@@ -118,10 +122,10 @@ static OFString *strings[] = {
 	ok = true;
 
 	for (OFString *object in list) {
-		if (![object isEqual: iter->object])
+		if (![object isEqual: OFListItemObject(iter)])
 			ok = false;
 
-		iter = iter->next;
+		iter = OFListItemNext(iter);
 		i++;
 	}
 
