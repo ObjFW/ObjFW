@@ -739,7 +739,7 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		OFString *path = OFSocketAddressUNIXPath(address);
 
 		if (path != nil) {
-			hash = [path hash];
+			hash = path.hash;
 			objc_autoreleasePoolPop(pool);
 			return hash;
 		}
