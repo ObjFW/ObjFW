@@ -56,7 +56,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
-#define MIN_READ_SIZE 512
+#define minReadSize 512
 
 @implementation OFStream
 @synthesize buffersWrites = _buffersWrites;
@@ -133,13 +133,12 @@
 		 * remainder - even if that means more copying of data - than
 		 * to do a syscall for every read.
 		 */
-		if (length < MIN_READ_SIZE) {
-			char tmp[MIN_READ_SIZE], *readBuffer;
+		if (length < minReadSize) {
+			char tmp[minReadSize], *readBuffer;
 			size_t bytesRead;
 
-			bytesRead = [self
-			    lowlevelReadIntoBuffer: tmp
-					    length: MIN_READ_SIZE];
+			bytesRead = [self lowlevelReadIntoBuffer: tmp
+							  length: minReadSize];
 
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);

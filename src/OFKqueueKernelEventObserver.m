@@ -34,7 +34,7 @@
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
-#define EVENTLIST_SIZE 64
+#define eventListSize 64
 
 @implementation OFKqueueKernelEventObserver
 - (instancetype)init
@@ -156,7 +156,7 @@
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	struct timespec timeout;
-	struct kevent eventList[EVENTLIST_SIZE];
+	struct kevent eventList[eventListSize];
 	int events;
 
 	if ([self of_processReadBuffers])
@@ -165,7 +165,7 @@
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
 
-	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
+	events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)

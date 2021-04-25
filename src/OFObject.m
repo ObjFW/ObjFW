@@ -78,16 +78,16 @@ extern struct stret OFForward_stret(id, SEL, ...);
 # define OFForward_stret OFMethodNotFound_stret
 #endif
 
-struct pre_ivar {
+struct PreIvars {
 	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	OFSpinlock retainCountSpinlock;
 #endif
 };
 
-#define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
+#define PRE_IVARS_ALIGN ((sizeof(struct PreIvars) + \
     (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_IVARS ((struct pre_ivar *)(void *)((char *)self - PRE_IVARS_ALIGN))
+#define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
 	Class isa;
@@ -310,11 +310,11 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		@throw (id)&allocFailedException;
 	}
 
-	((struct pre_ivar *)instance)->retainCount = 1;
+	((struct PreIvars *)instance)->retainCount = 1;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
-	    &((struct pre_ivar *)instance)->retainCountSpinlock) != 0) {
+	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
 		free(instance);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];

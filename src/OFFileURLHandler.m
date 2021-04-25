@@ -95,11 +95,11 @@ typedef struct {
 	OFTimeInterval st_birthtime;
 	DWORD fileAttributes;
 # endif
-} of_stat_t;
+} Stat;
 #elif defined(HAVE_STAT64)
-typedef struct stat64 of_stat_t;
+typedef struct stat64 Stat;
 #else
-typedef struct stat of_stat_t;
+typedef struct stat Stat;
 #endif
 
 #ifdef OF_WINDOWS
@@ -127,9 +127,9 @@ releaseReaddirMutex(void)
 #endif
 
 #ifdef OF_WINDOWS
-static int (*func__wutime64)(const wchar_t *, struct __utimbuf64 *);
-static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
-static WINAPI BOOLEAN (*func_CreateHardLinkW)(LPCWSTR, LPCWSTR,
+static int (*_wutime64FuncPtr)(const wchar_t *, struct __utimbuf64 *);
+static WINAPI BOOLEAN (*createSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
+static WINAPI BOOLEAN (*createHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
 #endif
 
@@ -196,7 +196,7 @@ retrieveError(void)
 #endif
 
 static int
-of_stat(OFString *path, of_stat_t *buffer)
+statWrapper(OFString *path, Stat *buffer)
 {
 #if defined(OF_WINDOWS)
 	WIN32_FILE_ATTRIBUTE_DATA data;
@@ -339,7 +339,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 }
 
 static int
-of_lstat(OFString *path, of_stat_t *buffer)
+lstatWrapper(OFString *path, Stat *buffer)
 {
 #if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && \
     !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
@@ -354,12 +354,12 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	return 0;
 #else
-	return of_stat(path, buffer);
+	return statWrapper(path, buffer);
 #endif
 }
 
 static void
-setTypeAttribute(OFMutableFileAttributes attributes, of_stat_t *s)
+setTypeAttribute(OFMutableFileAttributes attributes, Stat *s)
 {
 	if (S_ISREG(s->st_mode))
 		[attributes setObject: OFFileTypeRegular forKey: OFFileType];
@@ -391,7 +391,7 @@ setTypeAttribute(OFMutableFileAttributes attributes, of_stat_t *s)
 }
 
 static void
-setDateAttributes(OFMutableFileAttributes attributes, of_stat_t *s)
+setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
 	/* FIXME: We could be more precise on some OSes */
 	[attributes
@@ -411,7 +411,7 @@ setDateAttributes(OFMutableFileAttributes attributes, of_stat_t *s)
 }
 
 static void
-setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, of_stat_t *s)
+setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_uid]
@@ -482,7 +482,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	HANDLE handle;
 	OFString *destination;
 
-	if (func_CreateSymbolicLinkW == NULL)
+	if (createSymbolicLinkWFuncPtr == NULL)
 		return;
 
 	if ((handle = CreateFileW(path.UTF16String, 0, (FILE_SHARE_READ |
@@ -554,14 +554,14 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 #ifdef OF_WINDOWS
 	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
-		func__wutime64 = (int (*)(const wchar_t *,
+		_wutime64FuncPtr = (int (*)(const wchar_t *,
 		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
 
 	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
-		func_CreateSymbolicLinkW =
+		createSymbolicLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
 		    GetProcAddress(module, "CreateSymbolicLinkW");
-		func_CreateHardLinkW =
+		createHardLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR,
 		    LPSECURITY_ATTRIBUTES))
 		    GetProcAddress(module, "CreateHardLinkW");
@@ -577,9 +577,9 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 + (bool)of_directoryExistsAtPath: (OFString *)path
 {
-	of_stat_t s;
+	Stat s;
 
-	if (of_stat(path, &s) != 0)
+	if (statWrapper(path, &s) != 0)
 		return false;
 
 	return S_ISDIR(s.st_mode);
@@ -603,7 +603,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 	int error;
-	of_stat_t s;
+	Stat s;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -613,7 +613,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	path = URL.fileSystemRepresentation;
 
-	if ((error = of_lstat(path, &s)) != 0)
+	if ((error = lstatWrapper(path, &s)) != 0)
 		@throw [OFRetrieveItemAttributesFailedException
 		    exceptionWithURL: URL
 			       errNo: error];
@@ -657,7 +657,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		modificationDate = lastAccessDate;
 
 #if defined(OF_WINDOWS)
-	if (func__wutime64 != NULL) {
+	if (_wutime64FuncPtr != NULL) {
 		struct __utimbuf64 times = {
 			.actime =
 			    (__time64_t)lastAccessDate.timeIntervalSince1970,
@@ -665,7 +665,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			    (__time64_t)modificationDate.timeIntervalSince1970
 		};
 
-		if (func__wutime64([path UTF16String], &times) != 0)
+		if (_wutime64FuncPtr([path UTF16String], &times) != 0)
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithURL: URL
 				  attributes: attributes
@@ -909,7 +909,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 - (bool)fileExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_stat_t s;
+	Stat s;
 	bool ret;
 
 	if (URL == nil)
@@ -918,7 +918,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) != 0) {
+	if (statWrapper(URL.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -933,7 +933,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 - (bool)directoryExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_stat_t s;
+	Stat s;
 	bool ret;
 
 	if (URL == nil)
@@ -942,7 +942,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) != 0) {
+	if (statWrapper(URL.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -1245,7 +1245,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 	int error;
-	of_stat_t s;
+	Stat s;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -1255,7 +1255,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	path = URL.fileSystemRepresentation;
 
-	if ((error = of_lstat(path, &s)) != 0)
+	if ((error = lstatWrapper(path, &s)) != 0)
 		@throw [OFRemoveItemFailedException exceptionWithURL: URL
 							       errNo: error];
 
@@ -1357,11 +1357,11 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			    destinationURL: destination
 				     errNo: errno];
 # else
-	if (func_CreateHardLinkW == NULL)
+	if (createHardLinkWFuncPtr == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	if (!func_CreateHardLinkW(destinationPath.UTF16String,
+	if (!createHardLinkWFuncPtr(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
 		@throw [OFLinkFailedException
 		    exceptionWithSourceURL: source
@@ -1398,11 +1398,12 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			      target: target
 			       errNo: errno];
 # else
-	if (func_CreateSymbolicLinkW == NULL)
+	if (createSymbolicLinkWFuncPtr == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	if (!func_CreateSymbolicLinkW(path.UTF16String, target.UTF16String, 0))
+	if (!createSymbolicLinkWFuncPtr(path.UTF16String, target.UTF16String,
+	    0))
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithURL: URL
 			      target: target

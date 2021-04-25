@@ -41,7 +41,7 @@
 
 #import "OFInitializationFailedException.h"
 
-#define MAX_SUBFORMAT_LEN 64
+#define maxSubformatLen 64
 
 #ifndef HAVE_ASPRINTF
 /*
@@ -56,7 +56,7 @@
 struct context {
 	const char *format;
 	size_t formatLen;
-	char subformat[MAX_SUBFORMAT_LEN + 1];
+	char subformat[maxSubformatLen + 1];
 	size_t subformatLen;
 	va_list arguments;
 	char *buffer;
@@ -171,7 +171,7 @@ static bool
 appendSubformat(struct context *ctx, const char *subformat,
     size_t subformatLen)
 {
-	if (ctx->subformatLen + subformatLen > MAX_SUBFORMAT_LEN)
+	if (ctx->subformatLen + subformatLen > maxSubformatLen)
 		return false;
 
 	memcpy(ctx->subformat + ctx->subformatLen, subformat, subformatLen);
@@ -720,7 +720,7 @@ formatConversionSpecifierState(struct context *ctx)
 		free(tmp);
 	}
 
-	memset(ctx->subformat, 0, MAX_SUBFORMAT_LEN);
+	memset(ctx->subformat, 0, maxSubformatLen);
 	ctx->subformatLen = 0;
 	ctx->lengthModifier = LengthModifierNone;
 	ctx->useLocale = false;
@@ -746,7 +746,7 @@ OFVASPrintF(char **string, const char *format, va_list arguments)
 
 	ctx.format = format;
 	ctx.formatLen = strlen(format);
-	memset(ctx.subformat, 0, MAX_SUBFORMAT_LEN + 1);
+	memset(ctx.subformat, 0, maxSubformatLen + 1);
 	ctx.subformatLen = 0;
 	va_copy(ctx.arguments, arguments);
 	ctx.bufferLen = 0;

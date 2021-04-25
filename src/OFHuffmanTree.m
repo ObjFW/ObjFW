@@ -36,7 +36,7 @@ newTree(void)
 }
 
 static void
-insertTree(OFHuffmanTree *tree, uint16_t code, uint8_t length, uint16_t value)
+treeInsert(OFHuffmanTree *tree, uint16_t code, uint8_t length, uint16_t value)
 {
 	while (length > 0) {
 		uint8_t bit;
@@ -98,7 +98,7 @@ OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 			uint8_t length = lengths[i];
 
 			if (length > 0)
-				insertTree(tree, nextCode[length]++, length, i);
+				treeInsert(tree, nextCode[length]++, length, i);
 		}
 	} @finally {
 		OFFreeMemory(lengthCount);

@@ -17,19 +17,19 @@
 
 #import "OFCRC16.h"
 
-#define CRC16_MAGIC 0xA001
+static const uint16_t CRC16Magic = 0xA001;
 
 uint16_t
-OFCRC16(uint16_t crc, const void *bytes_, size_t length)
+OFCRC16(uint16_t CRC, const void *bytes_, size_t length)
 {
 	const unsigned char *bytes = bytes_;
 
 	for (size_t i = 0; i < length; i++) {
-		crc ^= bytes[i];
+		CRC ^= bytes[i];
 
 		for (uint8_t j = 0; j < 8; j++)
-			crc = (crc >> 1) ^ (CRC16_MAGIC & (~(crc & 1) + 1));
+			CRC = (CRC >> 1) ^ (CRC16Magic & (~(CRC & 1) + 1));
 	}
 
-	return crc;
+	return CRC;
 }

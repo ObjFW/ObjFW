@@ -30,7 +30,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFLoadPluginFailedException.h"
 
-typedef OFPlugin *(*init_plugin_t)(void);
+typedef OFPlugin *(*PluginInit)(void);
 
 OFPluginHandle
 OFDLOpen(OFString *path, OFDLOpenFlags flags)
@@ -85,7 +85,7 @@ OFDLError(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFPluginHandle handle;
-	init_plugin_t initPlugin;
+	PluginInit initPlugin;
 	OFPlugin *plugin;
 
 #if defined(OF_MACOS)
@@ -105,8 +105,8 @@ OFDLError(void)
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (init_plugin_t)(uintptr_t)OFDLSym(handle, "init_plugin");
-	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
+	initPlugin = (PluginInit)(uintptr_t)OFDLSym(handle, "OFPluginInit");
+	if (initPlugin == (PluginInit)0 || (plugin = initPlugin()) == nil) {
 		OFDLClose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];

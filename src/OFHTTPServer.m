@@ -44,8 +44,6 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
-#define BUFFER_SIZE 1024
-
 /*
  * FIXME: Key normalization replaces headers like "DNT" with "Dnt".
  * FIXME: Errors are not reported to the user.

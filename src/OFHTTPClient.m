@@ -48,7 +48,7 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
-#define REDIRECTS_DEFAULT 10
+static const unsigned int defaultRedirects = 10;
 
 OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate>
@@ -1205,7 +1205,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 {
-	return [self performRequest: request redirects: REDIRECTS_DEFAULT];
+	return [self performRequest: request redirects: defaultRedirects];
 }
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
@@ -1227,7 +1227,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 {
-	[self asyncPerformRequest: request redirects: REDIRECTS_DEFAULT];
+	[self asyncPerformRequest: request redirects: defaultRedirects];
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request

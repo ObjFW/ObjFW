@@ -37,8 +37,6 @@
  * writing binary), it checks that the handle is indeed a console.
  */
 
-#define OF_STDIO_STREAM_WIN32_CONSOLE_M
-
 #include "config.h"
 
 #include <assert.h>

@@ -2447,24 +2447,24 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint].UTF8String;
 #endif
-	char *endPointer = NULL;
+	char *endPtr = NULL;
 	float value;
 
 	errno = 0;
 #ifdef HAVE_STRTOF_L
-	value = strtof_l(UTF8String, &endPointer, cLocale);
+	value = strtof_l(UTF8String, &endPtr, cLocale);
 #else
-	value = strtof(UTF8String, &endPointer);
+	value = strtof(UTF8String, &endPtr);
 #endif
 
 	if (value == HUGE_VALF && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
 
 	/* Check if there are any invalid chars left */
-	if (endPointer != NULL)
-		for (; *endPointer != '\0'; endPointer++)
+	if (endPtr != NULL)
+		for (; *endPtr != '\0'; endPtr++)
 			/* Use isspace since strtof uses the same. */
-			if (!isspace((unsigned char)*endPointer))
+			if (!isspace((unsigned char)*endPtr))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2500,24 +2500,24 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint].UTF8String;
 #endif
-	char *endPointer = NULL;
+	char *endPtr = NULL;
 	double value;
 
 	errno = 0;
 #ifdef HAVE_STRTOD_L
-	value = strtod_l(UTF8String, &endPointer, cLocale);
+	value = strtod_l(UTF8String, &endPtr, cLocale);
 #else
-	value = strtod(UTF8String, &endPointer);
+	value = strtod(UTF8String, &endPtr);
 #endif
 
 	if (value == HUGE_VAL && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
 
 	/* Check if there are any invalid chars left */
-	if (endPointer != NULL)
-		for (; *endPointer != '\0'; endPointer++)
+	if (endPtr != NULL)
+		for (; *endPtr != '\0'; endPtr++)
 			/* Use isspace since strtod uses the same. */
-			if (!isspace((unsigned char)*endPointer))
+			if (!isspace((unsigned char)*endPtr))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);

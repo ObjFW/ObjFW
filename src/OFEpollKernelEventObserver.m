@@ -33,7 +33,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
 
-#define EVENTLIST_SIZE 64
+#define eventListSize 64
 
 static const OFMapTableFunctions mapFunctions = { NULL };
 
@@ -190,13 +190,13 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	OFNull *nullObject = [OFNull null];
-	struct epoll_event eventList[EVENTLIST_SIZE];
+	struct epoll_event eventList[eventListSize];
 	int events;
 
 	if ([self of_processReadBuffers])
 		return;
 
-	events = epoll_wait(_epfd, eventList, EVENTLIST_SIZE,
+	events = epoll_wait(_epfd, eventList, eventListSize,
 	    (timeInterval != -1 ? timeInterval * 1000 : -1));
 
 	if (events < 0)

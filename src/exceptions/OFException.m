@@ -51,7 +51,7 @@ typedef enum {
 	_URC_END_OF_STACK = 5
 }_Unwind_Reason_Code;
 
-struct backtrace_ctx {
+struct BacktraceCtx {
 	void **backtrace;
 	uint8_t i;
 };
@@ -254,11 +254,11 @@ OFWindowsStatusToString(LSTATUS status)
 
 #ifdef HAVE__UNWIND_BACKTRACE
 static _Unwind_Reason_Code
-backtrace_callback(struct _Unwind_Context *ctx, void *data)
+backtraceCallback(struct _Unwind_Context *ctx, void *data)
 {
-	struct backtrace_ctx *bt = data;
+	struct BacktraceCtx *bt = data;
 
-	if (bt->i < OF_BACKTRACE_SIZE) {
+	if (bt->i < OFBacktraceSize) {
 # ifndef HAVE_ARM_EHABI_EXCEPTIONS
 		bt->backtrace[bt->i++] = (void *)_Unwind_GetIP(ctx);
 # else
@@ -283,13 +283,13 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 #ifdef HAVE__UNWIND_BACKTRACE
 - (instancetype)init
 {
-	struct backtrace_ctx ctx;
+	struct BacktraceCtx ctx;
 
 	self = [super init];
 
 	ctx.backtrace = _backtrace;
 	ctx.i = 0;
-	_Unwind_Backtrace(backtrace_callback, &ctx);
+	_Unwind_Backtrace(backtraceCallback, &ctx);
 
 	return self;
 }
@@ -308,8 +308,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (uint8_t i = 0;
-	    i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
+	for (uint8_t i = 0; i < OFBacktraceSize && _backtrace[i] != NULL; i++) {
 # ifdef HAVE_DLADDR
 		Dl_info info;
 

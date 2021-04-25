@@ -166,10 +166,10 @@ static struct {
 } alloc_failed_exception;
 
 #ifndef OF_HAVE_ATOMIC_OPS
-# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
-# define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
-static OFSpinlock blockSpinlocks[NUM_SPINLOCKS];
-static OFSpinlock byrefSpinlocks[NUM_SPINLOCKS];
+# define numSpinlocks 8	/* needs to be a power of 2 */
+# define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (numSpinlocks - 1)
+static OFSpinlock blockSpinlocks[numSpinlocks];
+static OFSpinlock byrefSpinlocks[numSpinlocks];
 #endif
 
 void *
@@ -374,7 +374,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 + (void)load
 {
 #ifndef OF_HAVE_ATOMIC_OPS
-	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
+	for (size_t i = 0; i < numSpinlocks; i++)
 		if (OFSpinlockNew(&blockSpinlocks[i]) != 0 ||
 		    OFSpinlockNew(&byrefSpinlocks[i]) != 0)
 			@throw [OFInitializationFailedException

@@ -13,8 +13,6 @@
  * file.
  */
 
-#define OF_STDIO_STREAM_WIN32CONSOLE_H
-
 #import "OFStdIOStream.h"
 
 OF_ASSUME_NONNULL_BEGIN

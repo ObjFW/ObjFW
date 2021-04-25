@@ -24,11 +24,11 @@
 
 #import "ProgressBar.h"
 
-#define GIBIBYTE (1024 * 1024 * 1024)
-#define MEBIBYTE (1024 * 1024)
-#define KIBIBYTE (1024)
+static const float oneKibibyte = 1024;
+static const float oneMebibyte = 1024 * oneKibibyte;
+static const float oneGibibyte = 1024 * oneMebibyte;
 
-#define UPDATE_INTERVAL 0.1
+static const OFTimeInterval updateInterval = 0.1;
 
 #ifndef HAVE_TRUNCF
 # define truncf(x) trunc(x)
@@ -50,7 +50,7 @@
 		_startDate = [[OFDate alloc] init];
 		_lastReceivedDate = [[OFDate alloc] init];
 		_drawTimer = [[OFTimer
-		    scheduledTimerWithTimeInterval: UPDATE_INTERVAL
+		    scheduledTimerWithTimeInterval: updateInterval
 					    target: self
 					  selector: @selector(draw)
 					   repeats: true] retain];
@@ -179,21 +179,21 @@
 		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
 		    (uint8_t)_ETA % 60];
 
-	if (_BPS >= GIBIBYTE) {
+	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / GIBIBYTE];
+		    @"%,7.2f", _BPS / oneGibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_gibs",
 		    @"%[num] GiB/s",
 		    @"num", num)];
-	} else if (_BPS >= MEBIBYTE) {
+	} else if (_BPS >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / MEBIBYTE];
+		    @"%,7.2f", _BPS / oneMebibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_mibs",
 		    @"%[num] MiB/s",
 		    @"num", num)];
-	} else if (_BPS >= KIBIBYTE) {
+	} else if (_BPS >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / KIBIBYTE];
+		    @"%,7.2f", _BPS / oneKibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_kibs",
 		    @"%[num] KiB/s",
 		    @"num", num)];
@@ -210,21 +210,21 @@
 {
 	[OFStdOut writeString: @"\r  "];
 
-	if (_resumedFrom + _received >= GIBIBYTE) {
+	if (_resumedFrom + _received >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", (float)(_resumedFrom + _received) / GIBIBYTE];
+		    @"%,7.2f", (float)(_resumedFrom + _received) / oneGibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_gib",
 		    @"%[num] GiB",
 		    @"num", num)];
-	} else if (_resumedFrom + _received >= MEBIBYTE) {
+	} else if (_resumedFrom + _received >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", (float)(_resumedFrom + _received) / MEBIBYTE];
+		    @"%,7.2f", (float)(_resumedFrom + _received) / oneMebibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_mib",
 		    @"%[num] MiB",
 		    @"num", num)];
-	} else if (_resumedFrom + _received >= KIBIBYTE) {
+	} else if (_resumedFrom + _received >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", (float)(_resumedFrom + _received) / KIBIBYTE];
+		    @"%,7.2f", (float)(_resumedFrom + _received) / oneKibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_kib",
 		    @"%[num] KiB",
 		    @"num", num)];
@@ -247,21 +247,21 @@
 		_BPS = (float)_received /
 		    -(float)_startDate.timeIntervalSinceNow;
 
-	if (_BPS >= GIBIBYTE) {
+	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / GIBIBYTE];
+		    @"%,7.2f", _BPS / oneGibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_gibs",
 		    @"%[num] GiB/s",
 		    @"num", num)];
-	} else if (_BPS >= MEBIBYTE) {
+	} else if (_BPS >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / MEBIBYTE];
+		    @"%,7.2f", _BPS / oneMebibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_mibs",
 		    @"%[num] MiB/s",
 		    @"num", num)];
-	} else if (_BPS >= KIBIBYTE) {
+	} else if (_BPS >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
-		    @"%,7.2f", _BPS / KIBIBYTE];
+		    @"%,7.2f", _BPS / oneKibibyte];
 		[OFStdOut writeString: OF_LOCALIZED(@"progress_kibs",
 		    @"%[num] KiB/s",
 		    @"num", num)];

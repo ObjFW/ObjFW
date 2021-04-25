@@ -24,7 +24,7 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
-#define BLOCK_SIZE 128
+static const size_t blockSize = 128;
 
 @interface OFSHA384Or512Hash ()
 - (void)of_resetState;
@@ -137,7 +137,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 + (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 + (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
@@ -195,7 +195,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 - (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 - (id)copy

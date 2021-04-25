@@ -116,7 +116,7 @@ releaseMutex(void)
 #endif
 
 #ifdef OF_WINDOWS
-static __time64_t (*func__mktime64)(struct tm *);
+static __time64_t (*_mktime64FuncPtr)(struct tm *);
 #endif
 
 #ifdef HAVE_GMTIME_R
@@ -354,7 +354,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 #ifdef OF_WINDOWS
 	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
-		func__mktime64 = (__time64_t (*)(struct tm *))
+		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
 #endif
 
@@ -477,8 +477,8 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 	if (tz == SHRT_MAX) {
 #ifdef OF_WINDOWS
-		if (func__mktime64 != NULL) {
-			if ((seconds = func__mktime64(&tm)) == -1)
+		if (_mktime64FuncPtr != NULL) {
+			if ((seconds = _mktime64FuncPtr(&tm)) == -1)
 				@throw [OFInvalidFormatException exception];
 		} else {
 #endif

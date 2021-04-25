@@ -63,8 +63,8 @@ static void inCommentOpeningState(OFXMLParser *);
 static void inCommentState1(OFXMLParser *);
 static void inCommentState2(OFXMLParser *);
 static void inDOCTYPEState(OFXMLParser *);
-typedef void (*state_function_t)(OFXMLParser *);
-static state_function_t lookupTable[] = {
+typedef void (*StateFunction)(OFXMLParser *);
+static StateFunction lookupTable[] = {
 	[OFXMLParserStateInByteOrderMark] = inByteOrderMarkState,
 	[OFXMLParserStateOutsideTag] = outsideTagState,
 	[OFXMLParserStateTagOpened] = tagOpenedState,

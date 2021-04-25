@@ -23,8 +23,8 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
-#define DIGEST_SIZE 16
-#define BLOCK_SIZE 64
+static const size_t digestSize = 16;
+static const size_t blockSize = 64;
 
 OF_DIRECT_MEMBERS
 @interface OFMD5Hash ()
@@ -128,12 +128,12 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 + (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 + (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
@@ -181,12 +181,12 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 - (id)copy

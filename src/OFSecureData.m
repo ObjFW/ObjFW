@@ -35,7 +35,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#define CHUNK_SIZE 16
+static const size_t chunkSize = 16;
 
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 struct page {
@@ -98,7 +98,7 @@ static struct page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
 	    CHAR_BIT;
 	struct page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -184,7 +184,7 @@ removePageIfEmpty(struct page *page)
 {
 	unsigned char *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
 	    CHAR_BIT;
 
 	for (size_t i = 0; i < mapSize; i++)
@@ -219,12 +219,12 @@ allocateMemory(struct page *page, size_t bytes)
 {
 	size_t chunks, chunksLeft, pageSize, i, firstChunk;
 
-	bytes = OFRoundUpToPowerOf2(CHUNK_SIZE, bytes);
-	chunks = chunksLeft = bytes / CHUNK_SIZE;
+	bytes = OFRoundUpToPowerOf2(chunkSize, bytes);
+	chunks = chunksLeft = bytes / chunkSize;
 	firstChunk = 0;
 	pageSize = [OFSystemInfo pageSize];
 
-	for (i = 0; i < pageSize / CHUNK_SIZE; i++) {
+	for (i = 0; i < pageSize / chunkSize; i++) {
 		if (OFBitsetIsSet(page->map, i)) {
 			chunksLeft = chunks;
 			firstChunk = i + 1;
@@ -239,7 +239,7 @@ allocateMemory(struct page *page, size_t bytes)
 		for (size_t j = firstChunk; j < firstChunk + chunks; j++)
 			OFBitsetSet(page->map, j);
 
-		return page->page + (CHUNK_SIZE * firstChunk);
+		return page->page + (chunkSize * firstChunk);
 	}
 
 	return NULL;
@@ -250,9 +250,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 	size_t chunks, chunkIndex;
 
-	bytes = OFRoundUpToPowerOf2(CHUNK_SIZE, bytes);
-	chunks = bytes / CHUNK_SIZE;
-	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / CHUNK_SIZE;
+	bytes = OFRoundUpToPowerOf2(chunkSize, bytes);
+	chunks = bytes / chunkSize;
+	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / chunkSize;
 
 	OFZeroMemory(pointer, bytes);
 

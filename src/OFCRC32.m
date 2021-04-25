@@ -17,19 +17,19 @@
 
 #import "OFCRC32.h"
 
-#define CRC32_MAGIC 0xEDB88320
+static const uint32_t CRC32Magic = 0xEDB88320;
 
 uint32_t
-OFCRC32(uint32_t crc, const void *bytes_, size_t length)
+OFCRC32(uint32_t CRC, const void *bytes_, size_t length)
 {
 	const unsigned char *bytes = bytes_;
 
 	for (size_t i = 0; i < length; i++) {
-		crc ^= bytes[i];
+		CRC ^= bytes[i];
 
 		for (uint8_t j = 0; j < 8; j++)
-			crc = (crc >> 1) ^ (CRC32_MAGIC & (~(crc & 1) + 1));
+			CRC = (CRC >> 1) ^ (CRC32Magic & (~(CRC & 1) + 1));
 	}
 
-	return crc;
+	return CRC;
 }

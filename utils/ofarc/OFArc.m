@@ -42,7 +42,7 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#define BUFFER_SIZE 4096
+#define bufferSize 4096
 
 OF_APPLICATION_DELEGATE(OFArc)
 
@@ -687,11 +687,11 @@ error:
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName
 {
-	char buffer[BUFFER_SIZE];
+	char buffer[bufferSize];
 	size_t length;
 
 	@try {
-		length = [input readIntoBuffer: buffer length: BUFFER_SIZE];
+		length = [input readIntoBuffer: buffer length: bufferSize];
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)

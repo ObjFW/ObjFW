@@ -32,10 +32,10 @@
 #import "TableGenerator.h"
 #import "copyright.h"
 
-#define UNICODE_DATA_URL \
-	@"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt"
-#define CASE_FOLDING_URL \
-	@"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt"
+static OFString *const unicodeDataURL =
+    @"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
+static OFString *const caseFoldingURL =
+    @"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
 
 OF_APPLICATION_DELEGATE(TableGenerator)
 
@@ -69,7 +69,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeString: @"Downloading UnicodeData.txt…"];
 	_state = STATE_UNICODE_DATA;
 	request = [OFHTTPRequest requestWithURL:
-	    [OFURL URLWithString: UNICODE_DATA_URL]];
+	    [OFURL URLWithString: unicodeDataURL]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
@@ -169,7 +169,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeString: @"Downloading CaseFolding.txt…"];
 	_state = STATE_CASE_FOLDING;
 	request = [OFHTTPRequest requestWithURL:
-	    [OFURL URLWithString: CASE_FOLDING_URL]];
+	    [OFURL URLWithString: caseFoldingURL]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
