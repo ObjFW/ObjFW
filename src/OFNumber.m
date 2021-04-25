@@ -44,16 +44,16 @@
 
 #ifdef OF_OBJFW_RUNTIME
 enum Tag {
-	TagChar,
-	TagShort,
-	TagInt,
-	TagLong,
-	TagLongLong,
-	TagUnsignedChar,
-	TagUnsignedShort,
-	TagUnsignedInt,
-	TagUnsignedLong,
-	TagUnsignedLongLong,
+	tagChar,
+	tagShort,
+	tagInt,
+	tagLong,
+	tagLongLong,
+	tagUnsignedChar,
+	tagUnsignedShort,
+	tagUnsignedInt,
+	tagUnsignedLong,
+	tagUnsignedLongLong,
 };
 static const uint_fast8_t tagBits = 4;
 static const uintptr_t tagMask = 0xF;
@@ -174,7 +174,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned char)value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned char)value << tagBits) | TagChar);
+		    ((uintptr_t)(unsigned char)value << tagBits) | tagChar);
 
 		if (ret != nil)
 			return ret;
@@ -193,7 +193,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned short)value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned short)value << tagBits) | TagShort);
+		    ((uintptr_t)(unsigned short)value << tagBits) | tagShort);
 
 		if (ret != nil)
 			return ret;
@@ -212,7 +212,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned int)value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned int)value << tagBits) | TagInt);
+		    ((uintptr_t)(unsigned int)value << tagBits) | tagInt);
 
 		if (ret != nil)
 			return ret;
@@ -231,7 +231,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if ((unsigned long)value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned long)value << tagBits) | TagLong);
+		    ((uintptr_t)(unsigned long)value << tagBits) | tagLong);
 
 		if (ret != nil)
 			return ret;
@@ -251,7 +251,7 @@ isFloat(OFNumber *number)
 	} else if ((unsigned long long)value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
 		    ((uintptr_t)(unsigned long long)value << tagBits) |
-		    TagLongLong);
+		    tagLongLong);
 
 		if (ret != nil)
 			return ret;
@@ -270,7 +270,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | TagUnsignedChar);
+		    ((uintptr_t)value << tagBits) | tagUnsignedChar);
 
 		if (ret != nil)
 			return ret;
@@ -289,7 +289,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | TagUnsignedShort);
+		    ((uintptr_t)value << tagBits) | tagUnsignedShort);
 
 		if (ret != nil)
 			return ret;
@@ -308,7 +308,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | TagUnsignedInt);
+		    ((uintptr_t)value << tagBits) | tagUnsignedInt);
 
 		if (ret != nil)
 			return ret;
@@ -327,7 +327,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | TagUnsignedLong);
+		    ((uintptr_t)value << tagBits) | tagUnsignedLong);
 
 		if (ret != nil)
 			return ret;
@@ -346,7 +346,7 @@ isFloat(OFNumber *number)
 #ifdef OF_OBJFW_RUNTIME
 	} else if (value <= (UINTPTR_MAX >> tagBits)) {
 		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | TagUnsignedLongLong);
+		    ((uintptr_t)value << tagBits) | tagUnsignedLongLong);
 
 		if (ret != nil)
 			return ret;
@@ -415,25 +415,25 @@ isFloat(OFNumber *number)
 	uintptr_t value = object_getTaggedPointerValue(self);
 
 	switch (value & tagMask) {
-	case TagChar:
+	case tagChar:
 		return @encode(signed char);
-	case TagShort:
+	case tagShort:
 		return @encode(short);
-	case TagInt:
+	case tagInt:
 		return @encode(int);
-	case TagLong:
+	case tagLong:
 		return @encode(long);
-	case TagLongLong:
+	case tagLongLong:
 		return @encode(long long);
-	case TagUnsignedChar:
+	case tagUnsignedChar:
 		return @encode(unsigned char);
-	case TagUnsignedShort:
+	case tagUnsignedShort:
 		return @encode(unsigned short);
-	case TagUnsignedInt:
+	case tagUnsignedInt:
 		return @encode(unsigned int);
-	case TagUnsignedLong:
+	case tagUnsignedLong:
 		return @encode(unsigned long);
-	case TagUnsignedLongLong:
+	case tagUnsignedLongLong:
 		return @encode(unsigned long long);
 	default:
 		@throw [OFInvalidArgumentException exception];
@@ -444,25 +444,25 @@ isFloat(OFNumber *number)
 	uintptr_t value = object_getTaggedPointerValue(self);		  \
 									  \
 	switch (value & tagMask) {					  \
-	case TagChar:							  \
+	case tagChar:							  \
 		return (signed char)(unsigned char)(value >> tagBits);	  \
-	case TagShort:							  \
+	case tagShort:							  \
 		return (short)(unsigned short)(value >> tagBits);	  \
-	case TagInt:							  \
+	case tagInt:							  \
 		return (int)(unsigned int)(value >> tagBits);		  \
-	case TagLong:							  \
+	case tagLong:							  \
 		return (long)(unsigned long)(value >> tagBits);		  \
-	case TagLongLong:						  \
+	case tagLongLong:						  \
 		return (long long)(unsigned long long)(value >> tagBits); \
-	case TagUnsignedChar:						  \
+	case tagUnsignedChar:						  \
 		return (unsigned char)(value >> tagBits);		  \
-	case TagUnsignedShort:						  \
+	case tagUnsignedShort:						  \
 		return (unsigned short)(value >> tagBits);		  \
-	case TagUnsignedInt:						  \
+	case tagUnsignedInt:						  \
 		return (unsigned int)(value >> tagBits);		  \
-	case TagUnsignedLong:						  \
+	case tagUnsignedLong:						  \
 		return (unsigned long)(value >> tagBits);		  \
-	case TagUnsignedLongLong:					  \
+	case tagUnsignedLongLong:					  \
 		return (unsigned long long)(value >> tagBits);		  \
 	default:							  \
 		@throw [OFInvalidArgumentException exception];		  \

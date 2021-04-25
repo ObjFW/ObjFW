@@ -25,9 +25,9 @@ const char *
 OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 {
 	enum {
-		StateSearchConversionSpecifier,
-		StateInConversionSpecifier
-	} state = StateSearchConversionSpecifier;
+		stateSearchConversionSpecifier,
+		stateInConversionSpecifier
+	} state = stateSearchConversionSpecifier;
 	size_t j, bufferLen, formatLen;
 
 	bufferLen = strlen(buffer);
@@ -39,15 +39,14 @@ OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 			return NULL;
 
 		switch (state) {
-		case StateSearchConversionSpecifier:
+		case stateSearchConversionSpecifier:
 			if (format[i] == '%')
-				state = StateInConversionSpecifier;
+				state = stateInConversionSpecifier;
 			else if (format[i] != buffer[j++])
 				return NULL;
 
 			break;
-
-		case StateInConversionSpecifier:;
+		case stateInConversionSpecifier:;
 			int k, maxLen, number = 0;
 
 			switch (format[i]) {
@@ -221,7 +220,7 @@ OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 				break;
 			}
 
-			state = StateSearchConversionSpecifier;
+			state = stateSearchConversionSpecifier;
 
 			break;
 		}

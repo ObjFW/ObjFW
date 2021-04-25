@@ -791,7 +791,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 	if (([string isKindOfClass: [OFUTF8String class]] ||
 	    [string isKindOfClass: [OFMutableUTF8String class]]) &&
-	    _s->hashed && string->_s->hashed && _s->hash != string->_s->hash)
+	    _s->hasHash && string->_s->hasHash && _s->hash != string->_s->hash)
 		return false;
 
 	if (strcmp(_s->cString, string.UTF8String) != 0)
@@ -919,7 +919,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 {
 	unsigned long hash;
 
-	if (_s->hashed)
+	if (_s->hasHash)
 		return _s->hash;
 
 	OFHashInit(&hash);
@@ -942,7 +942,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	OFHashFinalize(&hash);
 
 	_s->hash = hash;
-	_s->hashed = true;
+	_s->hasHash = true;
 
 	return hash;
 }

@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t        cStringLength;
 		bool          isUTF8;
 		size_t        length;
-		bool          hashed;
+		bool          hasHash;
 		unsigned long hash;
 		bool          freeWhenDone;
 	} *restrict _s;

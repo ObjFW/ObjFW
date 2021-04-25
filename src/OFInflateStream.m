@@ -40,20 +40,20 @@
 #endif
 
 enum State {
-	StateBlockHeader,
-	StateUncompressedBlockHeader,
-	StateUncompressedBlock,
-	StateHuffmanTree,
-	StateHuffmanBlock
+	stateBlockHeader,
+	stateUncompressedBlockHeader,
+	stateUncompressedBlock,
+	stateHuffmanTree,
+	stateHuffmanBlock
 };
 
 enum HuffmanState {
-	HuffmanStateWriteValue,
-	HuffmanStateAwaitCode,
-	HuffmanStateAwaitLengthExtraBits,
-	HuffmanStateAwaitDistance,
-	HuffmanStateAwaitDistanceExtraBits,
-	HuffmanStateProcessPair
+	huffmanStateWriteValue,
+	huffmanStateAwaitCode,
+	huffmanStateAwaitLengthExtraBits,
+	huffmanStateAwaitDistance,
+	huffmanStateAwaitDistanceExtraBits,
+	huffmanStateProcessPair
 };
 
 #ifndef OF_INFLATE64_STREAM_M
@@ -209,14 +209,14 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 	OFFreeMemory(_slidingWindow);
 
-	if (_state == StateHuffmanTree) {
+	if (_state == stateHuffmanTree) {
 		OFFreeMemory(_context.huffmanTree.lengths);
 
 		if (_context.huffmanTree.codeLenTree != NULL)
 			OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
 	}
 
-	if (_state == StateHuffmanTree || _state == StateHuffmanBlock) {
+	if (_state == stateHuffmanTree || _state == stateHuffmanBlock) {
 		if (_context.huffman.litLenTree != fixedLitLenTree)
 			OFHuffmanTreeFree(_context.huffman.litLenTree);
 		if (_context.huffman.distTree != fixedDistTree)
@@ -243,7 +243,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 start:
 	switch ((enum State)_state) {
-	case StateBlockHeader:
+	case stateBlockHeader:
 		if OF_UNLIKELY (_inLastBlock) {
 			[_stream unreadFromBuffer: _buffer + _bufferIndex
 					   length: _bufferLength -
@@ -261,20 +261,20 @@ start:
 
 		switch (bits >> 1) {
 		case 0: /* No compression */
-			_state = StateUncompressedBlockHeader;
+			_state = stateUncompressedBlockHeader;
 			_bitIndex = 8;
 			_context.uncompressedHeader.position = 0;
 			memset(_context.uncompressedHeader.length, 0, 4);
 			break;
 		case 1: /* Fixed Huffman */
-			_state = StateHuffmanBlock;
-			_context.huffman.state = HuffmanStateAwaitCode;
+			_state = stateHuffmanBlock;
+			_context.huffman.state = huffmanStateAwaitCode;
 			_context.huffman.litLenTree = fixedLitLenTree;
 			_context.huffman.distTree = fixedDistTree;
 			_context.huffman.treeIter = fixedLitLenTree;
 			break;
 		case 2: /* Dynamic Huffman */
-			_state = StateHuffmanTree;
+			_state = stateHuffmanTree;
 			_context.huffmanTree.lengths = NULL;
 			_context.huffmanTree.receivedCount = 0;
 			_context.huffmanTree.value = 0xFE;
@@ -287,7 +287,7 @@ start:
 		}
 
 		goto start;
-	case StateUncompressedBlockHeader:
+	case stateUncompressedBlockHeader:
 #define CTX _context.uncompressedHeader
 		/* FIXME: This can be done more efficiently than unreading */
 		[_stream unreadFromBuffer: _buffer + _bufferIndex
@@ -305,7 +305,7 @@ start:
 		    (uint16_t)~(CTX.length[2] | (CTX.length[3] << 8)))
 			@throw [OFInvalidFormatException exception];
 
-		_state = StateUncompressedBlock;
+		_state = stateUncompressedBlock;
 
 		/*
 		 * Do not reorder! _context.uncompressed.position and
@@ -317,7 +317,7 @@ start:
 
 		goto start;
 #undef CTX
-	case StateUncompressedBlock:
+	case stateUncompressedBlock:
 #define CTX _context.uncompressed
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
@@ -343,11 +343,11 @@ start:
 
 		CTX.position += tmp;
 		if OF_UNLIKELY (CTX.position == CTX.length)
-			_state = StateBlockHeader;
+			_state = stateBlockHeader;
 
 		goto start;
 #undef CTX
-	case StateHuffmanTree:
+	case stateHuffmanTree:
 #define CTX _context.huffmanTree
 		if OF_LIKELY (CTX.value == 0xFE) {
 			if OF_LIKELY (CTX.litLenCodesCount == 0xFF) {
@@ -489,18 +489,18 @@ start:
 		 * _context.huffman and _context.huffmanTree, thus no need to
 		 * set them.
 		 */
-		_state = StateHuffmanBlock;
-		_context.huffman.state = HuffmanStateAwaitCode;
+		_state = stateHuffmanBlock;
+		_context.huffman.state = huffmanStateAwaitCode;
 		_context.huffman.treeIter = CTX.litLenTree;
 
 		goto start;
 #undef CTX
-	case StateHuffmanBlock:
+	case stateHuffmanBlock:
 #define CTX _context.huffman
 		for (;;) {
 			uint8_t extraBits, lengthCodeIndex;
 
-			if OF_UNLIKELY (CTX.state == HuffmanStateWriteValue) {
+			if OF_UNLIKELY (CTX.state == huffmanStateWriteValue) {
 				if OF_UNLIKELY (length == 0)
 					return bytesWritten;
 
@@ -512,24 +512,24 @@ start:
 				    (_slidingWindowIndex + 1) &
 				    _slidingWindowMask;
 
-				CTX.state = HuffmanStateAwaitCode;
+				CTX.state = huffmanStateAwaitCode;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
 			if OF_UNLIKELY (CTX.state ==
-			    HuffmanStateAwaitLengthExtraBits) {
+			    huffmanStateAwaitLengthExtraBits) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
 				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.length += bits;
 
-				CTX.state = HuffmanStateAwaitDistance;
+				CTX.state = huffmanStateAwaitDistance;
 				CTX.treeIter = CTX.distTree;
 			}
 
 			/* Distance of length distance pair */
-			if (CTX.state == HuffmanStateAwaitDistance) {
+			if (CTX.state == huffmanStateAwaitDistance) {
 				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value))
 					return bytesWritten;
@@ -544,7 +544,7 @@ start:
 				if (extraBits > 0) {
 					if OF_UNLIKELY (!tryReadBits(self,
 					    &bits, extraBits)) {
-#define HSADEB HuffmanStateAwaitDistanceExtraBits
+#define HSADEB huffmanStateAwaitDistanceExtraBits
 						CTX.state = HSADEB;
 #undef HSADEB
 						CTX.extraBits = extraBits;
@@ -554,20 +554,20 @@ start:
 					CTX.distance += bits;
 				}
 
-				CTX.state = HuffmanStateProcessPair;
+				CTX.state = huffmanStateProcessPair;
 			} else if (CTX.state ==
-			    HuffmanStateAwaitDistanceExtraBits) {
+			    huffmanStateAwaitDistanceExtraBits) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
 				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.distance += bits;
 
-				CTX.state = HuffmanStateProcessPair;
+				CTX.state = huffmanStateProcessPair;
 			}
 
 			/* Length distance pair */
-			if (CTX.state == HuffmanStateProcessPair) {
+			if (CTX.state == huffmanStateProcessPair) {
 				for (uint_fast16_t j = 0; j < CTX.length; j++) {
 					uint16_t idx;
 
@@ -590,7 +590,7 @@ start:
 					    _slidingWindowMask;
 				}
 
-				CTX.state = HuffmanStateAwaitCode;
+				CTX.state = huffmanStateAwaitCode;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
@@ -605,14 +605,14 @@ start:
 				if (CTX.distTree != fixedDistTree)
 					OFHuffmanTreeFree(CTX.distTree);
 
-				_state = StateBlockHeader;
+				_state = stateBlockHeader;
 				goto start;
 			}
 
 			/* Literal byte */
 			if OF_LIKELY (value < 256) {
 				if OF_UNLIKELY (length == 0) {
-					CTX.state = HuffmanStateWriteValue;
+					CTX.state = huffmanStateWriteValue;
 					CTX.value = value;
 					return bytesWritten;
 				}
@@ -642,7 +642,7 @@ start:
 				    extraBits)) {
 					CTX.extraBits = extraBits;
 					CTX.state =
-					    HuffmanStateAwaitLengthExtraBits;
+					    huffmanStateAwaitLengthExtraBits;
 					return bytesWritten;
 				}
 
@@ -650,7 +650,7 @@ start:
 			}
 
 			CTX.treeIter = CTX.distTree;
-			CTX.state = HuffmanStateAwaitDistance;
+			CTX.state = huffmanStateAwaitDistance;
 		}
 
 		break;

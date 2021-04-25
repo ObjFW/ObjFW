@@ -25,21 +25,21 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
 
-enum state {
-	StateBlockHeader,
-	StateCodeLenCodesCount,
-	StateCodeLenTree,
-	StateCodeLenTreeSingle,
-	StateLitLenCodesCount,
-	StateLitLenTree,
-	StateLitLenTreeSingle,
-	StateDistCodesCount,
-	StateDistTree,
-	StateDistTreeSingle,
-	StateBlockLitLen,
-	StateBlockDistLength,
-	StateBlockDistLengthExtra,
-	StateBlockLenDistPair
+enum State {
+	stateBlockHeader,
+	stateCodeLenCodesCount,
+	stateCodeLenTree,
+	stateCodeLenTreeSingle,
+	stateLitLenCodesCount,
+	stateLitLenTree,
+	stateLitLenTreeSingle,
+	stateDistCodesCount,
+	stateDistTree,
+	stateDistTreeSingle,
+	stateBlockLitLen,
+	stateBlockDistLength,
+	stateBlockDistLengthExtra,
+	stateBlockLenDistPair
 };
 
 @implementation OFLHADecompressingStream
@@ -148,20 +148,20 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_stream.atEndOfStream && _bufferLength - _bufferIndex == 0 &&
-	    _state == StateBlockHeader)
+	    _state == stateBlockHeader)
 		return 0;
 
 start:
-	switch ((enum state)_state) {
-	case StateBlockHeader:
+	switch ((enum State)_state) {
+	case stateBlockHeader:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 16))
 			return bytesWritten;
 
 		_symbolsLeft = bits;
 
-		_state = StateCodeLenCodesCount;
+		_state = stateCodeLenCodesCount;
 		goto start;
-	case StateCodeLenCodesCount:
+	case stateCodeLenCodesCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 			return bytesWritten;
 
@@ -169,7 +169,7 @@ start:
 			@throw [OFInvalidFormatException exception];
 
 		if OF_UNLIKELY (bits == 0) {
-			_state = StateCodeLenTreeSingle;
+			_state = stateCodeLenTreeSingle;
 			goto start;
 		}
 
@@ -178,9 +178,9 @@ start:
 		_codesLengths = OFAllocZeroedMemory(bits, 1);
 		_skip = true;
 
-		_state = StateCodeLenTree;
+		_state = stateCodeLenTree;
 		goto start;
-	case StateCodeLenTree:
+	case stateCodeLenTree:
 		while (_codesReceived < _codesCount) {
 			if OF_UNLIKELY (_currentIsExtendedLength) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 1))
@@ -228,17 +228,17 @@ start:
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
-		_state = StateLitLenCodesCount;
+		_state = stateLitLenCodesCount;
 		goto start;
-	case StateCodeLenTreeSingle:
+	case stateCodeLenTreeSingle:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 			return bytesWritten;
 
 		_codeLenTree = OFHuffmanTreeNewSingle(bits);
 
-		_state = StateLitLenCodesCount;
+		_state = stateLitLenCodesCount;
 		goto start;
-	case StateLitLenCodesCount:
+	case stateLitLenCodesCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
 			return bytesWritten;
 
@@ -249,7 +249,7 @@ start:
 			OFHuffmanTreeFree(_codeLenTree);
 			_codeLenTree = NULL;
 
-			_state = StateLitLenTreeSingle;
+			_state = stateLitLenTreeSingle;
 			goto start;
 		}
 
@@ -259,9 +259,9 @@ start:
 		_skip = false;
 
 		_treeIter = _codeLenTree;
-		_state = StateLitLenTree;
+		_state = stateLitLenTree;
 		goto start;
-	case StateLitLenTree:
+	case stateLitLenTree:
 		while (_codesReceived < _codesCount) {
 			if OF_UNLIKELY (_skip) {
 				uint16_t skipCount;
@@ -320,17 +320,17 @@ start:
 		OFHuffmanTreeFree(_codeLenTree);
 		_codeLenTree = NULL;
 
-		_state = StateDistCodesCount;
+		_state = stateDistCodesCount;
 		goto start;
-	case StateLitLenTreeSingle:
+	case stateLitLenTreeSingle:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
 			return bytesWritten;
 
 		_litLenTree = OFHuffmanTreeNewSingle(bits);
 
-		_state = StateDistCodesCount;
+		_state = stateDistCodesCount;
 		goto start;
-	case StateDistCodesCount:
+	case stateDistCodesCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distanceBits))
 			return bytesWritten;
 
@@ -338,7 +338,7 @@ start:
 			@throw [OFInvalidFormatException exception];
 
 		if OF_UNLIKELY (bits == 0) {
-			_state = StateDistTreeSingle;
+			_state = stateDistTreeSingle;
 			goto start;
 		}
 
@@ -347,9 +347,9 @@ start:
 		_codesLengths = OFAllocZeroedMemory(bits, 1);
 
 		_treeIter = _codeLenTree;
-		_state = StateDistTree;
+		_state = stateDistTree;
 		goto start;
-	case StateDistTree:
+	case stateDistTree:
 		while (_codesReceived < _codesCount) {
 			if OF_UNLIKELY (_currentIsExtendedLength) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 1))
@@ -382,24 +382,24 @@ start:
 		_codesLengths = NULL;
 
 		_treeIter = _litLenTree;
-		_state = StateBlockLitLen;
+		_state = stateBlockLitLen;
 		goto start;
-	case StateDistTreeSingle:
+	case stateDistTreeSingle:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distanceBits))
 			return bytesWritten;
 
 		_distTree = OFHuffmanTreeNewSingle(bits);
 
 		_treeIter = _litLenTree;
-		_state = StateBlockLitLen;
+		_state = stateBlockLitLen;
 		goto start;
-	case StateBlockLitLen:
+	case stateBlockLitLen:
 		if OF_UNLIKELY (_symbolsLeft == 0) {
 			OFHuffmanTreeFree(_litLenTree);
 			OFHuffmanTreeFree(_distTree);
 			_litLenTree = _distTree = NULL;
 
-			_state = StateBlockHeader;
+			_state = stateBlockHeader;
 
 			/*
 			 * We must return here, as there is no indication
@@ -441,11 +441,11 @@ start:
 		} else {
 			_length = value - 253;
 			_treeIter = _distTree;
-			_state = StateBlockDistLength;
+			_state = stateBlockDistLength;
 		}
 
 		goto start;
-	case StateBlockDistLength:
+	case stateBlockDistLength:
 		if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
 		    &_treeIter, &value))
 			return bytesWritten;
@@ -453,17 +453,17 @@ start:
 		_distance = value;
 
 		_state = (value < 2
-		    ? StateBlockLenDistPair : StateBlockDistLengthExtra);
+		    ? stateBlockLenDistPair : stateBlockDistLengthExtra);
 		goto start;
-	case StateBlockDistLengthExtra:
+	case stateBlockDistLengthExtra:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distance - 1))
 			return bytesWritten;
 
 		_distance = bits + (1u << (_distance - 1));
 
-		_state = StateBlockLenDistPair;
+		_state = stateBlockLenDistPair;
 		goto start;
-	case StateBlockLenDistPair:
+	case stateBlockLenDistPair:
 		for (uint_fast16_t i = 0; i < _length; i++) {
 			uint32_t idx;
 
@@ -487,7 +487,7 @@ start:
 		_symbolsLeft--;
 
 		_treeIter = _litLenTree;
-		_state = StateBlockLitLen;
+		_state = stateBlockLitLen;
 		goto start;
 	}
 
@@ -500,7 +500,7 @@ start:
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return (_stream.atEndOfStream &&
-	    _bufferLength - _bufferIndex == 0 && _state == StateBlockHeader);
+	    _bufferLength - _bufferIndex == 0 && _state == stateBlockHeader);
 }
 
 - (int)fileDescriptorForReading

@@ -81,7 +81,7 @@
 
 		assert(startTableSize >= 1 && middleTableSize >= 1);
 
-		_s->hashed = false;
+		_s->hasHash = false;
 
 		for (i = 0; i < _s->cStringLength; i++) {
 			if (isStart)
@@ -178,7 +178,7 @@
 	OFFreeMemory(unicodeString);
 
 	OFFreeMemory(_s->cString);
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
 
@@ -205,7 +205,7 @@
 
 	/* Shortcut if old and new character both are ASCII */
 	if (character < 0x80 && !(_s->cString[idx] & 0x80)) {
-		_s->hashed = false;
+		_s->hasHash = false;
 		_s->cString[idx] = character;
 		return;
 	}
@@ -217,7 +217,7 @@
 	    _s->cStringLength - idx, &c)) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	if (lenNew == (size_t)lenOld)
 		memcpy(_s->cString + idx, buffer, lenNew);
@@ -275,7 +275,7 @@
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String,
@@ -304,7 +304,7 @@
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
@@ -350,7 +350,7 @@
 
 	UTF8StringLength = string.UTF8StringLength;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, string.UTF8String,
@@ -391,7 +391,7 @@
 
 		tmp[j] = '\0';
 
-		_s->hashed = false;
+		_s->hasHash = false;
 		_s->cString = OFResizeMemory(_s->cString,
 		    _s->cStringLength + j + 1, 1);
 		memcpy(_s->cString + _s->cStringLength, tmp, j + 1);
@@ -429,7 +429,7 @@
 {
 	size_t i, j;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = _s->cStringLength - 1; i < _s->cStringLength / 2;
@@ -517,7 +517,7 @@
 		    _s->cStringLength);
 
 	newCStringLength = _s->cStringLength + string.UTF8StringLength;
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1, 1);
 
 	memmove(_s->cString + idx + string.UTF8StringLength,
@@ -554,7 +554,7 @@
 
 	memmove(_s->cString + start, _s->cString + end,
 	    _s->cStringLength - end);
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->length -= range.length;
 	_s->cStringLength -= end - start;
 	_s->cString[_s->cStringLength] = 0;
@@ -591,7 +591,7 @@
 
 	newCStringLength = _s->cStringLength - (end - start) +
 	    replacement.UTF8StringLength;
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	/*
 	 * If the new string is bigger, we need to resize it first so we can
@@ -702,7 +702,7 @@
 	newCString[newCStringLength] = 0;
 
 	OFFreeMemory(_s->cString);
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
@@ -723,7 +723,7 @@
 		if (!OFASCIIIsSpace(_s->cString[i]))
 			break;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cStringLength -= i;
 	_s->length -= i;
 
@@ -743,7 +743,7 @@
 	size_t d;
 	char *p;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {
@@ -770,7 +770,7 @@
 	size_t d, i;
 	char *p;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {

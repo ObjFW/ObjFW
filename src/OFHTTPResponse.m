@@ -122,54 +122,54 @@ encodingForContentType(OFString *contentType)
 	const char *UTF8String = contentType.UTF8String;
 	size_t last, length = contentType.UTF8StringLength;
 	enum {
-		StateType,
-		StateBeforeParamName,
-		StateParamName,
-		StateParamValueOrQuote,
-		StateParamValue,
-		StateParamQuotedValue,
-		StateAfterParamValue
-	} state = StateType;
+		stateType,
+		stateBeforeParamName,
+		stateParamName,
+		stateParamValueOrQuote,
+		stateParamValue,
+		stateParamQuotedValue,
+		stateAfterParamValue
+	} state = stateType;
 	OFString *name = nil, *value = nil, *charset = nil;
 	OFStringEncoding ret;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
-		case StateType:
+		case stateType:
 			if (UTF8String[i] == ';') {
-				state = StateBeforeParamName;
+				state = stateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case StateBeforeParamName:
+		case stateBeforeParamName:
 			if (UTF8String[i] == ' ')
 				last = i + 1;
 			else {
-				state = StateParamName;
+				state = stateParamName;
 				i--;
 			}
 			break;
-		case StateParamName:
+		case stateParamName:
 			if (UTF8String[i] == '=') {
 				name = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				state = StateParamValueOrQuote;
+				state = stateParamValueOrQuote;
 				last = i + 1;
 			}
 			break;
-		case StateParamValueOrQuote:
+		case stateParamValueOrQuote:
 			if (UTF8String[i] == '"') {
-				state = StateParamQuotedValue;
+				state = stateParamQuotedValue;
 				last = i + 1;
 			} else {
-				state = StateParamValue;
+				state = stateParamValue;
 				i--;
 			}
 			break;
-		case StateParamValue:
+		case stateParamValue:
 			if (UTF8String[i] == ';') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -180,11 +180,11 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = StateBeforeParamName;
+				state = stateBeforeParamName;
 				last = i + 1;
 			}
 			break;
-		case StateParamQuotedValue:
+		case stateParamQuotedValue:
 			if (UTF8String[i] == '"') {
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -193,19 +193,19 @@ encodingForContentType(OFString *contentType)
 				if ([name isEqual: @"charset"])
 					charset = value;
 
-				state = StateAfterParamValue;
+				state = stateAfterParamValue;
 			}
 			break;
-		case StateAfterParamValue:
+		case stateAfterParamValue:
 			if (UTF8String[i] == ';') {
-				state = StateBeforeParamName;
+				state = stateBeforeParamName;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ')
 				return OFStringEncodingAutodetect;
 			break;
 		}
 	}
-	if (state == StateParamValue) {
+	if (state == stateParamValue) {
 		value = [OFString stringWithUTF8String: UTF8String + last
 						length: length - last];
 		value = value.stringByDeletingTrailingWhitespaces;

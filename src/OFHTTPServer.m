@@ -74,9 +74,9 @@ OF_DIRECT_MEMBERS
 	OFHTTPServer *_server;
 	OFTimer *_timer;
 	enum {
-		StateAwaitingProlog,
-		StateParsingHeaders,
-		StateSendResponse
+		stateAwaitingProlog,
+		stateParsingHeaders,
+		stateSendResponse
 	} _state;
 	uint8_t _HTTPMinorVersion;
 	OFHTTPRequestMethod _method;
@@ -290,7 +290,7 @@ normalizedKey(OFString *key)
 					  selector: @selector(
 							cancelAsyncRequests)
 					   repeats: false] retain];
-		_state = StateAwaitingProlog;
+		_state = stateAwaitingProlog;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -324,9 +324,9 @@ normalizedKey(OFString *key)
 
 	@try {
 		switch (_state) {
-		case StateAwaitingProlog:
+		case stateAwaitingProlog:
 			return [self parseProlog: line];
-		case StateParsingHeaders:
+		case stateParsingHeaders:
 			return [self parseHeaders: line];
 		default:
 			return false;
@@ -389,7 +389,7 @@ normalizedKey(OFString *key)
 
 	_headers = [[OFMutableDictionary alloc] init];
 	_path = [path copy];
-	_state = StateParsingHeaders;
+	_state = stateParsingHeaders;
 
 	return true;
 }
@@ -431,7 +431,7 @@ normalizedKey(OFString *key)
 			_timer = nil;
 		}
 
-		_state = StateSendResponse;
+		_state = stateSendResponse;
 		[self createResponse];
 
 		return false;

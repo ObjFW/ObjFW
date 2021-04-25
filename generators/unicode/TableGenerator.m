@@ -67,7 +67,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFHTTPRequest *request;
 
 	[OFStdOut writeString: @"Downloading UnicodeData.txt…"];
-	_state = STATE_UNICODE_DATA;
+	_state = stateUnicodeData;
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: unicodeDataURL]];
 	[_HTTPClient asyncPerformRequest: request];
@@ -84,10 +84,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeLine: @" done"];
 
 	switch (_state) {
-	case STATE_UNICODE_DATA:
+	case stateUnicodeData:
 		[self parseUnicodeData: response];
 		break;
-	case STATE_CASE_FOLDING:
+	case stateCaseFolding:
 		[self parseCaseFolding: response];
 		break;
 	}
@@ -167,7 +167,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeLine: @" done"];
 
 	[OFStdOut writeString: @"Downloading CaseFolding.txt…"];
-	_state = STATE_CASE_FOLDING;
+	_state = stateCaseFolding;
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: caseFoldingURL]];
 	[_HTTPClient asyncPerformRequest: request];

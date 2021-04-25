@@ -71,46 +71,46 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {
-		StatePreName,
-		StateName,
-		StateExpectValue,
-		StateValue,
-		StateQuotedValue,
-		StatePostQuotedValue,
-		StatePreAttrName,
-		StateAttrName,
-		StateAttrValue
-	} state = StatePreName;
+		statePreName,
+		stateName,
+		stateExpectValue,
+		stateValue,
+		stateQuotedValue,
+		statePostQuotedValue,
+		statePreAttrName,
+		stateAttrName,
+		stateAttrValue
+	} state = statePreName;
 	OFString *name = nil, *value = nil;
 
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
-		case StatePreName:
+		case statePreName:
 			if (characters[i] != ' ') {
-				state = StateName;
+				state = stateName;
 				last = i;
 				i--;
 			}
 			break;
-		case StateName:
+		case stateName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
 				    OFRangeMake(last, i - last)];
-				state = StateExpectValue;
+				state = stateExpectValue;
 			}
 			break;
-		case StateExpectValue:
+		case stateExpectValue:
 			if (characters[i] == '"') {
-				state = StateQuotedValue;
+				state = stateQuotedValue;
 				last = i + 1;
 			} else {
-				state = StateValue;
+				state = stateValue;
 				last = i;
 			}
 
 			i--;
 			break;
-		case StateValue:
+		case stateValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
 				    OFRangeMake(last, i - last)];
@@ -121,10 +121,10 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 							  domain: domain]];
 
 				state = (characters[i] == ';'
-				    ? StatePreAttrName : StatePreName);
+				    ? statePreAttrName : statePreName);
 			}
 			break;
-		case StateQuotedValue:
+		case stateQuotedValue:
 			if (characters[i] == '"') {
 				value = [string substringWithRange:
 				    OFRangeMake(last, i - last)];
@@ -133,31 +133,31 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 							   value: value
 							  domain: domain]];
 
-				state = StatePostQuotedValue;
+				state = statePostQuotedValue;
 			}
 			break;
-		case StatePostQuotedValue:
+		case statePostQuotedValue:
 			if (characters[i] == ';')
-				state = StatePreAttrName;
+				state = statePreAttrName;
 			else if (characters[i] == ',')
-				state = StatePreName;
+				state = statePreName;
 			else
 				@throw [OFInvalidFormatException exception];
 
 			break;
-		case StatePreAttrName:
+		case statePreAttrName:
 			if (characters[i] != ' ') {
-				state = StateAttrName;
+				state = stateAttrName;
 				last = i;
 				i--;
 			}
 			break;
-		case StateAttrName:
+		case stateAttrName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
 				    OFRangeMake(last, i - last)];
 
-				state = StateAttrValue;
+				state = stateAttrValue;
 				last = i + 1;
 			} else if (characters[i] == ';' ||
 			    characters[i] == ',') {
@@ -167,11 +167,11 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				handleAttribute(ret.lastObject, name, nil);
 
 				state = (characters[i] == ';'
-				    ? StatePreAttrName : StatePreName);
+				    ? statePreAttrName : statePreName);
 			}
 
 			break;
-		case StateAttrValue:
+		case stateAttrValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
 				    OFRangeMake(last, i - last)];
@@ -198,22 +198,22 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				handleAttribute(ret.lastObject, name, value);
 
 				state = (characters[i] == ';'
-				    ? StatePreAttrName : StatePreName);
+				    ? statePreAttrName : statePreName);
 			}
 			break;
 		}
 	}
 
 	switch (state) {
-	case StatePreName:
-	case StatePostQuotedValue:
-	case StatePreAttrName:
+	case statePreName:
+	case statePostQuotedValue:
+	case statePreAttrName:
 		break;
-	case StateName:
-	case StateQuotedValue:
+	case stateName:
+	case stateQuotedValue:
 		@throw [OFInvalidFormatException exception];
 		break;
-	case StateValue:
+	case stateValue:
 		value = [string substringWithRange:
 		    OFRangeMake(last, length - last)];
 		[ret addObject: [OFHTTPCookie cookieWithName: name
@@ -221,12 +221,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 						      domain: domain]];
 		break;
 	/* We end up here if the cookie is just foo= */
-	case StateExpectValue:
+	case stateExpectValue:
 		[ret addObject: [OFHTTPCookie cookieWithName: name
 						       value: @""
 						      domain: domain]];
 		break;
-	case StateAttrName:
+	case stateAttrName:
 		if (last != length) {
 			name = [string substringWithRange:
 			    OFRangeMake(last, length - last)];
@@ -234,7 +234,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			handleAttribute(ret.lastObject, name, nil);
 		}
 		break;
-	case StateAttrValue:
+	case stateAttrValue:
 		value = [string substringWithRange:
 		    OFRangeMake(last, length - last)];
 
