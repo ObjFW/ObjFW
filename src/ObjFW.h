@@ -116,7 +116,7 @@
 #import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
 #import "OFXMLComment.h"
-#import "OFXMLProcessingInstructions.h"
+#import "OFXMLProcessingInstruction.h"
 #import "OFXMLParser.h"
 #import "OFXMLElementBuilder.h"
 
@@ -240,31 +240,27 @@
 #endif
 
 #ifdef OF_HAVE_ATOMIC_OPS
-# import "atomic.h"
+# import "OFAtomic.h"
 #endif
-
 #import "OFLocking.h"
+#import "OFOnce.h"
 #import "OFThread.h"
-#import "once.h"
 #ifdef OF_HAVE_THREADS
-# import "thread.h"
-# import "tlskey.h"
-# import "mutex.h"
-# import "condition.h"
-# import "OFThreadPool.h"
-# import "OFMutex.h"
-# import "OFRecursiveMutex.h"
 # import "OFCondition.h"
+# import "OFMutex.h"
+# import "OFPlainCondition.h"
+# import "OFPlainMutex.h"
+# import "OFPlainThread.h"
+# import "OFRecursiveMutex.h"
+# import "OFTLSKey.h"
+# import "OFThreadPool.h"
 #endif
 
-#import "base64.h"
-#import "crc16.h"
-#import "crc32.h"
-#import "huffman_tree.h"
-#import "of_asprintf.h"
-#import "of_strptime.h"
-#import "pbkdf2.h"
-#import "scrypt.h"
-#ifdef OF_HAVE_UNICODE_TABLES
-# import "unicode.h"
-#endif
+#import "OFASPrintF.h"
+#import "OFBase64.h"
+#import "OFCRC16.h"
+#import "OFCRC32.h"
+#import "OFHuffmanTree.h"
+#import "OFPBKDF2.h"
+#import "OFScrypt.h"
+#import "OFStrPTime.h"

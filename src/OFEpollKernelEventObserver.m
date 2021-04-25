@@ -33,9 +33,9 @@
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
 
-#define EVENTLIST_SIZE 64
+#define eventListSize 64
 
-static const of_map_table_functions_t mapFunctions = { NULL };
+static const OFMapTableFunctions mapFunctions = { NULL };
 
 @implementation OFEpollKernelEventObserver
 - (instancetype)init
@@ -187,16 +187,16 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	OFNull *nullObject = [OFNull null];
-	struct epoll_event eventList[EVENTLIST_SIZE];
+	struct epoll_event eventList[eventListSize];
 	int events;
 
 	if ([self of_processReadBuffers])
 		return;
 
-	events = epoll_wait(_epfd, eventList, EVENTLIST_SIZE,
+	events = epoll_wait(_epfd, eventList, eventListSize,
 	    (timeInterval != -1 ? timeInterval * 1000 : -1));
 
 	if (events < 0)
@@ -209,7 +209,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 				continue;
 			}
 

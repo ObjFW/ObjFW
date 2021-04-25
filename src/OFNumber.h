@@ -46,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFNumber: OFValue <OFComparing, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
-	union of_number_value {
+	union {
 		double float_;
 		long long signed_;
 		unsigned long long unsigned_;
@@ -129,10 +129,10 @@ OF_SUBCLASSING_RESTRICTED
 		      objCType: (const char *)objCType OF_UNAVAILABLE;
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
-+ (instancetype)valueWithRange: (of_range_t)range OF_UNAVAILABLE;
-+ (instancetype)valueWithPoint: (of_point_t)point OF_UNAVAILABLE;
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
++ (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
++ (instancetype)valueWithPoint: (OFPoint)point OF_UNAVAILABLE;
++ (instancetype)valueWithSize: (OFSize)size OF_UNAVAILABLE;
++ (instancetype)valueWithRect: (OFRect)rect OF_UNAVAILABLE;
 #endif
 
 /**
@@ -243,12 +243,6 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_UNAVAILABLE
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType OF_UNAVAILABLE;
-- (instancetype)initWithPointer: (const void *)pointer OF_UNAVAILABLE;
-- (instancetype)initWithNonretainedObject: (id)object OF_UNAVAILABLE;
-- (instancetype)initWithRange: (of_range_t)range OF_UNAVAILABLE;
-- (instancetype)initWithPoint: (of_point_t)point OF_UNAVAILABLE;
-- (instancetype)initWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
 #endif
 
 /**
@@ -368,7 +362,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param number The number to compare the number to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (OFNumber *)number;
+- (OFComparisonResult)compare: (OFNumber *)number;
 @end
 
 OF_ASSUME_NONNULL_END

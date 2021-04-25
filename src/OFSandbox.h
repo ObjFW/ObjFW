@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An @ref OFPair for a path to unveil, with the first string being the
  *	  path and the second the permissions.
  */
-typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
+typedef OFPair OF_GENERIC(OFString *, OFString *) *OFSandboxUnveilPath;
 
 /**
  * @class OFSandbox OFSandbox.h ObjFW/OFSandbox.h
@@ -66,7 +66,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 	unsigned int _allowsBPF: 1;
 	unsigned int _allowsUnveil: 1;
 	unsigned int _returnsErrors: 1;
-	OFMutableArray OF_GENERIC(of_sandbox_unveil_path_t) *_unveiledPaths;
+	OFMutableArray OF_GENERIC(OFSandboxUnveilPath) *_unveiledPaths;
 @public
 	size_t _unveiledPathsIndex;
 	OF_RESERVE_IVARS(OFSandbox, 4)
@@ -235,7 +235,7 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
  * @brief A list of unveiled paths.
  */
 @property (readonly, nonatomic)
-    OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+    OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
 
 /**
  * @brief Create a new, autorelease OFSandbox.

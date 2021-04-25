@@ -49,6 +49,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Getting the current directory path failed: %@",
-	    of_strerror(_errNo)];
+	    OFStrError(_errNo)];
 }
 @end

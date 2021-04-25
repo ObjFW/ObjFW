@@ -24,7 +24,7 @@ static OFString *module = @"OFXMLParser";
 static int i = 0;
 
 enum event_type {
-	PROCESSING_INSTRUCTIONS,
+	PROCESSING_INSTRUCTION,
 	TAG_OPEN,
 	TAG_CLOSE,
 	STRING,
@@ -48,12 +48,13 @@ enum event_type {
 
 	switch (i) {
 	case 1:
-		TEST(msg, type == PROCESSING_INSTRUCTIONS &&
-		    [string isEqual: @"xml version='1.0'"])
+		TEST(msg, type == PROCESSING_INSTRUCTION &&
+		    [name isEqual: @"xml"] &&
+		    [string isEqual: @"version='1.0'"])
 		break;
 	case 2:
-		TEST(msg, type == PROCESSING_INSTRUCTIONS &&
-		    [string isEqual: @"p?i"])
+		TEST(msg, type == PROCESSING_INSTRUCTION &&
+		    [name isEqual: @"p?i"] && string == nil)
 		break;
 	case 3:
 		TEST(msg, type == TAG_OPEN && [name isEqual: @"root"] &&
@@ -232,16 +233,17 @@ enum event_type {
 	}
 }
 
--		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)pi
+-			  (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructionWithTarget: (OFString *)target
+				  data: (OFString *)data
 {
 	[self	    parser: parser
-	    didCreateEvent: PROCESSING_INSTRUCTIONS
-		      name: nil
+	    didCreateEvent: PROCESSING_INSTRUCTION
+		      name: target
 		    prefix: nil
 		 namespace: nil
 		attributes: nil
-		    string: pi];
+		    string: data];
 }
 
 -    (void)parser: (OFXMLParser *)parser
@@ -371,17 +373,17 @@ enum event_type {
 	    OFMalformedXMLException, [parser parseString: @"<!["])
 
 	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #1",
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #1",
 	    OFMalformedXMLException,
 	    [parser parseString: @"<?xml version='2.0'?>"])
 
 	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #2",
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #2",
 	    OFInvalidEncodingException,
 	    [parser parseString: @"<?xml encoding='UTF-7'?>"])
 
 	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #3",
+	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #3",
 	    OFMalformedXMLException,
 	    [parser parseString: @"<x><?xml?></x>"])
 

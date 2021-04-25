@@ -29,10 +29,10 @@ OF_ASSUME_NONNULL_BEGIN
 @private
 	OFSecureData *_iVarsData;
 @protected
-	struct of_sha384_or_512_hash_ivars {
+	struct {
 		uint64_t state[8];
 		uint64_t bits[2];
-		union of_sha384_or_512_hash_buffer {
+		union {
 			unsigned char bytes[128];
 			uint64_t words[80];
 		} buffer;

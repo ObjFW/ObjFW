@@ -14,9 +14,8 @@
  */
 
 #import "OFObject.h"
+#import "OFSocket.h"
 #import "OFString.h"
-
-#import "socket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -30,39 +29,37 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of an HTTP request.
  */
-typedef enum {
+typedef enum OFHTTPRequestMethod {
 	/** OPTIONS */
-	OF_HTTP_REQUEST_METHOD_OPTIONS,
+	OFHTTPRequestMethodOptions,
 	/** GET */
-	OF_HTTP_REQUEST_METHOD_GET,
+	OFHTTPRequestMethodGet,
 	/** HEAD */
-	OF_HTTP_REQUEST_METHOD_HEAD,
+	OFHTTPRequestMethodHead,
 	/** POST */
-	OF_HTTP_REQUEST_METHOD_POST,
+	OFHTTPRequestMethodPost,
 	/** PUT */
-	OF_HTTP_REQUEST_METHOD_PUT,
+	OFHTTPRequestMethodPut,
 	/** DELETE */
-	OF_HTTP_REQUEST_METHOD_DELETE,
+	OFHTTPRequestMethodDelete,
 	/** TRACE */
-	OF_HTTP_REQUEST_METHOD_TRACE,
+	OFHTTPRequestMethodTrace,
 	/** CONNECT */
-	OF_HTTP_REQUEST_METHOD_CONNECT
-} of_http_request_method_t;
+	OFHTTPRequestMethodConnect
+} OFHTTPRequestMethod;
 
 /**
- * @struct of_http_request_protocol_version_t \
- *	   OFHTTPRequest.h ObjFW/OFHTTPRequest.h
+ * @struct OFHTTPRequestProtocolVersion OFHTTPRequest.h ObjFW/OFHTTPRequest.h
  *
  * @brief The HTTP version of the HTTP request.
  */
-struct OF_BOXABLE of_http_request_protocol_version_t {
+struct OF_BOXABLE OFHTTPRequestProtocolVersion {
 	/** The major of the HTTP version */
 	unsigned char major;
 	/** The minor of the HTTP version */
 	unsigned char minor;
 };
-typedef struct of_http_request_protocol_version_t
-    of_http_request_protocol_version_t;
+typedef struct OFHTTPRequestProtocolVersion OFHTTPRequestProtocolVersion;
 
 /**
  * @class OFHTTPRequest OFHTTPRequest.h ObjFW/OFHTTPRequest.h
@@ -72,10 +69,10 @@ typedef struct of_http_request_protocol_version_t
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
 	OFURL *_URL;
-	of_http_request_method_t _method;
-	of_http_request_protocol_version_t _protocolVersion;
+	OFHTTPRequestMethod _method;
+	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
 	OF_RESERVE_IVARS(OFHTTPRequest, 4)
 }
@@ -88,7 +85,7 @@ typedef struct of_http_request_protocol_version_t
 /**
  * @brief The protocol version of the HTTP request.
  */
-@property (nonatomic) of_http_request_protocol_version_t protocolVersion;
+@property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
  * @brief The protocol version of the HTTP request as a string.
@@ -98,7 +95,7 @@ typedef struct of_http_request_protocol_version_t
 /**
  * @brief The request method of the HTTP request.
  */
-@property (nonatomic) of_http_request_method_t method;
+@property (nonatomic) OFHTTPRequestMethod method;
 
 /**
  * @brief The headers for the HTTP request.
@@ -111,8 +108,7 @@ typedef struct of_http_request_protocol_version_t
  *
  * @note The setter creates a copy of the remote address.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic)
-    const of_socket_address_t *remoteAddress;
+@property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief Creates a new OFHTTPRequest.
@@ -147,8 +143,8 @@ extern "C" {
  * @param method The request method which should be described as a C string
  * @return A C string describing the specified request method
  */
-extern const char *_Nullable of_http_request_method_to_string(
-    of_http_request_method_t method);
+extern const char *_Nullable OFHTTPRequestMethodName(
+    OFHTTPRequestMethod method);
 
 /**
  * @brief Returns the request method for the specified string.
@@ -156,8 +152,7 @@ extern const char *_Nullable of_http_request_method_to_string(
  * @param string The string for which the request method should be returned
  * @return The request method for the specified string
  */
-extern of_http_request_method_t of_http_request_method_from_string(
-    OFString *string);
+extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string);
 #ifdef __cplusplus
 }
 #endif

@@ -53,7 +53,7 @@ class_copyMethodList(Class class, unsigned int *outCount)
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			methods[i++] = &iter->methods[j];
-	OF_ENSURE(i == count);
+	OFEnsure(i == count);
 	methods[count] = NULL;
 
 	if (outCount != NULL)

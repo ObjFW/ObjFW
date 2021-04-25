@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range of characters for the character set
  * @return A new OFCharacterSet
  */
-+ (instancetype)characterSetWithRange: (of_range_t)range;
++ (instancetype)characterSetWithRange: (OFRange)range;
 
 /**
  * @brief A character set containing all Unicode characters in the category
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range of characters for the character set
  * @return An initialized OFCharacterSet
  */
-- (instancetype)initWithRange: (of_range_t)range;
+- (instancetype)initWithRange: (OFRange)range;
 
 /**
  * @brief Returns whether the specified character is a member of the character
@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    character set
  * @return Whether the specified character is a member of the character set.
  */
-- (bool)characterIsMember: (of_unichar_t)character;
+- (bool)characterIsMember: (OFUnichar)character;
 @end
 
 OF_ASSUME_NONNULL_END

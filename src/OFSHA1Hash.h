@@ -28,10 +28,10 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFSHA1Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
-	struct of_sha1_hash_ivars {
+	struct {
 		uint32_t state[5];
 		uint64_t bits;
-		union of_sha1_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[80];
 		} buffer;

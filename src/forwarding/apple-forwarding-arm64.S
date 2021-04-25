@@ -15,8 +15,8 @@
 
 #include "config.h"
 
-.globl _of_forward
-.globl _of_forward_stret
+.globl _OFForward
+.globl _OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 str_forwardingTargetForSelector_:
@@ -31,8 +31,8 @@ sel_forwardingTargetForSelector_:
 
 .section __TEXT, __text, regular, pure_instructions
 .align 2
-_of_forward:
-_of_forward_stret:
+_OFForward:
+_OFForward_stret:
 	stp	fp, lr, [sp, #-208]!
 	mov	fp, sp
 	sub	sp, sp, #208
@@ -95,4 +95,4 @@ _of_forward_stret:
 	mov	sp, fp
 	ldp	fp, lr, [sp], #208
 
-	b	_of_method_not_found
+	b	_OFMethodNotFound

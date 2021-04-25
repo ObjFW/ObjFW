@@ -68,7 +68,7 @@ static OFString *module = @"OFStream";
 	OFString *str;
 	char *cstr;
 
-	cstr = of_alloc(pageSize - 2, 1);
+	cstr = OFAllocMemory(pageSize - 2, 1);
 	memset(cstr, 'X', pageSize - 3);
 	cstr[pageSize - 3] = '\0';
 
@@ -76,7 +76,7 @@ static OFString *module = @"OFStream";
 	    [(str = [t readLine]) length] == pageSize - 3 &&
 	    !strcmp(str.UTF8String, cstr))
 
-	free(cstr);
+	OFFreeMemory(cstr);
 
 	objc_autoreleasePoolPop(pool);
 }

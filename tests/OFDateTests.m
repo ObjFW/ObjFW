@@ -30,8 +30,8 @@ static OFString *module = @"OFDate";
 	struct tm tm;
 	int16_t tz;
 	const char *dstr = "Wed, 09 Jun 2021 +0200x";
-	TEST(@"of_strptime()",
-	    of_strptime(dstr, "%a, %d %b %Y %z", &tm, &tz) == dstr + 22 &&
+	TEST(@"OFStrPTime()",
+	    OFStrPTime(dstr, "%a, %d %b %Y %z", &tm, &tz) == dstr + 22 &&
 	    tm.tm_wday == 3 && tm.tm_mday == 9 && tm.tm_mon == 5 &&
 	    tm.tm_year == 2021 - 1900 && tz == 2 * 60)
 
@@ -80,7 +80,7 @@ static OFString *module = @"OFDate";
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
 	    ![d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
 
-	TEST(@"-[compare:]", [d1 compare: d2] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare:]", [d1 compare: d2] == OFOrderedAscending)
 
 	TEST(@"-[second]", d1.second == 0 && d2.second == 5)
 

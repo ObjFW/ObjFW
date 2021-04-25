@@ -66,7 +66,7 @@
 	[old release];
 }
 
-- (void)setType: (of_tar_archive_entry_type_t)type
+- (void)setType: (OFTarArchiveEntryType)type
 {
 	_type = type;
 }
