@@ -35,6 +35,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
+
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
@@ -94,20 +100,19 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OFLHAArchiveModeRead;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OFLHAArchiveModeWrite;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OFLHAArchiveModeAppend;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_mode == OFLHAArchiveModeWrite ||
-		    _mode == OFLHAArchiveModeAppend) &&
+		if ((_mode == modeWrite || _mode == modeAppend) &&
 		    ![_stream isKindOfClass: [OFSeekableStream class]])
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OFLHAArchiveModeAppend)
+		if (_mode == modeAppend)
 			[(OFSeekableStream *)_stream seekToOffset: 0
 							   whence: SEEK_END];
 
@@ -154,7 +159,7 @@ OF_DIRECT_MEMBERS
 	char header[21];
 	size_t headerLen;
 
-	if (_mode != OFLHAArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -195,7 +200,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OFLHAArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_lastReturnedStream == nil)
@@ -209,7 +214,7 @@ OF_DIRECT_MEMBERS
 {
 	OFString *compressionMethod;
 
-	if (_mode != OFLHAArchiveModeWrite && _mode != OFLHAArchiveModeAppend)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	compressionMethod = entry.compressionMethod;
