@@ -110,7 +110,6 @@ SRCS = OFASPrintF.m			\
        OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
-       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
@@ -200,7 +199,8 @@ SRCS += OFAdjacentArray.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
-	${RUNTIME_INSTANCE_M}
+	${RUNTIME_INSTANCE_M}		\
+       ${UNICODE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
