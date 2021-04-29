@@ -20,8 +20,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 /**
- * @typedef OFListItem OFList.h ObjFW/OFList.h
+ * @typedef OFListItem
  *
  * @brief A list item.
  *

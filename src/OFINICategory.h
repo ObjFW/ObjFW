@@ -140,8 +140,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified string.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the
- * value of the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
+ * of the first key/value pair found is changed.
  *
  * @param string The string to which the key should be set
  * @param key The key for which the new value should be set
@@ -151,7 +151,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified long long.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is changed.
  *
  * @param longLong The long long to which the key should be set
@@ -162,8 +162,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified bool.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the
- * value of the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
+ * of the first key/value pair found is changed.
  *
  * @param bool_ The bool to which the key should be set
  * @param key The key for which the new value should be set
@@ -173,8 +173,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified float.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the
- * value of the first key/value pair found is changed.
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
+ * of the first key/value pair found is changed.
  *
  * @param float_ The float to which the key should be set
  * @param key The key for which the new value should be set
@@ -184,7 +184,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Sets the value of the specified key to the specified double.
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), the value
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), the value
  * of the first key/value pair found is changed.
  *
  * @param double_ The double to which the key should be set
@@ -210,7 +210,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Removes the value for the specified key
  *
- * If the specified key is a multi-key (see @ref stringValuesForKey:), all
+ * If the specified key is a multi-key (see @ref stringArrayForKey:), all
  * key/value pairs matching the specified key are removed.
  *
  * @param key The key of the value to remove
