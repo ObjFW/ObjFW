@@ -229,6 +229,15 @@ extern const OFFileAttributeType OFFileTypeBlockSpecial;
  * @brief A socket.
  */
 extern const OFFileAttributeType OFFileTypeSocket;
+
+/**
+ * @brief An unknown file type.
+ *
+ * This is different from not having an @ref OFFileType at all in that it means
+ * that retrieving file types is supported, but the particular file type is
+ * unknown.
+ */
+extern const OFFileAttributeType OFFileTypeUnknown;
 #ifdef __cplusplus
 }
 #endif
