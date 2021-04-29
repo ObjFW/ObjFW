@@ -22,6 +22,14 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+/*
+ * Make clang's -Wdocumentation shut about about using @struct on someting it
+ * thinks is not a struct. Doxygen requires it this way.
+ */
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 /**
  * @struct OFListItem OFList.h ObjFW/OFList.h
  *
@@ -30,6 +38,9 @@ OF_ASSUME_NONNULL_BEGIN
  * See @ref OFListItemNext, @ref OFListItemPrevious and @ref OFListItemObject.
  */
 typedef struct _OFListItem *OFListItem;
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 #ifdef __cplusplus
 extern "C" {
