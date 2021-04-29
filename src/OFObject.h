@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A result of a comparison.
  */
-typedef enum OFComparisonResult {
+typedef enum {
 	/** The left object is smaller than the right */
 	OFOrderedAscending = -1,
 	/** Both objects are equal */
@@ -75,9 +75,9 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**
- * @brief An enum for storing endianess.
+ * @brief An enum for representing endianess.
  */
-typedef enum OFByteOrder {
+typedef enum {
 	/** Most significant byte first (big endian) */
 	OFByteOrderBigEndian,
 	/** Least significant byte first (little endian) */
@@ -95,13 +95,12 @@ typedef enum OFByteOrder {
  *
  * @brief A range.
  */
-struct OF_BOXABLE OFRange {
+typedef struct OF_BOXABLE {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
 	size_t length;
-};
-typedef struct OFRange OFRange;
+} OFRange;
 
 /**
  * @brief Creates a new OFRange.
@@ -147,13 +146,12 @@ typedef double OFTimeInterval;
  *
  * @brief A point.
  */
-struct OF_BOXABLE OFPoint {
+typedef struct OF_BOXABLE {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
 	float y;
-};
-typedef struct OFPoint OFPoint;
+} OFPoint;
 
 /**
  * @brief Creates a new OFPoint.
@@ -194,13 +192,12 @@ OFPointEqual(OFPoint point1, OFPoint point2)
  *
  * @brief A size.
  */
-struct OF_BOXABLE OFSize {
+typedef struct OF_BOXABLE {
 	/** The width of the size */
 	float width;
 	/** The height of the size */
 	float height;
-};
-typedef struct OFSize OFSize;
+} OFSize;
 
 /**
  * @brief Creates a new OFSize.
@@ -241,13 +238,12 @@ OFSizeEqual(OFSize size1, OFSize size2)
  *
  * @brief A rectangle.
  */
-struct OF_BOXABLE OFRect {
+typedef struct OF_BOXABLE {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
 	OFSize size;
-};
-typedef struct OFRect OFRect;
+} OFRect;
 
 /**
  * @brief Creates a new OFRect.

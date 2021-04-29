@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The DNS class.
  */
-typedef enum OFDNSClass {
+typedef enum {
 	/** IN */
 	OFDNSClassIN  =   1,
 	/** Any class. Only for queries. */
@@ -37,7 +37,7 @@ typedef enum OFDNSClass {
 /**
  * @brief The type of a DNS resource record.
  */
-typedef enum OFDNSRecordType {
+typedef enum {
 	/** A */
 	OFDNSRecordTypeA     =   1,
 	/** NS */

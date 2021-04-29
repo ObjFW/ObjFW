@@ -65,7 +65,7 @@ typedef OFChar32 OFUnichar;
 /**
  * @brief The encoding of a string.
  */
-typedef enum OFStringEncoding {
+typedef enum {
 	/*
 	 * UTF-8 *has* to be 0, so that if the current @ref OFLocale is
 	 * `nil`, `[OFLocale encoding]` returns UTF-8.
@@ -107,7 +107,7 @@ typedef enum OFStringEncoding {
  *
  * This is a bit mask.
  */
-typedef enum OFStringSearchOptions {
+typedef enum {
 	/** Search backwards in the string */
 	OFStringSearchBackwards = 1
 } OFStringSearchOptions;
@@ -117,7 +117,7 @@ typedef enum OFStringSearchOptions {
  *
  * This is a bit mask.
  */
-typedef enum OFStringSeparationOptions {
+typedef enum {
 	/** Skip empty components */
 	OFStringSkipEmptyComponents = 1
 } OFStringSeparationOptions;

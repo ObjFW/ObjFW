@@ -51,19 +51,19 @@ OF_SUBCLASSING_RESTRICTED
 			uint16_t position, length;
 		} uncompressed;
 		struct {
-			OFHuffmanTree *_Nullable litLenTree;
-			OFHuffmanTree *_Nullable distTree;
-			OFHuffmanTree *_Nullable codeLenTree;
-			OFHuffmanTree *_Nullable treeIter;
+			OFHuffmanTree _Nullable litLenTree;
+			OFHuffmanTree _Nullable distTree;
+			OFHuffmanTree _Nullable codeLenTree;
+			OFHuffmanTree _Nullable treeIter;
 			uint8_t *_Nullable lengths;
 			uint16_t receivedCount;
 			uint8_t value, litLenCodesCount, distCodesCount;
 			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
-			OFHuffmanTree *_Nullable litLenTree;
-			OFHuffmanTree *_Nullable distTree;
-			OFHuffmanTree *_Nullable treeIter;
+			OFHuffmanTree _Nullable litLenTree;
+			OFHuffmanTree _Nullable distTree;
+			OFHuffmanTree _Nullable treeIter;
 			int state;
 			uint16_t value, length, distance, extraBits;
 		} huffman;

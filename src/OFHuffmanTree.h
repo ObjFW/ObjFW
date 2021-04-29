@@ -22,18 +22,18 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-typedef struct OFHuffmanTree {
-	struct OFHuffmanTree *_Nullable leaves[2];
+typedef struct _OFHuffmanTree {
+	struct _OFHuffmanTree *_Nullable leaves[2];
 	uint16_t value;
-} OFHuffmanTree;
+} *OFHuffmanTree;
 
 /* Inlined for performance. */
 static OF_INLINE bool
 OFHuffmanTreeWalk(id _Nullable stream,
     bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
-    OFHuffmanTree *_Nonnull *_Nonnull tree, uint16_t *_Nonnull value)
+    OFHuffmanTree _Nonnull *_Nonnull tree, uint16_t *_Nonnull value)
 {
-	struct OFHuffmanTree *iter = *tree;
+	OFHuffmanTree iter = *tree;
 	uint16_t bits;
 
 	while (iter->value == 0xFFFF) {
@@ -55,10 +55,10 @@ OFHuffmanTreeWalk(id _Nullable stream,
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFHuffmanTree *_Nonnull OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
+extern OFHuffmanTree _Nonnull OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
     uint16_t count);
-extern OFHuffmanTree *_Nonnull OFHuffmanTreeNewSingle(uint16_t value);
-extern void OFHuffmanTreeFree(OFHuffmanTree *_Nonnull tree);
+extern OFHuffmanTree _Nonnull OFHuffmanTreeNewSingle(uint16_t value);
+extern void OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree);
 #ifdef __cplusplus
 }
 #endif

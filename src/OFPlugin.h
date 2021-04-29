@@ -21,7 +21,7 @@
 # include <dlfcn.h>
 typedef void *OFPluginHandle;
 
-typedef enum OFDLOpenFlags {
+typedef enum {
 	OFDLOpenFlagLazy = RTLD_LAZY,
 	OFDLOpenFlagNow  = RTLD_NOW
 } OFDLOpenFlags;
@@ -29,7 +29,7 @@ typedef enum OFDLOpenFlags {
 # include <windows.h>
 typedef HMODULE OFPluginHandle;
 
-typedef enum OFDLOpenFlags {
+typedef enum {
 	OFDLOpenFlagLazy = 0,
 	OFDLOpenFlagNow  = 0
 } OFDLOpenFlags;

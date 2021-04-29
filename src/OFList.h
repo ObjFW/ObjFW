@@ -23,13 +23,13 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @typedef OFListItem
+ * @struct OFListItem OFList.h ObjFW/OFList.h
  *
  * @brief A list item.
  *
  * See @ref OFListItemNext, @ref OFListItemPrevious and @ref OFListItemObject.
  */
-typedef struct OFListItem *OFListItem;
+typedef struct _OFListItem *OFListItem;
 
 #ifdef __cplusplus
 extern "C" {

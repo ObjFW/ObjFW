@@ -26,8 +26,8 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
-struct OFListItem {
-	OFListItem previous, next;
+struct _OFListItem {
+	struct _OFListItem *previous, *next;
 	id object;
 };
 

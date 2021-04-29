@@ -21,7 +21,7 @@
 typedef int OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-typedef struct OFFileHandle *OFFileHandle;
+typedef struct _OFFileHandle *OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 

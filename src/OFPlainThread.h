@@ -44,7 +44,7 @@ typedef struct {
 } *OFPlainThread;
 #endif
 
-typedef struct OFPlainThreadAttributes {
+typedef struct {
 	float priority;
 	size_t stackSize;
 } OFPlainThreadAttributes;
