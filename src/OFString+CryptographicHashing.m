@@ -54,7 +54,7 @@ stringByHashing(Class <OFCryptographicHash> class, OFString *self)
 	objc_autoreleasePoolPop(pool);
 
 	return [OFString stringWithCString: cString
-				  encoding: OF_STRING_ENCODING_ASCII
+				  encoding: OFStringEncodingASCII
 				    length: digestSize * 2];
 }
 

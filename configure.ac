@@ -387,7 +387,6 @@ AS_IF([test x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(INVOCATION_A, "invocation.a")
 	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
@@ -1334,12 +1333,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_HEADER(netinet/tcp.h, [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
-	])
-	AC_CHECK_HEADER(netinet/sctp.h, [
-		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
-		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
-			[Whether we have netinet/sctp.h])
-		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 	AC_CHECK_HEADER(netipx/ipx.h, [

@@ -17,17 +17,17 @@
 
 #import "OFSHA512Hash.h"
 
-#define DIGEST_SIZE 64
+static const size_t digestSize = 64;
 
 @implementation OFSHA512Hash
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (void)of_resetState

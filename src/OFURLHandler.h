@@ -98,9 +98,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param URL The URL to return the attributes for
  * @return A dictionary of attributes for the specified URL, with the keys of
- *	   type @ref of_file_attribute_key_t
+ *	   type @ref OFFileAttributeKey
  */
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL;
 
 /**
  * @brief Sets the attributes for the item at the specified URL.
@@ -110,8 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributes The attributes to set for the specified URL
  * @param URL The URL of the item to set the attributes for
  */
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL;
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL;
 
 /**
  * @brief Checks whether a file exists at the specified URL.

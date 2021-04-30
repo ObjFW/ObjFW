@@ -30,8 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_spx_stream_socket_async_connect_block_t)(
-    id _Nullable exception);
+typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
@@ -122,7 +121,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -138,7 +137,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-		     block: (of_spx_stream_socket_async_connect_block_t)block;
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block;
 
 /**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
@@ -154,8 +153,8 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_spx_stream_socket_async_connect_block_t)block;
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block;
 #endif
 
 /**
@@ -165,7 +164,7 @@ typedef void (^of_spx_stream_socket_async_connect_block_t)(
  *	       pick one and return it.
  * @return The address on which this socket can be reached
  */
-- (of_socket_address_t)bindToPort: (uint16_t)port;
+- (OFSocketAddress)bindToPort: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

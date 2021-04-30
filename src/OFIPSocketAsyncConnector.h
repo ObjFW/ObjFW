@@ -20,9 +20,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @protocol OFIPSocketAsyncConnecting
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+- (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
 - (void)of_closeSocket;
 @end
@@ -46,8 +46,8 @@ OF_ASSUME_NONNULL_BEGIN
 		      delegate: (nullable id)delegate
 			 block: (nullable id)block;
 - (void)didConnect;
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 OF_ASSUME_NONNULL_END

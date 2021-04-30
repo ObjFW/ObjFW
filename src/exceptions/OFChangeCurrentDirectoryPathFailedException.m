@@ -62,6 +62,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to change the current directory path to %@: %@",
-	    _path, of_strerror(_errNo)];
+	    _path, OFStrError(_errNo)];
 }
 @end

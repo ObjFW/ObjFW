@@ -52,28 +52,28 @@ static OFHTTPResponse *response = nil;
 	client = [listener accept];
 
 	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	if (![[client readLine] hasPrefix: @"User-Agent:"])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	if (![[client readLine] isEqual: @"Content-Length: 5"])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	if (![[client readLine] isEqual:
 	    @"Content-Type: application/x-www-form-urlencoded; charset=UTF-8"])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	if (![[client readLine] isEqual:
 	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	if (![[client readLine] isEqual: @""])
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	[client readIntoBuffer: buffer exactLength: 5];
 	if (memcmp(buffer, "Hello", 5) != 0)
-		OF_ENSURE(0);
+		OFEnsure(0);
 
 	[client writeString: @"HTTP/1.0 200 OK\r\n"
 			     @"cONTeNT-lENgTH: 7\r\n"
@@ -99,7 +99,7 @@ static OFHTTPResponse *response = nil;
 	   response: (OFHTTPResponse *)response_
 	  exception: (id)exception
 {
-	OF_ENSURE(exception == nil);
+	OFEnsure(exception == nil);
 
 	response = [response_ retain];
 

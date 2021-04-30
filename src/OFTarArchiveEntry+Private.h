@@ -23,10 +23,10 @@ OF_ASSUME_NONNULL_BEGIN
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveEntry ()
 - (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init);
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding;
+		encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

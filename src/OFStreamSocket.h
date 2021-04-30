@@ -14,8 +14,7 @@
  */
 
 #import "OFStream.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -33,8 +32,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
-typedef bool (^of_stream_socket_async_accept_block_t)(
-    OFStreamSocket *acceptedSocket, id _Nullable exception);
+typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
+    id _Nullable exception);
 #endif
 
 /**
@@ -66,9 +65,9 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
 @interface OFStreamSocket: OFStream <OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _atEndOfStream, _listening;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	OF_RESERVE_IVARS(OFStreamSocket, 4)
 }
 
@@ -82,7 +81,7 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
  *
  * @note This only works for accepted sockets!
  */
-@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
+@property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.
@@ -129,7 +128,7 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -139,7 +138,7 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithBlock: (of_stream_socket_async_accept_block_t)block;
+- (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block;
 
 /**
  * @brief Asynchronously accept an incoming connection.
@@ -149,9 +148,8 @@ typedef bool (^of_stream_socket_async_accept_block_t)(
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			     block: (of_stream_socket_async_accept_block_t)
-					block;
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			     block: (OFStreamSocketAsyncAcceptBlock)block;
 #endif
 @end
 

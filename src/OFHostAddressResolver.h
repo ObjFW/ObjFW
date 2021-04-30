@@ -16,8 +16,7 @@
 #import "OFObject.h"
 #import "OFDNSResolver.h"
 #import "OFRunLoop.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -30,10 +29,10 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFHostAddressResolver: OFObject <OFDNSResolverQueryDelegate>
 {
 	OFString *_host;
-	of_socket_address_family_t _addressFamily;
+	OFSocketAddressFamily _addressFamily;
 	OFDNSResolver *_resolver;
 	OFDNSResolverSettings *_settings;
-	of_run_loop_mode_t _Nullable _runLoopMode;
+	OFRunLoopMode _Nullable _runLoopMode;
 	id <OFDNSResolverHostDelegate> _Nullable _delegate;
 	bool _isFQDN;
 	size_t _searchDomainIndex;
@@ -42,10 +41,10 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
-		 runLoopMode: (nullable of_run_loop_mode_t)runLoopMode
+		 runLoopMode: (nullable OFRunLoopMode)runLoopMode
 		    delegate: (nullable id <OFDNSResolverHostDelegate>)delegate;
 - (void)asyncResolve;
 - (OFData *)resolve;

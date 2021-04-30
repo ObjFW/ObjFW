@@ -25,11 +25,11 @@
 #import "OFTCPSocket.h"
 #import "OFURL.h"
 
-#define BUFFER_LEN 4096
+#define bufferLen 4096
 
 @interface OFSock: OFObject <OFApplicationDelegate, OFStreamDelegate>
 {
-	char _buffer[BUFFER_LEN];
+	char _buffer[bufferLen];
 	OFMutableArray OF_GENERIC(OFPair OF_GENERIC(OFStream *, OFStream *) *)
 	    *_streams;
 	int _errors;
@@ -45,8 +45,8 @@ streamFromString(OFString *string)
 	OFString *scheme;
 
 	if ([string isEqual: @"-"])
-		return [OFPair pairWithFirstObject: of_stdin
-				      secondObject: of_stdout];
+		return [OFPair pairWithFirstObject: OFStdIn
+				      secondObject: OFStdOut];
 
 	URL = [OFURL URLWithString: string];
 	scheme = URL.scheme;
@@ -55,7 +55,7 @@ streamFromString(OFString *string)
 		OFTCPSocket *sock = [OFTCPSocket socket];
 
 		if (URL.port == nil) {
-			[of_stderr writeLine: @"Need a port!"];
+			[OFStdErr writeLine: @"Need a port!"];
 			[OFApplication terminateWithStatus: 1];
 		}
 
@@ -63,7 +63,7 @@ streamFromString(OFString *string)
 		return [OFPair pairWithFirstObject: sock secondObject: sock];
 	}
 
-	[of_stderr writeFormat: @"Invalid protocol: %@\n", scheme];
+	[OFStdErr writeFormat: @"Invalid protocol: %@\n", scheme];
 	[OFApplication terminateWithStatus: 1];
 	abort();
 }
@@ -74,7 +74,7 @@ streamFromString(OFString *string)
 	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
 
 	if (arguments.count < 1) {
-		[of_stderr writeLine: @"Need at least one argument!"];
+		[OFStdErr writeLine: @"Need at least one argument!"];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -89,16 +89,15 @@ streamFromString(OFString *string)
 	}
 
 	if (arguments.count == 1) {
-		of_stdin.delegate = self;
+		OFStdIn.delegate = self;
 
-		[_streams addObject:
-		    [OFPair pairWithFirstObject: of_stdin
-				   secondObject: of_stdout]];
+		[_streams addObject: [OFPair pairWithFirstObject: OFStdIn
+						    secondObject: OFStdOut]];
 	}
 
 	for (OFPair *pair in _streams)
 		[pair.firstObject asyncReadIntoBuffer: _buffer
-					       length: BUFFER_LEN];
+					       length: bufferLen];
 }
 
 - (void)removeDeadStream: (OFStream *)stream
@@ -122,8 +121,8 @@ streamFromString(OFString *string)
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		[of_stderr writeFormat: @"Exception on stream %@: %@\n",
-					stream, exception];
+		[OFStdErr writeFormat: @"Exception on stream %@: %@\n",
+				       stream, exception];
 		_errors++;
 		[self removeDeadStream: stream];
 		return false;

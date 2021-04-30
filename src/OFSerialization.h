@@ -17,8 +17,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_SERIALIZATION_NS @"https://objfw.nil.im/serialization"
-
 @class OFXMLElement;
 
 /**
@@ -40,5 +38,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFString *const OFSerializationNS;
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

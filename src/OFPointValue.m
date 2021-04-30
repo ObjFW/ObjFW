@@ -22,7 +22,7 @@
 @implementation OFPointValue
 @synthesize pointValue = _point;
 
-- (instancetype)initWithPoint: (of_point_t)point
+- (instancetype)initWithPoint: (OFPoint)point
 {
 	self = [super init];
 
@@ -33,7 +33,7 @@
 
 - (const char *)objCType
 {
-	return @encode(of_point_t);
+	return @encode(OFPoint);
 }
 
 - (void)getValue: (void *)value size: (size_t)size
@@ -47,6 +47,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFValue: of_point_t { %f, %f }>", _point.x, _point.y];
+	    @"<OFValue: OFPoint { %f, %f }>", _point.x, _point.y];
 }
 @end

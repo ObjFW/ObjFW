@@ -30,49 +30,49 @@
 #import "OFUnsupportedVersionException.h"
 
 const char *
-of_http_request_method_to_string(of_http_request_method_t method)
+OFHTTPRequestMethodName(OFHTTPRequestMethod method)
 {
 	switch (method) {
-	case OF_HTTP_REQUEST_METHOD_OPTIONS:
+	case OFHTTPRequestMethodOptions:
 		return "OPTIONS";
-	case OF_HTTP_REQUEST_METHOD_GET:
+	case OFHTTPRequestMethodGet:
 		return "GET";
-	case OF_HTTP_REQUEST_METHOD_HEAD:
+	case OFHTTPRequestMethodHead:
 		return "HEAD";
-	case OF_HTTP_REQUEST_METHOD_POST:
+	case OFHTTPRequestMethodPost:
 		return "POST";
-	case OF_HTTP_REQUEST_METHOD_PUT:
+	case OFHTTPRequestMethodPut:
 		return "PUT";
-	case OF_HTTP_REQUEST_METHOD_DELETE:
+	case OFHTTPRequestMethodDelete:
 		return "DELETE";
-	case OF_HTTP_REQUEST_METHOD_TRACE:
+	case OFHTTPRequestMethodTrace:
 		return "TRACE";
-	case OF_HTTP_REQUEST_METHOD_CONNECT:
+	case OFHTTPRequestMethodConnect:
 		return "CONNECT";
 	}
 
 	return NULL;
 }
 
-of_http_request_method_t
-of_http_request_method_from_string(OFString *string)
+OFHTTPRequestMethod
+OFHTTPRequestMethodParseName(OFString *string)
 {
 	if ([string isEqual: @"OPTIONS"])
-		return OF_HTTP_REQUEST_METHOD_OPTIONS;
+		return OFHTTPRequestMethodOptions;
 	if ([string isEqual: @"GET"])
-		return OF_HTTP_REQUEST_METHOD_GET;
+		return OFHTTPRequestMethodGet;
 	if ([string isEqual: @"HEAD"])
-		return OF_HTTP_REQUEST_METHOD_HEAD;
+		return OFHTTPRequestMethodHead;
 	if ([string isEqual: @"POST"])
-		return OF_HTTP_REQUEST_METHOD_POST;
+		return OFHTTPRequestMethodPost;
 	if ([string isEqual: @"PUT"])
-		return OF_HTTP_REQUEST_METHOD_PUT;
+		return OFHTTPRequestMethodPut;
 	if ([string isEqual: @"DELETE"])
-		return OF_HTTP_REQUEST_METHOD_DELETE;
+		return OFHTTPRequestMethodDelete;
 	if ([string isEqual: @"TRACE"])
-		return OF_HTTP_REQUEST_METHOD_TRACE;
+		return OFHTTPRequestMethodTrace;
 	if ([string isEqual: @"CONNECT"])
-		return OF_HTTP_REQUEST_METHOD_CONNECT;
+		return OFHTTPRequestMethodConnect;
 
 	@throw [OFInvalidArgumentException exception];
 }
@@ -94,7 +94,7 @@ of_http_request_method_from_string(OFString *string)
 {
 	self = [super init];
 
-	_method = OF_HTTP_REQUEST_METHOD_GET;
+	_method = OFHTTPRequestMethodGet;
 	_protocolVersion.major = 1;
 	_protocolVersion.minor = 1;
 
@@ -123,7 +123,7 @@ of_http_request_method_from_string(OFString *string)
 	[super dealloc];
 }
 
-- (void)setRemoteAddress: (const of_socket_address_t *)remoteAddress
+- (void)setRemoteAddress: (const OFSocketAddress *)remoteAddress
 {
 	_hasRemoteAddress = (remoteAddress != NULL);
 
@@ -131,7 +131,7 @@ of_http_request_method_from_string(OFString *string)
 		_remoteAddress = *remoteAddress;
 }
 
-- (const of_socket_address_t *)remoteAddress
+- (const OFSocketAddress *)remoteAddress
 {
 	if (_hasRemoteAddress)
 		return &_remoteAddress;
@@ -177,7 +177,7 @@ of_http_request_method_from_string(OFString *string)
 		return false;
 
 	if (request.remoteAddress != self.remoteAddress &&
-	    !of_socket_address_equal(request.remoteAddress, self.remoteAddress))
+	    !OFSocketAddressEqual(request.remoteAddress, self.remoteAddress))
 		return false;
 
 	return true;
@@ -185,24 +185,24 @@ of_http_request_method_from_string(OFString *string)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, _method);
-	OF_HASH_ADD(hash, _protocolVersion.major);
-	OF_HASH_ADD(hash, _protocolVersion.minor);
-	OF_HASH_ADD_HASH(hash, _URL.hash);
-	OF_HASH_ADD_HASH(hash, _headers.hash);
+	OFHashAdd(&hash, _method);
+	OFHashAdd(&hash, _protocolVersion.major);
+	OFHashAdd(&hash, _protocolVersion.minor);
+	OFHashAddHash(&hash, _URL.hash);
+	OFHashAddHash(&hash, _headers.hash);
 	if (_hasRemoteAddress)
-		OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
+		OFHashAddHash(&hash, OFSocketAddressHash(&_remoteAddress));
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
 
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
+- (void)setProtocolVersion: (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
@@ -213,7 +213,7 @@ of_http_request_method_from_string(OFString *string)
 	_protocolVersion = protocolVersion;
 }
 
-- (of_http_request_protocol_version_t)protocolVersion
+- (OFHTTPRequestProtocolVersion)protocolVersion
 {
 	return _protocolVersion;
 }
@@ -223,7 +223,7 @@ of_http_request_method_from_string(OFString *string)
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
 	unsigned long long major, minor;
-	of_http_request_protocol_version_t protocolVersion;
+	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
@@ -252,7 +252,7 @@ of_http_request_method_from_string(OFString *string)
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *method = of_http_request_method_to_string(_method);
+	const char *method = OFHTTPRequestMethodName(_method);
 	OFString *indentedHeaders, *remoteAddress, *ret;
 
 	indentedHeaders = [_headers.description
@@ -260,8 +260,7 @@ of_http_request_method_from_string(OFString *string)
 				      withString: @"\n\t"];
 
 	if (_hasRemoteAddress)
-		remoteAddress =
-		    of_socket_address_ip_string(&_remoteAddress, NULL);
+		remoteAddress = OFSocketAddressString(&_remoteAddress);
 	else
 		remoteAddress = nil;
 

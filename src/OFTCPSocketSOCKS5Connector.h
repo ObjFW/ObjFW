@@ -26,17 +26,10 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _port;
 	id <OFTCPSocketDelegate> _Nullable _delegate;
 #ifdef OF_HAVE_BLOCKS
-	of_tcp_socket_async_connect_block_t _Nullable _block;
+	OFTCPSocketAsyncConnectBlock _Nullable _block;
 #endif
 	id _Nullable _exception;
-	enum {
-		OF_SOCKS5_STATE_SEND_AUTHENTICATION = 1,
-		OF_SOCKS5_STATE_READ_VERSION,
-		OF_SOCKS5_STATE_SEND_REQUEST,
-		OF_SOCKS5_STATE_READ_RESPONSE,
-		OF_SOCKS5_STATE_READ_ADDRESS,
-		OF_SOCKS5_STATE_READ_ADDRESS_LENGTH,
-	} _SOCKS5State;
+	uint_least8_t _SOCKS5State;
 	/* Longest read is domain name (max 255 bytes) + port */
 	unsigned char _buffer[257];
 	OFMutableData *_Nullable _request;
@@ -47,8 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  port: (uint16_t)port
 		      delegate: (nullable id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (nullable of_tcp_socket_async_connect_block_t)
-				    block
+			 block: (nullable OFTCPSocketAsyncConnectBlock)block
 #endif
 ;
 - (void)didConnect;

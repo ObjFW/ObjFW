@@ -46,11 +46,11 @@ OF_ASSUME_NONNULL_BEGIN
  * this as well.
  */
 /**
- * @struct of_fast_enumeration_state_t OFEnumerator.h ObjFW/OFEnumerator.h
+ * @struct OFFastEnumerationState OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief State information for fast enumerations.
  */
-#define of_fast_enumeration_state_t NSFastEnumerationState
+#define OFFastEnumerationState NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
 typedef struct {
 	/** Arbitrary state information for the enumeration */
@@ -61,7 +61,7 @@ typedef struct {
 	unsigned long *_Nullable mutationsPtr;
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
-} of_fast_enumeration_state_t;
+} OFFastEnumerationState;
 #endif
 
 /**
@@ -83,7 +83,7 @@ typedef struct {
  * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
  */
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
 					objects
 			     count: (int)count;

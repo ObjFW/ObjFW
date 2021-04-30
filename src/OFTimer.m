@@ -33,7 +33,7 @@
 @implementation OFTimer
 @synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 				       repeats: (bool)repeats
@@ -54,7 +54,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object
@@ -77,7 +77,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -102,7 +102,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -129,7 +129,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -159,9 +159,9 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 				       repeats: (bool)repeats
-					 block: (of_timer_block_t)block
+					 block: (OFTimerBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
@@ -179,7 +179,7 @@
 }
 #endif
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			      repeats: (bool)repeats
@@ -198,7 +198,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object
@@ -219,7 +219,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -242,7 +242,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -267,7 +267,7 @@
 	return [timer autorelease];
 }
 
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -295,9 +295,9 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			      repeats: (bool)repeats
-				block: (of_timer_block_t)block
+				block: (OFTimerBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
@@ -319,7 +319,7 @@
 }
 
 - (instancetype)of_initWithFireDate: (OFDate *)fireDate
-			   interval: (of_time_interval_t)interval
+			   interval: (OFTimeInterval)interval
 			     target: (id)target
 			   selector: (SEL)selector
 			     object: (id)object1
@@ -356,7 +356,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			 repeats: (bool)repeats
@@ -374,7 +374,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object
@@ -393,7 +393,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -413,7 +413,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -434,7 +434,7 @@
 }
 
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (id)object1
@@ -457,9 +457,9 @@
 
 #ifdef OF_HAVE_BLOCKS
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			 repeats: (bool)repeats
-			   block: (of_timer_block_t)block
+			   block: (OFTimerBlock)block
 {
 	self = [super init];
 
@@ -506,22 +506,18 @@
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (OFComparisonResult)compare: (OFTimer *)timer
 {
-	OFTimer *timer;
-
-	if (![(id)object isKindOfClass: [OFTimer class]])
+	if (![timer isKindOfClass: [OFTimer class]])
 		@throw [OFInvalidArgumentException exception];
-
-	timer = (OFTimer *)object;
 
 	return [_fireDate compare: timer->_fireDate];
 }
 
-- (void)of_setInRunLoop: (OFRunLoop *)runLoop mode: (of_run_loop_mode_t)mode
+- (void)of_setInRunLoop: (OFRunLoop *)runLoop mode: (OFRunLoopMode)mode
 {
 	OFRunLoop *oldInRunLoop = _inRunLoop;
-	of_run_loop_mode_t oldInRunLoopMode = _inRunLoopMode;
+	OFRunLoopMode oldInRunLoopMode = _inRunLoopMode;
 
 	_inRunLoop = [runLoop retain];
 	[oldInRunLoop release];
@@ -539,12 +535,12 @@
 	id object3 = [[_object3 retain] autorelease];
 	id object4 = [[_object4 retain] autorelease];
 
-	OF_ENSURE(_arguments <= 4);
+	OFEnsure(_arguments <= 4);
 
 	if (_repeats && _valid) {
 		int64_t missedIntervals =
 		    -_fireDate.timeIntervalSinceNow / _interval;
-		of_time_interval_t newFireDate;
+		OFTimeInterval newFireDate;
 		OFRunLoop *runLoop;
 
 		/* In case the clock was changed backwards */

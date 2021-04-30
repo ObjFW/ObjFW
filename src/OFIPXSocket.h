@@ -32,11 +32,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create and use IPX sockets.
  *
- * Addresses are of type @ref of_socket_address_t. You can use
- * @ref of_socket_address_ipx to create an address or
- * @ref of_socket_address_get_ipx_network to get the IPX network,
- * @ref of_socket_address_get_ipx_node to get the IPX node and
- * @ref of_socket_address_get_port to get the port (sometimes also called
+ * Addresses are of type @ref OFSocketAddress. You can use
+ * @ref OFSocketAddressMakeIPX to create an address or
+ * @ref OFSocketAddressIPXNetwork to get the IPX network,
+ * @ref OFSocketAddressIPXNode to get the IPX node and
+ * @ref OFSocketAddressPort to get the port (sometimes also called
  * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
@@ -72,8 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
  */
-- (of_socket_address_t)bindToPort: (uint16_t)port
-		       packetType: (uint8_t)packetType;
+- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType;
 @end
 
 OF_ASSUME_NONNULL_END

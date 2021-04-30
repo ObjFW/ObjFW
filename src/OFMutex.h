@@ -15,8 +15,7 @@
 
 #import "OFObject.h"
 #import "OFLocking.h"
-
-#import "mutex.h"
+#import "OFPlainMutex.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutex: OFObject <OFLocking>
 {
-	of_mutex_t _mutex;
+	OFPlainMutex _mutex;
 	bool _initialized;
 	OFString *_Nullable _name;
 	OF_RESERVE_IVARS(OFMutex, 4)

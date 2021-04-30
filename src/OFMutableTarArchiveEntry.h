@@ -61,9 +61,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of the archive entry.
  *
- * See @ref of_tar_archive_entry_type_t.
+ * See @ref OFTarArchiveEntryType.
  */
-@property (readwrite, nonatomic) of_tar_archive_entry_type_t type;
+@property (readwrite, nonatomic) OFTarArchiveEntryType type;
 
 /**
  * @brief The file name of the target (for a hard link or symbolic link).

@@ -39,8 +39,9 @@ static struct {
 static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 
 @interface OFDictionary ()
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFDictionaryPlaceholder: OFDictionary
@@ -171,12 +172,12 @@ OF_DIRECT_MEMBERS
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
-	if (character < CHAR_MAX && of_ascii_isalnum(character))
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
 	switch (character) {
@@ -507,7 +508,7 @@ OF_DIRECT_MEMBERS
 	    initWithDictionary: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -537,8 +538,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block
 {
 	bool stop = false;
 
@@ -550,7 +550,7 @@ OF_DIRECT_MEMBERS
 	}
 }
 
-- (OFDictionary *)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
+- (OFDictionary *)mappedDictionaryUsingBlock: (OFDictionaryMapBlock)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
@@ -564,8 +564,7 @@ OF_DIRECT_MEMBERS
 	return new;
 }
 
-- (OFDictionary *)filteredDictionaryUsingBlock:
-    (of_dictionary_filter_block_t)block
+- (OFDictionary *)filteredDictionaryUsingBlock: (OFDictionaryFilterBlock)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
@@ -681,10 +680,10 @@ OF_DIRECT_MEMBERS
 
 	if ([self isKindOfClass: [OFMutableDictionary class]])
 		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFDictionary"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	keyEnumerator = [self keyEnumerator];
 	objectEnumerator = [self objectEnumerator];
@@ -695,12 +694,12 @@ OF_DIRECT_MEMBERS
 
 		keyElement = [OFXMLElement
 		    elementWithName: @"key"
-			  namespace: OF_SERIALIZATION_NS];
+			  namespace: OFSerializationNS];
 		[keyElement addChild: key.XMLElementBySerializing];
 
 		objectElement = [OFXMLElement
 		    elementWithName: @"object"
-			  namespace: OF_SERIALIZATION_NS];
+			  namespace: OFSerializationNS];
 		[objectElement addChild: object.XMLElementBySerializing];
 
 		[element addChild: keyElement];
@@ -721,13 +720,15 @@ OF_DIRECT_MEMBERS
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
 	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
@@ -736,7 +737,7 @@ OF_DIRECT_MEMBERS
 	size_t i, count = self.count;
 	id key, object;
 
-	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
 
 		for (i = 0; i < depth; i++)
@@ -749,7 +750,7 @@ OF_DIRECT_MEMBERS
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
 			int identifierOptions =
-			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+			    options | OFJSONRepresentationOptionIsIdentifier;
 
 			if (![key isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException exception];
@@ -779,7 +780,7 @@ OF_DIRECT_MEMBERS
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
 			int identifierOptions =
-			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+			    options | OFJSONRepresentationOptionIsIdentifier;
 
 			if (![key isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException exception];
@@ -823,13 +824,13 @@ OF_DIRECT_MEMBERS
 		[data addItem: &tmp];
 	} else if (count <= UINT16_MAX) {
 		uint8_t type = 0xDE;
-		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
+		uint16_t tmp = OFToBigEndian16((uint16_t)count);
 
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xDF;
-		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
+		uint32_t tmp = OFToBigEndian32((uint32_t)count);
 
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];

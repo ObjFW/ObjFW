@@ -45,7 +45,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFLocale: OFObject
 {
 	OFString *_Nullable _language, *_Nullable _territory;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	OFString *_decimalPoint;
 	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString *, id) *)
 	    *_localizedStrings;
@@ -55,7 +55,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFLocale *currentLocale;
 @property (class, readonly, nullable, nonatomic) OFString *language;
 @property (class, readonly, nullable, nonatomic) OFString *territory;
-@property (class, readonly, nonatomic) of_string_encoding_t encoding;
+@property (class, readonly, nonatomic) OFStringEncoding encoding;
 @property (class, readonly, nullable, nonatomic) OFString *decimalPoint;
 #endif
 
@@ -81,7 +81,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * If the native 8-bit encoding is unknown, UTF-8 is assumed.
  */
-@property (readonly, nonatomic) of_string_encoding_t encoding;
+@property (readonly, nonatomic) OFStringEncoding encoding;
 
 /**
  * @brief The decimal point of the system's locale.
@@ -127,7 +127,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The native 8-bit string encoding for the locale
  */
-+ (of_string_encoding_t)encoding;
++ (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the decimal point of the system's locale.

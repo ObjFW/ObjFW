@@ -65,8 +65,8 @@ static OFString *module = @"OFXMLNode";
 	    (nodes[3] = [OFXMLCDATA CDATAWithString: @"<foo>"]) &&
 	    [[nodes[3] XMLString] isEqual: @"<![CDATA[<foo>]]>"]);
 
-	TEST(@"+[commentWithString:]",
-	    (nodes[3] = [OFXMLComment commentWithString: @" comment "]) &&
+	TEST(@"+[commentWithText:]",
+	    (nodes[3] = [OFXMLComment commentWithText: @" comment "]) &&
 	    [[nodes[3] XMLString] isEqual: @"<!-- comment -->"])
 
 	module = @"OFXMLElement";

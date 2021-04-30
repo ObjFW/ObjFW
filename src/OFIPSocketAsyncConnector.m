@@ -19,9 +19,6 @@
 
 #import "OFIPSocketAsyncConnector.h"
 #import "OFData.h"
-#ifdef OF_HAVE_SCTP
-# import "OFSCTPSocket.h"
-#endif
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -72,15 +69,9 @@
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((of_tcp_socket_async_connect_block_t)_block)(
-			    _exception);
-# ifdef OF_HAVE_SCTP
-		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
-			((of_sctp_socket_async_connect_block_t)_block)(
-			    _exception);
-# endif
+			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
 		else
-			OF_ENSURE(0);
+			OFEnsure(0);
 	} else {
 #endif
 		if ([_delegate respondsToSelector:
@@ -141,13 +132,13 @@
 							errNo: errNo];
 }
 
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	of_socket_address_t address = *(const of_socket_address_t *)
+	OFSocketAddress address = *(const OFSocketAddress *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
 	int errNo;
 
-	of_socket_address_set_port(&address, _port);
+	OFSocketAddressSetPort(&address, _port);
 
 	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {
@@ -232,11 +223,10 @@
 	    [OFRunLoop currentRunLoop].currentMode];
 }
 
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, _port);
+		OFSocketAddress address = OFSocketAddressParseIP(_host, _port);
 
 		_socketAddresses = [[OFData alloc]
 		    initWithItems: &address
@@ -250,7 +240,7 @@
 
 	[[OFThread DNSResolver]
 	    asyncResolveAddressesForHost: _host
-			   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+			   addressFamily: OFSocketAddressFamilyAny
 			     runLoopMode: runLoopMode
 				delegate: self];
 }

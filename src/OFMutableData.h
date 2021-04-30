@@ -190,7 +190,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param range The range of items to remove
  */
-- (void)removeItemsInRange: (of_range_t)range;
+- (void)removeItemsInRange: (OFRange)range;
 
 /**
  * @brief Removes the last item.

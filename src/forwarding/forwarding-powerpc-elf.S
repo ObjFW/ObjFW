@@ -17,11 +17,11 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -141,7 +141,7 @@ of_forward:
 	lwz	%r4, 12(%r1)
 
 #ifdef OF_PIC
-	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
+	lwz	%r0, .Lgot_OFMethodNotFound-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
 #endif
@@ -153,12 +153,12 @@ of_forward:
 #ifdef OF_PIC
 	bctr
 #else
-	b	of_method_not_found
+	b	OFMethodNotFound
 #endif
-.type of_forward, @function
-.size of_forward, .-of_forward
+.type OFForward, @function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -280,7 +280,7 @@ of_forward_stret:
 	lwz	%r5, 16(%r1)
 
 #ifdef OF_PIC
-	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
+	lwz	%r0, .Lgot_OFMethodNotFound_stret-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
 #endif
@@ -292,10 +292,10 @@ of_forward_stret:
 #ifdef OF_PIC
 	bctr
 #else
-	b	of_method_not_found_stret
+	b	OFMethodNotFound_stret
 #endif
-.type of_forward_stret, @function
-.size of_forward_stret, .-of_forward_stret
+.type OFForward_stret, @function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	stwu	%r1, -16(%r1)
@@ -351,10 +351,10 @@ module:
 	.long module
 .Lgot_sel_forwardingTargetForSelector_:
 	.long sel_forwardingTargetForSelector_
-.Lgot_of_method_not_found:
-	.long of_method_not_found
-.Lgot_of_method_not_found_stret:
-	.long of_method_not_found_stret
+.Lgot_OFMethodNotFound:
+	.long OFMethodNotFound
+.Lgot_OFMethodNotFound_stret:
+	.long OFMethodNotFound_stret
 #endif
 
 #ifdef OF_LINUX
