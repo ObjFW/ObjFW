@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_DNS_RESOLVER_BUFFER_LENGTH 512
+#define OFDNSResolverBufferLength 512
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolver;
@@ -36,37 +36,37 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFUDPSocket;
 
 /**
- * @enum of_dns_resolver_error_t OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @enum OFDNSResolverErrorCode OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief An enum describing why resolving a host failed.
  */
-typedef enum of_dns_resolver_error_t {
+typedef enum {
 	/** An unknown error */
-	OF_DNS_RESOLVER_ERROR_UNKNOWN,
+	OFDNSResolverErrorCodeUnknown,
 	/** The query timed out */
-	OF_DNS_RESOLVER_ERROR_TIMEOUT,
+	OFDNSResolverErrorCodeTimeout,
 	/** The query was canceled */
-	OF_DNS_RESOLVER_ERROR_CANCELED,
+	OFDNSResolverErrorCodeCanceled,
 	/**
 	 * No result for the specified host with the specified type and class.
 	 *
 	 * This is only used in situations where this is an error, e.g. when
 	 * trying to connect to a host.
 	 */
-	OF_DNS_RESOLVER_ERROR_NO_RESULT,
+	OFDNSResolverErrorCodeNoResult,
 	/** The server considered the query to be malformed */
-	OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT,
+	OFDNSResolverErrorCodeServerInvalidFormat,
 	/** The server was unable to process due to an internal error */
-	OF_DNS_RESOLVER_ERROR_SERVER_FAILURE,
+	OFDNSResolverErrorCodeServerFailure,
 	/** The server returned an error that the domain does not exist */
-	OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR,
+	OFDNSResolverErrorCodeServerNameError,
 	/** The server does not have support for the requested query */
-	OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED,
+	OFDNSResolverErrorCodeServerNotImplemented,
 	/** The server refused the query */
-	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED,
+	OFDNSResolverErrorCodeServerRefused,
 	/** There was no name server to query */
-	OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER
-} of_dns_resolver_error_t;
+	OFDNSResolverErrorCodeNoNameServer
+} OFDNSResolverErrorCode;
 
 /**
  * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
@@ -101,7 +101,7 @@ typedef enum of_dns_resolver_error_t {
  *
  * @param resolver The acting resolver
  * @param host The host the resolver resolved
- * @param addresses OFData containing several of_socket_address_t
+ * @param addresses OFData containing several OFSocketAddress
  * @param exception The exception that occurred during resolving, or nil on
  *		    success
  */
@@ -129,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
 #endif
-	char _buffer[OF_DNS_RESOLVER_BUFFER_LENGTH];
+	char _buffer[OFDNSResolverBufferLength];
 	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverContext *)
 	    *_queries;
 	OFMutableDictionary OF_GENERIC(OFTCPSocket *, OFDNSResolverContext *)
@@ -165,7 +165,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The timeout, in seconds, after which the next name server should be
  *	  tried.
  */
-@property (nonatomic) of_time_interval_t timeout;
+@property (nonatomic) OFTimeInterval timeout;
 
 /**
  * @brief The number of attempts before giving up to resolve a host.
@@ -189,7 +189,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * Setting this to 0 disables config reloading.
  */
-@property (nonatomic) of_time_interval_t configReloadInterval;
+@property (nonatomic) OFTimeInterval configReloadInterval;
 
 /**
  * @brief Creates a new, autoreleased OFDNSResolver.
@@ -218,7 +218,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+	      runLoopMode: (OFRunLoopMode)runLoopMode
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /**
@@ -238,7 +238,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
+		       addressFamily: (OFSocketAddressFamily)addressFamily
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /**
@@ -250,8 +250,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
-		       addressFamily: (of_socket_address_family_t)addressFamily
-			 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		       addressFamily: (OFSocketAddressFamily)addressFamily
+			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /**
@@ -259,10 +259,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param host The host to resolve
  * @param addressFamily The desired socket address family
- * @return OFData containing several of_socket_address_t
+ * @return OFData containing several OFSocketAddress
  */
 - (OFData *)resolveAddressesForHost: (OFString *)host
-		      addressFamily: (of_socket_address_family_t)addressFamily;
+		      addressFamily: (OFSocketAddressFamily)addressFamily;
 
 /**
  * @brief Closes all sockets and cancels all ongoing queries.

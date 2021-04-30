@@ -127,7 +127,7 @@ test(id self, SEL _cmd)
 				: (double)a2
 				: (double)a3
 {
-	OF_ENSURE(self == target);
+	OFEnsure(self == target);
 
 	if (a0 != (intptr_t)0xDEADBEEF)
 		return 0;
@@ -146,7 +146,7 @@ test(id self, SEL _cmd)
 	va_list args;
 	OFString *ret;
 
-	OF_ENSURE(self == target);
+	OFEnsure(self == target);
 
 	va_start(args, fmt);
 	ret = [[[OFString alloc] initWithFormat: fmt
@@ -158,7 +158,7 @@ test(id self, SEL _cmd)
 
 - (long double)forwardingTargetFPRetTest
 {
-	OF_ENSURE(self == target);
+	OFEnsure(self == target);
 
 	return 12345678.00006103515625;
 }
@@ -167,7 +167,7 @@ test(id self, SEL _cmd)
 {
 	struct stret_test ret = { { 0 } };
 
-	OF_ENSURE(self == target);
+	OFEnsure(self == target);
 
 	memcpy(ret.s, "abcdefghijklmnopqrstuvwxyz", 27);
 

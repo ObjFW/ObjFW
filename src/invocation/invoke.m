@@ -21,5 +21,5 @@
 # include "invoke-x86_64.m"
 #else
 /* To not have an empty translation unit otherwise */
-int of_invocation_cannot_invoke;
+int OFInvocationCannotInvoke;
 #endif

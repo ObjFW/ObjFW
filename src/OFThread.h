@@ -16,9 +16,8 @@
 #include <setjmp.h>
 
 #import "OFObject.h"
-
 #ifdef OF_HAVE_THREADS
-# import "thread.h"
+# import "OFPlainThread.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -38,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The object which should be returned when the thread is joined
  */
-typedef id _Nullable (^of_thread_block_t)(void);
+typedef id _Nullable (^OFThreadBlock)(void);
 #endif
 
 /**
@@ -64,18 +63,18 @@ typedef id _Nullable (^of_thread_block_t)(void);
     <OFCopying>
 {
 @private
-	of_thread_t _thread;
-	of_thread_attr_t _attr;
-	enum of_thread_running {
-		OF_THREAD_NOT_RUNNING,
-		OF_THREAD_RUNNING,
-		OF_THREAD_WAITING_FOR_JOIN
+	OFPlainThread _thread;
+	OFPlainThreadAttributes _attr;
+	enum OFThreadState {
+		OFThreadStateNotRunning,
+		OFThreadStateRunning,
+		OFThreadStateWaitingForJoin
 	} _running;
 # ifndef OF_OBJFW_RUNTIME
 	void *_pool;
 # endif
 # ifdef OF_HAVE_BLOCKS
-	of_thread_block_t _Nullable _threadBlock;
+	OFThreadBlock _Nullable _threadBlock;
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
@@ -119,8 +118,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /**
  * @brief The block to execute in the thread.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    of_thread_block_t threadBlock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock threadBlock;
 # endif
 
 /**
@@ -169,7 +167,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param threadBlock A block which is executed by the thread
  * @return A new, autoreleased thread
  */
-+ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock;
++ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock;
 # endif
 
 /**
@@ -217,7 +215,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @param timeInterval The number of seconds to sleep
  */
-+ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval;
++ (void)sleepForTimeInterval: (OFTimeInterval)timeInterval;
 
 /**
  * @brief Suspends execution of the current thread until the specified date.
@@ -269,7 +267,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param threadBlock A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock;
+- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock;
 # endif
 
 /**

@@ -37,7 +37,7 @@
 {
 	self = [super init];
 
-	if (of_rmutex_new(&_rmutex) != 0) {
+	if (OFPlainRecursiveMutexNew(&_rmutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -51,10 +51,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		int error = of_rmutex_free(&_rmutex);
+		int error = OFPlainRecursiveMutexFree(&_rmutex);
 
 		if (error != 0) {
-			OF_ENSURE(error == EBUSY);
+			OFEnsure(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,7 +67,7 @@
 
 - (void)lock
 {
-	int error = of_rmutex_lock(&_rmutex);
+	int error = OFPlainRecursiveMutexLock(&_rmutex);
 
 	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
@@ -76,7 +76,7 @@
 
 - (bool)tryLock
 {
-	int error = of_rmutex_trylock(&_rmutex);
+	int error = OFPlainRecursiveMutexTryLock(&_rmutex);
 
 	if (error != 0) {
 		if (error == EBUSY)
@@ -91,7 +91,7 @@
 
 - (void)unlock
 {
-	int error = of_rmutex_unlock(&_rmutex);
+	int error = OFPlainRecursiveMutexUnlock(&_rmutex);
 
 	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self

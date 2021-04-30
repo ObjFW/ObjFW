@@ -19,8 +19,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFRangeValue: OFValue
 {
-	of_range_t _range;
+	OFRange _range;
 }
+
+- (instancetype)initWithRange: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

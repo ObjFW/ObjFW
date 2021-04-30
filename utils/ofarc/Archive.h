@@ -20,10 +20,10 @@
 @protocol Archive <OFObject>
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding;
+			 encoding: (OFStringEncoding)encoding;
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding;
+		      encoding: (OFStringEncoding)encoding;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;

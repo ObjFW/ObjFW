@@ -29,24 +29,24 @@
 
 #import "macros.h"
 
-struct call_context {
-	uint64_t GPR[NUM_GPR_IN + NUM_GPR_OUT];
-	__m128 SSE[NUM_SSE_INOUT];
-	long double X87[NUM_X87_OUT];
+struct CallContext {
+	uint64_t GPR[numGPRIn + numGPROut];
+	__m128 SSE[numSSEInOut];
+	long double X87[numX87Out];
 	uint8_t numSSEUsed;
 	uint8_t returnType;
 	uint64_t stackSize;
 	uint64_t stack[];
 };
 
-extern void of_invocation_call(struct call_context *);
+extern void OFInvocationCall(struct CallContext *);
 
 static void
-pushGPR(struct call_context **context, uint_fast8_t *currentGPR, uint64_t value)
+pushGPR(struct CallContext **context, uint_fast8_t *currentGPR, uint64_t value)
 {
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
-	if (*currentGPR < NUM_GPR_IN) {
+	if (*currentGPR < numGPRIn) {
 		(*context)->GPR[(*currentGPR)++] = value;
 		return;
 	}
@@ -64,12 +64,12 @@ pushGPR(struct call_context **context, uint_fast8_t *currentGPR, uint64_t value)
 }
 
 static void
-pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
+pushDouble(struct CallContext **context, uint_fast8_t *currentSSE,
     double value)
 {
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
-	if (*currentSSE < NUM_SSE_INOUT) {
+	if (*currentSSE < numSSEInOut) {
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(value);
 		(*context)->numSSEUsed++;
 		return;
@@ -88,13 +88,13 @@ pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
 }
 
 static void
-pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
+pushQuad(struct CallContext **context, uint_fast8_t *currentSSE,
     double low, double high)
 {
 	size_t stackSize;
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
-	if (*currentSSE + 1 < NUM_SSE_INOUT) {
+	if (*currentSSE + 1 < numSSEInOut) {
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(low);
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(high);
 		(*context)->numSSEUsed += 2;
@@ -119,9 +119,9 @@ pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
 }
 
 static void
-pushLongDouble(struct call_context **context, long double value)
+pushLongDouble(struct CallContext **context, long double value)
 {
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + ((*context)->stackSize + 2) * 8)) == NULL) {
@@ -136,12 +136,12 @@ pushLongDouble(struct call_context **context, long double value)
 }
 
 static void
-pushLongDoublePair(struct call_context **context, long double value[2])
+pushLongDoublePair(struct CallContext **context, long double value[2])
 {
 	size_t stackSize;
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
-	stackSize = OF_ROUND_UP_POW2(2UL, (*context)->stackSize) + 4;
+	stackSize = OFRoundUpToPowerOf2(2UL, (*context)->stackSize) + 4;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -159,13 +159,13 @@ pushLongDoublePair(struct call_context **context, long double value[2])
 
 #if defined(__SIZEOF_INT128__) && !defined(__clang__)
 static void
-pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
+pushInt128(struct CallContext **context, uint_fast8_t *currentGPR,
     uint64_t value[2])
 {
 	size_t stackSize;
-	struct call_context *newContext;
+	struct CallContext *newContext;
 
-	if (*currentGPR + 1 < NUM_GPR_IN) {
+	if (*currentGPR + 1 < numGPRIn) {
 		(*context)->GPR[(*currentGPR)++] = value[0];
 		(*context)->GPR[(*currentGPR)++] = value[1];
 		return;
@@ -189,11 +189,11 @@ pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
 #endif
 
 void
-of_invocation_invoke(OFInvocation *invocation)
+OFInvocationInvoke(OFInvocation *invocation)
 {
 	OFMethodSignature *methodSignature = invocation.methodSignature;
 	size_t numberOfArguments = methodSignature.numberOfArguments;
-	struct call_context *context;
+	struct CallContext *context;
 	const char *typeEncoding;
 	uint_fast8_t currentGPR = 0, currentSSE = 0;
 
@@ -337,19 +337,19 @@ of_invocation_invoke(OFInvocation *invocation)
 #endif
 	case 'f':
 	case 'd':
-		context->returnType = RETURN_TYPE_NORMAL;
+		context->returnType = returnTypeNormal;
 		break;
 	case 'D':
-		context->returnType = RETURN_TYPE_X87;
+		context->returnType = returnTypeX87;
 		break;
 	case 'j':
 		switch (typeEncoding[1]) {
 		case 'f':
 		case 'd':
-			context->returnType = RETURN_TYPE_NORMAL;
+			context->returnType = returnTypeNormal;
 			break;
 		case 'D':
-			context->returnType = RETURN_TYPE_COMPLEX_X87;
+			context->returnType = returnTypeComplexX87;
 			break;
 		default:
 			free(context);
@@ -365,17 +365,17 @@ of_invocation_invoke(OFInvocation *invocation)
 		@throw [OFInvalidFormatException exception];
 	}
 
-	of_invocation_call(context);
+	OFInvocationCall(context);
 
 	switch (*typeEncoding) {
 		case 'v':
 			break;
-#define CASE_GPR(encoding, type)					   \
-		case encoding:						   \
-			{						   \
-				type tmp = (type)context->GPR[NUM_GPR_IN]; \
-				[invocation setReturnValue: &tmp];	   \
-			}						   \
+#define CASE_GPR(encoding, type)					 \
+		case encoding:						 \
+			{						 \
+				type tmp = (type)context->GPR[numGPRIn]; \
+				[invocation setReturnValue: &tmp];	 \
+			}						 \
 			break;
 		CASE_GPR('c', char)
 		CASE_GPR('C', unsigned char)
@@ -397,7 +397,7 @@ of_invocation_invoke(OFInvocation *invocation)
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
-			[invocation setReturnValue: &context->GPR[NUM_GPR_IN]];
+			[invocation setReturnValue: &context->GPR[numGPRIn]];
 			break;
 #endif
 		case 'f':;

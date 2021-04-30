@@ -62,6 +62,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to remove item at URL %@: %@", _URL, of_strerror(_errNo)];
+	    @"Failed to remove item at URL %@: %@", _URL, OFStrError(_errNo)];
 }
 @end

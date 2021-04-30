@@ -34,11 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	int64_t _offset;
-	enum {
-		OF_ZIP_ARCHIVE_MODE_READ,
-		OF_ZIP_ARCHIVE_MODE_WRITE,
-		OF_ZIP_ARCHIVE_MODE_APPEND
-	} _mode;
+	uint_least8_t _mode;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
@@ -171,5 +167,16 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)close;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern uint32_t OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull);
+extern uint64_t OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull);
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

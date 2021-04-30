@@ -241,7 +241,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -369,10 +369,10 @@ static struct {
 
 	if ([self isKindOfClass: [OFMutableSet class]])
 		element = [OFXMLElement elementWithName: @"OFMutableSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
@@ -428,7 +428,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block
 {
 	bool stop = false;
 
@@ -440,7 +440,7 @@ static struct {
 	}
 }
 
-- (OFSet *)filteredSetUsingBlock: (of_set_filter_block_t)block
+- (OFSet *)filteredSetUsingBlock: (OFSetFilterBlock)block
 {
 	OFMutableSet *ret = [OFMutableSet set];
 

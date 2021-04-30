@@ -94,13 +94,12 @@ atexitHandler(void)
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-	of_socket_deinit();
+	OFSocketDeinit();
 #endif
 }
 
 int
-of_application_main(int *argc, char **argv[],
-    id <OFApplicationDelegate> delegate)
+OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
 #ifdef OF_WINDOWS
 	wchar_t **wargv, **wenvp;
@@ -196,14 +195,14 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-+ (void)activateSandbox: (OFSandbox *)sandbox
++ (void)of_activateSandbox: (OFSandbox *)sandbox
 {
-	[app activateSandbox: sandbox];
+	[app of_activateSandbox: sandbox];
 }
 
-+ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
++ (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
-	[app activateSandboxForChildProcesses: sandbox];
+	[app of_activateSandboxForChildProcesses: sandbox];
 }
 #endif
 
@@ -223,7 +222,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 #if defined(OF_WINDOWS)
 		if ([OFSystemInfo isWindowsNT]) {
-			of_char16_t *env, *env0;
+			OFChar16 *env, *env0;
 			env = env0 = GetEnvironmentStringsW();
 
 			while (*env != 0) {
@@ -231,7 +230,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				OFString *tmp, *key, *value;
 				size_t length, pos;
 
-				length = of_string_utf16_length(env);
+				length = OFUTF16StringLength(env);
 				tmp = [OFString stringWithUTF16String: env
 							       length: length];
 				env += length + 1;
@@ -247,7 +246,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);
@@ -289,7 +288,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);
@@ -310,7 +309,7 @@ SIGNAL_HANDLER(SIGUSR2)
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =
 		    [fileManager contentsOfDirectoryAtPath: @"ENV:"];
-		const of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		struct Process *proc;
 		struct LocalVar *firstLocalVar;
 
@@ -376,8 +375,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 
 		if (env != NULL) {
-			const of_string_encoding_t encoding =
-			    [OFLocale encoding];
+			OFStringEncoding encoding = [OFLocale encoding];
 
 			for (; *env != NULL; env++) {
 				void *pool = objc_autoreleasePoolPush();
@@ -468,7 +466,7 @@ SIGNAL_HANDLER(SIGUSR2)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	_argc = argc;
 	_argv = argv;
@@ -603,12 +601,12 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-- (void)activateSandbox: (OFSandbox *)sandbox
+- (void)of_activateSandbox: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
-	of_string_encoding_t encoding = [OFLocale encoding];
-	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+	OFStringEncoding encoding = [OFLocale encoding];
+	OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
 	size_t unveiledPathsCount;
 	const char *promises;
 
@@ -620,7 +618,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 	for (size_t i = sandbox->_unveiledPathsIndex;
 	    i < unveiledPathsCount; i++) {
-		of_sandbox_unveil_path_t unveiledPath =
+		OFSandboxUnveilPath unveiledPath =
 		    [unveiledPaths objectAtIndex: i];
 		OFString *path = unveiledPath.firstObject;
 		OFString *permissions = unveiledPath.secondObject;
@@ -648,7 +646,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 }
 
-- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
+- (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();

@@ -94,7 +94,7 @@ extern "C" {
  * @param type The type encoding to return the size for
  * @return The size for the specified type encoding
  */
-extern size_t of_sizeof_type_encoding(const char *type);
+extern size_t OFSizeOfTypeEncoding(const char *type);
 
 /**
  * @brief Returns the alignment for the specified type encoding.
@@ -102,7 +102,7 @@ extern size_t of_sizeof_type_encoding(const char *type);
  * @param type The type encoding to return the alignment for
  * @return The alignment for the specified type encoding
  */
-extern size_t of_alignof_type_encoding(const char *type);
+extern size_t OFAlignmentOfTypeEncoding(const char *type);
 #ifdef __cplusplus
 }
 #endif

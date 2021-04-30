@@ -13,23 +13,23 @@
  * file.
  */
 
-#define RETURN_TYPE_NORMAL	0
-#define RETURN_TYPE_STRET	1
-#define RETURN_TYPE_X87		2
-#define RETURN_TYPE_COMPLEX_X87	3
-#define RETURN_TYPE_JMP		4
-#define RETURN_TYPE_JMP_STRET	5
+#define returnTypeNormal	0
+#define returnTypeStret		1
+#define returnTypeX87		2
+#define returnTypeComplexX87	3
+#define returnTypeJmp		4
+#define returnTypeJmpStret	5
 
-#define NUM_GPR_IN	6
-#define NUM_GPR_OUT	2
-#define NUM_SSE_INOUT	8
-#define NUM_X87_OUT	2
+#define numGPRIn	6
+#define numGPROut	2
+#define numSSEInOut	8
+#define numX87Out	2
 
-#define OFFSET_GPR_IN		0
-#define OFFSET_GPR_OUT		(OFFSET_GPR_IN + NUM_GPR_IN * 8)
-#define OFFSET_SSE_INOUT	(OFFSET_GPR_OUT + NUM_GPR_OUT * 8)
-#define OFFSET_X87_OUT		(OFFSET_SSE_INOUT + NUM_SSE_INOUT * 16)
-#define OFFSET_NUM_SSE_USED	(OFFSET_X87_OUT + NUM_X87_OUT * 16)
-#define OFFSET_RETURN_TYPE	(OFFSET_NUM_SSE_USED + 1)
-#define OFFSET_STACK_SIZE	(OFFSET_RETURN_TYPE + 7)
-#define OFFSET_STACK		(OFFSET_STACK_SIZE + 8)
+#define offsetGPRIn		0
+#define offsetGPROut		(offsetGPRIn + numGPRIn * 8)
+#define offsetSSEInOut		(offsetGPROut + numGPROut * 8)
+#define offsetX87Out		(offsetSSEInOut + numSSEInOut * 16)
+#define offsetNumSSEUsed	(offsetX87Out + numX87Out * 16)
+#define offsetReturnType	(offsetNumSSEUsed + 1)
+#define offsetStackSize		(offsetReturnType + 7)
+#define offsetStack		(offsetStackSize + 8)

@@ -24,26 +24,31 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLComment: OFXMLNode
 {
-	OFString *_comment;
+	OFString *_text;
 	OF_RESERVE_IVARS(OFXMLComment, 4)
 }
 
 /**
- * @brief Creates a new OFXMLComment with the specified string.
+ * @brief The comment text.
+ */
+@property (readonly, nonatomic) OFString *text;
+
+/**
+ * @brief Creates a new OFXMLComment with the specified text.
  *
- * @param string The string for the comment
+ * @param text The text for the comment
  * @return A new OFXMLComment
  */
-+ (instancetype)commentWithString: (OFString *)string;
++ (instancetype)commentWithText: (OFString *)text;
 
 /**
  * @brief Initializes an already allocated OFXMLComment with the specified
- *	  string.
+ *	  text.
  *
- * @param string The string for the comment
+ * @param text The text for the comment
  * @return An initialized OFXMLComment
  */
-- (instancetype)initWithString: (OFString *)string;
+- (instancetype)initWithText: (OFString *)text;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end

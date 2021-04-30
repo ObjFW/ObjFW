@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-.globl _of_forward
-.globl _of_forward_stret
+.globl _OFForward
+.globl _OFForward_stret
 
 .section .text
-_of_forward:
+_OFForward:
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -74,13 +74,13 @@ _of_forward:
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_of_method_not_found
-.def _of_forward
+	jmp	_OFMethodNotFound
+.def _OFForward
 .scl 2
 .type 32
 .endef
 
-_of_forward_stret:
+_OFForward_stret:
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -135,8 +135,8 @@ _of_forward_stret:
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_of_method_not_found_stret
-.def _of_forward_stret
+	jmp	_OFMethodNotFound_stret
+.def _OFForward_stret
 .scl 2
 .type 32
 .endef

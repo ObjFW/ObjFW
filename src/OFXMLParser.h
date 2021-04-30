@@ -34,14 +34,16 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFXMLParserDelegate <OFObject>
 @optional
 /**
- * @brief This callback is called when the XML parser found processing
- *	  instructions.
+ * @brief This callback is called when the XML parser found a processing
+ *	  instruction.
  *
- * @param parser The parser which found processing instructions
- * @param processingInstructions The processing instructions
+ * @param parser The parser which found a processing instruction
+ * @param target The target of the processing instruction
+ * @param data The data of the processing instruction
  */
--		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)processingInstructions;
+-			  (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructionWithTarget: (OFString *)target
+				  data: (OFString *)data;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new
@@ -128,28 +130,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFXMLParser: OFObject
 {
 	id <OFXMLParserDelegate> _Nullable _delegate;
-	enum of_xml_parser_state {
-		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
-		OF_XMLPARSER_OUTSIDE_TAG,
-		OF_XMLPARSER_TAG_OPENED,
-		OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS,
-		OF_XMLPARSER_IN_TAG_NAME,
-		OF_XMLPARSER_IN_CLOSE_TAG_NAME,
-		OF_XMLPARSER_IN_TAG,
-		OF_XMLPARSER_IN_ATTRIBUTE_NAME,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER,
-		OF_XMLPARSER_IN_ATTRIBUTE_VALUE,
-		OF_XMLPARSER_EXPECT_TAG_CLOSE,
-		OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE,
-		OF_XMLPARSER_IN_EXCLAMATION_MARK,
-		OF_XMLPARSER_IN_CDATA_OPENING,
-		OF_XMLPARSER_IN_CDATA,
-		OF_XMLPARSER_IN_COMMENT_OPENING,
-		OF_XMLPARSER_IN_COMMENT_1,
-		OF_XMLPARSER_IN_COMMENT_2,
-		OF_XMLPARSER_IN_DOCTYPE
-	} _state;
+	uint_least8_t _state;
 	size_t _i, _last;
 	const char *_Nullable _data;
 	OFMutableData *_buffer;
@@ -165,7 +146,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _acceptProlog;
 	size_t _lineNumber;
 	bool _lastCarriageReturn, _finishedParsing;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	size_t _depthLimit;
 }
 

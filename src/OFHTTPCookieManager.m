@@ -63,7 +63,7 @@
 		cookie.path = @"/";
 
 	if (cookie.secure &&
-	    [URL.scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME) {
+	    [URL.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -121,7 +121,7 @@
 			continue;
 
 		if (cookie.secure && [URL.scheme caseInsensitiveCompare:
-		    @"https"] != OF_ORDERED_SAME)
+		    @"https"] != OFOrderedSame)
 			continue;
 
 		pool = objc_autoreleasePoolPush();

@@ -29,10 +29,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFArray OF_GENERIC(OFString *) *_nameServers;
 	OFString *_Nullable _localDomain;
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
-	of_time_interval_t _timeout;
+	OFTimeInterval _timeout;
 	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
-	of_time_interval_t _configReloadInterval;
+	OFTimeInterval _configReloadInterval;
 @protected
 	OFDate *_lastConfigReload;
 }

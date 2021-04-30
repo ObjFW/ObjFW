@@ -148,22 +148,22 @@ struct test_struct {
 				       : (complex float)c15
 				       : (complex double)c16
 {
-	OF_ENSURE(creal(c1) == 1.0 && cimag(c1) == 0.5);
-	OF_ENSURE(creal(c2) == 2.0 && cimag(c2) == 1.0);
-	OF_ENSURE(creal(c3) == 3.0 && cimag(c3) == 1.5);
-	OF_ENSURE(creal(c4) == 4.0 && cimag(c4) == 2.0);
-	OF_ENSURE(creal(c5) == 5.0 && cimag(c5) == 2.5);
-	OF_ENSURE(creal(c6) == 6.0 && cimag(c6) == 3.0);
-	OF_ENSURE(creal(c7) == 7.0 && cimag(c7) == 3.5);
-	OF_ENSURE(creal(c8) == 8.0 && cimag(c8) == 4.0);
-	OF_ENSURE(creal(c9) == 9.0 && cimag(c9) == 4.5);
-	OF_ENSURE(creal(c10) == 10.0 && cimag(c10) == 5.0);
-	OF_ENSURE(creal(c11) == 11.0 && cimag(c11) == 5.5);
-	OF_ENSURE(creal(c12) == 12.0 && cimag(c12) == 6.0);
-	OF_ENSURE(creal(c13) == 13.0 && cimag(c13) == 6.5);
-	OF_ENSURE(creal(c14) == 14.0 && cimag(c14) == 7.0);
-	OF_ENSURE(creal(c15) == 15.0 && cimag(c15) == 7.5);
-	OF_ENSURE(creal(c16) == 16.0 && cimag(c16) == 8.0);
+	OFEnsure(creal(c1) == 1.0 && cimag(c1) == 0.5);
+	OFEnsure(creal(c2) == 2.0 && cimag(c2) == 1.0);
+	OFEnsure(creal(c3) == 3.0 && cimag(c3) == 1.5);
+	OFEnsure(creal(c4) == 4.0 && cimag(c4) == 2.0);
+	OFEnsure(creal(c5) == 5.0 && cimag(c5) == 2.5);
+	OFEnsure(creal(c6) == 6.0 && cimag(c6) == 3.0);
+	OFEnsure(creal(c7) == 7.0 && cimag(c7) == 3.5);
+	OFEnsure(creal(c8) == 8.0 && cimag(c8) == 4.0);
+	OFEnsure(creal(c9) == 9.0 && cimag(c9) == 4.5);
+	OFEnsure(creal(c10) == 10.0 && cimag(c10) == 5.0);
+	OFEnsure(creal(c11) == 11.0 && cimag(c11) == 5.5);
+	OFEnsure(creal(c12) == 12.0 && cimag(c12) == 6.0);
+	OFEnsure(creal(c13) == 13.0 && cimag(c13) == 6.5);
+	OFEnsure(creal(c14) == 14.0 && cimag(c14) == 7.0);
+	OFEnsure(creal(c15) == 15.0 && cimag(c15) == 7.5);
+	OFEnsure(creal(c16) == 16.0 && cimag(c16) == 8.0);
 
 	return (c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 +
 	    c12 + c13 + c14 + c15 + c16) / 16;
@@ -186,22 +186,22 @@ struct test_struct {
 					    : (complex long double)c15
 					    : (complex double)c16
 {
-	OF_ENSURE(creal(c1) == 1.0 && cimag(c1) == 0.5);
-	OF_ENSURE(creal(c2) == 2.0 && cimag(c2) == 1.0);
-	OF_ENSURE(creal(c3) == 3.0 && cimag(c3) == 1.5);
-	OF_ENSURE(creal(c4) == 4.0 && cimag(c4) == 2.0);
-	OF_ENSURE(creal(c5) == 5.0 && cimag(c5) == 2.5);
-	OF_ENSURE(creal(c6) == 6.0 && cimag(c6) == 3.0);
-	OF_ENSURE(creal(c7) == 7.0 && cimag(c7) == 3.5);
-	OF_ENSURE(creal(c8) == 8.0 && cimag(c8) == 4.0);
-	OF_ENSURE(creal(c9) == 9.0 && cimag(c9) == 4.5);
-	OF_ENSURE(creal(c10) == 10.0 && cimag(c10) == 5.0);
-	OF_ENSURE(creal(c11) == 11.0 && cimag(c11) == 5.5);
-	OF_ENSURE(creal(c12) == 12.0 && cimag(c12) == 6.0);
-	OF_ENSURE(creal(c13) == 13.0 && cimag(c13) == 6.5);
-	OF_ENSURE(creal(c14) == 14.0 && cimag(c14) == 7.0);
-	OF_ENSURE(creal(c15) == 15.0 && cimag(c15) == 7.5);
-	OF_ENSURE(creal(c16) == 16.0 && cimag(c16) == 8.0);
+	OFEnsure(creal(c1) == 1.0 && cimag(c1) == 0.5);
+	OFEnsure(creal(c2) == 2.0 && cimag(c2) == 1.0);
+	OFEnsure(creal(c3) == 3.0 && cimag(c3) == 1.5);
+	OFEnsure(creal(c4) == 4.0 && cimag(c4) == 2.0);
+	OFEnsure(creal(c5) == 5.0 && cimag(c5) == 2.5);
+	OFEnsure(creal(c6) == 6.0 && cimag(c6) == 3.0);
+	OFEnsure(creal(c7) == 7.0 && cimag(c7) == 3.5);
+	OFEnsure(creal(c8) == 8.0 && cimag(c8) == 4.0);
+	OFEnsure(creal(c9) == 9.0 && cimag(c9) == 4.5);
+	OFEnsure(creal(c10) == 10.0 && cimag(c10) == 5.0);
+	OFEnsure(creal(c11) == 11.0 && cimag(c11) == 5.5);
+	OFEnsure(creal(c12) == 12.0 && cimag(c12) == 6.0);
+	OFEnsure(creal(c13) == 13.0 && cimag(c13) == 6.5);
+	OFEnsure(creal(c14) == 14.0 && cimag(c14) == 7.0);
+	OFEnsure(creal(c15) == 15.0 && cimag(c15) == 7.5);
+	OFEnsure(creal(c16) == 16.0 && cimag(c16) == 8.0);
 
 	return (c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 +
 	    c12 + c13 + c14 + c15 + c16) / 16;
@@ -229,22 +229,22 @@ __extension__
 {
 	__int128 mask = (__int128)0xFFFFFFFFFFFFFFFF << 64;
 
-	OF_ENSURE(i1 == 1);
-	OF_ENSURE(i2 == mask + 2);
-	OF_ENSURE(i3 == mask + 3);
-	OF_ENSURE(i4 == mask + 4);
-	OF_ENSURE(i5 == 5);
-	OF_ENSURE(i6 == mask + 6);
-	OF_ENSURE(i7 == mask + 7);
-	OF_ENSURE(i8 == mask + 8);
-	OF_ENSURE(i9 == mask + 9);
-	OF_ENSURE(i10 == mask + 10);
-	OF_ENSURE(i11 == mask + 11);
-	OF_ENSURE(i12 == mask + 12);
-	OF_ENSURE(i13 == mask + 13);
-	OF_ENSURE(i14 == mask + 14);
-	OF_ENSURE(i15 == mask + 15);
-	OF_ENSURE(i16 == mask + 16);
+	OFEnsure(i1 == 1);
+	OFEnsure(i2 == mask + 2);
+	OFEnsure(i3 == mask + 3);
+	OFEnsure(i4 == mask + 4);
+	OFEnsure(i5 == 5);
+	OFEnsure(i6 == mask + 6);
+	OFEnsure(i7 == mask + 7);
+	OFEnsure(i8 == mask + 8);
+	OFEnsure(i9 == mask + 9);
+	OFEnsure(i10 == mask + 10);
+	OFEnsure(i11 == mask + 11);
+	OFEnsure(i12 == mask + 12);
+	OFEnsure(i13 == mask + 13);
+	OFEnsure(i14 == mask + 14);
+	OFEnsure(i15 == mask + 15);
+	OFEnsure(i16 == mask + 16);
 
 	return ((i1 + (int)i2 + (int)i3 + (int)i4 + i5 + (int)i6 + (int)i7 +
 	    (int)i8 + (int)i9 + (int)i10 + (int)i11 + (int)i12 + (int)i13 +

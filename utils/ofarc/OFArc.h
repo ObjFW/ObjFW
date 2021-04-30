@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (id <Archive>)openArchiveWithPath: (OFString *)path
 			       type: (OFString *)type
 			       mode: (char)mode
-			   encoding: (of_string_encoding_t)encoding;
+			   encoding: (OFStringEncoding)encoding;
 - (bool)shouldExtractFile: (OFString *)fileName
 	      outFileName: (OFString *)outFileName;
 - (ssize_t)copyBlockFromStream: (OFStream *)input

@@ -17,10 +17,10 @@
 
 #include "invoke-x86_64.h"
 
-.globl _of_invocation_call
+.globl _OFInvocationCall
 
 .section __TEXT, __text, regular, pure_instructions
-_of_invocation_call:
+_OFInvocationCall:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -28,8 +28,8 @@ _of_invocation_call:
 	andq	$-16, %rsp
 	movq	%rdi, -8(%rbp)
 
-	leaq	OFFSET_STACK(%rdi), %rdx
-	movq	OFFSET_STACK_SIZE(%rdi), %rcx
+	leaq	offsetStack(%rdi), %rdx
+	movq	offsetStackSize(%rdi), %rcx
 
 	testq	$1, %rcx
 	jnz	Lfix_align
@@ -45,50 +45,50 @@ Lfill_stack:
 	jmp	Lfill_stack
 
 Lstack_filled:
-	movb	OFFSET_NUM_SSE_USED(%rdi), %al
+	movb	offsetNumSSEUsed(%rdi), %al
 
-	movaps	OFFSET_SSE_INOUT+112(%rdi), %xmm7
-	movaps	OFFSET_SSE_INOUT+96(%rdi), %xmm6
-	movaps	OFFSET_SSE_INOUT+80(%rdi), %xmm5
-	movaps	OFFSET_SSE_INOUT+64(%rdi), %xmm4
-	movaps	OFFSET_SSE_INOUT+48(%rdi), %xmm3
-	movaps	OFFSET_SSE_INOUT+32(%rdi), %xmm2
-	movaps	OFFSET_SSE_INOUT+16(%rdi), %xmm1
-	movaps	OFFSET_SSE_INOUT(%rdi), %xmm0
+	movaps	offsetSSEInOut+112(%rdi), %xmm7
+	movaps	offsetSSEInOut+96(%rdi), %xmm6
+	movaps	offsetSSEInOut+80(%rdi), %xmm5
+	movaps	offsetSSEInOut+64(%rdi), %xmm4
+	movaps	offsetSSEInOut+48(%rdi), %xmm3
+	movaps	offsetSSEInOut+32(%rdi), %xmm2
+	movaps	offsetSSEInOut+16(%rdi), %xmm1
+	movaps	offsetSSEInOut(%rdi), %xmm0
 
-	movq	OFFSET_GPR_IN+40(%rdi), %r9
-	movq	OFFSET_GPR_IN+32(%rdi), %r8
-	movq	OFFSET_GPR_IN+24(%rdi), %rcx
-	movq	OFFSET_GPR_IN+16(%rdi), %rdx
-	movq	OFFSET_GPR_IN+8(%rdi), %rsi
+	movq	offsetGPRIn+40(%rdi), %r9
+	movq	offsetGPRIn+32(%rdi), %r8
+	movq	offsetGPRIn+24(%rdi), %rcx
+	movq	offsetGPRIn+16(%rdi), %rdx
+	movq	offsetGPRIn+8(%rdi), %rsi
 
-	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
-	movq	OFFSET_GPR_IN(%rdi), %rdi
+	movb	offsetReturnType(%rdi), %r11b
+	movq	offsetGPRIn(%rdi), %rdi
 
-	cmpb	$RETURN_TYPE_STRET, %r11b
+	cmpb	$returnTypeStret, %r11b
 	je	Lcall_send_stret
 
-	cmpb	$RETURN_TYPE_JMP, %r11b
+	cmpb	$returnTypeJmp, %r11b
 	je	_objc_msgSend
 
-	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
+	cmpb	$returnTypeJmpStret, %r11b
 	je	_objc_msgSend_stret
 
 	call	_objc_msgSend
 
 Lafter_send:
 	movq	-8(%rbp), %rdi
-	movq	%rax, OFFSET_GPR_OUT(%rdi)
-	movq	%rdx, OFFSET_GPR_OUT+8(%rdi)
-	movaps	%xmm0, OFFSET_SSE_INOUT(%rdi)
-	movaps	%xmm1, OFFSET_SSE_INOUT+16(%rdi)
+	movq	%rax, offsetGPROut(%rdi)
+	movq	%rdx, offsetGPROut+8(%rdi)
+	movaps	%xmm0, offsetSSEInOut(%rdi)
+	movaps	%xmm1, offsetSSEInOut+16(%rdi)
 
-	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
+	movb	offsetReturnType(%rdi), %r11b
 
-	cmpb	$RETURN_TYPE_X87, %r11b
+	cmpb	$returnTypeX87, %r11b
 	je	Lpop_long_double
 
-	cmpb	$RETURN_TYPE_COMPLEX_X87, %r11b
+	cmpb	$returnTypeComplexX87, %r11b
 	je	Lpop_complex_long_double
 
 Lreturn:
@@ -107,10 +107,10 @@ Lcall_send_stret:
 	jmp	Lafter_send
 
 Lpop_long_double:
-	fstpt	OFFSET_X87_OUT(%rdi)
+	fstpt	offsetX87Out(%rdi)
 	jmp	Lreturn
 
 Lpop_complex_long_double:
-	fstpt	OFFSET_X87_OUT(%rdi)
-	fstpt	OFFSET_X87_OUT+16(%rdi)
+	fstpt	offsetX87Out(%rdi)
+	fstpt	offsetX87Out+16(%rdi)
 	jmp	Lreturn

@@ -48,6 +48,9 @@
 
 #import "OFThread.h"
 #import "OFThread+Private.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
@@ -77,17 +80,13 @@
 # import "OFThreadStillRunningException.h"
 #endif
 
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "atomic.h"
-#endif
-
 #if defined(OF_HAVE_THREADS)
-# import "tlskey.h"
+# import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
-#  import "socket.h"
+#  import "OFSocket.h"
 # endif
 
-static of_tlskey_t threadSelfKey;
+static OFTLSKey threadSelfKey;
 static OFThread *mainThread;
 #elif defined(OF_HAVE_SOCKETS)
 static OFDNSResolver *DNSResolver;
@@ -101,7 +100,7 @@ callMain(id object)
 	OFThread *thread = (OFThread *)object;
 	OFString *name;
 
-	if (of_tlskey_set(threadSelfKey, thread) != 0)
+	if (OFTLSKeySet(threadSelfKey, thread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: thread.class];
 
@@ -111,14 +110,14 @@ callMain(id object)
 
 	name = thread.name;
 	if (name != nil)
-		of_thread_set_name(
+		OFSetThreadName(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(object_getClassName(thread));
+		OFSetThreadName(object_getClassName(thread));
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		if (!of_socket_init())
+		if (!OFSocketInit())
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: thread.class];
 #endif
@@ -146,10 +145,10 @@ callMain(id object)
 
 #if defined(OF_AMIGAOS) && !defined(OF_MORPHOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		of_socket_deinit();
+		OFSocketDeinit();
 #endif
 
-	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
+	thread->_running = OFThreadStateWaitingForJoin;
 
 	[thread release];
 }
@@ -164,7 +163,7 @@ callMain(id object)
 	if (self != [OFThread class])
 		return;
 
-	if (of_tlskey_new(&threadSelfKey) != 0)
+	if (OFTLSKeyNew(&threadSelfKey) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -175,7 +174,7 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (instancetype)threadWithThreadBlock: (of_thread_block_t)threadBlock
++ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock
 {
 	return [[[self alloc] initWithThreadBlock: threadBlock] autorelease];
 }
@@ -183,7 +182,7 @@ callMain(id object)
 
 + (OFThread *)currentThread
 {
-	return of_tlskey_get(threadSelfKey);
+	return OFTLSKeyGet(threadSelfKey);
 }
 
 + (OFThread *)mainThread
@@ -196,12 +195,12 @@ callMain(id object)
 	if (mainThread == nil)
 		return false;
 
-	return (of_tlskey_get(threadSelfKey) == mainThread);
+	return (OFTLSKeyGet(threadSelfKey) == mainThread);
 }
 
 + (OFMutableDictionary *)threadDictionary
 {
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == nil)
 		return nil;
@@ -217,7 +216,7 @@ callMain(id object)
 + (OFDNSResolver *)DNSResolver
 {
 # ifdef OF_HAVE_THREADS
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == nil)
 		return nil;
@@ -235,7 +234,7 @@ callMain(id object)
 }
 #endif
 
-+ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval
++ (void)sleepForTimeInterval: (OFTimeInterval)timeInterval
 {
 	if (timeInterval < 0)
 		return;
@@ -319,12 +318,12 @@ callMain(id object)
 
 + (void)terminateWithObject: (id)object
 {
-	OFThread *thread = of_tlskey_get(threadSelfKey);
+	OFThread *thread = OFTLSKeyGet(threadSelfKey);
 
 	if (thread == mainThread)
 		@throw [OFInvalidArgumentException exception];
 
-	OF_ENSURE(thread != nil);
+	OFEnsure(thread != nil);
 
 	thread->_returnValue = [object retain];
 	longjmp(thread->_exitEnv, 1);
@@ -337,10 +336,10 @@ callMain(id object)
 	[OFThread currentThread].name = name;
 
 	if (name != nil)
-		of_thread_set_name(
+		OFSetThreadName(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(class_getName([self class]));
+		OFSetThreadName(class_getName([self class]));
 }
 
 + (OFString *)name
@@ -351,10 +350,10 @@ callMain(id object)
 + (void)of_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
-	mainThread->_thread = of_thread_current();
-	mainThread->_running = OF_THREAD_RUNNING;
+	mainThread->_thread = OFCurrentPlainThread();
+	mainThread->_running = OFThreadStateRunning;
 
-	if (of_tlskey_set(threadSelfKey, mainThread) != 0)
+	if (OFTLSKeySet(threadSelfKey, mainThread) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -364,7 +363,7 @@ callMain(id object)
 	self = [super init];
 
 	@try {
-		if (of_thread_attr_init(&_attr) != 0)
+		if (OFPlainThreadAttributesInit(&_attr) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
@@ -376,7 +375,7 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock
+- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock
 {
 	self = [self init];
 
@@ -417,20 +416,20 @@ callMain(id object)
 {
 	int error;
 
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
-	if (_running == OF_THREAD_WAITING_FOR_JOIN) {
-		of_thread_detach(_thread);
+	if (_running == OFThreadStateWaitingForJoin) {
+		OFPlainThreadDetach(_thread);
 		[_returnValue release];
 	}
 
 	[self retain];
 
-	_running = OF_THREAD_RUNNING;
+	_running = OFThreadStateRunning;
 
-	if ((error = of_thread_new(&_thread, [_name cStringWithEncoding:
+	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
 		[self release];
 		@throw [OFThreadStartFailedException
@@ -443,16 +442,16 @@ callMain(id object)
 {
 	int error;
 
-	if (_running == OF_THREAD_NOT_RUNNING)
+	if (_running == OFThreadStateNotRunning)
 		@throw [OFThreadJoinFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
-	if ((error = of_thread_join(_thread)) != 0)
+	if ((error = OFPlainThreadJoin(_thread)) != 0)
 		@throw [OFThreadJoinFailedException exceptionWithThread: self
 								  errNo: error];
 
-	_running = OF_THREAD_NOT_RUNNING;
+	_running = OFThreadStateNotRunning;
 
 	return _returnValue;
 }
@@ -468,7 +467,8 @@ callMain(id object)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
-		if (!of_atomic_ptr_cmpswap((void **)&_runLoop, nil, tmp))
+		if (!OFAtomicPointerCompareAndSwap(
+		    (void **)&_runLoop, nil, tmp))
 			[tmp release];
 	}
 # else
@@ -488,7 +488,7 @@ callMain(id object)
 
 - (void)setPriority: (float)priority
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -502,7 +502,7 @@ callMain(id object)
 
 - (void)setStackSize: (size_t)stackSize
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -516,7 +516,7 @@ callMain(id object)
 
 - (void)setSupportsSockets: (bool)supportsSockets
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -525,7 +525,7 @@ callMain(id object)
 
 - (void)dealloc
 {
-	if (_running == OF_THREAD_RUNNING)
+	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
@@ -533,8 +533,8 @@ callMain(id object)
 	 * We should not be running anymore, but call detach in order to free
 	 * the resources.
 	 */
-	if (_running == OF_THREAD_WAITING_FOR_JOIN)
-		of_thread_detach(_thread);
+	if (_running == OFThreadStateWaitingForJoin)
+		OFPlainThreadDetach(_thread);
 
 	[_returnValue release];
 # ifdef OF_HAVE_BLOCKS

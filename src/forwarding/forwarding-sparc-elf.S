@@ -17,11 +17,11 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -77,12 +77,12 @@ of_forward:
 	 restore
 
 0:
-	call	of_method_not_found
+	call	OFMethodNotFound
 	 restore
-.type of_forward, %function
-.size of_forward, .-of_forward
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -138,10 +138,10 @@ of_forward_stret:
 	 restore
 
 0:
-	call	of_method_not_found_stret
+	call	OFMethodNotFound_stret
 	 restore
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	save	%sp, -96, %sp

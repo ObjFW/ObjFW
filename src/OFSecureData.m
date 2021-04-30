@@ -25,6 +25,9 @@
 #import "OFSecureData.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#ifdef OF_HAVE_THREADS
+# import "OFTLSKey.h"
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -32,13 +35,9 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#ifdef OF_HAVE_THREADS
-# import "tlskey.h"
-#endif
-
-#define CHUNK_SIZE 16
-
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+static const size_t chunkSize = 16;
+
 struct page {
 	struct page *next, *previous;
 	void *map;
@@ -51,8 +50,8 @@ static thread_local struct page *lastPage = NULL;
 static thread_local struct page **preallocatedPages = NULL;
 static thread_local size_t numPreallocatedPages = 0;
 # elif defined(OF_HAVE_THREADS)
-static of_tlskey_t firstPageKey, lastPageKey;
-static of_tlskey_t preallocatedPagesKey, numPreallocatedPagesKey;
+static OFTLSKey firstPageKey, lastPageKey;
+static OFTLSKey preallocatedPagesKey, numPreallocatedPagesKey;
 # else
 static struct page *firstPage = NULL;
 static struct page *lastPage = NULL;
@@ -99,7 +98,7 @@ static struct page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
 	    CHAR_BIT;
 	struct page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -109,28 +108,28 @@ addPage(bool allowPreallocated)
 	if (allowPreallocated) {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		uintptr_t numPreallocatedPages =
-		    (uintptr_t)of_tlskey_get(numPreallocatedPagesKey);
+		    (uintptr_t)OFTLSKeyGet(numPreallocatedPagesKey);
 # endif
 
 		if (numPreallocatedPages > 0) {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			struct page **preallocatedPages =
-			    of_tlskey_get(preallocatedPagesKey);
+			    OFTLSKeyGet(preallocatedPagesKey);
 # endif
 
 			numPreallocatedPages--;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-			OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
+			OFEnsure(OFTLSKeySet(numPreallocatedPagesKey,
 			    (void *)numPreallocatedPages) == 0);
 # endif
 
 			page = preallocatedPages[numPreallocatedPages];
 
 			if (numPreallocatedPages == 0) {
-				free(preallocatedPages);
+				OFFreeMemory(preallocatedPages);
 				preallocatedPages = NULL;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
+				OFEnsure(OFTLSKeySet(preallocatedPagesKey,
 				    preallocatedPages) == 0);
 # endif
 			}
@@ -139,24 +138,24 @@ addPage(bool allowPreallocated)
 		}
 	}
 
-	page = of_alloc(1, sizeof(*page));
+	page = OFAllocMemory(1, sizeof(*page));
 	@try {
-		page->map = of_alloc_zeroed(1, mapSize);
+		page->map = OFAllocZeroedMemory(1, mapSize);
 	} @catch (id e) {
-		free(page);
+		OFFreeMemory(page);
 		@throw e;
 	}
 	@try {
 		page->page = mapPages(1);
 	} @catch (id e) {
-		free(page->map);
-		free(page);
+		OFFreeMemory(page->map);
+		OFFreeMemory(page);
 		@throw e;
 	}
-	of_explicit_memset(page->page, 0, pageSize);
+	OFZeroMemory(page->page, pageSize);
 
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	lastPage = of_tlskey_get(lastPageKey);
+	lastPage = OFTLSKeyGet(lastPageKey);
 # endif
 
 	page->previous = lastPage;
@@ -171,10 +170,10 @@ addPage(bool allowPreallocated)
 	if (firstPage == NULL)
 		firstPage = page;
 # else
-	OF_ENSURE(of_tlskey_set(lastPageKey, page) == 0);
+	OFEnsure(OFTLSKeySet(lastPageKey, page) == 0);
 
-	if (of_tlskey_get(firstPageKey) == NULL)
-		OF_ENSURE(of_tlskey_set(firstPageKey, page) == 0);
+	if (OFTLSKeyGet(firstPageKey) == NULL)
+		OFEnsure(OFTLSKeySet(firstPageKey, page) == 0);
 # endif
 
 	return page;
@@ -185,7 +184,7 @@ removePageIfEmpty(struct page *page)
 {
 	unsigned char *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OF_ROUND_UP_POW2(CHAR_BIT, pageSize / CHUNK_SIZE) /
+	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
 	    CHAR_BIT;
 
 	for (size_t i = 0; i < mapSize; i++)
@@ -193,7 +192,7 @@ removePageIfEmpty(struct page *page)
 			return;
 
 	unmapPages(page->page, 1);
-	free(page->map);
+	OFFreeMemory(page->map);
 
 	if (page->previous != NULL)
 		page->previous->next = page->next;
@@ -206,13 +205,13 @@ removePageIfEmpty(struct page *page)
 	if (lastPage == page)
 		lastPage = page->previous;
 # else
-	if (of_tlskey_get(firstPageKey) == page)
-		OF_ENSURE(of_tlskey_set(firstPageKey, page->next) == 0);
-	if (of_tlskey_get(lastPageKey) == page)
-		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous) == 0);
+	if (OFTLSKeyGet(firstPageKey) == page)
+		OFEnsure(OFTLSKeySet(firstPageKey, page->next) == 0);
+	if (OFTLSKeyGet(lastPageKey) == page)
+		OFEnsure(OFTLSKeySet(lastPageKey, page->previous) == 0);
 # endif
 
-	free(page);
+	OFFreeMemory(page);
 }
 
 static void *
@@ -220,13 +219,13 @@ allocateMemory(struct page *page, size_t bytes)
 {
 	size_t chunks, chunksLeft, pageSize, i, firstChunk;
 
-	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
-	chunks = chunksLeft = bytes / CHUNK_SIZE;
+	bytes = OFRoundUpToPowerOf2(chunkSize, bytes);
+	chunks = chunksLeft = bytes / chunkSize;
 	firstChunk = 0;
 	pageSize = [OFSystemInfo pageSize];
 
-	for (i = 0; i < pageSize / CHUNK_SIZE; i++) {
-		if (of_bitset_isset(page->map, i)) {
+	for (i = 0; i < pageSize / chunkSize; i++) {
+		if (OFBitsetIsSet(page->map, i)) {
 			chunksLeft = chunks;
 			firstChunk = i + 1;
 			continue;
@@ -238,9 +237,9 @@ allocateMemory(struct page *page, size_t bytes)
 
 	if (chunksLeft == 0) {
 		for (size_t j = firstChunk; j < firstChunk + chunks; j++)
-			of_bitset_set(page->map, j);
+			OFBitsetSet(page->map, j);
 
-		return page->page + (CHUNK_SIZE * firstChunk);
+		return page->page + (chunkSize * firstChunk);
 	}
 
 	return NULL;
@@ -251,14 +250,14 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 	size_t chunks, chunkIndex;
 
-	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
-	chunks = bytes / CHUNK_SIZE;
-	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / CHUNK_SIZE;
+	bytes = OFRoundUpToPowerOf2(chunkSize, bytes);
+	chunks = bytes / chunkSize;
+	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / chunkSize;
 
-	of_explicit_memset(pointer, 0, bytes);
+	OFZeroMemory(pointer, bytes);
 
 	for (size_t i = 0; i < chunks; i++)
-		of_bitset_clear(page->map, chunkIndex + i);
+		OFBitsetClear(page->map, chunkIndex + i);
 }
 #endif
 
@@ -272,10 +271,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (self != [OFSecureData class])
 		return;
 
-	if (of_tlskey_new(&firstPageKey) != 0 ||
-	    of_tlskey_new(&lastPageKey) != 0 ||
-	    of_tlskey_new(&preallocatedPagesKey) != 0 ||
-	    of_tlskey_new(&numPreallocatedPagesKey) != 0)
+	if (OFTLSKeyNew(&firstPageKey) != 0 || OFTLSKeyNew(&lastPageKey) != 0 ||
+	    OFTLSKeyNew(&preallocatedPagesKey) != 0 ||
+	    OFTLSKeyNew(&numPreallocatedPagesKey) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -285,9 +283,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t numPages = OF_ROUND_UP_POW2(pageSize, size) / pageSize;
+	size_t numPages = OFRoundUpToPowerOf2(pageSize, size) / pageSize;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	struct page **preallocatedPages = of_tlskey_get(preallocatedPagesKey);
+	struct page **preallocatedPages = OFTLSKeyGet(preallocatedPagesKey);
 	size_t numPreallocatedPages;
 # endif
 	size_t i;
@@ -295,9 +293,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	preallocatedPages = of_alloc_zeroed(numPages, sizeof(struct page));
+	preallocatedPages = OFAllocZeroedMemory(numPages, sizeof(struct page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(of_tlskey_set(preallocatedPagesKey, preallocatedPages) == 0);
+	OFEnsure(OFTLSKeySet(preallocatedPagesKey, preallocatedPages) == 0);
 # endif
 
 	@try {
@@ -307,7 +305,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		for (size_t j = 0; j < i; j++)
 			removePageIfEmpty(preallocatedPages[j]);
 
-		free(preallocatedPages);
+		OFFreeMemory(preallocatedPages);
 		preallocatedPages = NULL;
 
 		@throw e;
@@ -315,7 +313,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	numPreallocatedPages = numPages;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
+	OFEnsure(OFTLSKeySet(numPreallocatedPagesKey,
 	    (void *)(uintptr_t)numPreallocatedPages) == 0);
 # endif
 #else
@@ -416,16 +414,16 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			@throw [OFOutOfRangeException exception];
 
 		if (allowsSwappableMemory) {
-			_items = of_alloc(count, itemSize);
+			_items = OFAllocMemory(count, itemSize);
 			_freeWhenDone = true;
 			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		} else if (count * itemSize >= pageSize)
-			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
+			_items = mapPages(OFRoundUpToPowerOf2(pageSize,
 			    count * itemSize) / pageSize);
 		else {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-			struct page *lastPage = of_tlskey_get(lastPageKey);
+			struct page *lastPage = OFTLSKeyGet(lastPageKey);
 # endif
 
 			for (struct page *page = lastPage; page != NULL;
@@ -531,7 +529,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 		if (_count * _itemSize > pageSize)
 			unmapPages(_items,
-			    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) /
+			    OFRoundUpToPowerOf2(pageSize, _count * _itemSize) /
 			    pageSize);
 		else if (_page != NULL) {
 			if (_items != NULL)
@@ -560,7 +558,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 - (void)zero
 {
-	of_explicit_memset(_items, 0, _count * _itemSize);
+	OFZeroMemory(_items, _count * _itemSize);
 }
 
 - (id)copy

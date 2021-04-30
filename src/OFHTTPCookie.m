@@ -68,52 +68,52 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
 	OFString *domain = URL.host;
-	const of_unichar_t *characters = string.characters;
+	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {
-		STATE_PRE_NAME,
-		STATE_NAME,
-		STATE_EXPECT_VALUE,
-		STATE_VALUE,
-		STATE_QUOTED_VALUE,
-		STATE_POST_QUOTED_VALUE,
-		STATE_PRE_ATTR_NAME,
-		STATE_ATTR_NAME,
-		STATE_ATTR_VALUE
-	} state = STATE_PRE_NAME;
+		statePreName,
+		stateName,
+		stateExpectValue,
+		stateValue,
+		stateQuotedValue,
+		statePostQuotedValue,
+		statePreAttrName,
+		stateAttrName,
+		stateAttrValue
+	} state = statePreName;
 	OFString *name = nil, *value = nil;
 
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
-		case STATE_PRE_NAME:
+		case statePreName:
 			if (characters[i] != ' ') {
-				state = STATE_NAME;
+				state = stateName;
 				last = i;
 				i--;
 			}
 			break;
-		case STATE_NAME:
+		case stateName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
-				state = STATE_EXPECT_VALUE;
+				    OFRangeMake(last, i - last)];
+				state = stateExpectValue;
 			}
 			break;
-		case STATE_EXPECT_VALUE:
+		case stateExpectValue:
 			if (characters[i] == '"') {
-				state = STATE_QUOTED_VALUE;
+				state = stateQuotedValue;
 				last = i + 1;
 			} else {
-				state = STATE_VALUE;
+				state = stateValue;
 				last = i;
 			}
 
 			i--;
 			break;
-		case STATE_VALUE:
+		case stateValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFRangeMake(last, i - last)];
 
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
@@ -121,60 +121,60 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 							  domain: domain]];
 
 				state = (characters[i] == ';'
-				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
+				    ? statePreAttrName : statePreName);
 			}
 			break;
-		case STATE_QUOTED_VALUE:
+		case stateQuotedValue:
 			if (characters[i] == '"') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFRangeMake(last, i - last)];
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
 							   value: value
 							  domain: domain]];
 
-				state = STATE_POST_QUOTED_VALUE;
+				state = statePostQuotedValue;
 			}
 			break;
-		case STATE_POST_QUOTED_VALUE:
+		case statePostQuotedValue:
 			if (characters[i] == ';')
-				state = STATE_PRE_ATTR_NAME;
+				state = statePreAttrName;
 			else if (characters[i] == ',')
-				state = STATE_PRE_NAME;
+				state = statePreName;
 			else
 				@throw [OFInvalidFormatException exception];
 
 			break;
-		case STATE_PRE_ATTR_NAME:
+		case statePreAttrName:
 			if (characters[i] != ' ') {
-				state = STATE_ATTR_NAME;
+				state = stateAttrName;
 				last = i;
 				i--;
 			}
 			break;
-		case STATE_ATTR_NAME:
+		case stateAttrName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFRangeMake(last, i - last)];
 
-				state = STATE_ATTR_VALUE;
+				state = stateAttrValue;
 				last = i + 1;
 			} else if (characters[i] == ';' ||
 			    characters[i] == ',') {
 				name = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFRangeMake(last, i - last)];
 
 				handleAttribute(ret.lastObject, name, nil);
 
 				state = (characters[i] == ';'
-				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
+				    ? statePreAttrName : statePreName);
 			}
 
 			break;
-		case STATE_ATTR_VALUE:
+		case stateAttrValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    of_range(last, i - last)];
+				    OFRangeMake(last, i - last)];
 
 				/*
 				 * Expires often contains a comma, even though
@@ -185,7 +185,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				 */
 				if (characters[i] == ',' &&
 				    [name caseInsensitiveCompare: @"expires"] ==
-				    OF_ORDERED_SAME && value.length == 3 &&
+				    OFOrderedSame && value.length == 3 &&
 				    ([value isEqual: @"Mon"] ||
 				    [value isEqual: @"Tue"] ||
 				    [value isEqual: @"Wed"] ||
@@ -198,45 +198,45 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				handleAttribute(ret.lastObject, name, value);
 
 				state = (characters[i] == ';'
-				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
+				    ? statePreAttrName : statePreName);
 			}
 			break;
 		}
 	}
 
 	switch (state) {
-	case STATE_PRE_NAME:
-	case STATE_POST_QUOTED_VALUE:
-	case STATE_PRE_ATTR_NAME:
+	case statePreName:
+	case statePostQuotedValue:
+	case statePreAttrName:
 		break;
-	case STATE_NAME:
-	case STATE_QUOTED_VALUE:
+	case stateName:
+	case stateQuotedValue:
 		@throw [OFInvalidFormatException exception];
 		break;
-	case STATE_VALUE:
+	case stateValue:
 		value = [string substringWithRange:
-		    of_range(last, length - last)];
+		    OFRangeMake(last, length - last)];
 		[ret addObject: [OFHTTPCookie cookieWithName: name
 						       value: value
 						      domain: domain]];
 		break;
 	/* We end up here if the cookie is just foo= */
-	case STATE_EXPECT_VALUE:
+	case stateExpectValue:
 		[ret addObject: [OFHTTPCookie cookieWithName: name
 						       value: @""
 						      domain: domain]];
 		break;
-	case STATE_ATTR_NAME:
+	case stateAttrName:
 		if (last != length) {
 			name = [string substringWithRange:
-			    of_range(last, length - last)];
+			    OFRangeMake(last, length - last)];
 
 			handleAttribute(ret.lastObject, name, nil);
 		}
 		break;
-	case STATE_ATTR_VALUE:
+	case stateAttrValue:
 		value = [string substringWithRange:
-		    of_range(last, length - last)];
+		    OFRangeMake(last, length - last)];
 
 		handleAttribute(ret.lastObject, name, value);
 
@@ -363,18 +363,18 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _value.hash);
-	OF_HASH_ADD_HASH(hash, _domain.hash);
-	OF_HASH_ADD_HASH(hash, _path.hash);
-	OF_HASH_ADD_HASH(hash, _expires.hash);
-	OF_HASH_ADD(hash, _secure);
-	OF_HASH_ADD(hash, _HTTPOnly);
-	OF_HASH_ADD_HASH(hash, _extensions.hash);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _value.hash);
+	OFHashAddHash(&hash, _domain.hash);
+	OFHashAddHash(&hash, _path.hash);
+	OFHashAddHash(&hash, _expires.hash);
+	OFHashAdd(&hash, _secure);
+	OFHashAdd(&hash, _HTTPOnly);
+	OFHashAddHash(&hash, _extensions.hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

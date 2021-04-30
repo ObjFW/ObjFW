@@ -19,7 +19,7 @@
 # error No sockets available!
 #endif
 
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

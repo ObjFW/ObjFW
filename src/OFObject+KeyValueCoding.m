@@ -48,17 +48,17 @@ int _OFObject_KeyValueCoding_reference;
 			return [self valueForUndefinedKey: key];
 		}
 
-		name = of_alloc(keyLength + 3, 1);
+		name = OFAllocMemory(keyLength + 3, 1);
 		@try {
 			memcpy(name, "is", 2);
 			memcpy(name + 2, key.UTF8String, keyLength);
 			name[keyLength + 2] = '\0';
 
-			name[2] = of_ascii_toupper(name[2]);
+			name[2] = OFASCIIToUpper(name[2]);
 
 			selector = sel_registerName(name);
 		} @finally {
-			free(name);
+			OFFreeMemory(name);
 		}
 
 		methodSignature = [self methodSignatureForSelector: selector];
@@ -157,17 +157,17 @@ int _OFObject_KeyValueCoding_reference;
 		return;
 	}
 
-	name = of_alloc(keyLength + 5, 1);
+	name = OFAllocMemory(keyLength + 5, 1);
 	@try {
 		memcpy(name, "set", 3);
 		memcpy(name + 3, key.UTF8String, keyLength);
 		memcpy(name + keyLength + 3, ":", 2);
 
-		name[3] = of_ascii_toupper(name[3]);
+		name[3] = OFASCIIToUpper(name[3]);
 
 		selector = sel_registerName(name);
 	} @finally {
-		free(name);
+		OFFreeMemory(name);
 	}
 
 	methodSignature = [self methodSignatureForSelector: selector];

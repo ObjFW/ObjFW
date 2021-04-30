@@ -182,7 +182,7 @@ static OFString *module;
 
 		break;
 	default:
-		OF_ENSURE(0);
+		OFEnsure(0);
 	}
 }
 @end
