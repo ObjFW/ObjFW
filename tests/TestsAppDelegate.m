@@ -51,6 +51,8 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef id
 #endif
 
+extern unsigned long OFHashSeed;
+
 #ifdef OF_PSP
 static int
 exit_cb(int arg1, int arg2, void *arg)
