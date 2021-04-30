@@ -130,28 +130,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFXMLParser: OFObject
 {
 	id <OFXMLParserDelegate> _Nullable _delegate;
-	enum {
-		OFXMLParserStateInByteOrderMark,
-		OFXMLParserStateOutsideTag,
-		OFXMLParserStateTagOpened,
-		OFXMLParserStateInProcessingInstruction,
-		OFXMLParserStateInTagName,
-		OFXMLParserStateInCloseTagName,
-		OFXMLParserStateInTag,
-		OFXMLParserStateInAttributeName,
-		OFXMLParserStateExpectAttributeEqualSign,
-		OFXMLParserStateExpectAttributeDelimiter,
-		OFXMLParserStateInAttributeValue,
-		OFXMLParserStateExpectTagClose,
-		OFXMLParserStateExpectSpaceOrTagClose,
-		OFXMLParserStateInExclamationMark,
-		OFXMLParserStateInCDATAOpening,
-		OFXMLParserStateInCDATA,
-		OFXMLParserStateInCommentOpening,
-		OFXMLParserStateInComment1,
-		OFXMLParserStateInComment2,
-		OFXMLParserStateInDOCTYPE
-	} _state;
+	uint_least8_t _state;
 	size_t _i, _last;
 	const char *_Nullable _data;
 	OFMutableData *_buffer;

@@ -40,6 +40,29 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnboundPrefixException.h"
 
+enum {
+	stateInByteOrderMark,
+	stateOutsideTag,
+	stateTagOpened,
+	stateInProcessingInstruction,
+	stateInTagName,
+	stateInCloseTagName,
+	stateInTag,
+	stateInAttributeName,
+	stateExpectAttributeEqualSign,
+	stateExpectAttributeDelimiter,
+	stateInAttributeValue,
+	stateExpectTagClose,
+	stateExpectSpaceOrTagClose,
+	stateInExclamationMark,
+	stateInCDATAOpening,
+	stateInCDATA,
+	stateInCommentOpening,
+	stateInComment1,
+	stateInComment2,
+	stateInDOCTYPE
+};
+
 @interface OFXMLParser () <OFStringXMLUnescapingDelegate>
 @end
 
@@ -65,29 +88,26 @@ static void inCommentState2(OFXMLParser *);
 static void inDOCTYPEState(OFXMLParser *);
 typedef void (*StateFunction)(OFXMLParser *);
 static StateFunction lookupTable[] = {
-	[OFXMLParserStateInByteOrderMark] = inByteOrderMarkState,
-	[OFXMLParserStateOutsideTag] = outsideTagState,
-	[OFXMLParserStateTagOpened] = tagOpenedState,
-	[OFXMLParserStateInProcessingInstruction] =
-	    inProcessingInstructionState,
-	[OFXMLParserStateInTagName] = inTagNameState,
-	[OFXMLParserStateInCloseTagName] = inCloseTagNameState,
-	[OFXMLParserStateInTag] = inTagState,
-	[OFXMLParserStateInAttributeName] = inAttributeNameState,
-	[OFXMLParserStateExpectAttributeEqualSign] =
-	    expectAttributeEqualSignState,
-	[OFXMLParserStateExpectAttributeDelimiter] =
-	    expectAttributeDelimiterState,
-	[OFXMLParserStateInAttributeValue] = inAttributeValueState,
-	[OFXMLParserStateExpectTagClose] = expectTagCloseState,
-	[OFXMLParserStateExpectSpaceOrTagClose] = expectSpaceOrTagCloseState,
-	[OFXMLParserStateInExclamationMark] = inExclamationMarkState,
-	[OFXMLParserStateInCDATAOpening] = inCDATAOpeningState,
-	[OFXMLParserStateInCDATA] = inCDATAState,
-	[OFXMLParserStateInCommentOpening] = inCommentOpeningState,
-	[OFXMLParserStateInComment1] = inCommentState1,
-	[OFXMLParserStateInComment2] = inCommentState2,
-	[OFXMLParserStateInDOCTYPE] = inDOCTYPEState
+	[stateInByteOrderMark] = inByteOrderMarkState,
+	[stateOutsideTag] = outsideTagState,
+	[stateTagOpened] = tagOpenedState,
+	[stateInProcessingInstruction] = inProcessingInstructionState,
+	[stateInTagName] = inTagNameState,
+	[stateInCloseTagName] = inCloseTagNameState,
+	[stateInTag] = inTagState,
+	[stateInAttributeName] = inAttributeNameState,
+	[stateExpectAttributeEqualSign] = expectAttributeEqualSignState,
+	[stateExpectAttributeDelimiter] = expectAttributeDelimiterState,
+	[stateInAttributeValue] = inAttributeValueState,
+	[stateExpectTagClose] = expectTagCloseState,
+	[stateExpectSpaceOrTagClose] = expectSpaceOrTagCloseState,
+	[stateInExclamationMark] = inExclamationMarkState,
+	[stateInCDATAOpening] = inCDATAOpeningState,
+	[stateInCDATA] = inCDATAState,
+	[stateInCommentOpening] = inCommentOpeningState,
+	[stateInComment1] = inCommentState1,
+	[stateInComment2] = inCommentState2,
+	[stateInDOCTYPE] = inDOCTYPEState
 };
 
 static OF_INLINE void
@@ -258,8 +278,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_lastCarriageReturn = (_data[_i] == '\r');
 	}
 
-	/* In OFXMLParserStateInTag, there can be only spaces */
-	if (length - _last > 0 && _state != OFXMLParserStateInTag)
+	/* In stateInTag, there can be only spaces */
+	if (length - _last > 0 && _state != stateInTag)
 		appendToBuffer(_buffer, _data + _last, _encoding,
 		    length - _last);
 }
@@ -290,7 +310,7 @@ inByteOrderMarkState(OFXMLParser *self)
 {
 	if (self->_data[self->_i] != "\xEF\xBB\xBF"[self->_level]) {
 		if (self->_level == 0) {
-			self->_state = OFXMLParserStateOutsideTag;
+			self->_state = stateOutsideTag;
 			self->_i--;
 			return;
 		}
@@ -299,7 +319,7 @@ inByteOrderMarkState(OFXMLParser *self)
 	}
 
 	if (self->_level++ == 2)
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 
 	self->_last = self->_i + 1;
 }
@@ -339,7 +359,7 @@ outsideTagState(OFXMLParser *self)
 	[self->_buffer removeAllItems];
 
 	self->_last = self->_i + 1;
-	self->_state = OFXMLParserStateTagOpened;
+	self->_state = stateTagOpened;
 }
 
 /* Tag was just opened */
@@ -353,17 +373,17 @@ tagOpenedState(OFXMLParser *self)
 	switch (self->_data[self->_i]) {
 	case '?':
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateInProcessingInstruction;
+		self->_state = stateInProcessingInstruction;
 		self->_level = 0;
 		break;
 	case '/':
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateInCloseTagName;
+		self->_state = stateInCloseTagName;
 		self->_acceptProlog = false;
 		break;
 	case '!':
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateInExclamationMark;
+		self->_state = stateInExclamationMark;
 		self->_acceptProlog = false;
 		break;
 	default:
@@ -371,7 +391,7 @@ tagOpenedState(OFXMLParser *self)
 		    self->_previous.count >= self->_depthLimit)
 			@throw [OFOutOfRangeException exception];
 
-		self->_state = OFXMLParserStateInTagName;
+		self->_state = stateInTagName;
 		self->_acceptProlog = false;
 		self->_i--;
 		break;
@@ -516,7 +536,7 @@ inProcessingInstructionState(OFXMLParser *self)
 		[self->_buffer removeAllItems];
 
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 	} else
 		self->_level = 0;
 }
@@ -594,10 +614,9 @@ inTagNameState(OFXMLParser *self)
 		self->_name = self->_prefix = nil;
 
 		self->_state = (self->_data[self->_i] == '/'
-		    ? OFXMLParserStateExpectTagClose
-		    : OFXMLParserStateOutsideTag);
+		    ? stateExpectTagClose : stateOutsideTag);
 	} else
-		self->_state = OFXMLParserStateInTag;
+		self->_state = stateInTag;
 
 	if (self->_data[self->_i] != '/')
 		[self->_namespaces addObject: [OFMutableDictionary dictionary]];
@@ -675,8 +694,7 @@ inCloseTagNameState(OFXMLParser *self)
 
 	self->_last = self->_i + 1;
 	self->_state = (self->_data[self->_i] == '>'
-	    ? OFXMLParserStateOutsideTag
-	    : OFXMLParserStateExpectSpaceOrTagClose);
+	    ? stateOutsideTag : stateExpectSpaceOrTagClose);
 
 	if (self->_previous.count == 0)
 		self->_finishedParsing = true;
@@ -697,7 +715,7 @@ inTagState(OFXMLParser *self)
 		    self->_data[self->_i] != '\n' &&
 		    self->_data[self->_i] != '\r') {
 			self->_last = self->_i;
-			self->_state = OFXMLParserStateInAttributeName;
+			self->_state = stateInAttributeName;
 			self->_i--;
 		}
 
@@ -756,7 +774,7 @@ inTagState(OFXMLParser *self)
 
 	self->_last = self->_i + 1;
 	self->_state = (self->_data[self->_i] == '/'
-	    ? OFXMLParserStateExpectTagClose : OFXMLParserStateOutsideTag);
+	    ? stateExpectTagClose : stateOutsideTag);
 }
 
 /* Looking for attribute name */
@@ -804,8 +822,7 @@ inAttributeNameState(OFXMLParser *self)
 
 	self->_last = self->_i + 1;
 	self->_state = (self->_data[self->_i] == '='
-	    ? OFXMLParserStateExpectAttributeDelimiter
-	    : OFXMLParserStateExpectAttributeEqualSign);
+	    ? stateExpectAttributeDelimiter : stateExpectAttributeEqualSign);
 }
 
 /* Expecting equal sign of an attribute */
@@ -814,7 +831,7 @@ expectAttributeEqualSignState(OFXMLParser *self)
 {
 	if (self->_data[self->_i] == '=') {
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateExpectAttributeDelimiter;
+		self->_state = stateExpectAttributeDelimiter;
 		return;
 	}
 
@@ -837,7 +854,7 @@ expectAttributeDelimiterState(OFXMLParser *self)
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	self->_delimiter = self->_data[self->_i];
-	self->_state = OFXMLParserStateInAttributeValue;
+	self->_state = stateInAttributeValue;
 }
 
 /* Looking for attribute value */
@@ -881,7 +898,7 @@ inAttributeValueState(OFXMLParser *self)
 	self->_attributeName = self->_attributePrefix = nil;
 
 	self->_last = self->_i + 1;
-	self->_state = OFXMLParserStateInTag;
+	self->_state = stateInTag;
 }
 
 /* Expecting closing '>' */
@@ -890,7 +907,7 @@ expectTagCloseState(OFXMLParser *self)
 {
 	if (self->_data[self->_i] == '>') {
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 	} else
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
@@ -901,7 +918,7 @@ expectSpaceOrTagCloseState(OFXMLParser *self)
 {
 	if (self->_data[self->_i] == '>') {
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 	} else if (self->_data[self->_i] != ' ' &&
 	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
 	    self->_data[self->_i] != '\r')
@@ -916,12 +933,12 @@ inExclamationMarkState(OFXMLParser *self)
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	if (self->_data[self->_i] == '-')
-		self->_state = OFXMLParserStateInCommentOpening;
+		self->_state = stateInCommentOpening;
 	else if (self->_data[self->_i] == '[') {
-		self->_state = OFXMLParserStateInCDATAOpening;
+		self->_state = stateInCDATAOpening;
 		self->_level = 0;
 	} else if (self->_data[self->_i] == 'D') {
-		self->_state = OFXMLParserStateInDOCTYPE;
+		self->_state = stateInDOCTYPE;
 		self->_level = 0;
 	} else
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -937,7 +954,7 @@ inCDATAOpeningState(OFXMLParser *self)
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	if (++self->_level == 6) {
-		self->_state = OFXMLParserStateInCDATA;
+		self->_state = stateInCDATA;
 		self->_level = 0;
 	}
 
@@ -966,7 +983,7 @@ inCDATAState(OFXMLParser *self)
 		[self->_buffer removeAllItems];
 
 		self->_last = self->_i + 1;
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 	} else
 		self->_level = 0;
 }
@@ -979,7 +996,7 @@ inCommentOpeningState(OFXMLParser *self)
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	self->_last = self->_i + 1;
-	self->_state = OFXMLParserStateInComment1;
+	self->_state = stateInComment1;
 	self->_level = 0;
 }
 
@@ -992,7 +1009,7 @@ inCommentState1(OFXMLParser *self)
 		self->_level = 0;
 
 	if (self->_level == 2)
-		self->_state = OFXMLParserStateInComment2;
+		self->_state = stateInComment2;
 }
 
 static void
@@ -1019,7 +1036,7 @@ inCommentState2(OFXMLParser *self)
 	[self->_buffer removeAllItems];
 
 	self->_last = self->_i + 1;
-	self->_state = OFXMLParserStateOutsideTag;
+	self->_state = stateOutsideTag;
 }
 
 /* In <!DOCTYPE ...> */
@@ -1036,7 +1053,7 @@ inDOCTYPEState(OFXMLParser *self)
 	self->_level++;
 
 	if (self->_level > 6 && self->_data[self->_i] == '>')
-		self->_state = OFXMLParserStateOutsideTag;
+		self->_state = stateOutsideTag;
 
 	self->_last = self->_i + 1;
 }
