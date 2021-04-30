@@ -40,12 +40,18 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This is a bit mask.
  */
-typedef enum OFArrayJoinOptions {
+typedef enum {
 	/** Skip empty components */
 	OFArraySkipEmptyComponents = 1
 } OFArrayJoinOptions;
 
-typedef enum OFArraySortOptions {
+/**
+ * @brief Options for sorting an array.
+ *
+ * This is a bit mask.
+ */
+typedef enum {
+	/** Sort the array descending */
 	OFArraySortDescending = 1
 } OFArraySortOptions;
 

@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of the archive entry.
  */
-typedef enum OFTarArchiveEntryType {
+typedef enum {
 	/** Normal file */
 	OFTarArchiveEntryTypeFile	     = '0',
 	/** Hard link */

@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An enum describing why resolving a host failed.
  */
-typedef enum OFDNSResolverErrorCode {
+typedef enum {
 	/** An unknown error */
 	OFDNSResolverErrorCodeUnknown,
 	/** The query timed out */

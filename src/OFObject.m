@@ -228,6 +228,12 @@ OFRandom64(void)
 #endif
 }
 
+void
+OFHashInit(unsigned long *hash)
+{
+	*hash = OFHashSeed;
+}
+
 static const char *
 typeEncodingForSelector(Class class, SEL selector)
 {

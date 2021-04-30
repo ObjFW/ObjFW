@@ -49,7 +49,7 @@ struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
 	_URC_END_OF_STACK = 5
-}_Unwind_Reason_Code;
+} _Unwind_Reason_Code;
 
 struct BacktraceCtx {
 	void **backtrace;

@@ -34,11 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	int64_t _offset;
-	enum {
-		OFZIPArchiveModeRead,
-		OFZIPArchiveModeWrite,
-		OFZIPArchiveModeAppend
-	} _mode;
+	uint_least8_t _mode;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;

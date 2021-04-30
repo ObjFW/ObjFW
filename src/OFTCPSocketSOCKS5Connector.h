@@ -29,14 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFTCPSocketAsyncConnectBlock _Nullable _block;
 #endif
 	id _Nullable _exception;
-	enum {
-		OFSOCKS5StateSendAuthentication = 1,
-		OFSOCKS5StateReadVersion,
-		OFSOCKS5StateSendRequest,
-		OFSOCKS5StateReadResponse,
-		OFSOCKS5StateReadAddress,
-		OFSOCKS5StateReadAddressLength,
-	} _SOCKS5State;
+	uint_least8_t _SOCKS5State;
 	/* Longest read is domain name (max 255 bytes) + port */
 	unsigned char _buffer[257];
 	OFMutableData *_Nullable _request;

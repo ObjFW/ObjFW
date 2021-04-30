@@ -49,6 +49,12 @@
  *  - Encrypted files cannot be read.
  */
 
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
+
 OF_DIRECT_MEMBERS
 @interface OFZIPArchive ()
 - (void)of_readZIPInfo;
@@ -175,11 +181,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	@try {
 		if ([mode isEqual: @"r"])
-			_mode = OFZIPArchiveModeRead;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OFZIPArchiveModeWrite;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OFZIPArchiveModeAppend;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
@@ -187,8 +193,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_entries = [[OFMutableArray alloc] init];
 		_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
-		if (_mode == OFZIPArchiveModeRead ||
-		    _mode == OFZIPArchiveModeAppend) {
+		if (_mode == modeRead || _mode == modeAppend) {
 			if (![stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
@@ -196,7 +201,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			[self of_readEntries];
 		}
 
-		if (_mode == OFZIPArchiveModeAppend) {
+		if (_mode == modeAppend) {
 			_offset = _centralDirectoryOffset;
 			seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
 			    (OFFileOffset)_offset, SEEK_SET);
@@ -400,8 +405,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		/* Might have already been closed by the user - that's fine. */
 	}
 
-	if ((_mode == OFZIPArchiveModeWrite ||
-	    _mode == OFZIPArchiveModeAppend) &&
+	if ((_mode == modeWrite || _mode == modeAppend) &&
 	    [_lastReturnedStream isKindOfClass:
 	    [OFZIPArchiveFileWriteStream class]]) {
 		OFZIPArchiveFileWriteStream *stream =
@@ -430,7 +434,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
-	if (_mode != OFZIPArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
@@ -480,7 +484,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
 
-	if (_mode != OFZIPArchiveModeWrite && _mode != OFZIPArchiveModeAppend)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -613,7 +617,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[self of_closeLastReturnedStream];
 
-	if (_mode == OFZIPArchiveModeWrite || _mode == OFZIPArchiveModeAppend)
+	if (_mode == modeWrite || _mode == modeAppend)
 		[self of_writeCentralDirectory];
 
 	[_stream release];

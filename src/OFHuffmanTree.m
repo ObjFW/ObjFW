@@ -23,10 +23,10 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
-static OFHuffmanTree *
+static OFHuffmanTree
 newTree(void)
 {
-	OFHuffmanTree *tree;
+	OFHuffmanTree tree;
 
 	tree = OFAllocMemory(1, sizeof(*tree));
 	tree->leaves[0] = tree->leaves[1] = NULL;
@@ -36,7 +36,7 @@ newTree(void)
 }
 
 static void
-treeInsert(OFHuffmanTree *tree, uint16_t code, uint8_t length, uint16_t value)
+treeInsert(OFHuffmanTree tree, uint16_t code, uint8_t length, uint16_t value)
 {
 	while (length > 0) {
 		uint8_t bit;
@@ -53,10 +53,10 @@ treeInsert(OFHuffmanTree *tree, uint16_t code, uint8_t length, uint16_t value)
 	tree->value = value;
 }
 
-OFHuffmanTree *
+OFHuffmanTree
 OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 {
-	OFHuffmanTree *tree;
+	OFHuffmanTree tree;
 	uint16_t *lengthCount = NULL;
 	uint16_t code, maxCode = 0, *nextCode = NULL;
 	uint_fast8_t maxBit = 0;
@@ -108,10 +108,10 @@ OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 	return tree;
 }
 
-OFHuffmanTree *
+OFHuffmanTree
 OFHuffmanTreeNewSingle(uint16_t value)
 {
-	OFHuffmanTree *tree = newTree();
+	OFHuffmanTree tree = newTree();
 
 	tree->value = value;
 
@@ -119,7 +119,7 @@ OFHuffmanTreeNewSingle(uint16_t value)
 }
 
 void
-OFHuffmanTreeFree(OFHuffmanTree *tree)
+OFHuffmanTreeFree(OFHuffmanTree tree)
 {
 	for (uint_fast8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leaves[i] != NULL)

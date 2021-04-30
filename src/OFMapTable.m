@@ -28,6 +28,8 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+extern unsigned long OFHashSeed;
+
 static const unsigned long minCapacity = 16;
 
 struct OFMapTableBucket {

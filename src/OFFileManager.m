@@ -95,6 +95,7 @@ const OFFileAttributeType OFFileTypeCharacterSpecial =
     @"OFFileTypeCharacterSpecial";
 const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
 const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
+const OFFileAttributeType OFFileTypeUnknown = @"OFFileTypeUnknown";
 
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)

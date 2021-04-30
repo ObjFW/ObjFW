@@ -31,11 +31,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFLHAArchive: OFObject
 {
 	OFStream *_stream;
-	enum {
-		OFLHAArchiveModeRead,
-		OFLHAArchiveModeWrite,
-		OFLHAArchiveModeAppend
-	} _mode;
+	uint_least8_t _mode;
 	OFStringEncoding _encoding;
 	OFStream *_Nullable _lastReturnedStream;
 }

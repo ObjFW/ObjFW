@@ -388,6 +388,8 @@ setTypeAttribute(OFMutableFileAttributes attributes, Stat *s)
 	else if (S_ISSOCK(s->st_mode))
 		[attributes setObject: OFFileTypeSocket forKey: OFFileType];
 #endif
+	else
+		[attributes setObject: OFFileTypeUnknown forKey: OFFileType];
 }
 
 static void

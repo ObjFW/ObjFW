@@ -161,7 +161,7 @@ other place, you are most likely using a mirror.
     $ export OBJC="$clang -arch armv7 -arch arm64"
     $ export OBJCPP="$clang -arch armv7 -E"
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/ios --host=arm-apple-darwin
+    $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
   To build for the iOS simulator, use something like this:
 
@@ -169,7 +169,7 @@ other place, you are most likely using a mirror.
     $ export OBJC="$clang -arch i386 -arch x86_64"
     $ export OBJCPP="$clang -arch i386 -E"
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/iossim --host=i386-apple-darwin
+    $ ./configure --prefix=/usr/local/iossim --host=x86_64-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
