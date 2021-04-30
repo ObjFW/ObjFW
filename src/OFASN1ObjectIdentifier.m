@@ -62,8 +62,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -76,9 +76,8 @@
 		unsigned long long value = 0;
 		uint_fast8_t bits = 0;
 
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER ||
-		    constructed)
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberObjectIdentifier || constructed)
 			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1 || count == 0)

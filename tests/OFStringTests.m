@@ -34,10 +34,10 @@ static OFString *whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
-static of_unichar_t ucstr[] = {
+static OFUnichar ucstr[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
 };
-static of_unichar_t sucstr[] = {
+static OFUnichar sucstr[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
 };
@@ -91,7 +91,7 @@ static uint16_t sutf16str[] = {
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)length
 {
 	self = [super init];
@@ -108,9 +108,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)UTF16String
+- (instancetype)initWithUTF16String: (const OFChar16 *)UTF16String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -127,9 +127,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)UTF32String
+- (instancetype)initWithUTF32String: (const OFChar32 *)UTF32String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -169,7 +169,7 @@ static uint16_t sutf16str[] = {
 	[super dealloc];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
 	return [_string characterAtIndex: idx];
 }
@@ -187,7 +187,7 @@ static uint16_t sutf16str[] = {
 		[self inheritMethodsFromClass: [SimpleString class]];
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)string
 {
 	[_string replaceCharactersInRange: range withString: string];
@@ -217,7 +217,7 @@ static uint16_t sutf16str[] = {
 	OFString *is;
 	OFArray *a;
 	size_t i;
-	const of_unichar_t *ua;
+	const OFUnichar *ua;
 	const uint16_t *u16a;
 	OFCharacterSet *cs;
 	EntityHandler *h;
@@ -235,30 +235,30 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[isEqual:]", [s[0] isEqual: s[2]] &&
 	    ![s[0] isEqual: [[[OFObject alloc] init] autorelease]])
 
-	TEST(@"-[compare:]", [s[0] compare: s[2]] == OF_ORDERED_SAME &&
-	    [s[0] compare: @""] != OF_ORDERED_SAME &&
-	    [C(@"") compare: @"a"] == OF_ORDERED_ASCENDING &&
-	    [C(@"a") compare: @"b"] == OF_ORDERED_ASCENDING &&
-	    [C(@"cd") compare: @"bc"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ä") compare: @"ö"] == OF_ORDERED_ASCENDING &&
-	    [C(@"€") compare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"aa") compare: @"z"] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare:]", [s[0] compare: s[2]] == OFOrderedSame &&
+	    [s[0] compare: @""] != OFOrderedSame &&
+	    [C(@"") compare: @"a"] == OFOrderedAscending &&
+	    [C(@"a") compare: @"b"] == OFOrderedAscending &&
+	    [C(@"cd") compare: @"bc"] == OFOrderedDescending &&
+	    [C(@"ä") compare: @"ö"] == OFOrderedAscending &&
+	    [C(@"€") compare: @"ß"] == OFOrderedDescending &&
+	    [C(@"aa") compare: @"z"] == OFOrderedAscending)
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OF_ORDERED_SAME &&
-	    [C(@"я") caseInsensitiveCompare: @"Я"] == OF_ORDERED_SAME &&
-	    [C(@"€") caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ß") caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OFOrderedSame &&
+	    [C(@"я") caseInsensitiveCompare: @"Я"] == OFOrderedSame &&
+	    [C(@"€") caseInsensitiveCompare: @"ß"] == OFOrderedDescending &&
+	    [C(@"ß") caseInsensitiveCompare: @"→"] == OFOrderedAscending &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])
 #else
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])
@@ -350,12 +350,12 @@ static uint16_t sutf16str[] = {
 #ifdef OF_HAVE_FILES
 	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [stringClass
 	    stringWithContentsOfFile: @"testfile.txt"
-			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+			    encoding: OFStringEncodingISO8859_1]) &&
 	    [is isEqual: @"testäöü"])
 
 	TEST(@"+[stringWithContentsOfURL:encoding]", (is = [stringClass
 	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
-			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
+			   encoding: OFStringEncodingISO8859_1]) &&
 	    [is isEqual: @"testäöü"])
 #endif
 
@@ -372,13 +372,13 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"Conversion of ISO 8859-1 to Unicode",
 	    [[stringClass stringWithCString: "\xE4\xF6\xFC"
-				   encoding: OF_STRING_ENCODING_ISO_8859_1]
+				   encoding: OFStringEncodingISO8859_1]
 	    isEqual: @"äöü"])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of ISO 8859-15 to Unicode",
 	    [[stringClass stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
-				   encoding: OF_STRING_ENCODING_ISO_8859_15]
+				   encoding: OFStringEncodingISO8859_15]
 	    isEqual: @"€ŠšŽžŒœŸ"])
 #endif
 
@@ -388,90 +388,90 @@ static uint16_t sutf16str[] = {
 					     "\x89\x8A\x8B\x8C\x8E\x91\x92\x93"
 					     "\x94\x95\x96\x97\x98\x99\x9A\x9B"
 					     "\x9C\x9E\x9F"
-				   encoding: OF_STRING_ENCODING_WINDOWS_1252]
+				   encoding: OFStringEncodingWindows1252]
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Codepage 437 to Unicode",
 	    [[stringClass stringWithCString: "\xB0\xB1\xB2\xDB"
-				   encoding: OF_STRING_ENCODING_CODEPAGE_437]
+				   encoding: OFStringEncodingCodepage437]
 	    isEqual: @"░▒▓█"])
 #endif
 
 	TEST(@"Conversion of Unicode to ASCII #1",
 	    !strcmp([C(@"This is a test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a test"))
+	    OFStringEncodingASCII], "This is a test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ASCII #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is a tést")
-	    cStringWithEncoding: OF_STRING_ENCODING_ASCII])
+	    cStringWithEncoding: OFStringEncodingASCII])
 
 	TEST(@"Conversion of Unicode to ISO-8859-1 #1",
 	    !strcmp([C(@"This is ä test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 test"))
+	    OFStringEncodingISO8859_1], "This is \xE4 test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-1 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1])
+	    OFStringEncodingISO8859_1])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of Unicode to ISO-8859-15 #1",
 	    !strcmp([C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-15 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15])
+	    OFStringEncodingISO8859_15])
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Conversion of Unicode to Windows-1252 #1",
 	    !strcmp([C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Windows-1252 #2",
 	    OFInvalidEncodingException, [C(@"This is ä t€st…‼")
-	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
+	    cStringWithEncoding: OFStringEncodingWindows1252])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Unicode to Codepage 437 #1",
 	    !strcmp([C(@"Tést strîng ░▒▓") cStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Codepage 437 #2",
 	    OFInvalidEncodingException, [C(@"T€st strîng ░▒▓")
-	    cStringWithEncoding: OF_STRING_ENCODING_CODEPAGE_437])
+	    cStringWithEncoding: OFStringEncodingCodepage437])
 #endif
 
 	TEST(@"Lossy conversion of Unicode to ASCII",
 	    !strcmp([C(@"This is a tést") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
+	    OFStringEncodingASCII], "This is a t?st"))
 
 	TEST(@"Lossy conversion of Unicode to ISO-8859-1",
 	    !strcmp([C(@"This is ä t€st") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 t?st"))
+	    OFStringEncodingISO8859_1], "This is \xE4 t?st"))
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Lossy conversion of Unicode to ISO-8859-15",
 	    !strcmp([C(@"This is ä t€st…") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st?"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st?"))
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Lossy conversion of Unicode to Windows-1252",
 	    !strcmp([C(@"This is ä t€st…‼") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85?"))
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Lossy conversion of Unicode to Codepage 437",
 	    !strcmp([C(@"T€st strîng ░▒▓") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T?st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T?st str\x8Cng \xB0\xB1\xB2"))
 #endif
 
 	TEST(@"+[stringWithFormat:]",
@@ -487,53 +487,53 @@ static uint16_t sutf16str[] = {
 	    [C(@"𝄞öö") rangeOfString: @"öö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"].location == 0 &&
-	    [C(@"𝄞öö") rangeOfString: @"x"].location == OF_NOT_FOUND &&
+	    [C(@"𝄞öö") rangeOfString: @"x"].location == OFNotFound &&
 	    [C(@"𝄞öö") rangeOfString: @"öö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
+	    options: OFStringSearchBackwards].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 2 &&
+	    options: OFStringSearchBackwards].location == 2 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
+	    options: OFStringSearchBackwards].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == OF_NOT_FOUND)
+	    options: OFStringSearchBackwards].location == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: of_range(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFRangeMake(3, 1)])
 
 	cs = [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 	TEST(@"-[indexOfCharacterFromSet:]",
 	     [C(@"abcđabcđe") indexOfCharacterFromSet: cs] == 2 &&
 	     [C(@"abcđabcđë")
 	     indexOfCharacterFromSet: cs
-			     options: OF_STRING_SEARCH_BACKWARDS] == 7 &&
+			     options: OFStringSearchBackwards] == 7 &&
 	     [C(@"abcđabcđë")
 	     indexOfCharacterFromSet: cs
 			     options: 0
-			       range: of_range(4, 4)] == 6 &&
+			       range: OFRangeMake(4, 4)] == 6 &&
 	     [C(@"abcđabcđëf")
 	     indexOfCharacterFromSet: cs
 			     options: 0
-			       range: of_range(8, 2)] == OF_NOT_FOUND)
+			       range: OFRangeMake(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
 	    OFOutOfRangeException,
 	    [C(@"𝄞öö") indexOfCharacterFromSet: cs
 				       options: 0
-					 range: of_range(3, 1)])
+					 range: OFRangeMake(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
-	    [[C(@"𝄞öö") substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&
-	    [[C(@"𝄞öö") substringWithRange: of_range(3, 0)] isEqual: @""])
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(1, 1)] isEqual: @"ö"] &&
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(3, 0)] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: of_range(2, 2)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(2, 2)])
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: of_range(4, 0)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
@@ -610,7 +610,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[componentsSeparatedByString:options:]",
 	    (a = [C(@"fooXXbarXXXXbazXXXX")
 	    componentsSeparatedByString: @"XX"
-				options: OF_STRING_SKIP_EMPTY]) &&
+				options: OFStringSkipEmptyComponents]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
@@ -639,7 +639,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[componentsSeparatedByCharactersInSet:options:]",
 	    (a = [C(@"fooXYbarXYZXbazXYXZ")
 	    componentsSeparatedByCharactersInSet: cs
-					 options: OF_STRING_SKIP_EMPTY]) &&
+	    options: OFStringSkipEmptyComponents]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
@@ -1189,23 +1189,23 @@ static uint16_t sutf16str[] = {
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
 
 #ifdef OF_BIG_ENDIAN
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_LITTLE_ENDIAN
+# define SWAPPED_BYTE_ORDER OFByteOrderLittleEndian
 #else
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_BIG_ENDIAN
+# define SWAPPED_BYTE_ORDER OFByteOrderBigEndian
 #endif
 	TEST(@"-[UTF16String]", (u16a = C(@"fööbär🀺").UTF16String) &&
-	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
+	    !memcmp(u16a, utf16str + 1, OFUTF16StringLength(utf16str) * 2) &&
 	    (u16a = [C(@"fööbär🀺")
 	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
+	    !memcmp(u16a, sutf16str + 1, OFUTF16StringLength(sutf16str) * 2))
 
 	TEST(@"-[UTF16StringLength]", C(@"fööbär🀺").UTF16StringLength == 8)
 
 	TEST(@"-[UTF32String]", (ua = C(@"fööbär🀺").UTF32String) &&
-	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
+	    !memcmp(ua, ucstr + 1, OFUTF32StringLength(ucstr) * 4) &&
 	    (ua = [C(@"fööbär🀺") UTF32StringWithByteOrder:
 	    SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
+	    !memcmp(ua, sucstr + 1, OFUTF32StringLength(sucstr) * 4))
 #undef SWAPPED_BYTE_ORDER
 
 	TEST(@"-[stringByMD5Hashing]", [C(@"asdfoobar").stringByMD5Hashing
@@ -1268,20 +1268,20 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[deleteCharactersInRange:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] deleteCharactersInRange: of_range(1, 3)]) &&
+	    R([s[0] deleteCharactersInRange: OFRangeMake(1, 3)]) &&
 	    [s[0] isEqual: @"𝄞bä€"] &&
-	    R([s[0] deleteCharactersInRange: of_range(0, 4)]) &&
+	    R([s[0] deleteCharactersInRange: OFRangeMake(0, 4)]) &&
 	    [s[0] isEqual: @""])
 
 	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] replaceCharactersInRange: of_range(1, 3)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(1, 3)
 				  withString: @"äöüß"]) &&
 	    [s[0] isEqual: @"𝄞äöüßbä€"] &&
-	    R([s[0] replaceCharactersInRange: of_range(4, 2)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(4, 2)
 				  withString: @"b"]) &&
 	    [s[0] isEqual: @"𝄞äöübä€"] &&
-	    R([s[0] replaceCharactersInRange: of_range(0, 7)
+	    R([s[0] replaceCharactersInRange: OFRangeMake(0, 7)
 				  withString: @""]) &&
 	    [s[0] isEqual: @""])
 
@@ -1289,22 +1289,22 @@ static uint16_t sutf16str[] = {
 	    OFOutOfRangeException,
 	    {
 		s[0] = [mutableStringClass stringWithString: @"𝄞öö"];
-		[s[0] deleteCharactersInRange: of_range(2, 2)];
+		[s[0] deleteCharactersInRange: OFRangeMake(2, 2)];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [s[0] deleteCharactersInRange: of_range(4, 0)])
+	    [s[0] deleteCharactersInRange: OFRangeMake(4, 0)])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(2, 2) withString: @""])
+	    [s[0] replaceCharactersInRange: OFRangeMake(2, 2) withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(4, 0) withString: @""])
+	    [s[0] replaceCharactersInRange: OFRangeMake(4, 0) withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
 	    (s[0] = [mutableStringClass stringWithString:
@@ -1321,7 +1321,7 @@ static uint16_t sutf16str[] = {
 	    R([s[0] replaceOccurrencesOfString: @"oo"
 				    withString: @"óò"
 				       options: 0
-					 range: of_range(2, 15)]) &&
+					 range: OFRangeMake(2, 15)]) &&
 	    [s[0] isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",

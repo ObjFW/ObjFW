@@ -32,11 +32,11 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const of_unichar_t *characters = string.characters;
+		const OFUnichar *characters = string.characters;
 		size_t length = string.length;
 
 		for (size_t i = 0; i < length; i++) {
-			of_unichar_t c = characters[i];
+			OFUnichar c = characters[i];
 
 			if (c / CHAR_BIT >= _size) {
 				size_t newSize;
@@ -45,16 +45,16 @@
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OF_ROUND_UP_POW2(CHAR_BIT, c + 1) /
+				newSize = OFRoundUpToPowerOf2(CHAR_BIT, c + 1) /
 				    CHAR_BIT;
 
-				_bitset = of_realloc(_bitset, newSize, 1);
+				_bitset = OFResizeMemory(_bitset, newSize, 1);
 				memset(_bitset + _size, '\0', newSize - _size);
 
 				_size = newSize;
 			}
 
-			of_bitset_set(_bitset, c);
+			OFBitsetSet(_bitset, c);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -68,16 +68,16 @@
 
 - (void)dealloc
 {
-	free(_bitset);
+	OFFreeMemory(_bitset);
 
 	[super dealloc];
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	if (character / CHAR_BIT >= _size)
 		return false;
 
-	return of_bitset_isset(_bitset, character);
+	return OFBitsetIsSet(_bitset, character);
 }
 @end

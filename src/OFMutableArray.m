@@ -34,11 +34,11 @@ static struct {
 @interface OFMutableArrayPlaceholder: OFMutableArray
 @end
 
-static of_comparison_result_t
+static OFComparisonResult
 compare(id left, id right, SEL selector)
 {
-	of_comparison_result_t (*comparator)(id, SEL, id) =
-	    (of_comparison_result_t (*)(id, SEL, id))
+	OFComparisonResult (*comparator)(id, SEL, id) =
+	    (OFComparisonResult (*)(id, SEL, id))
 	    [left methodForSelector: selector];
 
 	return comparator(left, selector, right);
@@ -46,16 +46,16 @@ compare(id left, id right, SEL selector)
 
 static void
 quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
-    int options)
+    OFArraySortOptions options)
 {
-	of_comparison_result_t ascending, descending;
+	OFComparisonResult ascending, descending;
 
-	if (options & OF_ARRAY_SORT_DESCENDING) {
-		ascending = OF_ORDERED_DESCENDING;
-		descending = OF_ORDERED_ASCENDING;
+	if (options & OFArraySortDescending) {
+		ascending = OFOrderedDescending;
+		descending = OFOrderedAscending;
 	} else {
-		ascending = OF_ORDERED_ASCENDING;
-		descending = OF_ORDERED_DESCENDING;
+		ascending = OFOrderedAscending;
+		descending = OFOrderedDescending;
 	}
 
 	while (left < right) {
@@ -92,16 +92,16 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 #ifdef OF_HAVE_BLOCKS
 static void
 quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
-    of_comparator_t comparator, int options)
+    OFComparator comparator, OFArraySortOptions options)
 {
-	of_comparison_result_t ascending, descending;
+	OFComparisonResult ascending, descending;
 
-	if (options & OF_ARRAY_SORT_DESCENDING) {
-		ascending = OF_ORDERED_DESCENDING;
-		descending = OF_ORDERED_ASCENDING;
+	if (options & OFArraySortDescending) {
+		ascending = OFOrderedDescending;
+		descending = OFOrderedAscending;
 	} else {
-		ascending = OF_ORDERED_ASCENDING;
-		descending = OF_ORDERED_DESCENDING;
+		ascending = OFOrderedAscending;
+		descending = OFOrderedDescending;
 	}
 
 	while (left < right) {
@@ -362,7 +362,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	}
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		[self removeObjectAtIndex: range.location];
@@ -380,11 +380,11 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)removeAllObjects
 {
-	[self removeObjectsInRange: of_range(0, self.count)];
+	[self removeObjectsInRange: OFRangeMake(0, self.count)];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block
 {
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {
@@ -416,7 +416,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 - (void)sortUsingSelector: (SEL)selector
-		  options: (int)options
+		  options: (OFArraySortOptions)options
 {
 	size_t count = self.count;
 
@@ -427,7 +427,8 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)sortUsingComparator: (of_comparator_t)comparator options: (int)options
+- (void)sortUsingComparator: (OFComparator)comparator
+		    options: (OFArraySortOptions)options
 {
 	size_t count = self.count;
 

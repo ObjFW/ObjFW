@@ -61,7 +61,7 @@
 
 - (OFString *)description
 {
-	const char *method = of_http_request_method_to_string(_request.method);
+	const char *method = OFHTTPRequestMethodName(_request.method);
 
 	return [OFString stringWithFormat:
 	    @"An HTTP %s request with URL %@ failed with code %hd!", method,

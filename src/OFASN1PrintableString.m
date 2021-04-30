@@ -40,7 +40,7 @@
 		size_t length = string.UTF8StringLength;
 
 		for (size_t i = 0; i < length; i++) {
-			if (of_ascii_isalnum(cString[i]))
+			if (OFASCIIIsAlnum(cString[i]))
 				continue;
 
 			switch (cString[i]) {
@@ -73,8 +73,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -82,9 +82,8 @@
 	OFString *printableString;
 
 	@try {
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_PRINTABLE_STRING ||
-		    constructed)
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberPrintableString || constructed)
 			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1)
@@ -92,7 +91,7 @@
 
 		printableString = [OFString
 		    stringWithCString: DEREncodedContents.items
-			     encoding: OF_STRING_ENCODING_ASCII
+			     encoding: OFStringEncodingASCII
 			       length: DEREncodedContents.count];
 	} @catch (id e) {
 		[self release];

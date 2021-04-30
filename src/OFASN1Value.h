@@ -26,46 +26,46 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** Universal */
-	OF_ASN1_TAG_CLASS_UNIVERSAL	   = 0x0,
+	OFASN1TagClassUniversal	      = 0x0,
 	/** Application */
-	OF_ASN1_TAG_CLASS_APPLICATION	   = 0x1,
+	OFASN1TagClassApplication     = 0x1,
 	/** Context specific */
-	OF_ASN1_TAG_CLASS_CONTEXT_SPECIFIC = 0x2,
+	OFASN1TagClassContextSpecific = 0x2,
 	/** Private */
-	OF_ASN1_TAG_CLASS_PRIVATE	   = 0x3
-} of_asn1_tag_class_t;
+	OFASN1TagClassPrivate	      = 0x3
+} OFASN1TagClass;
 
 /**
  * @brief ASN.1 tag number.
  */
 typedef enum {
 	/** Boolean */
-	OF_ASN1_TAG_NUMBER_BOOLEAN	     = 0x01,
+	OFASN1TagNumberBoolean		= 0x01,
 	/** Integer */
-	OF_ASN1_TAG_NUMBER_INTEGER	     = 0x02,
+	OFASN1TagNumberInteger		= 0x02,
 	/** Bit string */
-	OF_ASN1_TAG_NUMBER_BIT_STRING	     = 0x03,
+	OFASN1TagNumberBitString	= 0x03,
 	/** Octet string */
-	OF_ASN1_TAG_NUMBER_OCTET_STRING	     = 0x04,
+	OFASN1TagNumberOctetString	= 0x04,
 	/** Null */
-	OF_ASN1_TAG_NUMBER_NULL		     = 0x05,
+	OFASN1TagNumberNull		= 0x05,
 	/** Object Identifier */
-	OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER = 0x06,
+	OFASN1TagNumberObjectIdentifier	= 0x06,
 	/** Enumerated */
-	OF_ASN1_TAG_NUMBER_ENUMERATED	     = 0x0A,
+	OFASN1TagNumberEnumerated	= 0x0A,
 	/** UTF-8 string */
-	OF_ASN1_TAG_NUMBER_UTF8_STRING	     = 0x0C,
+	OFASN1TagNumberUTF8String	= 0x0C,
 	/** Sequence */
-	OF_ASN1_TAG_NUMBER_SEQUENCE	     = 0x10,
+	OFASN1TagNumberSequence		= 0x10,
 	/** Set */
-	OF_ASN1_TAG_NUMBER_SET		     = 0x11,
+	OFASN1TagNumberSet		= 0x11,
 	/** NumericString */
-	OF_ASN1_TAG_NUMBER_NUMERIC_STRING    = 0x12,
+	OFASN1TagNumberNumericString	= 0x12,
 	/** PrintableString */
-	OF_ASN1_TAG_NUMBER_PRINTABLE_STRING  = 0x13,
+	OFASN1TagNumberPrintableString	= 0x13,
 	/** IA5String */
-	OF_ASN1_TAG_NUMBER_IA5_STRING	     = 0x16
-} of_asn1_tag_number_t;
+	OFASN1TagNumberIA5String	= 0x16
+} OFASN1TagNumber;
 
 /**
  * @brief A class representing an ASN.1 value.
@@ -73,8 +73,8 @@ typedef enum {
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Value: OFObject
 {
-	of_asn1_tag_class_t _tagClass;
-	of_asn1_tag_number_t _tagNumber;
+	OFASN1TagClass _tagClass;
+	OFASN1TagNumber _tagNumber;
 	bool _constructed;
 	OFData *_DEREncodedContents;
 }
@@ -82,12 +82,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The tag class of the value's type.
  */
-@property (readonly, nonatomic) of_asn1_tag_class_t tagClass;
+@property (readonly, nonatomic) OFASN1TagClass tagClass;
 
 /**
  * @brief The tag number of the value's type.
  */
-@property (readonly, nonatomic) of_asn1_tag_number_t tagNumber;
+@property (readonly, nonatomic) OFASN1TagNumber tagNumber;
 
 /**
  * @brief Whether the value if of a constructed type.
@@ -108,8 +108,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param DEREncodedContents The DER-encoded contents octets of the value.
  * @return A new ASN.1 value
  */
-+ (instancetype)valueWithTagClass: (of_asn1_tag_class_t)tagClass
-			tagNumber: (of_asn1_tag_number_t)tagNumber
++ (instancetype)valueWithTagClass: (OFASN1TagClass)tagClass
+			tagNumber: (OFASN1TagNumber)tagNumber
 		      constructed: (bool)constructed
 	       DEREncodedContents: (OFData *)DEREncodedContents;
 
@@ -125,8 +125,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param DEREncodedContents The DER-encoded contents octets of the value.
  * @return An initialized ASN.1 value
  */
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
     OF_DESIGNATED_INITIALIZER;

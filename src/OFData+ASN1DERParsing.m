@@ -37,7 +37,7 @@
 #import "OFTruncatedDataException.h"
 
 enum {
-	ASN1_TAG_CONSTRUCTED_MASK = 0x20
+	tagConstructedMask = 0x20
 };
 
 int _OFData_ASN1DERParsing_reference;
@@ -61,7 +61,7 @@ parseSequence(OFData *contents, size_t depthLimit)
 
 		count -= objectLength;
 		contents = [contents subdataWithRange:
-		    of_range(objectLength, count)];
+		    OFRangeMake(objectLength, count)];
 
 		[ret addObject: object];
 	}
@@ -88,16 +88,16 @@ parseSet(OFData *contents, size_t depthLimit)
 
 		objectLength = parseObject(contents, &object, depthLimit);
 		objectData = [contents subdataWithRange:
-		    of_range(0, objectLength)];
+		    OFRangeMake(0, objectLength)];
 
 		if (previousObjectData != nil &&
 		    [objectData compare: previousObjectData] !=
-		    OF_ORDERED_DESCENDING)
+		    OFOrderedDescending)
 			@throw [OFInvalidFormatException exception];
 
 		count -= objectLength;
 		contents = [contents subdataWithRange:
-		    of_range(objectLength, count)];
+		    OFRangeMake(objectLength, count)];
 
 		[ret addObject: object];
 
@@ -155,24 +155,24 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		@throw [OFTruncatedDataException exception];
 
 	contents = [self subdataWithRange:
-	    of_range(bytesConsumed, contentsLength)];
+	    OFRangeMake(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
-	switch (tag & ~ASN1_TAG_CONSTRUCTED_MASK) {
-	case OF_ASN1_TAG_NUMBER_BOOLEAN:
+	switch (tag & ~tagConstructedMask) {
+	case OFASN1TagNumberBoolean:
 		valueClass = [OFASN1Boolean class];
 		break;
-	case OF_ASN1_TAG_NUMBER_INTEGER:
+	case OFASN1TagNumberInteger:
 		valueClass = [OFASN1Integer class];
 		break;
-	case OF_ASN1_TAG_NUMBER_BIT_STRING:
+	case OFASN1TagNumberBitString:
 		valueClass = [OFASN1BitString class];
 		break;
-	case OF_ASN1_TAG_NUMBER_OCTET_STRING:
+	case OFASN1TagNumberOctetString:
 		valueClass = [OFASN1OctetString class];
 		break;
-	case OF_ASN1_TAG_NUMBER_NULL:
-		if (tag & ASN1_TAG_CONSTRUCTED_MASK)
+	case OFASN1TagNumberNull:
+		if (tag & tagConstructedMask)
 			@throw [OFInvalidFormatException exception];
 
 		if (contents.count != 0)
@@ -180,34 +180,34 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 
 		*object = [OFNull null];
 		return bytesConsumed;
-	case OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER:
+	case OFASN1TagNumberObjectIdentifier:
 		valueClass = [OFASN1ObjectIdentifier class];
 		break;
-	case OF_ASN1_TAG_NUMBER_ENUMERATED:
+	case OFASN1TagNumberEnumerated:
 		valueClass = [OFASN1Enumerated class];
 		break;
-	case OF_ASN1_TAG_NUMBER_UTF8_STRING:
+	case OFASN1TagNumberUTF8String:
 		valueClass = [OFASN1UTF8String class];
 		break;
-	case OF_ASN1_TAG_NUMBER_SEQUENCE:
-		if (!(tag & ASN1_TAG_CONSTRUCTED_MASK))
+	case OFASN1TagNumberSequence:
+		if (!(tag & tagConstructedMask))
 			@throw [OFInvalidFormatException exception];
 
 		*object = parseSequence(contents, depthLimit - 1);
 		return bytesConsumed;
-	case OF_ASN1_TAG_NUMBER_SET:
-		if (!(tag & ASN1_TAG_CONSTRUCTED_MASK))
+	case OFASN1TagNumberSet:
+		if (!(tag & tagConstructedMask))
 			@throw [OFInvalidFormatException exception];
 
 		*object = parseSet(contents, depthLimit - 1);
 		return bytesConsumed;
-	case OF_ASN1_TAG_NUMBER_NUMERIC_STRING:
+	case OFASN1TagNumberNumericString:
 		valueClass = [OFASN1NumericString class];
 		break;
-	case OF_ASN1_TAG_NUMBER_PRINTABLE_STRING:
+	case OFASN1TagNumberPrintableString:
 		valueClass = [OFASN1PrintableString class];
 		break;
-	case OF_ASN1_TAG_NUMBER_IA5_STRING:
+	case OFASN1TagNumberIA5String:
 		valueClass = [OFASN1IA5String class];
 		break;
 	default:
@@ -218,7 +218,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	*object = [[[valueClass alloc]
 	      initWithTagClass: tag >> 6
 		     tagNumber: tag & 0x1F
-		   constructed: tag & ASN1_TAG_CONSTRUCTED_MASK
+		   constructed: tag & tagConstructedMask
 	    DEREncodedContents: contents] autorelease];
 	return bytesConsumed;
 }

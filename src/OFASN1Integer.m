@@ -24,7 +24,7 @@
 #import "OFOutOfRangeException.h"
 
 long long
-of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
+OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 {
 	unsigned long long value = 0;
 
@@ -63,22 +63,22 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 	return self;
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	long long value;
 
 	@try {
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_INTEGER || constructed)
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberInteger || constructed)
 			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		value = of_asn1_der_integer_parse(
+		value = OFASN1DERIntegerParse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		[self release];

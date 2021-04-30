@@ -40,7 +40,7 @@
 
 	@try {
 		if (bitString.count * bitString.itemSize !=
-		    OF_ROUND_UP_POW2(8, length) / 8)
+		    OFRoundUpToPowerOf2(8, length) / 8)
 			@throw [OFInvalidFormatException exception];
 
 		_bitStringValue = [bitString copy];
@@ -53,8 +53,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -66,8 +66,8 @@
 		unsigned char unusedBits;
 		size_t count = DEREncodedContents.count;
 
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_BIT_STRING || constructed)
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberBitString || constructed)
 			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1 || count == 0)
@@ -91,7 +91,7 @@
 
 		length = (count - 1) * 8;
 		bitString = [DEREncodedContents subdataWithRange:
-		    of_range(1, count - 1)];
+		    OFRangeMake(1, count - 1)];
 
 		if (unusedBits != 0)
 			length -= unusedBits;
@@ -122,10 +122,10 @@
 - (OFData *)ASN1DERRepresentation
 {
 	size_t bitStringValueCount = _bitStringValue.count;
-	size_t roundedUpLength = OF_ROUND_UP_POW2(8, _bitStringLength);
+	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitStringLength);
 	unsigned char unusedBits = roundedUpLength - _bitStringLength;
 	unsigned char header[] = {
-		OF_ASN1_TAG_NUMBER_BIT_STRING,
+		OFASN1TagNumberBitString,
 		bitStringValueCount + 1,
 		unusedBits
 	};

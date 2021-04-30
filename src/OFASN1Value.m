@@ -26,8 +26,8 @@
 @synthesize constructed = _constructed;
 @synthesize DEREncodedContents = _DEREncodedContents;
 
-+ (instancetype)valueWithTagClass: (of_asn1_tag_class_t)tagClass
-			tagNumber: (of_asn1_tag_number_t)tagNumber
++ (instancetype)valueWithTagClass: (OFASN1TagClass)tagClass
+			tagNumber: (OFASN1TagNumber)tagNumber
 		      constructed: (bool)constructed
 	       DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -38,8 +38,8 @@
 	    DEREncodedContents: DEREncodedContents] autorelease];
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -99,16 +99,16 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, _tagClass & 0xFF);
-	OF_HASH_ADD(hash, _tagNumber & 0xFF);
-	OF_HASH_ADD(hash, _constructed);
-	OF_HASH_ADD_HASH(hash, _DEREncodedContents.hash);
+	OFHashAdd(&hash, _tagClass & 0xFF);
+	OFHashAdd(&hash, _tagNumber & 0xFF);
+	OFHashAdd(&hash, _constructed);
+	OFHashAddHash(&hash, _DEREncodedContents.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

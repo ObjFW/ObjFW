@@ -120,7 +120,7 @@
 		prefix = 0xC8;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP16_IF_LE((uint16_t)count);
+		length = OFToBigEndian16((uint16_t)count);
 		[ret addItems: &length count: 2];
 
 		[ret addItem: &_type];
@@ -132,7 +132,7 @@
 		prefix = 0xC9;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP32_IF_LE((uint32_t)count);
+		length = OFToBigEndian32((uint32_t)count);
 		[ret addItems: &length count: 4];
 
 		[ret addItem: &_type];
@@ -170,14 +170,14 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, (uint8_t)_type);
-	OF_HASH_ADD_HASH(hash, _data.hash);
+	OFHashAdd(&hash, (uint8_t)_type);
+	OFHashAddHash(&hash, _data.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

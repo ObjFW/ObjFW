@@ -40,7 +40,7 @@
 		size_t length = string.UTF8StringLength;
 
 		for (size_t i = 0; i < length; i++)
-			if (!of_ascii_isdigit(cString[i]) && cString[i] != ' ')
+			if (!OFASCIIIsDigit(cString[i]) && cString[i] != ' ')
 				@throw [OFInvalidEncodingException exception];
 
 		_numericStringValue = [string copy];
@@ -54,8 +54,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
@@ -63,9 +63,8 @@
 	OFString *numericString;
 
 	@try {
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_NUMERIC_STRING ||
-		    constructed)
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberNumericString || constructed)
 			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1)
@@ -73,7 +72,7 @@
 
 		numericString = [OFString
 		    stringWithCString: DEREncodedContents.items
-			     encoding: OF_STRING_ENCODING_ASCII
+			     encoding: OFStringEncodingASCII
 			       length: DEREncodedContents.count];
 	} @catch (id e) {
 		[self release];

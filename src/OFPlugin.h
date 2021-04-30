@@ -19,14 +19,20 @@
 
 #ifndef OF_WINDOWS
 # include <dlfcn.h>
-# define OF_RTLD_LAZY RTLD_LAZY
-# define OF_RTLD_NOW  RTLD_NOW
-typedef void *of_plugin_handle_t;
+typedef void *OFPluginHandle;
+
+typedef enum {
+	OFDLOpenFlagLazy = RTLD_LAZY,
+	OFDLOpenFlagNow  = RTLD_NOW
+} OFDLOpenFlags;
 #else
 # include <windows.h>
-# define OF_RTLD_LAZY 0
-# define OF_RTLD_NOW  0
-typedef HMODULE of_plugin_handle_t;
+typedef HMODULE OFPluginHandle;
+
+typedef enum {
+	OFDLOpenFlagLazy = 0,
+	OFDLOpenFlagNow  = 0
+} OFDLOpenFlags;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -35,10 +41,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
  *
  * @brief Provides a system for loading plugins at runtime.
+ *
+ * A plugin must subclass @ref OFPlugin and have a global function called
+ * `OFPluginInit`, which returns an instance of the @ref OFPlugin subclass and
+ * takes no parameters.
  */
 @interface OFPlugin: OFObject
 {
-	of_plugin_handle_t _pluginHandle;
+	OFPluginHandle _pluginHandle;
 	OF_RESERVE_IVARS(OFPlugin, 4)
 }
 
@@ -54,10 +64,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
-extern void *of_dlsym(of_plugin_handle_t handle, const char *symbol);
-extern OFString *_Nullable of_dlerror(void);
-extern void of_dlclose(of_plugin_handle_t handle);
+extern OFPluginHandle OFDLOpen(OFString *path, OFDLOpenFlags flags);
+extern void *OFDLSym(OFPluginHandle handle, const char *symbol);
+extern OFString *_Nullable OFDLError(void);
+extern void OFDLClose(OFPluginHandle handle);
 #ifdef __cplusplus
 }
 #endif

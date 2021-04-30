@@ -21,10 +21,10 @@ OF_DIRECT_MEMBERS
 @interface OFLHAArchiveEntry ()
 - (instancetype)of_initWithHeader: (char [_Nonnull 21])header
 			   stream: (OFStream *)stream
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init);
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding;
+		encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

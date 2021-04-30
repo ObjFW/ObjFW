@@ -25,7 +25,7 @@
 
 static OFString *
 stringFromBuffer(const unsigned char *buffer, size_t length,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	for (size_t i = 0; i < length; i++)
 		if (buffer[i] == '\0')
@@ -38,7 +38,7 @@ stringFromBuffer(const unsigned char *buffer, size_t length,
 
 static void
 stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
-    of_string_encoding_t encoding)
+    OFStringEncoding encoding)
 {
 	size_t cStringLength = [string cStringLengthWithEncoding: encoding];
 
@@ -65,7 +65,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			value = (value << 8) | buffer[i];
 	} else
 		value = [stringFromBuffer(buffer, length,
-		    OF_STRING_ENCODING_ASCII) unsignedLongLongValueWithBase: 8];
+		    OFStringEncodingASCII) unsignedLongLongValueWithBase: 8];
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
@@ -85,7 +85,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -104,7 +104,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    header + 124, 12, ULLONG_MAX);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
-		    (of_time_interval_t)octalValueFromBuffer(
+		    (OFTimeInterval)octalValueFromBuffer(
 		    header + 136, 12, ULLONG_MAX)];
 		_type = header[156];
 
@@ -113,7 +113,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			_targetFileName = [targetFileName copy];
 
 		if (_type == '\0')
-			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+			_type = OFTarArchiveEntryTypeFile;
 
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
@@ -153,7 +153,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 	@try {
 		_fileName = [fileName copy];
-		_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+		_type = OFTarArchiveEntryTypeFile;
 		_mode = 0644;
 	} @catch (id e) {
 		[self release];
@@ -232,7 +232,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
-- (of_tar_archive_entry_type_t)type
+- (OFTarArchiveEntryType)type
 {
 	return _type;
 }
@@ -290,7 +290,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 {
 	unsigned char buffer[512];
 	unsigned long long modificationDate;
@@ -299,20 +299,20 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	stringToBuffer(buffer, _fileName, 100, encoding);
 	stringToBuffer(buffer + 100,
 	    [OFString stringWithFormat: @"%06" PRIo16 " ", _mode], 8,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	stringToBuffer(buffer + 108,
 	    [OFString stringWithFormat: @"%06" PRIo16 " ", _UID], 8,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	stringToBuffer(buffer + 116,
 	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	stringToBuffer(buffer + 124,
 	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
 	    [OFString stringWithFormat: @"%011llo", modificationDate],
-	    12, OF_STRING_ENCODING_ASCII);
+	    12, OFStringEncodingASCII);
 
 	/*
 	 * During checksumming, the checksum field is expected to be set to 8
@@ -329,10 +329,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	stringToBuffer(buffer + 297, _group, 32, encoding);
 	stringToBuffer(buffer + 329,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	stringToBuffer(buffer + 337,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 	memset(buffer + 345, '\0', 155 + 12);
 
 	/* Fill in the checksum */
@@ -340,7 +340,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		checksum += buffer[i];
 	stringToBuffer(buffer + 148,
 	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
-	    OF_STRING_ENCODING_ASCII);
+	    OFStringEncodingASCII);
 
 	[stream writeBuffer: buffer length: sizeof(buffer)];
 }

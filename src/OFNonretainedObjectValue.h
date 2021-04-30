@@ -21,6 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id _object;
 }
+
+- (instancetype)initWithNonretainedObject: (id)object;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -66,8 +66,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param DEREncodedContents The DER-encoded contents octets of the value.
  * @return An initialized OFASN1ObjectIdentifier
  */
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
