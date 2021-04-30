@@ -66,6 +66,6 @@
 	return [OFString stringWithFormat:
 	    @"Failed to read or write %zu bytes from / to an object of type "
 	    @"%@: %@",
-	    _requestedLength, [_object class], of_strerror(_errNo)];
+	    _requestedLength, [_object class], OFStrError(_errNo)];
 }
 @end

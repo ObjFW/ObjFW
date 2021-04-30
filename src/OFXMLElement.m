@@ -208,7 +208,7 @@ _references_to_categories_of_OFXMLElement(void)
 	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder elementBuilder];
+	builder = [OFXMLElementBuilder builder];
 	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 
@@ -239,7 +239,7 @@ _references_to_categories_of_OFXMLElement(void)
 	pool = objc_autoreleasePoolPush();
 
 	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder elementBuilder];
+	builder = [OFXMLElementBuilder builder];
 	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 
@@ -270,7 +270,7 @@ _references_to_categories_of_OFXMLElement(void)
 		OFString *key, *object;
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_name = [[element attributeForName: @"name"].stringValue copy];
@@ -281,16 +281,16 @@ _references_to_categories_of_OFXMLElement(void)
 
 		attributesElement = [[element
 		    elementForName: @"attributes"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 		namespacesElement = [[element
 		    elementForName: @"namespaces"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 		childrenElement = [[element
 		    elementForName: @"children"
-			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS].firstObject;
+			 namespace: OFSerializationNS] elementsForNamespace:
+		    OFSerializationNS].firstObject;
 
 		_attributes = [attributesElement.objectByDeserializing
 		    mutableCopy];
@@ -452,7 +452,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 	i = 0;
 	length = _name.UTF8StringLength + 3 + (level * indentation);
-	cString = of_alloc(length, 1);
+	cString = OFAllocMemory(length, 1);
 
 	@try {
 		memset(cString + i, ' ', level * indentation);
@@ -463,7 +463,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		if (prefix != nil && ![_namespace isEqual: defaultNS]) {
 			length += prefix.UTF8StringLength + 1;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			memcpy(cString + i, prefix.UTF8String,
 			    prefix.UTF8StringLength);
@@ -479,7 +479,7 @@ _references_to_categories_of_OFXMLElement(void)
 		    ![_namespace isEqual: defaultNS]) ||
 		    (_namespace == nil && defaultNS != nil))) {
 			length += _namespace.UTF8StringLength + 9;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			memcpy(cString + i, " xmlns='", 8);
 			i += 8;
@@ -512,7 +512,7 @@ _references_to_categories_of_OFXMLElement(void)
 			length += attributeNameLength + (attributePrefix != nil
 			    ? attributePrefix.UTF8StringLength + 1 : 0) +
 			    tmp.UTF8StringLength + 4;
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			cString[i++] = ' ';
 			if (attributePrefix != nil) {
@@ -582,7 +582,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 			length += tmp.count + _name.UTF8StringLength + 2 +
 			    (indent ? level * indentation : 0);
-			cString = of_realloc(cString, length, 1);
+			cString = OFResizeMemory(cString, length, 1);
 
 			cString[i++] = '>';
 
@@ -598,7 +598,7 @@ _references_to_categories_of_OFXMLElement(void)
 			cString[i++] = '/';
 			if (prefix != nil) {
 				length += prefix.UTF8StringLength + 1;
-				cString = of_realloc(cString, length, 1);
+				cString = OFResizeMemory(cString, length, 1);
 
 				memcpy(cString + i, prefix.UTF8String,
 				    prefix.UTF8StringLength);
@@ -619,7 +619,7 @@ _references_to_categories_of_OFXMLElement(void)
 		ret = [OFString stringWithUTF8String: cString
 					      length: length];
 	} @finally {
-		free(cString);
+		OFFreeMemory(cString);
 	}
 	return ret;
 }
@@ -655,7 +655,7 @@ _references_to_categories_of_OFXMLElement(void)
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	if (_name != nil)
 		[element addAttributeWithName: @"name" stringValue: _name];
@@ -673,7 +673,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		attributesElement =
 		    [OFXMLElement elementWithName: @"attributes"
-					namespace: OF_SERIALIZATION_NS];
+					namespace: OFSerializationNS];
 		[attributesElement addChild:
 		    _attributes.XMLElementBySerializing];
 		[element addChild: attributesElement];
@@ -692,7 +692,7 @@ _references_to_categories_of_OFXMLElement(void)
 		if (namespacesCopy.count > 0) {
 			namespacesElement =
 			    [OFXMLElement elementWithName: @"namespaces"
-						namespace: OF_SERIALIZATION_NS];
+						namespace: OFSerializationNS];
 			[namespacesElement addChild:
 			    namespacesCopy.XMLElementBySerializing];
 			[element addChild: namespacesElement];
@@ -704,7 +704,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 		childrenElement =
 		    [OFXMLElement elementWithName: @"children"
-					namespace: OF_SERIALIZATION_NS];
+					namespace: OFSerializationNS];
 		[childrenElement addChild: _children.XMLElementBySerializing];
 		[element addChild: childrenElement];
 	}
@@ -1014,18 +1014,18 @@ _references_to_categories_of_OFXMLElement(void)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _namespace.hash);
-	OF_HASH_ADD_HASH(hash, _defaultNamespace.hash);
-	OF_HASH_ADD_HASH(hash, _attributes.hash);
-	OF_HASH_ADD_HASH(hash, _namespaces.hash);
-	OF_HASH_ADD_HASH(hash, _children.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _namespace.hash);
+	OFHashAddHash(&hash, _defaultNamespace.hash);
+	OFHashAddHash(&hash, _attributes.hash);
+	OFHashAddHash(&hash, _namespaces.hash);
+	OFHashAddHash(&hash, _children.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

@@ -20,7 +20,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFInvertedCharacterSet: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
-	bool (*_characterIsMember)(id, SEL, of_unichar_t);
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
 }
 
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;

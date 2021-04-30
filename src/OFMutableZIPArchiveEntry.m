@@ -85,12 +85,14 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setVersionMadeBy: (uint16_t)versionMadeBy
+- (void)setVersionMadeBy:
+    (OFZIPArchiveEntryAttributeCompatibility)versionMadeBy
 {
 	_versionMadeBy = versionMadeBy;
 }
 
-- (void)setMinVersionNeeded: (uint16_t)minVersionNeeded
+- (void)setMinVersionNeeded:
+    (OFZIPArchiveEntryAttributeCompatibility)minVersionNeeded
 {
 	_minVersionNeeded = minVersionNeeded;
 }
@@ -108,7 +110,8 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setCompressionMethod: (uint16_t)compressionMethod
+- (void)setCompressionMethod:
+    (OFZIPArchiveEntryCompressionMethod)compressionMethod
 {
 	_compressionMethod = compressionMethod;
 }

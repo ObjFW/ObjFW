@@ -74,7 +74,7 @@ unescapeString(OFString *string)
 	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
 		return string;
 
-	string = [string substringWithRange: of_range(1, string.length - 2)];
+	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
 	mutableString = [[string mutableCopy] autorelease];
 
 	[mutableString replaceOccurrencesOfString: @"\\f" withString: @"\f"];
@@ -156,7 +156,7 @@ unescapeString(OFString *string)
 		OFString *key, *value;
 		size_t pos;
 
-		if ((pos = [line rangeOfString: @"="].location) == OF_NOT_FOUND)
+		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		key = unescapeString([line substringToIndex: pos]
@@ -468,7 +468,7 @@ unescapeString(OFString *string)
 }
 
 - (bool)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   first: (bool)first
 {
 	if (_lines.count == 0)

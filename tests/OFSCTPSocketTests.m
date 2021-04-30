@@ -39,8 +39,8 @@ static OFString *module = @"OFSCTPSocket";
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
 			    @"[OFSCTPSocket] -[bindToHost:port:]: "
 			    @"SCTP unsupported, skipping tests"];
 			break;
@@ -60,7 +60,7 @@ static OFString *module = @"OFSCTPSocket";
 	TEST(@"-[accept]", (accepted = [server accept]))
 
 	TEST(@"-[remoteAddress]",
-	    [of_socket_address_ip_string(accepted.remoteAddress, NULL)
+	    [OFSocketAddressString(accepted.remoteAddress)
 	    isEqual: @"127.0.0.1"])
 
 	TEST(@"-[sendBuffer:length:]",

@@ -141,20 +141,20 @@ static const unsigned char testVector4[64] = {
 
 	TEST(@"Salsa20/8 Core",
 	    R(memcpy(salsa20Buffer, salsa20Input, 64)) &&
-	    R(of_salsa20_8_core(salsa20Buffer)) &&
+	    R(OFSalsa20_8Core(salsa20Buffer)) &&
 	    memcmp(salsa20Buffer, salsa20Output, 64) == 0)
 
 	TEST(@"Block mix",
-	    R(of_scrypt_block_mix(blockMixBuffer, blockMixInput.u32, 1)) &&
+	    R(OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1)) &&
 	    memcmp(blockMixBuffer, blockMixOutput, 128) == 0)
 
 	TEST(@"ROMix",
 	    R(memcpy(ROMixBuffer, ROMixInput, 128)) &&
-	    R(of_scrypt_romix(ROMixBuffer, 1, 16, ROMixTmp)) &&
+	    R(OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp)) &&
 	    memcmp(ROMixBuffer, ROMixOutput, 128) == 0)
 
 	TEST(@"scrypt test vector #1",
-	    R(of_scrypt((of_scrypt_parameters_t){
+	    R(OFScrypt((OFScryptParameters){
 		.blockSize             = 1,
 		.costFactor            = 16,
 		.parallelization       = 1,
@@ -168,7 +168,7 @@ static const unsigned char testVector4[64] = {
 	    })) && memcmp(output, testVector1, 64) == 0)
 
 	TEST(@"scrypt test vector #2",
-	    R(of_scrypt((of_scrypt_parameters_t){
+	    R(OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 1024,
 		.parallelization       = 16,
@@ -182,7 +182,7 @@ static const unsigned char testVector4[64] = {
 	    })) && memcmp(output, testVector2, 64) == 0)
 
 	TEST(@"scrypt test vector #3",
-	    R(of_scrypt((of_scrypt_parameters_t){
+	    R(OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 16384,
 		.parallelization       = 1,
@@ -198,7 +198,7 @@ static const unsigned char testVector4[64] = {
 	/* The forth test vector is too expensive to include it in the tests. */
 #if 0
 	TEST(@"scrypt test vector #4",
-	    R(of_scrypt((of_scrypt_parameters_t){
+	    R(OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 1048576,
 		.parallelization       = 1,

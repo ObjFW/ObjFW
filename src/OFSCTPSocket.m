@@ -31,6 +31,8 @@
 #import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFThread.h"
 
@@ -40,11 +42,8 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
-
-static const of_run_loop_mode_t connectRunLoopMode =
-    @"of_sctp_socket_connect_mode";
+static const OFRunLoopMode connectRunLoopMode =
+    @"OFSCTPSocketConnectRunLoopMode";
 
 @interface OFSCTPSocket () <OFIPSocketAsyncConnecting>
 @end
@@ -78,19 +77,20 @@ static const of_run_loop_mode_t connectRunLoopMode =
 @implementation OFSCTPSocket
 @dynamic delegate;
 
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+- (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) == INVALID_SOCKET) {
-		*errNo = of_socket_errno();
+	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) ==
+	    OFInvalidSocketHandle) {
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -102,15 +102,15 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	return true;
 }
 
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (connect(_socket, &address->sockaddr.sockaddr,
 	    address->length) != 0) {
-		*errNo = of_socket_errno();
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -120,7 +120,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 - (void)of_closeSocket
 {
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 
 - (void)connectToHost: (OFString *)host port: (uint16_t)port
@@ -154,16 +154,16 @@ static const of_run_loop_mode_t connectRunLoopMode =
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default];
+		     runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	[[[[OFIPSocketAsyncConnector alloc]
@@ -180,22 +180,22 @@ static const of_run_loop_mode_t connectRunLoopMode =
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (of_sctp_socket_async_connect_block_t)block
+		     block: (OFSCTPSocketAsyncConnectBlock)block
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
+		     runLoopMode: OFDefaultRunLoopMode
 			   block: block];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_sctp_socket_async_connect_block_t)block
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFSCTPSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	[[[[OFIPSocketAsyncConnector alloc]
@@ -215,28 +215,28 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
-	of_socket_address_t address;
+	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+		      addressFamily: OFSocketAddressFamilyAny];
 
-	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
-	of_socket_address_set_port(&address, port);
+	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
+	OFSocketAddressSetPort(&address, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) == INVALID_SOCKET)
+	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -249,10 +249,10 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	    (char *)&one, (socklen_t)sizeof(one));
 
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -268,12 +268,12 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -282,14 +282,14 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	}
 
 	if (address.sockaddr.sockaddr.sa_family == AF_INET)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
+		return OFFromBigEndian16(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
 	else if (address.sockaddr.sockaddr.sa_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
+		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
 # endif
 	else {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -306,7 +306,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 }
 
 - (bool)canDelaySendingPackets
@@ -318,7 +318,7 @@ static const of_run_loop_mode_t connectRunLoopMode =
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	return !v;
 }

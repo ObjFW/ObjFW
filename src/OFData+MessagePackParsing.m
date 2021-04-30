@@ -134,7 +134,7 @@ createDate(OFData *data)
 		uint32_t timestamp;
 
 		memcpy(&timestamp, data.items, 4);
-		timestamp = OF_BSWAP32_IF_LE(timestamp);
+		timestamp = OFFromBigEndian32(timestamp);
 
 		return [OFDate dateWithTimeIntervalSince1970: timestamp];
 	}
@@ -142,7 +142,7 @@ createDate(OFData *data)
 		uint64_t combined;
 
 		memcpy(&combined, data.items, 8);
-		combined = OF_BSWAP64_IF_LE(combined);
+		combined = OFFromBigEndian64(combined);
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)(combined & 0x3FFFFFFFF) +
@@ -155,8 +155,8 @@ createDate(OFData *data)
 		memcpy(&nanoseconds, data.items, 4);
 		memcpy(&seconds, (char *)data.items + 4, 8);
 
-		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
-		seconds = OF_BSWAP64_IF_LE(seconds);
+		nanoseconds = OFFromBigEndian32(nanoseconds);
+		seconds = OFFromBigEndian64(seconds);
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)seconds + (double)nanoseconds / 1000000000];
@@ -287,7 +287,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		memcpy(&f, buffer + 1, 4);
 
-		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f)];
+		*object = [OFNumber numberWithFloat: OFFromBigEndianFloat(f)];
 		return 5;
 	case 0xCB:; /* float 64 */
 		double d;
@@ -297,7 +297,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		memcpy(&d, buffer + 1, 8);
 
-		*object = [OFNumber numberWithDouble: OF_BSWAP_DOUBLE_IF_LE(d)];
+		*object = [OFNumber numberWithDouble: OFFromBigEndianDouble(d)];
 		return 9;
 	/* nil */
 	case 0xC0:

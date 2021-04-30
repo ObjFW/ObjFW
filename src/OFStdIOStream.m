@@ -61,21 +61,21 @@ _reference_to_OFWin32ConsoleStdIOStream(void)
 }
 #endif
 
-OFStdIOStream *of_stdin = nil;
-OFStdIOStream *of_stdout = nil;
-OFStdIOStream *of_stderr = nil;
+OFStdIOStream *OFStdIn = nil;
+OFStdIOStream *OFStdOut = nil;
+OFStdIOStream *OFStdErr = nil;
 
 #ifdef OF_AMIGAOS
 OF_DESTRUCTOR()
 {
-	[of_stdin dealloc];
-	[of_stdout dealloc];
-	[of_stderr dealloc];
+	[OFStdIn dealloc];
+	[OFStdOut dealloc];
+	[OFStdErr dealloc];
 }
 #endif
 
 void
-of_log(OFConstantString *format, ...)
+OFLog(OFConstantString *format, ...)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *date;
@@ -95,8 +95,8 @@ of_log(OFConstantString *format, ...)
 				      arguments: arguments] autorelease];
 	va_end(arguments);
 
-	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-				date.microsecond / 1000, me, getpid(), msg];
+	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
+			       date.microsecond / 1000, me, getpid(), msg];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -153,13 +153,12 @@ colorToANSI(OFColor *color)
 	int fd;
 
 	if ((fd = fileno(stdin)) >= 0)
-		of_stdin = [[OFStdIOStream alloc]
-		    of_initWithFileDescriptor: fd];
+		OFStdIn = [[OFStdIOStream alloc] of_initWithFileDescriptor: fd];
 	if ((fd = fileno(stdout)) >= 0)
-		of_stdout = [[OFStdIOStream alloc]
+		OFStdOut = [[OFStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = fileno(stderr)) >= 0)
-		of_stderr = [[OFStdIOStream alloc]
+		OFStdErr = [[OFStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 # else
 	BPTR input, output, error;
@@ -185,12 +184,12 @@ colorToANSI(OFColor *color)
 		errorClosable = true;
 	}
 
-	of_stdin = [[OFStdIOStream alloc] of_initWithHandle: input
-						   closable: inputClosable];
-	of_stdout = [[OFStdIOStream alloc] of_initWithHandle: output
-						    closable: outputClosable];
-	of_stderr = [[OFStdIOStream alloc] of_initWithHandle: error
-						    closable: errorClosable];
+	OFStdIn = [[OFStdIOStream alloc] of_initWithHandle: input
+						  closable: inputClosable];
+	OFStdOut = [[OFStdIOStream alloc] of_initWithHandle: output
+						   closable: outputClosable];
+	OFStdErr = [[OFStdIOStream alloc] of_initWithHandle: error
+						   closable: errorClosable];
 # endif
 }
 #endif
@@ -383,7 +382,7 @@ colorToANSI(OFColor *color)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (bool)hasTerminal
@@ -493,7 +492,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setCursorPosition: (of_point_t)position
+- (void)setCursorPosition: (OFPoint)position
 {
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
@@ -507,7 +506,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setRelativeCursorPosition: (of_point_t)position
+- (void)setRelativeCursorPosition: (OFPoint)position
 {
 #ifdef HAVE_ISATTY
 	if (!isatty(_fd))

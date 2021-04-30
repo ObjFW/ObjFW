@@ -59,13 +59,13 @@ equal(void *object1, void *object2)
 	return [(id)object1 isEqual: (id)object2];
 }
 
-static const of_map_table_functions_t keyFunctions = {
+static const OFMapTableFunctions keyFunctions = {
 	.retain = copy,
 	.release = release,
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t objectFunctions = {
+static const OFMapTableFunctions objectFunctions = {
 	.retain = retain,
 	.release = release,
 	.hash = hash,
@@ -243,9 +243,9 @@ static const of_map_table_functions_t objectFunctions = {
 		OFXMLElement *keyElement, *objectElement;
 
 		keys = [element elementsForName: @"key"
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 		objects = [element elementsForName: @"object"
-					 namespace: OF_SERIALIZATION_NS];
+					 namespace: OFSerializationNS];
 
 		if (keys.count != objects.count)
 			@throw [OFInvalidFormatException exception];
@@ -263,9 +263,9 @@ static const of_map_table_functions_t objectFunctions = {
 			OFXMLElement *key, *object;
 
 			key = [keyElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 			object = [objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException exception];
@@ -335,7 +335,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	keys = of_alloc(count, sizeof(*keys));
+	keys = OFAllocMemory(count, sizeof(*keys));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -355,7 +355,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		ret = [OFArray arrayWithObjects: keys count: count];
 	} @finally {
-		free(keys);
+		OFFreeMemory(keys);
 	}
 
 	return ret;
@@ -368,7 +368,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	objects = of_alloc(count, sizeof(*objects));
+	objects = OFAllocMemory(count, sizeof(*objects));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -388,7 +388,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		ret = [OFArray arrayWithObjects: objects count: count];
 	} @finally {
-		free(objects);
+		OFFreeMemory(objects);
 	}
 
 	return ret;
@@ -408,7 +408,7 @@ static const of_map_table_functions_t objectFunctions = {
 			object: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -418,8 +418,7 @@ static const of_map_table_functions_t objectFunctions = {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:

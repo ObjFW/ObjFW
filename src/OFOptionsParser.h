@@ -21,13 +21,13 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @struct of_options_parser_option_t OFOptionsParser.h ObjFW/OFOptionsParser.h
+ * @struct OFOptionsParserOption OFOptionsParser.h ObjFW/OFOptionsParser.h
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
-struct of_options_parser_option_t {
+typedef struct {
 	/** The short version (e.g. `-v`) of the option or `\0` for none. */
-	of_unichar_t shortOption;
+	OFUnichar shortOption;
 
 	/**
 	 * The long version (e.g. `--verbose`) of the option or `nil` for none.
@@ -57,8 +57,7 @@ struct of_options_parser_option_t {
 	 * argument specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
-};
-typedef struct of_options_parser_option_t of_options_parser_option_t;
+} OFOptionsParserOption;
 
 /**
  * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
@@ -68,11 +67,11 @@ typedef struct of_options_parser_option_t of_options_parser_option_t;
 OF_SUBCLASSING_RESTRICTED
 @interface OFOptionsParser: OFObject
 {
-	of_options_parser_option_t *_options;
+	OFOptionsParserOption *_options;
 	OFMapTable *_longOptions;
 	OFArray OF_GENERIC(OFString *) *_arguments;
 	size_t _index, _subIndex;
-	of_unichar_t _lastOption;
+	OFUnichar _lastOption;
 	OFString *_Nullable _lastLongOption, *_Nullable _argument;
 	bool _done;
 }
@@ -85,7 +84,7 @@ OF_SUBCLASSING_RESTRICTED
  * If this returns `-`, the last option is only available as a long option (see
  * lastLongOption).
  */
-@property (readonly, nonatomic) of_unichar_t lastOption;
+@property (readonly, nonatomic) OFUnichar lastOption;
 
 /**
  * @brief The long option for the last parsed option, or `nil` if the last
@@ -119,13 +118,13 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFOptionsParser which accepts the specified options.
  *
- * @param options An array of @ref of_options_parser_option_t specifying all
+ * @param options An array of @ref OFOptionsParserOption specifying all
  *		  accepted options, terminated with an option whose short
  *		  option is `\0` and long option is `nil`.
  *
  * @return A new, autoreleased OFOptionsParser
  */
-+ (instancetype)parserWithOptions: (const of_options_parser_option_t *)options;
++ (instancetype)parserWithOptions: (const OFOptionsParserOption *)options;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -133,13 +132,13 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFOptionsParser so that it accepts
  *	  the specified options.
  *
- * @param options An array of @ref of_options_parser_option_t specifying all
+ * @param options An array of @ref OFOptionsParserOption specifying all
  *		  accepted options, terminated with an option whose short
  *		  option is `\0` and long option is `nil`.
  *
  * @return An initialized OFOptionsParser
  */
-- (instancetype)initWithOptions: (const of_options_parser_option_t *)options
+- (instancetype)initWithOptions: (const OFOptionsParserOption *)options
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -160,7 +159,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The next option
  */
-- (of_unichar_t)nextOption;
+- (OFUnichar)nextOption;
 @end
 
 OF_ASSUME_NONNULL_END

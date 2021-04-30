@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
+typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
@@ -109,7 +109,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -121,7 +121,7 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (of_sctp_socket_async_connect_block_t)block;
+		     block: (OFSCTPSocketAsyncConnectBlock)block;
 
 /**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
@@ -133,8 +133,8 @@ typedef void (^of_sctp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_sctp_socket_async_connect_block_t)block;
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFSCTPSocketAsyncConnectBlock)block;
 #endif
 
 /**

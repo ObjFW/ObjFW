@@ -118,58 +118,58 @@ union test4_union {
 	    OFInvalidFormatException,
 	    [OFMethodSignature signatureWithObjCTypes: "{{}0"])
 
-	TEST(@"of_sizeof_type_encoding() #1",
-	    of_sizeof_type_encoding(@encode(struct test1_struct)) ==
+	TEST(@"OFSizeOfTypeEncoding() #1",
+	    OFSizeOfTypeEncoding(@encode(struct test1_struct)) ==
 	    sizeof(struct test1_struct))
 
-	TEST(@"of_sizeof_type_encoding() #2",
-	    of_sizeof_type_encoding(@encode(struct test2_struct)) ==
+	TEST(@"OFSizeOfTypeEncoding() #2",
+	    OFSizeOfTypeEncoding(@encode(struct test2_struct)) ==
 	    sizeof(struct test2_struct))
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
     OF_GCC_VERSION >= 402
-	TEST(@"of_sizeof_type_encoding() #3",
-	    of_sizeof_type_encoding(@encode(struct test3_struct)) ==
+	TEST(@"OFSizeOfTypeEncoding() #3",
+	    OFSizeOfTypeEncoding(@encode(struct test3_struct)) ==
 	    sizeof(struct test3_struct))
 #endif
 
-	TEST(@"of_sizeof_type_encoding() #4",
-	    of_sizeof_type_encoding(@encode(union test3_union)) ==
+	TEST(@"OFSizeOfTypeEncoding() #4",
+	    OFSizeOfTypeEncoding(@encode(union test3_union)) ==
 	    sizeof(union test3_union))
 
-	TEST(@"of_sizeof_type_encoding() #5",
-	    of_sizeof_type_encoding(@encode(union test4_union)) ==
+	TEST(@"OFSizeOfTypeEncoding() #5",
+	    OFSizeOfTypeEncoding(@encode(union test4_union)) ==
 	    sizeof(union test4_union))
 
-	TEST(@"of_sizeof_type_encoding() #6",
-	    of_sizeof_type_encoding(@encode(struct test1_struct [5])) ==
+	TEST(@"OFSizeOfTypeEncoding() #6",
+	    OFSizeOfTypeEncoding(@encode(struct test1_struct [5])) ==
 	    sizeof(struct test1_struct [5]))
 
-	TEST(@"of_alignof_type_encoding() #1",
-	    of_alignof_type_encoding(@encode(struct test1_struct)) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #1",
+	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct)) ==
 	    OF_ALIGNOF(struct test1_struct))
 
-	TEST(@"of_alignof_type_encoding() #2",
-	    of_alignof_type_encoding(@encode(struct test2_struct)) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #2",
+	    OFAlignmentOfTypeEncoding(@encode(struct test2_struct)) ==
 	    OF_ALIGNOF(struct test2_struct))
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
     OF_GCC_VERSION >= 402
-	TEST(@"of_alignof_type_encoding() #3",
-	    of_alignof_type_encoding(@encode(struct test3_struct)) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #3",
+	    OFAlignmentOfTypeEncoding(@encode(struct test3_struct)) ==
 	    OF_ALIGNOF(struct test3_struct))
 #endif
 
-	TEST(@"of_alignof_type_encoding() #4",
-	    of_alignof_type_encoding(@encode(union test3_union)) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #4",
+	    OFAlignmentOfTypeEncoding(@encode(union test3_union)) ==
 	    OF_ALIGNOF(union test3_union))
 
-	TEST(@"of_alignof_type_encoding() #5",
-	    of_alignof_type_encoding(@encode(union test4_union)) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #5",
+	    OFAlignmentOfTypeEncoding(@encode(union test4_union)) ==
 	    OF_ALIGNOF(union test4_union))
 
-	TEST(@"of_alignof_type_encoding() #6",
-	    of_alignof_type_encoding(@encode(struct test1_struct [5])) ==
+	TEST(@"OFAlignmentOfTypeEncoding() #6",
+	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct [5])) ==
 	    OF_ALIGNOF(struct test1_struct [5]))
 
 	objc_autoreleasePoolPop(pool);

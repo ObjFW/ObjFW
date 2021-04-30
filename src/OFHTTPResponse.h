@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHTTPResponse: OFStream
 {
-	of_http_request_protocol_version_t _protocolVersion;
+	OFHTTPRequestProtocolVersion _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
 	OF_RESERVE_IVARS(OFHTTPResponse, 4)
@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The protocol version of the HTTP request reply.
  */
-@property (nonatomic) of_http_request_protocol_version_t protocolVersion;
+@property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
  * @brief The protocol version of the HTTP request reply as a string.
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The reply as a string
  */
-- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding;
+- (OFString *)stringWithEncoding: (OFStringEncoding)encoding;
 @end
 
 #ifdef __cplusplus
@@ -78,7 +78,7 @@ extern "C" {
  * @param code The HTTP status code to return a description string for
  * @return A description string for the specified HTTP status code
  */
-extern OFString *_Nonnull of_http_status_code_to_string(short code);
+extern OFString *_Nonnull OFHTTPStatusCodeString(short code);
 #ifdef __cplusplus
 }
 #endif

@@ -27,7 +27,7 @@ int _OFString_XMLUnescaping_reference;
 static OF_INLINE OFString *
 parseNumericEntity(const char *entity, size_t length)
 {
-	of_unichar_t c;
+	OFUnichar c;
 	size_t i;
 	char buffer[5];
 
@@ -64,7 +64,7 @@ parseNumericEntity(const char *entity, size_t length)
 		}
 	}
 
-	if ((i = of_string_utf8_encode(c, buffer)) == 0)
+	if ((i = OFUTF8StringEncode(c, buffer)) == 0)
 		return nil;
 	buffer[i] = 0;
 
@@ -102,27 +102,27 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 
 			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
 				[ret appendCString: "<"
-					  encoding: OF_STRING_ENCODING_ASCII
+					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 2 &&
 			    memcmp(entity, "gt", 2) == 0)
 				[ret appendCString: ">"
-					  encoding: OF_STRING_ENCODING_ASCII
+					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    memcmp(entity, "quot", 4) == 0)
 				[ret appendCString: "\""
-					  encoding: OF_STRING_ENCODING_ASCII
+					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
 			    memcmp(entity, "apos", 4) == 0)
 				[ret appendCString: "'"
-					  encoding: OF_STRING_ENCODING_ASCII
+					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 3 &&
 			    memcmp(entity, "amp", 3) == 0)
 				[ret appendCString: "&"
-					  encoding: OF_STRING_ENCODING_ASCII
+					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entity[0] == '#') {
 				void *pool2;
@@ -190,7 +190,7 @@ lookupUsingDelegate(void *context, OFString *self, OFString *entity)
 static id
 lookupUsingBlock(void *context, OFString *self, OFString *entity)
 {
-	of_string_xml_unescaping_block_t block = context;
+	OFStringXMLUnescapingBlock block = context;
 
 	if (block == NULL)
 		return nil;
@@ -212,8 +212,7 @@ lookupUsingBlock(void *context, OFString *self, OFString *entity)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFString *)stringByXMLUnescapingWithBlock:
-    (of_string_xml_unescaping_block_t)block
+- (OFString *)stringByXMLUnescapingWithBlock: (OFStringXMLUnescapingBlock)block
 {
 	return parseEntities(self, lookupUsingBlock, block);
 }

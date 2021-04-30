@@ -38,7 +38,7 @@ stringEqual(void *object1, void *object2)
 @synthesize lastOption = _lastOption, lastLongOption = _lastLongOption;
 @synthesize argument = _argument;
 
-+ (instancetype)parserWithOptions: (const of_options_parser_option_t *)options
++ (instancetype)parserWithOptions: (const OFOptionsParserOption *)options
 {
 	return [[[self alloc] initWithOptions: options] autorelease];
 }
@@ -48,19 +48,19 @@ stringEqual(void *object1, void *object2)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithOptions: (const of_options_parser_option_t *)options
+- (instancetype)initWithOptions: (const OFOptionsParserOption *)options
 {
 	self = [super init];
 
 	@try {
 		size_t count = 0;
-		const of_options_parser_option_t *iter;
-		of_options_parser_option_t *iter2;
-		const of_map_table_functions_t keyFunctions = {
+		const OFOptionsParserOption *iter;
+		OFOptionsParserOption *iter2;
+		const OFMapTableFunctions keyFunctions = {
 			.hash = stringHash,
 			.equal = stringEqual
 		};
-		const of_map_table_functions_t objectFunctions = { NULL };
+		const OFMapTableFunctions objectFunctions = { NULL };
 
 		/* Count, sanity check, initialize pointers */
 		for (iter = options;
@@ -84,7 +84,7 @@ stringEqual(void *object1, void *object2)
 			count++;
 		}
 
-		_options = of_alloc(count + 1, sizeof(*_options));
+		_options = OFAllocMemory(count + 1, sizeof(*_options));
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions];
@@ -141,12 +141,12 @@ stringEqual(void *object1, void *object2)
 - (void)dealloc
 {
 	if (_options != NULL)
-		for (of_options_parser_option_t *iter = _options;
+		for (OFOptionsParserOption *iter = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++)
 			[iter->longOption release];
 
-	free(_options);
+	OFFreeMemory(_options);
 	[_longOptions release];
 
 	[_arguments release];
@@ -155,9 +155,9 @@ stringEqual(void *object1, void *object2)
 	[super dealloc];
 }
 
-- (of_unichar_t)nextOption
+- (OFUnichar)nextOption
 {
-	of_options_parser_option_t *iter;
+	OFOptionsParserOption *iter;
 	OFString *argument;
 
 	if (_done || _index >= _arguments.count)
@@ -186,20 +186,20 @@ stringEqual(void *object1, void *object2)
 		if ([argument hasPrefix: @"--"]) {
 			void *pool = objc_autoreleasePoolPush();
 			size_t pos;
-			of_options_parser_option_t *option;
+			OFOptionsParserOption *option;
 
 			_lastOption = '-';
 			_index++;
 
 			if ((pos = [argument rangeOfString: @"="].location) !=
-			    OF_NOT_FOUND)
+			    OFNotFound)
 				_argument = [[argument
 				    substringFromIndex: pos + 1] copy];
 			else
 				pos = argument.length;
 
 			_lastLongOption = [[argument substringWithRange:
-			    of_range(2, pos - 2)] copy];
+			    OFRangeMake(2, pos - 2)] copy];
 
 			objc_autoreleasePoolPop(pool);
 
@@ -271,6 +271,6 @@ stringEqual(void *object1, void *object2)
 - (OFArray *)remainingArguments
 {
 	return [_arguments objectsInRange:
-	    of_range(_index, _arguments.count - _index)];
+	    OFRangeMake(_index, _arguments.count - _index)];
 }
 @end

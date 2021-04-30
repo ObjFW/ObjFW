@@ -28,10 +28,6 @@
 # include <fcntl.h>
 #endif
 
-#ifdef OF_HAVE_SOCKETS
-# import "socket_helpers.h"
-#endif
-
 #include "platform.h"
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
@@ -40,10 +36,14 @@
 
 #import "OFStream.h"
 #import "OFStream+Private.h"
+#import "OFASPrintF.h"
 #import "OFData.h"
 #import "OFKernelEventObserver.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFSocket+Private.h"
+#endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
@@ -56,9 +56,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
-#import "of_asprintf.h"
-
-#define MIN_READ_SIZE 512
+#define minReadSize 512
 
 @implementation OFStream
 @synthesize buffersWrites = _buffersWrites;
@@ -93,8 +91,8 @@
 
 - (void)dealloc
 {
-	free(_readBufferMemory);
-	free(_writeBuffer);
+	OFFreeMemory(_readBufferMemory);
+	OFFreeMemory(_writeBuffer);
 
 	[super dealloc];
 }
@@ -135,18 +133,18 @@
 		 * remainder - even if that means more copying of data - than
 		 * to do a syscall for every read.
 		 */
-		if (length < MIN_READ_SIZE) {
-			char tmp[MIN_READ_SIZE], *readBuffer;
+		if (length < minReadSize) {
+			char tmp[minReadSize], *readBuffer;
 			size_t bytesRead;
 
-			bytesRead = [self
-			    lowlevelReadIntoBuffer: tmp
-					    length: MIN_READ_SIZE];
+			bytesRead = [self lowlevelReadIntoBuffer: tmp
+							  length: minReadSize];
 
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
 
-				readBuffer = of_alloc(bytesRead - length, 1);
+				readBuffer = OFAllocMemory(bytesRead - length,
+				    1);
 				memcpy(readBuffer, tmp + length,
 				    bytesRead - length);
 
@@ -167,7 +165,7 @@
 		size_t ret = _readBufferLength;
 		memcpy(buffer, _readBuffer, _readBufferLength);
 
-		free(_readBufferMemory);
+		OFFreeMemory(_readBufferMemory);
 		_readBuffer = _readBufferMemory = NULL;
 		_readBufferLength = 0;
 
@@ -200,12 +198,12 @@
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
-		      runLoopMode: of_run_loop_mode_default];
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -224,12 +222,12 @@
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
-		      runLoopMode: of_run_loop_mode_default];
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -247,18 +245,18 @@
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		      block: (of_stream_async_read_block_t)block
+		      block: (OFStreamAsyncReadBlock)block
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
-		      runLoopMode: of_run_loop_mode_default
+		      runLoopMode: OFDefaultRunLoopMode
 			    block: block];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		      block: (OFStreamAsyncReadBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -273,18 +271,18 @@
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		      block: (of_stream_async_read_block_t)block
+		      block: (OFStreamAsyncReadBlock)block
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
-		      runLoopMode: of_run_loop_mode_default
+		      runLoopMode: OFDefaultRunLoopMode
 			    block: block];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		      block: (OFStreamAsyncReadBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -310,35 +308,35 @@
 {
 	uint16_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 2];
-	return OF_BSWAP16_IF_LE(ret);
+	return OFFromBigEndian16(ret);
 }
 
 - (uint32_t)readBigEndianInt32
 {
 	uint32_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP32_IF_LE(ret);
+	return OFFromBigEndian32(ret);
 }
 
 - (uint64_t)readBigEndianInt64
 {
 	uint64_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP64_IF_LE(ret);
+	return OFFromBigEndian64(ret);
 }
 
 - (float)readBigEndianFloat
 {
 	float ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP_FLOAT_IF_LE(ret);
+	return OFFromBigEndianFloat(ret);
 }
 
 - (double)readBigEndianDouble
 {
 	double ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP_DOUBLE_IF_LE(ret);
+	return OFFromBigEndianDouble(ret);
 }
 
 - (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer count: (size_t)count
@@ -354,7 +352,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP16(buffer[i]);
+		buffer[i] = OFByteSwap16(buffer[i]);
 #endif
 
 	return size;
@@ -373,7 +371,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP32(buffer[i]);
+		buffer[i] = OFByteSwap32(buffer[i]);
 #endif
 
 	return size;
@@ -392,7 +390,7 @@
 
 #ifndef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP64(buffer[i]);
+		buffer[i] = OFByteSwap64(buffer[i]);
 #endif
 
 	return size;
@@ -411,7 +409,7 @@
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
+		buffer[i] = OFByteSwapFloat(buffer[i]);
 #endif
 
 	return size;
@@ -430,7 +428,7 @@
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
+		buffer[i] = OFByteSwapDouble(buffer[i]);
 #endif
 
 	return size;
@@ -440,35 +438,35 @@
 {
 	uint16_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 2];
-	return OF_BSWAP16_IF_BE(ret);
+	return OFFromLittleEndian16(ret);
 }
 
 - (uint32_t)readLittleEndianInt32
 {
 	uint32_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP32_IF_BE(ret);
+	return OFFromLittleEndian32(ret);
 }
 
 - (uint64_t)readLittleEndianInt64
 {
 	uint64_t ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP64_IF_BE(ret);
+	return OFFromLittleEndian64(ret);
 }
 
 - (float)readLittleEndianFloat
 {
 	float ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 4];
-	return OF_BSWAP_FLOAT_IF_BE(ret);
+	return OFFromLittleEndianFloat(ret);
 }
 
 - (double)readLittleEndianDouble
 {
 	double ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
-	return OF_BSWAP_DOUBLE_IF_BE(ret);
+	return OFFromLittleEndianDouble(ret);
 }
 
 - (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
@@ -485,7 +483,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP16(buffer[i]);
+		buffer[i] = OFByteSwap16(buffer[i]);
 #endif
 
 	return size;
@@ -505,7 +503,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP32(buffer[i]);
+		buffer[i] = OFByteSwap32(buffer[i]);
 #endif
 
 	return size;
@@ -525,7 +523,7 @@
 
 #ifdef OF_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP64(buffer[i]);
+		buffer[i] = OFByteSwap64(buffer[i]);
 #endif
 
 	return size;
@@ -545,7 +543,7 @@
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
+		buffer[i] = OFByteSwapFloat(buffer[i]);
 #endif
 
 	return size;
@@ -565,7 +563,7 @@
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	for (size_t i = 0; i < count; i++)
-		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
+		buffer[i] = OFByteSwapDouble(buffer[i]);
 #endif
 
 	return size;
@@ -584,7 +582,7 @@
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
-	buffer = of_alloc(count, itemSize);
+	buffer = OFAllocMemory(count, itemSize);
 	@try {
 		[self readIntoBuffer: buffer exactLength: count * itemSize];
 		ret = [OFData dataWithItemsNoCopy: buffer
@@ -592,7 +590,7 @@
 					 itemSize: itemSize
 				     freeWhenDone: true];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 
@@ -603,7 +601,7 @@
 {
 	OFMutableData *data = [OFMutableData data];
 	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = of_alloc(1, pageSize);
+	char *buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		while (!self.atEndOfStream) {
@@ -612,7 +610,7 @@
 			[data addItems: buffer count: length];
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	[data makeImmutable];
@@ -622,27 +620,27 @@
 - (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
-				 encoding: OF_STRING_ENCODING_UTF_8];
+				 encoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)readStringWithLength: (size_t)length
-			  encoding: (of_string_encoding_t)encoding
+			  encoding: (OFStringEncoding)encoding
 {
 	OFString *ret;
-	char *buffer = of_alloc(length + 1, 1);
+	char *buffer = OFAllocMemory(length + 1, 1);
 	buffer[length] = 0;
 
 	@try {
 		[self readIntoBuffer: buffer exactLength: length];
 		ret = [OFString stringWithCString: buffer encoding: encoding];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;
 }
 
-- (OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)tryReadLineWithEncoding: (OFStringEncoding)encoding
 {
 	size_t pageSize, bufferLength;
 	char *buffer, *readBuffer;
@@ -673,7 +671,7 @@
 
 	/* Read and see if we got a newline or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -693,7 +691,7 @@
 						 encoding: encoding
 						   length: retLength];
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -709,7 +707,7 @@
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
 				size_t retLength = _readBufferLength + i;
-				char *retCString = of_alloc(retLength, 1);
+				char *retCString = OFAllocMemory(retLength, 1);
 
 				if (_readBuffer != NULL)
 					memcpy(retCString, _readBuffer,
@@ -732,7 +730,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_alloc(
+						readBuffer = OFAllocMemory(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -742,7 +740,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						free(_readBufferMemory);
+						OFFreeMemory(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -751,15 +749,16 @@
 
 					@throw e;
 				} @finally {
-					free(retCString);
+					OFFreeMemory(retCString);
 				}
 
-				readBuffer = of_alloc(bufferLength - i - 1, 1);
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				free(_readBufferMemory);
+				OFFreeMemory(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -770,19 +769,19 @@
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
-			readBuffer = of_alloc(_readBufferLength + bufferLength,
-			    1);
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -791,10 +790,10 @@
 
 - (OFString *)readLine
 {
-	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self readLineWithEncoding: OFStringEncodingUTF8];
 }
 
-- (OFString *)readLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)readLineWithEncoding: (OFStringEncoding)encoding
 {
 	OFString *line = nil;
 
@@ -808,18 +807,18 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncReadLine
 {
-	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
-			    runLoopMode: of_run_loop_mode_default];
+	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+			    runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 {
 	[self asyncReadLineWithEncoding: encoding
-			    runLoopMode: of_run_loop_mode_default];
+			    runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -834,24 +833,24 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
+- (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
 {
-	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
-			    runLoopMode: of_run_loop_mode_default
+	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+			    runLoopMode: OFDefaultRunLoopMode
 				  block: block];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-			    block: (of_stream_async_read_line_block_t)block
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+			    block: (OFStreamAsyncReadLineBlock)block
 {
 	[self asyncReadLineWithEncoding: encoding
-			    runLoopMode: of_run_loop_mode_default
+			    runLoopMode: OFDefaultRunLoopMode
 				  block: block];
 }
 
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
-			    block: (of_stream_async_read_line_block_t)block
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
+			    block: (OFStreamAsyncReadLineBlock)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -867,11 +866,11 @@
 
 - (OFString *)tryReadLine
 {
-	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
+	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)tryReadTillDelimiter: (OFString *)delimiter
-			  encoding: (of_string_encoding_t)encoding
+			  encoding: (OFStringEncoding)encoding
 {
 	const char *delimiterCString;
 	size_t j, delimiterLength, pageSize, bufferLength;
@@ -911,7 +910,7 @@
 
 	/* Read and see if we got a delimiter or \0 */
 	pageSize = [OFSystemInfo pageSize];
-	buffer = of_alloc(1, pageSize);
+	buffer = OFAllocMemory(1, pageSize);
 
 	@try {
 		if ([self lowlevelIsAtEndOfStream]) {
@@ -924,7 +923,7 @@
 						 encoding: encoding
 						   length: _readBufferLength];
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
@@ -949,7 +948,7 @@
 
 				retLength = _readBufferLength + i + 1 -
 				    delimiterLength;
-				retCString = of_alloc(retLength, 1);
+				retCString = OFAllocMemory(retLength, 1);
 
 				if (_readBuffer != NULL &&
 				    _readBufferLength <= retLength)
@@ -973,7 +972,7 @@
 						 * Append data to _readBuffer
 						 * to prevent loss of data.
 						 */
-						readBuffer = of_alloc(
+						readBuffer = OFAllocMemory(
 						    _readBufferLength +
 						    bufferLength, 1);
 
@@ -983,7 +982,7 @@
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-						free(_readBufferMemory);
+						OFFreeMemory(_readBufferMemory);
 						_readBuffer = readBuffer;
 						_readBufferMemory = readBuffer;
 						_readBufferLength +=
@@ -992,15 +991,16 @@
 
 					@throw e;
 				} @finally {
-					free(retCString);
+					OFFreeMemory(retCString);
 				}
 
-				readBuffer = of_alloc(bufferLength - i - 1, 1);
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
 				if (readBuffer != NULL)
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				free(_readBufferMemory);
+				OFFreeMemory(_readBufferMemory);
 				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
@@ -1011,19 +1011,19 @@
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
-			readBuffer = of_alloc(_readBufferLength + bufferLength,
-			    1);
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
 
 			memcpy(readBuffer, _readBuffer, _readBufferLength);
 			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-			free(_readBufferMemory);
+			OFFreeMemory(_readBufferMemory);
 			_readBuffer = _readBufferMemory = readBuffer;
 			_readBufferLength += bufferLength;
 		}
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	_waitingForDelimiter = true;
@@ -1034,11 +1034,11 @@
 - (OFString *)readTillDelimiter: (OFString *)delimiter
 {
 	return [self readTillDelimiter: delimiter
-			      encoding: OF_STRING_ENCODING_UTF_8];
+			      encoding: OFStringEncodingUTF8];
 }
 
 - (OFString *)readTillDelimiter: (OFString *)delimiter
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
 	OFString *ret = nil;
 
@@ -1053,7 +1053,7 @@
 - (OFString *)tryReadTillDelimiter: (OFString *)delimiter
 {
 	return [self tryReadTillDelimiter: delimiter
-				 encoding: OF_STRING_ENCODING_UTF_8];
+				 encoding: OFStringEncodingUTF8];
 }
 
 - (void)flushWriteBuffer
@@ -1063,7 +1063,7 @@
 
 	[self lowlevelWriteBuffer: _writeBuffer length: _writeBufferLength];
 
-	free(_writeBuffer);
+	OFFreeMemory(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 }
@@ -1084,7 +1084,7 @@
 
 		return bytesWritten;
 	} else {
-		_writeBuffer = of_realloc(_writeBuffer,
+		_writeBuffer = OFResizeMemory(_writeBuffer,
 		    _writeBufferLength + length, 1);
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
@@ -1096,11 +1096,10 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncWriteData: (OFData *)data
 {
-	[self asyncWriteData: data runLoopMode: of_run_loop_mode_default];
+	[self asyncWriteData: data runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncWriteData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1117,21 +1116,21 @@
 - (void)asyncWriteString: (OFString *)string
 {
 	[self asyncWriteString: string
-		      encoding: OF_STRING_ENCODING_UTF_8
-		   runLoopMode: of_run_loop_mode_default];
+		      encoding: OFStringEncodingUTF8
+		   runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 {
 	[self asyncWriteString: string
 		      encoding: encoding
-		   runLoopMode: of_run_loop_mode_default];
+		   runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1147,17 +1146,16 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncWriteData: (OFData *)data
-		 block: (of_stream_async_write_data_block_t)block
+- (void)asyncWriteData: (OFData *)data block: (OFStreamAsyncWriteDataBlock)block
 {
 	[self asyncWriteData: data
-		 runLoopMode: of_run_loop_mode_default
+		 runLoopMode: OFDefaultRunLoopMode
 		       block: block];
 }
 
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 block: (of_stream_async_write_data_block_t)block
+	   runLoopMode: (OFRunLoopMode)runLoopMode
+		 block: (OFStreamAsyncWriteDataBlock)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1170,28 +1168,28 @@
 }
 
 - (void)asyncWriteString: (OFString *)string
-		   block: (of_stream_async_write_string_block_t)block
+		   block: (OFStreamAsyncWriteStringBlock)block
 {
 	[self asyncWriteString: string
-		      encoding: OF_STRING_ENCODING_UTF_8
-		   runLoopMode: of_run_loop_mode_default
+		      encoding: OFStringEncodingUTF8
+		   runLoopMode: OFDefaultRunLoopMode
 			 block: block];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-		   block: (of_stream_async_write_string_block_t)block
+		encoding: (OFStringEncoding)encoding
+		   block: (OFStreamAsyncWriteStringBlock)block
 {
 	[self asyncWriteString: string
 		      encoding: encoding
-		   runLoopMode: of_run_loop_mode_default
+		   runLoopMode: OFDefaultRunLoopMode
 			 block: block];
 }
 
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   block: (of_stream_async_write_string_block_t)block
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
+		   block: (OFStreamAsyncWriteStringBlock)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1213,31 +1211,31 @@
 
 - (void)writeBigEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_LE(int16);
+	int16 = OFToBigEndian16(int16);
 	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeBigEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_LE(int32);
+	int32 = OFToBigEndian32(int32);
 	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeBigEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_LE(int64);
+	int64 = OFToBigEndian64(int64);
 	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeBigEndianFloat: (float)float_
 {
-	float_ = OF_BSWAP_FLOAT_IF_LE(float_);
+	float_ = OFToBigEndianFloat(float_);
 	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeBigEndianDouble: (double)double_
 {
-	double_ = OF_BSWAP_DOUBLE_IF_LE(double_);
+	double_ = OFToBigEndianDouble(double_);
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
@@ -1253,15 +1251,15 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
+	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP16(buffer[i]);
+			tmp[i] = OFByteSwap16(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1280,15 +1278,15 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
+	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP32(buffer[i]);
+			tmp[i] = OFByteSwap32(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1307,15 +1305,15 @@
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
+	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP64(buffer[i]);
+			tmp[i] = OFByteSwap64(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1334,15 +1332,15 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	float *tmp = of_alloc(count, sizeof(float));
+	float *tmp = OFAllocMemory(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
+			tmp[i] = OFByteSwapFloat(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1361,15 +1359,15 @@
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	double *tmp = of_alloc(count, sizeof(double));
+	double *tmp = OFAllocMemory(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
+			tmp[i] = OFByteSwapDouble(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1378,31 +1376,31 @@
 
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
-	int16 = OF_BSWAP16_IF_BE(int16);
+	int16 = OFToLittleEndian16(int16);
 	[self writeBuffer: (char *)&int16 length: 2];
 }
 
 - (void)writeLittleEndianInt32: (uint32_t)int32
 {
-	int32 = OF_BSWAP32_IF_BE(int32);
+	int32 = OFToLittleEndian32(int32);
 	[self writeBuffer: (char *)&int32 length: 4];
 }
 
 - (void)writeLittleEndianInt64: (uint64_t)int64
 {
-	int64 = OF_BSWAP64_IF_BE(int64);
+	int64 = OFToLittleEndian64(int64);
 	[self writeBuffer: (char *)&int64 length: 8];
 }
 
 - (void)writeLittleEndianFloat: (float)float_
 {
-	float_ = OF_BSWAP_FLOAT_IF_BE(float_);
+	float_ = OFToLittleEndianFloat(float_);
 	[self writeBuffer: (char *)&float_ length: 4];
 }
 
 - (void)writeLittleEndianDouble: (double)double_
 {
-	double_ = OF_BSWAP_DOUBLE_IF_BE(double_);
+	double_ = OFToLittleEndianDouble(double_);
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
@@ -1418,15 +1416,15 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint16_t *tmp = of_alloc(count, sizeof(uint16_t));
+	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP16(buffer[i]);
+			tmp[i] = OFByteSwap16(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1445,15 +1443,15 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint32_t *tmp = of_alloc(count, sizeof(uint32_t));
+	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP32(buffer[i]);
+			tmp[i] = OFByteSwap32(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1472,15 +1470,15 @@
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	uint64_t *tmp = of_alloc(count, sizeof(uint64_t));
+	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP64(buffer[i]);
+			tmp[i] = OFByteSwap64(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1499,15 +1497,15 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	float *tmp = of_alloc(count, sizeof(float));
+	float *tmp = OFAllocMemory(count, sizeof(float));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
+			tmp[i] = OFByteSwapFloat(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1526,15 +1524,15 @@
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer length: size];
 #else
-	double *tmp = of_alloc(count, sizeof(double));
+	double *tmp = OFAllocMemory(count, sizeof(double));
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
+			tmp[i] = OFByteSwapDouble(buffer[i]);
 
 		[self writeBuffer: tmp length: size];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 #endif
 
@@ -1561,11 +1559,10 @@
 
 - (size_t)writeString: (OFString *)string
 {
-	return [self writeString: string encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeString: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeString: (OFString *)string
-	     encoding: (of_string_encoding_t)encoding
+- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	void *pool;
 	size_t length;
@@ -1586,15 +1583,15 @@
 
 - (size_t)writeLine: (OFString *)string
 {
-	return [self writeLine: string encoding: OF_STRING_ENCODING_UTF_8];
+	return [self writeLine: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeLine: (OFString *)string encoding: (of_string_encoding_t)encoding
+- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
 
-	buffer = of_alloc(stringLength + 1, 1);
+	buffer = OFAllocMemory(stringLength + 1, 1);
 
 	@try {
 		memcpy(buffer, [string cStringWithEncoding: encoding],
@@ -1603,7 +1600,7 @@
 
 		[self writeBuffer: buffer length: stringLength + 1];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return stringLength + 1;
@@ -1629,7 +1626,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((length = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -1733,7 +1730,7 @@
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: of_run_loop_mode_default];
+					      mode: OFDefaultRunLoopMode];
 }
 #endif
 
@@ -1744,22 +1741,22 @@
 	if (length > SIZE_MAX - _readBufferLength)
 		@throw [OFOutOfRangeException exception];
 
-	readBuffer = of_alloc(_readBufferLength + length, 1);
+	readBuffer = OFAllocMemory(_readBufferLength + length, 1);
 	memcpy(readBuffer, buffer, length);
 	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 
-	free(_readBufferMemory);
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = readBuffer;
 	_readBufferLength += length;
 }
 
 - (void)close
 {
-	free(_readBufferMemory);
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;
 
-	free(_writeBuffer);
+	OFFreeMemory(_writeBuffer);
 	_writeBuffer = NULL;
 	_writeBufferLength = 0;
 	_buffersWrites = false;

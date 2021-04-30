@@ -18,11 +18,11 @@
 
 #ifndef OF_AMIGAOS
 # define OF_FILE_HANDLE_IS_FD
-# define OF_INVALID_FILE_HANDLE (-1)
-typedef int of_file_handle_t;
+typedef int OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-# define OF_INVALID_FILE_HANDLE NULL
-typedef struct of_file_handle *of_file_handle_t;
+typedef struct _OFFileHandle *OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -40,7 +40,7 @@ OF_SUBCLASSING_RESTRICTED
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
 #endif
 {
-	of_file_handle_t _handle;
+	OFFileHandle _handle;
 	bool _atEndOfStream;
 }
 
@@ -93,7 +93,7 @@ OF_SUBCLASSING_RESTRICTED
  *		 object is deallocated!
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithHandle: (of_file_handle_t)handle;
++ (instancetype)fileWithHandle: (OFFileHandle)handle;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -153,8 +153,7 @@ OF_SUBCLASSING_RESTRICTED
  *		 object is deallocated!
  * @return An initialized OFFile
  */
-- (instancetype)initWithHandle: (of_file_handle_t)handle
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHandle: (OFFileHandle)handle OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END
