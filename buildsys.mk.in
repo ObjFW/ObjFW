@@ -212,7 +212,7 @@ copy-headers-into-framework:
 	if test x"${includesubdir}" = x"${COPY_HEADERS_IF_SUBDIR}"; then \
 		for i in "" ${INCLUDES}; do \
 			test x"$$i" = x"" && continue; \
-			${MKDIR_P} ${COPY_HEADERS_DESTINATION} || exit $$?; \
+			${MKDIR_P} $$(dirname ${COPY_HEADERS_DESTINATION}/$$i) || exit $$?; \
 			${INSTALL} -m 644 $$i ${COPY_HEADERS_DESTINATION}/$$i || exit $$?; \
 		done \
 	fi
@@ -733,7 +733,7 @@ install: all install-extra
 		for i in "" ${INCLUDES}; do \
 			test x"$$i" = x"" && continue; \
 			${INSTALL_STATUS}; \
-			if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			if ${MKDIR_P} $$(dirname ${DESTDIR}${includedir}/${includesubdir}/$$i) && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
 				${INSTALL_OK}; \
 			else \
 				${INSTALL_FAILED}; \
