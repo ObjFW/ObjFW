@@ -79,7 +79,7 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-static struct _OFFileHandle
+static struct _OFFileHandle {
 	struct _OFFileHandle *previous, *next;
 	BPTR handle;
 	bool append;
