@@ -153,12 +153,11 @@ SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
 INCLUDES_ATOMIC = OFAtomic.h			\
-		  OFAtomic_builtins.h		\
-		  OFAtomic_no_threads.h		\
-		  OFAtomic_osatomic.h		\
-		  OFAtomic_powerpc.h		\
-		  OFAtomic_sync_builtins.h	\
-		  OFAtomic_x86.h
+		  platform/GCC4/OFAtomic.h	\
+		  platform/GCC4.7/OFAtomic.h	\
+		  platform/PowerPC/OFAtomic.h	\
+		  platform/macOS/OFAtomic.h	\
+		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
