@@ -18,7 +18,7 @@
 #import "OFTLSKey.h"
 
 int
-OFTLSKeyNew(OFTLSKeyT *key)
+OFTLSKeyNew(OFTLSKey *key)
 {
 	*key = TLSAllocA(NULL);
 
@@ -29,7 +29,7 @@ OFTLSKeyNew(OFTLSKeyT *key)
 }
 
 int
-OFTLSKeyFree(OFTLSKeyT key)
+OFTLSKeyFree(OFTLSKey key)
 {
 	return (TLSFree(key) ? 0 : EINVAL);
 }
