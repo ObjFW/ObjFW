@@ -18,11 +18,11 @@
 #include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "platform/posix/OFTLSKey.m"
+# include "platform/POSIX/OFTLSKey.m"
 #elif defined(OF_WINDOWS)
-# include "platform/windows/OFTLSKey.m"
+# include "platform/Windows/OFTLSKey.m"
 #elif defined(OF_MORPHOS)
-# include "platform/morphos/OFTLSKey.m"
+# include "platform/MorphOs/OFTLSKey.m"
 #elif defined(OF_AMIGAOS)
-# include "platform/amiga/OFTLSKey.m"
+# include "platform/AmigaOS/OFTLSKey.m"
 #endif

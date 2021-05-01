@@ -18,11 +18,11 @@
 #include "platform.h"
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
-# import "platform/windows/OFString+PathAdditions.m"
+# import "platform/Windows/OFString+PathAdditions.m"
 #elif defined(OF_AMIGAOS)
-# import "platform/amiga/OFString+PathAdditions.m"
+# import "platform/AmigaOS/OFString+PathAdditions.m"
 #elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 # import "platform/libfat/OFString+PathAdditions.m"
 #else
-# import "platform/posix/OFString+PathAdditions.m"
+# import "platform/POSIX/OFString+PathAdditions.m"
 #endif
