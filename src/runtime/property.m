@@ -22,15 +22,20 @@
 
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
-# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
-# define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
-static OFSpinlock spinlocks[NUM_SPINLOCKS];
+# define numSpinlocks 8	/* needs to be a power of 2 */
+static OFSpinlock spinlocks[numSpinlocks];
+
+static OF_INLINE size_t
+spinlockSlot(const void *ptr)
+{
+	return ((size_t)((uintptr_t)ptr >> 4) & (numSpinlocks - 1));
+}
 #endif
 
 #ifdef OF_HAVE_THREADS
 OF_CONSTRUCTOR()
 {
-	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
+	for (size_t i = 0; i < numSpinlocks; i++)
 		if (OFSpinlockNew(&spinlocks[i]) != 0)
 			OBJC_ERROR("Failed to initialize spinlocks!");
 }
@@ -42,13 +47,13 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(ptr);
+		size_t slot = spinlockSlot(ptr);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -65,9 +70,9 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(ptr);
+		size_t slot = spinlockSlot(ptr);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
 		@try {
 #endif
 			id old = *ptr;
@@ -86,7 +91,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+			OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
 		}
 #endif
 
@@ -117,13 +122,13 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(src);
+		size_t slot = spinlockSlot(src);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
 #endif
 
 		return;
@@ -138,13 +143,13 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(src);
+		size_t slot = spinlockSlot(src);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OFEnsure(OFSpinlockUnlock(&spinlocks[hash]) == 0);
+		OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
 #endif
 
 		return;
@@ -167,7 +172,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
 	count = 0;
 	if (class->info & OBJC_CLASS_INFO_NEW_ABI)
@@ -179,7 +184,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_global_mutex_unlock();
+		objc_globalMutex_unlock();
 		return NULL;
 	}
 
@@ -197,7 +202,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return properties;
 }

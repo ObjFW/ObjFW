@@ -28,12 +28,12 @@ OF_DESTRUCTOR()
 		/*
 		 * musl has broken dlclose(): Instead of calling the destructor
 		 * on dlclose(), they call it on exit(). This of course means
-		 * that our tests might have already called objc_exit() and the
-		 * class is already gone.
+                 * that our tests might have already called objc_deinit() and
+                 * the class is already gone.
 		 */
 		return;
 
-	objc_unregister_class(class);
+	objc_unregisterClass(class);
 }
 #endif
 

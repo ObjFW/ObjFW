@@ -41,7 +41,7 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 		Class class = (isClass
 		    ? (Class)object : object_getClass(object));
 
-		objc_initialize_class(class);
+		objc_initializeClass(class);
 
 		if (!(class->info & OBJC_CLASS_INFO_SETUP))
 			OBJC_ERROR("Could not dispatch message for incomplete "
@@ -97,14 +97,14 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 }
 
 IMP
-objc_method_not_found(id object, SEL selector)
+objc_methodNotFound(id object, SEL selector)
 {
 	return commonMethodNotFound(object, selector, objc_msg_lookup,
 	    forwardHandler);
 }
 
 IMP
-objc_method_not_found_stret(id object, SEL selector)
+objc_methodNotFound_stret(id object, SEL selector)
 {
 	return commonMethodNotFound(object, selector, objc_msg_lookup_stret,
 	    stretForwardHandler);
@@ -123,7 +123,7 @@ class_respondsToSelector(Class class, SEL selector)
 	if (class == Nil)
 		return false;
 
-	return (objc_dtable_get(class->DTable,
+	return (objc_dtable_get(class->dTable,
 	    (uint32_t)selector->UID) != (IMP)0);
 }
 

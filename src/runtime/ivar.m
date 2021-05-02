@@ -31,7 +31,7 @@ class_copyIvarList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
 	count = (class->ivars != NULL ? class->ivars->count : 0);
 
@@ -39,7 +39,7 @@ class_copyIvarList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_global_mutex_unlock();
+		objc_globalMutex_unlock();
 		return NULL;
 	}
 
@@ -53,7 +53,7 @@ class_copyIvarList(Class class, unsigned int *outCount)
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return ivars;
 }

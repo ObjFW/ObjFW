@@ -85,10 +85,10 @@ main(int argc, char *argv[])
 	 * This does not work on Win32 if ObjFW is built as a DLL.
 	 *
 	 * On AmigaOS, some destructors need to be able to send messages.
-	 * Calling objc_exit() via atexit() would result in the runtime being
+	 * Calling objc_deinit() via atexit() would result in the runtime being
 	 * destructed before for the destructors ran.
 	 */
-	atexit(objc_exit);
+	atexit(objc_deinit);
 #endif
 
 	/* We need deterministic hashes for tests */

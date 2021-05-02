@@ -79,7 +79,7 @@
 (CONST_APTR)glue_objc_setForwardHandler,
 (CONST_APTR)glue_objc_setEnumerationMutationHandler,
 (CONST_APTR)glue_objc_constructInstance,
-(CONST_APTR)glue_objc_exit,
+(CONST_APTR)glue_objc_deinit,
 (CONST_APTR)glue_class_copyIvarList,
 (CONST_APTR)glue_ivar_getName,
 (CONST_APTR)glue_ivar_getTypeEncoding,
