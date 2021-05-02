@@ -62,7 +62,8 @@ run:
 	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
-	rm -f objfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
