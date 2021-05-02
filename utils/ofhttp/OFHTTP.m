@@ -532,7 +532,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[sandbox unveilPath: outputPath
 			permissions: (_continue ? @"rwc" : @"wc")];
 	else
-		[sandbox unveilPath: [[OFFileManger defaultManager]
+		[sandbox unveilPath: [[OFFileManager defaultManager]
 					 currentDirectoryPath]
 			permissions: (_continue ? @"rwc" : @"wc")];
 
