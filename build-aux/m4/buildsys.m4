@@ -200,10 +200,10 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	*-*-mingw* | *-*-cygwin*)
 		AC_MSG_RESULT(MinGW / Cygwin)
 		LIB_CFLAGS=''
-		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib$$out.a'
+		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib$${out%${LIB_SUFFIX}}.a'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
-		LIB_SUFFIX='.dll'
+		LIB_SUFFIX='${LIB_MAJOR}.dll'
 		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared'
