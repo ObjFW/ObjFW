@@ -930,6 +930,8 @@ objc_unregisterClass(Class class)
 {
 	static SEL unloadSel = NULL;
 
+	objc_globalMutex_lock();
+
 	if (unloadSel == NULL)
 		unloadSel = sel_registerName("unload");
 
@@ -946,6 +948,8 @@ objc_unregisterClass(Class class)
 
 	unregisterClass(class);
 	unregisterClass(class->isa);
+
+	objc_globalMutex_unlock();
 }
 
 void
