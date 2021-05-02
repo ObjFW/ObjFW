@@ -253,7 +253,7 @@ static OFSpinlock emergencyExceptionsSpinlock;
 OF_CONSTRUCTOR()
 {
 	if (OFSpinlockNew(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot create spinlock!");
+		OBJC_ERROR("Failed to create spinlock!");
 }
 #endif
 
@@ -718,14 +718,14 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
 {
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot lock spinlock!");
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot unlock spinlock!");
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
@@ -738,7 +738,7 @@ objc_exception_throw(id object)
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 		for (uint_fast8_t i = 0; i < numEmergencyExceptions; i++) {
@@ -753,7 +753,7 @@ objc_exception_throw(id object)
 
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 	}
 

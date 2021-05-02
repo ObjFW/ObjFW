@@ -44,8 +44,9 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 		objc_initializeClass(class);
 
 		if (!(class->info & OBJC_CLASS_INFO_SETUP))
-			OBJC_ERROR("Could not dispatch message for incomplete "
-			    "class %s!", class_getName(class));
+			OBJC_ERROR("Could not dispatch message %s for "
+			    "incomplete class %s!",
+			    sel_getName(selector), class_getName(class));
 
 		/*
 		 * We don't need to handle the case that super was called.

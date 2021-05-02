@@ -37,7 +37,7 @@ OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < numSpinlocks; i++)
 		if (OFSpinlockNew(&spinlocks[i]) != 0)
-			OBJC_ERROR("Failed to initialize spinlocks!");
+			OBJC_ERROR("Failed to create spinlocks!");
 }
 #endif
 
@@ -49,11 +49,13 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(ptr);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
+			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+				OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -72,7 +74,8 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(ptr);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 #endif
 			id old = *ptr;
@@ -91,7 +94,8 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
+			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+				OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #endif
 
@@ -124,11 +128,13 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(src);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
+		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -145,11 +151,13 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(src);
 
-		OFEnsure(OFSpinlockLock(&spinlocks[slot]) == 0);
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OFEnsure(OFSpinlockUnlock(&spinlocks[slot]) == 0);
+		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -196,7 +204,10 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 	for (iter = class->propertyList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			properties[i++] = &iter->properties[j];
-	OFEnsure(i == count);
+
+	if (i != count)
+		OBJC_ERROR("Fatal internal inconsistency!");
+
 	properties[count] = NULL;
 
 	if (outCount != NULL)
@@ -258,7 +269,7 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	if (nullIsError && ret == NULL)
 		OBJC_ERROR("Not enough memory to copy property attribute "
-		    "value");
+		    "value!");
 
 	return ret;
 }

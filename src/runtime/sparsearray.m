@@ -26,10 +26,8 @@ objc_sparsearray_new(uint8_t levels)
 {
 	struct objc_sparsearray *sparsearray;
 
-	if ((sparsearray = calloc(1, sizeof(*sparsearray))) == NULL)
-		OBJC_ERROR("Failed to allocate memory for sparse array!");
-
-	if ((sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
+	if ((sparsearray = calloc(1, sizeof(*sparsearray))) == NULL ||
+	    (sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
 		OBJC_ERROR("Failed to allocate memory for sparse array!");
 
 	sparsearray->levels = levels;

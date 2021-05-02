@@ -53,7 +53,10 @@ class_copyMethodList(Class class, unsigned int *outCount)
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			methods[i++] = &iter->methods[j];
-	OFEnsure(i == count);
+
+	if (i != count)
+		OBJC_ERROR("Fatal internal inconsistency!");
+
 	methods[count] = NULL;
 
 	if (outCount != NULL)

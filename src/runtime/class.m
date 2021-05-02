@@ -474,9 +474,6 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	struct objc_class *class, *metaclass;
 	Class iter, rootclass = Nil;
 
-	if (extraBytes > LONG_MAX)
-		OBJC_ERROR("extraBytes out of range!");
-
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate class pair for class "
@@ -487,7 +484,13 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	class->name = name;
 	class->info = OBJC_CLASS_INFO_CLASS;
 	class->instanceSize = (superclass != Nil ?
-	    superclass->instanceSize : 0) + (long)extraBytes;
+	    superclass->instanceSize : 0);
+
+	if (extraBytes > LONG_MAX ||
+	    LONG_MAX - class->instanceSize < (long)extraBytes)
+		OBJC_ERROR("extraBytes too large!");
+
+	class->instanceSize += (long)extraBytes;
 
 	for (iter = superclass; iter != Nil; iter = iter->superclass)
 		rootclass = iter;
@@ -631,7 +634,8 @@ objc_copyClassList(unsigned int *length)
 		OBJC_ERROR("Failed to allocate memory for class list!");
 
 	count = objc_getClassList(ret, classesCount);
-	OFEnsure(count == classesCount);
+	if (count != classesCount)
+		OBJC_ERROR("Fatal internal inconsistency!");
 
 	ret[count] = Nil;
 
@@ -980,7 +984,8 @@ objc_unregisterAllClasses(void)
 		}
 	}
 
-	OFEnsure(classesCount == 0);
+	if (classesCount != 0)
+		OBJC_ERROR("Fatal internal inconsistency!");
 
 	if (emptyDTable != NULL) {
 		objc_dtable_free(emptyDTable);

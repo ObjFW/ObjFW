@@ -119,7 +119,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 			}
 
 			if (j >= last)
-				OBJC_ERROR("No free bucket!");
+				OBJC_ERROR("No free bucket in hash table!");
 
 			newData[j] = table->data[i];
 		}
@@ -191,7 +191,7 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	}
 
 	if (i >= last)
-		OBJC_ERROR("No free bucket!");
+		OBJC_ERROR("No free bucket in hash table!");
 
 	if ((bucket = malloc(sizeof(*bucket))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate hash table bucket!");

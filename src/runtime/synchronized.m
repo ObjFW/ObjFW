@@ -130,7 +130,7 @@ objc_sync_exit(id object)
 		return 0;
 	}
 
-	OBJC_ERROR("objc_sync_exit() was called for an object not locked!");
+	OBJC_ERROR("objc_sync_exit() was called for an unlocked object!");
 #else
 	return 0;
 #endif

@@ -51,9 +51,9 @@ static uintptr_t size = 0;
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 OF_CONSTRUCTOR()
 {
-	OFEnsure(OFTLSKeyNew(&objectsKey) == 0);
-	OFEnsure(OFTLSKeyNew(&countKey) == 0);
-	OFEnsure(OFTLSKeyNew(&sizeKey) == 0);
+	if (OFTLSKeyNew(&objectsKey) != 0 || OFTLSKeyNew(&countKey) != 0 ||
+	    OFTLSKeyNew(&sizeKey) != 0)
+		OBJC_ERROR("Failed to create TLS keys!");
 }
 #endif
 
@@ -98,13 +98,15 @@ objc_autoreleasePoolPop(void *pool)
 #if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
 		size = 0;
 #else
-		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
-		OFEnsure(OFTLSKeySet(sizeKey, (void *)0) == 0);
+		if (OFTLSKeySet(objectsKey, objects) != 0 ||
+		    OFTLSKeySet(sizeKey, (void *)0) != 0)
+			OBJC_ERROR("Failed to set TLS key!");
 #endif
 	}
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
+	if (OFTLSKeySet(countKey, (void *)count) != 0)
+		OBJC_ERROR("Failed to set TLS key!");
 #endif
 }
 
@@ -123,19 +125,21 @@ _objc_rootAutorelease(id object)
 		else
 			size *= 2;
 
-		OFEnsure((objects =
-		    realloc(objects, size * sizeof(id))) != NULL);
+		if ((objects = realloc(objects, size * sizeof(id))) == NULL)
+			OBJC_ERROR("Failed to resize autorelease pool!");
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
-		OFEnsure(OFTLSKeySet(sizeKey, (void *)size) == 0);
+		if (OFTLSKeySet(objectsKey, objects) != 0 ||
+		    OFTLSKeySet(sizeKey, (void *)size) != 0)
+			OBJC_ERROR("Failed to set TLS key!");
 #endif
 	}
 
 	objects[count++] = object;
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
+	if (OFTLSKeySet(countKey, (void *)count) != 0)
+		OBJC_ERROR("Failed to set TLS key!");
 #endif
 
 	return object;
