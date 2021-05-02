@@ -209,7 +209,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.dll'
 		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_LIB='&& ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i && ${INSTALL} -m 755 lib$$i.a ${DESTDIR}${libdir}/lib$$i.a'
+		INSTALL_LIB='&& ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i && ${INSTALL} -m 755 lib$${i%${LIB_SUFFIX}}.a ${DESTDIR}${libdir}/lib$${i%${LIB_SUFFIX}}.a'
 		UNINSTALL_LIB='&& rm -f ${DESTDIR}${bindir}/$$i ${DESTDIR}${libdir}/lib$$i.a'
 		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
