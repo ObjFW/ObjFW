@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFMD5Hash";
+static OFString *const module = @"OFMD5Hash";
 
 const uint8_t testFileMD5[16] =
     "\x00\x8B\x9D\x1B\x58\xDF\xF8\xFE\xEE\xF3\xAE\x8D\xBB\x68\x2D\x38";

@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFINIFile";
+static OFString *module;
 
 @implementation TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests
@@ -49,6 +49,8 @@ static OFString *module = @"OFINIFile";
 #ifndef OF_NINTENDO_DS
 	OFString *writePath;
 #endif
+
+	module = @"OFINIFile";
 
 	TEST(@"+[fileWithPath:encoding:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"

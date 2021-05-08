@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFList";
+static OFString *const module = @"OFList";
 static OFString *strings[] = {
 	@"Foo",
 	@"Bar",

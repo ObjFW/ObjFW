@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = nil;
+static OFString *module;
 static OFString *keys[] = {
 	@"key1",
 	@"key2"

@@ -29,7 +29,7 @@
 # define INFINITY __builtin_inf()
 #endif
 
-static OFString *module = nil;
+static OFString *module;
 static OFString *const whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"

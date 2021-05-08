@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFTCPSocket";
+static OFString *const module = @"OFTCPSocket";
 
 @implementation TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests

@@ -21,7 +21,7 @@
 #import "OFBitSetCharacterSet.h"
 #import "OFRangeCharacterSet.h"
 
-static OFString *module = nil;
+static OFString *module;
 
 @interface SimpleCharacterSet: OFCharacterSet
 @end

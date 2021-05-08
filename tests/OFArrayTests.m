@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = nil;
+static OFString *module;
 static OFString *const cArray[] = {
 	@"Foo",
 	@"Bar",
