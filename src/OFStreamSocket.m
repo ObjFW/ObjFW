@@ -164,9 +164,9 @@
 - (void)setCanBlock: (bool)canBlock
 {
 # ifdef OF_WINDOWS
-	u_long v = canBlock;
+	u_long v = !canBlock;
 # else
-	char v = canBlock;
+	char v = !canBlock;
 # endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
