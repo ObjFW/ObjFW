@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSPXStreamSocket";
+static OFString *const module = @"OFSPXStreamSocket";
 
 @interface SPXStreamSocketDelegate: OFObject <OFSPXStreamSocketDelegate>
 {

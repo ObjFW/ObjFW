@@ -19,9 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSHA1Hash";
+static OFString *const module = @"OFSHA1Hash";
 
-const uint8_t testfile_sha1[20] =
+const uint8_t testFileSHA1[20] =
 	"\xC9\x9A\xB8\x7E\x1E\xC8\xEC\x65\xD5\xEB\xE4\x2E\x0D\xA6\x80\x96\xF5"
 	"\x94\xE7\x17";
 
@@ -29,28 +29,28 @@ const uint8_t testfile_sha1[20] =
 - (void)SHA1HashTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSHA1Hash *sha1, *copy;
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
+	OFSHA1Hash *SHA1, *SHA1Copy;
+	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
-	    (sha1 = [OFSHA1Hash hashWithAllowsSwappableMemory: true]))
+	    (SHA1 = [OFSHA1Hash hashWithAllowsSwappableMemory: true]))
 
-	while (!f.atEndOfStream) {
-		char buf[64];
-		size_t len = [f readIntoBuffer: buf length: 64];
-		[sha1 updateWithBuffer: buf length: len];
+	while (!file.atEndOfStream) {
+		char buffer[64];
+		size_t length = [file readIntoBuffer: buffer length: 64];
+		[SHA1 updateWithBuffer: buffer length: length];
 	}
-	[f close];
+	[file close];
 
-	TEST(@"-[copy]", (copy = [[sha1 copy] autorelease]))
+	TEST(@"-[copy]", (SHA1Copy = [[SHA1 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp(sha1.digest, testfile_sha1, 20) == 0 &&
-	    memcmp(copy.digest, testfile_sha1, 20) == 0)
+	    memcmp(SHA1.digest, testFileSHA1, 20) == 0 &&
+	    memcmp(SHA1Copy.digest, testFileSHA1, 20) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
-	    [sha1 updateWithBuffer: "" length: 1])
+	    [SHA1 updateWithBuffer: "" length: 1])
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"scrypt";
+static OFString *const module = @"OFScrypt";
 /* Test vectors form RFC 7914 */
 static const unsigned char salsa20Input[64] = {
 	0x7E, 0x87, 0x9A, 0x21, 0x4F, 0x3E, 0xC9, 0x86, 0x7C, 0xA9, 0x40, 0xE6,
@@ -130,7 +130,7 @@ static const unsigned char testVector4[64] = {
 };
 #endif
 
-@implementation TestsAppDelegate (ScryptTests)
+@implementation TestsAppDelegate (OFScryptTests)
 - (void)scryptTests
 {
 	void *pool = objc_autoreleasePoolPush();

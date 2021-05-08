@@ -27,7 +27,7 @@ static OFString *module = @"OFTCPSocket";
 	void *pool = objc_autoreleasePoolPush();
 	OFTCPSocket *server, *client = nil, *accepted;
 	uint16_t port;
-	char buf[6];
+	char buffer[6];
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
@@ -49,8 +49,8 @@ static OFString *module = @"OFTCPSocket";
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 
 	TEST(@"-[readIntoBuffer:length:]",
-	    [accepted readIntoBuffer: buf length: 6] &&
-	    !memcmp(buf, "Hello!", 6))
+	    [accepted readIntoBuffer: buffer length: 6] &&
+	    !memcmp(buffer, "Hello!", 6))
 
 	objc_autoreleasePoolPop(pool);
 }

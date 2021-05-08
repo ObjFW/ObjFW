@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFValue";
+static OFString *const module = @"OFValue";
 
 @implementation TestsAppDelegate (OFValueTests)
 - (void)valueTests

@@ -24,7 +24,9 @@ SRCS = ForwardingTests.m		\
        OFMethodSignatureTests.m		\
        OFNumberTests.m			\
        OFObjectTests.m			\
+       OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
+       OFScryptTests.m			\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -34,10 +36,8 @@ SRCS = ForwardingTests.m		\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
-       PBKDF2Tests.m			\
        RuntimeTests.m			\
        ${RUNTIME_ARC_TESTS_M}		\
-       ScryptTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
@@ -63,9 +63,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
+	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       SocketTests.m			\
 	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
