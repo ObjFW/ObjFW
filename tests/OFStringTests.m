@@ -41,10 +41,10 @@ static const OFUnichar swappedUnicharString[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
 };
-static const uint16_t UTF16String[] = {
+static const OFChar16 char16String[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A, 0
 };
-static const uint16_t swappedUTF16String[] = {
+static const OFChar16 swappedChar16String[] = {
 	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
 	0
 };
@@ -343,10 +343,10 @@ static const uint16_t swappedUTF16String[] = {
 	    [mutableString1 isEqual: @"foo"])
 
 	TEST(@"+[stringWithUTF16String:]",
-	    (string = [stringClass stringWithUTF16String: UTF16String]) &&
+	    (string = [stringClass stringWithUTF16String: char16String]) &&
 	    [string isEqual: @"fööbär🀺"] &&
 	    (string = [stringClass stringWithUTF16String:
-	    swappedUTF16String]) && [string isEqual: @"fööbär🀺"])
+	    swappedChar16String]) && [string isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithUTF32String:]",
 	    (string = [stringClass stringWithUTF32String: unicharString]) &&
@@ -1201,17 +1201,17 @@ static const uint16_t swappedUTF16String[] = {
 	    !memcmp(characters, unicharString + 1, sizeof(unicharString) - 8))
 
 #ifdef OF_BIG_ENDIAN
-# define SWAPPED_BYTE_ORDER OFByteOrderLittleEndian
+# define swappedByteOrder OFByteOrderLittleEndian
 #else
-# define SWAPPED_BYTE_ORDER OFByteOrderBigEndian
+# define swappedByteOrder OFByteOrderBigEndian
 #endif
 	TEST(@"-[UTF16String]", (UTF16Characters = C(@"fööbär🀺").UTF16String) &&
-	    !memcmp(UTF16Characters, UTF16String + 1,
-	    OFUTF16StringLength(UTF16String) * 2) &&
+	    !memcmp(UTF16Characters, char16String + 1,
+	    OFUTF16StringLength(char16String) * 2) &&
 	    (UTF16Characters = [C(@"fööbär🀺")
-	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(UTF16Characters, swappedUTF16String + 1,
-	    OFUTF16StringLength(swappedUTF16String) * 2))
+	    UTF16StringWithByteOrder: swappedByteOrder]) &&
+	    !memcmp(UTF16Characters, swappedChar16String + 1,
+	    OFUTF16StringLength(swappedChar16String) * 2))
 
 	TEST(@"-[UTF16StringLength]", C(@"fööbär🀺").UTF16StringLength == 8)
 
@@ -1219,10 +1219,10 @@ static const uint16_t swappedUTF16String[] = {
 	    !memcmp(characters, unicharString + 1,
 	    OFUTF32StringLength(unicharString) * 4) &&
 	    (characters = [C(@"fööbär🀺") UTF32StringWithByteOrder:
-	    SWAPPED_BYTE_ORDER]) &&
+	    swappedByteOrder]) &&
 	    !memcmp(characters, swappedUnicharString + 1,
 	    OFUTF32StringLength(swappedUnicharString) * 4))
-#undef SWAPPED_BYTE_ORDER
+#undef swappedByteOrder
 
 	TEST(@"-[stringByMD5Hashing]", [C(@"asdfoobar").stringByMD5Hashing
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
