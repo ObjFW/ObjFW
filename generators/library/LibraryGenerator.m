@@ -36,7 +36,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
 	    URLByAppendingPathComponent: directory];
 	OFURL *libraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"library.xml"];
+	    URLByAppendingPathComponent: @"amiga-library.xml"];
 	OFURL *linkLibURL = [sourcesURL
 	    URLByAppendingPathComponent: @"linklib/linklib.m"];
 	OFURL *glueHeaderURL = [sourcesURL
