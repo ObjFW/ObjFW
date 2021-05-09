@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index of the object to replace
  * @return The object to replace the object with
  */
-typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
+typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 #endif
 
 /**
@@ -82,8 +82,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param object An object to add
  * @param index The index where the object should be inserted
  */
-- (void)insertObject: (ObjectType)object
-	     atIndex: (size_t)index;
+- (void)insertObject: (ObjectType)object atIndex: (size_t)index;
 
 /**
  * @brief Inserts the objects from the specified OFArray at the specified index.
@@ -101,8 +100,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param oldObject The object to replace
  * @param newObject The replacement object
  */
-- (void)replaceObject: (ObjectType)oldObject
-	   withObject: (ObjectType)newObject;
+- (void)replaceObject: (ObjectType)oldObject withObject: (ObjectType)newObject;
 
 /**
  * @brief Replaces the object at the specified index with the specified object.
@@ -110,8 +108,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index The index of the object to replace
  * @param object The replacement object
  */
-- (void)replaceObjectAtIndex: (size_t)index
-		  withObject: (ObjectType)object;
+- (void)replaceObjectAtIndex: (size_t)index withObject: (ObjectType)object;
 
 /**
  * @brief Replaces the object at the specified index with the specified object.
@@ -123,8 +120,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index The index of the object to replace
  * @param object The replacement object
  */
--    (void)setObject: (ObjectType)object
-  atIndexedSubscript: (size_t)index;
+- (void)setObject: (ObjectType)object atIndexedSubscript: (size_t)index;
 
 /**
  * @brief Replaces the first object that has the same address as the specified
@@ -163,7 +159,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param range The range of the objects to remove
  */
-- (void)removeObjectsInRange: (of_range_t)range;
+- (void)removeObjectsInRange: (OFRange)range;
 
 /**
  * @brief Removes the last object.
@@ -181,7 +177,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param block The block which returns a new object for each object
  */
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block;
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block;
 #endif
 
 /**
@@ -190,8 +186,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param index1 The index of the first object to exchange
  * @param index2 The index of the second object to exchange
  */
-- (void)exchangeObjectAtIndex: (size_t)index1
-	    withObjectAtIndex: (size_t)index2;
+- (void)exchangeObjectAtIndex: (size_t)index1 withObjectAtIndex: (size_t)index2;
 
 /**
  * @brief Sorts the array in ascending order.
@@ -203,28 +198,19 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param selector The selector to use to sort the array. It's signature
  *		   should be the same as that of -[compare:].
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  */
-- (void)sortUsingSelector: (SEL)selector
-		  options: (int)options;
+- (void)sortUsingSelector: (SEL)selector options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Sorts the array using the specified comparator and options.
  *
  * @param comparator The comparator to use to sort the array
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  */
-- (void)sortUsingComparator: (of_comparator_t)comparator
-		    options: (int)options;
+- (void)sortUsingComparator: (OFComparator)comparator
+		    options: (OFArraySortOptions)options;
 #endif
 
 /**

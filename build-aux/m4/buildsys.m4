@@ -36,6 +36,13 @@ AC_DEFUN([BUILDSYS_INIT], [
 		;;
 	esac
 
+	AC_PROG_INSTALL
+	case "$INSTALL" in
+	./build-aux/install-sh*)
+		INSTALL="$PWD/$INSTALL"
+		;;
+	esac
+
 	AC_CONFIG_COMMANDS_PRE([
 		AS_IF([test x"$GCC" = x"yes"],
 			[AC_SUBST(DEP_CFLAGS, '-MD -MF $${out%.o}.dep')])
@@ -193,16 +200,16 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	*-*-mingw* | *-*-cygwin*)
 		AC_MSG_RESULT(MinGW / Cygwin)
 		LIB_CFLAGS=''
-		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib$$out.a'
+		LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,lib$${out%${LIB_SUFFIX}}.a'
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
-		LIB_SUFFIX='.dll'
+		LIB_SUFFIX='${LIB_MAJOR}.dll'
 		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.dll'
 		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_LIB='&& ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i && ${INSTALL} -m 755 lib$$i.a ${DESTDIR}${libdir}/lib$$i.a'
+		INSTALL_LIB='&& ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i && ${INSTALL} -m 755 lib$${i%${LIB_SUFFIX}}.a ${DESTDIR}${libdir}/lib$${i%${LIB_SUFFIX}}.a'
 		UNINSTALL_LIB='&& rm -f ${DESTDIR}${bindir}/$$i ${DESTDIR}${libdir}/lib$$i.a'
 		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
@@ -277,6 +284,25 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
 		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i && ${LN_S} -f $$i ${DESTDIR}${libdir}/$${i%%.*}.sl'
 		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%%.*}.sl'
+		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
+		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
+		CLEAN_LIB=''
+		;;
+	ia64*-*-hpux*)
+		AC_MSG_RESULT([HP-UX (Itanium)])
+		LIB_CFLAGS='-fPIC -DPIC'
+		LIB_LDFLAGS='-shared -Wl,+h,$$out'
+		LIB_LDFLAGS_INSTALL_NAME=''
+		LIB_PREFIX='lib'
+		LIB_SUFFIX='.${LIB_MAJOR}'
+		LINK_LIB='&& rm -f $${out%%.*}.so && ${LN_S} $$out $${out%%.*}.so'
+		LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		PLUGIN_CFLAGS='-fPIC -DPIC'
+		PLUGIN_LDFLAGS='-shared'
+		PLUGIN_SUFFIX='.so'
+		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i && ${LN_S} -f $$i ${DESTDIR}${libdir}/$${i%%.*}.so'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$${i%%.*}.so'
 		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
 		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		CLEAN_LIB=''

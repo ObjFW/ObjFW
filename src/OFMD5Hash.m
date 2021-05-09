@@ -23,8 +23,8 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
-#define DIGEST_SIZE 16
-#define BLOCK_SIZE 64
+static const size_t digestSize = 16;
+static const size_t blockSize = 64;
 
 OF_DIRECT_MEMBERS
 @interface OFMD5Hash ()
@@ -75,7 +75,7 @@ byteSwapVectorIfBE(uint32_t *vector, uint_fast8_t length)
 {
 #ifdef OF_BIG_ENDIAN
 	for (uint_fast8_t i = 0; i < length; i++)
-		vector[i] = OF_BSWAP32(vector[i]);
+		vector[i] = OFByteSwap32(vector[i]);
 #endif
 }
 
@@ -92,16 +92,17 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 	byteSwapVectorIfBE(buffer, 16);
 
-#define LOOP_BODY(f)							      \
-	{								      \
-		uint32_t tmp = new[3];					      \
-		tmp = new[3];						      \
-		new[0] += f(new[1], new[2], new[3]) +			      \
-		    buffer[wordOrder[i]] + table[i];			      \
-		new[3] = new[2];					      \
-		new[2] = new[1];					      \
-		new[1] += OF_ROL(new[0], rotateBits[(i % 4) + (i / 16) * 4]); \
-		new[0] = tmp;\
+#define LOOP_BODY(f)						\
+	{							\
+		uint32_t tmp = new[3];				\
+		tmp = new[3];					\
+		new[0] += f(new[1], new[2], new[3]) +		\
+		    buffer[wordOrder[i]] + table[i];		\
+		new[3] = new[2];				\
+		new[2] = new[1];				\
+		new[1] += OFRotateLeft(new[0],			\
+		    rotateBits[(i % 4) + (i / 16) * 4]);	\
+		new[0] = tmp;					\
 	}
 
 	for (; i < 16; i++)
@@ -127,15 +128,15 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 + (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
-+ (instancetype)cryptoHashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
++ (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithAllowsSwappableMemory:
 	    allowsSwappableMemory] autorelease];
@@ -180,12 +181,12 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 - (id)copy
@@ -208,8 +209,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_iVars->state[3] = 0x10325476;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 
@@ -248,21 +248,21 @@ processBlock(uint32_t *state, uint32_t *buffer)
 		return (const unsigned char *)_iVars->state;
 
 	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
-	of_explicit_memset(_iVars->buffer.bytes + _iVars->bufferLength + 1, 0,
+	OFZeroMemory(_iVars->buffer.bytes + _iVars->bufferLength + 1,
 	    64 - _iVars->bufferLength - 1);
 
 	if (_iVars->bufferLength >= 56) {
 		processBlock(_iVars->state, _iVars->buffer.words);
-		of_explicit_memset(_iVars->buffer.bytes, 0, 64);
+		OFZeroMemory(_iVars->buffer.bytes, 64);
 	}
 
 	_iVars->buffer.words[14] =
-	    OF_BSWAP32_IF_BE((uint32_t)(_iVars->bits & 0xFFFFFFFF));
+	    OFToLittleEndian32((uint32_t)(_iVars->bits & 0xFFFFFFFF));
 	_iVars->buffer.words[15] =
-	    OF_BSWAP32_IF_BE((uint32_t)(_iVars->bits >> 32));
+	    OFToLittleEndian32((uint32_t)(_iVars->bits >> 32));
 
 	processBlock(_iVars->state, _iVars->buffer.words);
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	byteSwapVectorIfBE(_iVars->state, 4);
 	_calculated = true;
 
@@ -273,7 +273,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 {
 	[self of_resetState];
 	_iVars->bits = 0;
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	_iVars->bufferLength = 0;
 	_calculated = false;
 }

@@ -19,11 +19,16 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-enum {
-	OF_JSON_REPRESENTATION_PRETTY	  = 0x01,
-	OF_JSON_REPRESENTATION_JSON5	  = 0x02,
-	OF_JSON_REPRESENTATION_IDENTIFIER = 0x10
-};
+/**
+ * @brief Options to change the behavior when creating a JSON representation.
+ */
+typedef enum {
+	/** Optimize for readability */
+	OFJSONRepresentationOptionPretty       = 0x01,
+	/** Generate JSON5 */
+	OFJSONRepresentationOptionJSON5	       = 0x02,
+	OFJSONRepresentationOptionIsIdentifier = 0x10
+} OFJSONRepresentationOptions;
 
 /**
  * @protocol OFJSONRepresentation
@@ -45,16 +50,11 @@ enum {
 /**
  * @brief Returns the JSON representation of the object as a string.
  *
- * @param options The options to use when creating a JSON representation.@n
- *		  Possible values are:
- *		  Value                           | Description
- *		  --------------------------------|-------------------------
- *		  `OF_JSON_REPRESENTATION_PRETTY` | Optimize for readability
- *		  `OF_JSON_REPRESENTATION_JSON5`  | Generate JSON5
- *
+ * @param options The options to use when creating a JSON representation
  * @return The JSON representation of the object as a string
  */
-- (OFString *)JSONRepresentationWithOptions: (int)options;
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options;
 @end
 
 OF_ASSUME_NONNULL_END

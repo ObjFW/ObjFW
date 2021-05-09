@@ -31,8 +31,7 @@
 					  errNo: errNo] autorelease];
 }
 
-- (instancetype)initWithCondition: (OFCondition *)condition
-			    errNo: (int)errNo
+- (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo
 {
 	self = [super init];
 

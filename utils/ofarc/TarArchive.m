@@ -34,9 +34,9 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
-	of_file_attributes_t attributes = [OFDictionary
+	OFFileAttributes attributes = [OFDictionary
 	    dictionaryWithObject: mode
-			  forKey: of_file_attribute_key_posix_permissions];
+			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
@@ -47,14 +47,14 @@ static void
 setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 {
 	OFDate *modificationDate = entry.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -68,7 +68,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithStream: stream
 					mode: mode
@@ -77,7 +77,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -85,7 +85,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		_archive = [[OFTarArchive alloc] initWithStream: stream
 							   mode: mode];
 
-		if (encoding != OF_STRING_ENCODING_AUTODETECT)
+		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
 		[self release];
@@ -109,7 +109,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[of_stdout writeLine: entry.fileName];
+		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
 			OFString *date = [entry.modificationDate
@@ -123,8 +123,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			OFString *GID = [OFString stringWithFormat:
 			    @"%u", entry.GID];
 
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_size",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_size",
 			    @"["
 			    @"    'Size: ',"
 			    @"    ["
@@ -133,129 +133,129 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"    ]"
 			    @"]".objectByParsingJSON,
 			    @"size", size)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_mode",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_mode",
 			    @"Mode: %[mode]",
 			    @"mode", mode)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_uid",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_uid",
 			    @"UID: %[uid]",
 			    @"uid", UID)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_gid",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_gid",
 			    @"GID: %[gid]",
 			    @"gid", GID)];
 
 			if (entry.owner != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_owner",
 				    @"Owner: %[owner]",
 				    @"owner", entry.owner)];
 			}
 			if (entry.group != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_group",
 				    @"Group: %[group]",
 				    @"group", entry.group)];
 			}
 
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_modification_date",
 			    @"Modification date: %[date]",
 			    @"date", date)];
 		}
 
 		if (app->_outputLevel >= 2) {
-			[of_stdout writeString: @"\t"];
+			[OFStdOut writeString: @"\t"];
 
 			switch (entry.type) {
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_FILE:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeFile:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_normal",
 				    @"Type: Normal file")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_LINK:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeLink:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_hardlink",
 				    @"Type: Hard link")];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_link_target",
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeSymlink:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_symlink",
 				    @"Type: Symbolic link")];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_link_target",
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE: {
+			case OFTarArchiveEntryTypeCharacterDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMinor];
 
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_character_device",
 				    @"Type: Character device")];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_device_major",
 				    @"Device major: %[major]",
 				    @"major", majorString)];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_device_minor",
 				    @"Device minor: %[minor]",
 				    @"minor", minorString)];
 				break;
 			}
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE: {
+			case OFTarArchiveEntryTypeBlockDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMinor];
 
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_block_device",
 				    @"Type: Block device")];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_device_major",
 				    @"Device major: %[major]",
 				    @"major", majorString)];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_device_minor",
 				    @"Device minor: %[minor]",
 				    @"minor", minorString)];
 				break;
 			}
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeDirectory:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_directory",
 				    @"Type: Directory")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_FIFO:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeFIFO:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_fifo",
 				    @"Type: FIFO")];
 				break;
-			case OF_TAR_ARCHIVE_ENTRY_TYPE_CONTIGUOUS_FILE:
-				[of_stdout writeLine: OF_LOCALIZED(
+			case OFTarArchiveEntryTypeContiguousFile:
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_contiguous_file",
 				    @"Type: Contiguous file")];
 				break;
 			default:
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_unknown",
 				    @"Type: Unknown")];
 				break;
@@ -277,7 +277,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = entry.fileName;
-		of_tar_archive_entry_type_t type = entry.type;
+		OFTarArchiveEntryType type = entry.type;
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
@@ -287,10 +287,10 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (!all && ![files containsObject: fileName])
 			continue;
 
-		if (type != OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
-		    type != OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY) {
+		if (type != OFTarArchiveEntryTypeFile &&
+		    type != OFTarArchiveEntryTypeDirectory) {
 			if (app->_outputLevel >= 0)
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"skipping_file",
 				    @"Skipping %[file]...",
 				    @"file", fileName)];
@@ -301,7 +301,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		outFileName = [app safeLocalPathForPath: fileName];
 		if (outFileName == nil) {
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"refusing_to_extract_file",
 			    @"Refusing to extract %[file]!",
 			    @"file", fileName)];
@@ -311,12 +311,12 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
-		if (type == OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY ||
-		    (type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
+		if (type == OFTarArchiveEntryTypeDirectory ||
+		    (type == OFTarArchiveEntryTypeFile &&
 		    [fileName hasSuffix: @"/"])) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
@@ -324,8 +324,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			setModificationDate(outFileName, entry);
 
 			if (app->_outputLevel >= 0) {
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -339,13 +339,11 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if (![app shouldExtractFile: fileName
-				outFileName: outFileName])
+		if (![app shouldExtractFile: fileName outFileName: outFileName])
 			goto outer_loop_end;
 
 		stream = [_archive streamForReadingCurrentEntry];
-		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+		output = [OFFile fileWithPath: outFileName mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
@@ -369,8 +367,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeString: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -382,8 +380,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -395,7 +393,7 @@ outer_loop_end:
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"file_not_in_archive",
 			    @"File %[file] is not in the archive!",
 			    @"file", file)];
@@ -410,7 +408,7 @@ outer_loop_end:
 	OFTarArchiveEntry *entry;
 
 	if (files_.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"print_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"print_no_file_specified",
 		    @"Need one or more files to print!")];
 		app->_exitStatus = 1;
 		return;
@@ -429,7 +427,7 @@ outer_loop_end:
 
 		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: of_stdout
+							 toStream: OFStdOut
 							 fileName: fileName];
 
 			if (length < 0) {
@@ -446,7 +444,7 @@ outer_loop_end:
 	}
 
 	for (OFString *file in files) {
-		[of_stderr writeLine: OF_LOCALIZED(@"file_not_in_archive",
+		[OFStdErr writeLine: OF_LOCALIZED(@"file_not_in_archive",
 		    @"File %[file] is not in the archive!",
 		    @"file", file)];
 		app->_exitStatus = 1;
@@ -458,7 +456,7 @@ outer_loop_end:
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
 	if (files.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
 		    @"Need one or more files to add!")];
 		app->_exitStatus = 1;
 		return;
@@ -466,13 +464,13 @@ outer_loop_end:
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
-		of_file_attributes_t attributes;
-		of_file_type_t type;
+		OFFileAttributes attributes;
+		OFFileAttributeType type;
 		OFMutableTarArchiveEntry *entry;
 		OFStream *output;
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -487,19 +485,19 @@ outer_loop_end:
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = attributes.filePOSIXUID;
-		entry.GID = attributes.filePOSIXGID;
-		entry.owner = attributes.fileOwner;
-		entry.group = attributes.fileGroup;
+		entry.UID = attributes.fileOwnerAccountID;
+		entry.GID = attributes.fileGroupOwnerAccountID;
+		entry.owner = attributes.fileOwnerAccountName;
+		entry.group = attributes.fileGroupOwnerAccountName;
 #endif
 
-		if ([type isEqual: of_file_type_regular])
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
-		else if ([type isEqual: of_file_type_directory]) {
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY;
+		if ([type isEqual: OFFileTypeRegular])
+			entry.type = OFTarArchiveEntryTypeFile;
+		else if ([type isEqual: OFFileTypeDirectory]) {
+			entry.type = OFTarArchiveEntryTypeDirectory;
 			entry.size = 0;
-		} else if ([type isEqual: of_file_type_symbolic_link]) {
-			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK;
+		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
+			entry.type = OFTarArchiveEntryTypeSymlink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
 			entry.size = 0;
@@ -509,7 +507,7 @@ outer_loop_end:
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if (entry.type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
+		if (entry.type == OFTarArchiveEntryTypeFile) {
 			uint64_t written = 0, size = entry.size;
 			int8_t percent = -1, newPercent;
 
@@ -539,8 +537,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[of_stdout writeString: @"\r"];
-					[of_stdout writeString: OF_LOCALIZED(
+					[OFStdOut writeString: @"\r"];
+					[OFStdOut writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -550,8 +548,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

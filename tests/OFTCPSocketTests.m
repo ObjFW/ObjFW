@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFTCPSocket";
+static OFString *const module = @"OFTCPSocket";
 
 @implementation TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests
@@ -27,32 +27,30 @@ static OFString *module = @"OFTCPSocket";
 	void *pool = objc_autoreleasePoolPush();
 	OFTCPSocket *server, *client = nil, *accepted;
 	uint16_t port;
-	char buf[6];
+	char buffer[6];
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
 
 	TEST(@"-[bindToHost:port:]",
-	    (port = [server bindToHost: @"127.0.0.1"
-				  port: 0]))
+	    (port = [server bindToHost: @"127.0.0.1" port: 0]))
 
 	TEST(@"-[listen]", R([server listen]))
 
 	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1"
-			       port: port]))
+	    R([client connectToHost: @"127.0.0.1" port: port]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 
 	TEST(@"-[remoteAddress]",
-	    [of_socket_address_ip_string(accepted.remoteAddress, NULL)
+	    [OFSocketAddressString(accepted.remoteAddress)
 	    isEqual: @"127.0.0.1"])
 
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 
-	TEST(@"-[readIntoBuffer:length:]", [accepted readIntoBuffer: buf
-							     length: 6] &&
-	    !memcmp(buf, "Hello!", 6))
+	TEST(@"-[readIntoBuffer:length:]",
+	    [accepted readIntoBuffer: buffer length: 6] &&
+	    !memcmp(buffer, "Hello!", 6))
 
 	objc_autoreleasePoolPop(pool);
 }

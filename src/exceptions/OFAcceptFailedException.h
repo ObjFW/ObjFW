@@ -52,8 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno for the error
  * @return A new, autoreleased accept failed exception
  */
-+ (instancetype)exceptionWithSocket: (id)socket
-			      errNo: (int)errNo;
++ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 

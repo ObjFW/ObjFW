@@ -13,9 +13,13 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define __NO_EXT_QNX
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
 #include <stdio.h>
@@ -33,6 +37,8 @@
 #import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFTCPSocketSOCKS5Connector.h"
 #import "OFThread.h"
@@ -44,13 +50,10 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
+static const OFRunLoopMode connectRunLoopMode =
+    @"OFTCPSocketConnectRunLoopMode";
 
-static const of_run_loop_mode_t connectRunLoopMode =
-    @"of_tcp_socket_connect_mode";
-
-Class of_tls_socket_class = Nil;
+Class OFTLSSocketClass = Nil;
 
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
@@ -132,19 +135,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
-- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+- (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET) {
-		*errNo = of_socket_errno();
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -156,16 +159,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return true;
 }
 
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	/* Cast needed for AmigaOS, where the argument is declared non-const */
 	if (connect(_socket, (struct sockaddr *)&address->sockaddr.sockaddr,
 	    address->length) != 0) {
-		*errNo = of_socket_errno();
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -175,11 +178,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)of_closeSocket
 {
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port
+- (void)connectToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = _delegate;
@@ -193,12 +195,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		     runLoopMode: connectRunLoopMode];
 
 	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -208,22 +208,21 @@ static uint16_t defaultSOCKS5Port = 1080;
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default];
+		     runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
@@ -255,23 +254,23 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (of_tcp_socket_async_connect_block_t)block
+		     block: (OFTCPSocketAsyncConnectBlock)block
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
+		     runLoopMode: OFDefaultRunLoopMode
 			   block: block];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_tcp_socket_async_connect_block_t)block
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFTCPSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
@@ -297,18 +296,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
-	of_socket_address_t address;
+	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil)
@@ -317,18 +315,18 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+		      addressFamily: OFSocketAddressFamilyAny];
 
-	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
-	of_socket_address_set_port(&address, port);
+	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
+	OFSocketAddressSetPort(&address, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET)
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -345,10 +343,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 		if (bind(_socket, &address.sockaddr.sockaddr,
 		    address.length) != 0) {
-			int errNo = of_socket_errno();
+			int errNo = OFSocketErrNo();
 
 			closesocket(_socket);
-			_socket = INVALID_SOCKET;
+			_socket = OFInvalidSocketHandle;
 
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
@@ -364,7 +362,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			of_socket_address_set_port(&address, rnd);
+			OFSocketAddressSetPort(&address, rnd);
 
 			if ((ret = bind(_socket, &address.sockaddr.sockaddr,
 			    address.length)) == 0) {
@@ -372,11 +370,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 				break;
 			}
 
-			if (of_socket_errno() != EADDRINUSE) {
-				int errNo = of_socket_errno();
+			if (OFSocketErrNo() != EADDRINUSE) {
+				int errNo = OFSocketErrNo();
 
 				closesocket(_socket);
-				_socket = INVALID_SOCKET;
+				_socket = OFInvalidSocketHandle;
 
 				@throw [OFBindFailedException
 				    exceptionWithHost: host
@@ -397,12 +395,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -411,14 +409,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 	if (address.sockaddr.sockaddr.sa_family == AF_INET)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
+		return OFFromBigEndian16(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
 	else if (address.sockaddr.sockaddr.sa_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
+		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
 # endif
 	else {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
@@ -427,7 +425,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 #else
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
 						 socket: self
@@ -444,7 +442,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 }
 
 - (bool)sendsKeepAlives
@@ -456,7 +454,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	return v;
 }
@@ -471,7 +469,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 }
 
 - (bool)canDelaySendingSegments
@@ -483,7 +481,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	return !v;
 }

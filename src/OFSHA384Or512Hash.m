@@ -24,7 +24,7 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
-#define BLOCK_SIZE 128
+static const size_t blockSize = 128;
 
 @interface OFSHA384Or512Hash ()
 - (void)of_resetState;
@@ -65,7 +65,7 @@ byteSwapVectorIfLE(uint64_t *vector, uint_fast8_t length)
 {
 #ifndef OF_BIG_ENDIAN
 	for (uint_fast8_t i = 0; i < length; i++)
-		vector[i] = OF_BSWAP64(vector[i]);
+		vector[i] = OFByteSwap64(vector[i]);
 #endif
 }
 
@@ -90,20 +90,20 @@ processBlock(uint64_t *state, uint64_t *buffer)
 		uint64_t tmp;
 
 		tmp = buffer[i - 2];
-		buffer[i] = (OF_ROR(tmp, 19) ^ OF_ROR(tmp, 61) ^ (tmp >> 6)) +
-		    buffer[i - 7];
+		buffer[i] = (OFRotateRight(tmp, 19) ^ OFRotateRight(tmp, 61) ^
+		    (tmp >> 6)) + buffer[i - 7];
 		tmp = buffer[i - 15];
-		buffer[i] += (OF_ROR(tmp, 1) ^ OF_ROR(tmp, 8) ^ (tmp >> 7)) +
-		    buffer[i - 16];
+		buffer[i] += (OFRotateRight(tmp, 1) ^ OFRotateRight(tmp, 8) ^
+		    (tmp >> 7)) + buffer[i - 16];
 	}
 
 	for (i = 0; i < 80; i++) {
-		uint64_t tmp1 = new[7] + (OF_ROR(new[4], 14) ^
-		    OF_ROR(new[4], 18) ^ OF_ROR(new[4], 41)) +
+		uint64_t tmp1 = new[7] + (OFRotateRight(new[4], 14) ^
+		    OFRotateRight(new[4], 18) ^ OFRotateRight(new[4], 41)) +
 		    ((new[4] & (new[5] ^ new[6])) ^ new[6]) +
 		    table[i] + buffer[i];
-		uint64_t tmp2 = (OF_ROR(new[0], 28) ^ OF_ROR(new[0], 34) ^
-		    OF_ROR(new[0], 39)) +
+		uint64_t tmp2 = (OFRotateRight(new[0], 28) ^
+		    OFRotateRight(new[0], 34) ^ OFRotateRight(new[0], 39)) +
 		    ((new[0] & (new[1] | new[2])) | (new[1] & new[2]));
 
 		new[7] = new[6];
@@ -137,10 +137,10 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 + (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
-+ (instancetype)cryptoHashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
++ (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithAllowsSwappableMemory:
 	    allowsSwappableMemory] autorelease];
@@ -195,7 +195,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 - (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 - (id)copy
@@ -210,8 +210,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	return copy;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 
@@ -252,19 +251,19 @@ processBlock(uint64_t *state, uint64_t *buffer)
 		return (const unsigned char *)_iVars->state;
 
 	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
-	of_explicit_memset(_iVars->buffer.bytes + _iVars->bufferLength + 1, 0,
+	OFZeroMemory(_iVars->buffer.bytes + _iVars->bufferLength + 1,
 	    128 - _iVars->bufferLength - 1);
 
 	if (_iVars->bufferLength >= 112) {
 		processBlock(_iVars->state, _iVars->buffer.words);
-		of_explicit_memset(_iVars->buffer.bytes, 0, 128);
+		OFZeroMemory(_iVars->buffer.bytes, 128);
 	}
 
-	_iVars->buffer.words[14] = OF_BSWAP64_IF_LE(_iVars->bits[1]);
-	_iVars->buffer.words[15] = OF_BSWAP64_IF_LE(_iVars->bits[0]);
+	_iVars->buffer.words[14] = OFToBigEndian64(_iVars->bits[1]);
+	_iVars->buffer.words[15] = OFToBigEndian64(_iVars->bits[0]);
 
 	processBlock(_iVars->state, _iVars->buffer.words);
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	byteSwapVectorIfLE(_iVars->state, 8);
 	_calculated = true;
 
@@ -274,8 +273,8 @@ processBlock(uint64_t *state, uint64_t *buffer)
 - (void)reset
 {
 	[self of_resetState];
-	of_explicit_memset(_iVars->bits, 0, sizeof(_iVars->bits));
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(_iVars->bits, sizeof(_iVars->bits));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	_iVars->bufferLength = 0;
 	_calculated = false;
 }

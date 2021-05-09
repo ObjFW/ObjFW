@@ -301,7 +301,7 @@ error(const char *string, ULONG arg)
 }
 
 static int *
-get_errno(void)
+errNo(void)
 {
 	return &errno;
 }
@@ -310,7 +310,7 @@ static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
-	struct of_libc libc = {
+	struct OFLibC libC = {
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
@@ -346,7 +346,7 @@ ctor(void)
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
 #endif
-		.get_errno = get_errno,
+		.errNo = errNo,
 		.vsnprintf = vsnprintf,
 #ifdef OF_AMIGAOS_M68K
 		.vsscanf = vsscanf,
@@ -365,7 +365,7 @@ ctor(void)
 		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
 		    OBJFW_LIB_MINOR);
 
-	if (!of_init(1, &libc, __sF))
+	if (!OFInit(1, &libC, __sF))
 		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;

@@ -31,15 +31,15 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_WINDOWS)
-typedef __int64 of_offset_t;
+typedef __int64 OFFileOffset;
 #elif defined(OF_ANDROID)
-typedef long long of_offset_t;
+typedef long long OFFileOffset;
 #elif defined(OF_MORPHOS)
-typedef signed long long of_offset_t;
+typedef signed long long OFFileOffset;
 #elif defined(OF_HAVE_OFF64_T)
-typedef off64_t of_offset_t;
+typedef off64_t OFFileOffset;
 #else
-typedef off_t of_offset_t;
+typedef off_t OFFileOffset;
 #endif
 
 /**
@@ -71,8 +71,7 @@ typedef off_t of_offset_t;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset form the start of the file
  */
-- (of_offset_t)seekToOffset: (of_offset_t)offset
-		     whence: (int)whence;
+- (OFFileOffset)seekToOffset: (OFFileOffset)offset whence: (int)whence;
 
 /**
  * @brief Seek the stream on the lowlevel.
@@ -92,8 +91,7 @@ typedef off_t of_offset_t;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset from the start of the file
  */
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence;
+- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence;
 @end
 
 OF_ASSUME_NONNULL_END

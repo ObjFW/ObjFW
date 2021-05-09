@@ -15,75 +15,22 @@
 
 #import "OFValue.h"
 #import "OFBytesValue.h"
-#import "OFDimensionValue.h"
 #import "OFMethodSignature.h"
 #import "OFNonretainedObjectValue.h"
 #import "OFPointValue.h"
 #import "OFPointerValue.h"
 #import "OFRangeValue.h"
-#import "OFRectangleValue.h"
+#import "OFRectValue.h"
+#import "OFSizeValue.h"
 #import "OFString.h"
 
 #import "OFOutOfMemoryException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
-@interface OFValuePlaceholder: OFValue
-@end
-
-@implementation OFValuePlaceholder
-- (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType
-{
-	return (id)[[OFBytesValue alloc] initWithBytes: bytes
-					      objCType: objCType];
-}
-
-- (instancetype)initWithPointer: (const void *)pointer
-{
-	return (id)[[OFPointerValue alloc] initWithPointer: pointer];
-}
-
-- (instancetype)initWithNonretainedObject: (id)object
-{
-	return (id)[[OFNonretainedObjectValue alloc]
-	    initWithNonretainedObject: object];
-}
-
-- (instancetype)initWithRange: (of_range_t)range
-{
-	return (id)[[OFRangeValue alloc] initWithRange: range];
-}
-
-- (instancetype)initWithPoint: (of_point_t)point
-{
-	return (id)[[OFPointValue alloc] initWithPoint: point];
-}
-
-- (instancetype)initWithDimension: (of_dimension_t)dimension
-{
-	return (id)[[OFDimensionValue alloc] initWithDimension: dimension];
-}
-
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
-{
-	return (id)[[OFRectangleValue alloc] initWithRectangle: rectangle];
-}
-@end
-
 @implementation OFValue
-+ (void)initialize
-{
-	if (self == [OFValue class])
-		placeholder.isa = [OFValuePlaceholder class];
-}
-
 + (instancetype)alloc
 {
 	if (self == [OFValue class])
-		return (id)&placeholder;
+		return [OFBytesValue alloc];
 
 	return [super alloc];
 }
@@ -91,72 +38,43 @@ static struct {
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType
 {
-	return [[[self alloc] initWithBytes: bytes
-				   objCType: objCType] autorelease];
+	return [[[OFBytesValue alloc] initWithBytes: bytes
+					   objCType: objCType] autorelease];
 }
 
 + (instancetype)valueWithPointer: (const void *)pointer
 {
-	return [[[self alloc] initWithPointer: pointer] autorelease];
+	return [[[OFPointerValue alloc] initWithPointer: pointer] autorelease];
 }
 
 + (instancetype)valueWithNonretainedObject: (id)object
 {
-	return [[[self alloc] initWithNonretainedObject: object] autorelease];
+	return [[[OFNonretainedObjectValue alloc]
+	    initWithNonretainedObject: object] autorelease];
 }
 
-+ (instancetype)valueWithRange: (of_range_t)range
++ (instancetype)valueWithRange: (OFRange)range
 {
-	return [[[self alloc] initWithRange: range] autorelease];
+	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
 }
 
-+ (instancetype)valueWithPoint: (of_point_t)point
++ (instancetype)valueWithPoint: (OFPoint)point
 {
-	return [[[self alloc] initWithPoint: point] autorelease];
+	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
 }
 
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension
++ (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[self alloc] initWithDimension: dimension] autorelease];
+	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
 }
 
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
++ (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[self alloc] initWithRectangle: rectangle] autorelease];
+	return [[[OFRectValue alloc] initWithRect: rect] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPointer: (const void *)pointer
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithNonretainedObject: (id)object
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithRange: (of_range_t)range
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPoint: (of_point_t)point
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithDimension: (of_dimension_t)dimension
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -179,26 +97,23 @@ static struct {
 	if (strcmp([object objCType], objCType) != 0)
 		return false;
 
-	size = of_sizeof_type_encoding(objCType);
+	size = OFSizeOfTypeEncoding(objCType);
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
-		otherValue = of_alloc(1, size);
+		otherValue = OFAllocMemory(1, size);
 	} @catch (id e) {
-		free(value);
+		OFFreeMemory(value);
 		@throw e;
 	}
 
 	@try {
-		[self getValue: value
-			  size: size];
-		[object getValue: otherValue
-			    size: size];
-
+		[self getValue: value size: size];
+		[object getValue: otherValue size: size];
 		ret = (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		free(value);
-		free(otherValue);
+		OFFreeMemory(value);
+		OFFreeMemory(otherValue);
 	}
 
 	return ret;
@@ -206,23 +121,22 @@ static struct {
 
 - (unsigned long)hash
 {
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
-	uint32_t hash;
+	unsigned long hash;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
-		[self getValue: value
-			  size: size];
+		[self getValue: value size: size];
 
-		OF_HASH_INIT(hash);
+		OFHashInit(&hash);
 
 		for (size_t i = 0; i < size; i++)
-			OF_HASH_ADD(hash, value[i]);
+			OFHashAdd(&hash, value[i]);
 
-		OF_HASH_FINALIZE(hash);
+		OFHashFinalize(&hash);
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	return hash;
@@ -238,8 +152,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -247,60 +160,42 @@ static struct {
 - (void *)pointerValue
 {
 	void *ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
 - (id)nonretainedObjectValue
 {
 	id ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_range_t)rangeValue
+- (OFRange)rangeValue
 {
-	of_range_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	OFRange ret;
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_point_t)pointValue
+- (OFPoint)pointValue
 {
-	of_point_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	OFPoint ret;
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_dimension_t)dimensionValue
+- (OFSize)sizeValue
 {
-	of_dimension_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	OFSize ret;
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
-- (of_rectangle_t)rectangleValue
+- (OFRect)rectValue
 {
-	of_rectangle_t ret;
-
-	[self getValue: &ret
-		  size: sizeof(ret)];
-
+	OFRect ret;
+	[self getValue: &ret size: sizeof(ret)];
 	return ret;
 }
 
@@ -308,13 +203,12 @@ static struct {
 {
 	OFMutableString *ret =
 	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = of_sizeof_type_encoding(self.objCType);
+	size_t size = OFSizeOfTypeEncoding(self.objCType);
 	unsigned char *value;
 
-	value = of_alloc(1, size);
+	value = OFAllocMemory(1, size);
 	@try {
-		[self getValue: value
-			  size: size];
+		[self getValue: value size: size];
 
 		for (size_t i = 0; i < size; i++) {
 			if (i > 0)
@@ -323,7 +217,7 @@ static struct {
 			[ret appendFormat: @"%02x", value[i]];
 		}
 	} @finally {
-		free(value);
+		OFFreeMemory(value);
 	}
 
 	[ret appendString: @">"];

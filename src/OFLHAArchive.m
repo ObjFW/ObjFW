@@ -18,6 +18,7 @@
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
+#import "OFCRC16.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -26,8 +27,6 @@
 #import "OFSeekableStream.h"
 #import "OFString.h"
 
-#import "crc16.h"
-
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
@@ -35,6 +34,12 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
+
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
 
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
@@ -55,34 +60,30 @@ OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFMutableLHAArchiveEntry *_entry;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
-	of_offset_t _headerOffset;
+	OFFileOffset _headerOffset;
 	uint32_t _bytesWritten;
 	uint16_t _CRC16;
 }
 
 - (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (of_string_encoding_t)encoding;
+			 encoding: (OFStringEncoding)encoding;
 @end
 
 @implementation OFLHAArchive
 @synthesize encoding = _encoding;
 
-+ (instancetype)archiveWithStream: (OFStream *)stream
-			     mode: (OFString *)mode
++ (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode] autorelease];
+	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path
-			   mode: (OFString *)mode
++ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 #endif
 
@@ -91,8 +92,7 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			  mode: (OFString *)mode
+- (instancetype)initWithStream: (OFStream *)stream mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -100,24 +100,23 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OF_LHA_ARCHIVE_MODE_READ;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_LHA_ARCHIVE_MODE_WRITE;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_LHA_ARCHIVE_MODE_APPEND;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_mode == OF_LHA_ARCHIVE_MODE_WRITE ||
-		    _mode == OF_LHA_ARCHIVE_MODE_APPEND) &&
+		if ((_mode == modeWrite || _mode == modeAppend) &&
 		    ![_stream isKindOfClass: [OFSeekableStream class]])
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OF_LHA_ARCHIVE_MODE_APPEND)
+		if (_mode == modeAppend)
 			[(OFSeekableStream *)_stream seekToOffset: 0
 							   whence: SEEK_END];
 
-		_encoding = OF_STRING_ENCODING_ISO_8859_1;
+		_encoding = OFStringEncodingISO8859_1;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -127,21 +126,17 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
 	OFFile *file;
 
 	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"r+"];
+		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
 	else
-		file = [[OFFile alloc] initWithPath: path
-					       mode: mode];
+		file = [[OFFile alloc] initWithPath: path mode: mode];
 
 	@try {
-		self = [self initWithStream: file
-				       mode: mode];
+		self = [self initWithStream: file mode: mode];
 	} @finally {
 		[file release];
 	}
@@ -164,7 +159,7 @@ OF_DIRECT_MEMBERS
 	char header[21];
 	size_t headerLen;
 
-	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -205,7 +200,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_lastReturnedStream == nil)
@@ -219,8 +214,7 @@ OF_DIRECT_MEMBERS
 {
 	OFString *compressionMethod;
 
-	if (_mode != OF_LHA_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_LHA_ARCHIVE_MODE_APPEND)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	compressionMethod = entry.compressionMethod;
@@ -325,8 +319,7 @@ OF_DIRECT_MEMBERS
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	size_t ret;
 
@@ -342,11 +335,10 @@ OF_DIRECT_MEMBERS
 	if (length > _toRead)
 		length = _toRead;
 
-	ret = [_decompressedStream readIntoBuffer: buffer
-					   length: length];
+	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC16 = of_crc16(_CRC16, buffer, ret);
+	_CRC16 = OFCRC16(_CRC16, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -406,8 +398,8 @@ OF_DIRECT_MEMBERS
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(of_offset_t) > 4 || toRead < INT32_MAX))
-		[(OFSeekableStream *)stream seekToOffset: (of_offset_t)toRead
+	    (sizeof(OFFileOffset) > 4 || toRead < INT32_MAX))
+		[(OFSeekableStream *)stream seekToOffset: (OFFileOffset)toRead
 						  whence: SEEK_CUR];
 	else {
 		while (toRead > 0) {
@@ -417,8 +409,7 @@ OF_DIRECT_MEMBERS
 			if (min > 512)
 				min = 512;
 
-			toRead -= [stream readIntoBuffer: buffer
-						  length: min];
+			toRead -= [stream readIntoBuffer: buffer length: min];
 		}
 	}
 
@@ -446,7 +437,7 @@ OF_DIRECT_MEMBERS
 @implementation OFLHAArchiveFileWriteStream
 - (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -454,10 +445,8 @@ OF_DIRECT_MEMBERS
 		_entry = [entry mutableCopy];
 		_encoding = encoding;
 
-		_headerOffset = [stream seekToOffset: 0
-					       whence: SEEK_CUR];
-		[_entry of_writeToStream: stream
-				encoding: _encoding];
+		_headerOffset = [stream seekToOffset: 0 whence: SEEK_CUR];
+		[_entry of_writeToStream: stream encoding: _encoding];
 
 		/*
 		 * Retain stream last, so that -[close] called by -[dealloc]
@@ -482,8 +471,7 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	uint32_t bytesWritten;
 
@@ -498,13 +486,13 @@ OF_DIRECT_MEMBERS
 						       length: length];
 	} @catch (OFWriteFailedException *e) {
 		_bytesWritten += e.bytesWritten;
-		_CRC16 = of_crc16(_CRC16, buffer, e.bytesWritten);
+		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		@throw e;
 	}
 
 	_bytesWritten += (uint32_t)bytesWritten;
-	_CRC16 = of_crc16(_CRC16, buffer, bytesWritten);
+	_CRC16 = OFCRC16(_CRC16, buffer, bytesWritten);
 
 	return bytesWritten;
 }
@@ -525,7 +513,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	of_offset_t offset;
+	OFFileOffset offset;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -534,14 +522,10 @@ OF_DIRECT_MEMBERS
 	_entry.compressedSize = _bytesWritten;
 	_entry.CRC16 = _CRC16;
 
-	offset = [_stream seekToOffset: 0
-				whence:SEEK_CUR];
-	[_stream seekToOffset: _headerOffset
-		       whence: SEEK_SET];
-	[_entry of_writeToStream: _stream
-			encoding: _encoding];
-	[_stream seekToOffset: offset
-		       whence: SEEK_SET];
+	offset = [_stream seekToOffset: 0 whence: SEEK_CUR];
+	[_stream seekToOffset: _headerOffset whence: SEEK_SET];
+	[_entry of_writeToStream: _stream encoding: _encoding];
+	[_stream seekToOffset: offset whence: SEEK_SET];
 
 	[_stream release];
 	_stream = nil;

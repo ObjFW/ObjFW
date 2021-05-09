@@ -31,402 +31,465 @@ __asm__ (
 #endif
 
 bool __saveds
-glue_of_init PPC_PARAMS(unsigned int version, struct of_libc *_Nonnull libc, FILE *_Nonnull *_Nonnull sF)
+glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, FILE *_Nonnull *_Nonnull sF)
 {
 	M68K_ARG(unsigned int, version, d0)
-	M68K_ARG(struct of_libc *_Nonnull, libc, a0)
+	M68K_ARG(struct OFLibC *_Nonnull, libc, a0)
 	M68K_ARG(FILE *_Nonnull *_Nonnull, sF, a1)
 
-	return of_init(version, libc, sF);
+	return OFInit(version, libc, sF);
 }
 
 void *_Nullable __saveds
-glue_of_alloc PPC_PARAMS(size_t count, size_t size)
+glue_OFAllocMemory PPC_PARAMS(size_t count, size_t size)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
 
-	return of_alloc(count, size);
+	return OFAllocMemory(count, size);
 }
 
 void *_Nullable __saveds
-glue_of_alloc_zeroed PPC_PARAMS(size_t count, size_t size)
+glue_OFAllocZeroedMemory PPC_PARAMS(size_t count, size_t size)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
 
-	return of_alloc_zeroed(count, size);
+	return OFAllocZeroedMemory(count, size);
 }
 
 void *_Nullable __saveds
-glue_of_realloc PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size)
+glue_OFResizeMemory PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size)
 {
 	M68K_ARG(void *_Nullable, pointer, a0)
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
 
-	return of_realloc(pointer, count, size);
-}
-
-uint32_t *_Nonnull __saveds
-glue_of_hash_seed_ref(void)
-{
-	return of_hash_seed_ref();
-}
-
-OFStdIOStream *_Nonnull *_Nullable __saveds
-glue_of_stdin_ref(void)
-{
-	return of_stdin_ref();
-}
-
-OFStdIOStream *_Nonnull *_Nullable __saveds
-glue_of_stdout_ref(void)
-{
-	return of_stdout_ref();
-}
-
-OFStdIOStream *_Nonnull *_Nullable __saveds
-glue_of_stderr_ref(void)
-{
-	return of_stderr_ref();
+	return OFResizeMemory(pointer, count, size);
 }
 
 void __saveds
-glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments)
+glue_OFFreeMemory PPC_PARAMS(void *_Nullable pointer)
+{
+	M68K_ARG(void *_Nullable, pointer, a0)
+
+	OFFreeMemory(pointer);
+}
+
+void __saveds
+glue_OFHashInit PPC_PARAMS(unsigned long *_Nonnull hash)
+{
+	M68K_ARG(unsigned long *_Nonnull, hash, a0)
+
+	OFHashInit(hash);
+}
+
+uint16_t __saveds
+glue_OFRandom16(void)
+{
+	return OFRandom16();
+}
+
+uint32_t __saveds
+glue_OFRandom32(void)
+{
+	return OFRandom32();
+}
+
+uint64_t __saveds
+glue_OFRandom64(void)
+{
+	return OFRandom64();
+}
+
+unsigned long *_Nonnull __saveds
+glue_OFHashSeedRef(void)
+{
+	return OFHashSeedRef();
+}
+
+OFStdIOStream *_Nonnull *_Nullable __saveds
+glue_OFStdInRef(void)
+{
+	return OFStdInRef();
+}
+
+OFStdIOStream *_Nonnull *_Nullable __saveds
+glue_OFStdOutRef(void)
+{
+	return OFStdOutRef();
+}
+
+OFStdIOStream *_Nonnull *_Nullable __saveds
+glue_OFStdErrRef(void)
+{
+	return OFStdErrRef();
+}
+
+void __saveds
+glue_OFLogV PPC_PARAMS(OFConstantString *format, va_list arguments)
 {
 	M68K_ARG(OFConstantString *, format, a0)
 	M68K_ARG(va_list, arguments, a1)
 
-	of_logv(format, arguments);
+	OFLogV(format, arguments);
 }
 
 int __saveds
-glue_of_application_main PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
+glue_OFApplicationMain PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
 {
 	M68K_ARG(int *_Nonnull, argc, a0)
 	M68K_ARG(char *_Nullable *_Nonnull *_Nonnull, argv, a1)
 	M68K_ARG(id <OFApplicationDelegate>, delegate, a2)
 
-	return of_application_main(argc, argv, delegate);
+	return OFApplicationMain(argc, argv, delegate);
+}
+
+void *_Nullable __saveds
+glue__Block_copy PPC_PARAMS(const void *_Nullable block)
+{
+	M68K_ARG(const void *_Nullable, block, a0)
+
+	return _Block_copy(block);
+}
+
+void __saveds
+glue__Block_release PPC_PARAMS(const void *_Nullable block)
+{
+	M68K_ARG(const void *_Nullable, block, a0)
+
+	_Block_release(block);
+}
+
+OFString *_Nonnull __saveds
+glue_OFDNSClassName PPC_PARAMS(OFDNSClass DNSClass)
+{
+	M68K_ARG(OFDNSClass, DNSClass, d0)
+
+	return OFDNSClassName(DNSClass);
+}
+
+OFString *_Nonnull __saveds
+glue_OFDNSRecordTypeName PPC_PARAMS(OFDNSRecordType recordType)
+{
+	M68K_ARG(OFDNSRecordType, recordType, d0)
+
+	return OFDNSRecordTypeName(recordType);
+}
+
+OFDNSClass __saveds
+glue_OFDNSClassParseName PPC_PARAMS(OFString *_Nonnull string)
+{
+	M68K_ARG(OFString *_Nonnull, string, a0)
+
+	return OFDNSClassParseName(string);
+}
+
+OFDNSRecordType __saveds
+glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string)
+{
+	M68K_ARG(OFString *_Nonnull, string, a0)
+
+	return OFDNSRecordTypeParseName(string);
 }
 
 const char *_Nullable __saveds
-glue_of_http_request_method_to_string PPC_PARAMS(of_http_request_method_t method)
+glue_OFHTTPRequestMethodName PPC_PARAMS(OFHTTPRequestMethod method)
 {
-	M68K_ARG(of_http_request_method_t, method, d0)
+	M68K_ARG(OFHTTPRequestMethod, method, d0)
 
-	return of_http_request_method_to_string(method);
+	return OFHTTPRequestMethodName(method);
 }
 
-of_http_request_method_t __saveds
-glue_of_http_request_method_from_string PPC_PARAMS(OFString *string)
+OFHTTPRequestMethod __saveds
+glue_OFHTTPRequestMethodParseName PPC_PARAMS(OFString *string)
 {
 	M68K_ARG(OFString *, string, a0)
 
-	return of_http_request_method_from_string(string);
+	return OFHTTPRequestMethodParseName(string);
 }
 
 OFString *_Nonnull __saveds
-glue_of_http_status_code_to_string PPC_PARAMS(short code)
+glue_OFHTTPStatusCodeString PPC_PARAMS(short code)
 {
 	M68K_ARG(short, code, d0)
 
-	return of_http_status_code_to_string(code);
+	return OFHTTPStatusCodeString(code);
+}
+
+OFListItem _Nullable __saveds
+glue_OFListItemNext PPC_PARAMS(OFListItem _Nonnull listItem)
+{
+	M68K_ARG(OFListItem _Nonnull, listItem, a0)
+
+	return OFListItemNext(listItem);
+}
+
+OFListItem _Nullable __saveds
+glue_OFListItemPrevious PPC_PARAMS(OFListItem _Nonnull listItem)
+{
+	M68K_ARG(OFListItem _Nonnull, listItem, a0)
+
+	return OFListItemPrevious(listItem);
+}
+
+id _Nonnull __saveds
+glue_OFListItemObject PPC_PARAMS(OFListItem _Nonnull listItem)
+{
+	M68K_ARG(OFListItem _Nonnull, listItem, a0)
+
+	return OFListItemObject(listItem);
 }
 
 size_t __saveds
-glue_of_sizeof_type_encoding PPC_PARAMS(const char *type)
+glue_OFSizeOfTypeEncoding PPC_PARAMS(const char *type)
 {
 	M68K_ARG(const char *, type, a0)
 
-	return of_sizeof_type_encoding(type);
+	return OFSizeOfTypeEncoding(type);
 }
 
 size_t __saveds
-glue_of_alignof_type_encoding PPC_PARAMS(const char *type)
+glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type)
 {
 	M68K_ARG(const char *, type, a0)
 
-	return of_alignof_type_encoding(type);
-}
-
-of_string_encoding_t __saveds
-glue_of_string_parse_encoding PPC_PARAMS(OFString *string)
-{
-	M68K_ARG(OFString *, string, a0)
-
-	return of_string_parse_encoding(string);
-}
-
-OFString *_Nullable __saveds
-glue_of_string_name_of_encoding PPC_PARAMS(of_string_encoding_t encoding)
-{
-	M68K_ARG(of_string_encoding_t, encoding, d0)
-
-	return of_string_name_of_encoding(encoding);
-}
-
-size_t __saveds
-glue_of_string_utf8_encode PPC_PARAMS(of_unichar_t c, char *UTF8)
-{
-	M68K_ARG(of_unichar_t, c, d0)
-	M68K_ARG(char *, UTF8, a0)
-
-	return of_string_utf8_encode(c, UTF8);
-}
-
-ssize_t __saveds
-glue_of_string_utf8_decode PPC_PARAMS(const char *UTF8, size_t len, of_unichar_t *c)
-{
-	M68K_ARG(const char *, UTF8, a0)
-	M68K_ARG(size_t, len, d0)
-	M68K_ARG(of_unichar_t *, c, a1)
-
-	return of_string_utf8_decode(UTF8, len, c);
-}
-
-size_t __saveds
-glue_of_string_utf16_length PPC_PARAMS(const of_char16_t *string)
-{
-	M68K_ARG(const of_char16_t *, string, a0)
-
-	return of_string_utf16_length(string);
-}
-
-size_t __saveds
-glue_of_string_utf32_length PPC_PARAMS(const of_char32_t *string)
-{
-	M68K_ARG(const of_char32_t *, string, a0)
-
-	return of_string_utf32_length(string);
-}
-
-OFString *_Nonnull __saveds
-glue_of_zip_archive_entry_version_to_string PPC_PARAMS(uint16_t version)
-{
-	M68K_ARG(uint16_t, version, d0)
-
-	return of_zip_archive_entry_version_to_string(version);
-}
-
-OFString *_Nonnull __saveds
-glue_of_zip_archive_entry_compression_method_to_string PPC_PARAMS(uint16_t compressionMethod)
-{
-	M68K_ARG(uint16_t, compressionMethod, d0)
-
-	return of_zip_archive_entry_compression_method_to_string(compressionMethod);
-}
-
-size_t __saveds
-glue_of_zip_archive_entry_extra_field_find PPC_PARAMS(OFData *extraField, uint16_t tag, uint16_t *size)
-{
-	M68K_ARG(OFData *, extraField, a0)
-	M68K_ARG(uint16_t, tag, d0)
-	M68K_ARG(uint16_t *, size, a1)
-
-	return of_zip_archive_entry_extra_field_find(extraField, tag, size);
+	return OFAlignmentOfTypeEncoding(type);
 }
 
 void __saveds
-glue_of_pbkdf2 PPC_PARAMS(of_pbkdf2_parameters_t param)
+glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
 {
-	M68K_ARG(of_pbkdf2_parameters_t, param, a0)
+	M68K_ARG(OFOnceControl *_Nonnull, control, (nil))
+	M68K_ARG(OFOnceFunction _Nonnull, func, (nil))
 
-	of_pbkdf2(param);
+	OFOnce(control, func);
 }
 
 void __saveds
-glue_of_salsa20_8_core PPC_PARAMS(uint32_t *_Nonnull buffer)
+glue_OFPBKDF2 PPC_PARAMS(OFPBKDF2Parameters parameters)
+{
+	M68K_ARG(OFPBKDF2Parameters, parameters, a0)
+
+	OFPBKDF2(parameters);
+}
+
+void __saveds
+glue_OFScrypt PPC_PARAMS(OFScryptParameters parameters)
+{
+	M68K_ARG(OFScryptParameters, parameters, a0)
+
+	OFScrypt(parameters);
+}
+
+void __saveds
+glue_OFSalsa20_8Core PPC_PARAMS(uint32_t *_Nonnull buffer)
 {
 	M68K_ARG(uint32_t *_Nonnull, buffer, a0)
 
-	of_salsa20_8_core(buffer);
+	OFSalsa20_8Core(buffer);
 }
 
 void __saveds
-glue_of_scrypt_block_mix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize)
+glue_OFScryptBlockMix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize)
 {
 	M68K_ARG(uint32_t *_Nonnull, output, a0)
 	M68K_ARG(const uint32_t *_Nonnull, input, a1)
 	M68K_ARG(size_t, blockSize, d0)
 
-	of_scrypt_block_mix(output, input, blockSize);
+	OFScryptBlockMix(output, input, blockSize);
 }
 
 void __saveds
-glue_of_scrypt_romix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp)
+glue_OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp)
 {
 	M68K_ARG(uint32_t *, buffer, a0)
 	M68K_ARG(size_t, blockSize, d0)
 	M68K_ARG(size_t, costFactor, d1)
 	M68K_ARG(uint32_t *, tmp, a1)
 
-	of_scrypt_romix(buffer, blockSize, costFactor, tmp);
+	OFScryptROMix(buffer, blockSize, costFactor, tmp);
 }
 
-void __saveds
-glue_of_scrypt PPC_PARAMS(of_scrypt_parameters_t param)
-{
-	M68K_ARG(of_scrypt_parameters_t, param, a0)
-
-	of_scrypt(param);
-}
-
-const char *_Nullable __saveds
-glue_of_strptime PPC_PARAMS(const char *buf, const char *fmt, struct tm *tm, int16_t *_Nullable tz)
-{
-	M68K_ARG(const char *, buf, a0)
-	M68K_ARG(const char *, fmt, a1)
-	M68K_ARG(struct tm *, tm, a2)
-	M68K_ARG(int16_t *_Nullable, tz, a3)
-
-	return of_strptime(buf, fmt, tm, tz);
-}
-
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ip PPC_PARAMS(OFString *IP, uint16_t port)
+OFSocketAddress __saveds
+glue_OFSocketAddressParseIP PPC_PARAMS(OFString *IP, uint16_t port)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ip(IP, port);
+	return OFSocketAddressParseIP(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ipv4 PPC_PARAMS(OFString *IP, uint16_t port)
+OFSocketAddress __saveds
+glue_OFSocketAddressParseIPv4 PPC_PARAMS(OFString *IP, uint16_t port)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ipv4(IP, port);
+	return OFSocketAddressParseIPv4(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_parse_ipv6 PPC_PARAMS(OFString *IP, uint16_t port)
+OFSocketAddress __saveds
+glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
 
-	return of_socket_address_parse_ipv6(IP, port);
+	return OFSocketAddressParseIPv6(IP, port);
 }
 
-of_socket_address_t __saveds
-glue_of_socket_address_ipx PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port)
+OFSocketAddress __saveds
+glue_OFSocketAddressMakeIPX PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port)
 {
 	M68K_ARG(const unsigned char *_Nonnull, node, a0)
 	M68K_ARG(uint32_t, network, d0)
 	M68K_ARG(uint16_t, port, d1)
 
-	return of_socket_address_ipx(node, network, port);
+	return OFSocketAddressMakeIPX(node, network, port);
 }
 
 bool __saveds
-glue_of_socket_address_equal PPC_PARAMS(const of_socket_address_t *_Nonnull address1, const of_socket_address_t *_Nonnull address2)
+glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *_Nonnull address1, const OFSocketAddress *_Nonnull address2)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address1, a0)
-	M68K_ARG(const of_socket_address_t *_Nonnull, address2, a1)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address1, a0)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address2, a1)
 
-	return of_socket_address_equal(address1, address2);
+	return OFSocketAddressEqual(address1, address2);
 }
 
 unsigned long __saveds
-glue_of_socket_address_hash PPC_PARAMS(const of_socket_address_t *_Nonnull address)
+glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *_Nonnull address)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
 
-	return of_socket_address_hash(address);
+	return OFSocketAddressHash(address);
 }
 
 OFString *_Nonnull __saveds
-glue_of_socket_address_ip_string PPC_PARAMS(const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port)
+glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *_Nonnull address)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address, a0)
-	M68K_ARG(uint16_t *_Nullable, port, a1)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
 
-	return of_socket_address_ip_string(address, port);
+	return OFSocketAddressString(address);
 }
 
 void __saveds
-glue_of_socket_address_set_port PPC_PARAMS(of_socket_address_t *_Nonnull address, uint16_t port)
+glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *_Nonnull address, uint16_t port)
 {
-	M68K_ARG(of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
 	M68K_ARG(uint16_t, port, d0)
 
-	of_socket_address_set_port(address, port);
+	OFSocketAddressSetPort(address, port);
 }
 
 uint16_t __saveds
-glue_of_socket_address_get_port PPC_PARAMS(const of_socket_address_t *_Nonnull address)
+glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *_Nonnull address)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
 
-	return of_socket_address_get_port(address);
+	return OFSocketAddressPort(address);
 }
 
 void __saveds
-glue_of_socket_address_set_ipx_network PPC_PARAMS(of_socket_address_t *_Nonnull address, uint32_t network)
+glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *_Nonnull address, uint32_t network)
 {
-	M68K_ARG(of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
 	M68K_ARG(uint32_t, network, d0)
 
-	of_socket_address_set_ipx_network(address, network);
+	OFSocketAddressSetIPXNetwork(address, network);
 }
 
 uint32_t __saveds
-glue_of_socket_address_get_ipx_network PPC_PARAMS(const of_socket_address_t *_Nonnull address)
+glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *_Nonnull address)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
 
-	return of_socket_address_get_ipx_network(address);
+	return OFSocketAddressIPXNetwork(address);
 }
 
 void __saveds
-glue_of_socket_address_set_ipx_node PPC_PARAMS(of_socket_address_t *_Nonnull address, const unsigned char *_Nonnull node)
+glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *_Nonnull address, const unsigned char *_Nonnull node)
 {
-	M68K_ARG(of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
 	M68K_ARG(const unsigned char *_Nonnull, node, a1)
 
-	of_socket_address_set_ipx_node(address, node);
+	OFSocketAddressSetIPXNode(address, node);
 }
 
 void __saveds
-glue_of_socket_address_get_ipx_node PPC_PARAMS(const of_socket_address_t *_Nonnull address, unsigned char *_Nonnull node)
+glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *_Nonnull address, unsigned char *_Nonnull node)
 {
-	M68K_ARG(const of_socket_address_t *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
 	M68K_ARG(unsigned char *_Nonnull, node, a1)
 
-	of_socket_address_get_ipx_node(address, node);
+	OFSocketAddressIPXNode(address, node);
+}
+
+const char *_Nullable __saveds
+glue_OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz)
+{
+	M68K_ARG(const char *, buffer, a0)
+	M68K_ARG(const char *, format, a1)
+	M68K_ARG(struct tm *, tm, a2)
+	M68K_ARG(int16_t *_Nullable, tz, a3)
+
+	return OFStrPTime(buffer, format, tm, tz);
+}
+
+OFStringEncoding __saveds
+glue_OFStringEncodingParseName PPC_PARAMS(OFString *string)
+{
+	M68K_ARG(OFString *, string, a0)
+
+	return OFStringEncodingParseName(string);
+}
+
+OFString *_Nullable __saveds
+glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding)
+{
+	M68K_ARG(OFStringEncoding, encoding, d0)
+
+	return OFStringEncodingName(encoding);
+}
+
+size_t __saveds
+glue_OFUTF16StringLength PPC_PARAMS(const OFChar16 *string)
+{
+	M68K_ARG(const OFChar16 *, string, a0)
+
+	return OFUTF16StringLength(string);
+}
+
+size_t __saveds
+glue_OFUTF32StringLength PPC_PARAMS(const OFChar32 *string)
+{
+	M68K_ARG(const OFChar32 *, string, a0)
+
+	return OFUTF32StringLength(string);
 }
 
 OFString *_Nonnull __saveds
-glue_of_dns_class_to_string PPC_PARAMS(of_dns_class_t DNSClass)
+glue_OFZIPArchiveEntryVersionToString PPC_PARAMS(uint16_t version)
 {
-	M68K_ARG(of_dns_class_t, DNSClass, d0)
+	M68K_ARG(uint16_t, version, d0)
 
-	return of_dns_class_to_string(DNSClass);
+	return OFZIPArchiveEntryVersionToString(version);
 }
 
 OFString *_Nonnull __saveds
-glue_of_dns_record_type_to_string PPC_PARAMS(of_dns_record_type_t recordType)
+glue_OFZIPArchiveEntryCompressionMethodName PPC_PARAMS(OFZIPArchiveEntryCompressionMethod compressionMethod)
 {
-	M68K_ARG(of_dns_record_type_t, recordType, d0)
+	M68K_ARG(OFZIPArchiveEntryCompressionMethod, compressionMethod, d0)
 
-	return of_dns_record_type_to_string(recordType);
+	return OFZIPArchiveEntryCompressionMethodName(compressionMethod);
 }
 
-of_dns_class_t __saveds
-glue_of_dns_class_parse PPC_PARAMS(OFString *_Nonnull string)
+size_t __saveds
+glue_OFZIPArchiveEntryExtraFieldFind PPC_PARAMS(OFData *extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size)
 {
-	M68K_ARG(OFString *_Nonnull, string, a0)
+	M68K_ARG(OFData *, extraField, a0)
+	M68K_ARG(OFZIPArchiveEntryExtraFieldTag, tag, d0)
+	M68K_ARG(uint16_t *, size, a1)
 
-	return of_dns_class_parse(string);
-}
-
-of_dns_record_type_t __saveds
-glue_of_dns_record_type_parse PPC_PARAMS(OFString *_Nonnull string)
-{
-	M68K_ARG(OFString *_Nonnull, string, a0)
-
-	return of_dns_record_type_parse(string);
+	return OFZIPArchiveEntryExtraFieldFind(extraField, tag, size);
 }

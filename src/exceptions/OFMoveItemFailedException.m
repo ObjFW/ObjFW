@@ -30,7 +30,7 @@
 
 + (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
 			destinationURL: (OFURL *)destinationURL
-				  errNo: (int)errNo
+				 errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourceURL: sourceURL
 				 destinationURL: destinationURL
@@ -72,6 +72,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to move item at %@ to %@: %@",
-	    _sourceURL, _destinationURL, of_strerror(_errNo)];
+	    _sourceURL, _destinationURL, OFStrError(_errNo)];
 }
 @end

@@ -67,10 +67,10 @@ class_conformsToProtocol(Class class, Protocol *protocol)
 			    protocol))
 				return true;
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
-	if ((categories = objc_categories_for_class(class)) == NULL) {
-		objc_global_mutex_unlock();
+	if ((categories = objc_categoriesForClass(class)) == NULL) {
+		objc_globalMutex_unlock();
 		return false;
 	}
 
@@ -81,14 +81,14 @@ class_conformsToProtocol(Class class, Protocol *protocol)
 			for (long j = 0; j < protocolList->count; j++) {
 				if (protocol_conformsToProtocol(
 				    protocolList->list[j], protocol)) {
-					objc_global_mutex_unlock();
+					objc_globalMutex_unlock();
 					return true;
 				}
 			}
 		}
 	}
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return false;
 }

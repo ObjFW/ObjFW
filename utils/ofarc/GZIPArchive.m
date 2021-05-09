@@ -30,10 +30,10 @@ setPermissions(OFString *destination, OFString *source)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	of_file_attributes_t attributes =
-	    [fileManager attributesOfItemAtPath: source];
-	of_file_attribute_key_t key = of_file_attribute_key_posix_permissions;
-	of_file_attributes_t destinationAttributes = [OFDictionary
+	OFFileAttributes attributes = [fileManager
+	    attributesOfItemAtPath: source];
+	OFFileAttributeKey key = OFFilePOSIXPermissions;
+	OFFileAttributes destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
 			  forKey: key];
 
@@ -46,14 +46,14 @@ static void
 setModificationDate(OFString *path, OFGZIPStream *stream)
 {
 	OFDate *modificationDate = stream.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -67,7 +67,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithStream: stream
 					mode: mode
@@ -76,7 +76,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -100,7 +100,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)listFiles
 {
-	[of_stderr writeLine: OF_LOCALIZED(@"cannot_list_gz",
+	[OFStdErr writeLine: OF_LOCALIZED(@"cannot_list_gz",
 	    @"Cannot list files of a .gz archive!")];
 	app->_exitStatus = 1;
 }
@@ -111,7 +111,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	OFFile *output;
 
 	if (files.count != 0) {
-		[of_stderr writeLine:
+		[OFStdErr writeLine:
 		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
 		    @"Cannot extract a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
@@ -122,16 +122,14 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	    .stringByDeletingPathExtension;
 
 	if (app->_outputLevel >= 0)
-		[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
-	if (![app shouldExtractFile: fileName
-			outFileName: fileName])
+	if (![app shouldExtractFile: fileName outFileName: fileName])
 		return;
 
-	output = [OFFile fileWithPath: fileName
-				 mode: @"w"];
+	output = [OFFile fileWithPath: fileName mode: @"w"];
 	setPermissions(fileName, app->_archivePath);
 
 	while (!_stream.atEndOfStream) {
@@ -149,8 +147,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	setModificationDate(fileName, _stream);
 
 	if (app->_outputLevel >= 0) {
-		[of_stdout writeString: @"\r"];
-		[of_stdout writeLine: OF_LOCALIZED(@"extracting_file_done",
+		[OFStdOut writeString: @"\r"];
+		[OFStdOut writeLine: OF_LOCALIZED(@"extracting_file_done",
 		    @"Extracting %[file]... done",
 		    @"file", fileName)];
 	}
@@ -162,7 +160,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	    .stringByDeletingPathExtension;
 
 	if (files.count > 0) {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"cannot_print_specific_file_from_gz",
 		    @"Cannot print a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
@@ -171,7 +169,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 	while (!_stream.atEndOfStream) {
 		ssize_t length = [app copyBlockFromStream: _stream
-						 toStream: of_stdout
+						 toStream: OFStdOut
 						 fileName: fileName];
 
 		if (length < 0) {

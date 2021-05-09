@@ -20,12 +20,12 @@
 #import "plugin/TestPlugin.h"
 
 #ifndef OF_IOS
-# define PLUGIN_PATH @"plugin/TestPlugin"
+static OFString *const pluginPath = @"plugin/TestPlugin";
 #else
-# define PLUGIN_PATH @"PlugIns/TestPlugin"
+static OFString *const pluginPath = @"PlugIns/TestPlugin";
 #endif
 
-static OFString *module = @"OFPlugin";
+static OFString *const module = @"OFPlugin";
 
 @implementation TestsAppDelegate (OFPluginTests)
 - (void)pluginTests
@@ -33,8 +33,8 @@ static OFString *module = @"OFPlugin";
 	void *pool = objc_autoreleasePoolPush();
 	TestPlugin *plugin;
 
-	TEST(@"+[pluginFromFile:]",
-	    (plugin = [OFPlugin pluginFromFile: PLUGIN_PATH]))
+	TEST(@"+[pluginWithPath:]",
+	    (plugin = [OFPlugin pluginWithPath: pluginPath]))
 
 	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
 

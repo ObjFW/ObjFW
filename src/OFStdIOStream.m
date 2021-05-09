@@ -62,56 +62,56 @@ _reference_to_OFWin32ConsoleStdIOStream(void)
 #endif
 
 #ifdef OF_AMIGAOS
-# undef of_stdin
-# undef of_stdout
-# undef of_stderr
+# undef OFStdIn
+# undef OFStdOut
+# undef OFStdErr
 #endif
 
-OFStdIOStream *of_stdin = nil;
-OFStdIOStream *of_stdout = nil;
-OFStdIOStream *of_stderr = nil;
+OFStdIOStream *OFStdIn = nil;
+OFStdIOStream *OFStdOut = nil;
+OFStdIOStream *OFStdErr = nil;
 
 #ifdef OF_AMIGAOS
 OFStdIOStream **
-of_stdin_ref(void)
+OFStdInRef(void)
 {
-	return &of_stdin;
+	return &OFStdIn;
 }
 
 OFStdIOStream **
-of_stdout_ref(void)
+OFStdOutRef(void)
 {
-	return &of_stdout;
+	return &OFStdOut;
 }
 
 OFStdIOStream **
-of_stderr_ref(void)
+OFStdErrRef(void)
 {
-	return &of_stderr;
+	return &OFStdErr;
 }
 #endif
 
 #ifdef OF_AMIGAOS
 OF_DESTRUCTOR()
 {
-	[of_stdin dealloc];
-	[of_stdout dealloc];
-	[of_stderr dealloc];
+	[OFStdIn dealloc];
+	[OFStdOut dealloc];
+	[OFStdErr dealloc];
 }
 #endif
 
 void
-of_log(OFConstantString *format, ...)
+OFLog(OFConstantString *format, ...)
 {
 	va_list arguments;
 
 	va_start(arguments, format);
-	of_logv(format, arguments);
+	OFLogV(format, arguments);
 	va_end(arguments);
 }
 
 void
-of_logv(OFConstantString *format, va_list arguments)
+OFLogV(OFConstantString *format, va_list arguments)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *date;
@@ -128,8 +128,8 @@ of_logv(OFConstantString *format, va_list arguments)
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
 
-	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-				date.microsecond / 1000, me, getpid(), msg];
+	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
+			       date.microsecond / 1000, me, getpid(), msg];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -186,13 +186,12 @@ colorToANSI(OFColor *color)
 	int fd;
 
 	if ((fd = fileno(stdin)) >= 0)
-		of_stdin = [[OFStdIOStream alloc]
-		    of_initWithFileDescriptor: fd];
+		OFStdIn = [[OFStdIOStream alloc] of_initWithFileDescriptor: fd];
 	if ((fd = fileno(stdout)) >= 0)
-		of_stdout = [[OFStdIOStream alloc]
+		OFStdOut = [[OFStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = fileno(stderr)) >= 0)
-		of_stderr = [[OFStdIOStream alloc]
+		OFStdErr = [[OFStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 # else
 	BPTR input, output, error;
@@ -218,12 +217,12 @@ colorToANSI(OFColor *color)
 		errorClosable = true;
 	}
 
-	of_stdin = [[OFStdIOStream alloc] of_initWithHandle: input
-						   closable: inputClosable];
-	of_stdout = [[OFStdIOStream alloc] of_initWithHandle: output
-						    closable: outputClosable];
-	of_stderr = [[OFStdIOStream alloc] of_initWithHandle: error
-						    closable: errorClosable];
+	OFStdIn = [[OFStdIOStream alloc] of_initWithHandle: input
+						  closable: inputClosable];
+	OFStdOut = [[OFStdIOStream alloc] of_initWithHandle: output
+						   closable: outputClosable];
+	OFStdErr = [[OFStdIOStream alloc] of_initWithHandle: error
+						   closable: errorClosable];
 # endif
 }
 #endif
@@ -243,8 +242,7 @@ colorToANSI(OFColor *color)
 	return self;
 }
 #else
-- (instancetype)of_initWithHandle: (BPTR)handle
-			 closable: (bool)closable
+- (instancetype)of_initWithHandle: (BPTR)handle closable: (bool)closable
 {
 	self = [super init];
 
@@ -279,8 +277,7 @@ colorToANSI(OFColor *color)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
@@ -321,8 +318,7 @@ colorToANSI(OFColor *color)
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 #ifndef OF_AMIGAOS
 	if (_fd == -1)
@@ -419,7 +415,7 @@ colorToANSI(OFColor *color)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (bool)hasTerminal
@@ -529,7 +525,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setCursorPosition: (of_point_t)position
+- (void)setCursorPosition: (OFPoint)position
 {
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
@@ -543,7 +539,7 @@ colorToANSI(OFColor *color)
 #endif
 }
 
-- (void)setRelativeCursorPosition: (of_point_t)position
+- (void)setRelativeCursorPosition: (OFPoint)position
 {
 #ifdef HAVE_ISATTY
 	if (!isatty(_fd))

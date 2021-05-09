@@ -64,6 +64,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
-	    [_socket class], _backlog, of_strerror(_errNo)];
+	    [_socket class], _backlog, OFStrError(_errNo)];
 }
 @end

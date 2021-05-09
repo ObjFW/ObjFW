@@ -13,9 +13,9 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#define __NO_EXT_QNX
 
 #include "platform.h"
 
@@ -31,15 +31,19 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
+#import "OFSocket+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
-#import "socket_helpers.h"
-
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
+#endif
+
+#ifdef OF_HPUX
+/* FD_SET causes warnings on HP-UX/IA64. */
+# pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
 @implementation OFSelectKernelEventObserver
@@ -94,7 +98,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET((of_socket_t)fd, &_readFDs);
+	FD_SET((OFSocketHandle)fd, &_readFDs);
 
 	[super addObjectForReading: object];
 }
@@ -118,7 +122,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET((of_socket_t)fd, &_writeFDs);
+	FD_SET((OFSocketHandle)fd, &_writeFDs);
 
 	[super addObjectForWriting: object];
 }
@@ -138,7 +142,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((of_socket_t)fd, &_readFDs);
+	FD_CLR((OFSocketHandle)fd, &_readFDs);
 
 	[super removeObjectForReading: object];
 }
@@ -159,12 +163,12 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((of_socket_t)fd, &_writeFDs);
+	FD_CLR((OFSocketHandle)fd, &_writeFDs);
 
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	fd_set readFDs;
 	fd_set writeFDs;
@@ -229,7 +233,7 @@
 	if (events < 0)
 		@throw [OFObserveFailedException
 		    exceptionWithObserver: self
-				    errNo: of_socket_errno()];
+				    errNo: OFSocketErrNo()];
 
 #ifdef OF_AMIGAOS
 	if (execSignalMask != 0 &&
@@ -240,9 +244,9 @@
 		char buffer;
 
 # ifdef OF_HAVE_PIPE
-		OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+		OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 # else
-		OF_ENSURE(recvfrom(_cancelFD[0], (void *)&buffer, 1, 0, NULL,
+		OFEnsure(recvfrom(_cancelFD[0], (void *)&buffer, 1, 0, NULL,
 		    NULL) == 1);
 # endif
 	}
@@ -255,7 +259,7 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForReading;
 
-		if (FD_ISSET((of_socket_t)fd, &readFDs) &&
+		if (FD_ISSET((OFSocketHandle)fd, &readFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
 			[_delegate objectIsReadyForReading: object];
@@ -268,7 +272,7 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 
-		if (FD_ISSET((of_socket_t)fd, &writeFDs) &&
+		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
 			[_delegate objectIsReadyForWriting: object];

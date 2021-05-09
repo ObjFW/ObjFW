@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#define _LARGEFILE64_SOURCE
+
 #include <assert.h>
 #include <errno.h>
 
@@ -77,16 +79,18 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-static struct of_file_handle {
-	of_file_handle_t previous, next;
+static struct _OFFileHandle {
+	struct _OFFileHandle *previous, *next;
 	BPTR handle;
 	bool append;
 } *firstHandle = NULL;
 
 static void
-closeHandle(of_file_handle_t handle)
+closeHandle(OFFileHandle handle)
 {
 	Close(handle->handle);
+
+	Forbid();
 
 	if (handle->previous != NULL)
 		handle->previous->next = handle->next;
@@ -96,12 +100,14 @@ closeHandle(of_file_handle_t handle)
 	if (firstHandle == handle)
 		firstHandle = handle->next;
 
-	free(handle);
+	Permit();
+
+	OFFreeMemory(handle);
 }
 
 OF_DESTRUCTOR()
 {
-	for (of_file_handle_t iter = firstHandle; iter != NULL;
+	for (OFFileHandle iter = firstHandle; iter != NULL;
 	    iter = iter->next)
 		Close(iter->handle);
 }
@@ -180,21 +186,17 @@ parseMode(const char *mode, bool *append)
 #endif
 }
 
-+ (instancetype)fileWithPath: (OFString *)path
-			mode: (OFString *)mode
++ (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithURL: (OFURL *)URL
-		       mode: (OFString *)mode
++ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURL: URL
-				     mode: mode] autorelease];
+	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithHandle: (of_file_handle_t)handle
++ (instancetype)fileWithHandle: (OFFileHandle)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
 }
@@ -204,10 +206,9 @@ parseMode(const char *mode, bool *append)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
-	of_file_handle_t handle;
+	OFFileHandle handle;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -241,7 +242,7 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		handle = of_alloc(1, sizeof(*handle));
+		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
 			if ((flags = parseMode(mode.UTF8String,
 			    &handle->append)) == -1)
@@ -295,6 +296,8 @@ parseMode(const char *mode, bool *append)
 				}
 			}
 
+			Forbid();
+
 			handle->previous = NULL;
 			handle->next = firstHandle;
 
@@ -302,8 +305,10 @@ parseMode(const char *mode, bool *append)
 				firstHandle->previous = handle;
 
 			firstHandle = handle;
+
+			Permit();
 		} @catch (id e) {
-			free(handle);
+			OFFreeMemory(handle);
 			@throw e;
 		}
 #endif
@@ -324,8 +329,7 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *fileSystemRepresentation;
@@ -337,15 +341,14 @@ parseMode(const char *mode, bool *append)
 		@throw e;
 	}
 
-	self = [self initWithPath: fileSystemRepresentation
-			     mode: mode];
+	self = [self initWithPath: fileSystemRepresentation mode: mode];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithHandle: (of_file_handle_t)handle
+- (instancetype)initWithHandle: (OFFileHandle)handle
 {
 	self = [super init];
 
@@ -356,18 +359,17 @@ parseMode(const char *mode, bool *append)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -399,10 +401,9 @@ parseMode(const char *mode, bool *append)
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -458,12 +459,11 @@ parseMode(const char *mode, bool *append)
 	return (size_t)bytesWritten;
 }
 
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence
+- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence
 {
-	of_offset_t ret;
+	OFFileOffset ret;
 
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_AMIGAOS
@@ -533,18 +533,18 @@ parseMode(const char *mode, bool *append)
 
 - (void)close
 {
-	if (_handle == OF_INVALID_FILE_HANDLE)
+	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	closeHandle(_handle);
-	_handle = OF_INVALID_FILE_HANDLE;
+	_handle = OFInvalidFileHandle;
 
 	[super close];
 }
 
 - (void)dealloc
 {
-	if (_handle != OF_INVALID_FILE_HANDLE)
+	if (_handle != OFInvalidFileHandle)
 		[self close];
 
 	[super dealloc];

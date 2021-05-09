@@ -32,7 +32,7 @@ class_copyMethodList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
 	count = 0;
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
@@ -42,7 +42,7 @@ class_copyMethodList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_global_mutex_unlock();
+		objc_globalMutex_unlock();
 		return NULL;
 	}
 
@@ -53,13 +53,16 @@ class_copyMethodList(Class class, unsigned int *outCount)
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			methods[i++] = &iter->methods[j];
-	OF_ENSURE(i == count);
+
+	if (i != count)
+		OBJC_ERROR("Fatal internal inconsistency!");
+
 	methods[count] = NULL;
 
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return methods;
 }

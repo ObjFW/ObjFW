@@ -29,22 +29,22 @@
 # define INFINITY __builtin_inf()
 #endif
 
-static OFString *module = nil;
-static OFString *whitespace[] = {
+static OFString *module;
+static OFString *const whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
-static of_unichar_t ucstr[] = {
+static const OFUnichar unicharString[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0x1F03A, 0
 };
-static of_unichar_t sucstr[] = {
+static const OFUnichar swappedUnicharString[] = {
 	0xFFFE0000, 0x66000000, 0xF6000000, 0xF6000000, 0x62000000, 0xE4000000,
 	0x72000000, 0x3AF00100, 0
 };
-static uint16_t utf16str[] = {
+static const OFChar16 char16String[] = {
 	0xFEFF, 'f', 0xF6, 0xF6, 'b', 0xE4, 'r', 0xD83C, 0xDC3A, 0
 };
-static uint16_t sutf16str[] = {
+static const OFChar16 swappedChar16String[] = {
 	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
 	0
 };
@@ -91,7 +91,7 @@ static uint16_t sutf16str[] = {
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)length
 {
 	self = [super init];
@@ -108,9 +108,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)UTF16String
+- (instancetype)initWithUTF16String: (const OFChar16 *)UTF16String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -127,9 +127,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)UTF32String
+- (instancetype)initWithUTF32String: (const OFChar32 *)UTF32String
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	self = [super init];
 
@@ -169,7 +169,7 @@ static uint16_t sutf16str[] = {
 	[super dealloc];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)idx
+- (OFUnichar)characterAtIndex: (size_t)idx
 {
 	return [_string characterAtIndex: idx];
 }
@@ -187,11 +187,10 @@ static uint16_t sutf16str[] = {
 		[self inheritMethodsFromClass: [SimpleString class]];
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)string
 {
-	[_string replaceCharactersInRange: range
-			       withString: string];
+	[_string replaceCharactersInRange: range withString: string];
 }
 @end
 
@@ -214,14 +213,14 @@ static uint16_t sutf16str[] = {
 		mutableClass: (Class)mutableStringClass
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableString *s[3];
-	OFString *is;
-	OFArray *a;
+	OFMutableString *mutableString1, *mutableString2, *mutableString3;
+	OFString *string;
+	OFArray *array;
 	size_t i;
-	const of_unichar_t *ua;
-	const uint16_t *u16a;
-	OFCharacterSet *cs;
-	EntityHandler *h;
+	const OFUnichar *characters;
+	const uint16_t *UTF16Characters;
+	OFCharacterSet *characterSet;
+	EntityHandler *entityHandler;
 #ifdef OF_HAVE_BLOCKS
 	__block int j;
 	__block bool ok;
@@ -229,139 +228,148 @@ static uint16_t sutf16str[] = {
 
 #define C(s) ((OFString *)[stringClass stringWithString: s])
 
-	s[0] = [mutableStringClass stringWithString: @"täs€"];
-	s[1] = [mutableStringClass string];
-	s[2] = [[s[0] copy] autorelease];
+	mutableString1 = [mutableStringClass stringWithString: @"täs€"];
+	mutableString2 = [mutableStringClass string];
+	mutableString3 = [[mutableString1 copy] autorelease];
 
-	TEST(@"-[isEqual:]", [s[0] isEqual: s[2]] &&
-	    ![s[0] isEqual: [[[OFObject alloc] init] autorelease]])
+	TEST(@"-[isEqual:]", [mutableString1 isEqual: mutableString3] &&
+	    ![mutableString1 isEqual: [[[OFObject alloc] init] autorelease]])
 
-	TEST(@"-[compare:]", [s[0] compare: s[2]] == OF_ORDERED_SAME &&
-	    [s[0] compare: @""] != OF_ORDERED_SAME &&
-	    [C(@"") compare: @"a"] == OF_ORDERED_ASCENDING &&
-	    [C(@"a") compare: @"b"] == OF_ORDERED_ASCENDING &&
-	    [C(@"cd") compare: @"bc"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ä") compare: @"ö"] == OF_ORDERED_ASCENDING &&
-	    [C(@"€") compare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"aa") compare: @"z"] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare:]",
+	    [mutableString1 compare: mutableString3] == OFOrderedSame &&
+	    [mutableString1 compare: @""] != OFOrderedSame &&
+	    [C(@"") compare: @"a"] == OFOrderedAscending &&
+	    [C(@"a") compare: @"b"] == OFOrderedAscending &&
+	    [C(@"cd") compare: @"bc"] == OFOrderedDescending &&
+	    [C(@"ä") compare: @"ö"] == OFOrderedAscending &&
+	    [C(@"€") compare: @"ß"] == OFOrderedDescending &&
+	    [C(@"aa") compare: @"z"] == OFOrderedAscending)
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OF_ORDERED_SAME &&
-	    [C(@"я") caseInsensitiveCompare: @"Я"] == OF_ORDERED_SAME &&
-	    [C(@"€") caseInsensitiveCompare: @"ß"] == OF_ORDERED_DESCENDING &&
-	    [C(@"ß") caseInsensitiveCompare: @"→"] == OF_ORDERED_ASCENDING &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"Ä") caseInsensitiveCompare: @"ä"] == OFOrderedSame &&
+	    [C(@"я") caseInsensitiveCompare: @"Я"] == OFOrderedSame &&
+	    [C(@"€") caseInsensitiveCompare: @"ß"] == OFOrderedDescending &&
+	    [C(@"ß") caseInsensitiveCompare: @"→"] == OFOrderedAscending &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])
 #else
 	TEST(@"-[caseInsensitiveCompare:]",
-	    [C(@"a") caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
-	    [C(@"AA") caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [C(@"a") caseInsensitiveCompare: @"A"] == OFOrderedSame &&
+	    [C(@"AA") caseInsensitiveCompare: @"z"] == OFOrderedAscending &&
 	    [[stringClass stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [stringClass stringWithUTF8String: "AbD"]] ==
 	    [C(@"abc") compare: @"abd"])
 #endif
 
 	TEST(@"-[hash] is the same if -[isEqual:] is true",
-	    s[0].hash == s[2].hash)
+	    mutableString1.hash == mutableString3.hash)
 
-	TEST(@"-[description]", [s[0].description isEqual: s[0]])
+	TEST(@"-[description]",
+	    [mutableString1.description isEqual: mutableString1])
 
 	TEST(@"-[appendString:] and -[appendUTF8String:]",
-	    R([s[1] appendUTF8String: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
-	    R([s[0] appendString: s[1]]) && [s[0] isEqual: @"täs€1𝄞3"])
+	    R([mutableString2 appendUTF8String: "1𝄞"]) &&
+	    R([mutableString2 appendString: @"3"]) &&
+	    R([mutableString1 appendString: mutableString2]) &&
+	    [mutableString1 isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[appendCharacters:length:]",
-	    R([s[1] appendCharacters: ucstr + 6
-			      length: 2]) && [s[1] isEqual: @"1𝄞3r🀺"])
+	    R([mutableString2 appendCharacters: unicharString + 6 length: 2]) &&
+	    [mutableString2 isEqual: @"1𝄞3r🀺"])
 
-	TEST(@"-[length]", s[0].length == 7)
-	TEST(@"-[UTF8StringLength]", s[0].UTF8StringLength == 13)
-	TEST(@"-[hash]", s[0].hash == 0x705583C0)
+	TEST(@"-[length]", mutableString1.length == 7)
+	TEST(@"-[UTF8StringLength]", mutableString1.UTF8StringLength == 13)
+	TEST(@"-[hash]", mutableString1.hash == 0x705583C0)
 
-	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
-	    [s[0] characterAtIndex: 1] == 0xE4 &&
-	    [s[0] characterAtIndex: 3] == 0x20AC &&
-	    [s[0] characterAtIndex: 5] == 0x1D11E)
+	TEST(@"-[characterAtIndex:]",
+	    [mutableString1 characterAtIndex: 0] == 't' &&
+	    [mutableString1 characterAtIndex: 1] == 0xE4 &&
+	    [mutableString1 characterAtIndex: 3] == 0x20AC &&
+	    [mutableString1 characterAtIndex: 5] == 0x1D11E)
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[characterAtIndex:]",
-	    OFOutOfRangeException, [s[0] characterAtIndex: 7])
+	    OFOutOfRangeException, [mutableString1 characterAtIndex: 7])
 
-	TEST(@"-[reverse]", R([s[0] reverse]) && [s[0] isEqual: @"3𝄞1€sät"])
+	TEST(@"-[reverse]",
+	    R([mutableString1 reverse]) && [mutableString1 isEqual: @"3𝄞1€sät"])
 
-	s[1] = [mutableStringClass stringWithString: @"abc"];
+	mutableString2 = [mutableStringClass stringWithString: @"abc"];
 
 #ifdef OF_HAVE_UNICODE_TABLES
-	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
-	    [s[0] isEqual: @"3𝄞1€SÄT"] &&
-	    R([s[1] uppercase]) && [s[1] isEqual: @"ABC"])
+	TEST(@"-[uppercase]", R([mutableString1 uppercase]) &&
+	    [mutableString1 isEqual: @"3𝄞1€SÄT"] &&
+	    R([mutableString2 uppercase]) && [mutableString2 isEqual: @"ABC"])
 
-	TEST(@"-[lowercase]", R([s[0] lowercase]) &&
-	    [s[0] isEqual: @"3𝄞1€sät"] &&
-	    R([s[1] lowercase]) && [s[1] isEqual: @"abc"])
+	TEST(@"-[lowercase]", R([mutableString1 lowercase]) &&
+	    [mutableString1 isEqual: @"3𝄞1€sät"] &&
+	    R([mutableString2 lowercase]) && [mutableString2 isEqual: @"abc"])
 
 	TEST(@"-[uppercaseString]",
-	    [[s[0] uppercaseString] isEqual: @"3𝄞1€SÄT"])
+	    [[mutableString1 uppercaseString] isEqual: @"3𝄞1€SÄT"])
 
-	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
-	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
+	TEST(@"-[lowercaseString]", R([mutableString1 uppercase]) &&
+	    [[mutableString1 lowercaseString] isEqual: @"3𝄞1€sät"])
 
 	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǅbla Tǆst Tǆst"])
 #else
-	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
-	    [s[0] isEqual: @"3𝄞1€SäT"] &&
-	    R([s[1] uppercase]) && [s[1] isEqual: @"ABC"])
+	TEST(@"-[uppercase]", R([mutableString1 uppercase]) &&
+	    [mutableString1 isEqual: @"3𝄞1€SäT"] &&
+	    R([mutableString2 uppercase]) && [mutableString2 isEqual: @"ABC"])
 
-	TEST(@"-[lowercase]", R([s[0] lowercase]) &&
-	    [s[0] isEqual: @"3𝄞1€sät"] &&
-	    R([s[1] lowercase]) && [s[1] isEqual: @"abc"])
+	TEST(@"-[lowercase]", R([mutableString1 lowercase]) &&
+	    [mutableString1 isEqual: @"3𝄞1€sät"] &&
+	    R([mutableString2 lowercase]) && [mutableString2 isEqual: @"abc"])
 
-	TEST(@"-[uppercaseString]", [s[0].uppercaseString isEqual: @"3𝄞1€SäT"])
+	TEST(@"-[uppercaseString]",
+	    [mutableString1.uppercaseString isEqual: @"3𝄞1€SäT"])
 
-	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
-	    [s[0].lowercaseString isEqual: @"3𝄞1€sät"])
+	TEST(@"-[lowercaseString]",
+	    R([mutableString1 uppercase]) &&
+	    [mutableString1.lowercaseString isEqual: @"3𝄞1€sät"])
 
 	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǆbla Tǆst TǄst"])
 #endif
 
 	TEST(@"+[stringWithUTF8String:length:]",
-	    (s[0] = [mutableStringClass stringWithUTF8String: "\xEF\xBB\xBF"
-							      "foobar"
-						      length: 6]) &&
-	    [s[0] isEqual: @"foo"])
+	    (mutableString1 = [mutableStringClass
+	    stringWithUTF8String: "\xEF\xBB\xBF" "foobar"
+			  length: 6]) &&
+	    [mutableString1 isEqual: @"foo"])
 
 	TEST(@"+[stringWithUTF16String:]",
-	    (is = [stringClass stringWithUTF16String: utf16str]) &&
-	    [is isEqual: @"fööbär🀺"] &&
-	    (is = [stringClass stringWithUTF16String: sutf16str]) &&
-	    [is isEqual: @"fööbär🀺"])
+	    (string = [stringClass stringWithUTF16String: char16String]) &&
+	    [string isEqual: @"fööbär🀺"] &&
+	    (string = [stringClass stringWithUTF16String:
+	    swappedChar16String]) && [string isEqual: @"fööbär🀺"])
 
 	TEST(@"+[stringWithUTF32String:]",
-	    (is = [stringClass stringWithUTF32String: ucstr]) &&
-	    [is isEqual: @"fööbär🀺"] &&
-	    (is = [stringClass stringWithUTF32String: sucstr]) &&
-	    [is isEqual: @"fööbär🀺"])
+	    (string = [stringClass stringWithUTF32String: unicharString]) &&
+	    [string isEqual: @"fööbär🀺"] &&
+	    (string = [stringClass stringWithUTF32String:
+	    swappedUnicharString]) && [string isEqual: @"fööbär🀺"])
 
 #ifdef OF_HAVE_FILES
-	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [stringClass
+	TEST(@"+[stringWithContentsOfFile:encoding]", (string = [stringClass
 	    stringWithContentsOfFile: @"testfile.txt"
-			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
-	    [is isEqual: @"testäöü"])
+			    encoding: OFStringEncodingISO8859_1]) &&
+	    [string isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURL:encoding]", (is = [stringClass
+	TEST(@"+[stringWithContentsOfURL:encoding]", (string = [stringClass
 	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
-			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
-	    [is isEqual: @"testäöü"])
+			   encoding: OFStringEncodingISO8859_1]) &&
+	    [string isEqual: @"testäöü"])
 #endif
 
 	TEST(@"-[appendUTFString:length:]",
-	    R([s[0] appendUTF8String: "\xEF\xBB\xBF" "barqux"
-			      length: 6]) && [s[0] isEqual: @"foobar"])
+	    R([mutableString1 appendUTF8String: "\xEF\xBB\xBF" "barqux"
+					length: 6]) &&
+	    [mutableString1 isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
 	    OFInvalidEncodingException,
@@ -372,13 +380,13 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"Conversion of ISO 8859-1 to Unicode",
 	    [[stringClass stringWithCString: "\xE4\xF6\xFC"
-				   encoding: OF_STRING_ENCODING_ISO_8859_1]
+				   encoding: OFStringEncodingISO8859_1]
 	    isEqual: @"äöü"])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of ISO 8859-15 to Unicode",
 	    [[stringClass stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
-				   encoding: OF_STRING_ENCODING_ISO_8859_15]
+				   encoding: OFStringEncodingISO8859_15]
 	    isEqual: @"€ŠšŽžŒœŸ"])
 #endif
 
@@ -388,154 +396,153 @@ static uint16_t sutf16str[] = {
 					     "\x89\x8A\x8B\x8C\x8E\x91\x92\x93"
 					     "\x94\x95\x96\x97\x98\x99\x9A\x9B"
 					     "\x9C\x9E\x9F"
-				   encoding: OF_STRING_ENCODING_WINDOWS_1252]
+				   encoding: OFStringEncodingWindows1252]
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Codepage 437 to Unicode",
 	    [[stringClass stringWithCString: "\xB0\xB1\xB2\xDB"
-				   encoding: OF_STRING_ENCODING_CODEPAGE_437]
+				   encoding: OFStringEncodingCodepage437]
 	    isEqual: @"░▒▓█"])
 #endif
 
 	TEST(@"Conversion of Unicode to ASCII #1",
 	    !strcmp([C(@"This is a test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a test"))
+	    OFStringEncodingASCII], "This is a test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ASCII #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is a tést")
-	    cStringWithEncoding: OF_STRING_ENCODING_ASCII])
+	    cStringWithEncoding: OFStringEncodingASCII])
 
 	TEST(@"Conversion of Unicode to ISO-8859-1 #1",
 	    !strcmp([C(@"This is ä test") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 test"))
+	    OFStringEncodingISO8859_1], "This is \xE4 test"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-1 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1])
+	    OFStringEncodingISO8859_1])
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Conversion of Unicode to ISO-8859-15 #1",
 	    !strcmp([C(@"This is ä t€st") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-15 #2",
 	    OFInvalidEncodingException,
 	    [C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15])
+	    OFStringEncodingISO8859_15])
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Conversion of Unicode to Windows-1252 #1",
 	    !strcmp([C(@"This is ä t€st…") cStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Windows-1252 #2",
 	    OFInvalidEncodingException, [C(@"This is ä t€st…‼")
-	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
+	    cStringWithEncoding: OFStringEncodingWindows1252])
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Conversion of Unicode to Codepage 437 #1",
 	    !strcmp([C(@"Tést strîng ░▒▓") cStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
 
 	EXPECT_EXCEPTION(@"Conversion of Unicode to Codepage 437 #2",
 	    OFInvalidEncodingException, [C(@"T€st strîng ░▒▓")
-	    cStringWithEncoding: OF_STRING_ENCODING_CODEPAGE_437])
+	    cStringWithEncoding: OFStringEncodingCodepage437])
 #endif
 
 	TEST(@"Lossy conversion of Unicode to ASCII",
 	    !strcmp([C(@"This is a tést") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
+	    OFStringEncodingASCII], "This is a t?st"))
 
 	TEST(@"Lossy conversion of Unicode to ISO-8859-1",
 	    !strcmp([C(@"This is ä t€st") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 t?st"))
+	    OFStringEncodingISO8859_1], "This is \xE4 t?st"))
 
 #ifdef HAVE_ISO_8859_15
 	TEST(@"Lossy conversion of Unicode to ISO-8859-15",
 	    !strcmp([C(@"This is ä t€st…") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st?"))
+	    OFStringEncodingISO8859_15], "This is \xE4 t\xA4st?"))
 #endif
 
 #ifdef HAVE_WINDOWS_1252
 	TEST(@"Lossy conversion of Unicode to Windows-1252",
 	    !strcmp([C(@"This is ä t€st…‼") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
+	    OFStringEncodingWindows1252], "This is \xE4 t\x80st\x85?"))
 #endif
 
 #ifdef HAVE_CODEPAGE_437
 	TEST(@"Lossy conversion of Unicode to Codepage 437",
 	    !strcmp([C(@"T€st strîng ░▒▓") lossyCStringWithEncoding:
-	    OF_STRING_ENCODING_CODEPAGE_437], "T?st str\x8Cng \xB0\xB1\xB2"))
+	    OFStringEncodingCodepage437], "T?st str\x8Cng \xB0\xB1\xB2"))
 #endif
 
 	TEST(@"+[stringWithFormat:]",
-	    [(s[0] = [mutableStringClass stringWithFormat: @"%@:%d", @"test",
-							   123])
+	    [(mutableString1 = [mutableStringClass stringWithFormat: @"%@:%d",
+								     @"test",
+								     123])
 	    isEqual: @"test:123"])
 
 	TEST(@"-[appendFormat:]",
-	    R(([s[0] appendFormat: @"%02X", 15])) &&
-	    [s[0] isEqual: @"test:1230F"])
+	    R(([mutableString1 appendFormat: @"%02X", 15])) &&
+	    [mutableString1 isEqual: @"test:1230F"])
 
 	TEST(@"-[rangeOfString:]",
 	    [C(@"𝄞öö") rangeOfString: @"öö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"].location == 0 &&
-	    [C(@"𝄞öö") rangeOfString: @"x"].location == OF_NOT_FOUND &&
+	    [C(@"𝄞öö") rangeOfString: @"x"].location == OFNotFound &&
 	    [C(@"𝄞öö") rangeOfString: @"öö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 1 &&
+	    options: OFStringSearchBackwards].location == 1 &&
 	    [C(@"𝄞öö") rangeOfString: @"ö"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 2 &&
+	    options: OFStringSearchBackwards].location == 2 &&
 	    [C(@"𝄞öö") rangeOfString: @"𝄞"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
+	    options: OFStringSearchBackwards].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"
-	    options: OF_STRING_SEARCH_BACKWARDS].location == OF_NOT_FOUND)
+	    options: OFStringSearchBackwards].location == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö"
-			     options: 0
-			       range: of_range(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFRangeMake(3, 1)])
 
-	cs = [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
+	characterSet =
+	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 	TEST(@"-[indexOfCharacterFromSet:]",
-	     [C(@"abcđabcđe") indexOfCharacterFromSet: cs] == 2 &&
-	     [C(@"abcđabcđë")
-	     indexOfCharacterFromSet: cs
-			     options: OF_STRING_SEARCH_BACKWARDS] == 7 &&
-	     [C(@"abcđabcđë")
-	     indexOfCharacterFromSet: cs
-			     options: 0
-			       range: of_range(4, 4)] == 6 &&
-	     [C(@"abcđabcđëf")
-	     indexOfCharacterFromSet: cs
-			     options: 0
-			       range: of_range(8, 2)] == OF_NOT_FOUND)
+	    [C(@"abcđabcđe") indexOfCharacterFromSet: characterSet] == 2 &&
+	    [C(@"abcđabcđë")
+	    indexOfCharacterFromSet: characterSet
+			    options: OFStringSearchBackwards] == 7 &&
+	    [C(@"abcđabcđë") indexOfCharacterFromSet: characterSet
+					     options: 0
+					       range: OFRangeMake(4, 4)] == 6 &&
+	    [C(@"abcđabcđëf")
+	    indexOfCharacterFromSet: characterSet
+			    options: 0
+			      range: OFRangeMake(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") indexOfCharacterFromSet: cs
+	    [C(@"𝄞öö") indexOfCharacterFromSet: characterSet
 				       options: 0
-					 range: of_range(3, 1)])
+					 range: OFRangeMake(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
-	    [[C(@"𝄞öö") substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&
-	    [[C(@"𝄞öö") substringWithRange: of_range(3, 0)] isEqual: @""])
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(1, 1)] isEqual: @"ö"] &&
+	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(3, 0)] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: of_range(2, 2)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(2, 2)])
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: of_range(4, 0)])
+	    [C(@"𝄞öö") substringWithRange: OFRangeMake(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
@@ -567,24 +574,26 @@ static uint16_t sutf16str[] = {
 	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
 # endif
 
-	s[0] = [mutableStringClass stringWithString: @"foo"];
+	mutableString1 = [mutableStringClass stringWithString: @"foo"];
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	[s[0] appendString: @"\\"];
+	[mutableString1 appendString: @"\\"];
 # else
-	[s[0] appendString: @"/"];
+	[mutableString1 appendString: @"/"];
 # endif
-	[s[0] appendString: @"bar"];
-	s[1] = [mutableStringClass stringWithString: s[0]];
+	[mutableString1 appendString: @"bar"];
+	mutableString2 = [mutableStringClass stringWithString: mutableString1];
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	[s[1] appendString: @"\\"];
+	[mutableString2 appendString: @"\\"];
 # else
-	[s[1] appendString: @"/"];
+	[mutableString2 appendString: @"/"];
 # endif
-	is = [stringClass stringWithString: s[1]];
-	[s[1] appendString: @"baz"];
+	string = [stringClass stringWithString: mutableString2];
+	[mutableString2 appendString: @"baz"];
 	TEST(@"-[stringByAppendingPathComponent:]",
-	    [[s[0] stringByAppendingPathComponent: @"baz"] isEqual: s[1]] &&
-	    [[is stringByAppendingPathComponent: @"baz"] isEqual: s[1]])
+	    [[mutableString1 stringByAppendingPathComponent: @"baz"]
+	    isEqual: mutableString2] &&
+	    [[string stringByAppendingPathComponent: @"baz"]
+	    isEqual: mutableString2])
 #endif
 
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
@@ -595,57 +604,58 @@ static uint16_t sutf16str[] = {
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:]",
-	    (a = [C(@"fooXXbarXXXXbazXXXX")
+	    (array = [C(@"fooXXbarXXXXbazXXXX")
 	    componentsSeparatedByString: @"XX"]) &&
-	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
-	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    a.count == i &&
-	    (a = [C(@"foo") componentsSeparatedByString: @""]) &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    a.count == 1)
+	    [[array objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[array objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @"baz"] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    array.count == i &&
+	    (array = [C(@"foo") componentsSeparatedByString: @""]) &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    array.count == 1)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:options:]",
-	    (a = [C(@"fooXXbarXXXXbazXXXX")
+	    (array = [C(@"fooXXbarXXXXbazXXXX")
 	    componentsSeparatedByString: @"XX"
-				options: OF_STRING_SKIP_EMPTY]) &&
-	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
-	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
-	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    a.count == i)
+				options: OFStringSkipEmptyComponents]) &&
+	    [[array objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[array objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[array objectAtIndex: i++] isEqual: @"baz"] &&
+	    array.count == i)
 
-	cs = [OFCharacterSet characterSetWithCharactersInString: @"XYZ"];
+	characterSet =
+	    [OFCharacterSet characterSetWithCharactersInString: @"XYZ"];
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByCharactersInSet:]",
-	    (a = [C(@"fooXYbarXYZXbazXYXZx")
-	    componentsSeparatedByCharactersInSet: cs]) &&
-	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @"x"] &&
-	    a.count == i)
+	    (array = [C(@"fooXYbarXYZXbazXYXZx")
+	    componentsSeparatedByCharactersInSet: characterSet]) &&
+	    [[array objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @"baz"] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @""] &&
+	    [[array objectAtIndex: i++] isEqual: @"x"] &&
+	    array.count == i)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByCharactersInSet:options:]",
-	    (a = [C(@"fooXYbarXYZXbazXYXZ")
-	    componentsSeparatedByCharactersInSet: cs
-					 options: OF_STRING_SKIP_EMPTY]) &&
-	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
-	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
-	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    a.count == i)
+	    (array = [C(@"fooXYbarXYZXbazXYXZ")
+	    componentsSeparatedByCharactersInSet: characterSet
+	    options: OFStringSkipEmptyComponents]) &&
+	    [[array objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[array objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[array objectAtIndex: i++] isEqual: @"baz"] &&
+	    array.count == i)
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)
@@ -750,147 +760,147 @@ static uint16_t sutf16str[] = {
 # if defined(OF_WINDOWS)
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
-	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"c:/tmp").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:/"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
-	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"c:\\tmp\\").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:\\"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\ */
-	    (a = C(@"c:\\").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
+	    (array = C(@"c:\\").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    /* c:/ */
-	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
+	    (array = C(@"c:/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:/"] &&
 	    /* c: */
-	    (a = C(@"c:").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    (array = C(@"c:").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
-	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    (array = C(@"foo\\bar").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo\bar/baz/ */
-	    (a = C(@"foo\\bar/baz/").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
-	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    (array = C(@"foo\\bar/baz/").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[array objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo\/ */
-	    (a = C(@"foo\\/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    (array = C(@"foo\\/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    /* \\foo\bar */
-	    (a = C(@"\\\\foo\\bar").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"\\\\"] &&
-	    [[a objectAtIndex: 1] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 2] isEqual: @"bar"] &&
+	    (array = C(@"\\\\foo\\bar").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"\\\\"] &&
+	    [[array objectAtIndex: 1] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 2] isEqual: @"bar"] &&
 	    C(@"").pathComponents.count == 0)
 # elif defined(OF_MSDOS)
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
-	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"c:/tmp").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:/"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
-	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"c:\\tmp\\").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:\\"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\ */
-	    (a = C(@"c:\\").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
+	    (array = C(@"c:\\").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    /* c:/ */
-	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
+	    (array = C(@"c:/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:/"] &&
 	    /* c: */
-	    (a = C(@"c:").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    (array = C(@"c:").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
-	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    (array = C(@"foo\\bar").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo\bar/baz/ */
-	    (a = C(@"foo\\bar/baz/").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
-	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    (array = C(@"foo\\bar/baz/").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[array objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo\/ */
-	    (a = C(@"foo\\/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    (array = C(@"foo\\/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    C(@"").pathComponents.count == 0)
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[pathComponents]",
 	    /* dh0:tmp */
-	    (a = C(@"dh0:tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"dh0:tmp").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* dh0:tmp/ */
-	    (a = C(@"dh0:tmp/").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"dh0:tmp/").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* dh0: */
-	    (a = C(@"dh0:/").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
-	    [[a objectAtIndex: 1] isEqual: @"/"] &&
+	    (array = C(@"dh0:/").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[array objectAtIndex: 1] isEqual: @"/"] &&
 	    /* foo/bar */
-	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    (array = C(@"foo/bar").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
-	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    (array = C(@"foo/bar/baz/").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[array objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = C(@"foo//").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"/"] &&
+	    (array = C(@"foo//").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"/"] &&
 	    C(@"").pathComponents.count == 0)
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[pathComponents]",
 	    /* sdmc:/tmp */
-	    (a = C(@"sdmc:/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"sdmc:/tmp").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"sdmc:"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* sdmc:/ */
-	    (a = C(@"sdmc:/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
+	    (array = C(@"sdmc:/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"sdmc:"] &&
 	    /* foo/bar */
-	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    (array = C(@"foo/bar").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
-	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    (array = C(@"foo/bar/baz/").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[array objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = C(@"foo//").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    (array = C(@"foo//").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    C(@"").pathComponents.count == 0)
 # else
 	TEST(@"-[pathComponents]",
 	    /* /tmp */
-	    (a = C(@"/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"/"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"/tmp").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"/"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* /tmp/ */
-	    (a = C(@"/tmp/").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"/"] &&
-	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    (array = C(@"/tmp/").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"/"] &&
+	    [[array objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* / */
-	    (a = C(@"/").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"/"] &&
+	    (array = C(@"/").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"/"] &&
 	    /* foo/bar */
-	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    (array = C(@"foo/bar").pathComponents) && array.count == 2 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
-	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    (array = C(@"foo/bar/baz/").pathComponents) && array.count == 3 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[array objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[array objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = C(@"foo//").pathComponents) && a.count == 1 &&
-	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    (array = C(@"foo//").pathComponents) && array.count == 1 &&
+	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    C(@"").pathComponents.count == 0)
 # endif
 
@@ -1187,68 +1197,75 @@ static uint16_t sutf16str[] = {
 	       @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
 	    unsignedLongLongValueWithBase: 16])
 
-	TEST(@"-[characters]", (ua = C(@"fööbär🀺").characters) &&
-	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
+	TEST(@"-[characters]", (characters = C(@"fööbär🀺").characters) &&
+	    !memcmp(characters, unicharString + 1, sizeof(unicharString) - 8))
 
 #ifdef OF_BIG_ENDIAN
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_LITTLE_ENDIAN
+# define swappedByteOrder OFByteOrderLittleEndian
 #else
-# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_BIG_ENDIAN
+# define swappedByteOrder OFByteOrderBigEndian
 #endif
-	TEST(@"-[UTF16String]", (u16a = C(@"fööbär🀺").UTF16String) &&
-	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
-	    (u16a = [C(@"fööbär🀺")
-	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
+	TEST(@"-[UTF16String]", (UTF16Characters = C(@"fööbär🀺").UTF16String) &&
+	    !memcmp(UTF16Characters, char16String + 1,
+	    OFUTF16StringLength(char16String) * 2) &&
+	    (UTF16Characters = [C(@"fööbär🀺")
+	    UTF16StringWithByteOrder: swappedByteOrder]) &&
+	    !memcmp(UTF16Characters, swappedChar16String + 1,
+	    OFUTF16StringLength(swappedChar16String) * 2))
 
 	TEST(@"-[UTF16StringLength]", C(@"fööbär🀺").UTF16StringLength == 8)
 
-	TEST(@"-[UTF32String]", (ua = C(@"fööbär🀺").UTF32String) &&
-	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
-	    (ua = [C(@"fööbär🀺") UTF32StringWithByteOrder:
-	    SWAPPED_BYTE_ORDER]) &&
-	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
-#undef SWAPPED_BYTE_ORDER
+	TEST(@"-[UTF32String]", (characters = C(@"fööbär🀺").UTF32String) &&
+	    !memcmp(characters, unicharString + 1,
+	    OFUTF32StringLength(unicharString) * 4) &&
+	    (characters = [C(@"fööbär🀺") UTF32StringWithByteOrder:
+	    swappedByteOrder]) &&
+	    !memcmp(characters, swappedUnicharString + 1,
+	    OFUTF32StringLength(swappedUnicharString) * 4))
+#undef swappedByteOrder
 
-	TEST(@"-[MD5Hash]", [C(@"asdfoobar").MD5Hash
+	TEST(@"-[stringByMD5Hashing]", [C(@"asdfoobar").stringByMD5Hashing
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
-	TEST(@"-[RIPEMD160Hash]", [C(@"asdfoobar").RIPEMD160Hash
+	TEST(@"-[stringByRIPEMD160Hashing]",
+	    [C(@"asdfoobar").stringByRIPEMD160Hashing
 	    isEqual: @"021d773b0fac06eb6755ca6aa58a580c980f7f13"])
 
-	TEST(@"-[SHA1Hash]", [C(@"asdfoobar").SHA1Hash
+	TEST(@"-[stringBySHA1Hashing]", [C(@"asdfoobar").stringBySHA1Hashing
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 
-	TEST(@"-[SHA224Hash]", [C(@"asdfoobar").SHA224Hash
-	    isEqual:
-	    @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"])
+	TEST(@"-[stringBySHA224Hashing]", [C(@"asdfoobar").stringBySHA224Hashing
+	    isEqual: @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"
+	    ])
 
-	TEST(@"-[SHA256Hash]", [C(@"asdfoobar").SHA256Hash isEqual:
-	    @"28e65b1dcd7f6ce2ea6277b15f87b913"
-	    @"628b5500bf7913a2bbf4cedcfa1215f6"])
+	TEST(@"-[stringBySHA256Hashing]", [C(@"asdfoobar").stringBySHA256Hashing
+	    isEqual: @"28e65b1dcd7f6ce2ea6277b15f87b913628b5500bf7913a2bbf4cedc"
+		     @"fa1215f6"])
 
-	TEST(@"-[SHA384Hash]", [C(@"asdfoobar").SHA384Hash isEqual:
-	    @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d08"
-	    @"7ded2f9c279e5addf8be854044bca0cece073fce28eec7d9"])
+	TEST(@"-[stringBySHA384Hashing]", [C(@"asdfoobar").stringBySHA384Hashing
+	    isEqual: @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d087ded2f9c"
+		     @"279e5addf8be854044bca0cece073fce28eec7d9"])
 
-	TEST(@"-[SHA512Hash]", [C(@"asdfoobar").SHA512Hash isEqual:
-	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
-	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
+	TEST(@"-[stringBySHA512Hashing]", [C(@"asdfoobar").stringBySHA512Hashing
+	    isEqual: @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56"
+		     @"412a9247c3579a329e53a5dc74676b106755e3394f9454a2d4227324"
+		     @"2615d32f80437d61"])
 
-	cs = [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
+	characterSet =
+	    [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
 	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
 	    [[C(@"foo\"ba'_~$]🍏🍌") stringByURLEncodingWithAllowedCharacters:
-	    cs] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
+	    characterSet] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
 
 	TEST(@"-[stringByURLDecoding]",
 	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByURLDecoding
 	    isEqual: @"foo bar\"+$🍌"])
 
 	TEST(@"-[insertString:atIndex:]",
-	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] insertString: @"äöü"
-			 atIndex: 3]) &&
-	    [s[0] isEqual: @"𝄞ööäöüöbä€"])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: @"𝄞öööbä€"]) &&
+	    R([mutableString1 insertString: @"äöü" atIndex: 3]) &&
+	    [mutableString1 isEqual: @"𝄞ööäöüöbä€"])
 
 	EXPECT_EXCEPTION(@"Detect invalid format in -[stringByURLDecoding] "
 	    @"#1", OFInvalidFormatException,
@@ -1258,101 +1275,110 @@ static uint16_t sutf16str[] = {
 	    [C(@"foo%FFbar") stringByURLDecoding])
 
 	TEST(@"-[setCharacter:atIndex:]",
-	    (s[0] = [mutableStringClass stringWithString: @"abäde"]) &&
-	    R([s[0] setCharacter: 0xF6
-			 atIndex: 2]) &&
-	    [s[0] isEqual: @"aböde"] &&
-	    R([s[0] setCharacter: 'c'
-			 atIndex: 2]) &&
-	    [s[0] isEqual: @"abcde"] &&
-	    R([s[0] setCharacter: 0x20AC
-			 atIndex: 3]) &&
-	    [s[0] isEqual: @"abc€e"] &&
-	    R([s[0] setCharacter: 'x'
-			 atIndex: 1]) &&
-	    [s[0] isEqual: @"axc€e"])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: @"abäde"]) &&
+	    R([mutableString1 setCharacter: 0xF6 atIndex: 2]) &&
+	    [mutableString1 isEqual: @"aböde"] &&
+	    R([mutableString1 setCharacter: 'c' atIndex: 2]) &&
+	    [mutableString1 isEqual: @"abcde"] &&
+	    R([mutableString1 setCharacter: 0x20AC atIndex: 3]) &&
+	    [mutableString1 isEqual: @"abc€e"] &&
+	    R([mutableString1 setCharacter: 'x' atIndex: 1]) &&
+	    [mutableString1 isEqual: @"axc€e"])
 
 	TEST(@"-[deleteCharactersInRange:]",
-	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] deleteCharactersInRange: of_range(1, 3)]) &&
-	    [s[0] isEqual: @"𝄞bä€"] &&
-	    R([s[0] deleteCharactersInRange: of_range(0, 4)]) &&
-	    [s[0] isEqual: @""])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: @"𝄞öööbä€"]) &&
+	    R([mutableString1 deleteCharactersInRange: OFRangeMake(1, 3)]) &&
+	    [mutableString1 isEqual: @"𝄞bä€"] &&
+	    R([mutableString1 deleteCharactersInRange: OFRangeMake(0, 4)]) &&
+	    [mutableString1 isEqual: @""])
 
 	TEST(@"-[replaceCharactersInRange:withString:]",
-	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
-	    R([s[0] replaceCharactersInRange: of_range(1, 3)
-				  withString: @"äöüß"]) &&
-	    [s[0] isEqual: @"𝄞äöüßbä€"] &&
-	    R([s[0] replaceCharactersInRange: of_range(4, 2)
-				  withString: @"b"]) &&
-	    [s[0] isEqual: @"𝄞äöübä€"] &&
-	    R([s[0] replaceCharactersInRange: of_range(0, 7)
-				  withString: @""]) &&
-	    [s[0] isEqual: @""])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: @"𝄞öööbä€"]) &&
+	    R([mutableString1 replaceCharactersInRange: OFRangeMake(1, 3)
+					    withString: @"äöüß"]) &&
+	    [mutableString1 isEqual: @"𝄞äöüßbä€"] &&
+	    R([mutableString1 replaceCharactersInRange: OFRangeMake(4, 2)
+					    withString: @"b"]) &&
+	    [mutableString1 isEqual: @"𝄞äöübä€"] &&
+	    R([mutableString1 replaceCharactersInRange: OFRangeMake(0, 7)
+					    withString: @""]) &&
+	    [mutableString1 isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #1",
 	    OFOutOfRangeException,
 	    {
-		s[0] = [mutableStringClass stringWithString: @"𝄞öö"];
-		[s[0] deleteCharactersInRange: of_range(2, 2)];
+		mutableString1 = [mutableStringClass stringWithString: @"𝄞öö"];
+		[mutableString1 deleteCharactersInRange: OFRangeMake(2, 2)];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [s[0] deleteCharactersInRange: of_range(4, 0)])
+	    [mutableString1 deleteCharactersInRange: OFRangeMake(4, 0)])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(2, 2)
-				withString: @""])
+	    [mutableString1 replaceCharactersInRange: OFRangeMake(2, 2)
+					  withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [s[0] replaceCharactersInRange: of_range(4, 0)
-				withString: @""])
+	    [mutableString1 replaceCharactersInRange: OFRangeMake(4, 0)
+					  withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
-	    (s[0] = [mutableStringClass stringWithString:
+	    (mutableString1 = [mutableStringClass stringWithString:
 	    @"asd fo asd fofo asd"]) &&
-	    R([s[0] replaceOccurrencesOfString: @"fo"
-				    withString: @"foo"]) &&
-	    [s[0] isEqual: @"asd foo asd foofoo asd"] &&
-	    (s[0] = [mutableStringClass stringWithString: @"XX"]) &&
-	    R([s[0] replaceOccurrencesOfString: @"X"
-				    withString: @"XX"]) &&
-	    [s[0] isEqual: @"XXXX"])
+	    R([mutableString1 replaceOccurrencesOfString: @"fo"
+					      withString: @"foo"]) &&
+	    [mutableString1 isEqual: @"asd foo asd foofoo asd"] &&
+	    (mutableString1 = [mutableStringClass stringWithString: @"XX"]) &&
+	    R([mutableString1 replaceOccurrencesOfString: @"X"
+					      withString: @"XX"]) &&
+	    [mutableString1 isEqual: @"XXXX"])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:options:range:]",
-	    (s[0] = [mutableStringClass stringWithString:
-	    @"foofoobarfoobarfoo"]) &&
-	    R([s[0] replaceOccurrencesOfString: @"oo"
-				    withString: @"óò"
-				       options: 0
-					 range: of_range(2, 15)]) &&
-	    [s[0] isEqual: @"foofóòbarfóòbarfoo"])
+	    (mutableString1 = [mutableStringClass stringWithString:
+	    @"foofoobarfoobarfoo"]) && R([mutableString1
+	    replaceOccurrencesOfString: @"oo"
+			    withString: @"óò"
+			       options: 0
+				 range: OFRangeMake(2, 15)]) &&
+	    [mutableString1 isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",
-	    (s[0] = [mutableStringClass stringWithString: whitespace[0]]) &&
-	    R([s[0] deleteLeadingWhitespaces]) &&
-	    [s[0] isEqual: @"asd  \t \t\t\r\n"] &&
-	    (s[0] = [mutableStringClass stringWithString: whitespace[1]]) &&
-	    R([s[0] deleteLeadingWhitespaces]) && [s[0] isEqual: @""])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[0]]) &&
+	    R([mutableString1 deleteLeadingWhitespaces]) &&
+	    [mutableString1 isEqual: @"asd  \t \t\t\r\n"] &&
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[1]]) &&
+	    R([mutableString1 deleteLeadingWhitespaces]) &&
+	    [mutableString1 isEqual: @""])
 
 	TEST(@"-[deleteTrailingWhitespaces]",
-	    (s[0] = [mutableStringClass stringWithString: whitespace[0]]) &&
-	    R([s[0] deleteTrailingWhitespaces]) &&
-	    [s[0] isEqual: @" \r \t\n\t \tasd"] &&
-	    (s[0] = [mutableStringClass stringWithString: whitespace[1]]) &&
-	    R([s[0] deleteTrailingWhitespaces]) && [s[0] isEqual: @""])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[0]]) &&
+	    R([mutableString1 deleteTrailingWhitespaces]) &&
+	    [mutableString1 isEqual: @" \r \t\n\t \tasd"] &&
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[1]]) &&
+	    R([mutableString1 deleteTrailingWhitespaces]) &&
+	    [mutableString1 isEqual: @""])
 
 	TEST(@"-[deleteEnclosingWhitespaces]",
-	    (s[0] = [mutableStringClass stringWithString: whitespace[0]]) &&
-	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @"asd"] &&
-	    (s[0] = [mutableStringClass stringWithString: whitespace[1]]) &&
-	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @""])
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[0]]) &&
+	    R([mutableString1 deleteEnclosingWhitespaces]) &&
+	    [mutableString1 isEqual: @"asd"] &&
+	    (mutableString1 = [mutableStringClass
+	    stringWithString: whitespace[1]]) &&
+	    R([mutableString1 deleteEnclosingWhitespaces]) &&
+	    [mutableString1 isEqual: @""])
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[decomposedStringWithCanonicalMapping]",
@@ -1365,11 +1391,11 @@ static uint16_t sutf16str[] = {
 #endif
 
 	TEST(@"-[stringByXMLEscaping]",
-	    (is = C(@"<hello> &world'\"!&").stringByXMLEscaping) &&
-	    [is isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
+	    (string = C(@"<hello> &world'\"!&").stringByXMLEscaping) &&
+	    [string isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
 
 	TEST(@"-[stringByXMLUnescaping]",
-	    [is.stringByXMLUnescaping isEqual: @"<hello> &world'\"!&"] &&
+	    [string.stringByXMLUnescaping isEqual: @"<hello> &world'\"!&"] &&
 	    [C(@"&#x79;").stringByXMLUnescaping isEqual: @"y"] &&
 	    [C(@"&#xe4;").stringByXMLUnescaping isEqual: @"ä"] &&
 	    [C(@"&#8364;").stringByXMLUnescaping isEqual: @"€"] &&
@@ -1391,14 +1417,14 @@ static uint16_t sutf16str[] = {
 	    [C(@"&#xg;") stringByXMLUnescaping])
 
 	TEST(@"-[stringByXMLUnescapingWithDelegate:]",
-	    (h = [[[EntityHandler alloc] init] autorelease]) &&
-	    [[C(@"x&foo;y") stringByXMLUnescapingWithDelegate: h]
+	    (entityHandler = [[[EntityHandler alloc] init] autorelease]) &&
+	    [[C(@"x&foo;y") stringByXMLUnescapingWithDelegate: entityHandler]
 	    isEqual: @"xbary"])
 
 #ifdef OF_HAVE_BLOCKS
 	TEST(@"-[stringByXMLUnescapingWithBlock:]",
 	    [[C(@"x&foo;y") stringByXMLUnescapingWithBlock:
-	        ^ OFString *(OFString *str, OFString *entity) {
+		^ OFString *(OFString *str, OFString *entity) {
 		    if ([entity isEqual: @"foo"])
 			    return @"bar";
 

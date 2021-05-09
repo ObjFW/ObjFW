@@ -14,9 +14,8 @@
  */
 
 #import "OFObject.h"
+#import "OFSocket.h"
 #import "OFString.h"
-
-#import "socket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -30,40 +29,40 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** IN */
-	OF_DNS_CLASS_IN	 =   1,
+	OFDNSClassIN  =   1,
 	/** Any class. Only for queries. */
-	OF_DNS_CLASS_ANY = 255,
-} of_dns_class_t;
+	OFDNSClassAny = 255,
+} OFDNSClass;
 
 /**
  * @brief The type of a DNS resource record.
  */
 typedef enum {
 	/** A */
-	OF_DNS_RECORD_TYPE_A	 =   1,
+	OFDNSRecordTypeA     =   1,
 	/** NS */
-	OF_DNS_RECORD_TYPE_NS	 =   2,
+	OFDNSRecordTypeNS    =   2,
 	/** CNAME */
-	OF_DNS_RECORD_TYPE_CNAME =   5,
+	OFDNSRecordTypeCNAME =   5,
 	/** SOA */
-	OF_DNS_RECORD_TYPE_SOA	 =   6,
+	OFDNSRecordTypeSOA   =   6,
 	/** PTR */
-	OF_DNS_RECORD_TYPE_PTR	 =  12,
+	OFDNSRecordTypePTR   =  12,
 	/** HINFO */
-	OF_DNS_RECORD_TYPE_HINFO =  13,
+	OFDNSRecordTypeHINFO =  13,
 	/** MX */
-	OF_DNS_RECORD_TYPE_MX	 =  15,
+	OFDNSRecordTypeMX    =  15,
 	/** TXT */
-	OF_DNS_RECORD_TYPE_TXT	 =  16,
+	OFDNSRecordTypeTXT   =  16,
 	/** RP */
-	OF_DNS_RECORD_TYPE_RP	 =  17,
+	OFDNSRecordTypeRP    =  17,
 	/** AAAA */
-	OF_DNS_RECORD_TYPE_AAAA	 =  28,
+	OFDNSRecordTypeAAAA  =  28,
 	/** SRV */
-	OF_DNS_RECORD_TYPE_SRV	 =  33,
+	OFDNSRecordTypeSRV   =  33,
 	/** All types. Only for queries. */
-	OF_DNS_RECORD_TYPE_ALL	 = 255,
-} of_dns_record_type_t;
+	OFDNSRecordTypeAll   = 255,
+} OFDNSRecordType;
 
 /**
  * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
@@ -73,8 +72,8 @@ typedef enum {
 @interface OFDNSResourceRecord: OFObject <OFCopying>
 {
 	OFString *_name;
-	of_dns_class_t _DNSClass;
-	of_dns_record_type_t _recordType;
+	OFDNSClass _DNSClass;
+	OFDNSRecordType _recordType;
 	uint32_t _TTL;
 	OF_RESERVE_IVARS(OFDNSResourceRecord, 4)
 }
@@ -87,12 +86,12 @@ typedef enum {
 /**
  * @brief The DNS class.
  */
-@property (readonly, nonatomic) of_dns_class_t DNSClass;
+@property (readonly, nonatomic) OFDNSClass DNSClass;
 
 /**
  * @brief The resource record type code.
  */
-@property (readonly, nonatomic) of_dns_record_type_t recordType;
+@property (readonly, nonatomic) OFDNSRecordType recordType;
 
 /**
  * @brief The number of seconds after which the resource record should be
@@ -111,8 +110,8 @@ typedef enum {
  * @return An initialized OFDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -124,17 +123,17 @@ typedef enum {
 OF_SUBCLASSING_RESTRICTED
 @interface OFADNSResourceRecord: OFDNSResourceRecord
 {
-	of_socket_address_t _address;
+	OFSocketAddress _address;
 }
 
 /**
  * @brief The IPv4 address of the resource record.
  */
-@property (readonly, nonatomic) const of_socket_address_t *address;
+@property (readonly, nonatomic) const OFSocketAddress *address;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -147,7 +146,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -160,17 +159,17 @@ OF_SUBCLASSING_RESTRICTED
 OF_SUBCLASSING_RESTRICTED
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord
 {
-	of_socket_address_t _address;
+	OFSocketAddress _address;
 }
 
 /**
  * @brief The IPv6 address of the resource record.
  */
-@property (readonly, nonatomic) const of_socket_address_t *address;
+@property (readonly, nonatomic) const OFSocketAddress *address;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -183,7 +182,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFAAAADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (const of_socket_address_t *)address
+		     address: (const OFSocketAddress *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -205,8 +204,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *alias;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -220,7 +219,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFCNAMEDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 		       alias: (OFString *)alias
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
@@ -248,8 +247,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *OS;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -264,7 +263,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFHINFODNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 			 CPU: (OFString *)CPU
 			  OS: (OFString *)OS
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
@@ -294,8 +293,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *mailExchange;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -310,7 +309,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFMXDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 		  preference: (uint16_t)preference
 		mailExchange: (OFString *)mailExchange
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
@@ -334,8 +333,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *authoritativeHost;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -349,7 +348,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFNSDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 	   authoritativeHost: (OFString *)authoritativeHost
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
@@ -372,8 +371,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *domainName;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -387,7 +386,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFPTRDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 		  domainName: (OFString *)domainName
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
@@ -416,8 +415,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *TXTDomainName;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -433,7 +432,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFRPDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 		     mailbox: (OFString *)mailbox
 	       TXTDomainName: (OFString *)TXTDomainName
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
@@ -489,8 +488,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) uint32_t minTTL;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -510,7 +509,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFSOADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 	   primaryNameServer: (OFString *)primaryNameServer
 	   responsiblePerson: (OFString *)responsiblePerson
 		serialNumber: (uint32_t)serialNumber
@@ -556,8 +555,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) uint16_t port;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -598,8 +597,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFData *) *textStrings;
 
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_record_type_t)recordType
+		    DNSClass: (OFDNSClass)DNSClass
+		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
@@ -613,7 +612,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFTXTDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		    DNSClass: (of_dns_class_t)DNSClass
+		    DNSClass: (OFDNSClass)DNSClass
 		 textStrings: (OFArray OF_GENERIC(OFData *) *)textStrings
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
@@ -621,11 +620,37 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *_Nonnull of_dns_class_to_string(of_dns_class_t DNSClass);
-extern OFString *_Nonnull of_dns_record_type_to_string(
-    of_dns_record_type_t recordType);
-extern of_dns_class_t of_dns_class_parse(OFString *_Nonnull string);
-extern of_dns_record_type_t of_dns_record_type_parse(OFString *_Nonnull string);
+/**
+ * @brief Returns the name for the specified OFDNSClass.
+ *
+ * @param DNSClass The OFDNSClass to return the name for
+ * @return The name for the specified OFDNSClass
+ */
+extern OFString *_Nonnull OFDNSClassName(OFDNSClass DNSClass);
+
+/**
+ * @brief Returns the name for the specified OFDNSRecordType.
+ *
+ * @param recordType The OFDNSRecordType to return the name for
+ * @return The name for the specified OFDNSRecordType
+ */
+extern OFString *_Nonnull OFDNSRecordTypeName(OFDNSRecordType recordType);
+
+/**
+ * @brief Parses the specified string as an @ref OFDNSClass.
+ *
+ * @param string The string to parse as an @ref OFDNSClass
+ * @return The parsed OFDNSClass
+ */
+extern OFDNSClass OFDNSClassParseName(OFString *_Nonnull string);
+
+/**
+ * @brief Parses the specified string as an @ref OFDNSRecordType.
+ *
+ * @param string The string to parse as an @ref OFDNSRecordType
+ * @return The parsed OFDNSRecordType
+ */
+extern OFDNSRecordType OFDNSRecordTypeParseName(OFString *_Nonnull string);
 #ifdef __cplusplus
 }
 #endif

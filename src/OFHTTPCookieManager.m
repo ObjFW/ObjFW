@@ -53,8 +53,7 @@
 	return [[_cookies copy] autorelease];
 }
 
-- (void)addCookie: (OFHTTPCookie *)cookie
-	   forURL: (OFURL *)URL
+- (void)addCookie: (OFHTTPCookie *)cookie forURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *cookieDomain, *URLHost;
@@ -64,7 +63,7 @@
 		cookie.path = @"/";
 
 	if (cookie.secure &&
-	    [URL.scheme caseInsensitiveCompare: @"https"] != OF_ORDERED_SAME) {
+	    [URL.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -87,9 +86,7 @@
 		if ([iter.name isEqual: cookie.name] &&
 		    [iter.domain isEqual: cookie.domain] &&
 		    [iter.path isEqual: cookie.path]) {
-			[_cookies replaceObjectAtIndex: i
-					    withObject: cookie];
-
+			[_cookies replaceObjectAtIndex: i withObject: cookie];
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
@@ -106,8 +103,7 @@
 	    forURL: (OFURL *)URL
 {
 	for (OFHTTPCookie *cookie in cookies)
-		[self addCookie: cookie
-			 forURL: URL];
+		[self addCookie: cookie forURL: URL];
 }
 
 - (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURL: (OFURL *)URL
@@ -125,7 +121,7 @@
 			continue;
 
 		if (cookie.secure && [URL.scheme caseInsensitiveCompare:
-		    @"https"] != OF_ORDERED_SAME)
+		    @"https"] != OFOrderedSame)
 			continue;
 
 		pool = objc_autoreleasePoolPush();

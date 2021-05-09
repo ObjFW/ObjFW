@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSetWindowsRegistryValueFailedException: OFException
 {
 	OFWindowsRegistryKey *_registryKey;
-	OFString *_Nullable _value;
+	OFString *_Nullable _valueName;
 	OFData *_Nullable _data;
 	DWORD _type;
 	LSTATUS _status;
@@ -42,9 +42,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
 /**
- * @brief The value which could not be set.
+ * @brief The name of the value which could not be set.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *valueName;
 
 /**
  * @brief The data to which the value could not be set.
@@ -66,14 +66,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	  exception.
  *
  * @param registryKey The registry key on which setting the value failed
- * @param value The value which could not be set
+ * @param valueName The name of the value which could not be set
  * @param data The data to which the value could not be set
  * @param type The type for the value that could not be set
  * @param status The status returned by RegSetValueEx()
  * @return A new, autoreleased set Windows registry value failed exception
  */
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-				   value: (nullable OFString *)value
+			       valueName: (nullable OFString *)valueName
 				    data: (nullable OFData *)data
 				    type: (DWORD)type
 				  status: (LSTATUS)status;
@@ -85,14 +85,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	  exception.
  *
  * @param registryKey The registry key on which setting the value failed
- * @param value The value which could not be set
+ * @param valueName The name of the value which could not be set
  * @param data The data to which the value could not be set
  * @param type The type for the value that could not be set
  * @param status The status returned by RegSetValueEx()
  * @return An initialized set Windows registry value failed exception
  */
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			      value: (nullable OFString *)value
+			  valueName: (nullable OFString *)valueName
 			       data: (nullable OFData *)data
 			       type: (DWORD)type
 			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;

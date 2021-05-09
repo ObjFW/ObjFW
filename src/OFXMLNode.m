@@ -76,14 +76,12 @@
 
 - (OFString *)XMLString
 {
-	return [self XMLStringWithIndentation: 0
-					level: 0];
+	return [self XMLStringWithIndentation: 0 level: 0];
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [self XMLStringWithIndentation: 0
-					level: 0];
+	return [self XMLStringWithIndentation: 0 level: 0];
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
@@ -94,7 +92,7 @@
 
 - (OFString *)description
 {
-	return [self XMLStringWithIndentation: 2];
+	return [self XMLStringWithIndentation: 2 level: 0];
 }
 
 - (OFXMLElement *)XMLElementBySerializing

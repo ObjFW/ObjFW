@@ -88,11 +88,11 @@ extern const char *_Nullable glue_object_getClassName PPC_PARAMS(id _Nullable ob
 extern const char *_Nonnull glue_protocol_getName PPC_PARAMS(Protocol *_Nonnull protocol);
 extern bool glue_protocol_isEqual PPC_PARAMS(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
 extern bool glue_protocol_conformsToProtocol PPC_PARAMS(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
-extern _Nullable objc_uncaught_exception_handler_t glue_objc_setUncaughtExceptionHandler PPC_PARAMS(objc_uncaught_exception_handler_t _Nullable handler);
+extern _Nullable objc_uncaught_exception_handler glue_objc_setUncaughtExceptionHandler PPC_PARAMS(objc_uncaught_exception_handler _Nullable handler);
 extern void glue_objc_setForwardHandler PPC_PARAMS(IMP _Nullable forward, IMP _Nullable stretForward);
-extern void glue_objc_setEnumerationMutationHandler PPC_PARAMS(objc_enumeration_mutation_handler_t _Nullable hadler);
+extern void glue_objc_setEnumerationMutationHandler PPC_PARAMS(objc_enumeration_mutation_handler _Nullable hadler);
 extern id _Nullable glue_objc_constructInstance PPC_PARAMS(Class _Nullable class, void *_Nullable bytes);
-extern void glue_objc_exit(void);
+extern void glue_objc_deinit(void);
 extern Ivar _Nullable *_Nullable glue_class_copyIvarList PPC_PARAMS(Class _Nullable class, unsigned int *_Nullable outCount);
 extern const char *_Nonnull glue_ivar_getName PPC_PARAMS(Ivar _Nonnull ivar);
 extern const char *_Nonnull glue_ivar_getTypeEncoding PPC_PARAMS(Ivar _Nonnull ivar);

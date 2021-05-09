@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
+typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
@@ -151,8 +151,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  */
-- (void)connectToHost: (OFString *)host
-		 port: (uint16_t)port;
+- (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
@@ -160,8 +159,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  */
-- (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port;
+- (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
@@ -172,7 +170,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -184,7 +182,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (of_tcp_socket_async_connect_block_t)block;
+		     block: (OFTCPSocketAsyncConnectBlock)block;
 
 /**
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
@@ -196,8 +194,8 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_tcp_socket_async_connect_block_t)block;
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFTCPSocketAsyncConnectBlock)block;
 #endif
 
 /**
@@ -209,14 +207,13 @@ typedef void (^of_tcp_socket_async_connect_block_t)(id _Nullable exception);
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern Class _Nullable of_tls_socket_class;
+extern Class _Nullable OFTLSSocketClass;
 #ifdef __cplusplus
 }
 #endif

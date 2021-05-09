@@ -26,7 +26,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	self = [super init];
 
@@ -43,7 +43,7 @@
 	return self;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character >= _range.location &&
 	    character < _range.location + _range.length);

@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A mode for an OFRunLoop.
  */
-typedef OFConstantString *of_run_loop_mode_t;
+typedef OFConstantString *OFRunLoopMode;
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,7 +47,7 @@ extern "C" {
 /**
  * @brief The default mode for an OFRunLoop.
  */
-extern const of_run_loop_mode_t of_run_loop_mode_default;
+extern const OFRunLoopMode OFDefaultRunLoopMode;
 #ifdef __cplusplus
 }
 #endif
@@ -64,7 +64,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_THREADS
 	OFMutex *_statesMutex;
 #endif
-	of_run_loop_mode_t _Nullable _currentMode;
+	OFRunLoopMode _Nullable _currentMode;
 	volatile bool _stop;
 }
 
@@ -72,8 +72,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFRunLoop *mainRunLoop;
 @property (class, readonly, nullable, nonatomic) OFRunLoop *currentRunLoop;
 #endif
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    of_run_loop_mode_t currentMode;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFRunLoopMode currentMode;
 
 /**
  * @brief Returns the run loop for the main thread.
@@ -102,8 +101,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param timer The timer to add
  * @param mode The run loop mode in which to run the timer
  */
-- (void)addTimer: (OFTimer *)timer
-	 forMode: (of_run_loop_mode_t)mode;
+- (void)addTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode;
 
 #ifdef OF_AMIGAOS
 /**
@@ -120,9 +118,7 @@ OF_SUBCLASSING_RESTRICTED
  *		   received. The selector must have one parameter for the ULONG
  *		   of the signal that was received.
  */
-- (void)addExecSignal: (ULONG)signal
-	       target: (id)target
-	     selector: (SEL)selector;
+- (void)addExecSignal: (ULONG)signal target: (id)target selector: (SEL)selector;
 
 /**
  * @brief Adds an Exec Signal to the run loop for the specified mode.
@@ -140,7 +136,7 @@ OF_SUBCLASSING_RESTRICTED
  *		   of the signal that was received.
  */
 - (void)addExecSignal: (ULONG)signal
-	      forMode: (of_run_loop_mode_t)mode
+	      forMode: (OFRunLoopMode)mode
 	       target: (id)target
 	     selector: (SEL)selector;
 
@@ -166,7 +162,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param selector The selector which was specified when adding the signal
  */
 - (void)removeExecSignal: (ULONG)signal
-		 forMode: (of_run_loop_mode_t)mode
+		 forMode: (OFRunLoopMode)mode
 		  target: (id)target
 		selector: (SEL)selector;
 #endif
@@ -190,8 +186,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param mode The mode in which to run the run loop
  * @param deadline The date until which the run loop should run at the longest
  */
-- (void)runMode: (of_run_loop_mode_t)mode
-     beforeDate: (nullable OFDate *)deadline;
+- (void)runMode: (OFRunLoopMode)mode beforeDate: (nullable OFDate *)deadline;
 
 /**
  * @brief Stops the run loop. If there is still an operation being executed, it

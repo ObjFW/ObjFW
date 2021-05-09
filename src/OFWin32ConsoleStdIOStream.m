@@ -26,7 +26,7 @@
  * read.
  *
  * Therefore, instead of just using the UTF-8 codepage, this captures all reads
- * and writes to of_std{in,out,err} on the low level, interprets the buffer as
+ * and writes to OFStd{In,Out,Err} on the low level, interprets the buffer as
  * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
  * Doing so is safe, as the console only supports text anyway and thus it does
  * not matter if binary gets garbled by the conversion (e.g. because invalid
@@ -36,8 +36,6 @@
  * file would then be read / written in the wrong encoding and break reading /
  * writing binary), it checks that the handle is indeed a console.
  */
-
-#define OF_STDIO_STREAM_WIN32_CONSOLE_M
 
 #include "config.h"
 
@@ -60,20 +58,20 @@
 
 #include <windows.h>
 
-static of_string_encoding_t
+static OFStringEncoding
 codepageToEncoding(UINT codepage)
 {
 	switch (codepage) {
 	case 437:
-		return OF_STRING_ENCODING_CODEPAGE_437;
+		return OFStringEncodingCodepage437;
 	case 850:
-		return OF_STRING_ENCODING_CODEPAGE_850;
+		return OFStringEncodingCodepage850;
 	case 858:
-		return OF_STRING_ENCODING_CODEPAGE_858;
+		return OFStringEncodingCodepage858;
 	case 1251:
-		return OF_STRING_ENCODING_WINDOWS_1251;
+		return OFStringEncodingWindows1251;
 	case 1252:
-		return OF_STRING_ENCODING_WINDOWS_1252;
+		return OFStringEncodingWindows1252;
 	default:
 		@throw [OFInvalidEncodingException exception];
 	}
@@ -88,13 +86,13 @@ codepageToEncoding(UINT codepage)
 		return;
 
 	if ((fd = _fileno(stdin)) >= 0)
-		of_stdin = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdIn = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = _fileno(stdout)) >= 0)
-		of_stdout = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdOut = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = _fileno(stderr)) >= 0)
-		of_stderr = [[OFWin32ConsoleStdIOStream alloc]
+		OFStdErr = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 }
 
@@ -124,18 +122,17 @@ codepageToEncoding(UINT codepage)
 	return self;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer_
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer_ length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	char *buffer = buffer_;
-	of_char16_t *UTF16;
+	OFChar16 *UTF16;
 	size_t j = 0;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	UTF16 = of_alloc(length, sizeof(of_char16_t));
+	UTF16 = OFAllocMemory(length, sizeof(OFChar16));
 	@try {
 		DWORD UTF16Len;
 		OFMutableData *rest = nil;
@@ -149,7 +146,7 @@ codepageToEncoding(UINT codepage)
 					requestedLength: length * 2
 						  errNo: EIO];
 		} else {
-			of_string_encoding_t encoding;
+			OFStringEncoding encoding;
 			OFString *string;
 			size_t stringLen;
 
@@ -174,13 +171,13 @@ codepageToEncoding(UINT codepage)
 		}
 
 		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
-			of_unichar_t c =
+			OFUnichar c =
 			    (((_incompleteUTF16Surrogate & 0x3FF) << 10) |
 			    (UTF16[0] & 0x3FF)) + 0x10000;
 			char UTF8[4];
 			size_t UTF8Len;
 
-			if ((UTF8Len = of_string_utf8_encode(c, UTF8)) == 0)
+			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
@@ -190,8 +187,7 @@ codepageToEncoding(UINT codepage)
 				if (rest == nil)
 					rest = [OFMutableData data];
 
-				[rest addItems: UTF8
-					 count: UTF8Len];
+				[rest addItems: UTF8 count: UTF8Len];
 			}
 
 			_incompleteUTF16Surrogate = 0;
@@ -199,7 +195,7 @@ codepageToEncoding(UINT codepage)
 		}
 
 		for (; i < UTF16Len; i++) {
-			of_unichar_t c = UTF16[i];
+			OFUnichar c = UTF16[i];
 			char UTF8[4];
 			size_t UTF8Len;
 
@@ -208,7 +204,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if ((c & 0xFC00) == 0xD800) {
-				of_char16_t next;
+				OFChar16 next;
 
 				if (UTF16Len <= i + 1) {
 					_incompleteUTF16Surrogate = c;
@@ -238,7 +234,7 @@ codepageToEncoding(UINT codepage)
 				i++;
 			}
 
-			if ((UTF8Len = of_string_utf8_encode(c, UTF8)) == 0)
+			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
@@ -248,16 +244,14 @@ codepageToEncoding(UINT codepage)
 				if (rest == nil)
 					rest = [OFMutableData data];
 
-				[rest addItems: UTF8
-					 count: UTF8Len];
+				[rest addItems: UTF8 count: UTF8Len];
 			}
 		}
 
 		if (rest != nil)
-			[self unreadFromBuffer: rest.items
-					length: rest.count];
+			[self unreadFromBuffer: rest.items length: rest.count];
 	} @finally {
-		free(UTF16);
+		OFFreeMemory(UTF16);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -265,27 +259,26 @@ codepageToEncoding(UINT codepage)
 	return j;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer_
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const char *buffer = buffer_;
-	of_char16_t *tmp;
+	OFChar16 *tmp;
 	size_t i = 0, j = 0;
 
 	if (length > SIZE_MAX / 2)
 		@throw [OFOutOfRangeException exception];
 
 	if (_incompleteUTF8SurrogateLen > 0) {
-		of_unichar_t c;
-		of_char16_t UTF16[2];
+		OFUnichar c;
+		OFChar16 UTF16[2];
 		ssize_t UTF8Len;
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
 
-		UTF8Len = -of_string_utf8_decode(
+		UTF8Len = -OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
-		OF_ENSURE(UTF8Len > 0);
+		OFEnsure(UTF8Len > 0);
 
 		toCopy = UTF8Len - _incompleteUTF8SurrogateLen;
 		if (toCopy > length)
@@ -298,7 +291,7 @@ codepageToEncoding(UINT codepage)
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
 			return 0;
 
-		UTF8Len = of_string_utf8_decode(
+		UTF8Len = OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
@@ -331,7 +324,7 @@ codepageToEncoding(UINT codepage)
 			OFString *string = [OFString
 			    stringWithUTF16String: UTF16
 					   length: UTF16Len];
-			of_string_encoding_t encoding =
+			OFStringEncoding encoding =
 			    codepageToEncoding(GetConsoleOutputCP());
 			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];
@@ -362,19 +355,19 @@ codepageToEncoding(UINT codepage)
 		i += toCopy;
 	}
 
-	tmp = of_alloc(length * 2, sizeof(of_char16_t));
+	tmp = OFAllocMemory(length * 2, sizeof(OFChar16));
 	@try {
 		DWORD bytesWritten;
 
 		while (i < length) {
-			of_unichar_t c;
+			OFUnichar c;
 			ssize_t UTF8Len;
 
-			UTF8Len = of_string_utf8_decode(buffer + i, length - i,
+			UTF8Len = OFUTF8StringDecode(buffer + i, length - i,
 			    &c);
 
 			if (UTF8Len < 0 && UTF8Len >= -4) {
-				OF_ENSURE(length - i < 4);
+				OFEnsure(length - i < 4);
 
 				memcpy(_incompleteUTF8Surrogate, buffer + i,
 				    length - i);
@@ -414,7 +407,7 @@ codepageToEncoding(UINT codepage)
 			void *pool = objc_autoreleasePoolPush();
 			OFString *string = [OFString stringWithUTF16String: tmp
 								    length: j];
-			of_string_encoding_t encoding =
+			OFStringEncoding encoding =
 			    codepageToEncoding(GetConsoleOutputCP());
 			size_t nativeLen = [string
 			    cStringLengthWithEncoding: encoding];
@@ -441,7 +434,7 @@ codepageToEncoding(UINT codepage)
 				   bytesWritten: bytesWritten * 2
 					  errNo: 0];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	/*
@@ -491,10 +484,7 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
 	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
-	[color getRed: &red
-		green: &green
-		 blue: &blue
-		alpha: NULL];
+	[color getRed: &red green: &green blue: &blue alpha: NULL];
 
 	if (red >= 0.25)
 		csbi.wAttributes |= FOREGROUND_RED;
@@ -520,10 +510,7 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
 	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-	[color getRed: &red
-		green: &green
-		 blue: &blue
-		alpha: NULL];
+	[color getRed: &red green: &green blue: &blue alpha: NULL];
 
 	if (red >= 0.25)
 		csbi.wAttributes |= BACKGROUND_RED;
@@ -593,7 +580,7 @@ codepageToEncoding(UINT codepage)
 	SetConsoleCursorPosition(_handle, csbi.dwCursorPosition);
 }
 
-- (void)setCursorPosition: (of_point_t)position
+- (void)setCursorPosition: (OFPoint)position
 {
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
@@ -601,7 +588,7 @@ codepageToEncoding(UINT codepage)
 	SetConsoleCursorPosition(_handle, (COORD){ position.x, position.y });
 }
 
-- (void)setRelativeCursorPosition: (of_point_t)position
+- (void)setRelativeCursorPosition: (OFPoint)position
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 

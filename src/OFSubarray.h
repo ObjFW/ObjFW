@@ -20,13 +20,11 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSubarray: OFArray
 {
 	OFArray *_array;
-	of_range_t _range;
+	OFRange _range;
 }
 
-+ (instancetype)arrayWithArray: (OFArray *)array
-			 range: (of_range_t)range;
-- (instancetype)initWithArray: (OFArray *)array
-			range: (of_range_t)range;
++ (instancetype)arrayWithArray: (OFArray *)array range: (OFRange)range;
+- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

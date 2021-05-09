@@ -42,8 +42,7 @@
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
++ (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	return [[[self alloc] initWithItemSize: itemSize
 				      capacity: capacity] autorelease];
@@ -83,8 +82,7 @@
 			     capacity: capacity];
 }
 
-- (instancetype)initWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
+- (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	self = [super init];
 
@@ -92,7 +90,7 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = of_alloc(capacity, itemSize);
+		_items = OFAllocMemory(capacity, itemSize);
 		_itemSize = itemSize;
 		_capacity = capacity;
 		_freeWhenDone = true;
@@ -108,9 +106,7 @@
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	self = [super initWithItems: items
-			      count: count
-			   itemSize: itemSize];
+	self = [super initWithItems: items count: count itemSize: itemSize];
 
 	_capacity = _count;
 
@@ -122,12 +118,10 @@
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	self = [self initWithItems: items
-			     count: count
-			  itemSize: itemSize];
+	self = [self initWithItems: items count: count itemSize: itemSize];
 
 	if (freeWhenDone)
-		free(items);
+		OFFreeMemory(items);
 
 	return self;
 }
@@ -170,7 +164,7 @@
 	return _items + (_count - 1) * _itemSize;
 }
 
-- (OFData *)subdataWithRange: (of_range_t)range
+- (OFData *)subdataWithRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -187,7 +181,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + 1 > _capacity) {
-		_items = of_realloc(_items, _count + 1, _itemSize);
+		_items = OFResizeMemory(_items, _count + 1, _itemSize);
 		_capacity = _count + 1;
 	}
 
@@ -196,22 +190,18 @@
 	_count++;
 }
 
-- (void)insertItem: (const void *)item
-	   atIndex: (size_t)idx
+- (void)insertItem: (const void *)item atIndex: (size_t)idx
 {
-	[self insertItems: item
-		  atIndex: idx
-		    count: 1];
+	[self insertItems: item atIndex: idx count: 1];
 }
 
-- (void)addItems: (const void *)items
-	   count: (size_t)count
+- (void)addItems: (const void *)items count: (size_t)count
 {
 	if (count > SIZE_MAX - _count)
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -227,7 +217,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -244,7 +234,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = of_realloc(_items, _count + count, _itemSize);
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -254,10 +244,10 @@
 
 - (void)removeItemAtIndex: (size_t)idx
 {
-	[self removeItemsInRange: of_range(idx, 1)];
+	[self removeItemsInRange: OFRangeMake(idx, 1)];
 }
 
-- (void)removeItemsInRange: (of_range_t)range
+- (void)removeItemsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -269,7 +259,7 @@
 
 	_count -= range.length;
 	@try {
-		_items = of_realloc(_items, _count, _itemSize);
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
@@ -283,7 +273,7 @@
 
 	_count--;
 	@try {
-		_items = of_realloc(_items, _count, _itemSize);
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
@@ -292,7 +282,7 @@
 
 - (void)removeAllItems
 {
-	free(_items);
+	OFFreeMemory(_items);
 	_items = NULL;
 	_count = 0;
 	_capacity = 0;
@@ -309,7 +299,7 @@
 {
 	if (_capacity != _count) {
 		@try {
-			_items = of_realloc(_items, _count, _itemSize);
+			_items = OFResizeMemory(_items, _count, _itemSize);
 			_capacity = _count;
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only made it smaller */

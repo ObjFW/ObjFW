@@ -22,18 +22,18 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[of_stdout setForegroundColor: [OFColor lime]];
+	[OFStdOut setForegroundColor: [OFColor lime]];
 
-	[of_stdout writeFormat: @"[OFLocale] Language: %@\n",
+	[OFStdOut writeFormat: @"[OFLocale] Language: %@\n",
 	    [OFLocale language]];
 
-	[of_stdout writeFormat: @"[OFLocale] Territory: %@\n",
+	[OFStdOut writeFormat: @"[OFLocale] Territory: %@\n",
 	    [OFLocale territory]];
 
-	[of_stdout writeFormat: @"[OFLocale] Encoding: %@\n",
-	    of_string_name_of_encoding([OFLocale encoding])];
+	[OFStdOut writeFormat: @"[OFLocale] Encoding: %@\n",
+	    OFStringEncodingName([OFLocale encoding])];
 
-	[of_stdout writeFormat: @"[OFLocale] Decimal point: %@\n",
+	[OFStdOut writeFormat: @"[OFLocale] Decimal point: %@\n",
 	    [OFLocale decimalPoint]];
 
 	objc_autoreleasePoolPop(pool);

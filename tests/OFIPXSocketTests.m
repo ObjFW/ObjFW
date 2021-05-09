@@ -19,34 +19,33 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFIPXSocket";
+static OFString *const module = @"OFIPXSocket";
 
 @implementation TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
-	of_socket_address_t address1, address2;
+	OFSocketAddress address1, address2;
 	char buffer[5];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
 	@try {
 		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0
-				       packetType: 0]))
+		    R(address1 = [sock bindToPort: 0 packetType: 0]))
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFIPXSocket] -[bindToPort:packetType:]: "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -58,18 +57,13 @@ static OFString *module = @"OFIPXSocket";
 	}
 
 	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello"
-			length: 5
-		      receiver: &address1]))
+	    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
 
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buffer
-			     length: 5
-			     sender: &address2] == 5 &&
+	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
-	    of_socket_address_equal(&address1, &address2) &&
-	    of_socket_address_hash(&address1) ==
-	    of_socket_address_hash(&address2))
+	    OFSocketAddressEqual(&address1, &address2) &&
+	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -35,8 +35,7 @@
 	return @encode(id);
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != sizeof(_object))
 		@throw [OFOutOfRangeException exception];

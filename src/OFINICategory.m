@@ -52,16 +52,11 @@ escapeString(OFString *string)
 
 	mutableString = [[string mutableCopy] autorelease];
 
-	[mutableString replaceOccurrencesOfString: @"\\"
-				       withString: @"\\\\"];
-	[mutableString replaceOccurrencesOfString: @"\f"
-				       withString: @"\\f"];
-	[mutableString replaceOccurrencesOfString: @"\r"
-				       withString: @"\\r"];
-	[mutableString replaceOccurrencesOfString: @"\n"
-				       withString: @"\\n"];
-	[mutableString replaceOccurrencesOfString: @"\""
-				       withString: @"\\\""];
+	[mutableString replaceOccurrencesOfString: @"\\" withString: @"\\\\"];
+	[mutableString replaceOccurrencesOfString: @"\f" withString: @"\\f"];
+	[mutableString replaceOccurrencesOfString: @"\r" withString: @"\\r"];
+	[mutableString replaceOccurrencesOfString: @"\n" withString: @"\\n"];
+	[mutableString replaceOccurrencesOfString: @"\"" withString: @"\\\""];
 
 	[mutableString prependString: @"\""];
 	[mutableString appendString: @"\""];
@@ -79,19 +74,14 @@ unescapeString(OFString *string)
 	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
 		return string;
 
-	string = [string substringWithRange: of_range(1, string.length - 2)];
+	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
 	mutableString = [[string mutableCopy] autorelease];
 
-	[mutableString replaceOccurrencesOfString: @"\\f"
-				       withString: @"\f"];
-	[mutableString replaceOccurrencesOfString: @"\\r"
-				       withString: @"\r"];
-	[mutableString replaceOccurrencesOfString: @"\\n"
-				       withString: @"\n"];
-	[mutableString replaceOccurrencesOfString: @"\\\""
-				       withString: @"\""];
-	[mutableString replaceOccurrencesOfString: @"\\\\"
-				       withString: @"\\"];
+	[mutableString replaceOccurrencesOfString: @"\\f" withString: @"\f"];
+	[mutableString replaceOccurrencesOfString: @"\\r" withString: @"\r"];
+	[mutableString replaceOccurrencesOfString: @"\\n" withString: @"\n"];
+	[mutableString replaceOccurrencesOfString: @"\\\"" withString: @"\""];
+	[mutableString replaceOccurrencesOfString: @"\\\\" withString: @"\\"];
 
 	[mutableString makeImmutable];
 
@@ -106,6 +96,11 @@ unescapeString(OFString *string)
 
 	[super dealloc];
 }
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"%@ = %@", _key, _value];
+}
 @end
 
 @implementation OFINICategoryComment
@@ -114,6 +109,11 @@ unescapeString(OFString *string)
 	[_comment release];
 
 	[super dealloc];
+}
+
+- (OFString *)description
+{
+	return [[_comment copy] autorelease];
 }
 @end
 
@@ -156,7 +156,7 @@ unescapeString(OFString *string)
 		OFString *key, *value;
 		size_t pos;
 
-		if ((pos = [line rangeOfString: @"="].location) == OF_NOT_FOUND)
+		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		key = unescapeString([line substringToIndex: pos]
@@ -180,8 +180,7 @@ unescapeString(OFString *string)
 
 - (OFString *)stringForKey: (OFString *)key
 {
-	return [self stringForKey: key
-		     defaultValue: nil];
+	return [self stringForKey: key defaultValue: nil];
 }
 
 - (OFString *)stringForKey: (OFString *)key
@@ -202,12 +201,11 @@ unescapeString(OFString *string)
 	return defaultValue;
 }
 
-- (long long)integerForKey: (OFString *)key
-	      defaultValue: (long long)defaultValue
+- (long long)longLongForKey: (OFString *)key
+	       defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringForKey: key defaultValue: nil];
 	long long ret;
 
 	if (value != nil)
@@ -220,12 +218,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (bool)boolForKey: (OFString *)key
-      defaultValue: (bool)defaultValue
+- (bool)boolForKey: (OFString *)key defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringForKey: key defaultValue: nil];
 	bool ret;
 
 	if (value != nil) {
@@ -243,12 +239,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (float)floatForKey: (OFString *)key
-	defaultValue: (float)defaultValue
+- (float)floatForKey: (OFString *)key defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringForKey: key defaultValue: nil];
 	float ret;
 
 	if (value != nil)
@@ -261,12 +255,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (double)doubleForKey: (OFString *)key
-	  defaultValue: (double)defaultValue
+- (double)doubleForKey: (OFString *)key defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key
-				defaultValue: nil];
+	OFString *value = [self stringForKey: key defaultValue: nil];
 	double ret;
 
 	if (value != nil)
@@ -279,7 +271,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (OFArray *)arrayForKey: (OFString *)key
+- (OFArray OF_GENERIC(OFString *) *)stringArrayForKey: (OFString *)key
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
@@ -303,8 +295,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (void)setString: (OFString *)string
-	   forKey: (OFString *)key
+- (void)setString: (OFString *)string forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategoryPair *pair;
@@ -344,26 +335,22 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setInteger: (long long)integer
-	    forKey: (OFString *)key
+- (void)setLongLong: (long long)longLong forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%lld", integer]
+	[self setString: [OFString stringWithFormat: @"%lld", longLong]
 		 forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setBool: (bool)bool_
-	 forKey: (OFString *)key
+- (void)setBool: (bool)bool_ forKey: (OFString *)key
 {
-	[self setString: (bool_ ? @"true" : @"false")
-		 forKey: key];
+	[self setString: (bool_ ? @"true" : @"false") forKey: key];
 }
 
-- (void)setFloat: (float)float_
-	  forKey: (OFString *)key
+- (void)setFloat: (float)float_ forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -373,8 +360,7 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setDouble: (double)double_
-	   forKey: (OFString *)key
+- (void)setDouble: (double)double_ forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -384,8 +370,8 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setArray: (OFArray *)array
-	  forKey: (OFString *)key
+- (void)setStringArray: (OFArray OF_GENERIC(OFString *) *)array
+		forKey: (OFString *)key
 {
 	void *pool;
 	OFMutableArray *pairs;
@@ -402,15 +388,15 @@ unescapeString(OFString *string)
 
 	pairs = [OFMutableArray arrayWithCapacity: array.count];
 
-	for (id object in array) {
+	for (OFString *string in array) {
 		OFINICategoryPair *pair;
 
-		if (![object isKindOfClass: [OFString class]])
+		if (![string isKindOfClass: [OFString class]])
 			@throw [OFInvalidArgumentException exception];
 
 		pair = [[[OFINICategoryPair alloc] init] autorelease];
 		pair->_key = [key copy];
-		pair->_value = [object copy];
+		pair->_value = [string copy];
 
 		[pairs addObject: pair];
 	}
@@ -482,7 +468,7 @@ unescapeString(OFString *string)
 }
 
 - (bool)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   first: (bool)first
 {
 	if (_lines.count == 0)
@@ -503,13 +489,17 @@ unescapeString(OFString *string)
 			OFString *value = escapeString(pair->_value);
 			OFString *tmp = [OFString
 			    stringWithFormat: @"%@=%@\r\n", key, value];
-
-			[stream writeString: tmp
-				   encoding: encoding];
+			[stream writeString: tmp encoding: encoding];
 		} else
 			@throw [OFInvalidArgumentException exception];
 	}
 
 	return true;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@ \"%@\": %@>",
+					   self.class, _name, _lines];
 }
 @end

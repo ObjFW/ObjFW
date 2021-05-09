@@ -26,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key
++ (instancetype)exceptionWithObject: (id)object key: (OFString *)key
 {
-	return [[[self alloc] initWithObject: object
-					 key: key] autorelease];
+	return [[[self alloc] initWithObject: object key: key] autorelease];
 }
 
 + (instancetype)exceptionWithObject: (id)object
@@ -47,17 +45,12 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
+- (instancetype)initWithObject: (id)object key: (OFString *)key
 {
-	return [self initWithObject: object
-				key: key
-			      value: nil];
+	return [self initWithObject: object key: key value: nil];
 }
 
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
-			 value: (id)value
+- (instancetype)initWithObject: (id)object key: (OFString *)key value: (id)value
 {
 	self = [super init];
 

@@ -99,15 +99,15 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, [_firstObject hash]);
-	OF_HASH_ADD_HASH(hash, [_secondObject hash]);
-	OF_HASH_ADD_HASH(hash, [_thirdObject hash]);
+	OFHashAddHash(&hash, [_firstObject hash]);
+	OFHashAddHash(&hash, [_secondObject hash]);
+	OFHashAddHash(&hash, [_thirdObject hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

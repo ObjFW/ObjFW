@@ -22,12 +22,12 @@
 
 #import "OFDNSResourceRecord.h"
 #import "OFHTTPRequest.h"
+#import "OFSocket.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
 
 #import "amiga-library.h"
 #import "macros.h"
-#import "socket.h"
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
@@ -66,59 +66,13 @@ extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
 
-extern bool glue_of_init(void);
-extern void *glue_of_alloc(void);
-extern void *glue_of_alloc_zeroed(void);
-extern void *glue_of_realloc(void);
-extern uint32_t *glue_of_hash_seed_ref(void);
-extern OFStdIOStream **glue_of_stdin_ref(void);
-extern OFStdIOStream **glue_of_stdout_ref(void);
-extern OFStdIOStream **glue_of_stderr_ref(void);
-extern void glue_of_logv(void);
-extern int glue_of_application_main(void);
-extern const char *glue_of_http_request_method_to_string(void);
-extern of_http_request_method_t glue_of_http_request_method_from_string(void);
-extern OFString *glue_of_http_status_code_to_string(void);
-extern size_t glue_of_sizeof_type_encoding(void);
-extern size_t glue_of_alignof_type_encoding(void);
-extern of_string_encoding_t glue_of_string_parse_encoding(void);
-extern OFString *glue_of_string_name_of_encoding(void);
-extern size_t glue_of_string_utf8_encode(void);
-extern ssize_t glue_of_string_utf8_decode(void);
-extern size_t glue_of_string_utf16_length(void);
-extern size_t glue_of_string_utf32_length(void);
-extern OFString *glue_of_zip_archive_entry_version_to_string(void);
-extern OFString *glue_of_zip_archive_entry_compression_method_to_string(void);
-extern size_t glue_of_zip_archive_entry_extra_field_find(void);
-extern void glue_of_pbkdf2(void);
-extern void glue_of_salsa20_8_core(void);
-extern void glue_of_scrypt_block_mix(void);
-extern void glue_of_scrypt_romix(void);
-extern void glue_of_scrypt(void);
-extern const char *glue_of_strptime(void);
-extern of_socket_address_t glue_of_socket_address_parse_ip(void);
-extern of_socket_address_t glue_of_socket_address_parse_ipv4(void);
-extern of_socket_address_t glue_of_socket_address_parse_ipv6(void);
-extern of_socket_address_t glue_of_socket_address_ipx(void);
-extern bool glue_of_socket_address_equal(void);
-extern unsigned long glue_of_socket_address_hash(void);
-extern OFString *glue_of_socket_address_ip_string(void);
-extern void glue_of_socket_address_set_port(void);
-extern uint16_t glue_of_socket_address_get_port(void);
-extern void glue_of_socket_address_set_ipx_network(void);
-extern uint32_t glue_of_socket_address_get_ipx_network(void);
-extern void glue_of_socket_address_set_ipx_node(void);
-extern void glue_of_socket_address_get_ipx_node(void);
-extern OFString *glue_of_dns_class_to_string(void);
-extern OFString *glue_of_dns_record_type_to_string(void);
-extern of_dns_class_t glue_of_dns_class_parse(void);
-extern of_dns_record_type_t glue_of_dns_record_type_parse(void);
+#include "amiga-glue.h"
 
 #ifdef OF_AMIGAOS_M68K
 void
 __init_eh(void)
 {
-	/* Taken care of by of_init() */
+	/* Taken care of by OFInit() */
 }
 #endif
 
@@ -126,7 +80,7 @@ __init_eh(void)
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
-struct of_libc libc;
+struct OFLibC libC;
 FILE **__sF;
 
 #if defined(OF_AMIGAOS_M68K)
@@ -219,7 +173,7 @@ getDataDataRelocs(void)
 }
 
 static struct Library *
-lib_init(struct ObjFWBase *base OF_M68K_REG(d0), void *segList OF_M68K_REG(a0),
+libInit(struct ObjFWBase *base OF_M68K_REG(d0), void *segList OF_M68K_REG(a0),
     struct ExecBase *sysBase OF_M68K_REG(a6))
 {
 #if defined(OF_AMIGAOS_M68K)
@@ -243,7 +197,7 @@ lib_init(struct ObjFWBase *base OF_M68K_REG(d0), void *segList OF_M68K_REG(a0),
 }
 
 struct Library *__saveds
-lib_open(void)
+libOpen(void)
 {
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
 
@@ -258,7 +212,7 @@ lib_open(void)
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
 	/*
-	 * We cannot use malloc here, as that depends on the libc passed from
+	 * We cannot use malloc here, as that depends on the libC passed from
 	 * the application.
 	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
@@ -323,7 +277,7 @@ expunge(struct ObjFWBase *base, struct ExecBase *sysBase)
 }
 
 static void *__saveds
-lib_expunge(void)
+libExpunge(void)
 {
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
 
@@ -331,7 +285,7 @@ lib_expunge(void)
 }
 
 static void *__saveds
-lib_close(void)
+libClose(void)
 {
 	/*
 	 * SysBase becomes invalid during this function, so we store it in
@@ -348,7 +302,7 @@ lib_close(void)
 #ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				libc.__deregister_frame_info(
+				libC.__deregister_frame_info(
 				    (&_EH_FRAME_BEGINS__)[i]);
 #endif
 
@@ -370,13 +324,13 @@ lib_close(void)
 }
 
 static void *
-lib_null(void)
+libNull(void)
 {
 	return NULL;
 }
 
 bool __saveds
-of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
+OFInit(unsigned int version, struct OFLibC *libC_, FILE **sF)
 {
 #ifdef OF_AMIGAOS_M68K
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
@@ -395,7 +349,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 	if (base->initialized)
 		return true;
 
-	memcpy(&libc, libc_, sizeof(libc));
+	memcpy(&libC, libC_, sizeof(libC));
 	__sF = sF;
 
 #ifdef OF_AMIGAOS_M68K
@@ -403,7 +357,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 		return false;
 
 	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		libC.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
 		    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
@@ -416,7 +370,7 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 	    : "=r"(frame), "=r"(iter0)
 	);
 
-	libc.__register_frame(frame);
+	libC.__register_frame(frame);
 #endif
 
 	for (iter = iter0; *iter != 0; iter++);
@@ -434,25 +388,25 @@ of_init(unsigned int version, struct of_libc *libc_, FILE **sF)
 void *
 malloc(size_t size)
 {
-	return libc.malloc(size);
+	return libC.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	return libc.calloc(count, size);
+	return libC.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	return libc.realloc(ptr, size);
+	return libC.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	libc.free(ptr);
+	libC.free(ptr);
 }
 
 int
@@ -462,7 +416,7 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	ret = libc.vfprintf(stream, fmt, args);
+	ret = libC.vfprintf(stream, fmt, args);
 	va_end(args);
 
 	return ret;
@@ -471,19 +425,19 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 int
 vfprintf(FILE *restrict stream, const char *restrict fmt, va_list args)
 {
-	return libc.vfprintf(stream, fmt, args);
+	return libC.vfprintf(stream, fmt, args);
 }
 
 int
 fflush(FILE *restrict stream)
 {
-	return libc.fflush(stream);
+	return libC.fflush(stream);
 }
 
 void
 abort(void)
 {
-	libc.abort();
+	libC.abort();
 
 	OF_UNREACHABLE
 }
@@ -492,81 +446,81 @@ abort(void)
 int
 _Unwind_SjLj_RaiseException(void *ex)
 {
-	return libc._Unwind_SjLj_RaiseException(ex);
+	return libC._Unwind_SjLj_RaiseException(ex);
 }
 #else
 int
 _Unwind_RaiseException(void *ex)
 {
-	return libc._Unwind_RaiseException(ex);
+	return libC._Unwind_RaiseException(ex);
 }
 #endif
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	libc._Unwind_DeleteException(ex);
+	libC._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	return libc._Unwind_GetLanguageSpecificData(ctx);
+	return libC._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	return libc._Unwind_GetRegionStart(ctx);
+	return libC._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	return libc._Unwind_GetDataRelBase(ctx);
+	return libC._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	return libc._Unwind_GetTextRelBase(ctx);
+	return libC._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	return libc._Unwind_GetIP(ctx);
+	return libC._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	return libc._Unwind_GetGR(ctx, gr);
+	return libC._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	libc._Unwind_SetIP(ctx, ip);
+	libC._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	libc._Unwind_SetGR(ctx, gr, value);
+	libC._Unwind_SetGR(ctx, gr, value);
 }
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 void
 _Unwind_SjLj_Resume(void *ex)
 {
-	libc._Unwind_SjLj_Resume(ex);
+	libC._Unwind_SjLj_Resume(ex);
 }
 #else
 void
 _Unwind_Resume(void *ex)
 {
-	libc._Unwind_Resume(ex);
+	libC._Unwind_Resume(ex);
 }
 #endif
 
@@ -574,39 +528,39 @@ _Unwind_Resume(void *ex)
 void
 __register_frame_info(const void *begin, void *object)
 {
-	libc.__register_frame_info(begin, object);
+	libC.__register_frame_info(begin, object);
 }
 
 void
 *__deregister_frame_info(const void *begin)
 {
-	return libc.__deregister_frame_info(begin);
+	return libC.__deregister_frame_info(begin);
 }
 #endif
 
 #ifdef OF_MORPHOS
 void __register_frame(void *frame)
 {
-	libc.__register_frame(frame);
+	libC.__register_frame(frame);
 }
 
 void __deregister_frame(void *frame)
 {
-	libc.__deregister_frame(frame);
+	libC.__deregister_frame(frame);
 }
 #endif
 
 int *
-of_get_errno(void)
+OFErrNo(void)
 {
-	return libc.get_errno();
+	return libC.errNo();
 }
 
 int
 vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
     va_list args)
 {
-	return libc.vsnprintf(str, size, fmt, args);
+	return libC.vsnprintf(str, size, fmt, args);
 }
 
 #ifdef OF_AMIGAOS_M68K
@@ -617,7 +571,7 @@ sscanf(const char *restrict str, const char *restrict fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	ret = libc.vsscanf(str, fmt, args);
+	ret = libC.vsscanf(str, fmt, args);
 	va_end(args);
 
 	return ret;
@@ -627,7 +581,7 @@ sscanf(const char *restrict str, const char *restrict fmt, ...)
 void
 exit(int status)
 {
-	libc.exit(status);
+	libC.exit(status);
 
 	OF_UNREACHABLE
 }
@@ -635,25 +589,25 @@ exit(int status)
 int
 atexit(void (*function)(void))
 {
-	return libc.atexit(function);
+	return libC.atexit(function);
 }
 
-of_sig_t
-signal(int sig, of_sig_t func)
+OFSignalHandler
+signal(int sig, OFSignalHandler func)
 {
-	return libc.signal(sig, func);
+	return libC.signal(sig, func);
 }
 
 char *
 setlocale(int category, const char *locale)
 {
-	return libc.setlocale(category, locale);
+	return libC.setlocale(category, locale);
 }
 
 int
 _Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 {
-	return libc._Unwind_Backtrace(callback, data);
+	return libC._Unwind_Backtrace(callback, data);
 }
 
 #pragma GCC diagnostic push
@@ -663,61 +617,15 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
 #endif
-	(CONST_APTR)lib_open,
-	(CONST_APTR)lib_close,
-	(CONST_APTR)lib_expunge,
-	(CONST_APTR)lib_null,
+	(CONST_APTR)libOpen,
+	(CONST_APTR)libClose,
+	(CONST_APTR)libExpunge,
+	(CONST_APTR)libNull,
 #ifdef OF_MORPHOS
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
-	(CONST_APTR)glue_of_init,
-	(CONST_APTR)glue_of_alloc,
-	(CONST_APTR)glue_of_alloc_zeroed,
-	(CONST_APTR)glue_of_realloc,
-	(CONST_APTR)glue_of_hash_seed_ref,
-	(CONST_APTR)glue_of_stdin_ref,
-	(CONST_APTR)glue_of_stdout_ref,
-	(CONST_APTR)glue_of_stderr_ref,
-	(CONST_APTR)glue_of_logv,
-	(CONST_APTR)glue_of_application_main,
-	(CONST_APTR)glue_of_http_request_method_to_string,
-	(CONST_APTR)glue_of_http_request_method_from_string,
-	(CONST_APTR)glue_of_http_status_code_to_string,
-	(CONST_APTR)glue_of_sizeof_type_encoding,
-	(CONST_APTR)glue_of_alignof_type_encoding,
-	(CONST_APTR)glue_of_string_parse_encoding,
-	(CONST_APTR)glue_of_string_name_of_encoding,
-	(CONST_APTR)glue_of_string_utf8_encode,
-	(CONST_APTR)glue_of_string_utf8_decode,
-	(CONST_APTR)glue_of_string_utf16_length,
-	(CONST_APTR)glue_of_string_utf32_length,
-	(CONST_APTR)glue_of_zip_archive_entry_version_to_string,
-	(CONST_APTR)glue_of_zip_archive_entry_compression_method_to_string,
-	(CONST_APTR)glue_of_zip_archive_entry_extra_field_find,
-	(CONST_APTR)glue_of_pbkdf2,
-	(CONST_APTR)glue_of_salsa20_8_core,
-	(CONST_APTR)glue_of_scrypt_block_mix,
-	(CONST_APTR)glue_of_scrypt_romix,
-	(CONST_APTR)glue_of_scrypt,
-	(CONST_APTR)glue_of_strptime,
-	(CONST_APTR)glue_of_socket_address_parse_ip,
-	(CONST_APTR)glue_of_socket_address_parse_ipv4,
-	(CONST_APTR)glue_of_socket_address_parse_ipv6,
-	(CONST_APTR)glue_of_socket_address_ipx,
-	(CONST_APTR)glue_of_socket_address_equal,
-	(CONST_APTR)glue_of_socket_address_hash,
-	(CONST_APTR)glue_of_socket_address_ip_string,
-	(CONST_APTR)glue_of_socket_address_set_port,
-	(CONST_APTR)glue_of_socket_address_get_port,
-	(CONST_APTR)glue_of_socket_address_set_ipx_network,
-	(CONST_APTR)glue_of_socket_address_get_ipx_network,
-	(CONST_APTR)glue_of_socket_address_set_ipx_node,
-	(CONST_APTR)glue_of_socket_address_get_ipx_node,
-	(CONST_APTR)glue_of_dns_class_to_string,
-	(CONST_APTR)glue_of_dns_record_type_to_string,
-	(CONST_APTR)glue_of_dns_class_parse,
-	(CONST_APTR)glue_of_dns_record_type_parse,
+#include "amiga-funcarray.inc"
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
@@ -737,7 +645,7 @@ static struct {
 	sizeof(struct ObjFWBase),
 	functionTable,
 	NULL,
-	lib_init
+	libInit
 };
 
 struct Resident resident = {

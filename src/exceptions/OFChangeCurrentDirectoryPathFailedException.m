@@ -26,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo
++ (instancetype)exceptionWithPath: (OFString *)path errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path
-				     errNo: errNo] autorelease];
+	return [[[self alloc] initWithPath: path errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -38,8 +36,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		       errNo: (int)errNo
+- (instancetype)initWithPath: (OFString *)path errNo: (int)errNo
 {
 	self = [super init];
 
@@ -65,6 +62,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to change the current directory path to %@: %@",
-	    _path, of_strerror(_errNo)];
+	    _path, OFStrError(_errNo)];
 }
 @end

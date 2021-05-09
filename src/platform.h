@@ -66,8 +66,9 @@
 # define OF_SPARC64
 #elif defined(__sparc__) && !defined(__arch64__)
 # define OF_SPARC
-#elif defined(__hppa__) || defined(__HPPA__) || \
-    defined(_PA_RISC1_0) || defined(_PA_RISC1_1)
+#elif defined(__hppa64__) || defined(_PA_RISC2_0)
+# define OF_PA_RISC_2_0
+#elif defined(__hppa__) || defined(_PA_RISC1_0) || defined(_PA_RISC1_1)
 # define OF_PA_RISC
 #elif defined(__ia64__) || defined(__IA64__)
 # define OF_ITANIUM

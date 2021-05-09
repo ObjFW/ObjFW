@@ -17,14 +17,22 @@
 #import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
+/*! @file */
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 @class OFURL;
 
-enum {
-	OF_DATA_SEARCH_BACKWARDS = 1
-};
+/**
+ * @brief Options for searching in data.
+ *
+ * This is a bit mask.
+ */
+typedef enum {
+	/** Search backwards in the data */
+	OFDataSearchBackwards = 1
+} OFDataSearchOptions;
 
 /**
  * @class OFData OFData.h ObjFW/OFData.h
@@ -94,8 +102,7 @@ enum {
  * @param count The number of items
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count;
++ (instancetype)dataWithItems: (const void *)items count: (size_t)count;
 
 /**
  * @brief Creates a new OFData with the specified `count` items of the
@@ -186,8 +193,7 @@ enum {
  * @param count The number of items
  * @return An initialized OFData
  */
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count;
+- (instancetype)initWithItems: (const void *)items count: (size_t)count;
 
 /**
  * @brief Initialized an already allocated OFData with the specified `count`
@@ -273,6 +279,14 @@ enum {
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
 /**
+ * @brief Compares the data to other data.
+ *
+ * @param data Data to compare the data to
+ * @return The result of the comparison
+ */
+- (OFComparisonResult)compare: (OFData *)data;
+
+/**
  * @brief Returns a specific item of the OFData.
  *
  * @param index The number of the item to return
@@ -286,24 +300,20 @@ enum {
  * @param range The range of the data for the new OFData
  * @return The data in the specified range as a new OFData
  */
-- (OFData *)subdataWithRange: (of_range_t)range;
+- (OFData *)subdataWithRange: (OFRange)range;
 
 /**
  * @brief Returns the range of the data.
  *
  * @param data The data to search for
- * @param options Options modifying search behavior.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-----------------------------
- *		  `OF_DATA_SEARCH_BACKWARDS` | Search backwards in the data
+ * @param options Options modifying search behavior
  * @param range The range in which to search
  * @return The range of the first occurrence of the data or a range with
- *	   `OF_NOT_FOUND` as start position if it was not found.
+ *	   `OFNotFound` as start position if it was not found.
  */
-- (of_range_t)rangeOfData: (OFData *)data
-		  options: (int)options
-		    range: (of_range_t)range;
+- (OFRange)rangeOfData: (OFData *)data
+	       options: (OFDataSearchOptions)options
+		 range: (OFRange)range;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -325,6 +335,5 @@ enum {
 OF_ASSUME_NONNULL_END
 
 #import "OFMutableData.h"
-#import "OFData+ASN1DERParsing.h"
-#import "OFData+CryptoHashing.h"
+#import "OFData+CryptographicHashing.h"
 #import "OFData+MessagePackParsing.h"

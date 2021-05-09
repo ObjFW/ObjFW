@@ -20,23 +20,61 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-typedef struct of_list_object_t of_list_object_t;
-/**
- * @struct of_list_object_t OFList.h ObjFW/OFList.h
- *
- * @brief A list object.
- *
- * A struct that contains a pointer to the next list object, the previous list
- * object and the object.
+/** @file */
+
+/*
+ * Make clang's -Wdocumentation shut about about using @struct on someting it
+ * thinks is not a struct. Doxygen requires it this way.
  */
-struct of_list_object_t {
-	/** A pointer to the next list object in the list */
-	of_list_object_t *_Nullable next;
-	/** A pointer to the previous list object in the list */
-	of_list_object_t *_Nullable previous;
-	/** The object for the list object */
-	id __unsafe_unretained object;
-};
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation"
+#endif
+/**
+ * @struct OFListItem OFList.h ObjFW/OFList.h
+ *
+ * @brief A list item.
+ *
+ * See @ref OFListItemNext, @ref OFListItemPrevious and @ref OFListItemObject.
+ */
+typedef struct _OFListItem *OFListItem;
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief Returns the next list item of the list item.
+ *
+ * @param listItem The list item for which the next list item should be returned
+ * @return The next list item of the list item
+ */
+extern OFListItem _Nullable OFListItemNext(OFListItem _Nonnull listItem);
+
+/*!
+ * @brief Returns the previous list item of the list item.
+ *
+ * @param listItem The list item for which the previous list item should be
+ *		   returned
+ * @return The previous list item of the list item
+ */
+extern OFListItem _Nullable OFListItemPrevious(OFListItem _Nonnull listItem);
+
+/*!
+ * @brief Returns the object of the list item.
+ *
+ * @warning The returned object is not retained and autoreleased - this is the
+ *	    caller's responsibility!
+ *
+ * @param listItem The list item for which the object should be returned
+ * @return The object of the list item
+ */
+extern id _Nonnull OFListItemObject(OFListItem _Nonnull listItem);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @class OFList OFList.h ObjFW/OFList.h
@@ -49,18 +87,17 @@ struct of_list_object_t {
 # define ObjectType id
 #endif
 {
-	of_list_object_t *_Nullable _firstListObject;
-	of_list_object_t *_Nullable _lastListObject;
+	OFListItem _Nullable _firstListItem;
+	OFListItem _Nullable _lastListItem;
 	size_t _count;
-	unsigned long  _mutations;
+	unsigned long _mutations;
 	OF_RESERVE_IVARS(OFList, 4)
 }
 
 /**
  * @brief The first list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    of_list_object_t *firstListObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem firstListItem;
 
 /**
  * @brief The first object of the list or `nil`.
@@ -73,8 +110,7 @@ struct of_list_object_t {
 /**
  * @brief The last list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    of_list_object_t *lastListObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFListItem lastListItem;
 
 /**
  * @brief The last object of the list or `nil`.
@@ -95,54 +131,54 @@ struct of_list_object_t {
  * @brief Appends an object to the list.
  *
  * @param object The object to append
- * @return An of_list_object_t, needed to identify the object inside the list.
+ * @return An OFListItem, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
- *	   its of_list_object_t.
+ *	   its OFListItem.
  */
-- (of_list_object_t *)appendObject: (ObjectType)object;
+- (OFListItem)appendObject: (ObjectType)object;
 
 /**
  * @brief Prepends an object to the list.
  *
  * @param object The object to prepend
- * @return An of_list_object_t, needed to identify the object inside the list.
+ * @return An OFListItem, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
- *	   its of_list_object_t.
+ *	   its OFListItem.
  */
-- (of_list_object_t *)prependObject: (ObjectType)object;
+- (OFListItem)prependObject: (ObjectType)object;
 
 /**
  * @brief Inserts an object before another list object.
  *
  * @param object The object to insert
- * @param listObject The of_list_object_t of the object before which it should
- *	  be inserted
- * @return An of_list_object_t, needed to identify the object inside the list.
+ * @param listItem The OFListItem of the object before which it should be
+ *		   inserted
+ * @return An OFListItem, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
- *	   its of_list_object_t.
+ *	   its OFListItem.
  */
-- (of_list_object_t *)insertObject: (ObjectType)object
-		  beforeListObject: (of_list_object_t *)listObject;
+- (OFListItem)insertObject: (ObjectType)object
+	    beforeListItem: (OFListItem)listItem;
 
 /**
  * @brief Inserts an object after another list object.
  *
  * @param object The object to insert
- * @param listObject The of_list_object_t of the object after which it should be
+ * @param listItem The OFListItem of the object after which it should be
  *	  inserted
- * @return An of_list_object_t, needed to identify the object inside the list.
+ * @return An OFListItem, needed to identify the object inside the list.
  *	   For example, if you want to remove an object from the list, you need
- *	   its of_list_object_t.
+ *	   its OFListItem.
  */
-- (of_list_object_t *)insertObject: (ObjectType)object
-		   afterListObject: (of_list_object_t *)listObject;
+- (OFListItem)insertObject: (ObjectType)object
+	     afterListItem: (OFListItem)listItem;
 
 /**
  * @brief Removes the object with the specified list object from the list.
  *
- * @param listObject The list object returned by append / prepend
+ * @param listItem The list object returned by append / prepend
  */
-- (void)removeListObject: (of_list_object_t *)listObject;
+- (void)removeListItem: (OFListItem)listItem;
 
 /**
  * @brief Checks whether the list contains an object equal to the specified

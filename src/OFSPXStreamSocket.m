@@ -20,25 +20,24 @@
 #import "OFSPXStreamSocket.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFNotOpenException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
-
 #ifndef NSPROTO_SPX
 # define NSPROTO_SPX 0
 #endif
 
-#define SPX_PACKET_TYPE 5
+static const uint8_t SPXPacketType = 5;
 
 @interface OFSPXStreamSocket ()
-- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+- (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo;
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
 - (void)of_closeSocket;
 @end
@@ -52,7 +51,7 @@ OF_DIRECT_MEMBERS
 	uint32_t _network;
 	uint16_t _port;
 #ifdef OF_HAVE_BLOCKS
-	of_spx_stream_socket_async_connect_block_t _block;
+	OFSPXStreamSocketAsyncConnectBlock _block;
 #endif
 }
 
@@ -61,11 +60,10 @@ OF_DIRECT_MEMBERS
 		       network: (uint32_t)network
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (of_spx_stream_socket_async_connect_block_t)
-				    block
+			 block: (OFSPXStreamSocketAsyncConnectBlock)block
 #endif
 ;
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 @implementation OFSPXStreamSocketAsyncConnectDelegate
@@ -74,8 +72,7 @@ OF_DIRECT_MEMBERS
 		       network: (uint32_t)network
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (of_spx_stream_socket_async_connect_block_t)
-				    block
+			 block: (OFSPXStreamSocketAsyncConnectBlock)block
 #endif
 {
 	self = [super init];
@@ -106,24 +103,26 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	of_socket_address_t address =
-	    of_socket_address_ipx(_node, _network, _port);
+	OFSocketAddress address =
+	    OFSocketAddressMakeIPX(_node, _network, _port);
 	id exception = nil;
 	int errNo;
 
-	if (![_socket of_createSocketForAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		exception = [self of_connectionFailedExceptionForErrNo: errNo];
 		goto inform_delegate;
 	}
 
 	_socket.canBlock = false;
 
-	if (![_socket of_connectSocketToAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
+#ifdef OF_WINDOWS
+		if (errNo == EINPROGRESS || errNo == EWOULDBLOCK) {
+#else
 		if (errNo == EINPROGRESS) {
+#endif
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
 						      delegate: self];
@@ -142,8 +141,7 @@ inform_delegate:
 		   afterDelay: 0];
 }
 
-- (void)of_socketDidConnect: (id)sock
-		  exception: (id)exception
+- (void)of_socketDidConnect: (id)sock exception: (id)exception
 {
 	id <OFSPXStreamSocketDelegate> delegate =
 	    ((OFSPXStreamSocket *)sock).delegate;
@@ -181,19 +179,20 @@ inform_delegate:
 @implementation OFSPXStreamSocket
 @dynamic delegate;
 
-- (int)of_createSocketForAddress: (const of_socket_address_t *)address
+- (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
-	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET) {
-		*errNo = of_socket_errno();
+	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
+	    OFInvalidSocketHandle) {
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -205,15 +204,15 @@ inform_delegate:
 	return true;
 }
 
-- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+- (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (connect(_socket, &address->sockaddr.sockaddr,
 	    address->length) != 0) {
-		*errNo = of_socket_errno();
+		*errNo = OFSocketErrNo();
 		return false;
 	}
 
@@ -223,19 +222,17 @@ inform_delegate:
 - (void)of_closeSocket
 {
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 
 - (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 	      network: (uint32_t)network
 		 port: (uint16_t)port
 {
-	of_socket_address_t address =
-	    of_socket_address_ipx(node, network, port);
+	OFSocketAddress address = OFSocketAddressMakeIPX(node, network, port);
 	int errNo;
 
-	if (![self of_createSocketForAddress: &address
-				       errNo: &errNo])
+	if (![self of_createSocketForAddress: &address errNo: &errNo])
 		@throw [OFConnectionFailedException
 		    exceptionWithNode: node
 			      network: network
@@ -243,8 +240,7 @@ inform_delegate:
 			       socket: self
 				errNo: errNo];
 
-	if (![self of_connectSocketToAddress: &address
-				       errNo: &errNo]) {
+	if (![self of_connectSocketToAddress: &address errNo: &errNo]) {
 		[self of_closeSocket];
 
 		@throw [OFConnectionFailedException
@@ -263,13 +259,13 @@ inform_delegate:
 	[self asyncConnectToNode: node
 			 network: network
 			    port: port
-		     runLoopMode: of_run_loop_mode_default];
+		     runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -290,20 +286,20 @@ inform_delegate:
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-		     block: (of_spx_stream_socket_async_connect_block_t)block
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block
 {
 	[self asyncConnectToNode: node
 			 network: network
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
+		     runLoopMode: OFDefaultRunLoopMode
 			   block: block];
 }
 
 - (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
 		   network: (uint32_t)network
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_spx_stream_socket_async_connect_block_t)block
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		     block: (OFSPXStreamSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -319,26 +315,26 @@ inform_delegate:
 }
 #endif
 
-- (of_socket_address_t)bindToPort: (uint16_t)port
+- (OFSocketAddress)bindToPort: (uint16_t)port
 {
 	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
-	of_socket_address_t address;
+	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == INVALID_SOCKET)
+	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
-			   packetType: SPX_PACKET_TYPE
+			   packetType: SPXPacketType
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -348,40 +344,40 @@ inform_delegate:
 #endif
 
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
-	address.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: errNo];
 	}
 
 	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPX_PACKET_TYPE
+						     packetType: SPXPacketType
 							 socket: self
 							  errNo: EAFNOSUPPORT];
 	}

@@ -14,8 +14,7 @@
  */
 
 #import "OFMutex.h"
-
-#import "condition.h"
+#import "OFPlainCondition.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFCondition: OFMutex
 {
-	of_condition_t _condition;
+	OFPlainCondition _condition;
 	bool _conditionInitialized;
 }
 
@@ -72,7 +71,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param timeInterval The time interval until the timeout is reached
  * @return Whether the condition has been signaled
  */
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval;
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval;
 
 #ifdef OF_AMIGAOS
 /**
@@ -86,7 +85,7 @@ OF_SUBCLASSING_RESTRICTED
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
  */
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask;
 #endif
 
@@ -114,8 +113,7 @@ OF_SUBCLASSING_RESTRICTED
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
  */
-- (bool)waitUntilDate: (OFDate *)date
-	 orExecSignal: (ULONG *)signalMask;
+- (bool)waitUntilDate: (OFDate *)date orExecSignal: (ULONG *)signalMask;
 #endif
 
 /**

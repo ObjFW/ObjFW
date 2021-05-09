@@ -35,10 +35,25 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 
-enum {
-	OF_ARRAY_SKIP_EMPTY = 1,
-	OF_ARRAY_SORT_DESCENDING = 2
-};
+/**
+ * @brief Options for joining the objects of an array.
+ *
+ * This is a bit mask.
+ */
+typedef enum {
+	/** Skip empty components */
+	OFArraySkipEmptyComponents = 1
+} OFArrayJoinOptions;
+
+/**
+ * @brief Options for sorting an array.
+ *
+ * This is a bit mask.
+ */
+typedef enum {
+	/** Sort the array descending */
+	OFArraySortDescending = 1
+} OFArraySortOptions;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -49,8 +64,7 @@ enum {
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_array_enumeration_block_t)(id object, size_t index,
-    bool *stop);
+typedef void (^OFArrayEnumerationBlock)(id object, size_t index, bool *stop);
 
 /**
  * @brief A block for filtering an OFArray.
@@ -59,7 +73,7 @@ typedef void (^of_array_enumeration_block_t)(id object, size_t index,
  * @param index The index of the object to inspect
  * @return Whether the object should be in the filtered array
  */
-typedef bool (^of_array_filter_block_t)(id object, size_t index);
+typedef bool (^OFArrayFilterBlock)(id object, size_t index);
 
 /**
  * @brief A block for mapping objects to objects in an OFArray.
@@ -68,7 +82,7 @@ typedef bool (^of_array_filter_block_t)(id object, size_t index);
  * @param index The index of the object to map
  * @return The object to map to
  */
-typedef id _Nonnull (^of_array_map_block_t)(id object, size_t index);
+typedef id _Nonnull (^OFArrayMapBlock)(id object, size_t index);
 
 /**
  * @brief A block for folding an OFArray.
@@ -77,7 +91,7 @@ typedef id _Nonnull (^of_array_map_block_t)(id object, size_t index);
  * @param right The object that should be added to the left object
  * @return The left and right side folded into one object
  */
-typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
+typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 #endif
 
 /**
@@ -218,6 +232,13 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 			  count: (size_t)count;
 
 /**
+ * @brief Returns an OFEnumerator to enumerate through all objects of the array.
+ *
+ * @return An OFEnumerator to enumerate through all objects of the array
+ */
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
+
+/**
  * @brief Returns the object at the specified index in the array.
  *
  * @warning The returned object is *not* retained and autoreleased for
@@ -254,8 +275,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 /**
  * @brief Copies the objects at the specified range to the specified buffer.
@@ -264,25 +284,25 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param range The range to copy
  */
 - (void)getObjects: (ObjectType __unsafe_unretained _Nonnull *_Nonnull)buffer
-	   inRange: (of_range_t)range;
+	   inRange: (OFRange)range;
 
 /**
  * @brief Returns the index of the first object that is equivalent to the
- *	  specified object or `OF_NOT_FOUND` if it was not found.
+ *	  specified object or `OFNotFound` if it was not found.
  *
  * @param object The object whose index is returned
  * @return The index of the first object equivalent to the specified object
- *	   or `OF_NOT_FOUND` if it was not found
+ *	   or `OFNotFound` if it was not found
  */
 - (size_t)indexOfObject: (ObjectType)object;
 
 /**
  * @brief Returns the index of the first object that has the same address as the
- *	  specified object or `OF_NOT_FOUND` if it was not found.
+ *	  specified object or `OFNotFound` if it was not found.
  *
  * @param object The object whose index is returned
  * @return The index of the first object that has the same address as
- *	   the specified object or `OF_NOT_FOUND` if it was not found
+ *	   the specified object or `OFNotFound` if it was not found
  */
 - (size_t)indexOfObjectIdenticalTo: (ObjectType)object;
 
@@ -311,7 +331,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param range The range for the subarray
  * @return The subarray as a new autoreleased OFArray
  */
-- (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (of_range_t)range;
+- (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (OFRange)range;
 
 /**
  * @brief Creates a string by joining all objects of the array.
@@ -325,15 +345,11 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @brief Creates a string by joining all objects of the array.
  *
  * @param separator The string with which the objects should be joined
- * @param options Options according to which the objects should be joined.@n
- *		  Possible values are:
- *		  Value                 | Description
- *		  ----------------------|----------------------
- * 		  `OF_ARRAY_SKIP_EMPTY` | Skip empty components
+ * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
-			       options: (int)options;
+			       options: (OFArrayJoinOptions)options;
 
 /**
  * @brief Creates a string by calling the selector on all objects of the array
@@ -352,16 +368,12 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *
  * @param separator The string with which the objects should be joined
  * @param selector The selector to perform on the objects
- * @param options Options according to which the objects should be joined.@n
- *		  Possible values are:
- *		  Value                 | Description
- *		  ----------------------|----------------------
- * 		  `OF_ARRAY_SKIP_EMPTY` | Skip empty components
+ * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector
-			       options: (int)options;
+			       options: (OFArrayJoinOptions)options;
 
 /**
  * @brief Performs the specified selector on all objects in the array.
@@ -387,15 +399,12 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *
  * @param selector The selector to use to sort the array. It's signature
  *		   should be the same as that of -[compare:].
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  * @return A sorted copy of the array
  */
-- (OFArray OF_GENERIC(ObjectType) *)sortedArrayUsingSelector: (SEL)selector
-						     options: (int)options;
+- (OFArray OF_GENERIC(ObjectType) *)
+    sortedArrayUsingSelector: (SEL)selector
+		     options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -403,16 +412,12 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *	  options.
  *
  * @param comparator The comparator to use to sort the array
- * @param options The options to use when sorting the array.@n
- *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------
- *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @param options The options to use when sorting the array
  * @return A sorted copy of the array
  */
 - (OFArray OF_GENERIC(ObjectType) *)
-    sortedArrayUsingComparator: (of_comparator_t)comparator
-		       options: (int)options;
+    sortedArrayUsingComparator: (OFComparator)comparator
+		       options: (OFArraySortOptions)options;
 #endif
 
 /**
@@ -446,7 +451,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *
  * @param block The block to execute for each object
  */
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block;
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block;
 
 /**
  * @brief Creates a new array, mapping each object using the specified block.
@@ -454,7 +459,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param block A block which maps an object for each object
  * @return A new, autoreleased OFArray
  */
-- (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block;
+- (OFArray *)mappedArrayUsingBlock: (OFArrayMapBlock)block;
 
 /**
  * @brief Creates a new array, only containing the objects for which the block
@@ -465,7 +470,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @return A new, autoreleased OFArray
  */
 - (OFArray OF_GENERIC(ObjectType) *)filteredArrayUsingBlock:
-    (of_array_filter_block_t)block;
+    (OFArrayFilterBlock)block;
 
 /**
  * @brief Folds the array to a single object using the specified block.
@@ -483,7 +488,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *		all objects except the first
  * @return The array folded to a single object
  */
-- (nullable id)foldUsingBlock: (of_array_fold_block_t)block;
+- (nullable id)foldUsingBlock: (OFArrayFoldBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType

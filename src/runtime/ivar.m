@@ -31,7 +31,7 @@ class_copyIvarList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
 	count = (class->ivars != NULL ? class->ivars->count : 0);
 
@@ -39,12 +39,12 @@ class_copyIvarList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_global_mutex_unlock();
+		objc_globalMutex_unlock();
 		return NULL;
 	}
 
 	if ((ivars = malloc((count + 1) * sizeof(Ivar))) == NULL)
-		OBJC_ERROR("Not enough memory to copy ivars");
+		OBJC_ERROR("Not enough memory to copy ivars!");
 
 	for (unsigned int i = 0; i < count; i++)
 		ivars[i] = &class->ivars->ivars[i];
@@ -53,7 +53,7 @@ class_copyIvarList(Class class, unsigned int *outCount)
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return ivars;
 }

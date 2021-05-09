@@ -16,8 +16,7 @@
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
 #import "OFRunLoop.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
-typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(size_t length,
+typedef bool (^OFSequencedPacketSocketAsyncReceiveBlock)(size_t length,
     id _Nullable exception);
 
 /**
@@ -46,7 +45,7 @@ typedef bool (^of_sequenced_packet_socket_async_receive_block_t)(size_t length,
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_sequenced_packet_socket_async_send_data_block_t)(
+typedef OFData *_Nullable (^OFSequencedPacketSocketAsyncSendDataBlock)(
     OFData *_Nonnull data, id _Nullable exception);
 
 /**
@@ -58,7 +57,7 @@ typedef OFData *_Nullable (^of_sequenced_packet_socket_async_send_data_block_t)(
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
-typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
+typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
     OFSequencedPacketSocket *acceptedSocket, id _Nullable exception);
 #endif
 
@@ -127,9 +126,9 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
 @interface OFSequencedPacketSocket: OFObject <OFCopying,
     OFReadyForReadingObserving, OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _canBlock, _listening;
-	of_socket_address_t _remoteAddress;
+	OFSocketAddress _remoteAddress;
 	id _Nullable _delegate;
 	OF_RESERVE_IVARS(OFSequencedPacketSocket, 4)
 }
@@ -151,7 +150,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *
  * @note This only works for accepted sockets!
  */
-@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
+@property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.
@@ -178,8 +177,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param length The length of the buffer
  * @return The length of the received packet
  */
-- (size_t)receiveIntoBuffer: (void *)buffer
-		     length: (size_t)length;
+- (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
@@ -190,8 +188,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
  */
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length;
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
@@ -205,7 +202,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -222,11 +219,9 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		If you want the next method in the queue to handle the packet
  *		received next, you need to return false from the method.
  */
-- (void)
-    asyncReceiveIntoBuffer: (void *)buffer
-		    length: (size_t)length
-		     block: (of_sequenced_packet_socket_async_receive_block_t)
-				block;
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block;
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
@@ -243,12 +238,10 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		If you want the next method in the queue to handle the packet
  *		received next, you need to return false from the method.
  */
-- (void)
-    asyncReceiveIntoBuffer: (void *)buffer
-		    length: (size_t)length
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     block: (of_sequenced_packet_socket_async_receive_block_t)
-				block;
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block;
 #endif
 
 /**
@@ -257,8 +250,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param buffer The buffer to send as a packet
  * @param length The length of the buffer
  */
-- (void)sendBuffer: (const void *)buffer
-	    length: (size_t)length;
+- (void)sendBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously sends the specified packet.
@@ -273,8 +265,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  * @param data The data to send as a packet
  * @param runLoopMode The run loop mode in which to perform the async send
  */
-- (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncSendData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -286,8 +277,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-		block: (of_sequenced_packet_socket_async_send_data_block_t)
-			   block;
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block;
 
 /**
  * @brief Asynchronously sends the specified packet.
@@ -299,9 +289,8 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_sequenced_packet_socket_async_send_data_block_t)
-			   block;
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block;
 #endif
 
 /**
@@ -333,7 +322,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -343,8 +332,7 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithBlock:
-    (of_sequenced_packet_socket_async_accept_block_t)block;
+- (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block;
 
 /**
  * @brief Asynchronously accept an incoming connection.
@@ -354,8 +342,9 @@ typedef bool (^of_sequenced_packet_socket_async_accept_block_t)(
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-    block: (of_sequenced_packet_socket_async_accept_block_t)block;
+- (void)
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block;
 #endif
 
 /**

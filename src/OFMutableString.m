@@ -20,13 +20,13 @@
 #include <string.h>
 
 #import "OFString.h"
+#import "OFASPrintF.h"
 #import "OFMutableUTF8String.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 static struct {
@@ -56,14 +56,14 @@ static struct {
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
 						       encoding: encoding];
 }
 
 - (instancetype)initWithCString: (const char *)cString
-		       encoding: (of_string_encoding_t)encoding
+		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
@@ -76,63 +76,63 @@ static struct {
 	return (id)[[OFMutableUTF8String alloc] initWithString: string];
 }
 
-- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+- (instancetype)initWithCharacters: (const OFUnichar *)characters
 			    length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithCharacters: characters
 							    length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
+- (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
 							     length: length
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							     length: length];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							  byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
+- (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
+			  byteOrder: (OFByteOrder)byteOrder
 {
 	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							     length: length
@@ -166,7 +166,7 @@ static struct {
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
-			      encoding: (of_string_encoding_t)encoding
+			      encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfFile: path
@@ -174,20 +174,18 @@ static struct {
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURL: URL];
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
-			     encoding: (of_string_encoding_t)encoding
+			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfURL: URL
 			 encoding: encoding];
 }
-#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
@@ -230,20 +228,20 @@ static struct {
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
-		     wordMiddleTable: (const of_unichar_t *const [])middleTable
+- (void)of_convertWithWordStartTable: (const OFUnichar *const [])startTable
+		     wordMiddleTable: (const OFUnichar *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
-		 wordMiddleTableSize: (size_t)middleTableSize OF_DIRECT
+		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 		size_t tableSize;
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (isStart) {
 			table = startTable;
@@ -254,78 +252,65 @@ static struct {
 		}
 
 		if (c >> 8 < tableSize && table[c >> 8][c & 0xFF])
-			[self setCharacter: table[c >> 8][c & 0xFF]
-				   atIndex: i];
+			[self setCharacter: table[c >> 8][c & 0xFF] atIndex: i];
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
 }
 #else
-- (void)of_convertWithWordStartFunction: (char (*)(char))startFunction
-		     wordMiddleFunction: (char (*)(char))middleFunction
-    OF_DIRECT
+static void
+convert(OFMutableString *self, char (*startFunction)(char),
+    char (*middleFunction)(char))
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
 		char (*function)(char) =
 		    (isStart ? startFunction : middleFunction);
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (c <= 0x7F)
-			[self setCharacter: (int)function(c)
-				   atIndex: i];
+			[self setCharacter: (int)function(c) atIndex: i];
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)idx
+- (void)setCharacter: (OFUnichar)character atIndex: (size_t)idx
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *string;
-
-	string = [OFString stringWithCharacters: &character
-					 length: 1];
-
-	[self replaceCharactersInRange: of_range(idx, 1)
-			    withString: string];
-
+	OFString *string =
+	    [OFString stringWithCharacters: &character length: 1];
+	[self replaceCharactersInRange: OFRangeMake(idx, 1) withString: string];
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendString: (OFString *)string
 {
-	[self insertString: string
-		   atIndex: self.length];
+	[self insertString: string atIndex: self.length];
 }
 
-- (void)appendCharacters: (const of_unichar_t *)characters
+- (void)appendCharacters: (const OFUnichar *)characters
 		  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCharacters: characters
 						    length: length]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendUTF8String: (const char *)UTF8String
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithUTF8String: UTF8String]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -333,34 +318,28 @@ static struct {
 		  length: (size_t)UTF8StringLength
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithUTF8String: UTF8String
 						    length: UTF8StringLength]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 	       length: (size_t)cStringLength
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self appendString: [OFString stringWithCString: cString
 					       encoding: encoding
 						 length: cStringLength]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -374,8 +353,7 @@ static struct {
 	va_end(arguments);
 }
 
-- (void)appendFormat: (OFConstantString *)format
-	   arguments: (va_list)arguments
+- (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -383,13 +361,12 @@ static struct {
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
 	@try {
-		[self appendUTF8String: UTF8String
-				length: UTF8StringLength];
+		[self appendUTF8String: UTF8String length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}
@@ -397,8 +374,7 @@ static struct {
 
 - (void)prependString: (OFString *)string
 {
-	[self insertString: string
-		   atIndex: 0];
+	[self insertString: string atIndex: 0];
 }
 
 - (void)reverse
@@ -406,72 +382,64 @@ static struct {
 	size_t i, j, length = self.length;
 
 	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
-		of_unichar_t tmp = [self characterAtIndex: j];
-		[self setCharacter: [self characterAtIndex: i]
-			   atIndex: j];
-		[self setCharacter: tmp
-			   atIndex: i];
+		OFUnichar tmp = [self characterAtIndex: j];
+		[self setCharacter: [self characterAtIndex: i] atIndex: j];
+		[self setCharacter: tmp atIndex: i];
 	}
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
-	[self of_convertWithWordStartTable: of_unicode_uppercase_table
-			   wordMiddleTable: of_unicode_uppercase_table
-			wordStartTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeUppercaseTable
+			   wordMiddleTable: OFUnicodeUppercaseTable
+			wordStartTableSize: OFUnicodeUppercaseTableSize
+		       wordMiddleTableSize: OFUnicodeUppercaseTableSize];
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartTable: of_unicode_lowercase_table
-			   wordMiddleTable: of_unicode_lowercase_table
-			wordStartTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeLowercaseTable
+			   wordMiddleTable: OFUnicodeLowercaseTable
+			wordStartTableSize: OFUnicodeLowercaseTableSize
+		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartTable: of_unicode_titlecase_table
-			   wordMiddleTable: of_unicode_lowercase_table
-			wordStartTableSize: OF_UNICODE_TITLECASE_TABLE_SIZE
-		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
+	[self of_convertWithWordStartTable: OFUnicodeTitlecaseTable
+			   wordMiddleTable: OFUnicodeLowercaseTable
+			wordStartTableSize: OFUnicodeTitlecaseTableSize
+		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
 }
 #else
 - (void)uppercase
 {
-	[self of_convertWithWordStartFunction: of_ascii_toupper
-			   wordMiddleFunction: of_ascii_toupper];
+	convert(self, OFASCIIToUpper, OFASCIIToUpper);
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartFunction: of_ascii_tolower
-			   wordMiddleFunction: of_ascii_tolower];
+	convert(self, OFASCIIToLower, OFASCIIToLower);
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartFunction: of_ascii_toupper
-			   wordMiddleFunction: of_ascii_tolower];
+	convert(self, OFASCIIToUpper, OFASCIIToLower);
 }
 #endif
 
-- (void)insertString: (OFString *)string
-	     atIndex: (size_t)idx
+- (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: of_range(idx, 0)
-			    withString: string];
+	[self replaceCharactersInRange: OFRangeMake(idx, 0) withString: string];
 }
 
-- (void)deleteCharactersInRange: (of_range_t)range
+- (void)deleteCharactersInRange: (OFRange)range
 {
-	[self replaceCharactersInRange: range
-			    withString: @""];
+	[self replaceCharactersInRange: range withString: @""];
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -483,17 +451,17 @@ static struct {
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
 				 options: 0
-				   range: of_range(0, self.length)];
+				   range: OFRangeMake(0, self.length)];
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement
 			   options: (int)options
-			     range: (of_range_t)range
+			     range: (OFRange)range
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
-	const of_unichar_t *characters;
-	const of_unichar_t *searchCharacters = string.characters;
+	const OFUnichar *characters;
+	const OFUnichar *searchCharacters = string.characters;
 	size_t searchLength = string.length;
 	size_t replacementLength = replacement.length;
 
@@ -514,10 +482,10 @@ static struct {
 
 	for (size_t i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(of_unichar_t)) != 0)
+		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;
 
-		[self replaceCharactersInRange: of_range(i, searchLength)
+		[self replaceCharactersInRange: OFRangeMake(i, searchLength)
 				    withString: replacement];
 
 		range.length -= searchLength;
@@ -537,25 +505,25 @@ static struct {
 - (void)deleteLeadingWhitespaces
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
 
 	for (i = 0; i < length; i++) {
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
-		if (!of_ascii_isspace(c))
+		if (!OFASCIIIsSpace(c))
 			break;
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: of_range(0, i)];
+	[self deleteCharactersInRange: OFRangeMake(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
 {
 	void *pool;
-	const of_unichar_t *characters, *p;
+	const OFUnichar *characters, *p;
 	size_t length, d;
 
 	length = self.length;
@@ -568,7 +536,7 @@ static struct {
 
 	d = 0;
 	for (p = characters + length - 1; p >= characters; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		d++;
@@ -576,7 +544,7 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: of_range(length - d, d)];
+	[self deleteCharactersInRange: OFRangeMake(length - d, d)];
 }
 
 - (void)deleteEnclosingWhitespaces

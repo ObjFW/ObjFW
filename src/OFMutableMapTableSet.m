@@ -28,8 +28,7 @@
 
 - (void)addObject: (id)object
 {
-	[_mapTable setObject: (void *)1
-		      forKey: object];
+	[_mapTable setObject: (void *)1 forKey: object];
 }
 
 - (void)removeObject: (id)object

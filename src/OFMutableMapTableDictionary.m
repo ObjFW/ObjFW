@@ -31,11 +31,9 @@
 		[self inheritMethodsFromClass: [OFMapTableDictionary class]];
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
-	[_mapTable setObject: object
-		      forKey: key];
+	[_mapTable setObject: object forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
@@ -49,7 +47,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFDictionaryReplaceBlock)block
 {
 	@try {
 		[_mapTable replaceObjectsUsingBlock:

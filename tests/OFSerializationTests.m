@@ -17,51 +17,49 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSerialization";
+static OFString *const module = @"OFSerialization";
 
 @implementation TestsAppDelegate (OFSerializationTests)
 - (void)serializationTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableDictionary *d = [OFMutableDictionary dictionary];
-	OFMutableArray *a = [OFMutableArray array];
-	OFList *l = [OFList list];
+	OFMutableDictionary *dict = [OFMutableDictionary dictionary];
+	OFMutableArray *array = [OFMutableArray array];
+	OFList *list = [OFList list];
 	OFData *data;
-	OFString *s;
+	OFString *string;
 
-	[a addObject: @"Qu\"xbar\ntest"];
-	[a addObject: [OFNumber numberWithInt: 1234]];
-	[a addObject: [OFNumber numberWithDouble: 1234.5678]];
-	[a addObject: [OFMutableString stringWithString: @"asd"]];
-	[a addObject: [OFDate dateWithTimeIntervalSince1970: 1234.5678]];
+	[array addObject: @"Qu\"xbar\ntest"];
+	[array addObject: [OFNumber numberWithInt: 1234]];
+	[array addObject: [OFNumber numberWithDouble: 1234.5678]];
+	[array addObject: [OFMutableString stringWithString: @"asd"]];
+	[array addObject: [OFDate dateWithTimeIntervalSince1970: 1234.5678]];
 
-	[d setObject: @"Hello"
-	      forKey: a];
-	[d setObject: @"B\"la"
-	      forKey: @"Blub"];
+	[dict setObject: @"Hello" forKey: array];
+	[dict setObject: @"B\"la" forKey: @"Blub"];
 
-	[l appendObject: @"Hello"];
-	[l appendObject: @"Wo\rld!\nHow are you?"];
-	[l appendObject: [OFURL URLWithString: @"https://objfw.nil.im/"]];
-	[l appendObject:
+	[list appendObject: @"Hello"];
+	[list appendObject: @"Wo\rld!\nHow are you?"];
+	[list appendObject: [OFURL URLWithString: @"https://objfw.nil.im/"]];
+	[list appendObject:
 	    [OFXMLElement elementWithXMLString: @"<x><y/><![CDATA[<]]></x>"]];
-	[l appendObject: [OFSet setWithObjects: @"foo", @"foo", @"bar", nil]];
-	[l appendObject:
+	[list appendObject:
+	    [OFSet setWithObjects: @"foo", @"foo", @"bar", nil]];
+	[list appendObject:
 	    [OFCountedSet setWithObjects: @"foo", @"foo", @"bar", nil]];
 
-	[d setObject: @"list"
-	      forKey: l];
+	[dict setObject: @"list" forKey: list];
 
 	data = [OFData dataWithItems: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"
 			       count: 39];
-	[d setObject: @"data"
-	      forKey: data];
+	[dict setObject: @"data" forKey: data];
 
 	TEST(@"-[stringBySerializing]",
-	    (s = d.stringBySerializing) && [s isEqual:
+	    (string = dict.stringBySerializing) && [string isEqual:
 	    [OFString stringWithContentsOfFile: @"serialization.xml"]])
 
-	TEST(@"-[objectByDeserializing]", [s.objectByDeserializing isEqual: d])
+	TEST(@"-[objectByDeserializing]",
+	    [string.objectByDeserializing isEqual: dict])
 
 	objc_autoreleasePoolPop(pool);
 }

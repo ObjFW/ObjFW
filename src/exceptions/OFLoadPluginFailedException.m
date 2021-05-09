@@ -26,11 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    error: (OFString *)error
++ (instancetype)exceptionWithPath: (OFString *)path error: (OFString *)error
 {
-	return [[[self alloc] initWithPath: path
-				     error: error] autorelease];
+	return [[[self alloc] initWithPath: path error: error] autorelease];
 }
 
 - (instancetype)init
@@ -38,8 +36,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		       error: (OFString *)error
+- (instancetype)initWithPath: (OFString *)path error: (OFString *)error
 {
 	self = [super init];
 

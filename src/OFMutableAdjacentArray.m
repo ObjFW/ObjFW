@@ -59,15 +59,13 @@
 	_mutations++;
 }
 
-- (void)insertObject: (id)object
-	     atIndex: (size_t)idx
+- (void)insertObject: (id)object atIndex: (size_t)idx
 {
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
-		[_array insertItem: &object
-			   atIndex: idx];
+		[_array insertItem: &object atIndex: idx];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -76,16 +74,13 @@
 	_mutations++;
 }
 
-- (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)idx
+- (void)insertObjectsFromArray: (OFArray *)array atIndex: (size_t)idx
 {
 	id const *objects = array.objects;
 	size_t count = array.count;
 
 	@try {
-		[_array insertItems: objects
-			    atIndex: idx
-			      count: count];
+		[_array insertItems: objects atIndex: idx count: count];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -96,8 +91,7 @@
 	_mutations++;
 }
 
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject
+- (void)replaceObject: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -119,8 +113,7 @@
 	}
 }
 
-- (void)replaceObjectAtIndex: (size_t)idx
-		  withObject: (id)object
+- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
 	id *objects;
 	id oldObject;
@@ -138,8 +131,7 @@
 	[oldObject release];
 }
 
-- (void)replaceObjectIdenticalTo: (id)oldObject
-		      withObject: (id)newObject
+- (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -231,7 +223,7 @@
 	[_array removeAllItems];
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -241,7 +233,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = of_alloc(range.length, sizeof(*copy));
+	copy = OFAllocMemory(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
@@ -251,7 +243,7 @@
 		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
-		free(copy);
+		OFFreeMemory(copy);
 	}
 }
 
@@ -272,8 +264,7 @@
 #endif
 }
 
-- (void)exchangeObjectAtIndex: (size_t)idx1
-	    withObjectAtIndex: (size_t)idx2
+- (void)exchangeObjectAtIndex: (size_t)idx1 withObjectAtIndex: (size_t)idx2
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;
@@ -302,7 +293,7 @@
 	}
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count_
 {
@@ -339,7 +330,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -355,7 +346,7 @@
 	}
 }
 
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;

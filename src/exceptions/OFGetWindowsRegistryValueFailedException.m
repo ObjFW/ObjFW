@@ -18,14 +18,15 @@
 #import "OFGetWindowsRegistryValueFailedException.h"
 
 @implementation OFGetWindowsRegistryValueFailedException
-@synthesize registryKey = _registryKey, value = _value, status = _status;
+@synthesize registryKey = _registryKey, valueName = _valueName;
+@synthesize status = _status;
 
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-				   value: (OFString *)value
+			       valueName: (OFString *)valueName
 				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
-					    value: value
+					valueName: valueName
 					   status: status] autorelease];
 }
 
@@ -35,14 +36,14 @@
 }
 
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			      value: (OFString *)value
+			  valueName: (OFString *)valueName
 			     status: (LSTATUS)status
 {
 	self = [super init];
 
 	@try {
 		_registryKey = [registryKey retain];
-		_value = [value copy];
+		_valueName = [valueName copy];
 		_status = status;
 	} @catch (id e) {
 		[self release];
@@ -55,7 +56,7 @@
 - (void)dealloc
 {
 	[_registryKey release];
-	[_value release];
+	[_valueName release];
 
 	[super dealloc];
 }
@@ -63,7 +64,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to get value %@: %@",
-	    _value, of_windows_status_to_string(_status)];
+	    @"Failed to get value named %@: %@",
+	    _valueName, OFWindowsStatusToString(_status)];
 }
 @end

@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for providing standard input, output and error as OFStream.
  *
- * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
+ * The global variables @ref OFStdIn, @ref OFStdOut and @ref OFStdErr are
  * instances of this class and need no initialization.
  */
 #ifdef OF_STDIO_STREAM_WIN32_CONSOLE_H
@@ -118,7 +118,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setCursorPosition: (of_point_t)position;
+- (void)setCursorPosition: (OFPoint)position;
 
 /**
  * @brief Moves the cursor to the specified relative position. Does nothing if
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setRelativeCursorPosition: (of_point_t)position;
+- (void)setRelativeCursorPosition: (OFPoint)position;
 @end
 
 #ifdef __cplusplus
@@ -138,41 +138,41 @@ extern "C" {
 /**
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdin;
+extern OFStdIOStream *_Nullable OFStdIn;
 
 /**
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdout;
+extern OFStdIOStream *_Nullable OFStdOut;
 
 /**
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stderr;
+extern OFStdIOStream *_Nullable OFStdErr;
 #else
-extern OFStdIOStream *_Nonnull *_Nullable of_stdin_ref(void);
-extern OFStdIOStream *_Nonnull *_Nullable of_stdout_ref(void);
-extern OFStdIOStream *_Nonnull *_Nullable of_stderr_ref(void);
-# define of_stdin (*of_stdin_ref())
-# define of_stdout (*of_stdout_ref())
-# define of_stderr (*of_stderr_ref())
+extern OFStdIOStream *_Nonnull *_Nullable OFStdInRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable OFStdOutRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable OFStdErrRef(void);
+# define OFStdIn (*OFStdInRef())
+# define OFStdOut (*OFStdOutRef())
+# define OFStdErr (*OFStdErrRef())
 #endif
 
 /**
- * @brief Logs the specified printf-style format to @ref of_stderr.
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
  *
  * This prefixes the output with the date, timestamp, process name and PID and
  * allows `%@` as a printf-style formatted to print objects.
  */
-extern void of_log(OFConstantString *format, ...);
+extern void OFLog(OFConstantString *format, ...);
 
 /*!
- * @brief Logs the specified printf-style format to @ref of_stderr.
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
  *
  * This prefixes the output with the date, timestamp, process name and PID and
  * allows `%@` as a printf-style formatted to print objects.
  */
-extern void of_logv(OFConstantString *format, va_list arguments);
+extern void OFLogV(OFConstantString *format, va_list arguments);
 #ifdef __cplusplus
 }
 #endif

@@ -25,7 +25,7 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_initWithName: (OFString *)name OF_METHOD_FAMILY(init);
 - (void)of_parseLine: (OFString *)line;
 - (bool)of_writeToStream: (OFStream *)stream
-		encoding: (of_string_encoding_t)encoding
+		encoding: (OFStringEncoding)encoding
 		   first: (bool)first;
 @end
 

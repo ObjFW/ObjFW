@@ -22,10 +22,6 @@
 #import "OFData.h"
 #import "OFMethodSignature.h"
 
-#ifdef OF_INVOCATION_CAN_INVOKE
-extern void of_invocation_invoke(OFInvocation *);
-#endif
-
 @implementation OFInvocation
 @synthesize methodSignature = _methodSignature;
 
@@ -52,7 +48,7 @@ extern void of_invocation_invoke(OFInvocation *);
 
 			typeEncoding = [_methodSignature
 			    argumentTypeAtIndex: i];
-			typeSize = of_sizeof_type_encoding(typeEncoding);
+			typeSize = OFSizeOfTypeEncoding(typeEncoding);
 
 			data = [OFMutableData dataWithItemSize: typeSize
 						      capacity: 1];
@@ -61,7 +57,7 @@ extern void of_invocation_invoke(OFInvocation *);
 		}
 
 		typeEncoding = _methodSignature.methodReturnType;
-		typeSize = of_sizeof_type_encoding(typeEncoding);
+		typeSize = OFSizeOfTypeEncoding(typeEncoding);
 
 		if (typeSize > 0) {
 			_returnValue = [[OFMutableData alloc]
@@ -88,19 +84,15 @@ extern void of_invocation_invoke(OFInvocation *);
 	[super dealloc];
 }
 
-- (void)setArgument: (const void *)buffer
-	    atIndex: (size_t)idx
+- (void)setArgument: (const void *)buffer atIndex: (size_t)idx
 {
 	OFMutableData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(data.mutableItems, buffer, data.itemSize);
 }
 
-- (void)getArgument: (void *)buffer
-	    atIndex: (size_t)idx
+- (void)getArgument: (void *)buffer atIndex: (size_t)idx
 {
 	OFData *data = [_arguments objectAtIndex: idx];
-
 	memcpy(buffer, data.items, data.itemSize);
 }
 
@@ -113,11 +105,4 @@ extern void of_invocation_invoke(OFInvocation *);
 {
 	memcpy(buffer, _returnValue.items, _returnValue.itemSize);
 }
-
-#ifdef OF_INVOCATION_CAN_INVOKE
-- (void)invoke
-{
-	of_invocation_invoke(self);
-}
-#endif
 @end

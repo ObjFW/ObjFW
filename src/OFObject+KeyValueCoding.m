@@ -48,17 +48,17 @@ int _OFObject_KeyValueCoding_reference;
 			return [self valueForUndefinedKey: key];
 		}
 
-		name = of_alloc(keyLength + 3, 1);
+		name = OFAllocMemory(keyLength + 3, 1);
 		@try {
 			memcpy(name, "is", 2);
 			memcpy(name + 2, key.UTF8String, keyLength);
 			name[keyLength + 2] = '\0';
 
-			name[2] = of_ascii_toupper(name[2]);
+			name[2] = OFASCIIToUpper(name[2]);
 
 			selector = sel_registerName(name);
 		} @finally {
-			free(name);
+			OFFreeMemory(name);
 		}
 
 		methodSignature = [self methodSignatureForSelector: selector];
@@ -139,12 +139,10 @@ int _OFObject_KeyValueCoding_reference;
 
 - (id)valueForUndefinedKey: (OFString *)key
 {
-	@throw [OFUndefinedKeyException exceptionWithObject: self
-							key: key];
+	@throw [OFUndefinedKeyException exceptionWithObject: self key: key];
 }
 
-- (void)setValue: (id)value
-	  forKey: (OFString *)key
+- (void)setValue: (id)value forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t keyLength;
@@ -155,22 +153,21 @@ int _OFObject_KeyValueCoding_reference;
 
 	if ((keyLength = key.UTF8StringLength) < 1) {
 		objc_autoreleasePoolPop(pool);
-		[self	   setValue: value
-		    forUndefinedKey: key];
+		[self setValue: value forUndefinedKey: key];
 		return;
 	}
 
-	name = of_alloc(keyLength + 5, 1);
+	name = OFAllocMemory(keyLength + 5, 1);
 	@try {
 		memcpy(name, "set", 3);
 		memcpy(name + 3, key.UTF8String, keyLength);
 		memcpy(name + keyLength + 3, ":", 2);
 
-		name[3] = of_ascii_toupper(name[3]);
+		name[3] = OFASCIIToUpper(name[3]);
 
 		selector = sel_registerName(name);
 	} @finally {
-		free(name);
+		OFFreeMemory(name);
 	}
 
 	methodSignature = [self methodSignatureForSelector: selector];
@@ -181,8 +178,7 @@ int _OFObject_KeyValueCoding_reference;
 	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
 	    *[methodSignature argumentTypeAtIndex: 1] != ':') {
 		objc_autoreleasePoolPop(pool);
-		[self	   setValue: value
-		    forUndefinedKey: key];
+		[self setValue: value forUndefinedKey: key];
 		return;
 	}
 
@@ -228,16 +224,14 @@ int _OFObject_KeyValueCoding_reference;
 #undef CASE
 	default:
 		objc_autoreleasePoolPop(pool);
-		[self	   setValue: value
-		    forUndefinedKey: key];
+		[self setValue: value forUndefinedKey: key];
 		return;
 	}
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setValue: (id)value
-      forKeyPath: (OFString *)keyPath
+- (void)setValue: (id)value forKeyPath: (OFString *)keyPath
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *keys = [keyPath componentsSeparatedByString: @"."];
@@ -247,8 +241,7 @@ int _OFObject_KeyValueCoding_reference;
 
 	for (OFString *key in keys) {
 		if (++i == keysCount)
-			[object setValue: value
-				  forKey: key];
+			[object setValue: value forKey: key];
 		else
 			object = [object valueForKey: key];
 	}
@@ -256,8 +249,7 @@ int _OFObject_KeyValueCoding_reference;
 	objc_autoreleasePoolPop(pool);
 }
 
--  (void)setValue: (id)value
-  forUndefinedKey: (OFString *)key
+-  (void)setValue: (id)value forUndefinedKey: (OFString *)key
 {
 	@throw [OFUndefinedKeyException exceptionWithObject: self
 							key: key

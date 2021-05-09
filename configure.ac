@@ -49,8 +49,9 @@ m68k-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB, objfw68k.library)
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
+		AC_SUBST(OBJFW_AMIGA_LIB, 'objfw${OBJFW_LIB_MAJOR}.library')
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
 		dnl For 68000, GCC emits calls to helper functions that
 		dnl do not work properly in a library.
 		t="-mcpu=68020 -fbaserel32 -noixemul -ffreestanding"
@@ -81,8 +82,10 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		AC_SUBST(OBJFW_AMIGA_LIB,
+			['objfw${OBJFW_LIB_MAJOR}ppc.library'])
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}ppc.library'])
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
@@ -161,7 +164,6 @@ esac
 AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_LN_S
-AC_PROG_INSTALL
 AC_PROG_EGREP
 
 BUILDSYS_CHECK_IOS
@@ -367,7 +369,6 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(INVOCATION_LIB_A, "invocation.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
 	BUILDSYS_FRAMEWORK([
@@ -400,16 +401,6 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src -L../src/linklib $TESTS_LIBS"
 ])
 
-AC_ARG_ENABLE(amiga-lib,
-	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
-AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
-AS_IF([test x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
-	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
-	AC_SUBST(INVOCATION_AMIGALIB_A, "invocation.amigalib.a")
-	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
-])
-
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
@@ -418,23 +409,13 @@ AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(INVOCATION_A, "invocation.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_AMIGALIB_A,
-		"exceptions/exceptions.amigalib.a")
 	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
-	AC_SUBST(FORWARDING_FORWARDING_AMIGALIB_A,
-		"forwarding/forwarding.amigalib.a")
-	AC_SUBST(INVOCATION_AMIGALIB_A, "invocation.amigalib.a")
-	AC_SUBST(INVOCATION_INVOCATION_AMIGALIB_A,
-		"invocation/invocation.amigalib.a")
 	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_AMIGALIB_A,
-		"lookup-asm/lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -644,7 +625,7 @@ case "$objc_runtime" in
 		AC_MSG_ERROR([Exceptions not accepted by compiler!])
 	])
 
-	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc], [
+	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
 		dnl c++abi requires pthread on OpenBSD
 		AS_IF([test x"$ac_lib" = x"c++abi"], [LIBS="$LIBS -lpthread"])
 	], [
@@ -677,7 +658,14 @@ case "$objc_runtime" in
 	;;
 esac
 
-AC_CHECK_FUNCS(_Unwind_Backtrace)
+case "$host_os" in
+hpux*)
+	dnl _Unwind_Backtrace() returns complete garbage on HP-UX.
+	;;
+*)
+	AC_CHECK_FUNCS(_Unwind_Backtrace)
+	;;
+esac
 
 case "$host_os" in
 darwin*)
@@ -969,7 +957,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread")
+		AC_CHECK_LIB(pthread, main, LIBS="$LIBS -lpthread")
 
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
@@ -1372,12 +1360,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADER(netinet/sctp.h, [
-		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
-		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
-			[Whether we have netinet/sctp.h])
-		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
-	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 	AC_CHECK_HEADER(netipx/ipx.h, [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
@@ -1558,7 +1540,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
 	])
-	AC_SUBST(OFSOCK, "ofsock")
 ])
 
 AC_DEFUN([CHECK_BUILTIN_BSWAP], [
@@ -1596,17 +1577,17 @@ darwin*)
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
-		have_processes="yes"
+		have_subprocesses="yes"
 	], [
 		AC_MSG_RESULT(no)
-		have_processes="no"
+		have_subprocesses="no"
 	])
 	;;
 mingw*)
-	have_processes="yes"
+	have_subprocesses="yes"
 	;;
 msdosdjgpp*)
-	have_processes="no"
+	have_subprocesses="no"
 	;;
 *)
 	AC_HEADER_SYS_WAIT
@@ -1614,7 +1595,7 @@ msdosdjgpp*)
 
 	AC_CHECK_FUNCS(posix_spawnp, [
 		AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
-			have_processes="yes"
+			have_subprocesses="yes"
 
 			AC_CHECK_HEADERS(spawn.h)
 		])
@@ -1626,7 +1607,7 @@ msdosdjgpp*)
 			    -a x"$ac_cv_func_execvp" = x"yes" \
 			    -a x"$ac_cv_func_kill" = x"yes" \
 			    -a x"$ac_cv_func__exit" = x"yes"], [
-				have_processes="yes"
+				have_subprocesses="yes"
 			])
 		], [
 			break
@@ -1634,9 +1615,9 @@ msdosdjgpp*)
 	])
 	;;
 esac
-AS_IF([test x"$have_processes" = x"yes"], [
-	AC_SUBST(OF_PROCESS_M, "OFProcess.m")
-	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
+AS_IF([test x"$have_subprocesses" = x"yes"], [
+	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
+	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])

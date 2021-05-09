@@ -41,14 +41,12 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
-	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
 		OFNumber *mode = [OFNumber numberWithUnsignedShort:
 		    (entry.versionSpecificAttributes >> 16) & 0777];
-		of_file_attribute_key_t key =
-		    of_file_attribute_key_posix_permissions;
-		of_file_attributes_t attributes = [OFDictionary
+		OFFileAttributes attributes = [OFDictionary
 		    dictionaryWithObject: mode
-				  forKey: key];
+				  forKey: OFFilePOSIXPermissions];
 
 		[[OFFileManager defaultManager] setAttributes: attributes
 						 ofItemAtPath: path];
@@ -60,14 +58,14 @@ static void
 setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFDate *modificationDate = entry.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil)
 		return;
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -81,7 +79,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithStream: stream
 					mode: mode
@@ -90,7 +88,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -117,7 +115,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	for (OFZIPArchiveEntry *entry in _archive.entries) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[of_stdout writeLine: entry.fileName];
+		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
 			OFString *compressedSize = [OFString
@@ -127,15 +125,15 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			    stringWithFormat: @"%" PRIu64,
 					      entry.uncompressedSize];
 			OFString *compressionMethod =
-			    of_zip_archive_entry_compression_method_to_string(
+			    OFZIPArchiveEntryCompressionMethodName(
 			    entry.compressionMethod);
 			OFString *CRC32 = [OFString
 			    stringWithFormat: @"%08" PRIX32, entry.CRC32];
 			OFString *modificationDate = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_compressed_size",
 			    @"["
 			    @"    'Compressed: ',"
@@ -145,8 +143,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			    @"    ]"
 			    @"]".objectByParsingJSON,
 			    @"size", compressedSize)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_uncompressed_size",
 			    @"["
 			    @"    'Uncompressed: ',"
@@ -156,47 +154,48 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			    @"    ]"
 			    @"]".objectByParsingJSON,
 			    @"size", uncompressedSize)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_compression_method",
 			    @"Compression method: %[method]",
 			    @"method", compressionMethod)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_crc32",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_crc32",
 			    @"CRC32: %[crc32]",
 			    @"crc32", CRC32)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_modification_date",
 			    @"Modification date: %[date]",
 			    @"date", modificationDate)];
 
 			if (app->_outputLevel >= 2) {
 				uint16_t versionMadeBy = entry.versionMadeBy;
+				OFZIPArchiveEntryAttributeCompatibility UNIX =
+				    OFZIPArchiveEntryAttributeCompatibilityUNIX;
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_version_made_by",
 				    @"Version made by: %[version]",
 				    @"version",
-				    of_zip_archive_entry_version_to_string(
+				    OFZIPArchiveEntryVersionToString(
 				    versionMadeBy))];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_min_version_needed",
 				    @"Minimum version needed: %[version]",
 				    @"version",
-				    of_zip_archive_entry_version_to_string(
+				    OFZIPArchiveEntryVersionToString(
 				    entry.minVersionNeeded))];
 
-				if ((versionMadeBy >> 8) ==
-				    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+				if ((versionMadeBy >> 8) == UNIX) {
 					uint32_t mode = entry
 					    .versionSpecificAttributes >> 16;
 					OFString *modeString = [OFString
 					    stringWithFormat: @"%06o", mode];
-					[of_stdout writeString: @"\t"];
-					[of_stdout writeLine: OF_LOCALIZED(
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_mode",
 					    @"Mode: %[mode]",
 					    @"mode", modeString)];
@@ -207,15 +206,15 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				OFString *GPBF = [OFString stringWithFormat:
 				    @"%04" PRIx16, entry.generalPurposeBitFlag];
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_general_purpose_bit_flag",
 				    @"General purpose bit flag: %[gpbf]",
 				    @"gpbf", GPBF)];
 
 				if (entry.extraField != nil) {
-					[of_stdout writeString: @"\t"];
-					[of_stdout writeLine: OF_LOCALIZED(
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_extra_field",
 					    @"Extra field: %[extra]",
 					    @"extra",
@@ -224,8 +223,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			}
 
 			if (entry.fileComment.length > 0) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_comment",
 				    @"Comment: %[comment]",
 				    @"comment", entry.fileComment)];
@@ -259,7 +258,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		outFileName = [app safeLocalPathForPath: fileName];
 		if (outFileName == nil) {
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"refusing_to_extract_file",
 			    @"Refusing to extract %[file]!",
 			    @"file", fileName)];
@@ -269,7 +268,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -280,8 +279,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			setModificationDate(outFileName, entry);
 
 			if (app->_outputLevel >= 0) {
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -295,13 +294,11 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if (![app shouldExtractFile: fileName
-				outFileName: outFileName])
+		if (![app shouldExtractFile: fileName outFileName: outFileName])
 			goto outer_loop_end;
 
 		stream = [_archive streamForReadingFile: fileName];
-		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+		output = [OFFile fileWithPath: outFileName mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
@@ -325,8 +322,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeString: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -338,8 +335,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -351,7 +348,7 @@ outer_loop_end:
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"file_not_in_archive",
 			    @"File %[file] is not in the archive!",
 			    @"file", file)];
@@ -365,7 +362,7 @@ outer_loop_end:
 	OFStream *stream;
 
 	if (files.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"print_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"print_no_file_specified",
 		    @"Need one or more files to print!")];
 		app->_exitStatus = 1;
 		return;
@@ -376,7 +373,7 @@ outer_loop_end:
 			stream = [_archive streamForReadingFile: path];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == ENOENT) {
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"file_not_in_archive",
 				    @"File %[file] is not in the archive!",
 				    @"file", e.path)];
@@ -389,7 +386,7 @@ outer_loop_end:
 
 		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: of_stdout
+							 toStream: OFStdOut
 							 fileName: path];
 
 			if (length < 0) {
@@ -407,7 +404,7 @@ outer_loop_end:
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
 	if (files.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
 		    @"Need one or more files to add!")];
 		app->_exitStatus = 1;
 		return;
@@ -417,7 +414,7 @@ outer_loop_end:
 		void *pool = objc_autoreleasePoolPush();
 		OFArray OF_GENERIC (OFString *) *components;
 		OFString *fileName;
-		of_file_attributes_t attributes;
+		OFFileAttributes attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
 		unsigned long long size;
@@ -429,13 +426,13 @@ outer_loop_end:
 		attributes = [fileManager
 		    attributesOfItemAtPath: localFileName];
 
-		if ([attributes.fileType isEqual: of_file_type_directory]) {
+		if ([attributes.fileType isEqual: OFFileTypeDirectory]) {
 			isDirectory = true;
 			fileName = [fileName stringByAppendingString: @"/"];
 		}
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -449,7 +446,7 @@ outer_loop_end:
 		entry.uncompressedSize = (int64_t)size;
 
 		entry.compressionMethod =
-		    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE;
+		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
 
 		[entry makeImmutable];
@@ -486,8 +483,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[of_stdout writeString: @"\r"];
-					[of_stdout writeString: OF_LOCALIZED(
+					[OFStdOut writeString: @"\r"];
+					[OFStdOut writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -497,8 +494,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

@@ -34,3 +34,8 @@ contact_links:
     about:
       Please use this for interactive questions and support - it is bridged to 
       the Matrix room above.
+  - name: ObjFW Gitter Room
+    url: https://gitter.im/ObjFW/ObjFW
+    about:
+      Please use this for interactive questions and support - it is bridged to 
+      the Matrix room above.

@@ -51,8 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the class was successfully registered. If a handler for the
  *	   same scheme is already registered, registration fails.
  */
-+ (bool)registerClass: (Class)class_
-	    forScheme: (OFString *)scheme;
++ (bool)registerClass: (Class)class_ forScheme: (OFString *)scheme;
 
 /**
  * @brief Returns the handler for the specified URL.
@@ -92,17 +91,16 @@ OF_ASSUME_NONNULL_BEGIN
  *	       The handler is allowed to not implement all modes and is also
  *	       allowed to implement additional, scheme-specific modes.
  */
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode;
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Returns the attributes for the item at the specified URL.
  *
  * @param URL The URL to return the attributes for
  * @return A dictionary of attributes for the specified URL, with the keys of
- *	   type @ref of_file_attribute_key_t
+ *	   type @ref OFFileAttributeKey
  */
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL;
 
 /**
  * @brief Sets the attributes for the item at the specified URL.
@@ -112,8 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributes The attributes to set for the specified URL
  * @param URL The URL of the item to set the attributes for
  */
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL;
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL;
 
 /**
  * @brief Checks whether a file exists at the specified URL.
@@ -139,14 +136,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)createDirectoryAtURL: (OFURL *)URL;
 
 /**
- * @brief Returns an array with the items in the specified directory.
+ * @brief Returns an array with the URLs of the items in the specified
+ *	  directory.
  *
  * @note `.` and `..` are not part of the returned array.
  *
  * @param URL The URL to the directory whose items should be returned
- * @return An array of OFString with the items in the specified directory
+ * @return An array with the URLs of the items in the specified directory
  */
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
 /**
  * @brief Removes the item at the specified URL.
@@ -168,8 +166,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
  */
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 /**
  * @brief Creates a symbolic link for an item.
@@ -205,8 +202,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   was not possible. Note that errors while performing a copy are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (bool)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 /**
  * @brief Tries to efficiently move an item. If a move would only be possible
@@ -224,8 +220,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   was not possible. Note that errors while performing a move are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 @end
 
 OF_ASSUME_NONNULL_END

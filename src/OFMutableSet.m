@@ -58,15 +58,13 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFMutableMapTableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
@@ -170,7 +168,7 @@ static struct {
 	size_t count = self.count;
 	id *cArray;
 
-	cArray = of_alloc(count, sizeof(id));
+	cArray = OFAllocMemory(count, sizeof(id));
 	@try {
 		size_t i;
 
@@ -182,9 +180,9 @@ static struct {
 
 		for (i = 0; i < count; i++)
 			if (![set containsObject: cArray[i]])
-			      [self removeObject: cArray[i]];
+				[self removeObject: cArray[i]];
 	} @finally {
-		free(cArray);
+		OFFreeMemory(cArray);
 	}
 
 	objc_autoreleasePoolPop(pool);

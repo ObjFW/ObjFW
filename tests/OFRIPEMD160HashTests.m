@@ -19,9 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFRIPEMD160Hash";
+static OFString *const module = @"OFRIPEMD160Hash";
 
-const uint8_t testfile_rmd160[20] =
+const uint8_t testFileRIPEMD160[20] =
 	"\x46\x02\x97\xF5\x85\xDF\xB9\x21\x00\xC8\xF9\x87\xC6\xEC\x84\x0D\xCE"
 	"\xE6\x08\x8B";
 
@@ -29,33 +29,28 @@ const uint8_t testfile_rmd160[20] =
 - (void)RIPEMD160HashTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFRIPEMD160Hash *rmd160, *copy;
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"r"];
+	OFRIPEMD160Hash *RIPEMD160, *RIPEMD160Copy;
+	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
-	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
-	    (rmd160 = [OFRIPEMD160Hash
-	    cryptoHashWithAllowsSwappableMemory: true]))
+	TEST(@"+[hashWithAllowsSwappableMemory:]",
+	    (RIPEMD160 = [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true]))
 
-	while (!f.atEndOfStream) {
-		char buf[64];
-		size_t len = [f readIntoBuffer: buf
-					length: 64];
-		[rmd160 updateWithBuffer: buf
-				  length: len];
+	while (!file.atEndOfStream) {
+		char buffer[64];
+		size_t length = [file readIntoBuffer: buffer length: 64];
+		[RIPEMD160 updateWithBuffer: buffer length: length];
 	}
-	[f close];
+	[file close];
 
-	TEST(@"-[copy]", (copy = [[rmd160 copy] autorelease]))
+	TEST(@"-[copy]", (RIPEMD160Copy = [[RIPEMD160 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp(rmd160.digest, testfile_rmd160, 20) == 0 &&
-	    memcmp(copy.digest, testfile_rmd160, 20) == 0)
+	    memcmp(RIPEMD160.digest, testFileRIPEMD160, 20) == 0 &&
+	    memcmp(RIPEMD160Copy.digest, testFileRIPEMD160, 20) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,
-	    [rmd160 updateWithBuffer: ""
-			      length: 1])
+	    [RIPEMD160 updateWithBuffer: "" length: 1])
 
 	objc_autoreleasePoolPop(pool);
 }

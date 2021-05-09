@@ -16,7 +16,9 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
 	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofhttp/lang\"
+	    -DLANGUAGE_DIR='"${datadir}/ofhttp/lang"'	\
+	    -DLIB_PREFIX='"${LIB_PREFIX}"'		\
+	    -DLIB_SUFFIX='"${LIB_SUFFIX}"'
 LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}

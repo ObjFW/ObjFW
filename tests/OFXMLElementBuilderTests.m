@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFXMLElementBuilder";
+static OFString *const module = @"OFXMLElementBuilder";
 static OFXMLNode *nodes[2];
 static size_t i = 0;
 
@@ -25,33 +25,33 @@ static size_t i = 0;
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
        didBuildElement: (OFXMLElement *)element
 {
-	OF_ENSURE(i == 0);
+	OFEnsure(i == 0);
 	nodes[i++] = [element retain];
 }
 
 -   (void)elementBuilder: (OFXMLElementBuilder *)builder
   didBuildParentlessNode: (OFXMLNode *)node
 {
-	OF_ENSURE(i == 1);
+	OFEnsure(i == 1);
 	nodes[i++] = [node retain];
 }
 
 - (void)XMLElementBuilderTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFXMLParser *p = [OFXMLParser parser];
-	OFXMLElementBuilder *builder = [OFXMLElementBuilder elementBuilder];
-	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
+	OFXMLParser *parser = [OFXMLParser parser];
+	OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
+	OFString *string = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
 	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
-	p.delegate = builder;
+	parser.delegate = builder;
 	builder.delegate = self;
 
 	TEST(@"Building elements from parsed XML",
-	    R([p parseString: str]) &&
-	    nodes[0] != nil && [nodes[0].XMLString isEqual: str] &&
-	    R([p parseString: @"<!--foo-->"]) &&
+	    R([parser parseString: string]) &&
+	    nodes[0] != nil && [nodes[0].XMLString isEqual: string] &&
+	    R([parser parseString: @"<!--foo-->"]) &&
 	    nodes[1] != nil && [nodes[1].XMLString isEqual: @"<!--foo-->"] &&
 	    i == 2)
 

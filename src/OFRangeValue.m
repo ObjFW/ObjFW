@@ -22,7 +22,7 @@
 @implementation OFRangeValue
 @synthesize rangeValue = _range;
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	self = [super init];
 
@@ -33,11 +33,10 @@
 
 - (const char *)objCType
 {
-	return @encode(of_range_t);
+	return @encode(OFRange);
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != sizeof(_range))
 		@throw [OFOutOfRangeException exception];
@@ -48,7 +47,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFValue: of_range_t { %zu, %zu }>",
+	    @"<OFValue: OFRange { %zu, %zu }>",
 	    _range.location, _range.length];
 }
 @end

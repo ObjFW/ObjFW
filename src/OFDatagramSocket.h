@@ -16,8 +16,7 @@
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
 #import "OFRunLoop.h"
-
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -36,9 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
-typedef bool (^of_datagram_socket_async_receive_block_t)(
-    size_t length, const of_socket_address_t *_Nonnull sender,
-    id _Nullable exception);
+typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
+    const OFSocketAddress *_Nonnull sender, id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
@@ -49,8 +47,8 @@ typedef bool (^of_datagram_socket_async_receive_block_t)(
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
-    OFData *_Nonnull data, const of_socket_address_t *_Nonnull receiver,
+typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
+    OFData *_Nonnull data, const OFSocketAddress *_Nonnull receiver,
     id _Nullable exception);
 #endif
 
@@ -76,7 +74,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 -	  (bool)socket: (OFDatagramSocket *)socket
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (const of_socket_address_t *_Nonnull)sender
+		sender: (const OFSocketAddress *_Nonnull)sender
 	     exception: (nullable id)exception;
 
 /**
@@ -90,7 +88,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (nullable OFData *)socket: (OFDatagramSocket *)socket
 		didSendData: (OFData *)data
-		   receiver: (const of_socket_address_t *_Nonnull)receiver
+		   receiver: (const OFSocketAddress *_Nonnull)receiver
 		  exception: (nullable id)exception;
 @end
 
@@ -109,7 +107,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
 @interface OFDatagramSocket: OFObject <OFCopying, OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-	of_socket_t _socket;
+	OFSocketHandle _socket;
 	bool _canBlock;
 #ifdef OF_WII
 	bool _canSendToBroadcastAddresses;
@@ -153,13 +151,13 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  *
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
- * @param sender A pointer to an @ref of_socket_address_t, which will be set to
- *		 the address of the sender
+ * @param sender A pointer to an @ref OFSocketAddress, which will be set to the
+ *		 address of the sender
  * @return The length of the received datagram
  */
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_socket_address_t *)sender;
+		     sender: (OFSocketAddress *)sender;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -170,8 +168,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
  */
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length;
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -185,7 +182,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -205,7 +202,7 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (of_datagram_socket_async_receive_block_t)block;
+			 block: (OFDatagramSocketAsyncReceiveBlock)block;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -225,8 +222,8 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			 block: (of_datagram_socket_async_receive_block_t)block;
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+			 block: (OFDatagramSocketAsyncReceiveBlock)block;
 #endif
 
 /**
@@ -234,65 +231,65 @@ typedef OFData *_Nullable (^of_datagram_socket_async_send_data_block_t)(
  *
  * @param buffer The buffer to send as a datagram
  * @param length The length of the buffer
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent
  */
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver;
+	  receiver: (const OFSocketAddress *)receiver;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver;
+	     receiver: (const OFSocketAddress *)receiver;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datgram
+ *		   should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-		block: (of_datagram_socket_async_send_data_block_t)block;
+	     receiver: (const OFSocketAddress *)receiver
+		block: (OFDatagramSocketAsyncSendDataBlock)block;
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent. The receiver is copied.
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_datagram_socket_async_send_data_block_t)block;
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+		block: (OFDatagramSocketAsyncSendDataBlock)block;
 #endif
 
 /**

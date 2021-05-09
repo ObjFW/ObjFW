@@ -19,17 +19,17 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
+# import "OFPlainMutex.h"
 #endif
 
-struct weak_ref {
+struct WeakRef {
 	id **locations;
 	size_t count;
 };
 
 static struct objc_hashtable *hashtable;
 #ifdef OF_HAVE_THREADS
-static of_spinlock_t spinlock;
+static OFSpinlock spinlock;
 #endif
 
 static uint32_t
@@ -49,7 +49,7 @@ OF_CONSTRUCTOR()
 	hashtable = objc_hashtable_new(hash, equal, 2);
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_new(&spinlock) != 0)
+	if (OFSpinlockNew(&spinlock) != 0)
 		OBJC_ERROR("Failed to create spinlock!");
 #endif
 }
@@ -117,10 +117,10 @@ objc_storeStrong(id *object, id value)
 id
 objc_storeWeak(id *object, id value)
 {
-	struct weak_ref *old;
+	struct WeakRef *old;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_lock(&spinlock) != 0)
+	if (OFSpinlockLock(&spinlock) != 0)
 		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
@@ -155,7 +155,7 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -177,7 +177,7 @@ objc_storeWeak(id *object, id value)
 	*object = value;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_unlock(&spinlock) != 0)
+	if (OFSpinlockUnlock(&spinlock) != 0)
 		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
@@ -188,10 +188,10 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_lock(&spinlock) != 0)
+	if (OFSpinlockLock(&spinlock) != 0)
 		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
@@ -200,7 +200,7 @@ objc_loadWeakRetained(id *object)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_unlock(&spinlock) != 0)
+	if (OFSpinlockUnlock(&spinlock) != 0)
 		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
@@ -239,10 +239,10 @@ objc_copyWeak(id *dest, id *src)
 void
 objc_moveWeak(id *dest, id *src)
 {
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_lock(&spinlock) != 0)
+	if (OFSpinlockLock(&spinlock) != 0)
 		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
@@ -260,18 +260,18 @@ objc_moveWeak(id *dest, id *src)
 	*src = nil;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_unlock(&spinlock) != 0)
+	if (OFSpinlockUnlock(&spinlock) != 0)
 		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
 void
-objc_zero_weak_references(id value)
+objc_zeroWeakReferences(id value)
 {
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_lock(&spinlock) != 0)
+	if (OFSpinlockLock(&spinlock) != 0)
 		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
@@ -285,7 +285,7 @@ objc_zero_weak_references(id value)
 	}
 
 #ifdef OF_HAVE_THREADS
-	if (of_spinlock_unlock(&spinlock) != 0)
+	if (OFSpinlockUnlock(&spinlock) != 0)
 		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }

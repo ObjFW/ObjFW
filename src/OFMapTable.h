@@ -21,11 +21,11 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @struct of_map_table_functions_t OFMapTable.h ObjFW/OFMapTable.h
+ * @struct OFMapTableFunctions OFMapTable.h ObjFW/OFMapTable.h
  *
  * @brief A struct describing the functions to be used by the map table.
  */
-struct of_map_table_functions_t {
+typedef struct {
 	/** The function to retain keys / objects */
 	void *_Nullable (*_Nullable retain)(void *_Nullable object);
 	/** The function to release keys / objects */
@@ -35,8 +35,7 @@ struct of_map_table_functions_t {
 	/** The function to compare keys / objects */
 	bool (*_Nullable equal)(void *_Nullable object1,
 	    void *_Nullable object2);
-};
-typedef struct of_map_table_functions_t of_map_table_functions_t;
+} OFMapTableFunctions;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -47,7 +46,7 @@ typedef struct of_map_table_functions_t of_map_table_functions_t;
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_map_table_enumeration_block_t)(void *_Nullable key,
+typedef void (^OFMapTableEnumerationBlock)(void *_Nullable key,
     void *_Nullable object, bool *stop);
 
 /**
@@ -57,7 +56,7 @@ typedef void (^of_map_table_enumeration_block_t)(void *_Nullable key,
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
+typedef void *_Nullable (^OFMapTableReplaceBlock)(void *_Nullable key,
     void *_Nullable object);
 #endif
 
@@ -72,8 +71,8 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 OF_SUBCLASSING_RESTRICTED
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
-	of_map_table_functions_t _keyFunctions, _objectFunctions;
-	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
+	OFMapTableFunctions _keyFunctions, _objectFunctions;
+	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
 	unsigned long _count, _capacity;
 	unsigned char _rotate;
 	unsigned long _mutations;
@@ -82,12 +81,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The key functions used by the map table.
  */
-@property (readonly, nonatomic) of_map_table_functions_t keyFunctions;
+@property (readonly, nonatomic) OFMapTableFunctions keyFunctions;
 
 /**
  * @brief The object functions used by the map table.
  */
-@property (readonly, nonatomic) of_map_table_functions_t objectFunctions;
+@property (readonly, nonatomic) OFMapTableFunctions objectFunctions;
 
 /**
  * @brief The number of objects in the map table.
@@ -101,9 +100,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param objectFunctions A structure of functions for handling objects
  * @return A new autoreleased OFMapTable
  */
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions;
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions;
 
 /**
  * @brief Creates a new OFMapTable with the specified key functions, object
@@ -115,9 +113,8 @@ OF_SUBCLASSING_RESTRICTED
  *	  table
  * @return A new autoreleased OFMapTable
  */
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions
 				capacity: (size_t)capacity;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -130,8 +127,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param objectFunctions A structure of functions for handling objects
  * @return An initialized OFMapTable
  */
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions;
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions;
 
 /**
  * @brief Initializes an already allocated OFMapTable with the specified key
@@ -143,8 +140,8 @@ OF_SUBCLASSING_RESTRICTED
  *	  table
  * @return An initialized OFMapTable
  */
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions
 			    capacity: (size_t)capacity
     OF_DESIGNATED_INITIALIZER;
 
@@ -162,8 +159,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (nullable void *)object
-	   forKey: (nullable void *)key;
+- (void)setObject: (nullable void *)object forKey: (nullable void *)key;
 
 /**
  * @brief Removes the object for the specified key from the map table.
@@ -218,15 +214,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param block The block to execute for each key / object pair.
  */
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_map_table_enumeration_block_t)block;
+- (void)enumerateKeysAndObjectsUsingBlock: (OFMapTableEnumerationBlock)block;
 
 /**
  * @brief Replaces each object with the object returned by the block.
  *
  * @param block The block which returns a new object for each object
  */
-- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block;
+- (void)replaceObjectsUsingBlock: (OFMapTableReplaceBlock)block;
 #endif
 @end
 
@@ -239,7 +234,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMapTableEnumerator: OFObject
 {
 	OFMapTable *_mapTable;
-	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
+	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
 	unsigned long _capacity, _mutations, *_Nullable _mutationsPtr;
 	unsigned long _position;
 }

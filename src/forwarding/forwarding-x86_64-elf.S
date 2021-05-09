@@ -17,186 +17,184 @@
 
 #include "platform.h"
 
-.intel_syntax noprefix
-
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
-	push	rbp
-	mov	rbp, rsp
+OFForward:
+	pushq	%rbp
+	movq	%rsp, %rbp
 
 	/* Save all arguments */
-	sub	rsp, 0xC0	/* 16-byte alignment */
-	mov	[rbp-0x08], rax
-	mov	[rbp-0x10], rdi
-	mov	[rbp-0x18], rsi
-	mov	[rbp-0x20], rdx
-	mov	[rbp-0x28], rcx
-	mov	[rbp-0x30], r8
-	mov	[rbp-0x38], r9
-	movaps	[rbp-0x50], xmm0
-	movaps	[rbp-0x60], xmm1
-	movaps	[rbp-0x70], xmm2
-	movaps	[rbp-0x80], xmm3
-	movaps	[rbp-0x90], xmm4
-	movaps	[rbp-0xA0], xmm5
-	movaps	[rbp-0xB0], xmm6
-	movaps	[rbp-0xC0], xmm7
+	subq	$0xC0, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x8(%rbp)
+	movq	%rdi, -0x10(%rbp)
+	movq	%rsi, -0x18(%rbp)
+	movq	%rdx, -0x20(%rbp)
+	movq	%rcx, -0x28(%rbp)
+	movq	%r8, -0x30(%rbp)
+	movq	%r9, -0x38(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
 
 	call	object_getClass@PLT
 
-	mov	rdi, rax
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	class_respondsToSelector@PLT
 
-	test	rax, rax
-	jz	short 0f
+	testq	%rax, %rax
+	jz	0f
 
-	mov	rdi, [rbp-0x10]
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
+	movq	-0x10(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	objc_msg_lookup@PLT
 
-	mov	rdi, [rbp-0x10]
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
-	mov	rdx, [rbp-0x18]
-	call	rax
+	movq	-0x10(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	-0x18(%rbp), %rdx
+	call	*%rax
 
-	test	rax, rax
-	jz	short 0f
-	cmp	rax, [rbp-0x10]
-	je	short 0f
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x10(%rbp), %rax
+	je	0f
 
-	mov	[rbp-0x10], rax
+	movq	%rax, -0x10(%rbp)
 
-	mov	rdi, rax
-	mov	rsi, [rbp-0x18]
+	movq	%rax, %rdi
+	movq	-0x18(%rbp), %rsi
 	call	objc_msg_lookup@PLT
-	mov	r11, rax
+	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movaps	xmm7, [rbp-0xC0]
-	movaps	xmm6, [rbp-0xB0]
-	movaps	xmm5, [rbp-0xA0]
-	movaps	xmm4, [rbp-0x90]
-	movaps	xmm3, [rbp-0x80]
-	movaps	xmm2, [rbp-0x70]
-	movaps	xmm1, [rbp-0x60]
-	movaps	xmm0, [rbp-0x50]
-	mov	r9,   [rbp-0x38]
-	mov	r8,   [rbp-0x30]
-	mov	rcx,  [rbp-0x28]
-	mov	rdx,  [rbp-0x20]
-	mov	rsi,  [rbp-0x18]
-	mov	rdi,  [rbp-0x10]
-	mov	rax,  [rbp-0x08]
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
+	movq	-0x38(%rbp), %r9
+	movq	-0x30(%rbp), %r8
+	movq	-0x28(%rbp), %rcx
+	movq	-0x20(%rbp), %rdx
+	movq	-0x18(%rbp), %rsi
+	movq	-0x10(%rbp), %rdi
+	movq	-0x8(%rbp), %rax
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	r11
+	jmpq	*%r11
 
 0:
-	mov	rdi, [rbp-0x10]
-	mov	rsi, [rbp-0x18]
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	of_method_not_found@PLT
-.type of_forward, %function
-.size of_forward, .-of_forward
+	jmp	OFMethodNotFound@PLT
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
-	push	rbp
-	mov	rbp, rsp
+OFForward_stret:
+	pushq	%rbp
+	movq	%rsp, %rbp
 
 	/* Save all arguments */
-	sub	rsp, 0xC0	/* 16-byte alignment */
-	mov	[rbp-0x08], rax
-	mov	[rbp-0x10], rdi
-	mov	[rbp-0x18], rsi
-	mov	[rbp-0x20], rdx
-	mov	[rbp-0x28], rcx
-	mov	[rbp-0x30], r8
-	mov	[rbp-0x38], r9
-	movaps	[rbp-0x50], xmm0
-	movaps	[rbp-0x60], xmm1
-	movaps	[rbp-0x70], xmm2
-	movaps	[rbp-0x80], xmm3
-	movaps	[rbp-0x90], xmm4
-	movaps	[rbp-0xA0], xmm5
-	movaps	[rbp-0xB0], xmm6
-	movaps	[rbp-0xC0], xmm7
+	subq	$0xC0, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x8(%rbp)
+	movq	%rdi, -0x10(%rbp)
+	movq	%rsi, -0x18(%rbp)
+	movq	%rdx, -0x20(%rbp)
+	movq	%rcx, -0x28(%rbp)
+	movq	%r8, -0x30(%rbp)
+	movq	%r9, -0x38(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
 
-	mov	rdi, rsi
+	movq	%rsi, %rdi
 	call	object_getClass@PLT
 
-	mov	rdi, rax
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	class_respondsToSelector@PLT
 
-	test	rax, rax
-	jz	short 0f
+	testq	%rax, %rax
+	jz	0f
 
-	mov	rdi, [rbp-0x18]
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
+	movq	-0x18(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	objc_msg_lookup@PLT
 
-	mov	rdi, [rbp-0x18]
-	lea	rsi, [rip+sel_forwardingTargetForSelector_]
-	mov	rdx, [rbp-0x20]
-	call	rax
+	movq	-0x18(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	-0x20(%rbp), %rdx
+	call	*%rax
 
-	test	rax, rax
-	jz	short 0f
-	cmp	rax, [rbp-0x18]
-	je	short 0f
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x18(%rbp), %rax
+	je	0f
 
-	mov	[rbp-0x18], rax
+	movq	%rax, -0x18(%rbp)
 
-	mov	rdi, rax
-	mov	rsi, [rbp-0x20]
+	movq	%rax, %rdi
+	movq	-0x20(%rbp), %rsi
 	call	objc_msg_lookup_stret@PLT
-	mov	r11, rax
+	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movaps	xmm7, [rbp-0xC0]
-	movaps	xmm6, [rbp-0xB0]
-	movaps	xmm5, [rbp-0xA0]
-	movaps	xmm4, [rbp-0x90]
-	movaps	xmm3, [rbp-0x80]
-	movaps	xmm2, [rbp-0x70]
-	movaps	xmm1, [rbp-0x60]
-	movaps	xmm0, [rbp-0x50]
-	mov	r9,   [rbp-0x38]
-	mov	r8,   [rbp-0x30]
-	mov	rcx,  [rbp-0x28]
-	mov	rdx,  [rbp-0x20]
-	mov	rsi,  [rbp-0x18]
-	mov	rdi,  [rbp-0x10]
-	mov	rax,  [rbp-0x08]
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
+	movq	-0x38(%rbp), %r9
+	movq	-0x30(%rbp), %r8
+	movq	-0x28(%rbp), %rcx
+	movq	-0x20(%rbp), %rdx
+	movq	-0x18(%rbp), %rsi
+	movq	-0x10(%rbp), %rdi
+	movq	-0x8(%rbp), %rax
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	r11
+	jmpq	*%r11
 
 0:
-	mov	rdi, [rbp-0x10]
-	mov	rsi, [rbp-0x18]
-	mov	rdx, [rbp-0x20]
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+	movq	-0x20(%rbp), %rdx
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	of_method_not_found_stret@PLT
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+	jmp	OFMethodNotFound_stret@PLT
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
-	lea	rdi, [rip+module]
+	leaq	module(%rip), %rdi
 	jmp	__objc_exec_class@PLT
 
 #ifdef OF_SOLARIS

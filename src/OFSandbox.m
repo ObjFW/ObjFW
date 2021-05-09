@@ -469,42 +469,42 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, _allowsStdIO);
-	OF_HASH_ADD(hash, _allowsReadingFiles);
-	OF_HASH_ADD(hash, _allowsWritingFiles);
-	OF_HASH_ADD(hash, _allowsCreatingFiles);
-	OF_HASH_ADD(hash, _allowsCreatingSpecialFiles);
-	OF_HASH_ADD(hash, _allowsTemporaryFiles);
-	OF_HASH_ADD(hash, _allowsIPSockets);
-	OF_HASH_ADD(hash, _allowsMulticastSockets);
-	OF_HASH_ADD(hash, _allowsChangingFileAttributes);
-	OF_HASH_ADD(hash, _allowsFileOwnerChanges);
-	OF_HASH_ADD(hash, _allowsFileLocks);
-	OF_HASH_ADD(hash, _allowsUNIXSockets);
-	OF_HASH_ADD(hash, _allowsDNS);
-	OF_HASH_ADD(hash, _allowsUserDatabaseReading);
-	OF_HASH_ADD(hash, _allowsFileDescriptorSending);
-	OF_HASH_ADD(hash, _allowsFileDescriptorReceiving);
-	OF_HASH_ADD(hash, _allowsTape);
-	OF_HASH_ADD(hash, _allowsTTY);
-	OF_HASH_ADD(hash, _allowsProcessOperations);
-	OF_HASH_ADD(hash, _allowsExec);
-	OF_HASH_ADD(hash, _allowsProtExec);
-	OF_HASH_ADD(hash, _allowsSetTime);
-	OF_HASH_ADD(hash, _allowsPS);
-	OF_HASH_ADD(hash, _allowsVMInfo);
-	OF_HASH_ADD(hash, _allowsChangingProcessRights);
-	OF_HASH_ADD(hash, _allowsPF);
-	OF_HASH_ADD(hash, _allowsAudio);
-	OF_HASH_ADD(hash, _allowsBPF);
-	OF_HASH_ADD(hash, _allowsUnveil);
-	OF_HASH_ADD(hash, _returnsErrors);
+	OFHashAdd(&hash, _allowsStdIO);
+	OFHashAdd(&hash, _allowsReadingFiles);
+	OFHashAdd(&hash, _allowsWritingFiles);
+	OFHashAdd(&hash, _allowsCreatingFiles);
+	OFHashAdd(&hash, _allowsCreatingSpecialFiles);
+	OFHashAdd(&hash, _allowsTemporaryFiles);
+	OFHashAdd(&hash, _allowsIPSockets);
+	OFHashAdd(&hash, _allowsMulticastSockets);
+	OFHashAdd(&hash, _allowsChangingFileAttributes);
+	OFHashAdd(&hash, _allowsFileOwnerChanges);
+	OFHashAdd(&hash, _allowsFileLocks);
+	OFHashAdd(&hash, _allowsUNIXSockets);
+	OFHashAdd(&hash, _allowsDNS);
+	OFHashAdd(&hash, _allowsUserDatabaseReading);
+	OFHashAdd(&hash, _allowsFileDescriptorSending);
+	OFHashAdd(&hash, _allowsFileDescriptorReceiving);
+	OFHashAdd(&hash, _allowsTape);
+	OFHashAdd(&hash, _allowsTTY);
+	OFHashAdd(&hash, _allowsProcessOperations);
+	OFHashAdd(&hash, _allowsExec);
+	OFHashAdd(&hash, _allowsProtExec);
+	OFHashAdd(&hash, _allowsSetTime);
+	OFHashAdd(&hash, _allowsPS);
+	OFHashAdd(&hash, _allowsVMInfo);
+	OFHashAdd(&hash, _allowsChangingProcessRights);
+	OFHashAdd(&hash, _allowsPF);
+	OFHashAdd(&hash, _allowsAudio);
+	OFHashAdd(&hash, _allowsBPF);
+	OFHashAdd(&hash, _allowsUnveil);
+	OFHashAdd(&hash, _returnsErrors);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -587,8 +587,7 @@
 }
 #endif
 
-- (void)unveilPath: (OFString *)path
-       permissions: (OFString *)permissions
+- (void)unveilPath: (OFString *)path permissions: (OFString *)permissions
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -598,7 +597,7 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray OF_GENERIC(of_sandbox_unveil_path_t) *)unveiledPaths
+- (OFArray OF_GENERIC(OFSandboxUnveilPath) *)unveiledPaths
 {
 	return [[_unveiledPaths copy] autorelease];
 }

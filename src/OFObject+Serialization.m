@@ -42,9 +42,8 @@ int _OFObject_Serialization_reference;
 	element = ((id <OFSerialization>)self).XMLElementBySerializing;
 
 	root = [OFXMLElement elementWithName: @"serialization"
-				   namespace: OF_SERIALIZATION_NS];
-	[root addAttributeWithName: @"version"
-		       stringValue: @"1"];
+				   namespace: OFSerializationNS];
+	[root addAttributeWithName: @"version" stringValue: @"1"];
 	[root addChild: element];
 
 	ret = [@"<?xml version='1.0' encoding='UTF-8'?>\n"

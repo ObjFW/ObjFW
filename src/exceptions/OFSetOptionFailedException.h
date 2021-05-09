@@ -48,8 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased set option failed exception
  */
-+ (instancetype)exceptionWithObject: (id)object
-			      errNo: (int)errNo;
++ (instancetype)exceptionWithObject: (id)object errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 

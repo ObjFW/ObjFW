@@ -42,7 +42,7 @@ OF_APPLICATION_DELEGATE(OFHash)
 static void
 help(void)
 {
-	[of_stderr writeLine: OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] [--md5|--ripemd160|--sha1|--sha224|--sha256|"
 	    @"--sha384|--sha512] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
@@ -51,17 +51,17 @@ help(void)
 }
 
 static void
-printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
+printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
 	const unsigned char *digest = hash.digest;
 	size_t digestSize = hash.digestSize;
 
-	[of_stdout writeFormat: @"%@ ", algo];
+	[OFStdOut writeFormat: @"%@ ", algo];
 
 	for (size_t i = 0; i < digestSize; i++)
-		[of_stdout writeFormat: @"%02x", digest[i]];
+		[OFStdOut writeFormat: @"%02x", digest[i]];
 
-	[of_stdout writeFormat: @"  %@\n", path];
+	[OFStdOut writeFormat: @"  %@\n", path];
 }
 
 @implementation OFHash
@@ -70,7 +70,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
 	bool calculateSHA256, calculateSHA384, calculateSHA512;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
@@ -82,7 +82,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 	};
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: options];
-	of_unichar_t option;
+	OFUnichar option;
 	OFMD5Hash *MD5Hash = nil;
 	OFRIPEMD160Hash *RIPEMD160Hash = nil;
 	OFSHA1Hash *SHA1Hash = nil;
@@ -101,7 +101,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		switch (option) {
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -109,7 +109,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 			else {
 				OFString *optStr = [OFString stringWithFormat:
 				    @"%c", optionsParser.lastOption];
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -129,13 +129,11 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		sandbox.allowsUserDatabaseReading = true;
 
 		for (OFString *path in optionsParser.remainingArguments)
-			[sandbox unveilPath: path
-				permissions: @"r"];
+			[sandbox unveilPath: path permissions: @"r"];
 
-		[sandbox unveilPath: @LANGUAGE_DIR
-			permissions: @"r"];
+		[sandbox unveilPath: @LANGUAGE_DIR permissions: @"r"];
 
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
 		[sandbox release];
 	}
@@ -150,42 +148,36 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		help();
 
 	if (calculateMD5)
-		MD5Hash = [OFMD5Hash cryptoHashWithAllowsSwappableMemory: true];
+		MD5Hash = [OFMD5Hash hashWithAllowsSwappableMemory: true];
 	if (calculateRIPEMD160)
 		RIPEMD160Hash =
-		    [OFRIPEMD160Hash cryptoHashWithAllowsSwappableMemory: true];
+		    [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA1)
-		SHA1Hash =
-		    [OFSHA1Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA1Hash = [OFSHA1Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA224)
-		SHA224Hash =
-		    [OFSHA224Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA224Hash = [OFSHA224Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA256)
-		SHA256Hash =
-		    [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA256Hash = [OFSHA256Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA384)
-		SHA384Hash =
-		    [OFSHA384Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA384Hash = [OFSHA384Hash hashWithAllowsSwappableMemory: true];
 	if (calculateSHA512)
-		SHA512Hash =
-		    [OFSHA512Hash cryptoHashWithAllowsSwappableMemory: true];
+		SHA512Hash = [OFSHA512Hash hashWithAllowsSwappableMemory: true];
 
 	for (OFString *path in optionsParser.remainingArguments) {
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *file;
 
 		if ([path isEqual: @"-"])
-			file = of_stdin;
+			file = OFStdIn;
 		else {
 			@try {
-				file = [OFFile fileWithPath: path
-						       mode: @"r"];
+				file = [OFFile fileWithPath: path mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
 				    @"Failed to open file %[file]: %[error]",
 				    @"file", e.path,
@@ -216,7 +208,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_read_file",
 				    @"Failed to read %[file]: %[error]",
 				    @"file", path,

@@ -83,8 +83,7 @@
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self init];
 
@@ -99,8 +98,7 @@
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -127,19 +125,19 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: @"OFCountedSet"] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *objectElement in
 		    [element elementsForName: @"object"
-				   namespace: OF_SERIALIZATION_NS]) {
+				   namespace: OFSerializationNS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
 			OFXMLAttribute *countAttribute;
 			unsigned long long count;
 
 			object = [objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 			countAttribute =
 			    [objectElement attributeForName: @"count"];
 
@@ -171,8 +169,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsAndCountUsingBlock:
-    (of_counted_set_enumeration_block_t)block
+- (void)enumerateObjectsAndCountUsingBlock: (OFCountedSetEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:
@@ -193,8 +190,7 @@
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];
 
-	[_mapTable setObject: (void *)(uintptr_t)(count + 1)
-		      forKey: object];
+	[_mapTable setObject: (void *)(uintptr_t)(count + 1) forKey: object];
 }
 
 - (void)removeObject: (id)object
@@ -207,8 +203,7 @@
 	count--;
 
 	if (count > 0)
-		[_mapTable setObject: (void *)(uintptr_t)count
-			      forKey: object];
+		[_mapTable setObject: (void *)(uintptr_t)count forKey: object];
 	else
 		[_mapTable removeObjectForKey: object];
 }

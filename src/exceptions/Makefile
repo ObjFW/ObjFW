@@ -34,7 +34,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
        OFRetrieveItemAttributesFailedException.m	\
-       OFSandboxActivationFailedException.m		\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
@@ -78,7 +77,9 @@ SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 	       OFOpenWindowsRegistryKeyFailedException.m	\
 	       OFSetWindowsRegistryValueFailedException.m
 
-INCLUDES = ${SRCS:.m=.h}
+INCLUDES := ${SRCS:.m=.h}
+
+SRCS += OFSandboxActivationFailedException.m
 
 include ../../buildsys.mk
 

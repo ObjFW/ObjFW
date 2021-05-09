@@ -30,10 +30,10 @@
 #import "OFInitializationFailedException.h"
 #import "OFLoadPluginFailedException.h"
 
-typedef OFPlugin *(*init_plugin_t)(void);
+typedef OFPlugin *(*PluginInit)(void);
 
-of_plugin_handle_t
-of_dlopen(OFString *path, int flags)
+OFPluginHandle
+OFDLOpen(OFString *path, OFDLOpenFlags flags)
 {
 #ifndef OF_WINDOWS
 	return dlopen([path cStringWithEncoding: [OFLocale encoding]], flags);
@@ -50,7 +50,7 @@ of_dlopen(OFString *path, int flags)
 }
 
 void *
-of_dlsym(of_plugin_handle_t handle, const char *symbol)
+OFDLSym(OFPluginHandle handle, const char *symbol)
 {
 #ifndef OF_WINDOWS
 	return dlsym(handle, symbol);
@@ -60,7 +60,7 @@ of_dlsym(of_plugin_handle_t handle, const char *symbol)
 }
 
 void
-of_dlclose(of_plugin_handle_t handle)
+OFDLClose(OFPluginHandle handle)
 {
 #ifndef OF_WINDOWS
 	dlclose(handle);
@@ -70,7 +70,7 @@ of_dlclose(of_plugin_handle_t handle)
 }
 
 OFString *
-of_dlerror(void)
+OFDLError(void)
 {
 #ifndef OF_WINDOWS
 	return [OFString stringWithCString: dlerror()
@@ -81,11 +81,11 @@ of_dlerror(void)
 }
 
 @implementation OFPlugin
-+ (id)pluginFromFile: (OFString *)path
++ (id)pluginWithPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_plugin_handle_t handle;
-	init_plugin_t initPlugin;
+	OFPluginHandle handle;
+	PluginInit initPlugin;
 	OFPlugin *plugin;
 
 #if defined(OF_MACOS)
@@ -98,16 +98,16 @@ of_dlerror(void)
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 #endif
 
-	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
+	if ((handle = OFDLOpen(path, OFDLOpenFlagLazy)) == NULL)
 		@throw [OFLoadPluginFailedException
 		    exceptionWithPath: path
-				error: of_dlerror()];
+				error: OFDLError()];
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (init_plugin_t)(uintptr_t)of_dlsym(handle, "init_plugin");
-	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
-		of_dlclose(handle);
+	initPlugin = (PluginInit)(uintptr_t)OFDLSym(handle, "OFPluginInit");
+	if (initPlugin == (PluginInit)0 || (plugin = initPlugin()) == nil) {
+		OFDLClose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 	}
@@ -134,10 +134,10 @@ of_dlerror(void)
 
 - (void)dealloc
 {
-	of_plugin_handle_t h = _pluginHandle;
+	OFPluginHandle h = _pluginHandle;
 
 	[super dealloc];
 
-	of_dlclose(h);
+	OFDLClose(h);
 }
 @end

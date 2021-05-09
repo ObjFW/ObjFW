@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stop A pointer to a variable that can be set to true to stop the
  *             enumeration
  */
-typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
+typedef void (^OFSetEnumerationBlock)(id object, bool *stop);
 
 /**
  * @brief A block for filtering an OFSet.
@@ -48,7 +48,7 @@ typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
  * @param object The object to inspect
  * @return Whether the object should be in the filtered set
  */
-typedef bool (^of_set_filter_block_t)(id object);
+typedef bool (^OFSetFilterBlock)(id object);
 #endif
 
 /**
@@ -164,6 +164,13 @@ typedef bool (^of_set_filter_block_t)(id object);
 		     arguments: (va_list)arguments;
 
 /**
+ * @brief Returns an OFEnumerator to enumerate through all objects of the set.
+ *
+ * @return An OFEnumerator to enumerate through all objects of the set
+ */
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
+
+/**
  * @brief Returns whether the receiver is a subset of the specified set.
  *
  * @return Whether the receiver is a subset of the specified set
@@ -239,8 +246,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -248,7 +254,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param block The block to execute for each object in the set
  */
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block;
 
 /**
  * @brief Creates a new set, only containing the objects for which the block
@@ -257,8 +263,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param block A block which determines if the object should be in the new set
  * @return A new, autoreleased OFSet
  */
-- (OFSet OF_GENERIC(ObjectType) *)filteredSetUsingBlock:
-    (of_set_filter_block_t)block;
+- (OFSet OF_GENERIC(ObjectType) *)
+    filteredSetUsingBlock: (OFSetFilterBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType

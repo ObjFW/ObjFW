@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions encodings forwarding invocation
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding
 SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE}
 CLEAN = amiga-end.amigalib.dep		\
 	amiga-end.amigalib.o		\
@@ -19,27 +19,19 @@ AMIGA_LIB = ${OBJFW_AMIGA_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASN1BitString.m		\
-       OFASN1Boolean.m			\
-       OFASN1Enumerated.m		\
-       OFASN1IA5String.m		\
-       OFASN1Integer.m			\
-       OFASN1NumericString.m		\
-       OFASN1ObjectIdentifier.m		\
-       OFASN1OctetString.m		\
-       OFASN1PrintableString.m		\
-       OFASN1UTF8String.m		\
-       OFASN1Value.m			\
+SRCS = OFASPrintF.m			\
        OFApplication.m			\
        OFArray.m			\
+       OFBase64.m			\
        OFBlock.m			\
+       OFCRC16.m			\
+       OFCRC32.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERParsing.m		\
-       OFData+CryptoHashing.m		\
+       OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
@@ -47,6 +39,7 @@ SRCS = OFASN1BitString.m		\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
+       OFHuffmanTree.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -54,8 +47,8 @@ SRCS = OFASN1BitString.m		\
        OFLHAArchiveEntry.m		\
        OFList.m				\
        OFLocale.m			\
-       OFMapTable.m			\
        OFMD5Hash.m			\
+       OFMapTable.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
@@ -74,15 +67,12 @@ SRCS = OFASN1BitString.m		\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
        OFObject+Serialization.m		\
+       OFOnce.m				\
        OFOptionsParser.m		\
+       OFPBKDF2.m			\
        OFPair.m				\
-       ${OF_PROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
-       OFSandbox.m			\
-       OFSecureData.m			\
-       OFSeekableStream.m		\
-       OFSet.m				\
        OFSHA1Hash.m			\
        OFSHA224Hash.m			\
        OFSHA224Or256Hash.m		\
@@ -90,17 +80,24 @@ SRCS = OFASN1BitString.m		\
        OFSHA384Hash.m			\
        OFSHA384Or512Hash.m		\
        OFSHA512Hash.m			\
+       OFScrypt.m			\
+       OFSecureData.m			\
+       OFSeekableStream.m		\
+       OFSerialization.m		\
+       OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
+       OFStrPTime.m			\
        OFStream.m			\
        OFString.m			\
-       OFString+CryptoHashing.m		\
+       OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
+       ${OF_SUBUPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -119,19 +116,9 @@ SRCS = OFASN1BitString.m		\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
-       OFXMLProcessingInstructions.m	\
+       OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
-       base64.m				\
-       crc16.m				\
-       crc32.m				\
-       huffman_tree.m			\
-       of_asprintf.m			\
-       of_strptime.m			\
-       once.m				\
-       pbkdf2.m				\
-       scrypt.m				\
-       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
@@ -146,7 +133,6 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
@@ -159,43 +145,38 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
 	       OFSequencedPacketSocket.m	\
+	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       socket.m				\
-	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_IPX}
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
+	       OFPlainCondition.m	\
+	       OFPlainMutex.m		\
+	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m		\
-	       condition.m		\
-	       mutex.m			\
-	       thread.m			\
-	       tlskey.m
+	       OFTLSKey.m		\
+	       OFThreadPool.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
-INCLUDES_ATOMIC = atomic.h			\
-		  atomic_builtins.h		\
-		  atomic_no_threads.h		\
-		  atomic_osatomic.h		\
-		  atomic_powerpc.h		\
-		  atomic_sync_builtins.h	\
-		  atomic_x86.h
+INCLUDES_ATOMIC = OFAtomic.h			\
+		  platform/GCC4/OFAtomic.h	\
+		  platform/GCC4.7/OFAtomic.h	\
+		  platform/PowerPC/OFAtomic.h	\
+		  platform/macOS/OFAtomic.h	\
+		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
-	    OFCryptoHash.h			\
+	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFSerialization.h			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\
-	    block.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
@@ -206,7 +187,6 @@ SRCS += OFAdjacentArray.m		\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCountedMapTableSet.m		\
-	OFDimensionValue.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -220,12 +200,15 @@ SRCS += OFAdjacentArray.m		\
 	OFPointerValue.m		\
 	OFRangeCharacterSet.m		\
 	OFRangeValue.m			\
-	OFRectangleValue.m		\
+	OFRectValue.m			\
+	OFSandbox.m			\
+	OFSizeValue.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
-	${RUNTIME_INSTANCE_M}
+	${RUNTIME_INSTANCE_M}		\
+       ${UNICODE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
@@ -241,18 +224,15 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
-	     forwarding/forwarding.a	\
-	     invocation/invocation.a
+	     forwarding/forwarding.a
 LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 		 encodings/encodings.lib.a	\
-		 forwarding/forwarding.lib.a	\
-		 invocation/invocation.lib.a
+		 forwarding/forwarding.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
 AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
 		       exceptions/exceptions.amigalib.a	\
 		       encodings/encodings.amigalib.a	\
 		       forwarding/forwarding.amigalib.a	\
-		       invocation/invocation.amigalib.a	\
 		       amiga-end.amigalib.o
 
 include ../buildsys.mk

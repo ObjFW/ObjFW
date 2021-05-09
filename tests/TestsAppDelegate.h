@@ -15,41 +15,35 @@
 
 #import "ObjFW.h"
 
-#define TEST(test, ...)					\
-	{						\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		if (__VA_ARGS__)			\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define TEST(test, ...)							\
+	{								\
+		[self outputTesting: test inModule: module];		\
+									\
+		if (__VA_ARGS__)					\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
-#define EXPECT_EXCEPTION(test, exception, code)		\
-	{						\
-		bool caught = false;			\
-							\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		@try {					\
-			code;				\
-		} @catch (exception *e) {		\
-			caught = true;			\
-		}					\
-							\
-		if (caught)				\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define EXPECT_EXCEPTION(test, exception, code)				\
+	{								\
+		bool caught = false;					\
+									\
+		[self outputTesting: test inModule: module];		\
+									\
+		@try {							\
+			code;						\
+		} @catch (exception *e) {				\
+			caught = true;					\
+		}							\
+									\
+		if (caught)						\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
 #define R(...) (__VA_ARGS__, 1)
 
@@ -60,20 +54,9 @@
 	int _fails;
 }
 
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module;
-@end
-
-@interface TestsAppDelegate (OFASN1DERParsingTests)
-- (void)ASN1DERParsingTests;
-@end
-
-@interface TestsAppDelegate (OFASN1DERRepresentationTests)
-- (void)ASN1DERRepresentationTests;
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module;
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module;
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
 @interface TestsAppDelegate (OFArrayTests)
@@ -164,6 +147,10 @@
 - (void)objectTests;
 @end
 
+@interface TestsAppDelegate (OFPBKDF2Tests)
+- (void)PBKDF2Tests;
+@end
+
 @interface TestsAppDelegate (OFPropertyListTests)
 - (void)propertyListTests;
 @end
@@ -184,7 +171,7 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (ScryptTests)
+@interface TestsAppDelegate (OFScryptTests)
 - (void)scryptTests;
 @end
 
@@ -206,10 +193,6 @@
 
 @interface TestsAppDelegate (OFSHA512HashTests)
 - (void)SHA512HashTests;
-@end
-
-@interface TestsAppDelegate (OFSCTPSocketTests)
-- (void)SCTPSocketTests;
 @end
 
 @interface TestsAppDelegate (OFSPXSocketTests)
@@ -234,6 +217,10 @@
 
 @interface TestsAppDelegate (OFHMACTests)
 - (void)HMACTests;
+@end
+
+@interface TestsAppDelegate (OFSocketTests)
+- (void)socketTests;
 @end
 
 @interface TestsAppDelegate (OFStreamTests)
@@ -279,12 +266,4 @@
 @interface TestsAppDelegate (OFXMLParserTests)
     <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
-@end
-
-@interface TestsAppDelegate (PBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
-@interface TestsAppDelegate (SocketTests)
-- (void)socketTests;
 @end

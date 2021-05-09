@@ -13,4 +13,4 @@
  * file.
  */
 
-const of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";

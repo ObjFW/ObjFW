@@ -26,25 +26,24 @@ OF_ASSUME_NONNULL_BEGIN
 	 * it on the first access. Strings created at runtime just set the
 	 * pointer to `&_storage`.
 	 */
-	struct of_string_utf8_ivars {
+	struct OFUTF8StringIvars {
 		char          *cString;
 		size_t        cStringLength;
 		bool          isUTF8;
 		size_t        length;
-		bool          hashed;
+		bool          hasHash;
 		unsigned long hash;
 		bool          freeWhenDone;
 	} *restrict _s;
-	struct of_string_utf8_ivars _storage;
+	struct OFUTF8StringIvars _storage;
 }
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_string_utf8_check(const char *, size_t, size_t *);
-extern size_t of_string_utf8_get_index(const char *, size_t);
-extern size_t of_string_utf8_get_position(const char *, size_t, size_t);
+extern int OFUTF8StringCheck(const char *, size_t, size_t *);
+extern size_t OFUTF8StringIndexToPosition(const char *, size_t, size_t);
 #ifdef __cplusplus
 }
 #endif

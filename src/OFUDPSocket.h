@@ -32,11 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create and use UDP sockets.
  *
- * Addresses are of type @ref of_socket_address_t. You can use the current
- * thread's @ref OFDNSResolver to create an address for a host / port pair and
- * @ref of_socket_address_ip_string to get the IP string / port pair for an
- * address. If you want to compare two addresses, you can use @ref
- * of_socket_address_equal and you can use @ref of_socket_address_hash to get a
+ * Addresses are of type @ref OFSocketAddress. You can use the current thread's
+ * @ref OFDNSResolver to create an address for a host / port pair,
+ * @ref OFSocketAddressString to get the IP address string for an address and
+ * @ref OFSocketAddressPort to get the port for an address. If you want to
+ * compare two addresses, you can use
+ * @ref OFSocketAddressEqual and you can use @ref OFSocketAddressHash to get a
  * hash to use in e.g. @ref OFMapTable.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
@@ -72,8 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port;
+- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

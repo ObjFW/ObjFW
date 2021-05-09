@@ -76,7 +76,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_name = [[element attributeForName: @"name"].stringValue copy];
@@ -140,15 +140,15 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD_HASH(hash, _namespace.hash);
-	OF_HASH_ADD_HASH(hash, _stringValue.hash);
+	OFHashAddHash(&hash, _name.hash);
+	OFHashAddHash(&hash, _namespace.hash);
+	OFHashAddHash(&hash, _stringValue.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -159,10 +159,8 @@
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
-
-	[element addAttributeWithName: @"name"
-			  stringValue: _name];
+				      namespace: OFSerializationNS];
+	[element addAttributeWithName: @"name" stringValue: _name];
 
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"

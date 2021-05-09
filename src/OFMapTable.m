@@ -28,13 +28,15 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#define MIN_CAPACITY 16
+extern unsigned long OFHashSeed;
 
-struct of_map_table_bucket {
+static const unsigned long minCapacity = 16;
+
+struct OFMapTableBucket {
 	void *key, *object;
 	unsigned long hash;
 };
-static struct of_map_table_bucket deleted = { 0 };
+static struct OFMapTableBucket deletedBucket = { 0 };
 
 static void *
 defaultRetain(void *object)
@@ -60,16 +62,9 @@ defaultEqual(void *object1, void *object2)
 }
 
 OF_DIRECT_MEMBERS
-@interface OFMapTable ()
-- (void)of_setObject: (void *)object
-	      forKey: (void *)key
-		hash: (unsigned long)hash;
-@end
-
-OF_DIRECT_MEMBERS
 @interface OFMapTableEnumerator ()
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
-			    buckets: (struct of_map_table_bucket **)buckets
+			    buckets: (struct OFMapTableBucket **)buckets
 			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
     OF_METHOD_FAMILY(init);
@@ -84,18 +79,16 @@ OF_DIRECT_MEMBERS
 @implementation OFMapTable
 @synthesize keyFunctions = _keyFunctions, objectFunctions = _objectFunctions;
 
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions
 {
 	return [[[self alloc]
 	    initWithKeyFunctions: keyFunctions
 		  objectFunctions: objectFunctions] autorelease];
 }
 
-+ (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			 objectFunctions: (of_map_table_functions_t)
-					      objectFunctions
++ (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+			 objectFunctions: (OFMapTableFunctions)objectFunctions
 				capacity: (size_t)capacity
 {
 	return [[[self alloc]
@@ -109,16 +102,16 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions
 {
 	return [self initWithKeyFunctions: keyFunctions
 			  objectFunctions: objectFunctions
 				 capacity: 0];
 }
 
-- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-		     objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (OFMapTableFunctions)keyFunctions
+		     objectFunctions: (OFMapTableFunctions)objectFunctions
 			    capacity: (size_t)capacity
 {
 	self = [super init];
@@ -158,13 +151,13 @@ OF_DIRECT_MEMBERS
 			if (_capacity <= ULONG_MAX / 2)
 				_capacity *= 2;
 
-		if (_capacity < MIN_CAPACITY)
-			_capacity = MIN_CAPACITY;
+		if (_capacity < minCapacity)
+			_capacity = minCapacity;
 
-		_buckets = of_alloc_zeroed(_capacity, sizeof(*_buckets));
+		_buckets = OFAllocZeroedMemory(_capacity, sizeof(*_buckets));
 
-		if (of_hash_seed != 0)
-			_rotate = of_random16() & 31;
+		if (OFHashSeed != 0)
+			_rotate = OFRandom16() & 31;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -176,17 +169,171 @@ OF_DIRECT_MEMBERS
 - (void)dealloc
 {
 	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 		}
 	}
 
-	free(_buckets);
+	OFFreeMemory(_buckets);
 
 	[super dealloc];
+}
+
+static void
+resizeForCount(OFMapTable *self, unsigned long count)
+{
+	unsigned long fullness, capacity;
+	struct OFMapTableBucket **buckets;
+
+	if (count > ULONG_MAX / sizeof(*self->_buckets) ||
+	    count > ULONG_MAX / 8)
+		@throw [OFOutOfRangeException exception];
+
+	fullness = count * 8 / self->_capacity;
+
+	if (fullness >= 6) {
+		if (self->_capacity > ULONG_MAX / 2)
+			return;
+
+		capacity = self->_capacity * 2;
+	} else if (fullness <= 1)
+		capacity = self->_capacity / 2;
+	else
+		return;
+
+	/*
+	 * Don't downsize if we have an initial capacity or if we would fall
+	 * below the minimum capacity.
+	 */
+	if ((capacity < self->_capacity && count > self->_count) ||
+	    capacity < minCapacity)
+		return;
+
+	buckets = OFAllocZeroedMemory(capacity, sizeof(*buckets));
+
+	for (unsigned long i = 0; i < self->_capacity; i++) {
+		if (self->_buckets[i] != NULL &&
+		    self->_buckets[i] != &deletedBucket) {
+			unsigned long j, last;
+
+			last = capacity;
+
+			for (j = self->_buckets[i]->hash & (capacity - 1);
+			    j < last && buckets[j] != NULL; j++);
+
+			/* In case the last bucket is already used */
+			if (j >= last) {
+				last = self->_buckets[i]->hash & (capacity - 1);
+
+				for (j = 0; j < last &&
+				    buckets[j] != NULL; j++);
+			}
+
+			if (j >= last)
+				@throw [OFOutOfRangeException exception];
+
+			buckets[j] = self->_buckets[i];
+		}
+	}
+
+	OFFreeMemory(self->_buckets);
+	self->_buckets = buckets;
+	self->_capacity = capacity;
+}
+
+static void
+setObject(OFMapTable *restrict self, void *key, void *object,
+    unsigned long hash)
+{
+	unsigned long i, last;
+	void *old;
+
+	if (key == NULL || object == NULL)
+		@throw [OFInvalidArgumentException exception];
+
+	hash = OFRotateLeft(hash, self->_rotate);
+	last = self->_capacity;
+
+	for (i = hash & (self->_capacity - 1);
+	    i < last && self->_buckets[i] != NULL; i++) {
+		if (self->_buckets[i] == &deletedBucket)
+			continue;
+
+		if (self->_keyFunctions.equal(self->_buckets[i]->key, key))
+			break;
+	}
+
+	/* In case the last bucket is already used */
+	if (i >= last) {
+		last = hash & (self->_capacity - 1);
+
+		for (i = 0; i < last && self->_buckets[i] != NULL; i++) {
+			if (self->_buckets[i] == &deletedBucket)
+				continue;
+
+			if (self->_keyFunctions.equal(
+			    self->_buckets[i]->key, key))
+				break;
+		}
+	}
+
+	/* Key not in map table */
+	if (i >= last || self->_buckets[i] == NULL ||
+	    self->_buckets[i] == &deletedBucket ||
+	    !self->_keyFunctions.equal(self->_buckets[i]->key, key)) {
+		struct OFMapTableBucket *bucket;
+
+		resizeForCount(self, self->_count + 1);
+
+		self->_mutations++;
+		last = self->_capacity;
+
+		for (i = hash & (self->_capacity - 1); i < last &&
+		    self->_buckets[i] != NULL &&
+		    self->_buckets[i] != &deletedBucket; i++);
+
+		/* In case the last bucket is already used */
+		if (i >= last) {
+			last = hash & (self->_capacity - 1);
+
+			for (i = 0; i < last && self->_buckets[i] != NULL &&
+			    self->_buckets[i] != &deletedBucket; i++);
+		}
+
+		if (i >= last)
+			@throw [OFOutOfRangeException exception];
+
+		bucket = OFAllocMemory(1, sizeof(*bucket));
+
+		@try {
+			bucket->key = self->_keyFunctions.retain(key);
+		} @catch (id e) {
+			OFFreeMemory(bucket);
+			@throw e;
+		}
+
+		@try {
+			bucket->object = self->_objectFunctions.retain(object);
+		} @catch (id e) {
+			self->_keyFunctions.release(bucket->key);
+			OFFreeMemory(bucket);
+			@throw e;
+		}
+
+		bucket->hash = hash;
+
+		self->_buckets[i] = bucket;
+		self->_count++;
+
+		return;
+	}
+
+	old = self->_buckets[i]->object;
+	self->_buckets[i]->object = self->_objectFunctions.retain(object);
+	self->_objectFunctions.release(old);
 }
 
 - (bool)isEqual: (id)object
@@ -207,7 +354,7 @@ OF_DIRECT_MEMBERS
 		return false;
 
 	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
 			void *objectIter =
 			    [mapTable objectForKey: _buckets[i]->key];
 
@@ -225,8 +372,8 @@ OF_DIRECT_MEMBERS
 	unsigned long hash = 0;
 
 	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			hash ^= OF_ROR(_buckets[i]->hash, _rotate);
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
+			hash ^= OFRotateRight(_buckets[i]->hash, _rotate);
 			hash ^= _objectFunctions.hash(_buckets[i]->object);
 		}
 	}
@@ -243,11 +390,11 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		for (unsigned long i = 0; i < _capacity; i++)
-			if (_buckets[i] != NULL && _buckets[i] != &deleted)
-				[copy of_setObject: _buckets[i]->object
-					    forKey: _buckets[i]->key
-					      hash: OF_ROR(_buckets[i]->hash,
-							_rotate)];
+			if (_buckets[i] != NULL &&
+			    _buckets[i] != &deletedBucket)
+				setObject(copy, _buckets[i]->key,
+				    _buckets[i]->object,
+				    OFRotateRight(_buckets[i]->hash, _rotate));
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -268,11 +415,11 @@ OF_DIRECT_MEMBERS
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
+		if (_buckets[i] == &deletedBucket)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key))
@@ -286,7 +433,7 @@ OF_DIRECT_MEMBERS
 	last = hash & (_capacity - 1);
 
 	for (i = 0; i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
+		if (_buckets[i] == &deletedBucket)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key))
@@ -296,158 +443,9 @@ OF_DIRECT_MEMBERS
 	return NULL;
 }
 
-- (void)of_resizeForCount: (unsigned long)count OF_DIRECT
+- (void)setObject: (void *)object forKey: (void *)key
 {
-	unsigned long fullness, capacity;
-	struct of_map_table_bucket **buckets;
-
-	if (count > ULONG_MAX / sizeof(*_buckets) || count > ULONG_MAX / 8)
-		@throw [OFOutOfRangeException exception];
-
-	fullness = count * 8 / _capacity;
-
-	if (fullness >= 6) {
-		if (_capacity > ULONG_MAX / 2)
-			return;
-
-		capacity = _capacity * 2;
-	} else if (fullness <= 1)
-		capacity = _capacity / 2;
-	else
-		return;
-
-	/*
-	 * Don't downsize if we have an initial capacity or if we would fall
-	 * below the minimum capacity.
-	 */
-	if ((capacity < _capacity && count > _count) || capacity < MIN_CAPACITY)
-		return;
-
-	buckets = of_alloc_zeroed(capacity, sizeof(*buckets));
-
-	for (unsigned long i = 0; i < _capacity; i++) {
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			unsigned long j, last;
-
-			last = capacity;
-
-			for (j = _buckets[i]->hash & (capacity - 1);
-			    j < last && buckets[j] != NULL; j++);
-
-			/* In case the last bucket is already used */
-			if (j >= last) {
-				last = _buckets[i]->hash & (capacity - 1);
-
-				for (j = 0; j < last &&
-				    buckets[j] != NULL; j++);
-			}
-
-			if (j >= last)
-				@throw [OFOutOfRangeException exception];
-
-			buckets[j] = _buckets[i];
-		}
-	}
-
-	free(_buckets);
-	_buckets = buckets;
-	_capacity = capacity;
-}
-
-- (void)of_setObject: (void *)object
-	      forKey: (void *)key
-		hash: (unsigned long)hash
-{
-	unsigned long i, last;
-	void *old;
-
-	if (key == NULL || object == NULL)
-		@throw [OFInvalidArgumentException exception];
-
-	hash = OF_ROL(hash, _rotate);
-	last = _capacity;
-
-	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
-			continue;
-
-		if (_keyFunctions.equal(_buckets[i]->key, key))
-			break;
-	}
-
-	/* In case the last bucket is already used */
-	if (i >= last) {
-		last = hash & (_capacity - 1);
-
-		for (i = 0; i < last && _buckets[i] != NULL; i++) {
-			if (_buckets[i] == &deleted)
-				continue;
-
-			if (_keyFunctions.equal(_buckets[i]->key, key))
-				break;
-		}
-	}
-
-	/* Key not in map table */
-	if (i >= last || _buckets[i] == NULL || _buckets[i] == &deleted ||
-	    !_keyFunctions.equal(_buckets[i]->key, key)) {
-		struct of_map_table_bucket *bucket;
-
-		[self of_resizeForCount: _count + 1];
-
-		_mutations++;
-		last = _capacity;
-
-		for (i = hash & (_capacity - 1); i < last &&
-		    _buckets[i] != NULL && _buckets[i] != &deleted; i++);
-
-		/* In case the last bucket is already used */
-		if (i >= last) {
-			last = hash & (_capacity - 1);
-
-			for (i = 0; i < last && _buckets[i] != NULL &&
-			    _buckets[i] != &deleted; i++);
-		}
-
-		if (i >= last)
-			@throw [OFOutOfRangeException exception];
-
-		bucket = of_alloc(1, sizeof(*bucket));
-
-		@try {
-			bucket->key = _keyFunctions.retain(key);
-		} @catch (id e) {
-			free(bucket);
-			@throw e;
-		}
-
-		@try {
-			bucket->object = _objectFunctions.retain(object);
-		} @catch (id e) {
-			_keyFunctions.release(bucket->key);
-			free(bucket);
-			@throw e;
-		}
-
-		bucket->hash = hash;
-
-		_buckets[i] = bucket;
-		_count++;
-
-		return;
-	}
-
-	old = _buckets[i]->object;
-	_buckets[i]->object = _objectFunctions.retain(object);
-	_objectFunctions.release(old);
-}
-
-- (void)setObject: (void *)object
-	   forKey: (void *)key
-{
-	[self of_setObject: object
-		    forKey: key
-		      hash: _keyFunctions.hash(key)];
+	setObject(self, key, object,_keyFunctions.hash(key));
 }
 
 - (void)removeObjectForKey: (void *)key
@@ -457,11 +455,11 @@ OF_DIRECT_MEMBERS
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OF_ROL(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
+		if (_buckets[i] == &deletedBucket)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key)) {
@@ -470,11 +468,11 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
-			_buckets[i] = &deleted;
+			OFFreeMemory(_buckets[i]);
+			_buckets[i] = &deletedBucket;
 
 			_count--;
-			[self of_resizeForCount: _count];
+			resizeForCount(self, _count);
 
 			return;
 		}
@@ -487,19 +485,19 @@ OF_DIRECT_MEMBERS
 	last = hash & (_capacity - 1);
 
 	for (i = 0; i < last && _buckets[i] != NULL; i++) {
-		if (_buckets[i] == &deleted)
+		if (_buckets[i] == &deletedBucket)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key)) {
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
-			_buckets[i] = &deleted;
+			OFFreeMemory(_buckets[i]);
+			_buckets[i] = &deletedBucket;
 
 			_count--;
 			_mutations++;
-			[self of_resizeForCount: _count];
+			resizeForCount(self, _count);
 
 			return;
 		}
@@ -510,7 +508,7 @@ OF_DIRECT_MEMBERS
 {
 	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL) {
-			if (_buckets[i] == &deleted) {
+			if (_buckets[i] == &deletedBucket) {
 				_buckets[i] = NULL;
 				continue;
 			}
@@ -518,21 +516,21 @@ OF_DIRECT_MEMBERS
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
-			free(_buckets[i]);
+			OFFreeMemory(_buckets[i]);
 			_buckets[i] = NULL;
 		}
 	}
 
 	_count = 0;
-	_capacity = MIN_CAPACITY;
-	_buckets = of_realloc(_buckets, _capacity, sizeof(*_buckets));
+	_capacity = minCapacity;
+	_buckets = OFResizeMemory(_buckets, _capacity, sizeof(*_buckets));
 
 	/*
 	 * Get a new random value for _rotate, so that it is not less secure
 	 * than creating a new hash map.
 	 */
-	if (of_hash_seed != 0)
-		_rotate = of_random16() & 31;
+	if (OFHashSeed != 0)
+		_rotate = OFRandom16() & 31;
 }
 
 - (bool)containsObject: (void *)object
@@ -541,7 +539,7 @@ OF_DIRECT_MEMBERS
 		return false;
 
 	for (unsigned long i = 0; i < _capacity; i++)
-		if (_buckets[i] != NULL && _buckets[i] != &deleted)
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
 			if (_objectFunctions.equal(_buckets[i]->object, object))
 				return true;
 
@@ -554,7 +552,7 @@ OF_DIRECT_MEMBERS
 		return false;
 
 	for (unsigned long i = 0; i < _capacity; i++)
-		if (_buckets[i] != NULL && _buckets[i] != &deleted)
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
 			if (_buckets[i]->object == object)
 				return true;
 
@@ -579,7 +577,7 @@ OF_DIRECT_MEMBERS
 	       mutationsPointer: &_mutations] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -588,7 +586,7 @@ OF_DIRECT_MEMBERS
 
 	for (i = 0; i < count; i++) {
 		for (; j < _capacity && (_buckets[j] == NULL ||
-		    _buckets[j] == &deleted); j++);
+		    _buckets[j] == &deletedBucket); j++);
 
 		if (j < _capacity) {
 			objects[i] = _buckets[j]->key;
@@ -605,8 +603,7 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_map_table_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFMapTableEnumerationBlock)block
 {
 	bool stop = false;
 	unsigned long mutations = _mutations;
@@ -616,12 +613,12 @@ OF_DIRECT_MEMBERS
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
 
-		if (_buckets[i] != NULL && _buckets[i] != &deleted)
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
 			block(_buckets[i]->key, _buckets[i]->object, &stop);
 	}
 }
 
-- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFMapTableReplaceBlock)block
 {
 	unsigned long mutations = _mutations;
 
@@ -630,7 +627,7 @@ OF_DIRECT_MEMBERS
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
 
-		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
 			void *new;
 
 			new = block(_buckets[i]->key, _buckets[i]->object);
@@ -655,7 +652,7 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
-			    buckets: (struct of_map_table_bucket **)buckets
+			    buckets: (struct OFMapTableBucket **)buckets
 			   capacity: (unsigned long)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
 {
@@ -691,7 +688,7 @@ OF_DIRECT_MEMBERS
 		    exceptionWithObject: _mapTable];
 
 	for (; _position < _capacity && (_buckets[_position] == NULL ||
-	    _buckets[_position] == &deleted); _position++);
+	    _buckets[_position] == &deletedBucket); _position++);
 
 	if (_position < _capacity)
 		return &_buckets[_position++]->key;
@@ -708,7 +705,7 @@ OF_DIRECT_MEMBERS
 		    exceptionWithObject: _mapTable];
 
 	for (; _position < _capacity && (_buckets[_position] == NULL ||
-	    _buckets[_position] == &deleted); _position++);
+	    _buckets[_position] == &deletedBucket); _position++);
 
 	if (_position < _capacity)
 		return &_buckets[_position++]->object;

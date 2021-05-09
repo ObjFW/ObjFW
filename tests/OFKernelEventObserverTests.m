@@ -30,7 +30,7 @@
 
 #import "TestsAppDelegate.h"
 
-#define EXPECTED_EVENTS 3
+static const size_t numExpectedEvents = 3;
 
 static OFString *module;
 
@@ -58,16 +58,12 @@ static OFString *module;
 		_testsAppDelegate = testsAppDelegate;
 
 		_server = [[OFTCPSocket alloc] init];
-		port = [_server bindToHost: @"127.0.0.1"
-				      port: 0];
+		port = [_server bindToHost: @"127.0.0.1" port: 0];
 		[_server listen];
 
 		_client = [[OFTCPSocket alloc] init];
-		[_client connectToHost: @"127.0.0.1"
-				  port: port];
-
-		[_client writeBuffer: "0"
-			      length: 1];
+		[_client connectToHost: @"127.0.0.1" port: port];
+		[_client writeBuffer: "0" length: 1];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -94,7 +90,7 @@ static OFString *module;
 				inModule: module];
 
 	deadline = [OFDate dateWithTimeIntervalSinceNow: 1];
-	while (_events < EXPECTED_EVENTS) {
+	while (_events < numExpectedEvents) {
 		if (deadline.timeIntervalSinceNow < 0) {
 			deadlineExceeded = true;
 			break;
@@ -114,7 +110,7 @@ static OFString *module;
 		_fails++;
 	}
 
-	if (_events == EXPECTED_EVENTS)
+	if (_events == numExpectedEvents)
 		[_testsAppDelegate
 		    outputSuccess: @"-[observe] handling all events"
 			 inModule: module];
@@ -128,7 +124,7 @@ static OFString *module;
 
 - (void)objectIsReadyForReading: (id)object
 {
-	char buf;
+	char buffer;
 
 	switch (_events++) {
 	case 0:
@@ -153,8 +149,8 @@ static OFString *module;
 		break;
 	case 1:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf
-				    length: 1] == 1 && buf == '0')
+		    [object readIntoBuffer: &buffer length: 1] == 1 &&
+		    buffer == '0')
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with data ready to read"
 				 inModule: module];
@@ -174,8 +170,7 @@ static OFString *module;
 		break;
 	case 2:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf
-				    length: 1] == 0)
+		    [object readIntoBuffer: &buffer length: 1] == 0)
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with closed connection"
 				 inModule: module];
@@ -188,7 +183,7 @@ static OFString *module;
 
 		break;
 	default:
-		OF_ENSURE(0);
+		OFEnsure(0);
 	}
 }
 @end

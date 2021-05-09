@@ -19,9 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSHA256Hash";
+static OFString *const module = @"OFSHA256Hash";
 
-const uint8_t testfile_sha256[32] =
+const uint8_t testFileSHA256[32] =
 	"\x1A\x02\xD6\x46\xF5\xA6\xBA\xAA\xFF\x7F\xD5\x87\xBA\xC3\xF6\xC6\xB5"
 	"\x67\x93\x8F\x0F\x44\x90\xB8\xF5\x35\x89\xF0\x5A\x23\x7F\x69";
 
@@ -29,32 +29,28 @@ const uint8_t testfile_sha256[32] =
 - (void)SHA256HashTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSHA256Hash *sha256, *copy;
-	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"r"];
+	OFSHA256Hash *SHA256, *SHA256Copy;
+	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
 
-	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
-	    (sha256 = [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true]))
+	TEST(@"+[hashWithAllowsSwappableMemory:]",
+	    (SHA256 = [OFSHA256Hash hashWithAllowsSwappableMemory: true]))
 
-	while (!f.atEndOfStream) {
-		char buf[64];
-		size_t len = [f readIntoBuffer: buf
-					length: 64];
-		[sha256 updateWithBuffer: buf
-				  length: len];
+	while (!file.atEndOfStream) {
+		char buffer[64];
+		size_t length = [file readIntoBuffer: buffer length: 64];
+		[SHA256 updateWithBuffer: buffer length: length];
 	}
-	[f close];
+	[file close];
 
-	TEST(@"-[copy]", (copy = [[sha256 copy] autorelease]))
+	TEST(@"-[copy]", (SHA256Copy = [[SHA256 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp(sha256.digest, testfile_sha256, 32) == 0 &&
-	    memcmp(copy.digest, testfile_sha256, 32) == 0)
+	    memcmp(SHA256.digest, testFileSHA256, 32) == 0 &&
+	    memcmp(SHA256Copy.digest, testFileSHA256, 32) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
-	    [sha256 updateWithBuffer: ""
-			      length: 1])
+	    [SHA256 updateWithBuffer: "" length: 1])
 
 	objc_autoreleasePoolPop(pool);
 }

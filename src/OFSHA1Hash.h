@@ -13,7 +13,7 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,13 +25,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which provides methods to create an SHA-1 hash.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFSHA1Hash: OFObject <OFCryptoHash>
+@interface OFSHA1Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
-	struct of_sha1_hash_ivars {
+	struct {
 		uint32_t state[5];
 		uint64_t bits;
-		union of_sha1_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[80];
 		} buffer;

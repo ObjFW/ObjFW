@@ -136,68 +136,68 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the data for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The data for the specified value
  */
-- (nullable OFData *)dataForValue: (nullable OFString *)value
-			     type: (nullable DWORD *)type;
+- (nullable OFData *)dataForValueNamed: (nullable OFString *)name
+				  type: (nullable DWORD *)type;
 
 /**
  * @brief Sets the data for the specified value.
  *
  * @param data The data to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  * @param type The type for the value
  */
 - (void)setData: (nullable OFData *)data
-       forValue: (nullable OFString *)value
+  forValueNamed: (nullable OFString *)name
 	   type: (DWORD)type;
 
 /**
  * @brief Returns the string for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @return The string for the specified value
  */
-- (nullable OFString *)stringForValue: (nullable OFString *)value;
+- (nullable OFString *)stringForValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Returns the string for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
  */
-- (nullable OFString *)stringForValue: (nullable OFString *)value
-				 type: (nullable DWORD *)type;
+- (nullable OFString *)stringForValueNamed: (nullable OFString *)name
+				      type: (nullable DWORD *)type;
 
 /**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  */
 - (void)setString: (nullable OFString *)string
-	 forValue: (nullable OFString *)value;
+    forValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  * @param type The type for the value
  */
 - (void)setString: (nullable OFString *)string
-	 forValue: (nullable OFString *)value
+    forValueNamed: (nullable OFString *)name
 	     type: (DWORD)type;
 
 /**
  * @brief Deletes the specified value.
  *
- * @param value The value to delete
+ * @param name The value to delete
  */
-- (void)deleteValue: (nullable OFString *)value;
+- (void)deleteValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Deletes the specified subkey.

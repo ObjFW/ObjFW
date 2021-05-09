@@ -120,7 +120,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new, autoreleased OFXMLElementBuilder
  */
-+ (instancetype)elementBuilder;
++ (instancetype)builder;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -39,14 +39,13 @@ static OFDictionary *operatorPrecedences = nil;
 
 #ifndef OF_AMIGAOS
 static void
-parseLocale(char *locale, of_string_encoding_t *encoding,
+parseLocale(char *locale, OFStringEncoding *encoding,
     OFString **language, OFString **territory)
 {
-	if ((locale = of_strdup(locale)) == NULL)
-		return;
+	locale = OFStrDup(locale);
 
 	@try {
-		const of_string_encoding_t enc = OF_STRING_ENCODING_ASCII;
+		OFStringEncoding enc = OFStringEncodingASCII;
 		char *tmp;
 
 		/* We don't care for extras behind the @ */
@@ -59,7 +58,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 			@try {
 				if (encoding != NULL)
-					*encoding = of_string_parse_encoding(
+					*encoding = OFStringEncodingParseName(
 					    [OFString stringWithCString: tmp
 							       encoding: enc]);
 			} @catch (OFInvalidArgumentException *e) {
@@ -79,14 +78,15 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			*language = [OFString stringWithCString: locale
 						       encoding: enc];
 	} @finally {
-		free(locale);
+		OFFreeMemory(locale);
 	}
 }
 #endif
 
 static bool
-evaluateCondition(OFString *condition, OFDictionary *variables)
+evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
+	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -98,21 +98,18 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 	 * before ")".
 	 * TODO: Replace with a proper tokenizer.
 	 */
-	condition = [condition stringByReplacingOccurrencesOfString: @"!"
-							 withString: @"! "];
-	condition = [condition stringByReplacingOccurrencesOfString: @"("
-							 withString: @"( "];
-	condition = [condition stringByReplacingOccurrencesOfString: @")"
-							 withString: @" )"];
+	[condition replaceOccurrencesOfString: @"!" withString: @"! "];
+	[condition replaceOccurrencesOfString: @"(" withString: @"( "];
+	[condition replaceOccurrencesOfString: @")" withString: @" )"];
 
 	/* Substitute variables and convert to RPN first */
 	tokens = [OFMutableArray array];
 	operators = [OFMutableArray array];
 	for (OFString *token in [condition
 	    componentsSeparatedByString: @" "
-				options: OF_STRING_SKIP_EMPTY]) {
+				options: OFStringSkipEmptyComponents]) {
 		unsigned precedence;
-		of_unichar_t c;
+		OFUnichar c;
 
 		if ([token isEqual: @"("]) {
 			[operators addObject: @"("];
@@ -199,16 +196,16 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				    ![first isEqual: second]];
 			else if ([token isEqual: @"<"])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] == OF_ORDERED_ASCENDING];
+				    compare: second] == OFOrderedAscending];
 			else if ([token isEqual: @"<="])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] != OF_ORDERED_DESCENDING];
+				    compare: second] != OFOrderedDescending];
 			else if ([token isEqual: @">"])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] == OF_ORDERED_DESCENDING];
+				    compare: second] == OFOrderedDescending];
 			else if ([token isEqual: @">="])
 				var = [OFNumber numberWithBool: [first
-				    compare: second] != OF_ORDERED_ASCENDING];
+				    compare: second] != OFOrderedAscending];
 			else if ([token isEqual: @"+"])
 				var = [OFNumber numberWithDouble:
 				    [first doubleValue] + [second doubleValue]];
@@ -223,7 +220,7 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				var = [OFNumber numberWithBool:
 				    [first boolValue] || [second boolValue]];
 			else
-				OF_ENSURE(0);
+				OFEnsure(0);
 
 			[stack replaceObjectAtIndex: stackSize - 2
 					 withObject: var];
@@ -240,7 +237,7 @@ evaluateCondition(OFString *condition, OFDictionary *variables)
 				    ([first doubleValue] !=
 				    [first longLongValue])];
 			else
-				OF_ENSURE(0);
+				OFEnsure(0);
 
 			[stack replaceObjectAtIndex: stackSize - 1
 					 withObject: var];
@@ -353,7 +350,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.territory;
 }
 
-+ (of_string_encoding_t)encoding
++ (OFStringEncoding)encoding
 {
 	return currentLocale.encoding;
 }
@@ -382,7 +379,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		_encoding = OF_STRING_ENCODING_UTF_8;
+		_encoding = OFStringEncodingUTF8;
 		_decimalPoint = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
@@ -426,17 +423,17 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 # else
 		if (0) {
 # endif
-			of_string_encoding_t ASCII = OF_STRING_ENCODING_ASCII;
+			OFStringEncoding ASCII = OFStringEncodingASCII;
 
 			@try {
-				_encoding = of_string_parse_encoding(
+				_encoding = OFStringEncodingParseName(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
 			} @catch (OFInvalidArgumentException *e) {
-				_encoding = OF_STRING_ENCODING_ISO_8859_1;
+				_encoding = OFStringEncodingISO8859_1;
 			}
 		} else
-			_encoding = OF_STRING_ENCODING_ISO_8859_1;
+			_encoding = OFStringEncodingISO8859_1;
 
 		/*
 		 * Get it via localeconv() instead of from the Locale struct,
@@ -459,7 +456,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 				size_t length;
 
 				territory =
-				    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
+				    OFToBigEndian32(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
 					if (((char *)&territory)[length] == 0)
@@ -571,8 +568,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	variables = [OFMutableDictionary dictionary];
 	while ((name = va_arg(arguments, OFConstantString *)) != nil)
-		[variables setObject: va_arg(arguments, id)
-			      forKey: name];
+		[variables setObject: va_arg(arguments, id) forKey: name];
 
 	for (OFDictionary *strings in _localizedStrings) {
 		id string = [strings objectForKey: ID];

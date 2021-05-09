@@ -24,9 +24,9 @@
 	type name = reg_##name;
 #endif
 
-typedef void (*of_sig_t)(int);
+typedef void (*OFSignalHandler)(int);
 
-struct of_libc {
+struct OFLibC {
 	/*
 	 * Needed by the runtime. Some of them are also used by ObjFW, but we
 	 * need all of them to pass them along to the runtime.
@@ -69,7 +69,7 @@ struct of_libc {
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 #endif
-	int *_Nonnull (*_Nonnull get_errno)(void);
+	int *_Nonnull (*_Nonnull errNo)(void);
 
 	/* Needed only by ObjFW. */
 	int (*_Nonnull vsnprintf)(char *_Nonnull restrict, size_t,
@@ -81,10 +81,11 @@ struct of_libc {
 #endif
 	void (*_Nonnull exit)(int);
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
-	of_sig_t _Nullable (*_Nonnull signal)(int, of_sig_t _Nullable);
+	OFSignalHandler _Nullable (*_Nonnull signal)(int, OFSignalHandler _Nullable);
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
 	    void *_Null_unspecified), void *_Null_unspecified);
 };
 
-extern bool of_init(unsigned int version, struct of_libc *libc, FILE **sF);
+extern bool OFInit(unsigned int version, struct OFLibC *libC, FILE **sF);
+extern unsigned long *OFHashSeedRef(void);

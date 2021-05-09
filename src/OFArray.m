@@ -38,8 +38,9 @@ static struct {
 } placeholder;
 
 @interface OFArray ()
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 @interface OFPlaceholderArray: OFArray
@@ -195,8 +196,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [self initWithObject: firstObject
-			 arguments: arguments];
+	ret = [self initWithObject: firstObject arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -229,8 +229,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getObjects: (id *)buffer
-	   inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self objectAtIndex: range.location + i];
@@ -239,18 +238,17 @@ static struct {
 - (id const *)objects
 {
 	size_t count = self.count;
-	id *buffer = of_alloc(count, sizeof(id));
+	id *buffer = OFAllocMemory(count, sizeof(id));
 
 	@try {
-		[self getObjects: buffer
-			 inRange: of_range(0, count)];
+		[self getObjects: buffer inRange: OFRangeMake(0, count)];
 
 		return [[OFData dataWithItemsNoCopy: buffer
 					      count: count
 					   itemSize: sizeof(id)
 				       freeWhenDone: true] items];
 	} @catch (id e) {
-		free(buffer);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 }
@@ -298,12 +296,10 @@ static struct {
 	return ret;
 }
 
-- (void)setValue: (id)value
-	  forKey: (OFString *)key
+- (void)setValue: (id)value forKey: (OFString *)key
 {
 	for (id object in self)
-		[object setValue: value
-			  forKey: key];
+		[object setValue: value forKey: key];
 }
 
 - (size_t)indexOfObject: (id)object
@@ -311,7 +307,7 @@ static struct {
 	size_t i = 0;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	for (id objectIter in self) {
 		if ([objectIter isEqual: object])
@@ -320,7 +316,7 @@ static struct {
 		i++;
 	}
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -328,7 +324,7 @@ static struct {
 	size_t i = 0;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	for (id objectIter in self) {
 		if (objectIter == object)
@@ -337,17 +333,17 @@ static struct {
 		i++;
 	}
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (bool)containsObject: (id)object
 {
-	return ([self indexOfObject: object] != OF_NOT_FOUND);
+	return ([self indexOfObject: object] != OFNotFound);
 }
 
 - (bool)containsObjectIdenticalTo: (id)object
 {
-	return ([self indexOfObjectIdenticalTo: object] != OF_NOT_FOUND);
+	return ([self indexOfObjectIdenticalTo: object] != OFNotFound);
 }
 
 - (id)firstObject
@@ -368,7 +364,7 @@ static struct {
 	return nil;
 }
 
-- (OFArray *)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (OFRange)range
 {
 	OFArray *ret;
 	id *buffer;
@@ -378,18 +374,15 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFSubarray arrayWithArray: self
-					    range: range];
+		return [OFSubarray arrayWithArray: self range: range];
 
-	buffer = of_alloc(range.length, sizeof(*buffer));
+	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {
-		[self getObjects: buffer
-			 inRange: range];
+		[self getObjects: buffer inRange: range];
 
-		ret = [OFArray arrayWithObjects: buffer
-					  count: range.length];
+		ret = [OFArray arrayWithObjects: buffer count: range.length];
 	} @finally {
-		free(buffer);
+		OFFreeMemory(buffer);
 	}
 
 	return ret;
@@ -403,7 +396,7 @@ static struct {
 }
 
 - (OFString *)componentsJoinedByString: (OFString *)separator
-			       options: (int)options
+			       options: (OFArrayJoinOptions)options
 {
 	return [self componentsJoinedByString: separator
 				usingSelector: @selector(description)
@@ -420,7 +413,7 @@ static struct {
 
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector
-			       options: (int)options
+			       options: (OFArrayJoinOptions)options
 {
 	OFMutableString *ret;
 
@@ -432,7 +425,7 @@ static struct {
 
 	if (self.count == 1) {
 		OFString *component =
-		    [[self firstObject] performSelector: selector];
+		    [[self objectAtIndex: 0] performSelector: selector];
 
 		if (component == nil)
 			@throw [OFInvalidArgumentException exception];
@@ -442,7 +435,7 @@ static struct {
 
 	ret = [OFMutableString string];
 
-	if (options & OF_ARRAY_SKIP_EMPTY) {
+	if (options & OFArraySkipEmptyComponents) {
 		for (id object in self) {
 			void *pool = objc_autoreleasePoolPush();
 			OFString *component =
@@ -515,14 +508,14 @@ static struct {
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (id object in self)
-		OF_HASH_ADD_HASH(hash, [object hash]);
+		OFHashAddHash(&hash, [object hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -540,8 +533,7 @@ static struct {
 
 	@try {
 		[ret prependString: @"(\n"];
-		[ret replaceOccurrencesOfString: @"\n"
-				     withString: @"\n\t"];
+		[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 		[ret appendString: @"\n)"];
 	} @catch (id e) {
 		[ret release];
@@ -562,10 +554,10 @@ static struct {
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		element = [OFXMLElement elementWithName: @"OFMutableArray"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFArray"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
@@ -584,24 +576,24 @@ static struct {
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
 	size_t i, count = self.count;
 
-	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
 
 		for (i = 0; i < depth; i++)
@@ -666,18 +658,16 @@ static struct {
 		[data addItem: &tmp];
 	} else if (count <= UINT16_MAX) {
 		uint8_t type = 0xDC;
-		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)count);
+		uint16_t tmp = OFToBigEndian16((uint16_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xDD;
-		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
+		uint32_t tmp = OFToBigEndian32((uint32_t)count);
 
 		[data addItem: &type];
-		[data addItems: &tmp
-			 count: sizeof(tmp)];
+		[data addItems: &tmp count: sizeof(tmp)];
 	} else
 		@throw [OFOutOfRangeException exception];
 
@@ -691,8 +681,7 @@ static struct {
 		i++;
 
 		child = [object messagePackRepresentation];
-		[data addItems: child.items
-			 count: child.count];
+		[data addItems: child.items count: child.count];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -716,45 +705,33 @@ static struct {
 			withObject: (id)object
 {
 	for (id objectIter in self)
-		[objectIter performSelector: selector
-				 withObject: object];
+		[objectIter performSelector: selector withObject: object];
 }
 
 - (OFArray *)sortedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
-
 	[new sort];
-
 	[new makeImmutable];
-
 	return new;
 }
 
 - (OFArray *)sortedArrayUsingSelector: (SEL)selector
-			      options: (int)options
+			      options: (OFArraySortOptions)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
-
-	[new sortUsingSelector: selector
-		       options: options];
-
+	[new sortUsingSelector: selector options: options];
 	[new makeImmutable];
-
 	return new;
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFArray *)sortedArrayUsingComparator: (of_comparator_t)comparator
-				options: (int)options
+- (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
+				options: (OFArraySortOptions)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
-
-	[new sortUsingComparator: comparator
-			 options: options];
-
+	[new sortUsingComparator: comparator options: options];
 	[new makeImmutable];
-
 	return new;
 }
 #endif
@@ -762,19 +739,16 @@ static struct {
 - (OFArray *)reversedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
-
 	[new reverse];
-
 	[new makeImmutable];
-
 	return new;
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
-	of_range_t range = of_range(state->state, count);
+	OFRange range = OFRangeMake(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exception];
@@ -782,8 +756,7 @@ static struct {
 	if (range.location + range.length > self.count)
 		range.length = self.count - range.location;
 
-	[self getObjects: objects
-		 inRange: range];
+	[self getObjects: objects inRange: range];
 
 	if (range.location + range.length > ULONG_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -802,7 +775,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	size_t i = 0;
 	bool stop = false;
@@ -824,7 +797,6 @@ static struct {
 		@throw [OFInvalidArgumentException exception];
 
 	ret = [[self mutableCopy] autorelease];
-
 	[ret addObject: object];
 	[ret makeImmutable];
 
@@ -834,7 +806,6 @@ static struct {
 - (OFArray *)arrayByAddingObjectsFromArray: (OFArray *)array
 {
 	OFMutableArray *ret = [[self mutableCopy] autorelease];
-
 	[ret addObjectsFromArray: array];
 	[ret makeImmutable];
 
@@ -844,19 +815,17 @@ static struct {
 - (OFArray *)arrayByRemovingObject: (id)object
 {
 	OFMutableArray *ret = [[self mutableCopy] autorelease];
-
 	[ret removeObject: object];
 	[ret makeImmutable];
-
 	return ret;
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block
+- (OFArray *)mappedArrayUsingBlock: (OFArrayMapBlock)block
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_alloc(count, sizeof(id));
+	id *tmp = OFAllocMemory(count, sizeof(id));
 
 	@try {
 		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
@@ -864,20 +833,19 @@ static struct {
 			tmp[idx] = block(object, idx);
 		}];
 
-		ret = [OFArray arrayWithObjects: tmp
-					  count: count];
+		ret = [OFArray arrayWithObjects: tmp count: count];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return ret;
 }
 
-- (OFArray *)filteredArrayUsingBlock: (of_array_filter_block_t)block
+- (OFArray *)filteredArrayUsingBlock: (OFArrayFilterBlock)block
 {
 	OFArray *ret;
 	size_t count = self.count;
-	id *tmp = of_alloc(count, sizeof(id));
+	id *tmp = OFAllocMemory(count, sizeof(id));
 
 	@try {
 		__block size_t i = 0;
@@ -888,16 +856,15 @@ static struct {
 				tmp[i++] = object;
 		}];
 
-		ret = [OFArray arrayWithObjects: tmp
-					  count: i];
+		ret = [OFArray arrayWithObjects: tmp count: i];
 	} @finally {
-		free(tmp);
+		OFFreeMemory(tmp);
 	}
 
 	return ret;
 }
 
-- (id)foldUsingBlock: (of_array_fold_block_t)block
+- (id)foldUsingBlock: (OFArrayFoldBlock)block
 {
 	size_t count = self.count;
 	__block id current;
@@ -905,7 +872,7 @@ static struct {
 	if (count == 0)
 		return nil;
 	if (count == 1)
-		return [[[self firstObject] retain] autorelease];
+		return [[[self objectAtIndex: 0] retain] autorelease];
 
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {

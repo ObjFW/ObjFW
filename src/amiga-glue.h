@@ -19,16 +19,19 @@
 #import "OFObject.h"
 #import "OFStdIOStream.h"
 #import "OFApplication.h"
+#import "OFBlock.h"
+#import "OFDNSResourceRecord.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFList.h"
 #import "OFMethodSignature.h"
+#import "OFOnce.h"
+#import "OFPBKDF2.h"
+#import "OFScrypt.h"
+#import "OFSocket.h"
+#import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFZIPArchiveEntry.h"
-#import "pbkdf2.h"
-#import "scrypt.h"
-#import "of_strptime.h"
-#import "socket.h"
-#import "OFDNSResourceRecord.h"
 
 #ifdef OF_AMIGAOS_M68K
 # define PPC_PARAMS(...) (void)
@@ -40,50 +43,59 @@
 # define M68K_ARG(...)
 #endif
 
-extern bool glue_of_init PPC_PARAMS(unsigned int version, struct of_libc *_Nonnull libc, FILE *_Nonnull *_Nonnull sF);
-extern void *_Nullable glue_of_alloc PPC_PARAMS(size_t count, size_t size);
-extern void *_Nullable glue_of_alloc_zeroed PPC_PARAMS(size_t count, size_t size);
-extern void *_Nullable glue_of_realloc PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size);
-extern uint32_t *_Nonnull glue_of_hash_seed_ref(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_of_stdin_ref(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_of_stdout_ref(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_of_stderr_ref(void);
-extern void glue_of_logv PPC_PARAMS(OFConstantString *format, va_list arguments);
-extern int glue_of_application_main PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate);
-extern const char *_Nullable glue_of_http_request_method_to_string PPC_PARAMS(of_http_request_method_t method);
-extern of_http_request_method_t glue_of_http_request_method_from_string PPC_PARAMS(OFString *string);
-extern OFString *_Nonnull glue_of_http_status_code_to_string PPC_PARAMS(short code);
-extern size_t glue_of_sizeof_type_encoding PPC_PARAMS(const char *type);
-extern size_t glue_of_alignof_type_encoding PPC_PARAMS(const char *type);
-extern of_string_encoding_t glue_of_string_parse_encoding PPC_PARAMS(OFString *string);
-extern OFString *_Nullable glue_of_string_name_of_encoding PPC_PARAMS(of_string_encoding_t encoding);
-extern size_t glue_of_string_utf8_encode PPC_PARAMS(of_unichar_t c, char *UTF8);
-extern ssize_t glue_of_string_utf8_decode PPC_PARAMS(const char *UTF8, size_t len, of_unichar_t *c);
-extern size_t glue_of_string_utf16_length PPC_PARAMS(const of_char16_t *string);
-extern size_t glue_of_string_utf32_length PPC_PARAMS(const of_char32_t *string);
-extern OFString *_Nonnull glue_of_zip_archive_entry_version_to_string PPC_PARAMS(uint16_t version);
-extern OFString *_Nonnull glue_of_zip_archive_entry_compression_method_to_string PPC_PARAMS(uint16_t compressionMethod);
-extern size_t glue_of_zip_archive_entry_extra_field_find PPC_PARAMS(OFData *extraField, uint16_t tag, uint16_t *size);
-extern void glue_of_pbkdf2 PPC_PARAMS(of_pbkdf2_parameters_t param);
-extern void glue_of_salsa20_8_core PPC_PARAMS(uint32_t *_Nonnull buffer);
-extern void glue_of_scrypt_block_mix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);
-extern void glue_of_scrypt_romix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp);
-extern void glue_of_scrypt PPC_PARAMS(of_scrypt_parameters_t param);
-extern const char *_Nullable glue_of_strptime PPC_PARAMS(const char *buf, const char *fmt, struct tm *tm, int16_t *_Nullable tz);
-extern of_socket_address_t glue_of_socket_address_parse_ip PPC_PARAMS(OFString *IP, uint16_t port);
-extern of_socket_address_t glue_of_socket_address_parse_ipv4 PPC_PARAMS(OFString *IP, uint16_t port);
-extern of_socket_address_t glue_of_socket_address_parse_ipv6 PPC_PARAMS(OFString *IP, uint16_t port);
-extern of_socket_address_t glue_of_socket_address_ipx PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port);
-extern bool glue_of_socket_address_equal PPC_PARAMS(const of_socket_address_t *_Nonnull address1, const of_socket_address_t *_Nonnull address2);
-extern unsigned long glue_of_socket_address_hash PPC_PARAMS(const of_socket_address_t *_Nonnull address);
-extern OFString *_Nonnull glue_of_socket_address_ip_string PPC_PARAMS(const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port);
-extern void glue_of_socket_address_set_port PPC_PARAMS(of_socket_address_t *_Nonnull address, uint16_t port);
-extern uint16_t glue_of_socket_address_get_port PPC_PARAMS(const of_socket_address_t *_Nonnull address);
-extern void glue_of_socket_address_set_ipx_network PPC_PARAMS(of_socket_address_t *_Nonnull address, uint32_t network);
-extern uint32_t glue_of_socket_address_get_ipx_network PPC_PARAMS(const of_socket_address_t *_Nonnull address);
-extern void glue_of_socket_address_set_ipx_node PPC_PARAMS(of_socket_address_t *_Nonnull address, const unsigned char *_Nonnull node);
-extern void glue_of_socket_address_get_ipx_node PPC_PARAMS(const of_socket_address_t *_Nonnull address, unsigned char *_Nonnull node);
-extern OFString *_Nonnull glue_of_dns_class_to_string PPC_PARAMS(of_dns_class_t DNSClass);
-extern OFString *_Nonnull glue_of_dns_record_type_to_string PPC_PARAMS(of_dns_record_type_t recordType);
-extern of_dns_class_t glue_of_dns_class_parse PPC_PARAMS(OFString *_Nonnull string);
-extern of_dns_record_type_t glue_of_dns_record_type_parse PPC_PARAMS(OFString *_Nonnull string);
+extern bool glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, FILE *_Nonnull *_Nonnull sF);
+extern void *_Nullable glue_OFAllocMemory PPC_PARAMS(size_t count, size_t size);
+extern void *_Nullable glue_OFAllocZeroedMemory PPC_PARAMS(size_t count, size_t size);
+extern void *_Nullable glue_OFResizeMemory PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size);
+extern void glue_OFFreeMemory PPC_PARAMS(void *_Nullable pointer);
+extern void glue_OFHashInit PPC_PARAMS(unsigned long *_Nonnull hash);
+extern uint16_t glue_OFRandom16(void);
+extern uint32_t glue_OFRandom32(void);
+extern uint64_t glue_OFRandom64(void);
+extern unsigned long *_Nonnull glue_OFHashSeedRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdInRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdOutRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdErrRef(void);
+extern void glue_OFLogV PPC_PARAMS(OFConstantString *format, va_list arguments);
+extern int glue_OFApplicationMain PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate);
+extern void *_Nullable glue__Block_copy PPC_PARAMS(const void *_Nullable block);
+extern void glue__Block_release PPC_PARAMS(const void *_Nullable block);
+extern OFString *_Nonnull glue_OFDNSClassName PPC_PARAMS(OFDNSClass DNSClass);
+extern OFString *_Nonnull glue_OFDNSRecordTypeName PPC_PARAMS(OFDNSRecordType recordType);
+extern OFDNSClass glue_OFDNSClassParseName PPC_PARAMS(OFString *_Nonnull string);
+extern OFDNSRecordType glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string);
+extern const char *_Nullable glue_OFHTTPRequestMethodName PPC_PARAMS(OFHTTPRequestMethod method);
+extern OFHTTPRequestMethod glue_OFHTTPRequestMethodParseName PPC_PARAMS(OFString *string);
+extern OFString *_Nonnull glue_OFHTTPStatusCodeString PPC_PARAMS(short code);
+extern OFListItem _Nullable glue_OFListItemNext PPC_PARAMS(OFListItem _Nonnull listItem);
+extern OFListItem _Nullable glue_OFListItemPrevious PPC_PARAMS(OFListItem _Nonnull listItem);
+extern id _Nonnull glue_OFListItemObject PPC_PARAMS(OFListItem _Nonnull listItem);
+extern size_t glue_OFSizeOfTypeEncoding PPC_PARAMS(const char *type);
+extern size_t glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type);
+extern void glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func);
+extern void glue_OFPBKDF2 PPC_PARAMS(OFPBKDF2Parameters parameters);
+extern void glue_OFScrypt PPC_PARAMS(OFScryptParameters parameters);
+extern void glue_OFSalsa20_8Core PPC_PARAMS(uint32_t *_Nonnull buffer);
+extern void glue_OFScryptBlockMix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);
+extern void glue_OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp);
+extern OFSocketAddress glue_OFSocketAddressParseIP PPC_PARAMS(OFString *IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressParseIPv4 PPC_PARAMS(OFString *IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressMakeIPX PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port);
+extern bool glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *_Nonnull address1, const OFSocketAddress *_Nonnull address2);
+extern unsigned long glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *_Nonnull address);
+extern OFString *_Nonnull glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *_Nonnull address, uint16_t port);
+extern uint16_t glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *_Nonnull address, uint32_t network);
+extern uint32_t glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *_Nonnull address, const unsigned char *_Nonnull node);
+extern void glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *_Nonnull address, unsigned char *_Nonnull node);
+extern const char *_Nullable glue_OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz);
+extern OFStringEncoding glue_OFStringEncodingParseName PPC_PARAMS(OFString *string);
+extern OFString *_Nullable glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding);
+extern size_t glue_OFUTF16StringLength PPC_PARAMS(const OFChar16 *string);
+extern size_t glue_OFUTF32StringLength PPC_PARAMS(const OFChar32 *string);
+extern OFString *_Nonnull glue_OFZIPArchiveEntryVersionToString PPC_PARAMS(uint16_t version);
+extern OFString *_Nonnull glue_OFZIPArchiveEntryCompressionMethodName PPC_PARAMS(OFZIPArchiveEntryCompressionMethod compressionMethod);
+extern size_t glue_OFZIPArchiveEntryExtraFieldFind PPC_PARAMS(OFData *extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size);

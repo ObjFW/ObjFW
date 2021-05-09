@@ -22,30 +22,28 @@
 #endif
 
 #import "OFIPXSocket.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
-
 @implementation OFIPXSocket
 @dynamic delegate;
 
-- (of_socket_address_t)bindToPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
+- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType
 {
 	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
-	of_socket_address_t address;
+	OFSocketAddress address;
 	int protocol = 0;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = of_socket_address_ipx(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;
@@ -54,12 +52,12 @@
 #endif
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == INVALID_SOCKET)
+	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
-				errNo: of_socket_errno()];
+				errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -69,10 +67,10 @@
 #endif
 
 	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType
@@ -81,15 +79,15 @@
 	}
 
 	memset(&address, 0, sizeof(address));
-	address.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
-		int errNo = of_socket_errno();
+		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType
@@ -99,7 +97,7 @@
 
 	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
 		closesocket(_socket);
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindFailedException exceptionWithPort: port
 						     packetType: packetType
@@ -113,19 +111,17 @@
 #ifndef OF_WINDOWS
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver
+	  receiver: (const OFSocketAddress *)receiver
 {
-	of_socket_address_t fixedReceiver;
+	OFSocketAddress fixedReceiver;
 
 	memcpy(&fixedReceiver, receiver, sizeof(fixedReceiver));
 
 	/* If it's not IPX, no fix-up needed - it will fail anyway. */
-	if (fixedReceiver.family == OF_SOCKET_ADDRESS_FAMILY_IPX)
+	if (fixedReceiver.family == OFSocketAddressFamilyIPX)
 		fixedReceiver.sockaddr.ipx.sipx_type = _packetType;
 
-	[super sendBuffer: buffer
-		   length: length
-		 receiver: &fixedReceiver];
+	[super sendBuffer: buffer length: length receiver: &fixedReceiver];
 }
 #endif
 @end
