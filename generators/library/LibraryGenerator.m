@@ -36,7 +36,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
 	    URLByAppendingPathComponent: @"../../src"];
 	OFURL *runtimeLibraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/library.xml"];
+	    URLByAppendingPathComponent: @"runtime/amiga-library.xml"];
 	OFURL *runtimeLinkLibURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/linklib/linklib.m"];
 	OFURL *runtimeGlueHeaderURL = [sourcesURL
