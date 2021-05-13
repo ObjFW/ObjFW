@@ -71,35 +71,11 @@
 @interface OFDefaultFileManager: OFFileManager
 @end
 
-const OFFileAttributeKey OFFileSize = @"OFFileSize";
-const OFFileAttributeKey OFFileType = @"OFFileType";
-const OFFileAttributeKey OFFilePOSIXPermissions = @"OFFilePOSIXPermissions";
-const OFFileAttributeKey OFFileOwnerAccountID = @"OFFileOwnerAccountID";
-const OFFileAttributeKey OFFileGroupOwnerAccountID =
-    @"OFFileGroupOwnerAccountID";
-const OFFileAttributeKey OFFileOwnerAccountName = @"OFFileOwnerAccountName";
-const OFFileAttributeKey OFFileGroupOwnerAccountName =
-    @"OFFileGroupOwnerAccountName";
-const OFFileAttributeKey OFFileLastAccessDate = @"OFFileLastAccessDate";
-const OFFileAttributeKey OFFileModificationDate = @"OFFileModificationDate";
-const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
-const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
-const OFFileAttributeKey OFFileSymbolicLinkDestination =
-    @"OFFileSymbolicLinkDestination";
-
-const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
-const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
-const OFFileAttributeType OFFileTypeSymbolicLink = @"OFFileTypeSymbolicLink";
-const OFFileAttributeType OFFileTypeFIFO = @"OFFileTypeFIFO";
-const OFFileAttributeType OFFileTypeCharacterSpecial =
-    @"OFFileTypeCharacterSpecial";
-const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
-const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
-const OFFileAttributeType OFFileTypeUnknown = @"OFFileTypeUnknown";
-
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
+
+#include "OFFileManagerConstants.inc"
 
 static OFFileManager *defaultManager;
 
