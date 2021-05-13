@@ -42,8 +42,8 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void *_Block_copy(const void *);
-extern void _Block_release(const void *);
+extern void *_Nullable _Block_copy(const void *_Nullable);
+extern void _Block_release(const void *_Nullable);
 
 # if defined(OF_WINDOWS) && \
     (defined(OF_NO_SHARED) || defined(OF_COMPILING_OBJFW))
