@@ -29,8 +29,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const char *OFStrPTime(const char *buf, const char *fmt, struct tm *tm,
-    short *tz);
+extern const char *_Nullable OFStrPTime(const char *buffer, const char *format,
+    struct tm *tm, short *_Nullable tz);
 #ifdef __cplusplus
 }
 #endif
