@@ -71,11 +71,11 @@
 @interface OFDefaultFileManager: OFFileManager
 @end
 
-#include "OFFileManager_constants.m"
-
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
+
+#include "OFFileManagerConstants.inc"
 
 static OFFileManager *defaultManager;
 

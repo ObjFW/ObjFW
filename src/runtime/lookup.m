@@ -143,7 +143,7 @@ commonLookup(id object, SEL selector, IMP (*notFound)(id, SEL))
 	if (object == nil)
 		return (IMP)nilMethod;
 
-	imp = objc_dtable_get(object_getClass(object)->DTable,
+	imp = objc_dtable_get(object_getClass(object)->dTable,
 	    (uint32_t)selector->UID);
 
 	if (imp == (IMP)0)
@@ -155,13 +155,13 @@ commonLookup(id object, SEL selector, IMP (*notFound)(id, SEL))
 IMP
 objc_msg_lookup(id object, SEL selector)
 {
-	return commonLookup(object, selector, objc_method_not_found);
+	return commonLookup(object, selector, objc_methodNotFound);
 }
 
 IMP
 objc_msg_lookup_stret(id object, SEL selector)
 {
-	return commonLookup(object, selector, objc_method_not_found_stret);
+	return commonLookup(object, selector, objc_methodNotFound_stret);
 }
 
 static OF_INLINE IMP
@@ -173,7 +173,7 @@ commonSuperLookup(struct objc_super *super, SEL selector,
 	if (super->self == nil)
 		return (IMP)nilMethod;
 
-	imp = objc_dtable_get(super->class->DTable, (uint32_t)selector->UID);
+	imp = objc_dtable_get(super->class->dTable, (uint32_t)selector->UID);
 
 	if (imp == (IMP)0)
 		return notFound(super->self, selector);
@@ -184,12 +184,12 @@ commonSuperLookup(struct objc_super *super, SEL selector,
 IMP
 objc_msg_lookup_super(struct objc_super *super, SEL selector)
 {
-	return commonSuperLookup(super, selector, objc_method_not_found);
+	return commonSuperLookup(super, selector, objc_methodNotFound);
 }
 
 IMP
 objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
 {
-	return commonSuperLookup(super, selector, objc_method_not_found_stret);
+	return commonSuperLookup(super, selector, objc_methodNotFound_stret);
 }
 #endif

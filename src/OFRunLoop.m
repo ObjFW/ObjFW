@@ -43,7 +43,7 @@
 
 #import "OFObserveFailedException.h"
 
-#include "OFRunLoop_constants.m"
+#include "OFRunLoopConstants.inc"
 
 static OFRunLoop *mainRunLoop = nil;
 

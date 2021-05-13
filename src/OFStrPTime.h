@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern const char *_Nullable OFStrPTime(const char *buffer, const char *format,
-    struct tm *tm, short *tz);
+    struct tm *tm, short *_Nullable tz);
 #ifdef __cplusplus
 }
 #endif
