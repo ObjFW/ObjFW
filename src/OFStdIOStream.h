@@ -150,12 +150,23 @@ extern OFStdIOStream *_Nullable OFStdOut;
 extern OFStdIOStream *_Nullable OFStdErr;
 
 /**
- * @brief Log the specified printf-style format to @ref OFStdErr.
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
  *
- * This prefixes the output with the date, timestamp, process name and PID and
- * allows `%@` as a printf-style formatted to print objects.
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
  */
 extern void OFLog(OFConstantString *format, ...);
+
+/**
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
+ * @param arguments The arguments for the format
+ */
+extern void OFLogV(OFConstantString *format, va_list arguments);
 #ifdef __cplusplus
 }
 #endif
