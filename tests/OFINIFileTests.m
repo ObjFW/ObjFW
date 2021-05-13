@@ -114,19 +114,13 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
-# ifndef OF_IOS
-	writePath = @"tmpfile.ini";
-# else
-	writePath = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    [[OFApplication environment] objectForKey: @"HOME"],
-	    @"tmp", @"tmpfile.ini", nil]];
-# endif
+	writePath = [[OFSystemInfo temporaryDirectoryPath]
+	    stringByAppendingPathComponent: @"objfw-tests.ini"];
 	TEST(@"-[writeToFile:encoding:]",
 	    R([file writeToFile: writePath
 		       encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString
-		stringWithContentsOfFile: writePath
-				encoding: OFStringEncodingCodepage437]
+	    [[OFString stringWithContentsOfFile: writePath
+				       encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
 	[[OFFileManager defaultManager] removeItemAtPath: writePath];
 #else
