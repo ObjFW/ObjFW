@@ -524,6 +524,57 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [var stringByAppendingPathComponent: @".config"];
 # endif
 }
+
++ (OFString *)temporaryDirectoryPath
+{
+# if defined(OF_MACOS) || defined(OF_IOS)
+	char buffer[PATH_MAX];
+	size_t length;
+
+	if ((length = confstr(_CS_DARWIN_USER_TEMP_DIR, buffer, PATH_MAX)) == 0)
+		return @"/tmp";
+
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]
+				    length: length];
+# elif defined(OF_WINDOWS)
+	if ([self isWindowsNT]) {
+		wchar_t buffer[PATH_MAX];
+
+		if (!GetTempPathW(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithUTF16String: buffer];
+	} else {
+		char buffer[PATH_MAX];
+
+		if (!GetTempPathA(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithCString: buffer
+					  encoding: [OFLocale encoding]];
+	}
+# elif defined(OF_HAIKU)
+	char pathC[PATH_MAX];
+
+	if (find_directory(B_SYSTEM_TEMP_DIRECTORY, 0, false,
+	    pathC, PATH_MAX) != B_OK)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return [OFString stringWithUTF8String: pathC];
+# elif defined(OF_AMIGAOS)
+	return @"T:";
+# else
+	OFString *path =
+	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
+
+	if (path != nil)
+		return path;
+
+	return @"/tmp";
+# endif
+}
 #endif
 
 + (OFString *)CPUVendor

@@ -118,10 +118,11 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the path where user data for the application can be stored.
  *
- * On Unix systems, this adheres to the XDG Base Directory specification.@n
- * On Mac OS X and iOS, it uses the `NSApplicationSupportDirectory` directory.@n
+ * On UNIX systems, this adheres to the XDG Base Directory specification.@n
+ * On macOS and iOS, it uses the `NSApplicationSupportDirectory` directory.@n
  * On Windows, it uses the `APPDATA` environment variable.@n
- * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.@n
+ * On AmigaOS and MorphOS, it returns `PROGDIR:`.
  *
  * @return The path where user data for the application can be stored
  */
@@ -131,15 +132,34 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the path where user configuration for the application can be
  *	  stored.
  *
- * On Unix systems, this adheres to the XDG Base Directory specification.@n
- * On Mac OS X and iOS, it uses the `Preferences` directory inside of
+ * On UNIX systems, this adheres to the XDG Base Directory specification.@n
+ * On macOS and iOS, it uses the `Preferences` directory inside of
  * `NSLibraryDirectory` directory.@n
  * On Windows, it uses the `APPDATA` environment variable.@n
  * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ * On AmigaOS and MorphOS, it returns `PROGDIR:`.
  *
  * @return The path where user configuration for the application can be stored
  */
 + (nullable OFString *)userConfigPath;
+
+/**
+ * @brief Returns a path where temporary files for can be stored.
+ * 
+ * If possible, returns a temporary directory for the user, otherwise returns a
+ * global temporary directory.
+ *
+ * On UNIX systems, this adheres to the XDG Base Directory specification and
+ * returns `/tmp` if `XDG_RUNTIME_DIR` is not set.@n
+ * On macOS and iOS, this uses `_CS_DARWIN_USER_TEMP_DIR`, falling back to
+ * `/tmp` if this fails.@n
+ * On Windows, it uses `GetTempPath`.@n
+ * On Haiku, it uses the `B_SYSTEM_TEMP_DIRECTORY` directory.
+ * On AmigaOS and MorphOS, it returns `T:`.
+ *
+ * @return A path where temporary files can be stored
+ */
++ (nullable OFString *)temporaryDirectoryPath;
 #endif
 
 /**
