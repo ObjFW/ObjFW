@@ -536,7 +536,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]
-				    length: length];
+				    length: length - 1];
 # elif defined(OF_WINDOWS)
 	if ([self isWindowsNT]) {
 		wchar_t buffer[PATH_MAX];
