@@ -448,6 +448,35 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	for (OFURL *URL in URLs)
 		[ret addObject: URL.lastPathComponent];
 
+	[ret makeImmutable];
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithObject: path];
+
+	for (OFString *subpath in [self contentsOfDirectoryAtPath: path]) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFString *fullSubpath =
+		    [path stringByAppendingPathComponent: subpath];
+
+		if ([self directoryExistsAtPath: fullSubpath])
+		       [ret addObjectsFromArray:
+			    [self subpathsOfDirectoryAtPath: fullSubpath]];
+		else
+			[ret addObject: fullSubpath];
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	[ret makeImmutable];
 	[ret retain];
 
 	objc_autoreleasePoolPop(pool);
