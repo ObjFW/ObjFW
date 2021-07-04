@@ -466,9 +466,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		void *pool2 = objc_autoreleasePoolPush();
 		OFString *fullSubpath =
 		    [path stringByAppendingPathComponent: subpath];
+		OFFileAttributes attributes =
+		    [self attributesOfItemAtPath: fullSubpath];
 
-		if ([self directoryExistsAtPath: fullSubpath])
-		       [ret addObjectsFromArray:
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[ret addObjectsFromArray:
 			    [self subpathsOfDirectoryAtPath: fullSubpath]];
 		else
 			[ret addObject: fullSubpath];
