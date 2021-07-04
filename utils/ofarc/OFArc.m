@@ -152,12 +152,16 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	    [OFMutableArray arrayWithCapacity: files.count];
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
-	for (OFString *file in files)
-		if ([fileManager directoryExistsAtPath: file])
+	for (OFString *file in files) {
+		OFFileAttributes attributes =
+		    [fileManager attributesOfItemAtPath: file];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
 			[expandedFiles addObjectsFromArray: 
 			    [fileManager subpathsOfDirectoryAtPath: file]];
 		else
 			[expandedFiles addObject: file];
+	}
 
 	[archive addFiles: expandedFiles];
 }
