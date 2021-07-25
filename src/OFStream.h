@@ -207,7 +207,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Whether writes are buffered.
  */
-@property (nonatomic, nonatomic) bool buffersWrites;
+@property (nonatomic) bool buffersWrites;
 
 /**
  * @brief Whether data is present in the internal read buffer.
