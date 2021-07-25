@@ -22,7 +22,7 @@
 #elif defined(OF_WINDOWS)
 # include "platform/Windows/OFTLSKey.m"
 #elif defined(OF_MORPHOS)
-# include "platform/MorphOs/OFTLSKey.m"
+# include "platform/MorphOS/OFTLSKey.m"
 #elif defined(OF_AMIGAOS)
 # include "platform/AmigaOS/OFTLSKey.m"
 #endif
