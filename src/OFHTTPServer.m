@@ -116,12 +116,13 @@ OF_DIRECT_MEMBERS
 @end
 #endif
 
-static OF_INLINE OFString *
+static OFString *
 normalizedKey(OFString *key)
 {
 	char *cString = OFStrDup(key.UTF8String);
 	unsigned char *tmp = (unsigned char *)cString;
 	bool firstLetter = true;
+	OFString *ret;
 
 	while (*tmp != '\0') {
 		if (!OFASCIIIsAlpha(*tmp)) {
@@ -138,12 +139,14 @@ normalizedKey(OFString *key)
 	}
 
 	@try {
-		return [OFString stringWithUTF8StringNoCopy: cString
-					       freeWhenDone: true];
+		ret = [OFString stringWithUTF8StringNoCopy: cString
+					      freeWhenDone: true];
 	} @catch (id e) {
 		OFFreeMemory(cString);
 		@throw e;
 	}
+
+	return ret;
 }
 
 @implementation OFHTTPServerResponse
