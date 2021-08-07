@@ -36,6 +36,11 @@
 @end
 #endif
 
+#ifndef OBJC_ERROR
+/* This is also used with old Apple runtimes that lack autorelease pools. */
+# define OBJC_ERROR(...) abort()
+#endif
+
 #if defined(OF_HAVE_COMPILER_TLS)
 static thread_local id *objects = NULL;
 static thread_local uintptr_t count = 0;
