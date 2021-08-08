@@ -1157,6 +1157,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 {
 	OFUnichar *buffer = OFAllocMemory(_s->length, sizeof(OFUnichar));
 	size_t i = 0, j = 0;
+	const OFUnichar *ret;
 
 	while (i < _s->cStringLength) {
 		OFUnichar c;
@@ -1174,16 +1175,24 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		i += cLen;
 	}
 
-	return [[OFData dataWithItemsNoCopy: buffer
-				      count: _s->length
-				   itemSize: sizeof(OFUnichar)
-			       freeWhenDone: true] items];
+	@try {
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: _s->length
+					  itemSize: sizeof(OFUnichar)
+				      freeWhenDone: true] items];
+	} @catch (id e) {
+		OFFreeMemory(buffer);
+		@throw e;
+	}
+
+	return ret;
 }
 
 - (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
 	OFChar32 *buffer = OFAllocMemory(_s->length + 1, sizeof(OFChar32));
 	size_t i = 0, j = 0;
+	const OFChar32 *ret;
 
 	while (i < _s->cStringLength) {
 		OFChar32 c;
@@ -1206,10 +1215,17 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	}
 	buffer[j] = 0;
 
-	return [[OFData dataWithItemsNoCopy: buffer
-				      count: _s->length + 1
-				   itemSize: sizeof(OFChar32)
-			       freeWhenDone: true] items];
+	@try {
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: _s->length + 1
+					  itemSize: sizeof(OFChar32)
+				      freeWhenDone: true] items];
+	} @catch (id e) {
+		OFFreeMemory(buffer);
+		@throw e;
+	}
+
+	return ret;
 }
 
 #ifdef OF_HAVE_BLOCKS
