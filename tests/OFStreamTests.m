@@ -72,8 +72,11 @@ static OFString *const module = @"OFStream";
 	memset(cString, 'X', pageSize - 3);
 	cString[pageSize - 3] = '\0';
 
-	TEST(@"-[readLine]", [[test readLine] isEqual: @"foo"] &&
-	    (string = [test readLine]).length == pageSize - 3 &&
+	TEST(@"-[readLine] #1", [[test readLine] isEqual: @"foo"])
+
+	string = [test readLine];
+	TEST(@"-[readLine] #2", string != nil &&
+	    string.length == pageSize - 3 &&
 	    !strcmp(string.UTF8String, cString))
 
 	OFFreeMemory(cString);
