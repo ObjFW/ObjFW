@@ -1370,6 +1370,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
 		])
 	], [
+		dnl Work around a bug in autoconf 2.61 that creates a broken
+		dnl configure if this branch is empty.
+		:
 	], [
 		#ifdef _WIN32
 		typedef int BOOL;
