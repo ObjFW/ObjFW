@@ -1834,6 +1834,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			#endif
 			@interface Test
 			@end
+
+			/**
+			 * @struct Foo conftest.m conftest.m
+			 */
+			typedef struct {} Foo;
 		])
 	], [
 		AC_MSG_RESULT(yes)
