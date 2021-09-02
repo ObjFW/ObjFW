@@ -22,6 +22,9 @@ dnl ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 dnl POSSIBILITY OF SUCH DAMAGE.
 dnl
 
+AC_ARG_ENABLE(rpath,
+	AS_HELP_STRING([--disable-rpath], [do not use rpath]))
+
 AC_DEFUN([BUILDSYS_INIT], [
 	AC_REQUIRE([AC_CANONICAL_BUILD])
 	AC_REQUIRE([AC_CANONICAL_HOST])
@@ -182,7 +185,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME='-Wl,-install_name,${libdir}/$${out%.dylib}.${LIB_MAJOR}.dylib'
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.dylib'
-		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-bundle ${PLUGIN_LDFLAGS_BUNDLE_LOADER}'
 		PLUGIN_SUFFIX='.bundle'
@@ -204,7 +209,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
 		LIB_SUFFIX='${LIB_MAJOR}.dll'
-		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		])
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.dll'
@@ -222,7 +229,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so.${LIB_MAJOR}.${LIB_MINOR}'
-		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
@@ -240,7 +249,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
-		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
@@ -258,7 +269,6 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
-		LDFLAGS_RPATH=''
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
@@ -277,7 +287,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.${LIB_MAJOR}'
 		LINK_LIB='&& rm -f $${out%%.*}.sl && ${LN_S} $$out $${out%%.*}.sl'
-		LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.sl'
@@ -296,7 +308,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.${LIB_MAJOR}'
 		LINK_LIB='&& rm -f $${out%%.*}.so && ${LN_S} $$out $${out%%.*}.so'
-		LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,+b,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
@@ -314,7 +328,9 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
-		LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		AS_IF([test x"$enable_rpath" != x"no"], [
+			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+		])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
