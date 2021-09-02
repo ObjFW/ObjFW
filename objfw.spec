@@ -105,7 +105,7 @@ proxy, a modern terminal-based UI, etc.
 %autosetup
 
 %build
-%configure
+%configure --disable-rpath
 %make_build
 
 %install
