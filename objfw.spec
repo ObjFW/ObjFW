@@ -112,10 +112,16 @@ proxy, a modern terminal-based UI, etc.
 %make_install
 
 %files
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n libobjfw
 %{_libdir}/libobjfw.so.1
 %{_libdir}/libobjfw.so.1.0.0
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n libobjfw-devel
 %{_libdir}/libobjfw.so
@@ -333,31 +339,52 @@ proxy, a modern terminal-based UI, etc.
 %{_bindir}/objfw-compile
 %{_bindir}/objfw-config
 %{_bindir}/objfw-new
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n libobjfwrt
 %{_libdir}/libobjfwrt.so.1
 %{_libdir}/libobjfwrt.so.1.0.0
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n libobjfwrt-devel
 %{_libdir}/libobjfwrt.so
 %{_includedir}/ObjFWRT/ObjFWRT.h
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n ofarc
 %{_bindir}/ofarc
 %{_datadir}/ofarc/lang/de.json
 %{_datadir}/ofarc/lang/languages.json
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n ofdns
 %{_bindir}/ofdns
 %{_datadir}/ofdns/lang/de.json
 %{_datadir}/ofdns/lang/languages.json
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n ofhash
 %{_bindir}/ofhash
 %{_datadir}/ofhash/lang/de.json
 %{_datadir}/ofhash/lang/languages.json
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
 
 %files -n ofhttp
 %{_bindir}/ofhttp
 %{_datadir}/ofhttp/lang/de.json
 %{_datadir}/ofhttp/lang/languages.json
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
