@@ -26,7 +26,9 @@
 #  include "lookup-asm-arm64-elf.S"
 # elif defined(OF_ARM)
 #  include "lookup-asm-arm-elf.S"
-# elif defined(OF_POWERPC)
+# elif defined(OF_POWERPC64) && (!defined(_CALL_ELF) || _CALL_ELF == 1)
+#  include "lookup-asm-powerpc64-elf.S"
+# elif defined(OF_POWERPC) && (!defined(_CALL_ELF) || _CALL_ELF == 1)
 #  include "lookup-asm-powerpc-elf.S"
 # elif defined(OF_MIPS64_N64)
 #  include "lookup-asm-mips64-n64-elf.S"

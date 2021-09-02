@@ -17,17 +17,17 @@
 
 #import "private.h"
 
-#define TAGGED_POINTER_BITS 4
-#define NUM_TAGGED_POINTER_CLASSES (1 << (TAGGED_POINTER_BITS - 1))
+#define numTaggedPointerBits 4
+#define maxNumTaggedPointerClasses (1 << (numTaggedPointerBits - 1))
 
-Class objc_tagged_pointer_classes[NUM_TAGGED_POINTER_CLASSES];
+Class objc_taggedPointerClasses[maxNumTaggedPointerClasses];
 static int taggedPointerClassesCount;
-uintptr_t objc_tagged_pointer_secret;
+uintptr_t objc_taggedPointerSecret;
 
 void
 objc_setTaggedPointerSecret(uintptr_t secret)
 {
-	objc_tagged_pointer_secret = secret & ~(uintptr_t)1;
+	objc_taggedPointerSecret = secret & ~(uintptr_t)1;
 }
 
 int
@@ -35,17 +35,17 @@ objc_registerTaggedPointerClass(Class class)
 {
 	int i;
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
-	if (taggedPointerClassesCount == NUM_TAGGED_POINTER_CLASSES) {
-		objc_global_mutex_unlock();
+	if (taggedPointerClassesCount == maxNumTaggedPointerClasses) {
+		objc_globalMutex_unlock();
 		return -1;
 	}
 
 	i = taggedPointerClassesCount++;
-	objc_tagged_pointer_classes[i] = class;
+	objc_taggedPointerClasses[i] = class;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return i;
 }
@@ -61,23 +61,23 @@ object_isTaggedPointer(id object)
 Class
 object_getTaggedPointerClass(id object)
 {
-	uintptr_t pointer = (uintptr_t)object ^ objc_tagged_pointer_secret;
+	uintptr_t pointer = (uintptr_t)object ^ objc_taggedPointerSecret;
 
-	pointer &= (1 << TAGGED_POINTER_BITS) - 1;
+	pointer &= (1 << numTaggedPointerBits) - 1;
 	pointer >>= 1;
 
-	if (pointer >= NUM_TAGGED_POINTER_CLASSES)
+	if (pointer >= maxNumTaggedPointerClasses)
 		return Nil;
 
-	return objc_tagged_pointer_classes[pointer];
+	return objc_taggedPointerClasses[pointer];
 }
 
 uintptr_t
 object_getTaggedPointerValue(id object)
 {
-	uintptr_t pointer = (uintptr_t)object ^ objc_tagged_pointer_secret;
+	uintptr_t pointer = (uintptr_t)object ^ objc_taggedPointerSecret;
 
-	pointer >>= TAGGED_POINTER_BITS;
+	pointer >>= numTaggedPointerBits;
 
 	return pointer;
 }
@@ -87,14 +87,14 @@ objc_createTaggedPointer(int class, uintptr_t value)
 {
 	uintptr_t pointer;
 
-	if (class < 0 || class >= NUM_TAGGED_POINTER_CLASSES)
+	if (class < 0 || class >= maxNumTaggedPointerClasses)
 		return nil;
 
-	if (value > (UINTPTR_MAX >> TAGGED_POINTER_BITS))
+	if (value > (UINTPTR_MAX >> numTaggedPointerBits))
 		return nil;
 
 	pointer = (class << 1) | 1;
-	pointer |= (value << TAGGED_POINTER_BITS);
+	pointer |= (value << numTaggedPointerBits);
 
-	return (id)(pointer ^ objc_tagged_pointer_secret);
+	return (id)(pointer ^ objc_taggedPointerSecret);
 }

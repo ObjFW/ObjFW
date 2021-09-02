@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFIPXSocket";
+static OFString *const module = @"OFIPXSocket";
 
 @implementation TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests

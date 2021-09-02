@@ -116,7 +116,7 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 }
 
 static OF_INLINE bool
-OFAtomicInt32CompAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
+OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 {
 	return __sync_bool_compare_and_swap(p, o, n);
 }

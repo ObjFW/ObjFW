@@ -43,7 +43,8 @@
 
 #import "OFObserveFailedException.h"
 
-const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
+#include "OFRunLoopConstants.inc"
+
 static OFRunLoop *mainRunLoop = nil;
 
 @interface OFRunLoopState: OFObject

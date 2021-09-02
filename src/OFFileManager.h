@@ -408,6 +408,17 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
+/**
+ * @brief Returns an array with all subpaths of the specified directory.
+ *
+ * @note `.` and `..` (of the directory itself or any subdirectory) are not
+ * part of the returned array.
+ *
+ * @param path The path to the directory whose subpaths should be returned
+ * @return An array of OFString with the subpaths of the specified directory
+ */
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path;
+
 #ifdef OF_HAVE_FILES
 /**
  * @brief Changes the current working directory.

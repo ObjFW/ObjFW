@@ -71,35 +71,11 @@
 @interface OFDefaultFileManager: OFFileManager
 @end
 
-const OFFileAttributeKey OFFileSize = @"OFFileSize";
-const OFFileAttributeKey OFFileType = @"OFFileType";
-const OFFileAttributeKey OFFilePOSIXPermissions = @"OFFilePOSIXPermissions";
-const OFFileAttributeKey OFFileOwnerAccountID = @"OFFileOwnerAccountID";
-const OFFileAttributeKey OFFileGroupOwnerAccountID =
-    @"OFFileGroupOwnerAccountID";
-const OFFileAttributeKey OFFileOwnerAccountName = @"OFFileOwnerAccountName";
-const OFFileAttributeKey OFFileGroupOwnerAccountName =
-    @"OFFileGroupOwnerAccountName";
-const OFFileAttributeKey OFFileLastAccessDate = @"OFFileLastAccessDate";
-const OFFileAttributeKey OFFileModificationDate = @"OFFileModificationDate";
-const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
-const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
-const OFFileAttributeKey OFFileSymbolicLinkDestination =
-    @"OFFileSymbolicLinkDestination";
-
-const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
-const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
-const OFFileAttributeType OFFileTypeSymbolicLink = @"OFFileTypeSymbolicLink";
-const OFFileAttributeType OFFileTypeFIFO = @"OFFileTypeFIFO";
-const OFFileAttributeType OFFileTypeCharacterSpecial =
-    @"OFFileTypeCharacterSpecial";
-const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
-const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
-const OFFileAttributeType OFFileTypeUnknown = @"OFFileTypeUnknown";
-
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
+
+#include "OFFileManagerConstants.inc"
 
 static OFFileManager *defaultManager;
 
@@ -472,6 +448,37 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	for (OFURL *URL in URLs)
 		[ret addObject: URL.lastPathComponent];
 
+	[ret makeImmutable];
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithObject: path];
+
+	for (OFString *subpath in [self contentsOfDirectoryAtPath: path]) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFString *fullSubpath =
+		    [path stringByAppendingPathComponent: subpath];
+		OFFileAttributes attributes =
+		    [self attributesOfItemAtPath: fullSubpath];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[ret addObjectsFromArray:
+			    [self subpathsOfDirectoryAtPath: fullSubpath]];
+		else
+			[ret addObject: fullSubpath];
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	[ret makeImmutable];
 	[ret retain];
 
 	objc_autoreleasePoolPop(pool);

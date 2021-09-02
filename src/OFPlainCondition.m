@@ -18,9 +18,9 @@
 #include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "platform/posix/OFPlainCondition.m"
+# include "platform/POSIX/OFPlainCondition.m"
 #elif defined(OF_WINDOWS)
-# include "platform/windows/OFPlainCondition.m"
+# include "platform/Windows/OFPlainCondition.m"
 #elif defined(OF_AMIGAOS)
-# include "platform/amiga/OFPlainCondition.m"
+# include "platform/AmigaOS/OFPlainCondition.m"
 #endif

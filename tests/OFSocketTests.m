@@ -52,9 +52,9 @@
 	a.sockaddr.in6.sin6_addr.s6_addr[14] = a7 >> 8;		\
 	a.sockaddr.in6.sin6_addr.s6_addr[15] = a7 & 0xFF;
 
-static OFString *module = @"Socket";
+static OFString *const module = @"OFSocket";
 
-@implementation TestsAppDelegate (SocketTests)
+@implementation TestsAppDelegate (OFSocketTests)
 - (void)socketTests
 {
 	void *pool = objc_autoreleasePoolPush();

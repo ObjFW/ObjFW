@@ -121,6 +121,9 @@ typedef enum {
  * @brief Creates a new OFData with the specified `count` items of size 1 by
  *	  taking over ownership of the specified items pointer.
  *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * free'd if `freeWhenDone` is true.
+ *
  * @param items The items to store in the OFData
  * @param count The number of items
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
@@ -134,6 +137,9 @@ typedef enum {
 /**
  * @brief Creates a new OFData with the specified `count` items of the
  *	  specified size by taking ownership of the specified items pointer.
+ *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -213,6 +219,9 @@ typedef enum {
  *	  items of size 1 by taking over ownership of the specified items
  *	  pointer.
  *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * free'd if `freeWhenDone` is true.
+ *
  * @param items The items to store in the OFData
  * @param count The number of items
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
@@ -227,6 +236,9 @@ typedef enum {
  * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size by taking ownership of the specified
  *	  items pointer.
+ *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items

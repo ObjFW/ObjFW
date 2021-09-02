@@ -629,10 +629,9 @@ OF_ROOT_CLASS
  * is unloaded.
  *
  * @warning This is not supported by the Apple runtime and currently only
- *	    called by the ObjFW runtime when objc_unregister_class() or
- *	    objc_exit() has been called!
+ *	    called by the ObjFW runtime when @ref objc_deinit has been called!
  *	    In the future, this might also be called by the ObjFW runtime when
- *	    the class is part of a plugin that has been unloaded.
+ *	    the class is part of a plugin that is being unloaded.
  */
 + (void)unload;
 

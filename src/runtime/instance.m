@@ -81,7 +81,7 @@ objc_destructInstance(id object)
 		return NULL;
 
 #ifdef OF_OBJFW_RUNTIME
-	objc_zero_weak_references(object);
+	objc_zeroWeakReferences(object);
 #endif
 
 	if (destructSelector == NULL)

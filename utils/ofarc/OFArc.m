@@ -145,6 +145,27 @@ writingNotSupported(OFString *type)
 	    @"type", type)];
 }
 
+static void
+addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
+{
+	OFMutableArray *expandedFiles =
+	    [OFMutableArray arrayWithCapacity: files.count];
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	for (OFString *file in files) {
+		OFFileAttributes attributes =
+		    [fileManager attributesOfItemAtPath: file];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[expandedFiles addObjectsFromArray: 
+			    [fileManager subpathsOfDirectoryAtPath: file]];
+		else
+			[expandedFiles addObject: file];
+	}
+
+	[archive addFiles: expandedFiles];
+}
+
 @implementation OFArc
 - (void)applicationDidFinishLaunching
 {
@@ -336,7 +357,7 @@ writingNotSupported(OFString *type)
 				   mode: mode
 			       encoding: encoding];
 
-		[archive addFiles: files];
+		addFiles(archive, files);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)

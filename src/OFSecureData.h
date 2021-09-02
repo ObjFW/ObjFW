@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
-	struct page *_page;
+	void *_page;
 	bool _allowsSwappableMemory;
 }
 

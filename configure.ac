@@ -48,7 +48,8 @@ m68k-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
 		dnl For 68000, GCC emits calls to helper functions that
 		dnl do not work properly in a library.
 		t="-mcpu=68020 -fbaserel -noixemul -ffreestanding"
@@ -79,7 +80,8 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFW_LIB_MAJOR}ppc.library'])
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul -ldebug"
@@ -1363,6 +1365,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
 		])
 	], [
+		dnl Work around a bug in autoconf 2.61 that creates a broken
+		dnl configure if this branch is empty.
+		:
 	], [
 		#ifdef _WIN32
 		typedef int BOOL;
@@ -1824,6 +1829,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			#endif
 			@interface Test
 			@end
+
+			/**
+			 * @struct Foo conftest.m conftest.m
+			 */
+			typedef struct {} Foo;
 		])
 	], [
 		AC_MSG_RESULT(yes)

@@ -426,7 +426,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			OFStringEncoding ASCII = OFStringEncodingASCII;
 
 			@try {
-				_encoding = OFStringEncodingForName(
+				_encoding = OFStringEncodingParseName(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
 			} @catch (OFInvalidArgumentException *e) {

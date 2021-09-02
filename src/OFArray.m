@@ -239,18 +239,21 @@ static struct {
 {
 	size_t count = self.count;
 	id *buffer = OFAllocMemory(count, sizeof(id));
+	id const *ret;
 
 	@try {
 		[self getObjects: buffer inRange: OFRangeMake(0, count)];
 
-		return [[OFData dataWithItemsNoCopy: buffer
-					      count: count
-					   itemSize: sizeof(id)
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: count
+					  itemSize: sizeof(id)
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (id)copy

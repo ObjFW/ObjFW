@@ -147,6 +147,10 @@
 - (void)objectTests;
 @end
 
+@interface TestsAppDelegate (OFPBKDF2Tests)
+- (void)PBKDF2Tests;
+@end
+
 @interface TestsAppDelegate (OFPropertyListTests)
 - (void)propertyListTests;
 @end
@@ -167,7 +171,7 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (ScryptTests)
+@interface TestsAppDelegate (OFScryptTests)
 - (void)scryptTests;
 @end
 
@@ -215,6 +219,10 @@
 - (void)HMACTests;
 @end
 
+@interface TestsAppDelegate (OFSocketTests)
+- (void)socketTests;
+@end
+
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
@@ -258,12 +266,4 @@
 @interface TestsAppDelegate (OFXMLParserTests)
     <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
-@end
-
-@interface TestsAppDelegate (PBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
-@interface TestsAppDelegate (SocketTests)
-- (void)socketTests;
 @end

@@ -10,10 +10,11 @@ SRCS = FuncArrayGenerator.m	\
 run: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
-	rm -f objfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
+	rm -f objfw${OBJFW_LIB_MAJOR}.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
-	rm -f objfwrt.dll libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
+	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
 	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../../src/libobjfw.so; then \
 		${LN_S} ../../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
@@ -23,8 +24,9 @@ run: all
 		${LN_S} ../../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
 		    libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../../src/objfw.dll; then \
-		${LN_S} ../../src/objfw.dll objfw.dll; \
+	if test -f ../../src/objfw${OBJFW_LIB_MAJOR}.dll; then \
+		${LN_S} ../../src/objfw${OBJFW_LIB_MAJOR}.dll \
+			objfw${OBJFW_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../../src/libobjfw.dylib; then \
 		${LN_S} ../../src/libobjfw.dylib \
@@ -38,8 +40,9 @@ run: all
 	elif test -f ../../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
 		${LN_S} ../../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../../src/runtime/objfwrt.dll; then \
-		${LN_S} ../../src/runtime/objfwrt.dll objfwrt.dll; \
+	if test -f ../../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll; then \
+		${LN_S} ../../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll \
+			objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../../src/runtime/libobjfwrt.dylib \
@@ -56,10 +59,12 @@ run: all
 	ASAN_OPTIONS=allocator_may_return_null=1 \
 	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
-	rm -f objfw.so.${OBJFW_LIB_MAJOR_MINOR} objfw.dll; \
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
+	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
-	rm -f objfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 

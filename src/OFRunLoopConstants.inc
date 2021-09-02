@@ -13,23 +13,4 @@
  * file.
  */
 
-#include "config.h"
-
-#import "OFTLSKey.h"
-
-int
-OFTLSKeyNew(OFTLSKeyT *key)
-{
-	*key = TLSAllocA(NULL);
-
-	if (*key == TLS_INVALID_INDEX)
-		return EAGAIN;
-
-	return 0;
-}
-
-int
-OFTLSKeyFree(OFTLSKeyT key)
-{
-	return (TLSFree(key) ? 0 : EINVAL);
-}
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
