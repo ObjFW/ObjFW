@@ -1,22 +1,39 @@
+%global libobjfw_major 1
+%global libobjfw_minor 0
+%global libobjfwrt_major 1
+%global libobjfwrt_minor 1
+%if 0%{?suse_version}
+%global libobjfw_pkgname libobjfw%{libobjfw_major}
+%global libobjfwrt_pkgname libobjfwrt%{libobjfwrt_major}
+%else
+%global libobjfw_pkgname libobjfw
+%global libobjfwrt_pkgname libobjfwrt
+%endif
+
 Name:          objfw
 Version:       1.1dev
 Release:       1%{?dist}
 Summary:       Portable, lightweight framework for the Objective-C language
 
-License:       QPL or GPLv2 or GPLv3
+%if 0%{?suse_version}
+License:       QPL-1.0 or GPL-3.0 or GPL-2.0
+Group:         Development/Languages/C and C++
+%else
+License:       QPL or GPLv3 or GPLv2
+%endif
 URL:           https://objfw.nil.im
 Source0:       objfw-%{version}.tar.gz
 
 BuildRequires: clang
 BuildRequires: make
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfw-devel = %{version}-%{release}
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
-Requires: libobjfwrt-devel = %{version}-%{release}
-Requires: ofarc%{_isa} = %{version}-%{release}
-Requires: ofdns%{_isa} = %{version}-%{release}
-Requires: ofhash%{_isa} = %{version}-%{release}
-Requires: ofhttp%{_isa} = %{version}-%{release}
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}-devel = %{version}-%{release}
+Requires:      ofarc%{_isa} = %{version}-%{release}
+Requires:      ofdns%{_isa} = %{version}-%{release}
+Requires:      ofhash%{_isa} = %{version}-%{release}
+Requires:      ofhttp%{_isa} = %{version}-%{release}
 
 %description
 ObjFW is a portable, lightweight framework for the Objective-C language. It
@@ -32,39 +49,41 @@ ObjFW also comes with its own lightweight and extremely fast Objective-C
 runtime, which in real world use cases was found to be significantly faster
 than both GNU's and Apple's runtime.
 
-%package -n libobjfw
-Summary: ObjFW library
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
+%package -n %{libobjfw_pkgname}
+Summary:       ObjFW library
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
-%description -n libobjfw
-The libobjfw package contains the library needed by programs using ObjFW.
+%description -n %{libobjfw_pkgname}
+The %{libobjfw_pkgname} package contains the library needed by programs using
+ObjFW.
 
-%package -n libobjfw-devel
-Summary: Header files and tools for libobjfw
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfwrt-devel = %{version}-%{release}
+%package -n %{libobjfw_pkgname}-devel
+Summary:       Header files and tools for %{libobjfw_pkgname}
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}-devel = %{version}-%{release}
 
-%description -n libobjfw-devel
-The libobjfw-devel package contains the header files and tools to develop
-programs using ObjFW.
+%description -n %{libobjfw_pkgname}-devel
+The %{libobjfw_pkgname}-devel package contains the header files and tools to
+develop programs using ObjFW.
 
-%package -n libobjfwrt
-Summary: ObjFW Objective-C runtime library
+%package -n %{libobjfwrt_pkgname}
+Summary:       ObjFW Objective-C runtime library
 
-%description -n libobjfwrt
-The libobjfwrt package contains ObjFW's Objective-C runtime library.
+%description -n %{libobjfwrt_pkgname}
+The %{libobjfwrt_pkgname} package contains ObjFW's Objective-C runtime library.
 
-%package -n libobjfwrt-devel
-Summary: Header files for libobjfwrt
+%package -n %{libobjfwrt_pkgname}-devel
+Summary:       Header files for %{libobjfwrt_pkgname}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
-%description -n libobjfwrt-devel
-The libobjfwrt-devel package contains header files for ObjFW's Objective-C
-runtime library.
+%description -n %{libobjfwrt_pkgname}-devel
+The %{libobjfwrt_pkgname}-devel package contains header files for ObjFW's
+Objective-C runtime library.
 
 %package -n ofarc
-Summary:  Utility for handling ZIP, Tar and LHA archives
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
+Summary:       Utility for handling ZIP, Tar and LHA archives
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofarc
 ofarc is a multi-format archive utility that allows creating, listing,
@@ -72,18 +91,18 @@ extracting and modifying ZIP, Tar and LHA archives using ObjFW's classes for
 various archive types.
 
 %package -n ofdns
-Summary:  Utility for performing DNS requests on the command line
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
+Summary:       Utility for performing DNS requests on the command line
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofdns
 ofdns is an utility for performing DNS requests on the command line using
 ObjFW's DNS resolver.
 
 %package -n ofhash
-Summary:  Utility to hash files with various cryptographic hash functions
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
+Summary:       Utility to hash files with various cryptographic hash functions
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofhash
 ofhash is an utility to hash files with various cryptographic hash functions
@@ -91,9 +110,9 @@ ofhash is an utility to hash files with various cryptographic hash functions
 cryptographic hashes.
 
 %package -n ofhttp
-Summary:  Command line downloader for HTTP(S)
-Requires: libobjfw%{_isa} = %{version}-%{release}
-Requires: libobjfwrt%{_isa} = %{version}-%{release}
+Summary:       Command line downloader for HTTP(S)
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofhttp
 ofhttp is a command line downloader for HTTP and HTTPS (via ObjOpenSSL) using
@@ -111,19 +130,26 @@ proxy, a modern terminal-based UI, etc.
 %install
 %make_install
 
+%if 0%{?suse_version}
+%post -n %{libobjfw_pkgname} -p /sbin/ldconfig
+%postun -n %{libobjfw_pkgname} -p /sbin/ldconfig
+%post -n %{libobjfwrt_pkgname} -p /sbin/ldconfig
+%postun -n %{libobjfwrt_pkgname} -p /sbin/ldconfig
+%endif
+
 %files
 %license LICENSE.QPL
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
 
-%files -n libobjfw
-%{_libdir}/libobjfw.so.1
-%{_libdir}/libobjfw.so.1.0.0
+%files -n %{libobjfw_pkgname}
+%{_libdir}/libobjfw.so.%{libobjfw_major}
+%{_libdir}/libobjfw.so.%{libobjfw_major}.%{libobjfw_minor}.0
 %license LICENSE.QPL
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
 
-%files -n libobjfw-devel
+%files -n %{libobjfw_pkgname}-devel
 %{_libdir}/libobjfw.so
 %{_includedir}/ObjFW/OFASPrintF.h
 %{_includedir}/ObjFW/OFAcceptFailedException.h
@@ -343,14 +369,14 @@ proxy, a modern terminal-based UI, etc.
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
 
-%files -n libobjfwrt
-%{_libdir}/libobjfwrt.so.1
-%{_libdir}/libobjfwrt.so.1.0.0
+%files -n %{libobjfwrt_pkgname}
+%{_libdir}/libobjfwrt.so.%{libobjfwrt_major}
+%{_libdir}/libobjfwrt.so.%{libobjfwrt_major}.%{libobjfw_minor}.0
 %license LICENSE.QPL
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
 
-%files -n libobjfwrt-devel
+%files -n %{libobjfwrt_pkgname}-devel
 %{_libdir}/libobjfwrt.so
 %{_includedir}/ObjFWRT/ObjFWRT.h
 %license LICENSE.QPL
