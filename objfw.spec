@@ -35,6 +35,12 @@ Requires:      ofdns%{_isa} = %{version}-%{release}
 Requires:      ofhash%{_isa} = %{version}-%{release}
 Requires:      ofhttp%{_isa} = %{version}-%{release}
 
+%generate_buildrequires
+if [ ! -x configure ]; then
+	echo "autoconf"
+	echo "automake"
+fi
+
 %description
 ObjFW is a portable, lightweight framework for the Objective-C language. It
 enables you to write an application in Objective-C that will run on any
@@ -122,6 +128,7 @@ proxy, a modern terminal-based UI, etc.
 
 %prep
 %autosetup
+[ -x configure ] || ./autogen.sh
 
 %build
 %configure --disable-rpath
