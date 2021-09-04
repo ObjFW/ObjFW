@@ -24,6 +24,8 @@ License:       QPL or GPLv3 or GPLv2
 URL:           https://objfw.nil.im
 Source0:       objfw-%{version}.tar.gz
 
+BuildRequires: autoconf
+BuildRequires: automake
 BuildRequires: clang
 BuildRequires: make
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
@@ -34,12 +36,6 @@ Requires:      ofarc%{_isa} = %{version}-%{release}
 Requires:      ofdns%{_isa} = %{version}-%{release}
 Requires:      ofhash%{_isa} = %{version}-%{release}
 Requires:      ofhttp%{_isa} = %{version}-%{release}
-
-%generate_buildrequires
-if [ ! -x configure ]; then
-	echo "autoconf"
-	echo "automake"
-fi
 
 %description
 ObjFW is a portable, lightweight framework for the Objective-C language. It
@@ -128,7 +124,7 @@ proxy, a modern terminal-based UI, etc.
 
 %prep
 %autosetup
-[ -x configure ] || ./autogen.sh
+./autogen.sh
 
 %build
 %configure --disable-rpath
