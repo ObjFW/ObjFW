@@ -1,8 +1,8 @@
 There are three ways you are probably reading this right now:
 
- * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil
+ * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil's web interface
  * On [GitHub](https://github.com/ObjFW/ObjFW)
- * Via an editor or pager, by opening `README.md` from a checkout or tarball
+ * Via an editor or pager, by opening `README.md` from a clone or tarball
 
 ObjFW is developed using Fossil, so if you are reading this on GitHub or any
 other place, you are most likely using a mirror.
@@ -107,13 +107,12 @@ other place, you are most likely using a mirror.
 
   Clone the Fossil repository like this:
 
-    $ fossil clone https://objfw.nil.im objfw.fossil
-    $ mkdir objfw && cd objfw
-    $ fossil open ../objfw.fossil
+    $ fossil clone https://objfw.nil.im
 
   You can then use Fossil's web interface to browse the timeline, tickets,
   wiki pages, etc.:
 
+    $ cd objfw
     $ fossil ui
 
   It's also possible to open the same local repository multiple times, so that
