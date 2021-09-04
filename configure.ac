@@ -262,15 +262,6 @@ case "$OBJC" in
 		dnl Don't use -no-integrated-as on Darwin. It breaks building
 		dnl for the iOS simulator.
 		;;
-	i?86-*-* | x86_64-*-*)
-		dnl Many older Clang versions don't support jmp short.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
-	*-*-mingw*)
-		dnl Clang's assembler on Windows is not complete yet and cannot
-		dnl compile all .S files.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
 	sparc64-*-*openbsd*)
 		dnl Clang generates assembly output on SPARC64 that OpenBSD's
 		dnl assembler does not accept.
