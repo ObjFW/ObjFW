@@ -11,7 +11,7 @@
 %endif
 
 Name:          objfw
-Version:       1.0
+Version:       1.0dev
 Release:       1%{?dist}
 Summary:       Portable, lightweight framework for the Objective-C language
 

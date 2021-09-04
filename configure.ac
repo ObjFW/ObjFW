@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.0, js@nil.im)
+AC_INIT(ObjFW, 1.0dev, js@nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
