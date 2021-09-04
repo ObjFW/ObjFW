@@ -209,9 +209,6 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
 		LIB_SUFFIX='${LIB_MAJOR}.dll'
-		AS_IF([test x"$enable_rpath" != x"no"], [
-			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
-		])
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.dll'
