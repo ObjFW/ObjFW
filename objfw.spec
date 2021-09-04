@@ -1,7 +1,7 @@
-%global libobjfw_major 1
+%global libobjfw_major 0
 %global libobjfw_minor 0
-%global libobjfwrt_major 1
-%global libobjfwrt_minor 1
+%global libobjfwrt_major 0
+%global libobjfwrt_minor 0
 %if 0%{?suse_version}
 %global libobjfw_pkgname libobjfw%{libobjfw_major}
 %global libobjfwrt_pkgname libobjfwrt%{libobjfwrt_major}
@@ -371,7 +371,7 @@ proxy, a modern terminal-based UI, etc.
 
 %files -n %{libobjfwrt_pkgname}
 %{_libdir}/libobjfwrt.so.%{libobjfwrt_major}
-%{_libdir}/libobjfwrt.so.%{libobjfwrt_major}.%{libobjfw_minor}.0
+%{_libdir}/libobjfwrt.so.%{libobjfwrt_major}.%{libobjfwrt_minor}.0
 %license LICENSE.QPL
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
