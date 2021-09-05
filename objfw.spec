@@ -133,6 +133,9 @@ proxy, a modern terminal-based UI, etc.
 %install
 %make_install
 
+%check
+make -C tests run
+
 %if 0%{?suse_version}
 %post -n %{libobjfw_pkgname} -p /sbin/ldconfig
 %postun -n %{libobjfw_pkgname} -p /sbin/ldconfig

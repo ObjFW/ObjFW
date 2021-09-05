@@ -1,6 +1,8 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}
+SUBDIRS = ${TESTPLUGIN}	\
+	  objc_sync	\
+	  terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -74,8 +76,6 @@ IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
-
-post-all: ${RUN_TESTS}
 
 .PHONY: run run-on-ios run-on-android
 run:

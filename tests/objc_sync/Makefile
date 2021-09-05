@@ -5,8 +5,6 @@ SRCS = test.m
 
 include ../../buildsys.mk
 
-post-all: ${RUN_TESTS}
-
 .PHONY: run
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}

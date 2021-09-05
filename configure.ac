@@ -1913,7 +1913,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	esac
 
 	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(RUN_TESTS, "run")
 		AC_SUBST(WRAPPER, "$WINE")
 	])
 
@@ -1927,8 +1926,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-], [
-	AC_SUBST(RUN_TESTS, "run")
 ])
 
 AC_ARG_WITH(fish_completions,
