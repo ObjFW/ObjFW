@@ -1,8 +1,8 @@
 There are three ways you are probably reading this right now:
 
- * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil
+ * On [ObjFW](https://objfw.nil.im/)'s homepage, via Fossil's web interface
  * On [GitHub](https://github.com/ObjFW/ObjFW)
- * Via an editor or pager, by opening `README.md` from a checkout or tarball
+ * Via an editor or pager, by opening `README.md` from a clone or tarball
 
 ObjFW is developed using Fossil, so if you are reading this on GitHub or any
 other place, you are most likely using a mirror.
@@ -21,8 +21,7 @@ other place, you are most likely using a mirror.
      * [Broken Xcode versions](#broken-xcode-versions)
    * [Windows](#windows)
      * [Getting MSYS2](#getting-msys2)
-     * [Updating MSYS2](#updating-msys2)
-     * [Installing MinGW-w64 using MSYS2](#installing-mingw-w64)
+     * [Setting up MSYS2](#setting-up-msys2)
      * [Getting, building and installing ObjFW](#steps-windows)
    * [Nintendo DS, Nintendo 3DS and Wii](#nintendo)
      * [Nintendo DS](#nintendo-ds)
@@ -108,13 +107,12 @@ other place, you are most likely using a mirror.
 
   Clone the Fossil repository like this:
 
-    $ fossil clone https://objfw.nil.im objfw.fossil
-    $ mkdir objfw && cd objfw
-    $ fossil open ../objfw.fossil
+    $ fossil clone https://objfw.nil.im
 
   You can then use Fossil's web interface to browse the timeline, tickets,
   wiki pages, etc.:
 
+    $ cd objfw
     $ fossil ui
 
   It's also possible to open the same local repository multiple times, so that
@@ -211,69 +209,57 @@ other place, you are most likely using a mirror.
 
   The first thing to install is [MSYS2](https://www.msys2.org) to provide a
   basic UNIX-like environment for Windows. Unfortunately, the binaries are not
-  signed and there is no way to verify their integrity, so only download this
-  from a trusted connection. Everything else you will download using MSYS2
-  later will be cryptographically signed.
+  signed, so make sure you download it via HTTPS. However, packages you
+  download and install via MSYS2 are cryptographically signed.
 
-<h3 id="updating-msys2">Updating MSYS2</h3>
+<h3 id="setting-up-msys2">Setting up MSYS2</h3>
 
-  The first thing to do is updating MSYS2. It is important to update things in
-  a certain order, as `pacman` (the package manager MSYS2 uses, which comes
-  from Arch Linux) does not know about a few things that are special on
-  Windows.
+  MSYS2 currently supports 5 different
+  [environments](https://www.msys2.org/docs/environments/). All of them except
+  for the one called just "MSYS" are supported, but which packages you need to
+  install depends on the environment(s) you want to use.
 
-  First, update the mirror list:
+  For MINGW64, use:
 
-    $ pacman -Sy pacman-mirrors
+    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
 
-  Then proceed to update the `msys2-runtime` itself, `bash` and `pacman`:
+  For UCRT64, use:
 
-    $ pacman -S msys2-runtime bash pacman mintty
+    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
 
-  Now close the current window and restart MSYS2, as the current window is now
-  defunct. In a new MSYS2 window, update the rest of MSYS2:
+  For CLANG64, use:
 
-    $ pacman -Su
+    $ pacman -Syu mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-fossil
 
-  Now you have a fully updated MSYS2. Whenever you want to update MSYS2,
-  proceed in this order. Notice that the first `pacman` invocation includes
-  `-y` to actually fetch a new list of packages.
+  For MINGW32, use:
 
-<h3 id="installing-mingw-w64">Installing MinGW-w64 using MSYS2</h3>
+    $ pacman -Syu mingw-w64-i686-clang mingw-w64-i686-fossil
 
-  Now it's time to install MinGW-w64. If you want to build 32 bit binaries:
+  When using `pacman` to install the packages, `pacman` might tell you to close
+  the window. If it does so, close the window, restart MSYS2 and execute the
+  `pacman` command again.
 
-    $ pacman -S mingw-w64-i686-clang mingw-w64-i686-gcc-objc
+  There is nothing wrong with installing multiple environments, as MSYS2 has
+  created shortcuts for each of them in your start menu. Just make sure to use
+  the correct shortcut for the environment you want to use.
 
-  For 64 bit binaries:
+  Finally, install a few more things that are common between all environments:
 
-    $ pacman -S mingw-w64-x86_64-clang mingw-w64-x86_64-gcc-objc
-
-  There is nothing wrong with installing them both, as MSYS2 has created two
-  entries in your start menu: `MinGW-w64 Win32 Shell` and
-  `MinGW-w64 Win64 Shell`. So if you want to build for 32 or 64 bit, you just
-  start the correct shell.
-
-  Finally, install a few more things needed to build ObjFW:
-
-    $ pacman -S autoconf automake fossil make
+    $ pacman -S autoconf automake make
 
 <h3 id="steps-windows">Getting, building and installing ObjFW</h3>
 
-  Start the MinGW-w64 Win32 or Win64 Shell (depening on what version you want
-  to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
-  or Win64 Shell shortcut instead!) and check out ObjFW:
+  Start the MSYS2 using the shortcut for the environment you want to use and
+  check out ObjFW:
 
-    $ fossil clone https://objfw.nil.im objfw.fossil
-    $ mkdir objfw && cd objfw
-    $ fossil open ../objfw.fossil
+    $ fossil clone https://objfw.nil.im
 
-  You can also download a release tarball if you want. Now go to the newly
+  You can also download a release tarball if you want. Now `cd` to the newly
   checked out repository and build and install it:
 
     $ ./autogen.sh && ./configure && make -j16 install
 
-  If everything was successfully, you can now build projects using ObjFW for
+  If everything was successful, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
 
 <h2 id="nintendo">Nintendo DS, Nintendo 3DS and Wii</h2>

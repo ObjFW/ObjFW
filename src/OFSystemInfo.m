@@ -354,8 +354,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(
@@ -447,8 +446,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(

@@ -266,15 +266,6 @@ case "$OBJC" in
 		dnl Don't use -no-integrated-as on Darwin. It breaks building
 		dnl for the iOS simulator.
 		;;
-	i?86-*-* | x86_64-*-*)
-		dnl Many older Clang versions don't support jmp short.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
-	*-*-mingw*)
-		dnl Clang's assembler on Windows is not complete yet and cannot
-		dnl compile all .S files.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
 	sparc64-*-*openbsd*)
 		dnl Clang generates assembly output on SPARC64 that OpenBSD's
 		dnl assembler does not accept.
@@ -1394,6 +1385,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
 		])
 	], [
+		dnl Work around a bug in autoconf 2.61 that creates a broken
+		dnl configure if this branch is empty.
+		:
 	], [
 		#ifdef _WIN32
 		typedef int BOOL;
@@ -1855,6 +1849,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			#endif
 			@interface Test
 			@end
+
+			/**
+			 * @struct Foo conftest.m conftest.m
+			 */
+			typedef struct {} Foo;
 		])
 	], [
 		AC_MSG_RESULT(yes)
@@ -1938,7 +1937,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	esac
 
 	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(RUN_TESTS, "run")
 		AC_SUBST(WRAPPER, "$WINE")
 	])
 
@@ -1952,8 +1950,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-], [
-	AC_SUBST(RUN_TESTS, "run")
 ])
 
 AC_ARG_WITH(fish_completions,

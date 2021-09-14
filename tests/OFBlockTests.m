@@ -58,7 +58,10 @@ forwardTest(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 	__block int x;
-	void (^stackBlock)(void) = ^ { x = 0; };
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
 	void (^mallocBlock)(void);
 	int (^voidBlock)(void);
 
