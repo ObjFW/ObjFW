@@ -29,6 +29,7 @@
 #import "macros.h"
 #import "amiga-library.h"
 
+#define USE_INLINE_STDARG
 #include <proto/exec.h>
 #include <proto/intuition.h>
 
