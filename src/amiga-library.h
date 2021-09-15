@@ -74,11 +74,21 @@ struct OFLibC {
 	/* Needed only by ObjFW. */
 	int (*_Nonnull vsnprintf)(char *_Nonnull restrict, size_t,
 	    const char *_Nonnull restrict, va_list);
-#ifdef OF_AMIGAOS_M68K
-	/* strtod() uses sscanf() internally */
-	int (*_Nonnull vsscanf)(const char *_Nonnull restrict,
-	    const char *_Nonnull restrict, va_list);
+	float (*_Nonnull strtof)(const char *_Nonnull,
+	    char *_Nullable *_Nullable);
+	double (*_Nonnull strtod)(const char *_Nonnull,
+	    char *_Nullable *_Nullable);
+#ifdef OF_MORPHOS
+	struct tm *(*_Nonnull gmtime_r)(const time_t *_Nonnull,
+	    struct tm *_Nonnull);
+	struct tm *(*_Nonnull localtime_r)(const time_t *_Nonnull,
+	    struct tm *_Nonnull);
 #endif
+	time_t (*_Nonnull mktime)(struct tm *_Nonnull);
+	int (*_Nonnull gettimeofday)(struct timeval *_Nonnull,
+	    struct timezone *_Nullable);
+	size_t (*_Nonnull strftime)(char *_Nonnull, size_t,
+	    const char *_Nonnull, const struct tm *_Nonnull);
 	void (*_Nonnull exit)(int);
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	OFSignalHandler _Nullable (*_Nonnull signal)(int, OFSignalHandler _Nullable);

@@ -563,20 +563,49 @@ vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
 	return libC.vsnprintf(str, size, fmt, args);
 }
 
-#ifdef OF_AMIGAOS_M68K
-int
-sscanf(const char *restrict str, const char *restrict fmt, ...)
+float
+strtof(const char *str, char **endptr)
 {
-	int ret;
-	va_list args;
+	return libC.strtof(str, endptr);
+}
 
-	va_start(args, fmt);
-	ret = libC.vsscanf(str, fmt, args);
-	va_end(args);
+double
+strtod(const char *str, char **endptr)
+{
+	return libC.strtod(str, endptr);
+}
 
-	return ret;
+#ifdef OF_MORPHOS
+struct tm *
+gmtime_r(const time_t *time, struct tm *tm)
+{
+	return libC.gmtime_r(time, tm);
+}
+
+struct tm *
+localtime_r(const time_t *time, struct tm *tm)
+{
+	return libC.localtime_r(time, tm);
 }
 #endif
+
+int
+gettimeofday(struct timeval *tv, struct timezone *tz)
+{
+	return libC.gettimeofday(tv, tz);
+}
+
+time_t
+mktime(struct tm *tm)
+{
+	return libC.mktime(tm);
+}
+
+size_t
+strftime(char *str, size_t len, const char *fmt, const struct tm *tm)
+{
+	return libC.strftime(str, len, fmt, tm);
+}
 
 void
 exit(int status)

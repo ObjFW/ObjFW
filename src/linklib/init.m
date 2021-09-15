@@ -348,9 +348,15 @@ ctor(void)
 #endif
 		.errNo = errNo,
 		.vsnprintf = vsnprintf,
-#ifdef OF_AMIGAOS_M68K
-		.vsscanf = vsscanf,
+		.strtof = strtof,
+		.strtod = strtod,
+#ifdef OF_MORPHOS
+		.gmtime_r = gmtime_r,
+		.localtime_r = localtime_r,
 #endif
+		.mktime = mktime,
+		.gettimeofday = gettimeofday,
+		.strftime = strftime,
 		.exit = exit,
 		.atexit = atexit,
 		.signal = signal,
