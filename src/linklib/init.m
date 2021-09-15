@@ -268,8 +268,8 @@ void *__objc_class_name_OFThreadJoinFailedException;
 void *__objc_class_name_OFThreadStartFailedException;
 void *__objc_class_name_OFThreadStillRunningException;
 #endif
-#include "OFFileManager_constants.m"
-#include "OFRunLoop_constants.m"
+#include "OFFileManagerConstants.inc"
+#include "OFRunLoopConstants.inc"
 /* The following __objc_class_name_* are only required for the tests. */
 void *__objc_class_name_OFBitSetCharacterSet;
 void *__objc_class_name_OFMapTableSet;
