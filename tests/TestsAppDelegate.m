@@ -376,6 +376,8 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
+	[self _4x4MatrixTests];
+
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif

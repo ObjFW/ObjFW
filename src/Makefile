@@ -10,7 +10,8 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASPrintF.m			\
+SRCS = OF4x4Matrix.m			\
+       OFASPrintF.m			\
        OFApplication.m			\
        OFArray.m			\
        OFBase64.m			\

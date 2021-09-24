@@ -129,6 +129,8 @@
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
+#import "OF4x4Matrix.h"
+
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
 #endif

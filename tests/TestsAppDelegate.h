@@ -59,6 +59,10 @@
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
+@interface TestsAppDelegate (OF4x4MatrixTests)
+- (void)_4x4MatrixTests;
+@end
+
 @interface TestsAppDelegate (OFArrayTests)
 - (void)arrayTests;
 @end
