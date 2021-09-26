@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A 4x4 matrix of floats.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OF4x4Matrix: OFObject
+@interface OF4x4Matrix: OFObject <OFCopying>
 {
 	float _values[16];
 }
@@ -62,6 +62,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Transposes the matrix.
  */
 - (void)transpose;
+
+/**
+ * @brief Mulitplies the receiver with the specified matrix on the left side
+ *	  and the receiver on the right side.
+ *
+ * @param matrix The matrix to multiply the receiver with
+ */
+- (void)multiplyWithMatrix: (OF4x4Matrix *)matrix;
 @end
 
 OF_ASSUME_NONNULL_END

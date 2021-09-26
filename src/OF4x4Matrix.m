@@ -59,6 +59,11 @@ static OF4x4Matrix *identity;
 	return _values;
 }
 
+- (instancetype)copy
+{
+	return [[OF4x4Matrix alloc] initWithValues: _values];
+}
+
 - (bool)isEqual: (OF4x4Matrix *)matrix
 {
 	if (![matrix isKindOfClass: [OF4x4Matrix class]])
@@ -98,6 +103,77 @@ static OF4x4Matrix *identity;
 	_values[12] = copy[3];
 	_values[13] = copy[7];
 	_values[14] = copy[11];
+}
+
+- (void)multiplyWithMatrix: (OF4x4Matrix *)matrix
+{
+	float copy[16];
+	memcpy(copy, _values, 16 * sizeof(float));
+
+	_values[0] = matrix->_values[0] * copy[0] +
+	    matrix->_values[4] * copy[1] +
+	    matrix->_values[8] * copy[2] +
+	    matrix->_values[12] * copy[3];
+	_values[1] = matrix->_values[1] * copy[0] +
+	    matrix->_values[5] * copy[1] +
+	    matrix->_values[9] * copy[2] +
+	    matrix->_values[13] * copy[3];
+	_values[2] = matrix->_values[2] * copy[0] +
+	    matrix->_values[6] * copy[1] +
+	    matrix->_values[10] * copy[2] +
+	    matrix->_values[14] * copy[3];
+	_values[3] = matrix->_values[3] * copy[0] +
+	    matrix->_values[7] * copy[1] +
+	    matrix->_values[11] * copy[2] +
+	    matrix->_values[15] * copy[3];
+	_values[4] = matrix->_values[0] * copy[4] +
+	    matrix->_values[4] * copy[5] +
+	    matrix->_values[8] * copy[6] +
+	    matrix->_values[12] * copy[7];
+	_values[5] = matrix->_values[1] * copy[4] +
+	    matrix->_values[5] * copy[5] +
+	    matrix->_values[9] * copy[6] +
+	    matrix->_values[13] * copy[7];
+	_values[6] = matrix->_values[2] * copy[4] +
+	    matrix->_values[6] * copy[5] +
+	    matrix->_values[10] * copy[6] +
+	    matrix->_values[14] * copy[7];
+	_values[7] = matrix->_values[3] * copy[4] +
+	    matrix->_values[7] * copy[5] +
+	    matrix->_values[11] * copy[6] +
+	    matrix->_values[15] * copy[7];
+	_values[8] = matrix->_values[0] * copy[8] +
+	    matrix->_values[4] * copy[9] +
+	    matrix->_values[8] * copy[10] +
+	    matrix->_values[12] * copy[11];
+	_values[9] = matrix->_values[1] * copy[8] +
+	    matrix->_values[5] * copy[9] +
+	    matrix->_values[9] * copy[10] +
+	    matrix->_values[13] * copy[11];
+	_values[10] = matrix->_values[2] * copy[8] +
+	    matrix->_values[6] * copy[9] +
+	    matrix->_values[10] * copy[10] +
+	    matrix->_values[14] * copy[11];
+	_values[11] = matrix->_values[3] * copy[8] +
+	    matrix->_values[7] * copy[9] +
+	    matrix->_values[11] * copy[10] +
+	    matrix->_values[15] * copy[11];
+	_values[12] = matrix->_values[0] * copy[12] +
+	    matrix->_values[4] * copy[13] +
+	    matrix->_values[8] * copy[14] +
+	    matrix->_values[12] * copy[15];
+	_values[13] = matrix->_values[1] * copy[12] +
+	    matrix->_values[5] * copy[13] +
+	    matrix->_values[9] * copy[14] +
+	    matrix->_values[13] * copy[15];
+	_values[14] = matrix->_values[2] * copy[12] +
+	    matrix->_values[6] * copy[13] +
+	    matrix->_values[10] * copy[14] +
+	    matrix->_values[14] * copy[15];
+	_values[15] = matrix->_values[3] * copy[12] +
+	    matrix->_values[7] * copy[13] +
+	    matrix->_values[11] * copy[14] +
+	    matrix->_values[15] * copy[15];
 }
 
 - (OFString *)description

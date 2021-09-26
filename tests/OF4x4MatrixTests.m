@@ -23,7 +23,7 @@ static OFString *const module = @"OF4x4MatrixTests";
 - (void)_4x4MatrixTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OF4x4Matrix *matrix;
+	OF4x4Matrix *matrix, *matrix2;
 
 	TEST(@"+[identity]",
 	    memcmp([[OF4x4Matrix identity] values], (float [16]){
@@ -63,6 +63,27 @@ static OFString *const module = @"OF4x4MatrixTests";
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
+	    }]])
+
+	TEST(@"-[copy]", (matrix2 = [matrix copy]) && [matrix2 isEqual: matrix])
+
+	TEST(@"-[multiplyWithMatrix:] #1",
+	    R([matrix2 multiplyWithMatrix: [OF4x4Matrix identity]]) &&
+	    [matrix2 isEqual: matrix])
+
+	matrix2 = [OF4x4Matrix matrixWithValues: (float [16]){
+		100, 500,  900, 1300,
+		200, 600, 1000, 1400,
+		300, 700, 1100, 1500,
+		400, 800, 1200, 1600
+	}];
+	TEST(@"-[multiplyWithMatrix:] #2",
+	    R([matrix2 multiplyWithMatrix: matrix]) &&
+	    [matrix2 isEqual: [OF4x4Matrix matrixWithValues: (float [16]){
+		 9000, 20200, 31400, 42600,
+		10000, 22800, 35600, 48400,
+		11000, 25400, 39800, 54200,
+		12000, 28000, 44000, 60000
 	    }]])
 
 	objc_autoreleasePoolPop(pool);
