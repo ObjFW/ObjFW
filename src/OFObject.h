@@ -285,6 +285,58 @@ OFRectEqual(OFRect rect1, OFRect rect2)
 }
 
 /**
+ * @struct OF3DVector OFObject.h ObjFW/OFObject.h
+ *
+ * @brief A vector in 3D space.
+ */
+typedef struct OF_BOXABLE {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+} OF3DVector;
+
+/**
+ * @brief Creates a new OF3DVector.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @return An OF3DVector with the specified coordinates
+ */
+static OF_INLINE OF3DVector OF_CONST_FUNC
+OF3DVectorMake(float x, float y, float z)
+{
+	OF3DVector vec = { x, y, z };
+
+	return vec;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vec1 The first vector for the comparison
+ * @param vec2 The second vector for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OF3DVectorEqual(OF3DVector vec1, OF3DVector vec2)
+{
+	if (vec1.x != vec2.x)
+		return false;
+
+	if (vec1.y != vec2.y)
+		return false;
+
+	if (vec1.z != vec2.z)
+		return false;
+
+	return true;
+}
+
+/**
  * @brief Adds the specified byte to the hash.
  *
  * @param hash A pointer to a hash to add the byte to
