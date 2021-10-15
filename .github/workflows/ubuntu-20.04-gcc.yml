@@ -1,0 +1,19 @@
+name: ubuntu-20.04, GCC
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Install dependencies
+      run: sudo apt install gobjc
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: ./configure OBJC="gcc"
+    - name: make
+      run: make -j$(nproc)
+    - name: make check
+      run: make check
+    - name: make install
+      run: sudo make install

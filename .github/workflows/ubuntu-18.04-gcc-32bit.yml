@@ -1,0 +1,19 @@
+name: ubuntu-18.04, GCC, 32 bit
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Install dependencies
+      run: sudo apt install gcc-multilib gobjc
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: ./configure OBJC="gcc -m32"
+    - name: make
+      run: make -j$(nproc)
+    - name: make check
+      run: make check
+    - name: make install
+      run: sudo make install
