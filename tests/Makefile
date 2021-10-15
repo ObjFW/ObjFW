@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}	\
-	  objc_sync	\
+	  ${OBJC_SYNC}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
