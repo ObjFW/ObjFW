@@ -3,6 +3,11 @@ on: [push, pull_request]
 jobs:
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-amiga-lib
     steps:
     - name: Install dependencies
       run: docker pull amigadev/crosstools:m68k-amigaos
@@ -15,7 +20,7 @@ jobs:
           -e PATH="/opt/m68k-amigaos/bin:$PATH" \
           -v "$PWD:/objfw" \
           amigadev/crosstools:m68k-amigaos \
-          sh -c 'cd /objfw && ./configure --host=m68k-amigaos'
+          sh -c 'cd /objfw && ./configure --host=m68k-amigaos ${{ matrix.configure_flags }}'
     - name: make
       run: |
         docker run \
