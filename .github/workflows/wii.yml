@@ -1,0 +1,35 @@
+name: wii
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: docker pull devkitpro/devkitppc
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c 'cd /objfw && ./configure --host=powerpc-eabi --with-wii'
+    - name: make
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw && make -j$(nproc)"
+    - name: make install
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw && make -j$(nproc)"

@@ -94,15 +94,13 @@
 			OFSocketAddressSetPort(address, rnd);
 
 			if ((ret = bind(_socket, &address->sockaddr.sockaddr,
-			    address->length)) == 0) {
-				port = rnd;
+			    address->length)) == 0)
 				break;
-			}
 
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				uint16_t port = OFSocketAddressPort(port);
+				port = OFSocketAddressPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
