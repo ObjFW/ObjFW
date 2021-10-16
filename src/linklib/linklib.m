@@ -536,7 +536,7 @@ OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFOnceControl *_Nonnull __asm__("(nil)"), OFOnceFunction _Nonnull __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 204))(control, func);
+	((void (*)(OFOnceControl *_Nonnull __asm__("a0"), OFOnceFunction _Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 204))(control, func);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"

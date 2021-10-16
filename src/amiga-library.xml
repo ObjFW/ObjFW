@@ -99,8 +99,8 @@
   </function>
   <include>OFOnce.h</include>
   <function name='OFOnce'>
-    <argument name='control' type='OFOnceControl *_Nonnull' m68k-arg='a0'/>
-    <argument name='func' type='OFOnceFunction _Nonnull' m68k-arg='a1'/>
+    <argument name='control' type='OFOnceControl *_Nonnull' m68k-reg='a0'/>
+    <argument name='func' type='OFOnceFunction _Nonnull' m68k-reg='a1'/>
   </function>
   <include>OFPBKDF2.h</include>
   <function name='OFPBKDF2'>

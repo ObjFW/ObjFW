@@ -260,8 +260,8 @@ glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type)
 void __saveds
 glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
 {
-	M68K_ARG(OFOnceControl *_Nonnull, control, (nil))
-	M68K_ARG(OFOnceFunction _Nonnull, func, (nil))
+	M68K_ARG(OFOnceControl *_Nonnull, control, a0)
+	M68K_ARG(OFOnceFunction _Nonnull, func, a1)
 
 	OFOnce(control, func);
 }
