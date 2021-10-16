@@ -123,6 +123,9 @@ run:
 		${LN_S} ../src/runtime/${OBJFWRT_AMIGA_LIB} \
 		    ${OBJFWRT_AMIGA_LIB}; \
 	fi
+	if test -f ../src/${OBJFW_AMIGA_LIB}; then \
+		${LN_S} ../src/${OBJFW_AMIGA_LIB} ${OBJFW_AMIGA_LIB}; \
+	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
