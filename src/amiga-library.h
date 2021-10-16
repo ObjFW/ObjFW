@@ -14,6 +14,8 @@
  */
 
 #import "macros.h"
+#import "OFPBKDF2.h"
+#import "OFScrypt.h"
 
 #ifdef OF_MORPHOS
 # include <ppcinline/macros.h>
@@ -97,5 +99,8 @@ struct OFLibC {
 	    void *_Null_unspecified), void *_Null_unspecified);
 };
 
-extern bool OFInit(unsigned int version, struct OFLibC *libC, FILE **sF);
+extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC,
+    FILE *_Nonnull *_Nonnull sF);
 extern unsigned long *OFHashSeedRef(void);
+extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters);
+extern void OFScryptWrapper(const OFScryptParameters *_Nonnull parameters);

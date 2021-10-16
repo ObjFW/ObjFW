@@ -103,12 +103,14 @@
     <argument name='func' type='OFOnceFunction _Nonnull' m68k-reg='a1'/>
   </function>
   <include>OFPBKDF2.h</include>
-  <function name='OFPBKDF2'>
-    <argument name='parameters' type='OFPBKDF2Parameters' m68k-reg='a0'/>
+  <function name='OFPBKDF2Wrapper'>
+    <argument name='parameters' type='const OFPBKDF2Parameters *_Nonnull'
+              m68k-reg='a0'/>
   </function>
   <include>OFScrypt.h</include>
-  <function name='OFScrypt'>
-    <argument name='parameters' type='OFScryptParameters' m68k-reg='a0'/>
+  <function name='OFScryptWrapper'>
+    <argument name='parameters' type='const OFScryptParameters *_Nonnull'
+              m68k-reg='a0'/>
   </function>
   <!-- The following scrypt functions are only for tests. -->
   <function name='OFSalsa20_8Core'>

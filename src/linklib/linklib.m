@@ -548,36 +548,36 @@ OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
 }
 
 void
-OFPBKDF2(OFPBKDF2Parameters parameters)
+OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFPBKDF2Parameters __asm__("a0")))(((uintptr_t)ObjFWBase) - 210))(parameters);
+	((void (*)(const OFPBKDF2Parameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 210))(parameters);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFPBKDF2Parameters))*(void **)(((uintptr_t)ObjFWBase) - 208))(parameters);
+	__extension__ ((void (*)(const OFPBKDF2Parameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 208))(parameters);
 #endif
 }
 
 void
-OFScrypt(OFScryptParameters parameters)
+OFScryptWrapper(const OFScryptParameters *_Nonnull parameters)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFScryptParameters __asm__("a0")))(((uintptr_t)ObjFWBase) - 216))(parameters);
+	((void (*)(const OFScryptParameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 216))(parameters);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFScryptParameters))*(void **)(((uintptr_t)ObjFWBase) - 214))(parameters);
+	__extension__ ((void (*)(const OFScryptParameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 214))(parameters);
 #endif
 }
 

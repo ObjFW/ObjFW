@@ -639,6 +639,18 @@ _Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 	return libC._Unwind_Backtrace(callback, data);
 }
 
+void
+OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters)
+{
+	OFPBKDF2(*parameters);
+}
+
+void
+OFScryptWrapper(const OFScryptParameters *parameters)
+{
+	OFScrypt(*parameters);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {

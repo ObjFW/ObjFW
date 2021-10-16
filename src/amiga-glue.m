@@ -267,19 +267,19 @@ glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull 
 }
 
 void __saveds
-glue_OFPBKDF2 PPC_PARAMS(OFPBKDF2Parameters parameters)
+glue_OFPBKDF2Wrapper PPC_PARAMS(const OFPBKDF2Parameters *_Nonnull parameters)
 {
-	M68K_ARG(OFPBKDF2Parameters, parameters, a0)
+	M68K_ARG(const OFPBKDF2Parameters *_Nonnull, parameters, a0)
 
-	OFPBKDF2(parameters);
+	OFPBKDF2Wrapper(parameters);
 }
 
 void __saveds
-glue_OFScrypt PPC_PARAMS(OFScryptParameters parameters)
+glue_OFScryptWrapper PPC_PARAMS(const OFScryptParameters *_Nonnull parameters)
 {
-	M68K_ARG(OFScryptParameters, parameters, a0)
+	M68K_ARG(const OFScryptParameters *_Nonnull, parameters, a0)
 
-	OFScrypt(parameters);
+	OFScryptWrapper(parameters);
 }
 
 void __saveds

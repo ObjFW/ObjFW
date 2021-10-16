@@ -400,3 +400,18 @@ DESTRUCTOR_P(ObjFW, 4000)
 	dtor();
 }
 #endif
+
+extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters);
+extern void OFScryptWrapper(const OFScryptParameters *parameters);
+
+void
+OFPBKDF2(OFPBKDF2Parameters *parameters)
+{
+	OFPBKDF2Wrapper(&parameters);
+}
+
+void
+OFScrypt(OFScryptParameters *parameters)
+{
+	OFScryptWrapper(&parameters);
+}

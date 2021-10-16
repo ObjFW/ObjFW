@@ -73,8 +73,8 @@ extern id _Nonnull glue_OFListItemObject PPC_PARAMS(OFListItem _Nonnull listItem
 extern size_t glue_OFSizeOfTypeEncoding PPC_PARAMS(const char *type);
 extern size_t glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type);
 extern void glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func);
-extern void glue_OFPBKDF2 PPC_PARAMS(OFPBKDF2Parameters parameters);
-extern void glue_OFScrypt PPC_PARAMS(OFScryptParameters parameters);
+extern void glue_OFPBKDF2Wrapper PPC_PARAMS(const OFPBKDF2Parameters *_Nonnull parameters);
+extern void glue_OFScryptWrapper PPC_PARAMS(const OFScryptParameters *_Nonnull parameters);
 extern void glue_OFSalsa20_8Core PPC_PARAMS(uint32_t *_Nonnull buffer);
 extern void glue_OFScryptBlockMix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);
 extern void glue_OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp);
