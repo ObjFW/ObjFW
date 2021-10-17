@@ -138,8 +138,8 @@ other place, you are most likely using a mirror.
   To install ObjFW, just run the following commands:
 
     $ ./configure
-    $ make
-    $ make install
+    $ make check
+    $ sudo make install
 
   In case you checked out ObjFW from the Fossil or Git repository, you need to
   run the following command first:
