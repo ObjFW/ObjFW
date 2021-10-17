@@ -97,6 +97,7 @@ SRCS = OFASPrintF.m			\
        OFTriple.m			\
        OFURL.m				\
        OFURLHandler.m			\
+       OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
