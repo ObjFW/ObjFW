@@ -1,7 +1,7 @@
 name: morphos
 on: [push, pull_request]
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:

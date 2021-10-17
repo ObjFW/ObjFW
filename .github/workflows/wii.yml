@@ -1,7 +1,7 @@
 name: wii
 on: [push, pull_request]
 jobs:
-  tests:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies
