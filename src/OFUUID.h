@@ -49,12 +49,27 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init;
 
 /**
+ * @brief Initializes an already allocated OFUUID with the specified bytes.
+ *
+ * @param bytes The bytes to initialize the OFUUID with
+ * @return An initialized OFUUID
+ */
+- (instancetype)initWithUUIDBytes: (const unsigned char [_Nonnull 16])bytes;
+
+/**
  * @brief Compares the UUID to another UUID.
  *
  * @param UUID The UUID to compare to
  * @return The result of the comparison
  */
 - (OFComparisonResult)compare: (OFUUID *)UUID;
+
+/**
+ * @brief Gets the bytes of the UUID.
+ *
+ * @param bytes An array of 16 bytes into which to write the UUID
+ */
+- (void)getUUIDBytes: (unsigned char [_Nonnull 16])bytes;
 @end
 
 OF_ASSUME_NONNULL_END

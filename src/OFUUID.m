@@ -45,6 +45,15 @@
 	return self;
 }
 
+- (instancetype)initWithUUIDBytes: (const unsigned char [16])bytes
+{
+	self = [super init];
+
+	memcpy(_bytes, bytes, sizeof(_bytes));
+
+	return self;
+}
+
 - (bool)isEqual: (id)object
 {
 	OFUUID *UUID;
@@ -90,6 +99,11 @@
 		return OFOrderedDescending;
 	else
 		return OFOrderedAscending;
+}
+
+- (void)getUUIDBytes: (unsigned char [16])bytes
+{
+	memcpy(bytes, _bytes, sizeof(_bytes));
 }
 
 - (OFString *)UUIDString
