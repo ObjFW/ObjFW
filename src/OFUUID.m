@@ -16,9 +16,14 @@
 #include "config.h"
 
 #import "OFUUID.h"
+#import "OFArray.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
+
+#define bytesSize 16
 
 @implementation OFUUID
 + (instancetype)UUID
@@ -50,6 +55,81 @@
 	self = [super init];
 
 	memcpy(_bytes, bytes, sizeof(_bytes));
+
+	return self;
+}
+
+static void
+decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
+    size_t componentLength, unsigned char *bytes, size_t *i)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *component = [components objectAtIndex: componentIndex];
+	const char *cString;
+
+	if (component.UTF8StringLength != componentLength)
+		@throw [OFInvalidFormatException exception];
+
+	if (*i + componentLength / 2 > bytesSize)
+		@throw [OFOutOfRangeException exception];
+
+	cString = component.UTF8String;
+
+	for (size_t j = 0; j < componentLength; j += 2) {
+		uint8_t value;
+
+		if (cString[j] >= '0' && cString[j] <= '9')
+			value = cString[j] - '0';
+		else if (cString[j] >= 'a' && cString[j] <= 'f')
+			value = cString[j] - 'a' + 10;
+		else if (cString[j] >= 'A' && cString[j] <= 'F')
+			value = cString[j] - 'A' + 10;
+		else
+			@throw [OFInvalidFormatException exception];
+
+		value <<= 4;
+
+		if (cString[j + 1] >= '0' && cString[j + 1] <= '9')
+			value |= cString[j + 1] - '0';
+		else if (cString[j + 1] >= 'a' && cString[j + 1] <= 'f')
+			value |= cString[j + 1] - 'a' + 10;
+		else if (cString[j + 1] >= 'A' && cString[j + 1] <= 'F')
+			value |= cString[j + 1] - 'A' + 10;
+		else
+			@throw [OFInvalidFormatException exception];
+
+		bytes[(*i)++] = value;
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (instancetype)initWithUUIDString: (OFString *)string
+{
+	self = [super init];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		size_t i = 0;
+		OFArray OF_GENERIC(OFString *) *components =
+		    [string componentsSeparatedByString: @"-"];
+
+		if (components.count != 5)
+			@throw [OFInvalidFormatException exception];
+
+		decode(components, 0, 8, _bytes, &i);
+		decode(components, 1, 4, _bytes, &i);
+		decode(components, 2, 4, _bytes, &i);
+		decode(components, 3, 4, _bytes, &i);
+		decode(components, 4, 12, _bytes, &i);
+
+		OFEnsure(i == 16);
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

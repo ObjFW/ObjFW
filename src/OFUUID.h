@@ -57,6 +57,15 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithUUIDBytes: (const unsigned char [_Nonnull 16])bytes;
 
 /**
+ * @brief Initializes an already allocated OFUUID with the specified UUID
+ *	  string.
+ *
+ * @param string The UUID string to initialize the OFUUID with
+ * @return An initialized OFUUID
+ */
+- (instancetype)initWithUUIDString: (OFString *)string;
+
+/**
  * @brief Compares the UUID to another UUID.
  *
  * @param UUID The UUID to compare to
