@@ -31,6 +31,16 @@
 	return [[[self alloc] init] autorelease];
 }
 
++ (instancetype)UUIDWithUUIDBytes: (const unsigned char [16])bytes
+{
+	return [[[self alloc] initWithUUIDBytes: bytes] autorelease];
+}
+
++ (instancetype)UUIDWithUUIDString: (OFString *)string
+{
+	return [[[self alloc] initWithUUIDString: string] autorelease];
+}
+
 - (instancetype)init
 {
 	uint64_t r;

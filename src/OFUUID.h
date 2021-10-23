@@ -41,6 +41,22 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)UUID;
 
 /**
+ * @brief Creates a new UUID with the specified bytes.
+ *
+ * @param bytes The bytes for the UUID
+ * @return A new, autoreleased OFUUID
+ */
++ (instancetype)UUIDWithUUIDBytes: (const unsigned char [_Nonnull 16])bytes;
+
+/**
+ * @brief Creates a new UUID with the specified UUID string.
+ *
+ * @param string The UUID string for the UUID
+ * @return A new, autoreleased OFUUID
+ */
++ (instancetype)UUIDWithUUIDString: (OFString *)string;
+
+/**
  * @brief Initializes an already allocated OFUUID as a new random UUID as per
  *	  RFC 4122 version 4.
  *
