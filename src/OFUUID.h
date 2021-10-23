@@ -14,8 +14,11 @@
  */
 
 #import "OFObject.h"
+#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+@class OFString;
 
 /**
  * @class OFUUID OFUUID.h ObjFW/OFUUID.h
@@ -23,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A UUID conforming to RFC 4122.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFUUID: OFObject <OFCopying, OFComparing>
+@interface OFUUID: OFObject <OFCopying, OFComparing, OFSerialization>
 {
 	unsigned char _bytes[16];
 }

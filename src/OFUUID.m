@@ -18,6 +18,7 @@
 #import "OFUUID.h"
 #import "OFArray.h"
 #import "OFString.h"
+#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -144,6 +145,29 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 	return self;
 }
 
+- (instancetype)initWithSerialization: (OFXMLElement *)element
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *UUIDString;
+
+	@try {
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OFSerializationNS])
+			@throw [OFInvalidArgumentException exception];
+
+		UUIDString = element.stringValue;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithUUIDString: UUIDString];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
 - (bool)isEqual: (id)object
 {
 	OFUUID *UUID;
@@ -210,5 +234,19 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 - (OFString *)description
 {
 	return self.UUIDString;
+}
+
+- (OFXMLElement *)XMLElementBySerializing
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFXMLElement *element = [OFXMLElement elementWithName: self.className
+						    namespace: OFSerializationNS
+						  stringValue: self.UUIDString];
+
+	[element retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [element autorelease];
 }
 @end

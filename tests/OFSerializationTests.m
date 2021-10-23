@@ -28,6 +28,7 @@ static OFString *const module = @"OFSerialization";
 	OFList *list = [OFList list];
 	OFData *data;
 	OFString *string;
+	OFUUID *UUID;
 
 	[array addObject: @"Qu\"xbar\ntest"];
 	[array addObject: [OFNumber numberWithInt: 1234]];
@@ -53,6 +54,10 @@ static OFString *const module = @"OFSerialization";
 	data = [OFData dataWithItems: "0123456789:;<ABCDEFGHJIKLMNOPQRSTUVWXYZ"
 			       count: 39];
 	[dict setObject: @"data" forKey: data];
+
+	UUID = [OFUUID
+	    UUIDWithUUIDString: @"01234567-89AB-CDEF-FEDC-BA9876543210"];
+	[dict setObject: @"uuid" forKey: UUID];
 
 	TEST(@"-[stringBySerializing]",
 	    (string = dict.stringBySerializing) && [string isEqual:
