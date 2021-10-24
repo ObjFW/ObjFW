@@ -56,9 +56,6 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA256HashTests.m	\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
-SRCS_IPX = OFIPXSocketTests.m		\
-	   OFSPXSocketTests.m		\
-	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
@@ -68,7 +65,13 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+		    OFUNIXStreamSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 

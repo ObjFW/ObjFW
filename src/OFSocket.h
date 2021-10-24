@@ -38,6 +38,12 @@
 #ifdef OF_HAVE_NETIPX_IPX_H
 # include <netipx/ipx.h>
 #endif
+#ifdef OF_HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
+#ifdef OF_HAVE_AFUNIX_H
+# include <afunix.h>
+#endif
 
 #ifdef OF_WINDOWS
 # include <windows.h>
@@ -69,6 +75,10 @@ typedef SOCKET OFSocketHandle;
 static const OFSocketHandle OFInvalidSocketHandle = INVALID_SOCKET;
 #endif
 
+#ifdef OF_WINDOWS
+typedef short sa_family_t;
+#endif
+
 #ifdef OF_WII
 typedef u8 sa_family_t;
 #endif
@@ -91,6 +101,8 @@ typedef enum {
 	OFSocketAddressFamilyIPv6,
 	/** IPX */
 	OFSocketAddressFamilyIPX,
+	/** UNIX */
+	OFSocketAddressFamilyUNIX,
 	/** Any address family */
 	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
@@ -125,6 +137,13 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
+#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS)
+struct sockaddr_un {
+	sa_family_t sun_family;
+	char sun_path[108];
+};
+#endif
+
 /**
  * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
  *
@@ -144,6 +163,7 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
 		struct sockaddr_ipx ipx;
+		struct sockaddr_un un;
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -180,15 +200,24 @@ extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 
 /**
- * @brief Creates an IPX address for the specified network, node and port.
+ * @brief Creates an IPX address for the specified node, network and port.
  *
  * @param node The node in the IPX network
  * @param network The IPX network
  * @param port The IPX port (sometimes called socket number) on the node
+ * @return An IPX socket address with the specified node, network and port.
  */
 extern OFSocketAddress OFSocketAddressMakeIPX(
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
     uint16_t port);
+
+/**
+ * @brief Creates a UNIX socket address from the specified path.
+ *
+ * @param path The path of the UNIX socket
+ * @return A UNIX socket address with the specified path
+ */
+extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -272,6 +301,15 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  */
 extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/**
+ * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the UNIX socket path
+ * @return The UNIX socket path
+ */
+extern OFString *_Nullable OFSocketAddressUNIXPath(
+    const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)

@@ -243,6 +243,14 @@
 - (void)UDPSocketTests;
 @end
 
+@interface TestsAppDelegate (OFUNIXDatagramSocketTests)
+- (void)UNIXDatagramSocketTests;
+@end
+
+@interface TestsAppDelegate (OFUNIXStreamSocketTests)
+- (void)UNIXStreamSocketTests;
+@end
+
 @interface TestsAppDelegate (OFURLTests)
 - (void)URLTests;
 @end

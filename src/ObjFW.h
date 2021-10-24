@@ -84,6 +84,10 @@
 #  import "OFSPXSocket.h"
 #  import "OFSPXStreamSocket.h"
 # endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXStreamSocket.h"
+# endif
 #endif
 #ifdef OF_HAVE_SOCKETS
 # ifdef OF_HAVE_THREADS

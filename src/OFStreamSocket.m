@@ -300,6 +300,11 @@
 		client->_remoteAddress.family = OFSocketAddressFamilyIPX;
 		break;
 #endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		client->_remoteAddress.family = OFSocketAddressFamilyUNIX;
+		break;
+#endif
 	default:
 		client->_remoteAddress.family = OFSocketAddressFamilyUnknown;
 		break;

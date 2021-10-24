@@ -19,7 +19,7 @@
 #import "OFString.h"
 
 @implementation OFBindFailedException
-@synthesize host = _host, port = _port, packetType = _packetType;
+@synthesize host = _host, port = _port, packetType = _packetType, path = _path;
 @synthesize socket = _socket, errNo = _errNo;
 
 + (instancetype)exception
@@ -45,6 +45,15 @@
 {
 	return [[[self alloc] initWithPort: port
 				packetType: packetType
+				    socket: sock
+				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)sock
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path
 				    socket: sock
 				     errNo: errNo] autorelease];
 }
@@ -94,9 +103,28 @@
 	return self;
 }
 
+- (instancetype)initWithPath: (OFString *)path
+		      socket: (id)sock
+		       errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_path = [path copy];
+		_socket = [sock retain];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
 	[_host release];
+	[_path release];
 	[_socket release];
 
 	[super dealloc];
@@ -104,7 +132,11 @@
 
 - (OFString *)description
 {
-	if (_host != nil)
+	if (_path != nil)
+		return [OFString stringWithFormat:
+		    @"Binding to path %@ failed in socket of type %@: %@",
+		    _path, [_socket class], OFStrError(_errNo)];
+	else if (_host != nil)
 		return [OFString stringWithFormat:
 		    @"Binding to port %" @PRIu16 @" on host %@ failed in "
 		    @"socket of type %@: %@",

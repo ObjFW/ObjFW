@@ -355,6 +355,10 @@ main(int argc, char *argv[])
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
 # endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+	[self UNIXDatagramSocketTests];
+	[self UNIXStreamSocketTests];
+# endif
 	[self kernelEventObserverTests];
 #endif
 #ifdef OF_HAVE_THREADS

@@ -19,8 +19,8 @@
 #import "OFString.h"
 
 @implementation OFConnectionFailedException
-@synthesize host = _host, port = _port, network = _network, socket = _socket;
-@synthesize errNo = _errNo;
+@synthesize host = _host, port = _port, network = _network, path = _path;
+@synthesize socket = _socket, errNo = _errNo;
 
 + (instancetype)exception
 {
@@ -47,6 +47,15 @@
 	return [[[self alloc] initWithNode: node
 				   network: network
 				      port: port
+				    socket: sock
+				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)sock
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path
 				    socket: sock
 				     errNo: errNo] autorelease];
 }
@@ -98,9 +107,28 @@
 	return self;
 }
 
+- (instancetype)initWithPath: (OFString *)path
+		      socket: (id)sock
+		       errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_path = [path copy];
+		_socket = [sock retain];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
 	[_host release];
+	[_path release];
 	[_socket release];
 
 	[super dealloc];
@@ -113,7 +141,12 @@
 
 - (OFString *)description
 {
-	if (_host != nil)
+	if (_path != nil)
+		return [OFString stringWithFormat:
+		    @"A connection to %@ could not be established in socket of "
+		    @"type %@: %@",
+		    _path, [_socket class], OFStrError(_errNo)];
+	else if (_host != nil)
 		return [OFString stringWithFormat:
 		    @"A connection to %@ on port %" @PRIu16 @" could not be "
 		    @"established in socket of type %@: %@",

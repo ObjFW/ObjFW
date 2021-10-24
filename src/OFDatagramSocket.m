@@ -208,6 +208,11 @@
 		sender->family = OFSocketAddressFamilyIPX;
 		break;
 #endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		sender->family = OFSocketAddressFamilyUNIX;
+		break;
+#endif
 	default:
 		sender->family = OFSocketAddressFamilyUnknown;
 		break;
