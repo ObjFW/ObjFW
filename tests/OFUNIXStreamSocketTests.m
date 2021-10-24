@@ -70,7 +70,7 @@ static OFString *const module = @"OFUNIXStreamSocket";
 		TEST(@"-[writeBuffer:length:]",
 		    R([sockAccepted writeBuffer: "Hello" length: 5]))
 
-		TEST(@"-[receiveIntoBuffer:length:]",
+		TEST(@"-[readIntoBuffer:length:]",
 		    [sockClient readIntoBuffer: buffer length: 5] == 5 &&
 		    memcmp(buffer, "Hello", 5) == 0)
 
