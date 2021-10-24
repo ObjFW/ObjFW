@@ -31,12 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFBindFailedException: OFException
 {
-	id _socket;
 	/* IP */
 	OFString *_host;
 	uint16_t _port;
 	/* IPX */
 	uint8_t _packetType;
+	/* UNIX socket */
+	OFString *_Nullable _path;
+	id _socket;
 	int _errNo;
 }
 
@@ -54,6 +56,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The IPX packet type for which binding failed.
  */
 @property (readonly, nonatomic) uint8_t packetType;
+
+/**
+ * @brief The path on which binding failed.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
 
 /**
  * @brief The socket which could not be bound.
@@ -95,6 +102,18 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
+/**
+ * @brief Creates a new, autoreleased bind failed exception.
+ *
+ * @param path The path on which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased bind failed exception
+ */
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -122,6 +141,17 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithPort: (uint16_t)port
 		  packetType: (uint8_t)packetType
+		      socket: (id)socket
+		       errNo: (int)errNo;
+/**
+ * @brief Initializes an already allocated bind failed exception.
+ *
+ * @param path The path on which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return An initialized bind failed exception
+ */
+- (instancetype)initWithPath: (OFString *)path
 		      socket: (id)socket
 		       errNo: (int)errNo;
 @end

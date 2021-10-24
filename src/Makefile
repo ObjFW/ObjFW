@@ -121,9 +121,6 @@ SRCS_FILES = OFFile.m			\
 	     OFINIFile.m		\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
-SRCS_IPX = OFIPXSocket.m	\
-	   OFSPXSocket.m	\
-	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
@@ -141,7 +138,12 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocket.m	\
+	   OFSPXSocket.m	\
+	   OFSPXStreamSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\

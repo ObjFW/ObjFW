@@ -636,31 +636,18 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 
 		return true;
 	case OFSocketAddressFamilyUNIX:
-		/*
-		 * This is a bit tricky. The only thing that is well-defined is
-		 * the path. So compare the path, and if both don't have a
-		 * path, compare bytes.
-		 */
-
-		if (address1->length != address2->length)
-			return false;
-
 		pool = objc_autoreleasePoolPush();
 
 		path1 = OFSocketAddressUNIXPath(address1);
 		path2 = OFSocketAddressUNIXPath(address2);
 
-		if (path1 == nil && path2 == nil) {
+		if (path1 == nil || path2 == nil) {
 			objc_autoreleasePoolPop(pool);
 
-			return (memcmp(&address1->sockaddr.un,
-			    &address2->sockaddr.un, address1->length) == 0);
+			return false;
 		}
 
-		if (path1 == nil || path2 == nil)
-			ret = false;
-		else
-			ret = [path1 isEqual: path2];
+		ret = [path1 isEqual: path2];
 
 		objc_autoreleasePoolPop(pool);
 
@@ -730,27 +717,14 @@ OFSocketAddressHash(const OFSocketAddress *address)
 
 		break;
 	case OFSocketAddressFamilyUNIX:;
-		/*
-		 * This is a bit tricky. The only thing that is well-defined is
-		 * the path. So hash the path if we have one, otherwise the
-		 * bytes.
-		 */
 		void *pool = objc_autoreleasePoolPush();
 		OFString *path = OFSocketAddressUNIXPath(address);
 
-		if (path != nil) {
-			hash = path.hash;
-			objc_autoreleasePoolPop(pool);
-			return hash;
-		}
+		hash = path.hash;
 
 		objc_autoreleasePoolPop(pool);
 
-		for (socklen_t i = 0; i < address->length; i++)
-			OFHashAdd(&hash,
-			    ((const char *)&address->sockaddr.un)[i]);
-
-		break;
+		return hash;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -934,7 +908,7 @@ OFSocketAddressIPXNode(const OFSocketAddress *address,
 OFString *
 OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 {
-	socklen_t maxLength = (socklen_t)sizeof(address->sockaddr.un);
+	const socklen_t maxLength = (socklen_t)sizeof(address->sockaddr.un);
 	size_t length;
 
 	if (address->family != OFSocketAddressFamilyUNIX ||
@@ -946,6 +920,9 @@ OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 
 	if (length == 0)
 		return nil;
+
+	while (address->sockaddr.un.sun_path[length - 1] == '\0')
+		length--;
 
 	return [OFString stringWithCString: address->sockaddr.un.sun_path
 				  encoding: [OFLocale encoding]
