@@ -33,18 +33,25 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	path = [[OFSystemInfo temporaryDirectoryPath]
 	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
 
-	TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
+	@try {
+		TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
 
-	TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
+		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
 
-	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
+		TEST(@"-[sendBuffer:length:receiver:]",
+		    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
 
-	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
-	    memcmp(buffer, "Hello", 5) == 0 &&
-	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
+		TEST(@"-[receiveIntoBuffer:length:sender:]",
+		    [sock receiveIntoBuffer: buffer
+				     length: 5
+				     sender: &address2] == 5 &&
+		    memcmp(buffer, "Hello", 5) == 0 &&
+		    OFSocketAddressEqual(&address1, &address2) &&
+		    OFSocketAddressHash(&address1) ==
+		    OFSocketAddressHash(&address2))
+	} @finally {
+		[[OFFileManager defaultManager] removeItemAtPath: path];
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
