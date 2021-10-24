@@ -1466,8 +1466,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have UNIX sockets])
 		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
 	], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
 		#ifdef OF_HAVE_SYS_UN_H
 		# include <sys/un.h>
+		#endif
+
+		#ifdef __morphos__
+		# error MorphOS has the struct but does not support it
 		#endif
 	])
 
