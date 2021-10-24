@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Options to change the behavior when creating a JSON representation.
  */
-typedef enum OFJSONRepresentationOptions {
+typedef enum {
 	/** Optimize for readability */
 	OFJSONRepresentationOptionPretty       = 0x01,
 	/** Generate JSON5 */

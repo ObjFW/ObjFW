@@ -23,9 +23,9 @@
 # define TOO_BIG (SIZE_MAX - 128)
 #endif
 
-static OFString *module = @"OFObject";
+static OFString *const module = @"OFObject";
 
-@interface MyObj: OFObject
+@interface MyObject: OFObject
 {
 	id _objectValue;
 	Class _classValue;
@@ -61,7 +61,7 @@ static OFString *module = @"OFObject";
 @property (nonatomic) double doubleValue;
 @end
 
-@implementation MyObj
+@implementation MyObject
 @synthesize objectValue = _objectValue, classValue = _classValue;
 @synthesize boolValue = _boolValue, charValue = _charValue;
 @synthesize shortValue = _shortValue, intValue = _intValue;
@@ -85,131 +85,136 @@ static OFString *module = @"OFObject";
 - (void)objectTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFObject *o;
-	MyObj *m;
+	OFObject *object;
+	MyObject *myObject;
 
 	TEST(@"+[description]",
 	    [[OFObject description] isEqual: @"OFObject"] &&
-	    [[MyObj description] isEqual: @"MyObj"])
+	    [[MyObject description] isEqual: @"MyObject"])
 
-	o = [[[OFObject alloc] init] autorelease];
-	m = [[[MyObj alloc] init] autorelease];
+	object = [[[OFObject alloc] init] autorelease];
+	myObject = [[[MyObject alloc] init] autorelease];
 
 	TEST(@"-[description]",
-	    [o.description isEqual: @"<OFObject>"] &&
-	    [m.description isEqual: @"<MyObj>"])
+	    [object.description isEqual: @"<OFObject>"] &&
+	    [myObject.description isEqual: @"<MyObject>"])
 
-	m.objectValue = @"Hello";
-	m.classValue = [m class];
+	myObject.objectValue = @"Hello";
+	myObject.classValue = myObject.class;
 	TEST(@"-[valueForKey:]",
-	    [[m valueForKey: @"objectValue"] isEqual: @"Hello"] &&
-	    [[m valueForKey: @"classValue"] isEqual: m.class] &&
-	    [[m valueForKey: @"class"] isEqual: m.class])
+	    [[myObject valueForKey: @"objectValue"] isEqual: @"Hello"] &&
+	    [[myObject valueForKey: @"classValue"] isEqual: myObject.class] &&
+	    [[myObject valueForKey: @"class"] isEqual: myObject.class])
 
 	EXPECT_EXCEPTION(@"-[valueForKey:] with undefined key",
-	    OFUndefinedKeyException, [m valueForKey: @"undefined"])
+	    OFUndefinedKeyException, [myObject valueForKey: @"undefined"])
 
 	TEST(@"-[setValue:forKey:]",
-	    R([m setValue: @"World" forKey: @"objectValue"]) &&
-	    R([m setValue: [OFObject class] forKey: @"classValue"]) &&
-	    [m.objectValue isEqual: @"World"] &&
-	    [m.classValue isEqual: [OFObject class]])
+	    R([myObject setValue: @"World" forKey: @"objectValue"]) &&
+	    R([myObject setValue: [OFObject class] forKey: @"classValue"]) &&
+	    [myObject.objectValue isEqual: @"World"] &&
+	    [myObject.classValue isEqual: [OFObject class]])
 
 	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
-	    OFUndefinedKeyException, [m setValue: @"x" forKey: @"undefined"])
+	    OFUndefinedKeyException,
+	    [myObject setValue: @"x" forKey: @"undefined"])
 
-	m.boolValue = 1;
-	m.charValue = 2;
-	m.shortValue = 3;
-	m.intValue = 4;
-	m.longValue = 5;
-	m.longLongValue = 6;
-	m.unsignedCharValue = 7;
-	m.unsignedShortValue = 8;
-	m.unsignedIntValue = 9;
-	m.unsignedLongValue = 10;
-	m.unsignedLongLongValue = 11;
-	m.floatValue = 12;
-	m.doubleValue = 13;
+	myObject.boolValue = 1;
+	myObject.charValue = 2;
+	myObject.shortValue = 3;
+	myObject.intValue = 4;
+	myObject.longValue = 5;
+	myObject.longLongValue = 6;
+	myObject.unsignedCharValue = 7;
+	myObject.unsignedShortValue = 8;
+	myObject.unsignedIntValue = 9;
+	myObject.unsignedLongValue = 10;
+	myObject.unsignedLongLongValue = 11;
+	myObject.floatValue = 12;
+	myObject.doubleValue = 13;
 	TEST(@"Auto-wrapping of -[valueForKey:]",
-	    [[m valueForKey: @"boolValue"] isEqual:
+	    [[myObject valueForKey: @"boolValue"] isEqual:
 	    [OFNumber numberWithBool: 1]] &&
-	    [[m valueForKey: @"charValue"] isEqual:
+	    [[myObject valueForKey: @"charValue"] isEqual:
 	    [OFNumber numberWithChar: 2]] &&
-	    [[m valueForKey: @"shortValue"] isEqual:
+	    [[myObject valueForKey: @"shortValue"] isEqual:
 	    [OFNumber numberWithShort: 3]] &&
-	    [[m valueForKey: @"intValue"] isEqual:
+	    [[myObject valueForKey: @"intValue"] isEqual:
 	    [OFNumber numberWithInt: 4]] &&
-	    [[m valueForKey: @"longValue"] isEqual:
+	    [[myObject valueForKey: @"longValue"] isEqual:
 	    [OFNumber numberWithLong: 5]] &&
-	    [[m valueForKey: @"longLongValue"] isEqual:
+	    [[myObject valueForKey: @"longLongValue"] isEqual:
 	    [OFNumber numberWithLongLong: 6]] &&
-	    [[m valueForKey: @"unsignedCharValue"] isEqual:
+	    [[myObject valueForKey: @"unsignedCharValue"] isEqual:
 	    [OFNumber numberWithUnsignedChar: 7]] &&
-	    [[m valueForKey: @"unsignedShortValue"] isEqual:
+	    [[myObject valueForKey: @"unsignedShortValue"] isEqual:
 	    [OFNumber numberWithUnsignedShort: 8]] &&
-	    [[m valueForKey: @"unsignedIntValue"] isEqual:
+	    [[myObject valueForKey: @"unsignedIntValue"] isEqual:
 	    [OFNumber numberWithUnsignedInt: 9]] &&
-	    [[m valueForKey: @"unsignedLongValue"] isEqual:
+	    [[myObject valueForKey: @"unsignedLongValue"] isEqual:
 	    [OFNumber numberWithUnsignedLong: 10]] &&
-	    [[m valueForKey: @"unsignedLongLongValue"] isEqual:
+	    [[myObject valueForKey: @"unsignedLongLongValue"] isEqual:
 	    [OFNumber numberWithUnsignedLongLong: 11]] &&
-	    [[m valueForKey: @"floatValue"] isEqual:
+	    [[myObject valueForKey: @"floatValue"] isEqual:
 	    [OFNumber numberWithFloat: 12]] &&
-	    [[m valueForKey: @"doubleValue"] isEqual:
+	    [[myObject valueForKey: @"doubleValue"] isEqual:
 	    [OFNumber numberWithDouble: 13]])
 
 	TEST(@"Auto-wrapping of -[setValue:forKey:]",
-	    R([m setValue: [OFNumber numberWithBool: 0]
-		   forKey: @"boolValue"]) &&
-	    R([m setValue: [OFNumber numberWithChar: 10]
-		   forKey: @"charValue"]) &&
-	    R([m setValue: [OFNumber numberWithShort: 20]
-		   forKey: @"shortValue"]) &&
-	    R([m setValue: [OFNumber numberWithInt: 30]
-		   forKey: @"intValue"]) &&
-	    R([m setValue: [OFNumber numberWithLong: 40]
-		   forKey: @"longValue"]) &&
-	    R([m setValue: [OFNumber numberWithLongLong: 50]
-		   forKey: @"longLongValue"]) &&
-	    R([m setValue: [OFNumber numberWithUnsignedChar: 60]
-		   forKey: @"unsignedCharValue"]) &&
-	    R([m setValue: [OFNumber numberWithUnsignedShort: 70]
-		   forKey: @"unsignedShortValue"]) &&
-	    R([m setValue: [OFNumber numberWithUnsignedInt: 80]
-		   forKey: @"unsignedIntValue"]) &&
-	    R([m setValue: [OFNumber numberWithUnsignedLong: 90]
-		   forKey: @"unsignedLongValue"]) &&
-	    R([m setValue: [OFNumber numberWithUnsignedLongLong: 100]
-		   forKey: @"unsignedLongLongValue"]) &&
-	    R([m setValue: [OFNumber numberWithFloat: 110]
-		   forKey: @"floatValue"]) &&
-	    R([m setValue: [OFNumber numberWithDouble: 120]
-		   forKey: @"doubleValue"]) &&
-	    m.isBoolValue == 0 && m.charValue == 10 && m.shortValue == 20 &&
-	    m.intValue == 30 && m.longValue == 40 && m.longLongValue == 50 &&
-	    m.unsignedCharValue == 60 && m.unsignedShortValue == 70 &&
-	    m.unsignedIntValue == 80 && m.unsignedLongValue == 90 &&
-	    m.unsignedLongLongValue == 100 && m.floatValue == 110 &&
-	    m.doubleValue == 120)
+	    R([myObject setValue: [OFNumber numberWithBool: 0]
+			  forKey: @"boolValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithChar: 10]
+			  forKey: @"charValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithShort: 20]
+			  forKey: @"shortValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithInt: 30]
+			  forKey: @"intValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithLong: 40]
+			  forKey: @"longValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithLongLong: 50]
+			  forKey: @"longLongValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithUnsignedChar: 60]
+			  forKey: @"unsignedCharValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithUnsignedShort: 70]
+			  forKey: @"unsignedShortValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithUnsignedInt: 80]
+			  forKey: @"unsignedIntValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithUnsignedLong: 90]
+			  forKey: @"unsignedLongValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithUnsignedLongLong: 100]
+			  forKey: @"unsignedLongLongValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithFloat: 110]
+			  forKey: @"floatValue"]) &&
+	    R([myObject setValue: [OFNumber numberWithDouble: 120]
+			  forKey: @"doubleValue"]) &&
+	    myObject.isBoolValue == 0 && myObject.charValue == 10 &&
+	    myObject.shortValue == 20 && myObject.intValue == 30 &&
+	    myObject.longValue == 40 && myObject.longLongValue == 50 &&
+	    myObject.unsignedCharValue == 60 &&
+	    myObject.unsignedShortValue == 70 &&
+	    myObject.unsignedIntValue == 80 &&
+	    myObject.unsignedLongValue == 90 &&
+	    myObject.unsignedLongLongValue == 100 &&
+	    myObject.floatValue == 110 &&
+	    myObject.doubleValue == 120)
 
 	EXPECT_EXCEPTION(@"Catch -[setValue:forKey:] with nil key for scalar",
-	    OFInvalidArgumentException, [m setValue: (id _Nonnull)nil
-					     forKey: @"intValue"])
+	    OFInvalidArgumentException,
+	    [myObject setValue: (id _Nonnull)nil forKey: @"intValue"])
 
 	TEST(@"-[valueForKeyPath:]",
-	    (m = [[[MyObj alloc] init] autorelease]) &&
-	    (m.objectValue = [[[MyObj alloc] init] autorelease]) &&
-	    R([m.objectValue
-	    setObjectValue: [[[MyObj alloc] init] autorelease]]) &&
-	    R([[m.objectValue objectValue] setDoubleValue: 0.5]) &&
-	    [[m valueForKeyPath: @"objectValue.objectValue.doubleValue"]
+	    (myObject = [[[MyObject alloc] init] autorelease]) &&
+	    (myObject.objectValue = [[[MyObject alloc] init] autorelease]) &&
+	    R([myObject.objectValue
+	    setObjectValue: [[[MyObject alloc] init] autorelease]]) &&
+	    R([[myObject.objectValue objectValue] setDoubleValue: 0.5]) &&
+	    [[myObject valueForKeyPath: @"objectValue.objectValue.doubleValue"]
 	    doubleValue] == 0.5)
 
 	TEST(@"[-setValue:forKeyPath:]",
-	    R([m setValue: [OFNumber numberWithDouble: 0.75]
-	       forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
-	    [[m.objectValue objectValue] doubleValue] == 0.75)
+	    R([myObject setValue: [OFNumber numberWithDouble: 0.75]
+		      forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
+	    [[myObject.objectValue objectValue] doubleValue] == 0.75)
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -482,8 +482,13 @@ outer_loop_end:
 		entry.group = attributes.fileGroupOwnerAccountName;
 #endif
 
-		if ([type isEqual: OFFileTypeDirectory])
+		if ([type isEqual: OFFileTypeDirectory]) {
 			entry.compressionMethod = @"-lhd-";
+
+			if (![entry.fileName hasSuffix: @"/"])
+				entry.fileName = [entry.fileName
+				    stringByAppendingString: @"/"];
+		}
 
 		output = [_archive streamForWritingEntry: entry];
 

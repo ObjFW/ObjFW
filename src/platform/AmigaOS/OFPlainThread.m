@@ -160,6 +160,12 @@ OFCurrentPlainThread(void)
 	return OFTLSKeyGet(threadKey);
 }
 
+bool
+OFPlainThreadIsCurrent(OFPlainThread thread)
+{
+	return (thread->task == FindTask(NULL));
+}
+
 int
 OFPlainThreadJoin(OFPlainThread thread)
 {

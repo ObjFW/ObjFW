@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The parameters for @ref OFScrypt.
  */
-typedef struct OFScryptParameters {
+typedef struct {
 	/** @brief The block size to use. */
 	size_t blockSize;
 	/** @brief The CPU/memory cost factor to use. */

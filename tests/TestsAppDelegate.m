@@ -51,9 +51,11 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef id
 #endif
 
+extern unsigned long OFHashSeed;
+
 #ifdef OF_PSP
 static int
-exit_cb(int arg1, int arg2, void *arg)
+exitCallback(int arg1, int arg2, void *arg)
 {
 	sceKernelExitGame();
 
@@ -61,10 +63,10 @@ exit_cb(int arg1, int arg2, void *arg)
 }
 
 static int
-callback_thread(SceSize args, void *argp)
+threadCallback(SceSize args, void *argp)
 {
 	sceKernelRegisterExitCallback(
-	    sceKernelCreateCallback("Exit Callback", exit_cb, NULL));
+	    sceKernelCreateCallback("Exit Callback", exitCallback, NULL));
 	sceKernelSleepThreadCB();
 
 	return 0;
@@ -83,10 +85,10 @@ main(int argc, char *argv[])
 	 * This does not work on Win32 if ObjFW is built as a DLL.
 	 *
 	 * On AmigaOS, some destructors need to be able to send messages.
-	 * Calling objc_exit() via atexit() would result in the runtime being
+	 * Calling objc_deinit() via atexit() would result in the runtime being
 	 * destructed before for the destructors ran.
 	 */
-	atexit(objc_exit);
+	atexit(objc_deinit);
 #endif
 
 	/* We need deterministic hashes for tests */
@@ -120,7 +122,7 @@ main(int argc, char *argv[])
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_DIGITAL);
 
-	if ((tid = sceKernelCreateThread("update_thread", callback_thread,
+	if ((tid = sceKernelCreateThread("update_thread", threadCallback,
 	    0x11, 0xFA0, 0, 0)) >= 0)
 		sceKernelStartThread(tid, 0, 0);
 #endif
@@ -198,8 +200,7 @@ main(int argc, char *argv[])
 }
 
 @implementation TestsAppDelegate
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module
 {
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor yellow]];
@@ -208,8 +209,7 @@ main(int argc, char *argv[])
 		[OFStdOut writeFormat: @"[%@] %@: ", module, test];
 }
 
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module
 {
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor lime]];
@@ -219,8 +219,7 @@ main(int argc, char *argv[])
 		[OFStdOut writeLine: @"ok"];
 }
 
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module
 {
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor red]];

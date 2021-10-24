@@ -69,38 +69,44 @@
 #define GNUCCXX0_EXCEPTION_CLASS UINT64_C(0x474E5543432B2B00) /* GNUCC++\0 */
 #define CLNGCXX0_EXCEPTION_CLASS UINT64_C(0x434C4E47432B2B00) /* CLNGC++\0 */
 
-#define NUM_EMERGENCY_EXCEPTIONS 4
+#define numEmergencyExceptions 4
 
-#define _UA_SEARCH_PHASE  0x01
-#define _UA_CLEANUP_PHASE 0x02
-#define _UA_HANDLER_FRAME 0x04
-#define _UA_FORCE_UNWIND  0x08
+enum {
+	_UA_SEARCH_PHASE  = 0x01,
+	_UA_CLEANUP_PHASE = 0x02,
+	_UA_HANDLER_FRAME = 0x04,
+	_UA_FORCE_UNWIND  = 0x08
+};
 
-#define DW_EH_PE_absptr	  0x00
+enum {
+	DW_EH_PE_absptr	  = 0x00,
 
-#define DW_EH_PE_uleb128  0x01
-#define DW_EH_PE_udata2	  0x02
-#define DW_EH_PE_udata4	  0x03
-#define DW_EH_PE_udata8	  0x04
+	DW_EH_PE_uleb128  = 0x01,
+	DW_EH_PE_udata2	  = 0x02,
+	DW_EH_PE_udata4	  = 0x03,
+	DW_EH_PE_udata8	  = 0x04,
 
-#define DW_EH_PE_signed	  0x08
-#define DW_EH_PE_sleb128  (DW_EH_PE_signed | DW_EH_PE_uleb128)
-#define DW_EH_PE_sdata2	  (DW_EH_PE_signed | DW_EH_PE_udata2)
-#define DW_EH_PE_sdata4	  (DW_EH_PE_signed | DW_EH_PE_udata4)
-#define DW_EH_PE_sdata8	  (DW_EH_PE_signed | DW_EH_PE_udata8)
+	DW_EH_PE_signed	  = 0x08,
+	DW_EH_PE_sleb128  = (DW_EH_PE_signed | DW_EH_PE_uleb128),
+	DW_EH_PE_sdata2	  = (DW_EH_PE_signed | DW_EH_PE_udata2),
+	DW_EH_PE_sdata4	  = (DW_EH_PE_signed | DW_EH_PE_udata4),
+	DW_EH_PE_sdata8	  = (DW_EH_PE_signed | DW_EH_PE_udata8),
 
-#define DW_EH_PE_pcrel	  0x10
-#define DW_EH_PE_textrel  0x20
-#define DW_EH_PE_datarel  0x30
-#define DW_EH_PE_funcrel  0x40
-#define DW_EH_PE_aligned  0x50
+	DW_EH_PE_pcrel	  = 0x10,
+	DW_EH_PE_textrel  = 0x20,
+	DW_EH_PE_datarel  = 0x30,
+	DW_EH_PE_funcrel  = 0x40,
+	DW_EH_PE_aligned  = 0x50,
 
-#define DW_EH_PE_indirect 0x80
+	DW_EH_PE_indirect = 0x80,
 
-#define DW_EH_PE_omit	  0xFF
+	DW_EH_PE_omit	  = 0xFF
+};
 
-#define CLEANUP_FOUND	  0x01
-#define HANDLER_FOUND	  0x02
+enum {
+	CLEANUP_FOUND = 0x01,
+	HANDLER_FOUND = 0x02
+};
 
 struct _Unwind_Context;
 
@@ -158,7 +164,7 @@ struct objc_exception {
 #endif
 };
 
-struct lsda {
+struct LSDA {
 	uintptr_t regionStart, landingpadsStart;
 	uint8_t typesTableEnc;
 	const uint8_t *typesTable;
@@ -239,15 +245,15 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     struct _Unwind_Exception *, struct _Unwind_Context *));
 #endif
 
-static objc_uncaught_exception_handler_t uncaughtExceptionHandler;
-static struct objc_exception emergencyExceptions[NUM_EMERGENCY_EXCEPTIONS];
+static objc_uncaught_exception_handler uncaughtExceptionHandler;
+static struct objc_exception emergencyExceptions[numEmergencyExceptions];
 #ifdef OF_HAVE_THREADS
 static OFSpinlock emergencyExceptionsSpinlock;
 
 OF_CONSTRUCTOR()
 {
 	if (OFSpinlockNew(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot create spinlock!");
+		OBJC_ERROR("Failed to create spinlock!");
 }
 #endif
 
@@ -399,7 +405,7 @@ resolveValue(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 #endif
 
 static void
-readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *LSDA)
+readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct LSDA *LSDA)
 {
 	uint8_t landingpadsStartEnc;
 	uintptr_t callsitesSize;
@@ -427,7 +433,7 @@ readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *LSDA)
 }
 
 static bool
-findCallsite(struct _Unwind_Context *ctx, struct lsda *LSDA,
+findCallsite(struct _Unwind_Context *ctx, struct LSDA *LSDA,
     uintptr_t *landingpad, const uint8_t **actionRecords)
 {
 	uintptr_t IP = _Unwind_GetIP(ctx);
@@ -504,7 +510,7 @@ classMatches(Class class, id object)
 }
 
 static uint8_t
-findActionRecord(const uint8_t *actionRecords, struct lsda *LSDA, int actions,
+findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
     bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
 	const uint8_t *ptr;
@@ -600,7 +606,7 @@ PERSONALITY_FUNC(PERSONALITY)
 	struct objc_exception *e = (struct objc_exception *)ex;
 	bool foreign = (exClass != GNUCOBJC_EXCEPTION_CLASS);
 	const uint8_t *LSDAAddr, *actionRecords;
-	struct lsda LSDA;
+	struct LSDA LSDA;
 	uintptr_t landingpad = 0;
 	uint8_t found = 0;
 	intptr_t filter = 0;
@@ -712,14 +718,14 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
 {
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot lock spinlock!");
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot unlock spinlock!");
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
@@ -732,10 +738,10 @@ objc_exception_throw(id object)
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
-		for (uint_fast8_t i = 0; i < NUM_EMERGENCY_EXCEPTIONS; i++) {
+		for (uint_fast8_t i = 0; i < numEmergencyExceptions; i++) {
 			if (emergencyExceptions[i].exception.class == 0) {
 				e = &emergencyExceptions[i];
 				e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
@@ -747,7 +753,7 @@ objc_exception_throw(id object)
 
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 	}
 
@@ -767,10 +773,10 @@ objc_exception_throw(id object)
 	OBJC_ERROR("_Unwind_RaiseException() returned!");
 }
 
-objc_uncaught_exception_handler_t
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler_t handler)
+objc_uncaught_exception_handler
+objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 {
-	objc_uncaught_exception_handler_t old = uncaughtExceptionHandler;
+	objc_uncaught_exception_handler old = uncaughtExceptionHandler;
 	uncaughtExceptionHandler = handler;
 
 	return old;

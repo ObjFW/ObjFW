@@ -71,6 +71,8 @@
 static OFString *
 domainFromHostname(OFString *hostname)
 {
+	OFString *ret;
+
 	if (hostname == nil)
 		return nil;
 
@@ -81,16 +83,18 @@ domainFromHostname(OFString *hostname)
 		 * If we are still here, the host name is a valid IP address.
 		 * We can't use that as local domain.
 		 */
-		return nil;
+		ret = nil;
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
 		size_t pos = [hostname rangeOfString: @"."].location;
 
-		if (pos == OFNotFound)
-			return nil;
-
-		return [hostname substringFromIndex: pos + 1];
+		if (pos != OFNotFound)
+			ret = [hostname substringFromIndex: pos + 1];
+		else
+			ret = nil;
 	}
+
+	return ret;
 }
 #endif
 

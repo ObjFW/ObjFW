@@ -72,7 +72,7 @@ extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id OFForward(id, SEL, ...);
-extern struct stret OFForward_stret(id, SEL, ...);
+extern struct Stret OFForward_stret(id, SEL, ...);
 #else
 # define OFForward OFMethodNotFound
 # define OFForward_stret OFMethodNotFound_stret
@@ -226,6 +226,12 @@ OFRandom64(void)
 #else
 	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
+}
+
+void
+OFHashInit(unsigned long *hash)
+{
+	*hash = OFHashSeed;
 }
 
 static const char *

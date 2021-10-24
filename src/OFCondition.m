@@ -106,7 +106,7 @@
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
-	int error = OFPlainConditionTimedWaitExecOrSignal(&_condition, &_mutex,
+	int error = OFPlainConditionTimedWaitOrExecSignal(&_condition, &_mutex,
 	    timeInterval, signalMask);
 
 	if (error == ETIMEDOUT)

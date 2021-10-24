@@ -23,14 +23,14 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	movl	4(%esp), %edx
 	testl	%edx, %edx
-	jz	ret_nil
+	jz	returnNilMethod
 
 	testb	$1, %dl
-	jnz	.Ltagged_pointer_\name
+	jnz	.LtaggedPointer_\name
 
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
@@ -53,21 +53,21 @@
 	ret
 
 0:
-	call	get_eip
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	lea	\not_found@GOTOFF(%eax), %eax
+	lea	\notFound@GOTOFF(%eax), %eax
 	jmp	*%eax
 
-.Ltagged_pointer_\name:
-	call	get_eip
+.LtaggedPointer_\name:
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	leal	objc_tagged_pointer_secret@GOTOFF(%eax), %ecx
+	leal	objc_taggedPointerSecret@GOTOFF(%eax), %ecx
 	xorl	(%ecx), %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	leal	objc_tagged_pointer_classes@GOTOFF(%eax), %eax
+	leal	objc_taggedPointerClasses@GOTOFF(%eax), %eax
 	movl	(%eax,%edx,2), %edx
 	movl	32(%edx), %edx
 
@@ -76,12 +76,12 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
 	testl	%eax, %eax
-	jz	ret_nil
+	jz	returnNilMethod
 
 	movl	%eax, 4(%esp)
 	mov	4(%edx), %edx
@@ -91,22 +91,22 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	call	get_eip
+returnNilMethod:
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	leal	nil_method@GOTOFF(%eax), %eax
+	leal	nilMethod@GOTOFF(%eax), %eax
 	ret
 
-nil_method:
+nilMethod:
 	xorl	%eax, %eax
 	ret
 
-get_eip:
+getEIP:
 	movl	(%esp), %eax
 	ret
 

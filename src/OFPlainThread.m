@@ -18,9 +18,9 @@
 #include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "platform/posix/OFPlainThread.m"
+# include "platform/POSIX/OFPlainThread.m"
 #elif defined(OF_WINDOWS)
-# include "platform/windows/OFPlainThread.m"
+# include "platform/Windows/OFPlainThread.m"
 #elif defined(OF_AMIGAOS)
-# include "platform/amiga/OFPlainThread.m"
+# include "platform/AmigaOS/OFPlainThread.m"
 #endif

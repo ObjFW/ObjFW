@@ -21,7 +21,7 @@
 #import "OFMapTableSet.h"
 #import "OFMutableMapTableSet.h"
 
-static OFString *module = nil;
+static OFString *module;
 
 @interface SimpleSet: OFSet
 {

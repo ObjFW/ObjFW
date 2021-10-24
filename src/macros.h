@@ -609,11 +609,11 @@ OFByteSwapDouble(double d)
 # define OFFromBigEndianFloat(f) (f)
 # define OFFromBigEndianDouble(d) (d)
 # define OFFromLittleEndianFloat(f) OFByteSwapFloat(f)
-# define OFFromLittleEndianDouble(i) OFByteSwapDouble(d)
+# define OFFromLittleEndianDouble(d) OFByteSwapDouble(d)
 # define OFToBigEndianFloat(f) (f)
 # define OFToBigEndianDouble(d) (d)
 # define OFToLittleEndianFloat(f) OFByteSwapFloat(f)
-# define OFToLittleEndianDouble(i) OFByteSwapDouble(d)
+# define OFToLittleEndianDouble(d) OFByteSwapDouble(d)
 #else
 # define OFFromBigEndianFloat(f) OFByteSwapFloat(f)
 # define OFFromBigEndianDouble(d) OFByteSwapDouble(d)
@@ -638,47 +638,6 @@ OFByteSwapDouble(double d)
 
 #define OFRoundUpToPowerOf2(pow2, value)	\
     (((value) + (pow2) - 1) & ~((pow2) - 1))
-
-extern unsigned long OFHashSeed;
-
-static OF_INLINE void
-OFHashInit(unsigned long *_Nonnull hash)
-{
-	*hash = OFHashSeed;
-}
-
-static OF_INLINE void
-OFHashAdd(unsigned long *_Nonnull hash, unsigned char byte)
-{
-	uint32_t tmp = (uint32_t)*hash;
-
-	tmp += byte;
-	tmp += tmp << 10;
-	tmp ^= tmp >> 6;
-
-	*hash = tmp;
-}
-
-static OF_INLINE void
-OFHashAddHash(unsigned long *_Nonnull hash, unsigned long otherHash)
-{
-	OFHashAdd(hash, (otherHash >> 24) & 0xFF);
-	OFHashAdd(hash, (otherHash >> 16) & 0xFF);
-	OFHashAdd(hash, (otherHash >>  8) & 0xFF);
-	OFHashAdd(hash, otherHash & 0xFF);
-}
-
-static OF_INLINE void
-OFHashFinalize(unsigned long *_Nonnull hash)
-{
-	uint32_t tmp = (uint32_t)*hash;
-
-	tmp += tmp << 3;
-	tmp ^= tmp >> 11;
-	tmp += tmp << 15;
-
-	*hash = tmp;
-}
 
 static OF_INLINE bool
 OFBitsetIsSet(unsigned char *_Nonnull storage, size_t idx)

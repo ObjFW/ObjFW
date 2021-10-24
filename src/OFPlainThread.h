@@ -44,7 +44,7 @@ typedef struct {
 } *OFPlainThread;
 #endif
 
-typedef struct OFPlainThreadAttributes {
+typedef struct {
 	float priority;
 	size_t stackSize;
 } OFPlainThreadAttributes;
@@ -75,12 +75,7 @@ OFPlainThreadIsCurrent(OFPlainThread thread)
 }
 #elif defined(OF_AMIGAOS)
 extern OFPlainThread OFCurrentPlainThread(void);
-
-static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread thread)
-{
-	return (thread->thread == FindTask(NULL));
-}
+extern bool OFPlainThreadIsCurrent(OFPlainThread);
 #endif
 
 #ifdef __cplusplus

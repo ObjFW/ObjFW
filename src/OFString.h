@@ -65,7 +65,7 @@ typedef OFChar32 OFUnichar;
 /**
  * @brief The encoding of a string.
  */
-typedef enum OFStringEncoding {
+typedef enum {
 	/*
 	 * UTF-8 *has* to be 0, so that if the current @ref OFLocale is
 	 * `nil`, `[OFLocale encoding]` returns UTF-8.
@@ -107,7 +107,7 @@ typedef enum OFStringEncoding {
  *
  * This is a bit mask.
  */
-typedef enum OFStringSearchOptions {
+typedef enum {
 	/** Search backwards in the string */
 	OFStringSearchBackwards = 1
 } OFStringSearchOptions;
@@ -117,7 +117,7 @@ typedef enum OFStringSearchOptions {
  *
  * This is a bit mask.
  */
-typedef enum OFStringSeparationOptions {
+typedef enum {
 	/** Skip empty components */
 	OFStringSkipEmptyComponents = 1
 } OFStringSeparationOptions;
@@ -326,8 +326,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-8 encoded C string without copying
  *	  the string, if possible.
  *
- * If initialization fails for whatever reason, the passed C string is free'd
- * if `freeWhenDone` is true.
+ * If initialization fails for whatever reason, the passed C string is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -343,8 +343,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-8 encoded C string with the
  *	  specified length without copying the string, if possible.
  *
- * If initialization fails for whatever reason, the passed C string is free'd
- * if `freeWhenDone` is true.
+ * If initialization fails for whatever reason, the passed C string is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -581,8 +581,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString from an UTF-8 encoded C
  *	  string without copying the string, if possible.
  *
- * If initialization fails for whatever reason, the passed C string is free'd
- * if `freeWhenDone` is true.
+ * If initialization fails for whatever reason, the passed C string is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -599,8 +599,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  string with the specified length without copying the string, if
  *	  possible.
  *
- * If initialization fails for whatever reason, the passed C string is free'd
- * if `freeWhenDone` is true.
+ * If initialization fails for whatever reason, the passed C string is *not*
+ * free'd if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *

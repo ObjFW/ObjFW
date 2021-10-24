@@ -43,7 +43,8 @@
 
 #import "OFObserveFailedException.h"
 
-const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
+#include "OFRunLoopConstants.inc"
+
 static OFRunLoop *mainRunLoop = nil;
 
 @interface OFRunLoopState: OFObject
@@ -1418,6 +1419,11 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	if (state == nil)
 		return;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
 	@try {
@@ -1434,6 +1440,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 		[state->_timersQueueMutex unlock];
 	}
 #endif
+
+#pragma GCC diagnostic pop
 }
 
 #ifdef OF_AMIGAOS

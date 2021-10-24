@@ -25,8 +25,8 @@
 #import "ProgressBar.h"
 
 static const float oneKibibyte = 1024;
-static const float oneMebibyte = 1024 * oneKibibyte;
-static const float oneGibibyte = 1024 * oneMebibyte;
+static const float oneMebibyte = 1024 * 1024;
+static const float oneGibibyte = 1024 * 1024 * 1024;
 
 static const OFTimeInterval updateInterval = 0.1;
 

@@ -43,8 +43,8 @@ static void
 help(void)
 {
 	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] [--md5|--ripemd160|--sha1|--sha224|--sha256|"
-	    @"--sha384|--sha512] file1 [file2 ...]",
+	    @"Usage: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] "
+	    @"[--sha256] [--sha384] [--sha512] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];

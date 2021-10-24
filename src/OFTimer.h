@@ -69,9 +69,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFTimeInterval timeInterval;
 
 /**
- * @brief Whether the timer is repeating.
+ * @brief Whether the timer repeats.
  */
-@property (readonly, nonatomic, getter=isRepeating) bool repeating;
+@property (readonly, nonatomic) bool repeats;
 
 /**
  * @brief Whether the timer is valid.

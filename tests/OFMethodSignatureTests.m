@@ -23,15 +23,15 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFMethodSignature";
+static OFString *const module = @"OFMethodSignature";
 
-struct test1_struct {
+struct Test1Struct {
 	char c;
 	int i;
 	char d;
 };
 
-struct test2_struct {
+struct Test2Struct {
 	char c;
 	struct {
 		short s;
@@ -45,19 +45,19 @@ struct test2_struct {
 };
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
-struct test3_struct {
+struct Test3Struct {
 	char c;
 	complex double cd;
 };
 #endif
 
-union test3_union {
+union Test3Union {
 	char c;
 	int i;
 	double d;
 };
 
-union test4_union {
+union Test4Union {
 	char c;
 	struct {
 		short x, y;
@@ -73,34 +73,38 @@ union test4_union {
 - (void)methodSignatureTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMethodSignature *ms;
+	OFMethodSignature *methodSignature;
 
 	TEST(@"-[signatureWithObjCTypes:] #1",
-	    (ms = [OFMethodSignature signatureWithObjCTypes:
-	    "i28@0:8S16*20"]) && ms.numberOfArguments == 4 &&
-	    strcmp(ms.methodReturnType, "i") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 2], "S") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 3], "*") == 0 &&
-	    ms.frameLength == 28 && [ms argumentOffsetAtIndex: 0] == 0 &&
-	    [ms argumentOffsetAtIndex: 1] == 8 &&
-	    [ms argumentOffsetAtIndex: 2] == 16 &&
-	    [ms argumentOffsetAtIndex: 3] == 20)
+	    (methodSignature = [OFMethodSignature signatureWithObjCTypes:
+	    "i28@0:8S16*20"]) &&
+	    methodSignature.numberOfArguments == 4 &&
+	    strcmp(methodSignature.methodReturnType, "i") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 0], "@") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 1], ":") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 2], "S") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 3], "*") == 0 &&
+	    methodSignature.frameLength == 28 &&
+	    [methodSignature argumentOffsetAtIndex: 0] == 0 &&
+	    [methodSignature argumentOffsetAtIndex: 1] == 8 &&
+	    [methodSignature argumentOffsetAtIndex: 2] == 16 &&
+	    [methodSignature argumentOffsetAtIndex: 3] == 20)
 
 	TEST(@"-[signatureWithObjCTypes:] #2",
-	    (ms = [OFMethodSignature signatureWithObjCTypes:
+	    (methodSignature = [OFMethodSignature signatureWithObjCTypes:
 	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}24@0:8"
 	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}16"]) &&
-	    ms.numberOfArguments == 3 && strcmp(ms.methodReturnType,
+	    methodSignature.numberOfArguments == 3 &&
+	    strcmp(methodSignature.methodReturnType,
 	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 2],
+	    strcmp([methodSignature argumentTypeAtIndex: 0], "@") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 1], ":") == 0 &&
+	    strcmp([methodSignature argumentTypeAtIndex: 2],
 	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
-	    ms.frameLength == 24 && [ms argumentOffsetAtIndex: 0] == 0 &&
-	    [ms argumentOffsetAtIndex: 1] == 8 &&
-	    [ms argumentOffsetAtIndex: 2] == 16)
+	    methodSignature.frameLength == 24 &&
+	    [methodSignature argumentOffsetAtIndex: 0] == 0 &&
+	    [methodSignature argumentOffsetAtIndex: 1] == 8 &&
+	    [methodSignature argumentOffsetAtIndex: 2] == 16)
 
 	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #3",
 	    OFInvalidFormatException,
@@ -119,58 +123,58 @@ union test4_union {
 	    [OFMethodSignature signatureWithObjCTypes: "{{}0"])
 
 	TEST(@"OFSizeOfTypeEncoding() #1",
-	    OFSizeOfTypeEncoding(@encode(struct test1_struct)) ==
-	    sizeof(struct test1_struct))
+	    OFSizeOfTypeEncoding(@encode(struct Test1Struct)) ==
+	    sizeof(struct Test1Struct))
 
 	TEST(@"OFSizeOfTypeEncoding() #2",
-	    OFSizeOfTypeEncoding(@encode(struct test2_struct)) ==
-	    sizeof(struct test2_struct))
+	    OFSizeOfTypeEncoding(@encode(struct Test2Struct)) ==
+	    sizeof(struct Test2Struct))
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
     OF_GCC_VERSION >= 402
 	TEST(@"OFSizeOfTypeEncoding() #3",
-	    OFSizeOfTypeEncoding(@encode(struct test3_struct)) ==
-	    sizeof(struct test3_struct))
+	    OFSizeOfTypeEncoding(@encode(struct Test3Struct)) ==
+	    sizeof(struct Test3Struct))
 #endif
 
 	TEST(@"OFSizeOfTypeEncoding() #4",
-	    OFSizeOfTypeEncoding(@encode(union test3_union)) ==
-	    sizeof(union test3_union))
+	    OFSizeOfTypeEncoding(@encode(union Test3Union)) ==
+	    sizeof(union Test3Union))
 
 	TEST(@"OFSizeOfTypeEncoding() #5",
-	    OFSizeOfTypeEncoding(@encode(union test4_union)) ==
-	    sizeof(union test4_union))
+	    OFSizeOfTypeEncoding(@encode(union Test4Union)) ==
+	    sizeof(union Test4Union))
 
 	TEST(@"OFSizeOfTypeEncoding() #6",
-	    OFSizeOfTypeEncoding(@encode(struct test1_struct [5])) ==
-	    sizeof(struct test1_struct [5]))
+	    OFSizeOfTypeEncoding(@encode(struct Test1Struct [5])) ==
+	    sizeof(struct Test1Struct [5]))
 
 	TEST(@"OFAlignmentOfTypeEncoding() #1",
-	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct)) ==
-	    OF_ALIGNOF(struct test1_struct))
+	    OFAlignmentOfTypeEncoding(@encode(struct Test1Struct)) ==
+	    OF_ALIGNOF(struct Test1Struct))
 
 	TEST(@"OFAlignmentOfTypeEncoding() #2",
-	    OFAlignmentOfTypeEncoding(@encode(struct test2_struct)) ==
-	    OF_ALIGNOF(struct test2_struct))
+	    OFAlignmentOfTypeEncoding(@encode(struct Test2Struct)) ==
+	    OF_ALIGNOF(struct Test2Struct))
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
     OF_GCC_VERSION >= 402
 	TEST(@"OFAlignmentOfTypeEncoding() #3",
-	    OFAlignmentOfTypeEncoding(@encode(struct test3_struct)) ==
-	    OF_ALIGNOF(struct test3_struct))
+	    OFAlignmentOfTypeEncoding(@encode(struct Test3Struct)) ==
+	    OF_ALIGNOF(struct Test3Struct))
 #endif
 
 	TEST(@"OFAlignmentOfTypeEncoding() #4",
-	    OFAlignmentOfTypeEncoding(@encode(union test3_union)) ==
-	    OF_ALIGNOF(union test3_union))
+	    OFAlignmentOfTypeEncoding(@encode(union Test3Union)) ==
+	    OF_ALIGNOF(union Test3Union))
 
 	TEST(@"OFAlignmentOfTypeEncoding() #5",
-	    OFAlignmentOfTypeEncoding(@encode(union test4_union)) ==
-	    OF_ALIGNOF(union test4_union))
+	    OFAlignmentOfTypeEncoding(@encode(union Test4Union)) ==
+	    OF_ALIGNOF(union Test4Union))
 
 	TEST(@"OFAlignmentOfTypeEncoding() #6",
-	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct [5])) ==
-	    OF_ALIGNOF(struct test1_struct [5]))
+	    OFAlignmentOfTypeEncoding(@encode(struct Test1Struct [5])) ==
+	    OF_ALIGNOF(struct Test1Struct [5]))
 
 	objc_autoreleasePoolPop(pool);
 }

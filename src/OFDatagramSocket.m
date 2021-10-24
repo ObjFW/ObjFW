@@ -118,7 +118,7 @@
 
 	_canBlock = canBlock;
 #elif defined(OF_WINDOWS)
-	u_long v = canBlock;
+	u_long v = !canBlock;
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException

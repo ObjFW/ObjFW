@@ -97,6 +97,7 @@ SRCS = OFASPrintF.m			\
        OFTriple.m			\
        OFURL.m				\
        OFURLHandler.m			\
+       OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -110,7 +111,6 @@ SRCS = OFASPrintF.m			\
        OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
-       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
@@ -154,12 +154,11 @@ SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
 INCLUDES_ATOMIC = OFAtomic.h			\
-		  OFAtomic_builtins.h		\
-		  OFAtomic_no_threads.h		\
-		  OFAtomic_osatomic.h		\
-		  OFAtomic_powerpc.h		\
-		  OFAtomic_sync_builtins.h	\
-		  OFAtomic_x86.h
+		  platform/GCC4/OFAtomic.h	\
+		  platform/GCC4.7/OFAtomic.h	\
+		  platform/PowerPC/OFAtomic.h	\
+		  platform/macOS/OFAtomic.h	\
+		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
@@ -200,7 +199,8 @@ SRCS += OFAdjacentArray.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
-	${RUNTIME_INSTANCE_M}
+	${RUNTIME_INSTANCE_M}		\
+       ${UNICODE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\

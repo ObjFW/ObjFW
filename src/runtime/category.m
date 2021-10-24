@@ -32,22 +32,22 @@ registerSelectors(struct objc_category *category)
 
 	for (iter = category->instanceMethods; iter != NULL; iter = iter->next)
 		for (i = 0; i < iter->count; i++)
-			objc_register_selector(&iter->methods[i].selector);
+			objc_registerSelector(&iter->methods[i].selector);
 
 	for (iter = category->classMethods; iter != NULL; iter = iter->next)
 		for (i = 0; i < iter->count; i++)
-			objc_register_selector(&iter->methods[i].selector);
+			objc_registerSelector(&iter->methods[i].selector);
 }
 
 static void
 registerCategory(struct objc_category *category)
 {
 	struct objc_category **categories;
-	Class class = objc_classname_to_class(category->className, false);
+	Class class = objc_classnameToClass(category->className, false);
 
 	if (categoriesMap == NULL)
 		categoriesMap = objc_hashtable_new(
-		    objc_hash_string, objc_equal_string, 2);
+		    objc_string_hash, objc_string_equal, 2);
 
 	categories = (struct objc_category **)objc_hashtable_get(
 	    categoriesMap, category->className);
@@ -70,8 +70,8 @@ registerCategory(struct objc_category *category)
 		    newCategories);
 
 		if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
-			objc_update_dtable(class);
-			objc_update_dtable(class->isa);
+			objc_updateDTable(class);
+			objc_updateDTable(class->isa);
 		}
 
 		return;
@@ -86,13 +86,13 @@ registerCategory(struct objc_category *category)
 	objc_hashtable_set(categoriesMap, category->className, categories);
 
 	if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
-		objc_update_dtable(class);
-		objc_update_dtable(class->isa);
+		objc_updateDTable(class);
+		objc_updateDTable(class->isa);
 	}
 }
 
 void
-objc_register_all_categories(struct objc_symtab *symtab)
+objc_registerAllCategories(struct objc_symtab *symtab)
 {
 	struct objc_category **categories =
 	    (struct objc_category **)symtab->defs + symtab->classDefsCount;
@@ -104,7 +104,7 @@ objc_register_all_categories(struct objc_symtab *symtab)
 }
 
 struct objc_category **
-objc_categories_for_class(Class class)
+objc_categoriesForClass(Class class)
 {
 	if (categoriesMap == NULL)
 		return NULL;
@@ -114,7 +114,7 @@ objc_categories_for_class(Class class)
 }
 
 void
-objc_unregister_all_categories(void)
+objc_unregisterAllCategories(void)
 {
 	if (categoriesMap == NULL)
 		return;

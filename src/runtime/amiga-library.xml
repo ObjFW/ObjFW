@@ -233,8 +233,8 @@
     <argument name='protocol2' type='Protocol *_Nonnull' m68k-reg='a1'/>
   </function>
   <function name='objc_setUncaughtExceptionHandler'
-            return-type='_Nullable objc_uncaught_exception_handler_t'>
-    <argument name='handler' type='objc_uncaught_exception_handler_t _Nullable'
+            return-type='_Nullable objc_uncaught_exception_handler'>
+    <argument name='handler' type='objc_uncaught_exception_handler _Nullable'
               m68k-reg='a0'/>
   </function>
   <function name='objc_setForwardHandler'>
@@ -242,14 +242,14 @@
     <argument name='stretForward' type='IMP _Nullable' m68k-reg='a1'/>
   </function>
   <function name='objc_setEnumerationMutationHandler'>
-    <argument name='hadler' type='objc_enumeration_mutation_handler_t _Nullable'
+    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'
               m68k-reg='a0'/>
   </function>
   <function name='objc_constructInstance' return-type='id _Nullable'>
     <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='bytes' type='void *_Nullable' m68k-reg='a1'/>
   </function>
-  <function name='objc_exit'/>
+  <function name='objc_deinit'/>
   <function name='class_copyIvarList' return-type='Ivar _Nullable *_Nullable'>
     <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>

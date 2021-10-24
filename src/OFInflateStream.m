@@ -99,7 +99,7 @@ static const uint8_t distanceExtraBits[32] = {
 static const uint8_t codeLengthsOrder[19] = {
 	16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
 };
-static OFHuffmanTree *fixedLitLenTree, *fixedDistTree;
+static OFHuffmanTree fixedLitLenTree, fixedDistTree;
 
 @implementation OFInflateStream
 static OF_INLINE bool

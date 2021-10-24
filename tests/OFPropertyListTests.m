@@ -25,9 +25,9 @@
 	x @"\n"								\
 	@"</plist>"
 
-static OFString *module = @"OFPropertyList";
-static OFString *PLIST1 = PLIST(@"<string>Hello</string>");
-static OFString *PLIST2 = PLIST(
+static OFString *const module = @"OFPropertyList";
+static OFString *const PLIST1 = PLIST(@"<string>Hello</string>");
+static OFString *const PLIST2 = PLIST(
     @"<array>"
     @" <string>Hello</string>"
     @" <data>V29ybGQh</data>"
@@ -37,7 +37,7 @@ static OFString *PLIST2 = PLIST(
     @" <real>12.25</real>"
     @" <integer>-10</integer>"
     @"</array>");
-static OFString *PLIST3 = PLIST(
+static OFString *const PLIST3 = PLIST(
     @"<dict>"
     @" <key>array</key>"
     @" <array>"

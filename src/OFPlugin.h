@@ -21,7 +21,7 @@
 # include <dlfcn.h>
 typedef void *OFPluginHandle;
 
-typedef enum OFDLOpenFlags {
+typedef enum {
 	OFDLOpenFlagLazy = RTLD_LAZY,
 	OFDLOpenFlagNow  = RTLD_NOW
 } OFDLOpenFlags;
@@ -29,7 +29,7 @@ typedef enum OFDLOpenFlags {
 # include <windows.h>
 typedef HMODULE OFPluginHandle;
 
-typedef enum OFDLOpenFlags {
+typedef enum {
 	OFDLOpenFlagLazy = 0,
 	OFDLOpenFlagNow  = 0
 } OFDLOpenFlags;
@@ -41,6 +41,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
  *
  * @brief Provides a system for loading plugins at runtime.
+ *
+ * A plugin must subclass @ref OFPlugin and have a global function called
+ * `OFPluginInit`, which returns an instance of the @ref OFPlugin subclass and
+ * takes no parameters.
  */
 @interface OFPlugin: OFObject
 {

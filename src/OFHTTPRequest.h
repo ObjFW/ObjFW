@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of an HTTP request.
  */
-typedef enum OFHTTPRequestMethod {
+typedef enum {
 	/** OPTIONS */
 	OFHTTPRequestMethodOptions,
 	/** GET */
@@ -53,13 +53,12 @@ typedef enum OFHTTPRequestMethod {
  *
  * @brief The HTTP version of the HTTP request.
  */
-struct OF_BOXABLE OFHTTPRequestProtocolVersion {
+typedef struct OF_BOXABLE {
 	/** The major of the HTTP version */
 	unsigned char major;
 	/** The minor of the HTTP version */
 	unsigned char minor;
-};
-typedef struct OFHTTPRequestProtocolVersion OFHTTPRequestProtocolVersion;
+} OFHTTPRequestProtocolVersion;
 
 /**
  * @class OFHTTPRequest OFHTTPRequest.h ObjFW/OFHTTPRequest.h

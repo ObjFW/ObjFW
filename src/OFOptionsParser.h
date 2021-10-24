@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
-struct OFOptionsParserOption {
+typedef struct {
 	/** The short version (e.g. `-v`) of the option or `\0` for none. */
 	OFUnichar shortOption;
 
@@ -57,8 +57,7 @@ struct OFOptionsParserOption {
 	 * argument specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
-};
-typedef struct OFOptionsParserOption OFOptionsParserOption;
+} OFOptionsParserOption;
 
 /**
  * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h

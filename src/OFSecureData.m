@@ -38,24 +38,24 @@
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 static const size_t chunkSize = 16;
 
-struct page {
-	struct page *next, *previous;
+struct Page {
+	struct Page *next, *previous;
 	void *map;
 	unsigned char *page;
 };
 
 # if defined(OF_HAVE_COMPILER_TLS)
-static thread_local struct page *firstPage = NULL;
-static thread_local struct page *lastPage = NULL;
-static thread_local struct page **preallocatedPages = NULL;
+static thread_local struct Page *firstPage = NULL;
+static thread_local struct Page *lastPage = NULL;
+static thread_local struct Page **preallocatedPages = NULL;
 static thread_local size_t numPreallocatedPages = 0;
 # elif defined(OF_HAVE_THREADS)
 static OFTLSKey firstPageKey, lastPageKey;
 static OFTLSKey preallocatedPagesKey, numPreallocatedPagesKey;
 # else
-static struct page *firstPage = NULL;
-static struct page *lastPage = NULL;
-static struct page **preallocatedPages = NULL;
+static struct Page *firstPage = NULL;
+static struct Page *lastPage = NULL;
+static struct Page **preallocatedPages = NULL;
 static size_t numPreallocatedPages = 0;
 # endif
 
@@ -94,15 +94,15 @@ unmapPages(void *pointer, size_t numPages)
 	munmap(pointer, numPages * pageSize);
 }
 
-static struct page *
+static struct Page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
 	    CHAR_BIT;
-	struct page *page;
+	struct Page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	struct page *lastPage;
+	struct Page *lastPage;
 # endif
 
 	if (allowPreallocated) {
@@ -113,7 +113,7 @@ addPage(bool allowPreallocated)
 
 		if (numPreallocatedPages > 0) {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-			struct page **preallocatedPages =
+			struct Page **preallocatedPages =
 			    OFTLSKeyGet(preallocatedPagesKey);
 # endif
 
@@ -180,7 +180,7 @@ addPage(bool allowPreallocated)
 }
 
 static void
-removePageIfEmpty(struct page *page)
+removePageIfEmpty(struct Page *page)
 {
 	unsigned char *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
@@ -215,7 +215,7 @@ removePageIfEmpty(struct page *page)
 }
 
 static void *
-allocateMemory(struct page *page, size_t bytes)
+allocateMemory(struct Page *page, size_t bytes)
 {
 	size_t chunks, chunksLeft, pageSize, i, firstChunk;
 
@@ -246,7 +246,7 @@ allocateMemory(struct page *page, size_t bytes)
 }
 
 static void
-freeMemory(struct page *page, void *pointer, size_t bytes)
+freeMemory(struct Page *page, void *pointer, size_t bytes)
 {
 	size_t chunks, chunkIndex;
 
@@ -285,7 +285,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	size_t pageSize = [OFSystemInfo pageSize];
 	size_t numPages = OFRoundUpToPowerOf2(pageSize, size) / pageSize;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	struct page **preallocatedPages = OFTLSKeyGet(preallocatedPagesKey);
+	struct Page **preallocatedPages = OFTLSKeyGet(preallocatedPagesKey);
 	size_t numPreallocatedPages;
 # endif
 	size_t i;
@@ -293,7 +293,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	preallocatedPages = OFAllocZeroedMemory(numPages, sizeof(struct page));
+	preallocatedPages = OFAllocZeroedMemory(numPages, sizeof(struct Page));
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFEnsure(OFTLSKeySet(preallocatedPagesKey, preallocatedPages) == 0);
 # endif
@@ -423,10 +423,10 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			    count * itemSize) / pageSize);
 		else {
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-			struct page *lastPage = OFTLSKeyGet(lastPageKey);
+			struct Page *lastPage = OFTLSKeyGet(lastPageKey);
 # endif
 
-			for (struct page *page = lastPage; page != NULL;
+			for (struct Page *page = lastPage; page != NULL;
 			    page = page->previous) {
 				_items = allocateMemory(page, count * itemSize);
 

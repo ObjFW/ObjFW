@@ -117,7 +117,11 @@ OF_DIRECT_MEMBERS
 	_socket.canBlock = false;
 
 	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
+#ifdef OF_WINDOWS
+		if (errNo == EINPROGRESS || errNo == EWOULDBLOCK) {
+#else
 		if (errNo == EINPROGRESS) {
+#endif
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
 						      delegate: self];

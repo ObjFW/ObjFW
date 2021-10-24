@@ -31,7 +31,7 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFTimer
-@synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
+@synthesize timeInterval = _interval, repeats = _repeats, valid = _valid;
 
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
@@ -666,4 +666,33 @@
 	}
 }
 #endif
+
+- (OFString *)description
+{
+#ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return [OFString stringWithFormat:
+		    @"<%@:\n"
+		    @"\tFire date: %@\n"
+		    @"\tInterval: %lf\n"
+		    @"\tRepeats: %s\n"
+		    @"\tBlock: %@\n"
+		    @"\tValid: %s\n"
+		    @">",
+		    self.class, _fireDate, _interval, (_repeats ? "yes" : "no"),
+		    _block, (_valid ? "yes" : "no")];
+	else
+#endif
+		return [OFString stringWithFormat:
+		    @"<%@:\n"
+		    @"\tFire date: %@\n"
+		    @"\tInterval: %lf\n"
+		    @"\tRepeats: %s\n"
+		    @"\tTarget: %@\n"
+		    @"\tSelector: %s\n"
+		    @"\tValid: %s\n"
+		    @">",
+		    self.class, _fireDate, _interval, (_repeats ? "yes" : "no"),
+		    _target, sel_getName(_selector), (_valid ? "yes" : "no")];
+}
 @end

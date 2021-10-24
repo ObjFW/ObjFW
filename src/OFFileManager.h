@@ -229,6 +229,15 @@ extern const OFFileAttributeType OFFileTypeBlockSpecial;
  * @brief A socket.
  */
 extern const OFFileAttributeType OFFileTypeSocket;
+
+/**
+ * @brief An unknown file type.
+ *
+ * This is different from not having an @ref OFFileType at all in that it means
+ * that retrieving file types is supported, but the particular file type is
+ * unknown.
+ */
+extern const OFFileAttributeType OFFileTypeUnknown;
 #ifdef __cplusplus
 }
 #endif
@@ -400,6 +409,17 @@ OF_SUBCLASSING_RESTRICTED
 - (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
+/**
+ * @brief Returns an array with all subpaths of the specified directory.
+ *
+ * @note `.` and `..` (of the directory itself or any subdirectory) are not
+ * part of the returned array.
+ *
+ * @param path The path to the directory whose subpaths should be returned
+ * @return An array of OFString with the subpaths of the specified directory
+ */
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path;
+
 /**
  * @brief Changes the current working directory.
  *

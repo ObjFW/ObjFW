@@ -17,8 +17,8 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = nil;
-static OFString *c_ary[] = {
+static OFString *module;
+static OFString *const cArray[] = {
 	@"Foo",
 	@"Bar",
 	@"Baz"
@@ -127,194 +127,207 @@ static OFString *c_ary[] = {
 	       mutableClass: (Class)mutableArrayClass
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *a[3];
-	OFMutableArray *m[2];
+	OFArray *array1, *array2;
+	OFMutableArray *mutableArray1, *mutableArray2;
 	OFEnumerator *enumerator;
-	id obj;
+	id object;
 	bool ok;
 	size_t i;
 
-	TEST(@"+[array]", (m[0] = [mutableArrayClass array]))
+	TEST(@"+[array]", (mutableArray1 = [mutableArrayClass array]))
 
 	TEST(@"+[arrayWithObjects:]",
-	    (a[0] = [arrayClass arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
+	    (array1 =
+	    [arrayClass arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
 	TEST(@"+[arrayWithObjects:count:]",
-	    (a[1] = [arrayClass arrayWithObjects: c_ary count: 3]) &&
-	    [a[1] isEqual: a[0]])
+	    (array2 = [arrayClass arrayWithObjects: cArray count: 3]) &&
+	    [array2 isEqual: array1])
 
 	TEST(@"-[description]",
-	    [a[0].description isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
+	    [array1.description isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
 
-	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
-	    R([m[0] addObject: c_ary[2]]))
+	TEST(@"-[addObject:]",
+	    R([mutableArray1 addObject: cArray[0]]) &&
+	    R([mutableArray1 addObject: cArray[2]]))
 
 	TEST(@"-[insertObject:atIndex:]",
-	    R([m[0] insertObject: c_ary[1] atIndex: 1]))
+	    R([mutableArray1 insertObject: cArray[1] atIndex: 1]))
 
-	TEST(@"-[count]", m[0].count == 3 && a[0].count == 3 && a[1].count == 3)
+	TEST(@"-[count]",
+	    mutableArray1.count == 3 && array1.count == 3 && array2.count == 3)
 
-	TEST(@"-[isEqual:]", [m[0] isEqual: a[0]] && [a[0] isEqual: a[1]])
+	TEST(@"-[isEqual:]",
+	    [mutableArray1 isEqual: array1] && [array1 isEqual: array2])
 
 	TEST(@"-[objectAtIndex:]",
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
-	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
-	    [[a[1] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[1] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]])
+	    [[mutableArray1 objectAtIndex: 0] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 1] isEqual: cArray[1]] &&
+	    [[mutableArray1 objectAtIndex: 2] isEqual: cArray[2]] &&
+	    [[array1 objectAtIndex: 0] isEqual: cArray[0]] &&
+	    [[array1 objectAtIndex: 1] isEqual: cArray[1]] &&
+	    [[array1 objectAtIndex: 2] isEqual: cArray[2]] &&
+	    [[array2 objectAtIndex: 0] isEqual: cArray[0]] &&
+	    [[array2 objectAtIndex: 1] isEqual: cArray[1]] &&
+	    [[array2 objectAtIndex: 2] isEqual: cArray[2]])
 
 	TEST(@"-[containsObject:]",
-	    [a[0] containsObject: c_ary[1]] &&
-	    ![a[0] containsObject: @"nonexistent"])
+	    [array1 containsObject: cArray[1]] &&
+	    ![array1 containsObject: @"nonexistent"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
-	    [a[0] containsObjectIdenticalTo: c_ary[1]] &&
-	    ![a[0] containsObjectIdenticalTo:
-	    [OFString stringWithString: c_ary[1]]])
+	    [array1 containsObjectIdenticalTo: cArray[1]] &&
+	    ![array1 containsObjectIdenticalTo:
+	    [OFString stringWithString: cArray[1]]])
 
-	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
+	TEST(@"-[indexOfObject:]", [array1 indexOfObject: cArray[1]] == 1)
 
 	TEST(@"-[indexOfObjectIdenticalTo:]",
-	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
+	    [array2 indexOfObjectIdenticalTo: cArray[1]] == 1)
 
 	TEST(@"-[objectsInRange:]",
-	    [[a[0] objectsInRange: OFRangeMake(1, 2)] isEqual:
-	    [arrayClass arrayWithObjects: c_ary[1], c_ary[2], nil]])
+	    [[array1 objectsInRange: OFRangeMake(1, 2)] isEqual:
+	    [arrayClass arrayWithObjects: cArray[1], cArray[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
-	    R([m[0] replaceObject: c_ary[1] withObject: c_ary[0]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+	    R([mutableArray1 replaceObject: cArray[1] withObject: cArray[0]]) &&
+	    [[mutableArray1 objectAtIndex: 0] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 1] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 2] isEqual: cArray[2]])
 
 	TEST(@"-[replaceObject:identicalTo:]",
-	    R([m[0] replaceObjectIdenticalTo: c_ary[0] withObject: c_ary[1]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+	    R([mutableArray1 replaceObjectIdenticalTo: cArray[0]
+					   withObject: cArray[1]]) &&
+	    [[mutableArray1 objectAtIndex: 0] isEqual: cArray[1]] &&
+	    [[mutableArray1 objectAtIndex: 1] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 2] isEqual: cArray[2]])
 
 	TEST(@"-[replaceObjectAtIndex:withObject:]",
-	    R([m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
+	    R([mutableArray1 replaceObjectAtIndex: 0 withObject: cArray[0]]) &&
+	    [[mutableArray1 objectAtIndex: 0] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 1] isEqual: cArray[0]] &&
+	    [[mutableArray1 objectAtIndex: 2] isEqual: cArray[2]])
 
 	TEST(@"-[removeObject:]",
-	    R([m[0] removeObject: c_ary[0]]) && m[0].count == 2)
+	    R([mutableArray1 removeObject: cArray[0]]) &&
+	    mutableArray1.count == 2)
 
 	TEST(@"-[removeObjectIdenticalTo:]",
-	    R([m[0] removeObjectIdenticalTo: c_ary[2]]) && m[0].count == 1)
+	    R([mutableArray1 removeObjectIdenticalTo: cArray[2]]) &&
+	    mutableArray1.count == 1)
 
-	m[1] = [[a[0] mutableCopy] autorelease];
-	TEST(@"-[removeObjectAtIndex:]", R([m[1] removeObjectAtIndex: 1]) &&
-	    m[1].count == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
+	mutableArray2 = [[array1 mutableCopy] autorelease];
+	TEST(@"-[removeObjectAtIndex:]",
+	    R([mutableArray2 removeObjectAtIndex: 1]) &&
+	    mutableArray2.count == 2 &&
+	    [[mutableArray2 objectAtIndex: 1] isEqual: cArray[2]])
 
-	m[1] = [[a[0] mutableCopy] autorelease];
+	mutableArray2 = [[array1 mutableCopy] autorelease];
 	TEST(@"-[removeObjectsInRange:]",
-	    R([m[1] removeObjectsInRange: OFRangeMake(0, 2)]) &&
-	    m[1].count == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
+	    R([mutableArray2 removeObjectsInRange: OFRangeMake(0, 2)]) &&
+	    mutableArray2.count == 1 &&
+	    [[mutableArray2 objectAtIndex: 0] isEqual: cArray[2]])
 
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"qux"];
-	[m[1] addObject: @"last"];
+	mutableArray2 = [[array1 mutableCopy] autorelease];
+	[mutableArray2 addObject: @"qux"];
+	[mutableArray2 addObject: @"last"];
 	TEST(@"-[reverse]",
-	    R([m[1] reverse]) && [m[1] isEqual: [arrayClass arrayWithObjects:
+	    R([mutableArray2 reverse]) &&
+	    [mutableArray2 isEqual: [arrayClass arrayWithObjects:
 	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"qux"];
-	[m[1] addObject: @"last"];
+	mutableArray2 = [[array1 mutableCopy] autorelease];
+	[mutableArray2 addObject: @"qux"];
+	[mutableArray2 addObject: @"last"];
 	TEST(@"-[reversedArray]",
-	    [[m[1] reversedArray] isEqual: [arrayClass arrayWithObjects:
+	    [[mutableArray2 reversedArray] isEqual:
+	    [arrayClass arrayWithObjects:
 	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"0"];
-	[m[1] addObject: @"z"];
+	mutableArray2 = [[array1 mutableCopy] autorelease];
+	[mutableArray2 addObject: @"0"];
+	[mutableArray2 addObject: @"z"];
 	TEST(@"-[sortedArray]",
-	    [[m[1] sortedArray] isEqual: [arrayClass arrayWithObjects:
+	    [[mutableArray2 sortedArray] isEqual: [arrayClass arrayWithObjects:
 	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
-	    [[m[1] sortedArrayUsingSelector: @selector(compare:)
-				    options: OFArraySortDescending]
+	    [[mutableArray2 sortedArrayUsingSelector: @selector(compare:)
+					     options: OFArraySortDescending]
 	    isEqual: [arrayClass arrayWithObjects:
 	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
-	    OFOutOfRangeException, [a[0] objectAtIndex: a[0].count])
+	    OFOutOfRangeException, [array1 objectAtIndex: array1.count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
-	    OFOutOfRangeException, [m[0] removeObjectsInRange:
-		OFRangeMake(0, m[0].count + 1)])
+	    OFOutOfRangeException, [mutableArray1 removeObjectsInRange:
+		OFRangeMake(0, mutableArray1.count + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
-	    (a[1] = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
+	    (array2 = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
 	    nil]) &&
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @" a b c"] &&
-	    (a[1] = [arrayClass arrayWithObject: @"foo"]) &&
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
+	    [[array2 componentsJoinedByString: @" "] isEqual: @" a b c"] &&
+	    (array2 = [arrayClass arrayWithObject: @"foo"]) &&
+	    [[array2 componentsJoinedByString: @" "] isEqual: @"foo"])
 
 	TEST(@"-[componentsJoinedByString:options]",
-	    (a[1] = [arrayClass arrayWithObjects: @"", @"foo", @"", @"", @"bar",
-	    @"", nil]) &&
-	    [[a[1] componentsJoinedByString: @" "
-				    options: OFArraySkipEmptyComponents]
+	    (array2 = [arrayClass arrayWithObjects: @"", @"foo", @"", @"",
+	    @"bar", @"", nil]) &&
+	    [[array2 componentsJoinedByString: @" "
+				      options: OFArraySkipEmptyComponents]
 	    isEqual: @"foo bar"])
 
-	m[0] = [[a[0] mutableCopy] autorelease];
+	mutableArray1 = [[array1 mutableCopy] autorelease];
 	ok = true;
 	i = 0;
 
-	TEST(@"-[objectEnumerator]", (enumerator = [m[0] objectEnumerator]))
+	TEST(@"-[objectEnumerator]",
+	    (enumerator = [mutableArray1 objectEnumerator]))
 
-	while ((obj = [enumerator nextObject]) != nil) {
-		if (![obj isEqual: c_ary[i]])
+	while ((object = [enumerator nextObject]) != nil) {
+		if (![object isEqual: cArray[i]])
 			ok = false;
-		[m[0] replaceObjectAtIndex: i withObject: @""];
+		[mutableArray1 replaceObjectAtIndex: i withObject: @""];
 		i++;
 	}
 
-	if (m[0].count != i)
+	if (mutableArray1.count != i)
 		ok = false;
 
 	TEST(@"OFEnumerator's -[nextObject]", ok)
 
-	[m[0] removeObjectAtIndex: 0];
+	[mutableArray1 removeObjectAtIndex: 0];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [enumerator nextObject])
 
-	m[0] = [[a[0] mutableCopy] autorelease];
+	mutableArray1 = [[array1 mutableCopy] autorelease];
 	ok = true;
 	i = 0;
 
-	for (OFString *s in m[0]) {
-		if (![s isEqual: c_ary[i]])
+	for (OFString *string in mutableArray1) {
+		if (![string isEqual: cArray[i]])
 			ok = false;
-		[m[0] replaceObjectAtIndex: i withObject: @""];
+		[mutableArray1 replaceObjectAtIndex: i withObject: @""];
 		i++;
 	}
 
-	if (m[0].count != i)
+	if (mutableArray1.count != i)
 		ok = false;
 
 	TEST(@"Fast Enumeration", ok)
 
-	[m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]];
-	[m[0] replaceObjectAtIndex: 1 withObject: c_ary[1]];
-	[m[0] replaceObjectAtIndex: 2 withObject: c_ary[2]];
+	[mutableArray1 replaceObjectAtIndex: 0 withObject: cArray[0]];
+	[mutableArray1 replaceObjectAtIndex: 1 withObject: cArray[1]];
+	[mutableArray1 replaceObjectAtIndex: 2 withObject: cArray[2]];
 
 	ok = false;
 	i = 0;
 	@try {
-		for (OFString *s in m[0]) {
-			(void)s;
+		for (OFString *string in mutableArray1) {
+			(void)string;
 
 			if (i == 0)
-				[m[0] addObject: @""];
+				[mutableArray1 addObject: @""];
 
 			i++;
 		}
@@ -324,37 +337,38 @@ static OFString *c_ary[] = {
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
-	[m[0] removeLastObject];
+	[mutableArray1 removeLastObject];
 
 #ifdef OF_HAVE_BLOCKS
 	{
-		__block bool blockOk = true;
+		__block bool blockOK = true;
 		__block size_t count = 0;
-		OFArray *cmp = a[0];
-		OFMutableArray *a2;
+		OFArray *compareArray = array1;
+		OFMutableArray *mutableArray3;
 
-		m[0] = [[a[0] mutableCopy] autorelease];
-		[m[0] enumerateObjectsUsingBlock:
-		    ^ (id object, size_t idx, bool *stop) {
-			    count++;
-			    if (![object isEqual: [cmp objectAtIndex: idx]])
-				    blockOk = false;
+		mutableArray1 = [[array1 mutableCopy] autorelease];
+		[mutableArray1 enumerateObjectsUsingBlock:
+		    ^ (id object_, size_t idx, bool *stop) {
+			count++;
+			if (![object_ isEqual:
+			    [compareArray objectAtIndex: idx]])
+				blockOK = false;
 		}];
 
-		if (count != cmp.count)
-			blockOk = false;
+		if (count != compareArray.count)
+			blockOK = false;
 
-		TEST(@"Enumeration using blocks", blockOk)
+		TEST(@"Enumeration using blocks", blockOK)
 
-		blockOk = false;
-		a2 = m[0];
+		blockOK = false;
+		mutableArray3 = mutableArray1;
 		@try {
-			[a2 enumerateObjectsUsingBlock:
-			    ^ (id object, size_t idx, bool *stop) {
-				[a2 removeObjectAtIndex: idx];
+			[mutableArray3 enumerateObjectsUsingBlock:
+			    ^ (id object_, size_t idx, bool *stop) {
+				[mutableArray3 removeObjectAtIndex: idx];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
-			blockOk = true;
+			blockOK = true;
 		} @catch (OFOutOfRangeException *e) {
 			/*
 			 * Out of bounds access due to enumeration not being
@@ -363,43 +377,46 @@ static OFString *c_ary[] = {
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",
-		    blockOk)
+		    blockOK)
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([m[0] replaceObjectsUsingBlock: ^ id (id object, size_t idx) {
-		switch (idx) {
-		case 0:
-			return @"foo";
-		case 1:
-			return @"bar";
-		}
+	    R([mutableArray1 replaceObjectsUsingBlock:
+		^ id (id object_, size_t idx) {
+		    switch (idx) {
+		    case 0:
+			    return @"foo";
+		    case 1:
+			    return @"bar";
+		    }
 
-		return nil;
-	    }]) && [m[0].description isEqual: @"(\n\tfoo,\n\tbar\n)"])
+		    return nil;
+	    }]) && [mutableArray1.description isEqual: @"(\n\tfoo,\n\tbar\n)"])
 
 	TEST(@"-[mappedArrayUsingBlock:]",
-	    [[m[0] mappedArrayUsingBlock: ^ id (id object, size_t idx) {
-		switch (idx) {
-		case 0:
-			return @"foobar";
-		case 1:
-			return @"qux";
-		}
+	    [[mutableArray1 mappedArrayUsingBlock:
+		^ id (id object_, size_t idx) {
+		    switch (idx) {
+		    case 0:
+			    return @"foobar";
+		    case 1:
+			    return @"qux";
+		    }
 
-		return nil;
+		    return nil;
 	    }].description isEqual: @"(\n\tfoobar,\n\tqux\n)"])
 
 	TEST(@"-[filteredArrayUsingBlock:]",
-	    [[m[0] filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
-		return [object isEqual: @"foo"];
+	    [[mutableArray1 filteredArrayUsingBlock:
+		^ bool (id object_, size_t idx) {
+		    return [object_ isEqual: @"foo"];
 	    }].description isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",
 	    [[arrayClass arrayWithObjects: [OFMutableString string], @"foo",
 	    @"bar", @"baz", nil] foldUsingBlock: ^ id (id left, id right) {
-		[left appendString: right];
-		return left;
+		    [left appendString: right];
+		    return left;
 	    }])
 #endif
 
@@ -411,14 +428,14 @@ static OFString *c_ary[] = {
 	    [[[arrayClass arrayWithObjects: @"1", @"2", nil]
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
 
-	m[0] = [mutableArrayClass arrayWithObjects:
+	mutableArray1 = [mutableArrayClass arrayWithObjects:
 	    [OFMutableURL URLWithString: @"http://foo.bar/"],
 	    [OFMutableURL URLWithString: @"http://bar.qux/"],
 	    [OFMutableURL URLWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
-	    R([m[0] setValue: [OFNumber numberWithShort: 1234]
-		      forKey: @"port"]) &&
-	    [m[0] isEqual: [arrayClass arrayWithObjects:
+	    R([mutableArray1 setValue: [OFNumber numberWithShort: 1234]
+			       forKey: @"port"]) &&
+	    [mutableArray1 isEqual: [arrayClass arrayWithObjects:
 	    [OFURL URLWithString: @"http://foo.bar:1234/"],
 	    [OFURL URLWithString: @"http://bar.qux:1234/"],
 	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])

@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"Runtime (ARC)";
+static OFString *const module = @"Runtime (ARC)";
 
 @interface RuntimeARCTest: OFObject
 @end

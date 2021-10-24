@@ -25,7 +25,7 @@ static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-objc_init_static_instances(struct objc_symtab *symtab)
+objc_initStaticInstances(struct objc_symtab *symtab)
 {
 	struct objc_static_instances **staticInstances;
 
@@ -95,7 +95,7 @@ objc_init_static_instances(struct objc_symtab *symtab)
 }
 
 void
-objc_forget_pending_static_instances()
+objc_forgetPendingStaticInstances()
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;

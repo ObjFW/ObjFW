@@ -35,8 +35,10 @@ OF_DIRECT_MEMBERS
 	uint32_t _slidingWindowIndex, _slidingWindowMask;
 	int _state;
 	uint16_t _symbolsLeft;
-	OFHuffmanTree *_Nullable _codeLenTree, *_Nullable _litLenTree;
-	OFHuffmanTree *_Nullable _distTree, *_Nullable _treeIter;
+	OFHuffmanTree _Nullable _codeLenTree;
+	OFHuffmanTree _Nullable _litLenTree;
+	OFHuffmanTree _Nullable _distTree;
+	OFHuffmanTree _Nullable _treeIter;
 	uint16_t _codesCount, _codesReceived;
 	bool _currentIsExtendedLength, _skip;
 	uint8_t *_Nullable _codesLengths;

@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The parameters for @ref OFPBKDF2.
  */
-typedef struct OFPBKDF2Parameters {
+typedef struct {
 	/** @brief The HMAC to use to derive a key. */
 	__unsafe_unretained OFHMAC *HMAC;
 	/** @brief The number of iterations to perform. */

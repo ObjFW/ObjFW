@@ -79,8 +79,8 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-static struct OFFileHandle
-	struct OFFileHandle *previous, *next;
+static struct _OFFileHandle {
+	struct _OFFileHandle *previous, *next;
 	BPTR handle;
 	bool append;
 } *firstHandle = NULL;
@@ -90,6 +90,8 @@ closeHandle(OFFileHandle handle)
 {
 	Close(handle->handle);
 
+	Forbid();
+
 	if (handle->previous != NULL)
 		handle->previous->next = handle->next;
 	if (handle->next != NULL)
@@ -97,6 +99,8 @@ closeHandle(OFFileHandle handle)
 
 	if (firstHandle == handle)
 		firstHandle = handle->next;
+
+	Permit();
 
 	OFFreeMemory(handle);
 }
@@ -292,6 +296,8 @@ parseMode(const char *mode, bool *append)
 				}
 			}
 
+			Forbid();
+
 			handle->previous = NULL;
 			handle->next = firstHandle;
 
@@ -299,6 +305,8 @@ parseMode(const char *mode, bool *append)
 				firstHandle->previous = handle;
 
 			firstHandle = handle;
+
+			Permit();
 		} @catch (id e) {
 			OFFreeMemory(handle);
 			@throw e;

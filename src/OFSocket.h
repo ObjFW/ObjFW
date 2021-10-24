@@ -146,7 +146,7 @@ struct sockaddr_un {
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-struct OF_BOXABLE OFSocketAddress {
+typedef struct OF_BOXABLE {
 	/*
 	 * Even though struct sockaddr contains the family, we need to use our
 	 * own family, as we need to support storing an IPv6 address on systems
@@ -163,8 +163,7 @@ struct OF_BOXABLE OFSocketAddress {
 		struct sockaddr_un un;
 	} sockaddr;
 	socklen_t length;
-};
-typedef struct OFSocketAddress OFSocketAddress;
+} OFSocketAddress;
 
 #ifdef __cplusplus
 extern "C" {

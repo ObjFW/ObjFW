@@ -19,9 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"PBKDF2";
+static OFString *const module = @"OFPBKDF2";
 
-@implementation TestsAppDelegate (PBKDF2Tests)
+@implementation TestsAppDelegate (OFPBKDF2Tests)
 - (void)PBKDF2Tests
 {
 	void *pool = objc_autoreleasePoolPush();

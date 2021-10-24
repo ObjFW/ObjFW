@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The operating system on which compressed the data.
  */
-typedef enum OFGZIPStreamOperatingSystem {
+typedef enum {
 	OFGZIPStreamOperatingSystemFAT	       =   0,
 	OFGZIPStreamOperatingSystemAmiga       =   1,
 	OFGZIPStreamOperatingSystemVMS	       =   2,

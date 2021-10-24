@@ -17,15 +17,15 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFStream";
+static OFString *const module = @"OFStream";
 
-@interface StreamTester: OFStream
+@interface StreamTest: OFStream
 {
 	int state;
 }
 @end
 
-@implementation StreamTester
+@implementation StreamTest
 - (bool)lowlevelIsAtEndOfStream
 {
 	return (state > 1);
@@ -64,19 +64,22 @@ static OFString *module = @"OFStream";
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t pageSize = [OFSystemInfo pageSize];
-	StreamTester *t = [[[StreamTester alloc] init] autorelease];
-	OFString *str;
-	char *cstr;
+	StreamTest *test = [[[StreamTest alloc] init] autorelease];
+	OFString *string;
+	char *cString;
 
-	cstr = OFAllocMemory(pageSize - 2, 1);
-	memset(cstr, 'X', pageSize - 3);
-	cstr[pageSize - 3] = '\0';
+	cString = OFAllocMemory(pageSize - 2, 1);
+	memset(cString, 'X', pageSize - 3);
+	cString[pageSize - 3] = '\0';
 
-	TEST(@"-[readLine]", [[t readLine] isEqual: @"foo"] &&
-	    [(str = [t readLine]) length] == pageSize - 3 &&
-	    !strcmp(str.UTF8String, cstr))
+	TEST(@"-[readLine] #1", [[test readLine] isEqual: @"foo"])
 
-	OFFreeMemory(cstr);
+	string = [test readLine];
+	TEST(@"-[readLine] #2", string != nil &&
+	    string.length == pageSize - 3 &&
+	    !strcmp(string.UTF8String, cString))
+
+	OFFreeMemory(cString);
 
 	objc_autoreleasePoolPop(pool);
 }

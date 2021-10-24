@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFBlock";
+static OFString *const module = @"OFBlock";
 
 #if defined(OF_OBJFW_RUNTIME)
 extern struct objc_class _NSConcreteStackBlock;
@@ -29,7 +29,7 @@ extern void *_NSConcreteGlobalBlock;
 extern void *_NSConcreteMallocBlock;
 #endif
 
-static void (^g)(void) = ^ {};
+static void (^globalBlock)(void) = ^ {};
 
 static int
 (^returnStackBlock(void))(void)
@@ -43,12 +43,12 @@ static double
 forwardTest(void)
 {
 	__block double d;
-	void (^b)(void) = Block_copy(^ {
+	void (^block)(void) = Block_copy(^ {
 		d = 5;
 	});
 
-	b();
-	Block_release(b);
+	block();
+	Block_release(block);
 
 	return d;
 }
@@ -58,13 +58,16 @@ forwardTest(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 	__block int x;
-	void (^s)(void) = ^ { x = 0; };
-	void (^m)(void);
-	int (^v)(void);
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
+	void (^mallocBlock)(void);
+	int (^voidBlock)(void);
 
 	TEST(@"Class of stack block",
 	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
-	    [s isKindOfClass: [OFBlock class]])
+	    [stackBlock isKindOfClass: [OFBlock class]])
 
 #if !defined(OF_WINDOWS) || !defined(__clang__) || !defined(OF_NO_SHARED)
 	/*
@@ -73,36 +76,39 @@ forwardTest(void)
 	 */
 	TEST(@"Class of global block",
 	    (Class)&_NSConcreteGlobalBlock == objc_getClass("OFGlobalBlock") &&
-	    [g isKindOfClass: [OFBlock class]])
+	    [globalBlock isKindOfClass: [OFBlock class]])
 #endif
 
 	TEST(@"Class of a malloc block",
 	    (Class)&_NSConcreteMallocBlock == objc_getClass("OFMallocBlock"))
 
 	TEST(@"Copying a stack block",
-	    (m = [[s copy] autorelease]) &&
-	    [m class] == objc_getClass("OFMallocBlock") &&
-	    [m isKindOfClass: [OFBlock class]])
+	    (mallocBlock = [[stackBlock copy] autorelease]) &&
+	    [mallocBlock class] == objc_getClass("OFMallocBlock") &&
+	    [mallocBlock isKindOfClass: [OFBlock class]])
 
 	TEST(@"Copying a stack block and referencing its variable",
 	    forwardTest() == 5)
 
 	TEST(@"Copying a stack block and using its copied variable",
-	    (v = returnStackBlock()) && v() == 43 && v() == 44 && v() == 45)
+	    (voidBlock = returnStackBlock()) && voidBlock() == 43 &&
+	    voidBlock() == 44 && voidBlock() == 45)
 
-	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
+	TEST(@"Copying a global block",
+	    (id)globalBlock == [[globalBlock copy] autorelease])
 
 #ifndef __clang_analyzer__
 	TEST(@"Copying a malloc block",
-	    (id)m == [m copy] && [m retainCount] == 2)
+	    (id)mallocBlock == [mallocBlock copy] &&
+	    [mallocBlock retainCount] == 2)
 #endif
 
-	TEST(@"Autorelease a stack block", R([s autorelease]))
+	TEST(@"Autorelease a stack block", R([stackBlock autorelease]))
 
-	TEST(@"Autorelease a global block", R([g autorelease]))
+	TEST(@"Autorelease a global block", R([globalBlock autorelease]))
 
 #ifndef __clang_analyzer__
-	TEST(@"Autorelease a malloc block", R([m autorelease]))
+	TEST(@"Autorelease a malloc block", R([mallocBlock autorelease]))
 #endif
 
 	objc_autoreleasePoolPop(pool);

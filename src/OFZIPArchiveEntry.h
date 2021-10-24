@@ -19,7 +19,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
-typedef enum OFZIPArchiveEntryCompressionMethod {
+typedef enum {
 	OFZIPArchiveEntryCompressionMethodNone		=  0,
 	OFZIPArchiveEntryCompressionMethodShrink	=  1,
 	OFZIPArchiveEntryCompressionMethodReduceFactor1 =  2,
@@ -38,7 +38,7 @@ typedef enum OFZIPArchiveEntryCompressionMethod {
 /**
  * @brief Attribute compatibility part of ZIP versions.
  */
-typedef enum OFZIPArchiveEntryAttributeCompatibility {
+typedef enum {
 	/** MS-DOS and OS/2 */
 	OFZIPArchiveEntryAttributeCompatibilityMSDOS	    =  0,
 	/** Amiga */
@@ -84,7 +84,7 @@ typedef enum OFZIPArchiveEntryAttributeCompatibility {
 /**
  * @brief Tags for the extra field.
  */
-typedef enum OFZIPArchiveEntryExtraFieldTag {
+typedef enum {
 	/** ZIP64 extra field tag */
 	OFZIPArchiveEntryExtraFieldTagZIP64 = 0x0001
 } OFZIPArchiveEntryExtraFieldTag;

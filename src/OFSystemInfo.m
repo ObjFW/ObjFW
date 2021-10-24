@@ -30,12 +30,15 @@
 # include <sys/sysctl.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# include <exec/execbase.h>
+# include <proto/exec.h>
+#endif
+
 #if defined(OF_AMIGAOS4)
 # include <exec/exectags.h>
-# include <proto/exec.h>
 #elif defined(OF_MORPHOS)
 # include <exec/system.h>
-# include <proto/exec.h>
 #endif
 
 #import "OFSystemInfo.h"
@@ -214,12 +217,10 @@ initOperatingSystemVersion(void)
 # endif
 #elif defined(OF_ANDROID)
 	/* TODO */
-#elif defined(OF_MORPHOS)
-	/* TODO */
-#elif defined(OF_AMIGAOS4)
-	/* TODO */
-#elif defined(OF_AMIGAOS_M68K)
-	/* TODO */
+#elif defined(OF_AMIGAOS)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"Kickstart %u.%u",
+			    SysBase->LibNode.lib_Version, SysBase->SoftVer];
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)
 	/* Intentionally nothing */
@@ -354,8 +355,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(
@@ -447,8 +447,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(
@@ -524,6 +523,57 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [var stringByAppendingPathComponent: @".config"];
 # endif
 }
+
++ (OFString *)temporaryDirectoryPath
+{
+# if defined(OF_MACOS) || defined(OF_IOS)
+	char buffer[PATH_MAX];
+	size_t length;
+
+	if ((length = confstr(_CS_DARWIN_USER_TEMP_DIR, buffer, PATH_MAX)) == 0)
+		return @"/tmp";
+
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]
+				    length: length - 1];
+# elif defined(OF_WINDOWS)
+	if ([self isWindowsNT]) {
+		wchar_t buffer[PATH_MAX];
+
+		if (!GetTempPathW(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithUTF16String: buffer];
+	} else {
+		char buffer[PATH_MAX];
+
+		if (!GetTempPathA(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithCString: buffer
+					  encoding: [OFLocale encoding]];
+	}
+# elif defined(OF_HAIKU)
+	char pathC[PATH_MAX];
+
+	if (find_directory(B_SYSTEM_TEMP_DIRECTORY, 0, false,
+	    pathC, PATH_MAX) != B_OK)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return [OFString stringWithUTF8String: pathC];
+# elif defined(OF_AMIGAOS)
+	return @"T:";
+# else
+	OFString *path =
+	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
+
+	if (path != nil)
+		return path;
+
+	return @"/tmp";
+# endif
+}
 #endif
 
 + (OFString *)CPUVendor
@@ -542,6 +592,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [OFString stringWithCString: (char *)buffer
 				  encoding: OFStringEncodingASCII
 				    length: 12];
+#elif defined(OF_M68K)
+	return @"Motorola";
 #else
 	return nil;
 #endif
@@ -576,6 +628,19 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	else
 		return [OFString stringWithCString: model
 					  encoding: OFStringEncodingASCII];
+#elif defined(OF_AMIGAOS_M68K)
+	if (SysBase->AttnFlags & AFF_68060)
+		return @"68060";
+	if (SysBase->AttnFlags & AFF_68040)
+		return @"68040";
+	if (SysBase->AttnFlags & AFF_68030)
+		return @"68030";
+	if (SysBase->AttnFlags & AFF_68020)
+		return @"68020";
+	if (SysBase->AttnFlags & AFF_68010)
+		return @"68010";
+	else
+		return @"68000";
 #else
 	return nil;
 #endif

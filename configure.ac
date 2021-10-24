@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.1-dev, js@nil.im)
+AC_INIT(ObjFW, 1.1dev, js@nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
@@ -49,7 +49,8 @@ m68k-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
 		dnl For 68000, GCC emits calls to helper functions that
 		dnl do not work properly in a library.
 		t="-mcpu=68020 -fbaserel -noixemul -ffreestanding"
@@ -80,7 +81,8 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFW_LIB_MAJOR}ppc.library'])
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul -ldebug"
@@ -259,15 +261,6 @@ case "$OBJC" in
 	i?86-*-darwin* | x86_64-*-darwin*)
 		dnl Don't use -no-integrated-as on Darwin. It breaks building
 		dnl for the iOS simulator.
-		;;
-	i?86-*-* | x86_64-*-*)
-		dnl Many older Clang versions don't support jmp short.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
-	*-*-mingw*)
-		dnl Clang's assembler on Windows is not complete yet and cannot
-		dnl compile all .S files.
-		ASFLAGS="$ASFLAGS -no-integrated-as"
 		;;
 	sparc64-*-*openbsd*)
 		dnl Clang generates assembly output on SPARC64 that OpenBSD's
@@ -979,6 +972,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	AC_DEFINE(OF_HAVE_THREADS, 1, [Whether we have threads])
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
+	AC_SUBST(OBJC_SYNC, objc_sync)
 
 	AC_ARG_ENABLE(compiler-tls,
 		AS_HELP_STRING([--disable-compiler-tls],
@@ -1371,6 +1365,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
 		])
 	], [
+		dnl Work around a bug in autoconf 2.61 that creates a broken
+		dnl configure if this branch is empty.
+		:
 	], [
 		#ifdef _WIN32
 		typedef int BOOL;
@@ -1841,6 +1838,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			#endif
 			@interface Test
 			@end
+
+			/**
+			 * @struct Foo conftest.m conftest.m
+			 */
+			typedef struct {} Foo;
 		])
 	], [
 		AC_MSG_RESULT(yes)
@@ -1924,7 +1926,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	esac
 
 	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(RUN_TESTS, "run")
 		AC_SUBST(WRAPPER, "$WINE")
 	])
 
@@ -1938,8 +1939,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-], [
-	AC_SUBST(RUN_TESTS, "run")
 ])
 
 AC_ARG_WITH(fish_completions,

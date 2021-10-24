@@ -588,8 +588,21 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 				    URLQueryAllowedCharacterSet]);
 			}
 
+			/*
+			 * Some versions of GCC issue a false-positive warning
+			 * (turned error) about a string overflow. This is a
+			 * false positive because UTF8String is set to tmp
+			 * above and tmp is either NULL or points *after* the
+			 * slash for the path. So all we do here is go back to
+			 * that slash and restore it.
+			 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
 			UTF8String--;
 			*UTF8String = '/';
+#pragma GCC diagnostic pop
 
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
