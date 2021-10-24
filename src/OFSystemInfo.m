@@ -30,12 +30,15 @@
 # include <sys/sysctl.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# include <exec/execbase.h>
+# include <proto/exec.h>
+#endif
+
 #if defined(OF_AMIGAOS4)
 # include <exec/exectags.h>
-# include <proto/exec.h>
 #elif defined(OF_MORPHOS)
 # include <exec/system.h>
-# include <proto/exec.h>
 #endif
 
 #import "OFSystemInfo.h"
@@ -214,12 +217,10 @@ initOperatingSystemVersion(void)
 # endif
 #elif defined(OF_ANDROID)
 	/* TODO */
-#elif defined(OF_MORPHOS)
-	/* TODO */
-#elif defined(OF_AMIGAOS4)
-	/* TODO */
-#elif defined(OF_AMIGAOS_M68K)
-	/* TODO */
+#elif defined(OF_AMIGAOS)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"Kickstart %u.%u",
+			    SysBase->LibNode.lib_Version, SysBase->SoftVer];
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)
 	/* Intentionally nothing */
@@ -591,6 +592,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [OFString stringWithCString: (char *)buffer
 				  encoding: OFStringEncodingASCII
 				    length: 12];
+#elif defined(OF_M68K)
+	return @"Motorola";
 #else
 	return nil;
 #endif
@@ -625,6 +628,19 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	else
 		return [OFString stringWithCString: model
 					  encoding: OFStringEncodingASCII];
+#elif defined(OF_AMIGAOS_M68K)
+	if (SysBase->AttnFlags & AFF_68060)
+		return @"68060";
+	if (SysBase->AttnFlags & AFF_68040)
+		return @"68040";
+	if (SysBase->AttnFlags & AFF_68030)
+		return @"68030";
+	if (SysBase->AttnFlags & AFF_68020)
+		return @"68020";
+	if (SysBase->AttnFlags & AFF_68010)
+		return @"68010";
+	else
+		return @"68000";
 #else
 	return nil;
 #endif
