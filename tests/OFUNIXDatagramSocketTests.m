@@ -30,8 +30,17 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	OFSocketAddress address1, address2;
 	char buffer[5];
 
+#ifdef OF_HAVE_FILES
 	path = [[OFSystemInfo temporaryDirectoryPath]
 	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
+#else
+	/*
+	 * We can have sockets, including UNIX sockets, while file support is
+	 * disabled.
+	 */
+	path = [OFString stringWithFormat: @"/tmp/%@",
+					   [[OFUUID UUID] UUIDString]];
+#endif
 
 	@try {
 		TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
@@ -50,7 +59,9 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 		    OFSocketAddressHash(&address1) ==
 		    OFSocketAddressHash(&address2))
 	} @finally {
+#ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];
+#endif
 	}
 
 	objc_autoreleasePoolPop(pool);
