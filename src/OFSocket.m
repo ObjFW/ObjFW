@@ -551,8 +551,8 @@ OFSocketAddressMakeUNIX(OFString *path)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyUNIX;
-	ret.length = (socklen_t)(sizeof(ret.sockaddr.un) -
-	    (sizeof(ret.sockaddr.un.sun_path) - length));
+	ret.length = (socklen_t)
+	    (offsetof(struct sockaddr_un, sun_path) + length);
 
 #ifdef AF_UNIX
 	ret.sockaddr.un.sun_family = AF_UNIX;
