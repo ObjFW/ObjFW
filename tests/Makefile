@@ -70,7 +70,8 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+		    OFUNIXStreamSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 

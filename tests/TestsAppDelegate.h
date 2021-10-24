@@ -247,6 +247,10 @@
 - (void)UNIXDatagramSocketTests;
 @end
 
+@interface TestsAppDelegate (OFUNIXStreamSocketTests)
+- (void)UNIXStreamSocketTests;
+@end
+
 @interface TestsAppDelegate (OFURLTests)
 - (void)URLTests;
 @end

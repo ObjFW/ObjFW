@@ -21,21 +21,22 @@
 # include <fcntl.h>
 #endif
 
-#import "OFUNIXDatagramSocket.h"
+#import "OFUNIXStreamSocket.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
+#import "OFConnectionFailedException.h"
 
-@implementation OFUNIXDatagramSocket
+@implementation OFUNIXStreamSocket
 @dynamic delegate;
 
-- (OFSocketAddress)bindToPath: (OFString *)path
+- (void)connectToPath: (OFString *)path
 {
 	OFSocketAddress address;
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
 
@@ -45,7 +46,45 @@
 	address = OFSocketAddressMakeUNIX(path);
 
 	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+		@throw [OFConnectionFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: OFSocketErrNo()];
+
+	_canBlock = true;
+
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
+
+	if (connect(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+		int errNo = OFSocketErrNo();
+
+		closesocket(_socket);
+		_socket = OFInvalidSocketHandle;
+
+		@throw [OFConnectionFailedException exceptionWithPath: path
+							       socket: self
+								errNo: errNo];
+	}
+}
+
+- (void)bindToPath: (OFString *)path
+{
+	OFSocketAddress address;
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
+#endif
+
+	if (_socket != OFInvalidSocketHandle)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
+	address = OFSocketAddressMakeUNIX(path);
+
+	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPath: path
 			       socket: self
@@ -53,7 +92,7 @@
 
 	_canBlock = true;
 
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
@@ -68,7 +107,5 @@
 							 socket: self
 							  errNo: errNo];
 	}
-
-	return address;
 }
 @end

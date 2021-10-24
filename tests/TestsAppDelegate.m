@@ -357,6 +357,7 @@ main(int argc, char *argv[])
 # endif
 # ifdef OF_HAVE_UNIX_SOCKETS
 	[self UNIXDatagramSocketTests];
+	[self UNIXStreamSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif

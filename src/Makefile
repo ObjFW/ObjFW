@@ -143,7 +143,8 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+		    OFUNIXStreamSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\

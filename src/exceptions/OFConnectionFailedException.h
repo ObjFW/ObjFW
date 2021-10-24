@@ -31,18 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFConnectionFailedException: OFException
 {
-	id _socket;
 	OFString *_host;
 	uint16_t _port;
 	unsigned char _node[IPX_NODE_LEN];
 	uint32_t _network;
+	OFString *_Nullable _path;
+	id _socket;
 	int _errNo;
 }
-
-/**
- * @brief The socket which could not connect.
- */
-@property (readonly, nonatomic) id socket;
 
 /**
  * @brief The host to which the connection failed.
@@ -63,6 +59,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The IPX network of the node to which the connection failed.
  */
 @property (readonly, nonatomic) uint32_t network;
+
+/**
+ * @brief The path to which the connection failed.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
+
+/**
+ * @brief The socket which could not connect.
+ */
+@property (readonly, nonatomic) id socket;
 
 /**
  * @brief The errno of the error that occurred.
@@ -101,6 +107,18 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
+/**
+ * @brief Creates a new, autoreleased connection failed exception.
+ *
+ * @param path The path to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased connection failed exception
+ */
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -130,6 +148,18 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithNode: (unsigned char [_Nullable IPX_NODE_LEN])node
 		     network: (uint32_t)network
 			port: (uint16_t)port
+		      socket: (id)socket
+		       errNo: (int)errNo;
+
+/**
+ * @brief Initializes an already allocated connection failed exception.
+ *
+ * @param path The path to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return An initialized connection failed exception
+ */
+- (instancetype)initWithPath: (OFString *)path
 		      socket: (id)socket
 		       errNo: (int)errNo;
 @end
