@@ -41,6 +41,9 @@
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
+#ifdef OF_HAVE_AFUNIX_H
+# include <afunix.h>
+#endif
 
 #ifdef OF_WINDOWS
 # include <windows.h>

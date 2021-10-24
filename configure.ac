@@ -1461,6 +1461,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AC_CHECK_HEADERS(afunix.h, [
+		AC_DEFINE(OF_HAVE_AFUNIX_H, 1, [Whether we have afunix.h])
+	], [], [
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
 	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
 		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
 			[Whether we have UNIX sockets])
@@ -1471,6 +1478,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 		#ifdef OF_HAVE_SYS_UN_H
 		# include <sys/un.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+		#ifdef HAVE_AFUNIX_H
+		# include <afunix.h>
 		#endif
 
 		#ifdef __morphos__

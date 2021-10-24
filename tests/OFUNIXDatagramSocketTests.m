@@ -42,11 +42,25 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 					   [[OFUUID UUID] UUIDString]];
 #endif
 
+	TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
+
 	@try {
-		TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
-
 		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
+	} @catch (OFBindFailedException *e) {
+		if (e.errNo == EAFNOSUPPORT) {
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFUNIXDatagramSocket] -[bindToPath:]: "
+			    @"UNIX datagram sockets unsupported, skipping "
+			    @"tests"];
 
+			objc_autoreleasePoolPop(pool);
+			return;
+		} else
+			@throw e;
+	}
+
+	@try {
 		TEST(@"-[sendBuffer:length:receiver:]",
 		    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
 
