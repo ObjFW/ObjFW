@@ -908,21 +908,19 @@ OFSocketAddressIPXNode(const OFSocketAddress *address,
 OFString *
 OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 {
-	const socklen_t maxLength = (socklen_t)sizeof(address->sockaddr.un);
-	size_t length;
+	socklen_t length;
 
-	if (address->family != OFSocketAddressFamilyUNIX ||
-	    address->length > maxLength)
+	if (address->family != OFSocketAddressFamilyUNIX)
 		@throw [OFInvalidArgumentException exception];
 
-	length = sizeof(address->sockaddr.un.sun_path) -
-	    (maxLength - address->length);
+	length = address->length - offsetof(struct sockaddr_un, sun_path);
 
-	if (length == 0)
+	for (socklen_t i = 0; i < length; i++)
+		if (address->sockaddr.un.sun_path[i] == 0)
+			length = i;
+
+	if (length <= 0)
 		return nil;
-
-	while (address->sockaddr.un.sun_path[length - 1] == '\0')
-		length--;
 
 	return [OFString stringWithCString: address->sockaddr.un.sun_path
 				  encoding: [OFLocale encoding]
