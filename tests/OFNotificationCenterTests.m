@@ -123,7 +123,7 @@ static const OFNotificationName otherNotificationName =
 	    test1->_received == 2 && test2->_received == 4 &&
 	    test3->_received == 0 && test4->_received == 0)
 
-	/* Act like the blocks test didn't happen. */
+	/* Act like the block test didn't happen. */
 	[center removeObserver: handle];
 	test1->_received--;
 	test2->_received--;

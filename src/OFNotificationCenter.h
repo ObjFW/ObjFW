@@ -121,6 +121,27 @@ typedef void (^OFNotificationCenterBlock)(OFNotification *notification);
  * @param notification The notification to post
  */
 - (void)postNotification: (OFNotification *)notification;
+
+/**
+ * @brief Posts a notification with the specified name and object.
+ *
+ * @param name The name for the notification
+ * @param object The object for the notification
+ */
+- (void)postNotificationName: (OFNotificationName)name
+		      object: (nullable id)object;
+
+/**
+ * @brief Posts a notification with the specified name, object and additional
+ *	  information.
+ *
+ * @param name The name for the notification
+ * @param object The object for the notification
+ * @param userInfo Additional information for the notification
+ */
+- (void)postNotificationName: (OFNotificationName)name
+		      object: (nullable id)object
+		    userInfo: (nullable OFDictionary *)userInfo;
 @end
 
 OF_ASSUME_NONNULL_END

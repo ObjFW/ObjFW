@@ -107,10 +107,10 @@ static OFNotificationCenter *defaultCenter;
 {
 	[_name release];
 	[_observer release];
+	[_object release];
 #ifdef OF_HAVE_BLOCKS
 	[_block release];
 #endif
-	[_object release];
 
 	[super dealloc];
 }
@@ -269,6 +269,8 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)removeObserver: (OFNotificationCenterHandle *)handle
 {
+	void *pool = objc_autoreleasePoolPush();
+
 	if (![handle isKindOfClass: [OFNotificationCenterHandle class]])
 		@throw [OFInvalidArgumentException exception];
 
@@ -288,6 +290,8 @@ static OFNotificationCenter *defaultCenter;
 		[_mutex unlock];
 	}
 #endif
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeObserver: (id)observer
@@ -344,6 +348,26 @@ static OFNotificationCenter *defaultCenter;
 		}
 #endif
 	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)postNotificationName: (OFNotificationName)name
+		      object: (nullable id)object
+{
+	[self postNotificationName: name object: object userInfo: nil];
+}
+
+- (void)postNotificationName: (OFNotificationName)name
+		      object: (nullable id)object
+		    userInfo: (nullable OFDictionary *)userInfo
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self postNotification:
+	    [OFNotification notificationWithName: name
+					  object: object
+					userInfo: userInfo]];
 
 	objc_autoreleasePoolPop(pool);
 }
