@@ -271,8 +271,10 @@ static OFNotificationCenter *defaultCenter;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (![handle isKindOfClass: [OFNotificationCenterHandle class]])
+	/* {} required to avoid -Wmisleading-indentation false positive. */
+	if (![handle isKindOfClass: [OFNotificationCenterHandle class]]) {
 		@throw [OFInvalidArgumentException exception];
+	}
 
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];

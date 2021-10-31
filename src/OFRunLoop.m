@@ -1416,13 +1416,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	OFRunLoopState *state = stateForMode(self, mode, false);
 
-	if (state == nil)
+	/* {} required to avoid -Wmisleading-indentation false positive. */
+	if (state == nil) {
 		return;
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+	}
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1440,8 +1437,6 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 		[state->_timersQueueMutex unlock];
 	}
 #endif
-
-#pragma GCC diagnostic pop
 }
 
 #ifdef OF_AMIGAOS
