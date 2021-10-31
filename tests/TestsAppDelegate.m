@@ -331,6 +331,7 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self numberTests];
 	[self streamTests];
+	[self notificationCenterTests];
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self RIPEMD160HashTests];
