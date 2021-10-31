@@ -50,6 +50,8 @@
 #import "OFURLHandler.h"
 #import "OFColor.h"
 
+#import "OFNotification.h"
+
 #import "OFStream.h"
 #import "OFStdIOStream.h"
 #import "OFInflateStream.h"
