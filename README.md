@@ -124,6 +124,12 @@ other place, you are most likely using a mirror.
 
     $ fossil artifact current | gpg --verify
 
+  Please note that not all checkins are signed, as the signing key only resides
+  on trusted systems. This means that checkins I perform on e.g. Windows are
+  unsigned. However, usually it should not take long until there is another
+  signed checkin. Alternatively, you can go back until the last signed checkin
+  and review changes from there on.
+
 <h2 id="cloning-git">Git</h2>
 
   To clone the Git repository, use the following:
