@@ -16,6 +16,7 @@
 #include "config.h"
 
 #import "OFNotificationCenter.h"
+#import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
@@ -26,7 +27,7 @@
 @interface OFDefaultNotificationCenter: OFNotificationCenter
 @end
 
-@interface OFNotificationRegistration: OFObject
+@interface OFNotificationHandler: OFObject
 {
 @public
 	id _observer;
@@ -42,7 +43,7 @@
 
 static OFNotificationCenter *defaultCenter;
 
-@implementation OFNotificationRegistration
+@implementation OFNotificationHandler
 - (instancetype)initWithObserver: (id)observer
 			selector: (SEL)selector
 			  object: (id)object
@@ -76,19 +77,18 @@ static OFNotificationCenter *defaultCenter;
 	[super dealloc];
 }
 
-- (bool)isEqual: (OFNotificationRegistration *)registration
+- (bool)isEqual: (OFNotificationHandler *)handler
 {
-	if (![registration isKindOfClass: [OFNotificationRegistration class]])
+	if (![handler isKindOfClass: [OFNotificationHandler class]])
 		return false;
 
-	if (![registration->_observer isEqual: _observer])
+	if (![handler->_observer isEqual: _observer])
 		return false;
 
-	if (!sel_isEqual(registration->_selector, _selector))
+	if (!sel_isEqual(handler->_selector, _selector))
 		return false;
 
-	if (registration->_object != _object &&
-	    ![registration->_object isEqual: _object])
+	if (handler->_object != _object && ![handler->_object isEqual: _object])
 		return false;
 
 	return true;
@@ -157,8 +157,7 @@ static OFNotificationCenter *defaultCenter;
 	     object: (id)object
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFNotificationRegistration *registration =
-	    [[[OFNotificationRegistration alloc]
+	OFNotificationHandler *handler = [[[OFNotificationHandler alloc]
 	    initWithObserver: observer
 		    selector: selector
 		      object: object] autorelease];
@@ -166,6 +165,7 @@ static OFNotificationCenter *defaultCenter;
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 	@try {
+#endif
 		OFMutableSet *notificationsForName =
 		    [_notifications objectForKey: name];
 
@@ -175,8 +175,7 @@ static OFNotificationCenter *defaultCenter;
 					   forKey: name];
 		}
 
-		[notificationsForName addObject: registration];
-#endif
+		[notificationsForName addObject: handler];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[_mutex unlock];
@@ -192,8 +191,7 @@ static OFNotificationCenter *defaultCenter;
 		object: (id)object
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFNotificationRegistration *registration =
-	    [[[OFNotificationRegistration alloc]
+	OFNotificationHandler *handler = [[[OFNotificationHandler alloc]
 	    initWithObserver: observer
 		    selector: selector
 		      object: object] autorelease];
@@ -201,9 +199,8 @@ static OFNotificationCenter *defaultCenter;
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 	@try {
-		[[_notifications objectForKey: name]
-		    removeObject: registration];
 #endif
+		[[_notifications objectForKey: name] removeObject: handler];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[_mutex unlock];
@@ -215,29 +212,33 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)postNotification: (OFNotification *)notification
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *matchedHandlers = [OFMutableArray array];
+
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 	@try {
-		for (OFNotificationRegistration *registration in
-		    [_notifications objectForKey: notification.name]) {
-			void (*callback)(id, SEL, OFNotification *);
-
-			if (registration->_object != nil &&
-			    registration->_object != notification.object)
-				continue;
-
-			callback = (void (*)(id, SEL, OFNotification *))
-			    [registration->_observer methodForSelector:
-			    registration->_selector];
-			callback(registration->_observer,
-			    registration->_selector, notification);
-		}
 #endif
+		for (OFNotificationHandler *handler in
+		    [_notifications objectForKey: notification.name])
+			if (handler->_object == nil ||
+			    handler->_object == notification.object)
+				[matchedHandlers addObject: handler];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[_mutex unlock];
 	}
 #endif
+
+	for (OFNotificationHandler *handler in matchedHandlers) {
+		void (*callback)(id, SEL, OFNotification *) =
+		    (void (*)(id, SEL, OFNotification *))
+		    [handler->_observer methodForSelector: handler->_selector];
+
+		callback(handler->_observer, handler->_selector, notification);
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end
 
