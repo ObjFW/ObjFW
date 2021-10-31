@@ -14,6 +14,7 @@
  */
 
 #import "OFSerialization.h"
+#import "OFString.h"
 
 OFConstantString *const OFSerializationNS =
     @"https://objfw.nil.im/serialization";
