@@ -22,6 +22,16 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
+@class OFNotificationCenterHandle;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * @brief A block which is called when a notification has been posted.
+ *
+ * @param notification The notification that has been posted
+ */
+typedef void (^OFNotificationCenterBlock)(OFNotification *notification);
+#endif
 
 /**
  * @class OFNotificationCenter OFNotificationCenter.h \
@@ -34,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_THREADS
 	OFMutex *_mutex;
 #endif
-	OFMutableDictionary *_notifications;
+	OFMutableDictionary *_handles;
 	OF_RESERVE_IVARS(OFNotificationCenter, 4)
 }
 
@@ -77,6 +87,33 @@ OF_ASSUME_NONNULL_BEGIN
 	      selector: (SEL)selector
 		  name: (OFNotificationName)name
 		object: (nullable id)object;
+
+#ifdef OF_HAVE_BLOCKS
+/**
+ * @brief Adds an observer for the specified notification and object.
+ *
+ * To remove the observer again, use @ref removeObserver:.
+ *
+ * @param name The name of the notification to observe
+ * @param object The object that should be sending the notification, or `nil`
+ *		 if the object should be ignored to determine what
+ *		 notifications to deliver
+ * @param block The block to handle notifications
+ * @return An opaque object to remove the observer again
+ */
+- (OFNotificationCenterHandle *)
+    addObserverForName: (OFNotificationName)name
+		object: (nullable id)object
+	    usingBlock: (OFNotificationCenterBlock)block;
+
+/**
+ * @brief Removes an observer. The specified observer must be one returned by
+ *	  @ref addObserver:selector:name:object:.
+ *
+ * @param observer The object that was returned when adding the observer
+ */
+- (void)removeObserver: (OFNotificationCenterHandle *)observer;
+#endif
 
 /**
  * @brief Posts the specified notification.

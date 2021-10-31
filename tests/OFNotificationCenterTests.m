@@ -107,6 +107,28 @@ static const OFNotificationName otherNotificationName =
 	    test1->_received == 1 && test2->_received == 3 &&
 	    test3->_received == 0 && test4->_received == 0)
 
+#ifdef OF_HAVE_BLOCKS
+	__block bool received = false;
+	OFNotificationCenterHandle *handle;
+
+	notification = [OFNotification notificationWithName: notificationName
+						     object: self];
+	TEST(@"-[addObserverForName:object:usingBlock:]",
+	    (handle = [center addObserverForName: notificationName
+					  object: self
+				      usingBlock: ^ (OFNotification *notif) {
+		OFEnsure(notif == notification && !received);
+		received = true;
+	    }]) && R([center postNotification: notification]) && received &&
+	    test1->_received == 2 && test2->_received == 4 &&
+	    test3->_received == 0 && test4->_received == 0)
+
+	/* Act like the blocks test didn't happen. */
+	[center removeObserver: handle];
+	test1->_received--;
+	test2->_received--;
+#endif
+
 	TEST(@"-[removeObserver:selector:name:object:]",
 	    R([center removeObserver: test1
 			    selector: @selector(handleNotification:)
