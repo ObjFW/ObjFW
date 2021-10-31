@@ -139,6 +139,10 @@
 - (void)methodSignatureTests;
 @end
 
+@interface TestsAppDelegate (OFNotificationCenterTests)
+- (void)notificationCenterTests;
+@end
+
 @interface TestsAppDelegate (OFNumberTests)
 - (void)numberTests;
 @end

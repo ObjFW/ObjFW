@@ -51,6 +51,7 @@
 #import "OFColor.h"
 
 #import "OFNotification.h"
+#import "OFNotificationCenter.h"
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"

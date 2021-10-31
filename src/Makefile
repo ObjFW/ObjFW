@@ -54,6 +54,7 @@ SRCS = OFASPrintF.m			\
        OFMutableURL.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
+       OFNotificationCenter.m		\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\

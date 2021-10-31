@@ -30,7 +30,7 @@ typedef OFConstantString *OFNotificationName;
 /**
  * @class OFNotification OFNotification.h ObjFW/OFNotification.h
  *
- * @brief An class to represent a notification for or from
+ * @brief A class to represent a notification for or from
  *	  @ref OFNotificationCenter.
  */
 OF_SUBCLASSING_RESTRICTED
