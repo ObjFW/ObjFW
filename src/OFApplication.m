@@ -32,6 +32,7 @@
 # import "OFFileManager.h"
 #endif
 #import "OFLocale.h"
+#import "OFNotificationCenter.h"
 #import "OFPair.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
@@ -80,12 +81,18 @@ OF_DIRECT_MEMBERS
 - (void)of_run;
 @end
 
+const OFNotificationName OFApplicationWillTerminateNotification =
+    @"OFApplicationWillTerminateNotification";
 static OFApplication *app = nil;
 
 static void
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
+
+	[[OFNotificationCenter defaultCenter]
+	    postNotificationName: OFApplicationWillTerminateNotification
+			  object: app];
 
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
 		[delegate applicationWillTerminate];
