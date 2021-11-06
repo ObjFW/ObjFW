@@ -769,11 +769,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	[super dealloc];
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	size_t requestedLength = length;
-	size_t ret;
+	/* TODO: Use non-blocking writes */
 
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -787,39 +785,28 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		return 0;
 
 	if (_atEndOfStream)
-		@throw [OFWriteFailedException
-		    exceptionWithObject: self
-			requestedLength: requestedLength
-			   bytesWritten: 0
-				  errNo: 0];
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: 0
+							     errNo: ENOTCONN];
 
 	if (_chunked)
 		[_socket writeFormat: @"%zX\r\n", length];
 	else if (length > _toWrite)
-		length = (size_t)_toWrite;
+		@throw [OFOutOfRangeException exception];
 
-	ret = [_socket writeBuffer: buffer length: length];
+	[_socket writeBuffer: buffer length: length];
 	if (_chunked)
 		[_socket writeString: @"\r\n"];
 
-	if (ret > length)
-		@throw [OFOutOfRangeException exception];
-
 	if (!_chunked) {
-		_toWrite -= ret;
+		_toWrite -= length;
 
 		if (_toWrite == 0)
 			_atEndOfStream = true;
 	}
 
-	if (requestedLength > length)
-		@throw [OFWriteFailedException
-		    exceptionWithObject: self
-			requestedLength: requestedLength
-			   bytesWritten: ret
-				  errNo: 0];
-
-	return ret;
+	return length;
 }
 
 - (bool)lowlevelIsAtEndOfStream

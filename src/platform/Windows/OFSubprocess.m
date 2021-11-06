@@ -361,7 +361,7 @@
 
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: 0
+						      bytesWritten: bytesWritten
 							     errNo: errNo];
 	}
 

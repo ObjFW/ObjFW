@@ -15,6 +15,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -228,8 +229,18 @@ normalizedKey(OFString *key)
 	if (!_headersSent)
 		[self of_sendHeaders];
 
-	if (!_chunked)
-		return [_socket writeBuffer: buffer length: length];
+	if (!_chunked) {
+		@try {
+			[_socket writeBuffer: buffer length: length];
+		} @catch (OFWriteFailedException *e) {
+			if (e.errNo == EWOULDBLOCK)
+				return e.bytesWritten;
+
+			@throw e;
+		}
+
+		return length;
+	}
 
 	pool = objc_autoreleasePoolPush();
 	[_socket writeString: [OFString stringWithFormat: @"%zX\r\n", length]];

@@ -1058,38 +1058,56 @@
 
 - (void)flushWriteBuffer
 {
+	size_t bytesWritten;
+
 	if (_writeBuffer == NULL)
 		return;
 
-	[self lowlevelWriteBuffer: _writeBuffer length: _writeBufferLength];
+	bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
+					  length: _writeBufferLength];
 
-	OFFreeMemory(_writeBuffer);
-	_writeBuffer = NULL;
-	_writeBufferLength = 0;
+	if (bytesWritten == 0)
+		return;
+
+	if (bytesWritten == _writeBufferLength) {
+		OFFreeMemory(_writeBuffer);
+		_writeBuffer = NULL;
+		_writeBufferLength = 0;
+	}
+
+	OFEnsure(bytesWritten < _writeBufferLength);
+
+	memmove(_writeBuffer, _writeBuffer + bytesWritten,
+	    _writeBufferLength - bytesWritten);
+	_writeBufferLength -= bytesWritten;
+	@try {
+		_writeBuffer = OFResizeMemory(_writeBuffer,
+		    _writeBufferLength, 1);
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only made it smaller. */
+	}
 }
 
-- (size_t)writeBuffer: (const void *)buffer
-	       length: (size_t)length
+- (void)writeBuffer: (const void *)buffer length: (size_t)length
 {
 	if (!_buffersWrites) {
 		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
 							 length: length];
 
-		if (_canBlock && bytesWritten < length)
+		if (bytesWritten < length)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
 				   bytesWritten: bytesWritten
 					  errNo: 0];
-
-		return bytesWritten;
 	} else {
+		if (SIZE_MAX - _writeBufferLength < length)
+			@throw [OFOutOfRangeException exception];
+
 		_writeBuffer = OFResizeMemory(_writeBuffer,
 		    _writeBufferLength + length, 1);
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
-
-		return length;
 	}
 }
 
@@ -1239,7 +1257,7 @@
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count
+- (void)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1262,11 +1280,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count
+- (void)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1289,11 +1305,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count
+- (void)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1316,11 +1330,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeBigEndianFloats: (const float *)buffer count: (size_t)count
+- (void)writeBigEndianFloats: (const float *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1343,11 +1355,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeBigEndianDoubles: (const double *)buffer count: (size_t)count
+- (void)writeBigEndianDoubles: (const double *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1370,8 +1380,6 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
 - (void)writeLittleEndianInt16: (uint16_t)int16
@@ -1404,7 +1412,7 @@
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer count: (size_t)count
+- (void)writeLittleEndianInt16s: (const uint16_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1427,11 +1435,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer count: (size_t)count
+- (void)writeLittleEndianInt32s: (const uint32_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1454,11 +1460,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer count: (size_t)count
+- (void)writeLittleEndianInt64s: (const uint64_t *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1481,11 +1485,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeLittleEndianFloats: (const float *)buffer count: (size_t)count
+- (void)writeLittleEndianFloats: (const float *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1508,11 +1510,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count
+- (void)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count
 {
 	size_t size;
 
@@ -1535,11 +1535,9 @@
 		OFFreeMemory(tmp);
 	}
 #endif
-
-	return size;
 }
 
-- (size_t)writeData: (OFData *)data
+- (void)writeData: (OFData *)data
 {
 	void *pool;
 	size_t length;
@@ -1553,16 +1551,14 @@
 	[self writeBuffer: data.items length: length];
 
 	objc_autoreleasePoolPop(pool);
-
-	return length;
 }
 
-- (size_t)writeString: (OFString *)string
+- (void)writeString: (OFString *)string
 {
-	return [self writeString: string encoding: OFStringEncodingUTF8];
+	[self writeString: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
+- (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	void *pool;
 	size_t length;
@@ -1577,16 +1573,14 @@
 		   length: length];
 
 	objc_autoreleasePoolPop(pool);
-
-	return length;
 }
 
-- (size_t)writeLine: (OFString *)string
+- (void)writeLine: (OFString *)string
 {
-	return [self writeLine: string encoding: OFStringEncodingUTF8];
+	[self writeLine: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
+- (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
@@ -1602,23 +1596,18 @@
 	} @finally {
 		OFFreeMemory(buffer);
 	}
-
-	return stringLength + 1;
 }
 
-- (size_t)writeFormat: (OFConstantString *)format, ...
+- (void)writeFormat: (OFConstantString *)format, ...
 {
 	va_list arguments;
-	size_t ret;
 
 	va_start(arguments, format);
-	ret = [self writeFormat: format arguments: arguments];
+	[self writeFormat: format arguments: arguments];
 	va_end(arguments);
-
-	return ret;
 }
 
-- (size_t)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
+- (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int length;
@@ -1635,8 +1624,6 @@
 	} @finally {
 		free(UTF8String);
 	}
-
-	return length;
 }
 
 - (bool)hasDataInReadBuffer

@@ -42,6 +42,7 @@
 #import "OFSeekFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+#import "OFWriteFailedException.h"
 
 /*
  * FIXME: Current limitations:
@@ -876,8 +877,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	size_t bytesWritten;
-
 #if SIZE_MAX >= INT64_MAX
 	if (length > INT64_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -886,12 +885,24 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (INT64_MAX - _bytesWritten < (int64_t)length)
 		@throw [OFOutOfRangeException exception];
 
-	bytesWritten = [_stream writeBuffer: buffer length: length];
+	@try {
+		[_stream writeBuffer: buffer length: length];
+	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten < length);
 
-	_bytesWritten += (int64_t)bytesWritten;
+		_bytesWritten += (int64_t)e.bytesWritten;
+		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
+
+		if (e.errNo == EWOULDBLOCK)
+			return e.bytesWritten;
+
+		@throw e;
+	}
+
+	_bytesWritten += (int64_t)length;
 	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
-	return bytesWritten;
+	return length;
 }
 
 - (void)close

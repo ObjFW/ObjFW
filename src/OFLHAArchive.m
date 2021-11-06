@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
@@ -473,8 +475,6 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	uint32_t bytesWritten;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -482,19 +482,23 @@ OF_DIRECT_MEMBERS
 		@throw [OFOutOfRangeException exception];
 
 	@try {
-		bytesWritten = (uint32_t)[_stream writeBuffer: buffer
-						       length: length];
+		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		_bytesWritten += e.bytesWritten;
+		OFEnsure(e.bytesWritten < length);
+
+		_bytesWritten += (uint32_t)e.bytesWritten;
 		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
+
+		if (e.errNo == EWOULDBLOCK)
+			return e.bytesWritten;
 
 		@throw e;
 	}
 
-	_bytesWritten += (uint32_t)bytesWritten;
-	_CRC16 = OFCRC16(_CRC16, buffer, bytesWritten);
+	_bytesWritten += (uint32_t)length;
+	_CRC16 = OFCRC16(_CRC16, buffer, length);
 
-	return bytesWritten;
+	return length;
 }
 
 - (bool)lowlevelIsAtEndOfStream

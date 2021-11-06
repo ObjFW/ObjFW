@@ -973,12 +973,15 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes from a buffer into the stream.
  *
+ * In non-blocking mode, if less than the specified length could be written, an
+ * @ref OFWriteFailedException is thrown with @ref OFWriteFailedException#errNo
+ * being set to `EWOULDBLOCK` and @ref OFWriteFailedException#bytesWritten
+ * being set to the number of bytes that were written, if any.
+ *
  * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written
- * @return The number of bytes written. This can only differ from the specified
- *	   length in non-blocking mode.
  */
-- (size_t)writeBuffer: (const void *)buffer length: (size_t)length;
+- (void)writeBuffer: (const void *)buffer length: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -1131,12 +1134,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes a uint8_t into the stream.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int8 A uint8_t
  */
 - (void)writeInt8: (uint8_t)int8;
 
 /**
  * @brief Writes a uint16_t into the stream, encoded in big endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int16 A uint16_t
  */
@@ -1145,12 +1152,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes a uint32_t into the stream, encoded in big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int32 A uint32_t
  */
 - (void)writeBigEndianInt32: (uint32_t)int32;
 
 /**
  * @brief Writes a uint64_t into the stream, encoded in big endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int64 A uint64_t
  */
@@ -1159,12 +1170,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes a float into the stream, encoded in big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param float_ A float
  */
 - (void)writeBigEndianFloat: (float)float_;
 
 /**
  * @brief Writes a double into the stream, encoded in big endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param double_ A double
  */
@@ -1174,59 +1189,66 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @brief Writes the specified number of uint16_ts into the stream, encoded in
  *	  big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of uint16_ts to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count;
+- (void)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint32_ts into the stream, encoded in
  *	  big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of uint32_ts to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count;
+- (void)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint64_ts into the stream, encoded in
  *	  big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of uint64_ts to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count;
+- (void)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of floats into the stream, encoded in big
  *	  endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of floats to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianFloats: (const float *)buffer count: (size_t)count;
+- (void)writeBigEndianFloats: (const float *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of doubles into the stream, encoded in
  *	  big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of doubles to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianDoubles: (const double *)buffer count: (size_t)count;
+- (void)writeBigEndianDoubles: (const double *)buffer count: (size_t)count;
 
 /**
  * @brief Writes a uint16_t into the stream, encoded in little endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int16 A uint16_t
  */
@@ -1235,12 +1257,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes a uint32_t into the stream, encoded in little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int32 A uint32_t
  */
 - (void)writeLittleEndianInt32: (uint32_t)int32;
 
 /**
  * @brief Writes a uint64_t into the stream, encoded in little endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int64 A uint64_t
  */
@@ -1249,12 +1275,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Writes a float into the stream, encoded in little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param float_ A float
  */
 - (void)writeLittleEndianFloat: (float)float_;
 
 /**
  * @brief Writes a double into the stream, encoded in little endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param double_ A double
  */
@@ -1264,103 +1294,110 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @brief Writes the specified number of uint16_ts into the stream, encoded in
  *	  little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of uint16_ts to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
-			    count: (size_t)count;
+- (void)writeLittleEndianInt16s: (const uint16_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint32_ts into the stream, encoded in
  *	  little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param count The number of uint32_ts to write
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
- * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
-			    count: (size_t)count;
+- (void)writeLittleEndianInt32s: (const uint32_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of uint64_ts into the stream, encoded in
  *	  little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of uint64_ts to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
-			    count: (size_t)count;
+- (void)writeLittleEndianInt64s: (const uint64_t *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of floats into the stream, encoded in
  *	  little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of floats to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianFloats: (const float *)buffer count: (size_t)count;
+- (void)writeLittleEndianFloats: (const float *)buffer count: (size_t)count;
 
 /**
  * @brief Writes the specified number of doubles into the stream, encoded in
  *	  little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param buffer The buffer from which the data is written to the stream after
  *		 it has been byte swapped if necessary
  * @param count The number of doubles to write
- * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count;
+- (void)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count;
 
 /**
  * @brief Writes OFData into the stream.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param data The OFData to write into the stream
- * @return The number of bytes written
  */
-- (size_t)writeData: (OFData *)data;
+- (void)writeData: (OFData *)data;
 
 /**
  * @brief Writes a string into the stream, without the trailing zero.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
- * @return The number of bytes written
  */
-- (size_t)writeString: (OFString *)string;
+- (void)writeString: (OFString *)string;
 
 /**
  * @brief Writes a string into the stream in the specified encoding, without
  *	  the trailing zero.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
- * @return The number of bytes written
  */
-- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding;
+- (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a string into the stream with a trailing newline.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
- * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString *)string;
+- (void)writeLine: (OFString *)string;
 
 /**
  * @brief Writes a string into the stream in the specified encoding with a
  *	  trailing newline.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
- * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding;
+- (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a formatted string into the stream.
@@ -1368,11 +1405,12 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * See printf for the format syntax. As an addition, `%@` is available as
  * format specifier for objects, `%C` for `OFUnichar` and `%S` for
  * `const OFUnichar *`.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param format A string used as format
- * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString *)format, ...;
+- (void)writeFormat: (OFConstantString *)format, ...;
 
 /**
  * @brief Writes a formatted string into the stream.
@@ -1380,12 +1418,13 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * See printf for the format syntax. As an addition, `%@` is available as
  * format specifier for objects, `%C` for `OFUnichar` and `%S` for
  * `const OFUnichar *`.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string
- * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString *)format arguments: (va_list)arguments;
+- (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
 #ifdef OF_HAVE_SOCKETS
 /**
