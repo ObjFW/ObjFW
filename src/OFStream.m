@@ -1075,7 +1075,7 @@
 		_writeBufferLength = 0;
 	}
 
-	OFEnsure(bytesWritten < _writeBufferLength);
+	OFEnsure(bytesWritten <= _writeBufferLength);
 
 	memmove(_writeBuffer, _writeBuffer + bytesWritten,
 	    _writeBufferLength - bytesWritten);

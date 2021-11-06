@@ -888,7 +888,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	@try {
 		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		OFEnsure(e.bytesWritten < length);
+		OFEnsure(e.bytesWritten <= length);
 
 		_bytesWritten += (int64_t)e.bytesWritten;
 		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);

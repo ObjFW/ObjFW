@@ -440,6 +440,8 @@ OF_DIRECT_MEMBERS
 	@try {
 		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten <= length);
+
 		_toWrite -= e.bytesWritten;
 
 		if (e.errNo == EWOULDBLOCK)

@@ -484,7 +484,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		OFEnsure(e.bytesWritten < length);
+		OFEnsure(e.bytesWritten <= length);
 
 		_bytesWritten += (uint32_t)e.bytesWritten;
 		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
