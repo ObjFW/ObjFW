@@ -587,9 +587,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didCreateSocket: (OFTCPSocket *)sock
 	  request: (OFHTTPRequest *)request
 {
-	if (_insecure && [sock respondsToSelector:
-	    @selector(setVerifiesCertificates:)])
-		((id <OFTLSSocket>)sock).verifiesCertificates = false;
+	if (_insecure && [sock isKindOfClass: [OFTLSSocket class]])
+		((OFTLSSocket *)sock).verifiesCertificates = false;
 }
 
 -     (void)client: (OFHTTPClient *)client

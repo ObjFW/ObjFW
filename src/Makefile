@@ -139,6 +139,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
+	       OFTLSSocket.m			\
 	       OFUDPSocket.m			\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
@@ -172,7 +173,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFTLSSocket.h			\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\
@@ -209,11 +209,11 @@ SRCS += OFAdjacentArray.m		\
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
-		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\

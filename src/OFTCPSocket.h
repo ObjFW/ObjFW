@@ -210,12 +210,4 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 - (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern Class _Nullable OFTLSSocketClass;
-#ifdef __cplusplus
-}
-#endif
-
 OF_ASSUME_NONNULL_END

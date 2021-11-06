@@ -31,6 +31,7 @@
 #import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
+#import "OFTLSSocket.h"
 #import "OFURL.h"
 
 #import "OFAlreadyConnectedException.h"
@@ -699,12 +700,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 		if ([URL.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame) {
-			if (OFTLSSocketClass == Nil)
+			@try {
+				sock = [OFTLSSocket socket];
+				port = 443;
+			} @catch (OFNotImplementedException *e) {
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
-
-			sock = [[[OFTLSSocketClass alloc] init] autorelease];
-			port = 443;
+			}
 		} else {
 			sock = [OFTCPSocket socket];
 			port = 80;
