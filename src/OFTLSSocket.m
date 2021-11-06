@@ -131,8 +131,8 @@ Class OFTLSSocketImplementation = Nil;
 		if ([socket isKindOfClass: [OFTLSSocket class]])
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_socket = dup(socket->_socket)) == OFInvalidSocketHandle)
-			@throw [OFInitializationFailedException exception];
+		_socket = socket->_socket;
+		socket->_socket = OFInvalidSocketHandle;
 
 		_verifiesCertificates = true;
 	} @catch (id e) {

@@ -67,6 +67,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes the TLS socket with the specified TCP socket as its
  *	  underlying socket.
  *
+ * The passed socket will become invalid, as the internal socket handle gets
+ * moved from the specified socket to the OFTLSSocket.
+ *
  * @param socket The TCP socket to use as underlying socket
  */
 - (instancetype)initWithSocket: (OFTCPSocket *)socket;
