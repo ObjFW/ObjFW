@@ -54,6 +54,14 @@ enum {
 		_block = [block copy];
 #endif
 
+		/*
+		 * Temporarily swizzle it to a TCP socket, so that if it's a
+		 * TLS socket, we still get to talk to the SOCKS5 proxy
+		 * directly.
+		 */
+		_socketClass = object_getClass(_socket);
+		object_setClass(_socket, [OFTCPSocket class]);
+
 		_socket.delegate = self;
 	} @catch (id e) {
 		[self release];
@@ -67,6 +75,8 @@ enum {
 {
 	if (_socket.delegate == self)
 		_socket.delegate = _delegate;
+
+	object_setClass(_socket, _socketClass);
 
 	[_socket release];
 	[_host release];
@@ -83,6 +93,7 @@ enum {
 - (void)didConnect
 {
 	_socket.delegate = _delegate;
+	object_setClass(_socket, _socketClass);
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)

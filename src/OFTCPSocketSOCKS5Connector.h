@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFTCPSocketSOCKS5Connector: OFObject <OFTCPSocketDelegate>
 {
 	OFTCPSocket *_socket;
+	Class _socketClass;
 	OFString *_host;
 	uint16_t _port;
 	id <OFTCPSocketDelegate> _Nullable _delegate;
