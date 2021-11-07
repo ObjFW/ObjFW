@@ -34,12 +34,14 @@ OF_ASSUME_NONNULL_BEGIN
  * if available.
  *
  * Subclasses need to override @ref accept, @ref lowlevelReadIntoBuffer:length:,
- * @ref lowlevelWriteBuffer:length:, @ref lowlevelIsAtEndOfStream and
- * @ref startTLSForHost:port:. In order to get access to the lowlevel TCP
- * methods (you cannot call `super`, as the class is abstract), the private
- * methods @ref TCPAccept, @ref lowlevelTCPReadIntoBuffer:length:,
- * @ref lowlevelTCPWriteBuffer:length: and @ref lowlevelTCPIsAtEndOfStream are
- * provided.
+ * @ref lowlevelWriteBuffer:length: and @ref startTLSForHost:port:. The method
+ * @ref hasDataInReadBuffer should be overridden to return `true` if the TLS
+ * socket has cached unprocessed data internally, while returning
+ * `[super hasDataInReadBuffer]` if it does not have any unprocessed data. In
+ * order to get access to the lowlevel TCP methods (you cannot call `super`, as
+ * the class is abstract), the private methods @ref TCPAccept,
+ * @ref lowlevelTCPReadIntoBuffer:length: and
+ * @ref lowlevelTCPWriteBuffer:length: are provided.
  */
 @interface OFTLSSocket: OFTCPSocket
 {
@@ -101,12 +103,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	  @ref OFTLSSocket are allowed to call it.
  */
 - (size_t)lowlevelTCPWriteBuffer: (const void *)buffer length: (size_t)length;
-
-/**
- * @brief This method should never be called directly. Only subclasses of
- *	  @ref OFTLSSocket are allowed to call it.
- */
-- (bool)lowlevelTCPIsAtEndOfStream;
 @end
 
 #ifdef __cplusplus

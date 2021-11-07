@@ -203,11 +203,6 @@ Class OFTLSSocketImplementation = Nil;
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)lowlevelIsAtEndOfStream
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)TCPAccept
 {
 	return [super accept];
