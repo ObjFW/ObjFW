@@ -1056,23 +1056,25 @@
 				 encoding: OFStringEncodingUTF8];
 }
 
-- (void)flushWriteBuffer
+- (bool)flushWriteBuffer
 {
 	size_t bytesWritten;
 
 	if (_writeBuffer == NULL)
-		return;
+		return true;
 
 	bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
 					  length: _writeBufferLength];
 
 	if (bytesWritten == 0)
-		return;
+		return false;
 
 	if (bytesWritten == _writeBufferLength) {
 		OFFreeMemory(_writeBuffer);
 		_writeBuffer = NULL;
 		_writeBufferLength = 0;
+
+		return true;
 	}
 
 	OFEnsure(bytesWritten <= _writeBufferLength);
@@ -1086,6 +1088,8 @@
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller. */
 	}
+
+	return false;
 }
 
 - (void)writeBuffer: (const void *)buffer length: (size_t)length

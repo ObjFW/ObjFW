@@ -967,8 +967,12 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 /**
  * @brief Writes everything in the write buffer to the stream.
+ *
+ * @return Whether the write buffer was flushed entirely. On non-blocking
+ *	   sockets, this can return `false` if flushing the write buffer in its
+ *	   entirety would block.
  */
-- (void)flushWriteBuffer;
+- (bool)flushWriteBuffer;
 
 /**
  * @brief Writes from a buffer into the stream.
