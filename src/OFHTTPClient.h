@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPResponse;
 @class OFStream;
 @class OFTCPSocket;
+@class OFTLSStream;
 @class OFURL;
 
 /**
@@ -50,20 +51,32 @@ OF_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
- * @brief A callback which is called when an OFHTTPClient creates a socket.
+ * @brief A callback which is called when an OFHTTPClient creates a TCP socket.
  *
- * This is useful if the connection is using HTTPS and the server requires a
- * client certificate. This callback can then be used to tell the TLS socket
- * about the certificate. Another use case is to tell the socket about a SOCKS5
- * proxy it should use for this connection.
+ * This can be used to tell the socket about a SOCKS5 proxy it should use for
+ * this connection.
  *
- * @param client The OFHTTPClient that created a socket
- * @param socket The socket created by the OFHTTPClient
- * @param request The request for which the socket was created
+ * @param client The OFHTTPClient that created a TCP socket
+ * @param TCPSocket The socket created by the OFHTTPClient
+ * @param request The request for which the TCP socket was created
  */
--    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OFTCPSocket *)socket
-	  request: (OFHTTPRequest *)request;
+-	(void)client: (OFHTTPClient *)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+	     request: (OFHTTPRequest *)request;
+
+/**
+ * @brief A callback which is called when an OFHTTPClient creates a TLS stream.
+ *
+ * This can be used to tell the TLS stream about a client certificate it should
+ * use before performing the TLS handshake.
+ *
+ * @param client The OFHTTPClient that created a TLS stream
+ * @param TLSStream The TLS stream created by the OFHTTPClient
+ * @param request The request for which the TLS stream was created
+ */
+-	(void)client: (OFHTTPClient *)client
+  didCreateTLSStream: (OFTLSStream *)TLSStream
+	     request: (OFHTTPRequest *)request;
 
 /**
  * @brief A callback which is called when an OFHTTPClient wants to send the
@@ -136,7 +149,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
 	bool _allowsInsecureRedirects, _inProgress;
-	OFTCPSocket *_Nullable _socket;
+	OFStream *_Nullable _stream;
 	OFURL *_Nullable _lastURL;
 	bool _lastWasHEAD;
 	OFHTTPResponse *_Nullable _lastResponse;

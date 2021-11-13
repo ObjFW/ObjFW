@@ -76,7 +76,7 @@
 # import "OFSequencedPacketSocket.h"
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
-# import "OFTLSSocket.h"
+# import "OFTLSStream.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"

@@ -324,7 +324,7 @@ make -C tests run
 %{_includedir}/ObjFW/OFSystemInfo.h
 %{_includedir}/ObjFW/OFTCPSocket.h
 %{_includedir}/ObjFW/OFTLSKey.h
-%{_includedir}/ObjFW/OFTLSSocket.h
+%{_includedir}/ObjFW/OFTLSStream.h
 %{_includedir}/ObjFW/OFTarArchive.h
 %{_includedir}/ObjFW/OFTarArchiveEntry.h
 %{_includedir}/ObjFW/OFThread.h

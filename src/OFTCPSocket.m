@@ -53,8 +53,6 @@
 static const OFRunLoopMode connectRunLoopMode =
     @"OFTCPSocketConnectRunLoopMode";
 
-Class OFTLSSocketClass = Nil;
-
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
@@ -189,7 +187,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    [[[OFTCPSocketConnectDelegate alloc] init] autorelease];
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
-	self.delegate = connectDelegate;
+	_delegate = connectDelegate;
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: connectRunLoopMode];
@@ -200,10 +198,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 	/* Cleanup */
 	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
+	_delegate = delegate;
+
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
-
-	self.delegate = delegate;
 
 	objc_autoreleasePoolPop(pool);
 }

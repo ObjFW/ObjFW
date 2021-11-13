@@ -139,7 +139,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
-	       OFTLSSocket.m			\
+	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}

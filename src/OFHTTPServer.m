@@ -29,7 +29,6 @@
 #import "OFNumber.h"
 #import "OFSocket+Private.h"
 #import "OFTCPSocket.h"
-#import "OFTLSSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
 #import "OFURL.h"
