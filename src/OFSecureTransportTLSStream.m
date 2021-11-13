@@ -140,6 +140,17 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	return ret;
 }
 
+- (bool)hasDataInReadBuffer
+{
+	size_t bufferSize;
+
+	if (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
+	    bufferSize > 0)
+		return true;
+
+	return super.hasDataInReadBuffer;
+}
+
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
 				runLoopMode: (OFRunLoopMode)runLoopMode
 {
