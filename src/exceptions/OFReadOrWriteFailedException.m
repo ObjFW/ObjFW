@@ -63,9 +63,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to read or write %zu bytes from / to an object of type "
-	    @"%@: %@",
-	    _requestedLength, [_object class], OFStrError(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@: %@",
+		    _requestedLength, [_object class], OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@",
+		    _requestedLength, [_object class]];
 }
 @end

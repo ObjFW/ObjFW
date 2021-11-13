@@ -23,6 +23,16 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTLSStream;
 
 /**
+ * @brief An enum representing an error of an OFTLSStream.
+ */
+typedef enum {
+	/** @brief An unknown error. */
+	OFTLSStreamErrorCodeUnknown,
+	/** @brief Initialization of the TLS context failed. */
+	OFTLSStreamErrorCodeInitializationFailed
+} OFTLSStreamErrorCode;
+
+/**
  * @protocol OFTLSStreamDelegate OFTLSStream.h ObjFW/OFTLSStream.h
  *
  * A delegate for OFTLSStream.
@@ -110,7 +120,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized TLS stream
  */
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
-				     OFReadyForWritingObserving> *)stream;
+				     OFReadyForWritingObserving> *)stream
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Asynchronously performs the TLS client handshake for the specified
@@ -149,6 +160,15 @@ extern "C" {
  * not know about.
  */
 extern Class OFTLSStreamImplementation;
+
+/**
+ * @brief Returns a string description for the TLS stream error code.
+ *
+ * @param errorCode The error code to return the description for
+ * @return A string description for the TLS stream error code
+ */
+extern OFString *OFTLSStreamErrorCodeDescription(
+    OFTLSStreamErrorCode errorCode);
 #ifdef __cplusplus
 }
 #endif

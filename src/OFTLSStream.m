@@ -17,12 +17,11 @@
 
 #import "OFTLSStream.h"
 #import "OFDate.h"
+#ifdef HAVE_SECURE_TRANSPORT
+# import "OFSecureTransportTLSStream.h"
+#endif
 
 #import "OFNotImplementedException.h"
-
-Class OFTLSStreamImplementation = Nil;
-static const OFRunLoopMode handshakeRunLoopMode =
-    @"OFTLSStreamHandshakeRunLoopMode";
 
 @interface OFTLSStreamHandshakeDelegate: OFObject <OFTLSStreamDelegate>
 {
@@ -31,6 +30,21 @@ static const OFRunLoopMode handshakeRunLoopMode =
 	id _exception;
 }
 @end
+
+Class OFTLSStreamImplementation = Nil;
+static const OFRunLoopMode handshakeRunLoopMode =
+    @"OFTLSStreamHandshakeRunLoopMode";
+
+OFString *
+OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
+{
+	switch (errorCode) {
+	case OFTLSStreamErrorCodeInitializationFailed:
+		return @"Initialization of TLS context failed";
+	default:
+		return @"Unknown error";
+	}
+}
 
 @implementation OFTLSStreamHandshakeDelegate
 - (void)dealloc
@@ -60,8 +74,12 @@ static const OFRunLoopMode handshakeRunLoopMode =
 		if (OFTLSStreamImplementation != Nil)
 			return [OFTLSStreamImplementation alloc];
 
+#ifdef HAVE_SECURE_TRANSPORT
+		return [OFSecureTransportTLSStream alloc];
+#else
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
+#endif
 	}
 
 	return [super alloc];

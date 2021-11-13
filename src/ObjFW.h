@@ -231,6 +231,9 @@
 # import "OFThreadStartFailedException.h"
 # import "OFThreadStillRunningException.h"
 #endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFTLSHandshakeFailedException.h"
+#endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
 #import "OFUnboundPrefixException.h"

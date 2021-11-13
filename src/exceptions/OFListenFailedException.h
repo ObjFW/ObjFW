@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated listen failed exception
+ * @brief Initializes an already allocated listen failed exception.
  *
  * @param socket The socket which failed to listen
  * @param backlog The requested size of the back log

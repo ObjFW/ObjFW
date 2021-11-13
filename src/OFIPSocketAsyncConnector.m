@@ -76,7 +76,7 @@
 #endif
 		if ([_delegate respondsToSelector:
 		    @selector(socket:didConnectToHost:port:exception:)])
-			[_delegate socket: _socket
+			[_delegate    socket: _socket
 			    didConnectToHost: _host
 					port: _port
 				   exception: _exception];

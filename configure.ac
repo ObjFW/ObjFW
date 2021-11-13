@@ -1333,7 +1333,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
 			[Whether we have netipx/ipx.h])
 	])
-	AC_CHECK_HEADERS(sys/un.h, [
+	AC_CHECK_HEADER(sys/un.h, [
 		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])
 
@@ -1535,6 +1535,20 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 		;;
 	esac
+
+	AC_CHECK_HEADERS(Security/SecureTransport.h, [
+		old_LIBS="$LIBS"
+		LIBS="-framework Security -framework Foundation $LIBS"
+
+		AC_CHECK_FUNC(SSLHandshake, [
+			AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
+				[Whether we have Secure Transport])
+			AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
+				"OFSecureTransportTLSStream.m")
+		], [
+			LIBS="$old_LIBS"
+		])
+	])
 
 	AS_IF([test x"$enable_threads" != x"no"], [
 		AC_SUBST(OF_HTTP_CLIENT_TESTS_M, "OFHTTPClientTests.m")

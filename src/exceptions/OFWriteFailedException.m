@@ -64,10 +64,16 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to write %zu bytes (after %zu bytes written) to an "
-	    @"object of type %@: %@",
-	    _requestedLength, _bytesWritten, [_object class],
-	    OFStrError(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes (after %zu bytes written) to "
+		    @"an object of type %@: %@",
+		    _requestedLength, _bytesWritten, [_object class],
+		    OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes (after %zu bytes written) to "
+		    @"an object of type %@",
+		    _requestedLength, _bytesWritten, [_object class]];
 }
 @end

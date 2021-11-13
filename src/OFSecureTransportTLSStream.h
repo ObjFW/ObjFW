@@ -13,21 +13,15 @@
  * file.
  */
 
-#include "config.h"
+#import "OFTLSStream.h"
 
-#import "OFReadFailedException.h"
-#import "OFString.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OFReadFailedException
-- (OFString *)description
+@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to read %zu bytes from an object of type %@: %@",
-		    _requestedLength, [_object class], OFStrError(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to read %zu bytes from an object of type %@",
-		    _requestedLength, [_object class]];
+	struct SSLContext *_context;
+	OFString *_host;
 }
 @end
+
+OF_ASSUME_NONNULL_END
