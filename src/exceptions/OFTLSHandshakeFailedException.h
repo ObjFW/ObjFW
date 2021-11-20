@@ -23,6 +23,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _OFTLSHandshakeFailedException_reference;
+#ifdef __cplusplus
+}
+#endif
+
 /**
  * @class OFTLSHandshakeFailedException \
  *	  OFTLSHandshakeFailedException.h ObjFW/OFTLSHandshakeFailedException.h

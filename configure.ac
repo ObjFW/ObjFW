@@ -1536,6 +1536,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
+	tls_support="no"
 	AC_CHECK_HEADERS(Security/SecureTransport.h, [
 		old_LIBS="$LIBS"
 		LIBS="-framework Security -framework Foundation $LIBS"
@@ -1543,10 +1544,37 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_CHECK_FUNC(SSLHandshake, [
 			AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
 				[Whether we have Secure Transport])
+
+			tls_support="securetransport"
+			TLS_LIBS="-framework Foundation $TLS_LIBS"
+			TLS_LIBS="-framework Security $TLS_LIBS"
+
 			AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
 				"OFSecureTransportTLSStream.m")
-		], [
-			LIBS="$old_LIBS"
+		], [])
+
+		LIBS="$old_LIBS"
+	])
+
+	AS_IF([test x"$tls_support" != x"no"], [
+		AC_SUBST(TLS, "tls")
+		AC_SUBST(TLS_LIBS)
+		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
+			[Whether we have an implementation for TLS])
+		AC_CONFIG_FILES(src/tls/Info.plist)
+
+		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+
+		AS_IF([test x"$enable_shared" != x"no"], [
+			AC_SUBST(OBJFWTLS_SHARED_LIB,
+				"${LIB_PREFIX}objfwtls${LIB_SUFFIX}")
+		])
+		AS_IF([test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"], [
+			AC_SUBST(OBJFWTLS_STATIC_LIB, "libobjfwtls.a")
+		])
+		AS_IF([test x"$build_framework" = x"yes"], [
+			AC_SUBST(OBJFWTLS_FRAMEWORK, "ObjFWTLS.framework")
 		])
 	])
 
@@ -1557,6 +1585,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
+		AC_SUBST(OFHTTP_LIBS)
 	])
 ])
 

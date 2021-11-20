@@ -36,6 +36,10 @@
 #import "OFTLSStream.h"
 #import "OFURL.h"
 
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
+
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -77,6 +81,14 @@
 
 - (void)downloadNextURL;
 @end
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFHTTP)
 

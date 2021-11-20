@@ -25,6 +25,8 @@
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
 
+int _ObjFWTLS_reference;
+
 static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
@@ -66,6 +68,12 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 #pragma GCC diagnostic ignored "-Wdeprecated"
 
 @implementation OFSecureTransportTLSStream
++ (void)load
+{
+	if (OFTLSStreamImplementation == Nil)
+		OFTLSStreamImplementation = self;
+}
+
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
 				     OFReadyForWritingObserving> *)stream
 {

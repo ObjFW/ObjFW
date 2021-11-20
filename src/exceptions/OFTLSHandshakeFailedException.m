@@ -18,6 +18,8 @@
 #import "OFTLSHandshakeFailedException.h"
 #import "OFString.h"
 
+int _OFTLSHandshakeFailedException_reference;
+
 @implementation OFTLSHandshakeFailedException
 @synthesize stream = _stream, host = _host, errorCode = _errorCode;
 

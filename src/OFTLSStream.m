@@ -17,11 +17,9 @@
 
 #import "OFTLSStream.h"
 #import "OFDate.h"
-#ifdef HAVE_SECURE_TRANSPORT
-# import "OFSecureTransportTLSStream.h"
-#endif
 
 #import "OFNotImplementedException.h"
+#import "OFTLSHandshakeFailedException.h"
 
 @interface OFTLSStreamHandshakeDelegate: OFObject <OFTLSStreamDelegate>
 {
@@ -34,6 +32,16 @@
 Class OFTLSStreamImplementation = Nil;
 static const OFRunLoopMode handshakeRunLoopMode =
     @"OFTLSStreamHandshakeRunLoopMode";
+
+/*
+ * References to exceptions. This is needed because they are only used by
+ * subclasses that are in a different library.
+ */
+void
+_references_to_exceptions_of_OFTLSStream(void)
+{
+	_OFTLSHandshakeFailedException_reference = 1;
+}
 
 OFString *
 OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
@@ -74,12 +82,8 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 		if (OFTLSStreamImplementation != Nil)
 			return [OFTLSStreamImplementation alloc];
 
-#ifdef HAVE_SECURE_TRANSPORT
-		return [OFSecureTransportTLSStream alloc];
-#else
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
-#endif
 	}
 
 	return [super alloc];

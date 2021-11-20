@@ -13,15 +13,12 @@
  * file.
  */
 
-#import "OFTLSStream.h"
+#import "macros.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
-{
-	struct SSLContext *_context;
-	OFString *_host;
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _ObjFWTLS_reference;
+#ifdef __cplusplus
 }
-@end
-
-OF_ASSUME_NONNULL_END
+#endif

@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS}
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -216,7 +216,6 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
-		${OF_SECURE_TRANSPORT_TLS_STREAM_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
 
