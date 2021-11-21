@@ -170,10 +170,10 @@ other place, you are most likely using a mirror.
   To build for the iOS simulator, use something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-    $ export OBJC="$clang -arch i386 -arch x86_64"
-    $ export OBJCPP="$clang -arch i386 -E"
+    $ export OBJC="$clang -arch arm64 -arch x86_64"
+    $ export OBJCPP="$clang -arch arm64 -E"
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/iossim --host=x86_64-apple-darwin
+    $ ./configure --prefix=/usr/local/iossim --host=arm64-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
