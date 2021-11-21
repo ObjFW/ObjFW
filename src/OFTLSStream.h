@@ -65,24 +65,24 @@ typedef enum {
  * @ref asyncPerformClientHandshakeWithHost:runLoopMode:. The method
  * @ref hasDataInReadBuffer should be overridden to return `true` if the TLS
  * stream has cached unprocessed data internally, while returning
- * `self.wrappedStream.hasDataInReadBuffer` if it does not have any unprocessed
- * data. In order to get access to the wrapped stream, @ref wrappedStream can
- * be used.
+ * `self.underlyingStream.hasDataInReadBuffer` if it does not have any
+ * unprocessed data. In order to get access to the underlying stream,
+ * @ref underlyingStream can be used.
  */
 @interface OFTLSStream: OFStream <OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
 	OFStream <OFReadyForReadingObserving, OFReadyForWritingObserving>
-	    *_wrappedStream;
+	    *_underlyingStream;
 	bool _verifiesCertificates;
 	OF_RESERVE_IVARS(OFTLSStream, 4)
 }
 
 /**
- * @brief The wrapped stream.
+ * @brief The underlying stream.
  */
 @property (readonly, nonatomic) OFStream <OFReadyForReadingObserving,
-    OFReadyForWritingObserving> *wrappedStream;
+    OFReadyForWritingObserving> *underlyingStream;
 
 /**
  * @brief The delegate for asynchronous operations on the stream.

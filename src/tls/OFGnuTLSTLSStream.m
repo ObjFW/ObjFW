@@ -37,14 +37,14 @@ readFunc(gnutls_transport_ptr_t transport, void *buffer, size_t length)
 	OFGnuTLSTLSStream *stream = (OFGnuTLSTLSStream *)transport;
 
 	@try {
-		length = [stream.wrappedStream readIntoBuffer: buffer
-						       length: length];
+		length = [stream.underlyingStream readIntoBuffer: buffer
+							  length: length];
 	} @catch (OFReadFailedException *e) {
 		gnutls_transport_set_errno(stream->_session, e.errNo);
 		return -1;
 	}
 
-	if (length == 0 && !stream.wrappedStream.atEndOfStream) {
+	if (length == 0 && !stream.underlyingStream.atEndOfStream) {
 		gnutls_transport_set_errno(stream->_session, EWOULDBLOCK);
 		return -1;
 	}
@@ -58,7 +58,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	OFGnuTLSTLSStream *stream = (OFGnuTLSTLSStream *)transport;
 
 	@try {
-		[stream.wrappedStream writeBuffer: buffer length: length];
+		[stream.underlyingStream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
 		gnutls_transport_set_errno(stream->_session, e.errNo);
 
@@ -94,7 +94,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	self = [super initWithStream: stream];
 
 	@try {
-		_wrappedStream.delegate = self;
+		_underlyingStream.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -238,13 +238,13 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 	if (status == GNUTLS_E_INTERRUPTED || status == GNUTLS_E_AGAIN) {
 		if (gnutls_record_get_direction(_session) == 1)
-			[_wrappedStream
+			[_underlyingStream
 			    asyncWriteData: [OFData dataWithItems: "" count: 0]
 			       runLoopMode: runLoopMode];
 		else
-			[_wrappedStream asyncReadIntoBuffer: (void *)"" 
-						     length: 0
-						runLoopMode: runLoopMode];
+			[_underlyingStream asyncReadIntoBuffer: (void *)"" 
+							length: 0
+						   runLoopMode: runLoopMode];
 
 		[_delegate retain];
 		return;
@@ -281,8 +281,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 							       count: 0];
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_wrappedStream asyncWriteData: data
-						   runLoopMode: runLoopMode];
+				[_underlyingStream asyncWriteData: data
+						      runLoopMode: runLoopMode];
 				return false;
 			} else
 				return true;
@@ -323,7 +323,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			else {
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_wrappedStream
+				[_underlyingStream
 				    asyncReadIntoBuffer: (void *)"" 
 						 length: 0
 					    runLoopMode: runLoopMode];

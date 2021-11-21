@@ -72,7 +72,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 @end
 
 @implementation OFTLSStream
-@synthesize wrappedStream = _wrappedStream;
+@synthesize underlyingStream = _underlyingStream;
 @dynamic delegate;
 @synthesize verifiesCertificates = _verifiesCertificates;
 
@@ -106,7 +106,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	self = [super init];
 
 	@try {
-		_wrappedStream = [stream retain];
+		_underlyingStream = [stream retain];
 		_verifiesCertificates = true;
 	} @catch (id e) {
 		[self release];
@@ -118,15 +118,15 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 
 - (void)dealloc
 {
-	[_wrappedStream release];
+	[_underlyingStream release];
 
 	[super dealloc];
 }
 
 - (void)close
 {
-	[_wrappedStream release];
-	_wrappedStream = nil;
+	[_underlyingStream release];
+	_underlyingStream = nil;
 
 	[super close];
 }
@@ -144,22 +144,22 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (bool)hasDataInReadBuffer
 {
 	return (super.hasDataInReadBuffer ||
-	    _wrappedStream.hasDataInReadBuffer);
+	    _underlyingStream.hasDataInReadBuffer);
 }
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	return _wrappedStream.atEndOfStream;
+	return _underlyingStream.atEndOfStream;
 }
 
 - (int)fileDescriptorForReading
 {
-	return _wrappedStream.fileDescriptorForReading;
+	return _underlyingStream.fileDescriptorForReading;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return _wrappedStream.fileDescriptorForWriting;
+	return _underlyingStream.fileDescriptorForWriting;
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host

@@ -34,7 +34,7 @@ readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 	size_t length;
 
 	@try {
-		length = [((OFTLSStream *)connection).wrappedStream
+		length = [((OFTLSStream *)connection).underlyingStream
 		    readIntoBuffer: data
 			    length: *dataLength];
 	} @catch (OFReadFailedException *e) {
@@ -56,7 +56,7 @@ static OSStatus
 writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 {
 	@try {
-		[((OFTLSStream *)connection).wrappedStream
+		[((OFTLSStream *)connection).underlyingStream
 		    writeBuffer: data
 			 length: *dataLength];
 	} @catch (OFWriteFailedException *e) {
@@ -91,7 +91,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	self = [super initWithStream: stream];
 
 	@try {
-		_wrappedStream.delegate = self;
+		_underlyingStream.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -219,9 +219,9 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		 * readable or writable doesn't work either, as the stream is
 		 * almost always at least ready for one of the two.
 		 */
-		[_wrappedStream asyncReadIntoBuffer: (void *)"" 
-					     length: 0
-					runLoopMode: runLoopMode];
+		[_underlyingStream asyncReadIntoBuffer: (void *)"" 
+						length: 0
+					   runLoopMode: runLoopMode];
 		[_delegate retain];
 		return;
 	}
