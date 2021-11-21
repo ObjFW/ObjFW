@@ -19,4 +19,4 @@ include ../../buildsys.mk
 CPPFLAGS += -I. -I.. -I../.. -I../exceptions -I../runtime ${TLS_CPPFLAGS}
 LD = ${OBJC}
 FRAMEWORK_LIBS := ${TLS_LIBS} -F.. -framework ObjFW ${LIBS}
-LIBS := ${TLS_LIBS} -L.. -lobjfw ${LIBS}
+LIBS := ${TLS_LIBS} -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}
