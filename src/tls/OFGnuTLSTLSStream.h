@@ -15,11 +15,14 @@
 
 #import "OFTLSStream.h"
 
+#include <gnutls/gnutls.h>
+
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFGnuTLSTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	struct SSLContext *_context;
+	bool _initialized, _handshakeDone;
+	gnutls_session_t _session;
 	OFString *_host;
 }
 @end

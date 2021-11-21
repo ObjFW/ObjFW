@@ -1545,7 +1545,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
 				[Whether we have Secure Transport])
 
-			tls_support="securetransport"
+			tls_support="Secure Transport"
 			TLS_LIBS="-framework Foundation $TLS_LIBS"
 			TLS_LIBS="-framework Security $TLS_LIBS"
 
@@ -1556,8 +1556,25 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		LIBS="$old_LIBS"
 	])
 
+	AS_IF([test x"$tls_support" = x"no"], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
+
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
+	])
+
 	AS_IF([test x"$tls_support" != x"no"], [
 		AC_SUBST(TLS, "tls")
+		AC_SUBST(TLS_CPPFLAGS)
 		AC_SUBST(TLS_LIBS)
 		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
 			[Whether we have an implementation for TLS])

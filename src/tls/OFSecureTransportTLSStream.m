@@ -104,6 +104,9 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	[_host release];
+	_host = nil;
+
 	SSLClose(_context);
 	CFRelease(_context);
 	_context = NULL;
@@ -132,20 +135,20 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	OSStatus status;
-	size_t ret = 0;
+	size_t bytesWritten = 0;
 
 	if (_context == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	status = SSLWrite(_context, buffer, length, &ret);
+	status = SSLWrite(_context, buffer, length, &bytesWritten);
 	if (status != noErr && status != errSSLWouldBlock)
 		/* FIXME: Translate status to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: ret
+						      bytesWritten: bytesWritten
 							     errNo: 0];
 
-	return ret;
+	return bytesWritten;
 }
 
 - (bool)hasDataInReadBuffer
@@ -184,12 +187,14 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 				   host: host
 			      errorCode: initFailedErrorCode];
 
+	_host = [host copy];
+
 	if (_verifiesCertificates)
 		if (SSLSetPeerDomainName(_context,
-		    host.UTF8String, host.UTF8StringLength) != noErr)
+		    _host.UTF8String, _host.UTF8StringLength) != noErr)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
-					   host: host
+					   host: _host
 				      errorCode: initFailedErrorCode];
 
 	status = SSLHandshake(_context);
@@ -207,7 +212,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 					     length: 0
 					runLoopMode: runLoopMode];
 		[_delegate retain];
-		_host = [host copy];
 		return;
 	}
 
@@ -215,13 +219,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
-				   host: host
+				   host: _host
 			      errorCode: OFTLSStreamErrorCodeUnknown];
 
 	if ([_delegate respondsToSelector:
 	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
 		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
+		    didPerformClientHandshakeWithHost: _host
 					    exception: exception];
 }
 
@@ -248,9 +252,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: _host
 					    exception: exception];
-
-	[_host release];
-	_host = nil;
 
 	[_delegate release];
 

@@ -123,6 +123,14 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	[super dealloc];
 }
 
+- (void)close
+{
+	[_wrappedStream release];
+	_wrappedStream = nil;
+
+	[super close];
+}
+
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
