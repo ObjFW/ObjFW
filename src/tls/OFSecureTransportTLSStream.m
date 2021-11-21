@@ -31,9 +31,20 @@ static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
 	bool incomplete;
-	size_t length = [((OFTLSStream *)connection).wrappedStream
-	    readIntoBuffer: data
-		    length: *dataLength];
+	size_t length;
+
+	@try {
+		length = [((OFTLSStream *)connection).wrappedStream
+		    readIntoBuffer: data
+			    length: *dataLength];
+	} @catch (OFReadFailedException *e) {
+		if (e.errNo == EWOULDBLOCK) {
+			*dataLength = 0;
+			return errSSLWouldBlock;
+		}
+
+		@throw e;
+	}
 
 	incomplete = (length < *dataLength);
 	*dataLength = length;
