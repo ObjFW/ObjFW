@@ -178,10 +178,8 @@ make -C tests run
 
 %files -n %{libobjfw_pkgname}-devel
 %{_libdir}/libobjfw.so
-%{_includedir}/ObjFW/
-%{_includedir}/ObjFW/*.h
-%{_includedir}/ObjFW/platform/
-%{_includedir}/ObjFW/platform/*/*.h
+%dir %{_includedir}/ObjFW
+%{_includedir}/ObjFW
 %{_bindir}/objfw-compile
 %{_bindir}/objfw-config
 %{_bindir}/objfw-new
