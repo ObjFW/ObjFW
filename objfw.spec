@@ -2,12 +2,16 @@
 %global libobjfw_minor 0
 %global libobjfwrt_major 0
 %global libobjfwrt_minor 0
+%global libobjfwtls_major 0
+%global libobjfwtls_minor 0
 %if 0%{?suse_version}
 %global libobjfw_pkgname libobjfw%{libobjfw_major}
 %global libobjfwrt_pkgname libobjfwrt%{libobjfwrt_major}
+%global libobjfwtls_pkgname libobjfwtls%{libobjfwtls_major}
 %else
 %global libobjfw_pkgname libobjfw
 %global libobjfwrt_pkgname libobjfwrt
+%global libobjfwtls_pkgname libobjfwtls
 %endif
 
 Name:          objfw
@@ -28,6 +32,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: clang
 BuildRequires: make
+BuildRequires: pkgconfig(gnutls)
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
@@ -60,13 +65,13 @@ The %{libobjfw_pkgname} package contains the library needed by programs using
 ObjFW.
 
 %package -n %{libobjfw_pkgname}-devel
-Summary:       Header files and tools for %{libobjfw_pkgname}
+Summary:       Header files, libraries and tools for %{libobjfw_pkgname}
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}-devel = %{version}-%{release}
 
 %description -n %{libobjfw_pkgname}-devel
-The %{libobjfw_pkgname}-devel package contains the header files and tools to
-develop programs using ObjFW.
+The %{libobjfw_pkgname}-devel package contains the header files, libraries and
+tools to develop programs using ObjFW.
 
 %package -n %{libobjfwrt_pkgname}
 Summary:       ObjFW Objective-C runtime library
@@ -75,12 +80,27 @@ Summary:       ObjFW Objective-C runtime library
 The %{libobjfwrt_pkgname} package contains ObjFW's Objective-C runtime library.
 
 %package -n %{libobjfwrt_pkgname}-devel
-Summary:       Header files for %{libobjfwrt_pkgname}
+Summary:       Header files and libraries for %{libobjfwrt_pkgname}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n %{libobjfwrt_pkgname}-devel
-The %{libobjfwrt_pkgname}-devel package contains header files for ObjFW's
-Objective-C runtime library.
+The %{libobjfwrt_pkgname}-devel package contains header files and libraries for
+ObjFW's Objective-C runtime library.
+
+%package -n %{libobjfwtls_pkgname}
+Summary:       TLS support for ObjFW
+Requires:      gnutls%{_isa} >= 3.5.0
+
+%description -n %{libobjfwtls_pkgname}
+The %{libobjfwtls_pkgname} package contains TLS support for ObjFW
+
+%package -n %{libobjfwtls_pkgname}-devel
+Summary:       Header files and libraries for %{libobjfwtls_pkgname}
+Requires:      %{libobjfwtls_pkgname}%{_isa} = %{version}-%{release}
+
+%description -n %{libobjfwtls_pkgname}-devel
+The %{libobjfwtls_pkgname}-devel package contains header files and libraries
+for TLS support for ObjFW.
 
 %package -n ofarc
 Summary:       Utility for handling ZIP, Tar and LHA archives
@@ -115,6 +135,7 @@ cryptographic hashes.
 Summary:       Command line downloader for HTTP(S)
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwtls_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofhttp
 ofhttp is a command line downloader for HTTP and HTTPS (via ObjOpenSSL) using
@@ -178,6 +199,20 @@ make -C tests run
 %files -n %{libobjfwrt_pkgname}-devel
 %{_libdir}/libobjfwrt.so
 %{_includedir}/ObjFWRT/ObjFWRT.h
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
+
+%files -n %{libobjfwtls_pkgname}
+%{_libdir}/libobjfwtls.so.%{libobjfwtls_major}
+%{_libdir}/libobjfwtls.so.%{libobjfwtls_major}.%{libobjfwtls_minor}.0
+%license LICENSE.QPL
+%license LICENSE.GPLv3
+%license LICENSE.GPLv2
+
+%files -n %{libobjfwtls_pkgname}-devel
+%{_libdir}/libobjfwtls.so
+%{_includedir}/ObjFWTLS/ObjFWTLS.h
 %license LICENSE.QPL
 %license LICENSE.GPLv3
 %license LICENSE.GPLv2
