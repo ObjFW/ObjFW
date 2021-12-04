@@ -15,11 +15,13 @@
 
 #import "OFTLSStream.h"
 
+#include <Security/SecureTransport.h>
+
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	struct SSLContext *_context;
+	SSLContextRef _context;
 	OFString *_host;
 }
 @end

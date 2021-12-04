@@ -17,8 +17,6 @@
 
 #import "OFSecureTransportTLSStream.h"
 
-#include <Security/SecureTransport.h>
-
 #import "OFAlreadyConnectedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
