@@ -127,7 +127,7 @@ proxy, a modern terminal-based UI, etc.
 ./autogen.sh
 
 %build
-%configure --disable-rpath
+%configure OBJC=clang --disable-rpath
 %make_build
 
 %install
