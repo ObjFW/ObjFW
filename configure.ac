@@ -1551,6 +1551,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
 				"OFSecureTransportTLSStream.m")
+
+			AC_CHECK_FUNCS(SSLCreateContext)
 		], [])
 
 		LIBS="$old_LIBS"
