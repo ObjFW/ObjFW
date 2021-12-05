@@ -22,12 +22,12 @@ dnl ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 dnl POSSIBILITY OF SUCH DAMAGE.
 dnl
 
-AC_ARG_ENABLE(rpath,
-	AS_HELP_STRING([--disable-rpath], [do not use rpath]))
-
 AC_DEFUN([BUILDSYS_INIT], [
 	AC_REQUIRE([AC_CANONICAL_BUILD])
 	AC_REQUIRE([AC_CANONICAL_HOST])
+
+	AC_ARG_ENABLE(rpath,
+		AS_HELP_STRING([--disable-rpath], [do not use rpath]))
 
 	case "$build_os" in
 	darwin*)
