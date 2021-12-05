@@ -163,7 +163,7 @@ CONSTRUCTOR_P(ObjFWRT, 4000)
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFWRT, 4000)
+DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
 }
