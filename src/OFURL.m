@@ -596,13 +596,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			 * slash for the path. So all we do here is go back to
 			 * that slash and restore it.
 			 */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wpragmas"
+# pragma GCC diagnostic ignored "-Wunknown-warning-option"
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
 			UTF8String--;
 			*UTF8String = '/';
-#pragma GCC diagnostic pop
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic pop
+#endif
 
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];

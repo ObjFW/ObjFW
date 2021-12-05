@@ -74,7 +74,9 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
  * work with any socket. On top of that, their replacement, Network.framework,
  * doesn't support STARTTLS at all.
  */
-#pragma GCC diagnostic ignored "-Wdeprecated"
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
 
 @implementation OFSecureTransportTLSStream
 + (void)load
