@@ -209,8 +209,9 @@ extern char **environ;
 			close(_writePipe[0]);
 			OFFreeMemory(argv);
 
-			for (iter = env; *iter != NULL; iter++)
-				OFFreeMemory(*iter);
+			if (env != NULL)
+				for (iter = env; *iter != NULL; iter++)
+					OFFreeMemory(*iter);
 
 			OFFreeMemory(env);
 		}

@@ -80,7 +80,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new, autoreleased OFSubprocess.
  */
 + (instancetype)
-    subProcessWithProgram: (OFString *)program
+    subprocessWithProgram: (OFString *)program
 		arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /**
