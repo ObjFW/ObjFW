@@ -1644,6 +1644,9 @@ darwin*)
 	], [
 		AC_MSG_RESULT(yes)
 		have_subprocesses="yes"
+
+		AC_CHECK_FUNCS(posix_spawnp)
+		AC_CHECK_HEADERS(spawn.h)
 	], [
 		AC_MSG_RESULT(no)
 		have_subprocesses="no"
