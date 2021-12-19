@@ -135,6 +135,10 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 #endif
 
+#ifndef EWOULDBLOCK
+# define EWOULDBLOCK EAGAIN
+#endif
+
 /**
  * @class OFException OFException.h ObjFW/OFException.h
  *
