@@ -604,13 +604,16 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 + (OFString *)CPUModel
 {
 #if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+	struct X86Regs regs = x86CPUID(0x80000000, 0);
 	uint32_t buffer[12];
 	size_t i;
 
+	if (regs.eax < 0x80000004)
+		return nil;
+
 	i = 0;
 	for (uint32_t eax = 0x80000002; eax <= 0x80000004; eax++) {
-		struct X86Regs regs = x86CPUID(eax, 0);
-
+		regs = x86CPUID(eax, 0);
 		buffer[i++] = regs.eax;
 		buffer[i++] = regs.ebx;
 		buffer[i++] = regs.ecx;
