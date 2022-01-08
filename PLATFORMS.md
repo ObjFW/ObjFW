@@ -195,7 +195,7 @@ Wii
 Windows
 -------
 
-  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10,
+  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
                  Wine (x86 & x64)
   * Architectures: x86, x86_64
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),
