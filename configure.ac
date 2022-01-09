@@ -2085,3 +2085,12 @@ AS_IF([test x"$enable_threads" != x"no" -a x"$atomic_ops" = x"none" \
 	echo "  ** --disable-threads to work around this problem."
 	echo
 ])
+
+AS_IF([test x"$enable_sockets" != x"no" -a x"$tls_support" = x"no"], [
+       echo
+       printf "  ** Warning: You have enabled sockets, but no TLS "
+       echo "implementation was found."
+       printf "  ** TLS support will be disabled. Please install "
+       echo "GnuTLS for TLS support."
+       echo
+])
