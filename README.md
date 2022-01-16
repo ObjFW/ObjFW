@@ -144,6 +144,7 @@ other place, you are most likely using a mirror.
   To install ObjFW, just run the following commands:
 
     $ ./configure
+    $ make
     $ make check
     $ sudo make install
 
