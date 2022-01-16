@@ -435,6 +435,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
@@ -484,6 +487,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFString *fileName;
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
+
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
