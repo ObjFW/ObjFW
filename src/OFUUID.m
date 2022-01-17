@@ -223,8 +223,8 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 - (OFString *)UUIDString
 {
 	return [OFString stringWithFormat:
-	    @"%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-"
-	    @"%02X%02X%02X%02X%02X%02X",
+	    @"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-"
+	    @"%02x%02x%02x%02x%02x%02x",
 	    _bytes[0], _bytes[1], _bytes[2], _bytes[3],
 	    _bytes[4], _bytes[5], _bytes[6], _bytes[7],
 	    _bytes[8], _bytes[9], _bytes[10], _bytes[11],
