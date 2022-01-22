@@ -46,6 +46,7 @@ m68k-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	with_tls="no"
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
@@ -66,6 +67,7 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	with_tls="no"
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -78,6 +80,7 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	with_tls="no"
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
@@ -180,6 +183,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
@@ -228,6 +232,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
@@ -1536,29 +1541,39 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
+	AC_ARG_WITH(tls,
+		AS_HELP_STRING([--with-tls], [
+			enable TLS support using the specified library
+			(yes, gnutls, securetransport or no)]))
+	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
-	AC_CHECK_HEADERS(Security/SecureTransport.h, [
-		old_LIBS="$LIBS"
-		LIBS="-framework Security -framework Foundation $LIBS"
 
-		AC_CHECK_FUNC(SSLHandshake, [
-			AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
-				[Whether we have Secure Transport])
+	AS_IF([test x"$with_tls" = x"securetransport" \
+		-o x"$with_tls" = x"yes"], [
+		AC_CHECK_HEADERS(Security/SecureTransport.h, [
+			old_LIBS="$LIBS"
+			LIBS="-framework Security -framework Foundation $LIBS"
 
-			tls_support="Secure Transport"
-			TLS_LIBS="-framework Foundation $TLS_LIBS"
-			TLS_LIBS="-framework Security $TLS_LIBS"
+			AC_CHECK_FUNC(SSLHandshake, [
+				AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
+					[Whether we have Secure Transport])
 
-			AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
-				"OFSecureTransportTLSStream.m")
+				tls_support="Secure Transport"
+				TLS_LIBS="-framework Foundation $TLS_LIBS"
+				TLS_LIBS="-framework Security $TLS_LIBS"
 
-			AC_CHECK_FUNCS(SSLCreateContext)
-		], [])
+				AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
+					"OFSecureTransportTLSStream.m")
 
-		LIBS="$old_LIBS"
+				AC_CHECK_FUNCS(SSLCreateContext)
+			], [])
+
+			LIBS="$old_LIBS"
+		])
 	])
 
-	AS_IF([test x"$tls_support" = x"no"], [
+	AS_IF([test x"$with_tls" = x"gnutls" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
 			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
 
@@ -1595,6 +1610,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AS_IF([test x"$build_framework" = x"yes"], [
 			AC_SUBST(OBJFWTLS_FRAMEWORK, "ObjFWTLS.framework")
 		])
+	])
+
+	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
+		AC_MSG_ERROR(m4_normalize([
+			No TLS implementation was found. Please install GnuTLS
+			or use --without-tls.
+		]))
 	])
 
 	AS_IF([test x"$enable_threads" != x"no"], [
@@ -2084,13 +2106,4 @@ AS_IF([test x"$enable_threads" != x"no" -a x"$atomic_ops" = x"none" \
 	echo "need threads, try"
 	echo "  ** --disable-threads to work around this problem."
 	echo
-])
-
-AS_IF([test x"$enable_sockets" != x"no" -a x"$tls_support" = x"no"], [
-       echo
-       printf "  ** Warning: You have enabled sockets, but no TLS "
-       echo "implementation was found."
-       printf "  ** TLS support will be disabled. Please install "
-       echo "GnuTLS for TLS support."
-       echo
 ])

@@ -21,7 +21,7 @@ jobs:
           - --disable-compiler-tls --disable-threads
     steps:
     - name: Install dependencies
-      run: sudo apt install gcc-multilib
+      run: sudo apt install gcc-multilib gnutls-dev
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh

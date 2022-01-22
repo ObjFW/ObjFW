@@ -20,6 +20,8 @@ jobs:
           - --disable-shared --enable-seluid24
           - --disable-compiler-tls --disable-threads
     steps:
+    - name: Install dependencies
+      run: sudo apt install gnutls-dev
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh
