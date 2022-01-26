@@ -30,6 +30,11 @@
 int _ObjFWTLS_reference;
 static gnutls_certificate_credentials_t systemTrustCreds;
 
+#ifndef GNUTLS_SAFE_PADDING_CHECK
+/* Some older versions don't have it. */
+# define GNUTLS_SAFE_PADDING_CHECK 0
+#endif
+
 @implementation OFGnuTLSTLSStream
 static ssize_t
 readFunc(gnutls_transport_ptr_t transport, void *buffer, size_t length)
