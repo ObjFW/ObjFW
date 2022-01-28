@@ -489,7 +489,7 @@ OF_DIRECT_MEMBERS
 		_bytesWritten += (uint32_t)e.bytesWritten;
 		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
 
-		if (e.errNo == EWOULDBLOCK)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
 
 		@throw e;

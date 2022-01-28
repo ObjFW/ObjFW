@@ -50,7 +50,7 @@ readFunc(gnutls_transport_ptr_t transport, void *buffer, size_t length)
 	}
 
 	if (length == 0 && !stream.underlyingStream.atEndOfStream) {
-		gnutls_transport_set_errno(stream->_session, EWOULDBLOCK);
+		gnutls_transport_set_errno(stream->_session, EAGAIN);
 		return -1;
 	}
 
@@ -67,7 +67,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	} @catch (OFWriteFailedException *e) {
 		gnutls_transport_set_errno(stream->_session, e.errNo);
 
-		if (e.errNo == EWOULDBLOCK)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
 
 		return -1;
@@ -148,7 +148,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		 * enough for GnuTLS to return decrypted data. This means the
 		 * caller might have observed the TLS stream for reading, got a
 		 * ready signal and read - and expects the read to succeed, not
-		 * to fail with EWOULDBLOCK, as it was signaled ready.
+		 * to fail with EWOULDBLOCK/EAGAIN, as it was signaled ready.
 		 * Therefore, return 0, as we could read 0 decrypted bytes, but
 		 * cleared the ready signal of the underlying stream.
 		 */
@@ -172,16 +172,14 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if ((ret = gnutls_record_send(_session, buffer, length)) < 0) {
-		/* FIXME: Translate error to errNo */
-		int errNo = 0;
-
 		if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN)
-			errNo = EWOULDBLOCK;
+			return 0;
 
+		/* FIXME: Translate error to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: ret
-							     errNo: errNo];
+							     errNo: 0];
 	}
 
 	return ret;

@@ -38,7 +38,7 @@ readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 		    readIntoBuffer: data
 			    length: *dataLength];
 	} @catch (OFReadFailedException *e) {
-		if (e.errNo == EWOULDBLOCK) {
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN) {
 			*dataLength = 0;
 			return errSSLWouldBlock;
 		}
@@ -62,7 +62,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	} @catch (OFWriteFailedException *e) {
 		*dataLength = e.bytesWritten;
 
-		if (e.errNo == EWOULDBLOCK)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
 
 		@throw e;
