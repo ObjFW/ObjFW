@@ -899,7 +899,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_bytesWritten += (int64_t)e.bytesWritten;
 		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
 
-		if (e.errNo == EWOULDBLOCK)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
 
 		@throw e;

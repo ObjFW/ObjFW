@@ -232,7 +232,7 @@ normalizedKey(OFString *key)
 		@try {
 			[_socket writeBuffer: buffer length: length];
 		} @catch (OFWriteFailedException *e) {
-			if (e.errNo == EWOULDBLOCK)
+			if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 				return e.bytesWritten;
 
 			@throw e;

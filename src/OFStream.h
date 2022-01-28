@@ -831,8 +831,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * In non-blocking mode, if less than the specified length could be written, an
  * @ref OFWriteFailedException is thrown with @ref OFWriteFailedException#errNo
- * being set to `EWOULDBLOCK` and @ref OFWriteFailedException#bytesWritten
- * being set to the number of bytes that were written, if any.
+ * being set to `EWOULDBLOCK` or `EAGAIN` (you need to check for both, as they
+ * are not the same on some systems) and
+ * @ref OFWriteFailedException#bytesWritten being set to the number of bytes
+ * that were written, if any.
  *
  * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written

@@ -444,7 +444,7 @@ OF_DIRECT_MEMBERS
 
 		_toWrite -= e.bytesWritten;
 
-		if (e.errNo == EWOULDBLOCK)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
 
 		@throw e;
