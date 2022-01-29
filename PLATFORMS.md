@@ -106,6 +106,16 @@ macOS
   * Runtimes: Apple, ObjFW
 
 
+MiNT
+----
+
+  * OS Versions: FreeMiNT 1.19
+  * Architectures: m68k
+  * Runtimes: ObjFW
+  * Compilers: GCC 4.6.4 (MiNT 20130415)
+  * Limitations: No threads, no sockets
+
+
 MorphOS
 -------
 
