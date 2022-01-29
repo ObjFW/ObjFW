@@ -1544,7 +1544,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, gnutls, securetransport or no)]))
+			(yes, openssl, gnutls, securetransport or no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
 
@@ -1570,6 +1570,22 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			LIBS="$old_LIBS"
 		])
+	])
+
+	AS_IF([test x"$with_tls" = x"openssl" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		AC_CHECK_LIB(ssl, SSL_set1_host, [
+			AC_CHECK_HEADER(openssl/ssl.h, [
+				AC_DEFINE(HAVE_OPENSSL, 1,
+					[Whether we have OpenSSL])
+
+				tls_support="OpenSSL"
+				TLS_LIBS="-lssl -lcrypto $TLS_LIBS"
+
+				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
+					"OFOpenSSLTLSStream.m")
+			])
+		], [], [-lcrypto])
 	])
 
 	AS_IF([test x"$with_tls" = x"gnutls" \
@@ -1614,8 +1630,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
 		AC_MSG_ERROR(m4_normalize([
-			No TLS implementation was found. Please install GnuTLS
-			or use --without-tls.
+			No TLS implementation was found. Please install OpenSSL,
+			GnuTLS or use --without-tls.
 		]))
 	])
 
