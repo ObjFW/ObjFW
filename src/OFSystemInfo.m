@@ -566,6 +566,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return @"T:";
 # elif defined(OF_MSDOS)
 	return [[OFApplication environment] objectForKey: @"TEMP"];
+# elif defined(OF_MINT)
+	return @"u:\\tmp";
 # else
 	OFString *path =
 	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
