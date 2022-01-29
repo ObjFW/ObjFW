@@ -80,6 +80,11 @@
 # import "OFThreadStillRunningException.h"
 #endif
 
+#ifdef OF_MINT
+/* freemint-gcc does not have trunc() */
+# define trunc(x) ((int64_t)(x))
+#endif
+
 #if defined(OF_HAVE_THREADS)
 # import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)

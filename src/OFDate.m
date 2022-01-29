@@ -41,8 +41,8 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#ifdef OF_AMIGAOS_M68K
-/* amiga-gcc does not have trunc() */
+#if defined(OF_AMIGAOS_M68K) || defined(OF_MINT)
+/* amiga-gcc and freemint-gcc do not have trunc() */
 # define trunc(x) ((int64_t)(x))
 #endif
 

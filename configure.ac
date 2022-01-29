@@ -140,6 +140,11 @@ hppa*-*-hpux*)
 	dnl We need -latomic for GCC's atomics to work.
 	LIBS="$LIBS -latomic"
 	;;
+*-*-mint*)
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
@@ -826,6 +831,10 @@ AC_CHECK_FUNCS(strtof truncf)
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
+	*-*-mint*)
+		dnl asprintf is not in headers
+		have_asprintf="no"
+		;;
 	*-*-mingw*)
 		dnl asprintf from MinGW is broken on older Windows versions
 		have_asprintf="no"
