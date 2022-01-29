@@ -14,8 +14,8 @@
  */
 
 /*
- * This file is also used for MS-DOS! Don't forget to #ifdef Windows-specific
- * parts!
+ * This file is also used for MS-DOS and MiNT! Don't forget to #ifdef
+ * Windows-specific parts!
  */
 
 #include "config.h"
