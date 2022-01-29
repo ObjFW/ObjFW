@@ -642,6 +642,9 @@ case "$objc_runtime" in
 esac
 
 case "$host_os" in
+mint*)
+	dnl _Unwind_Backtrace crashes on MiNT
+	;;
 hpux*)
 	dnl _Unwind_Backtrace() returns complete garbage on HP-UX.
 	;;
