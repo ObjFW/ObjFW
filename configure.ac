@@ -143,7 +143,7 @@ hppa*-*-hpux*)
 *-*-mint*)
 	enable_shared="no"
 	enable_threads="no"	# TODO
-	enable_sockets="no"	# TODO
+	with_tls="no"
 	;;
 esac
 
@@ -427,7 +427,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdlib.h>
 
 	#if defined(__GLIBC__) || defined(__MINGW32__) || \
-	    defined(__NEWLIB__) || defined(__MORPHOS__)
+	    defined(__NEWLIB__) || defined(__MORPHOS__) || defined(__MINT__)
 	egrep_cpp_yes
 	#endif
 ], [
@@ -1505,6 +1505,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		#ifdef __morphos__
 		# error MorphOS has the struct but does not support it
+		#endif
+
+		#ifdef __MINT__
+		# error Gives invalid argument at runtime
 		#endif
 	])
 

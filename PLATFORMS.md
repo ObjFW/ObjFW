@@ -113,7 +113,7 @@ MiNT
   * Architectures: m68k
   * Runtimes: ObjFW
   * Compilers: GCC 4.6.4 (MiNT 20130415)
-  * Limitations: No threads, no sockets
+  * Limitations: No shared libraries, no threads
 
 
 MorphOS
