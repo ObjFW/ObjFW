@@ -110,8 +110,8 @@ static const unsigned char testVector2[64] = {
 	0xC7, 0x27, 0xAF, 0xB9, 0x4A, 0x83, 0xEE, 0x6D, 0x83, 0x60, 0xCB, 0xDF,
 	0xA2, 0xCC, 0x06, 0x40
 };
-/* The third test vector is too expensive for m68k Amigas. */
-#ifndef OF_AMIGAOS_M68K
+/* The third test vector is too expensive for m68k Amigas / MiNT. */
+#if !defined(OF_AMIGAOS_M68K) && !defined(OF_MINT)
 static const unsigned char testVector3[64] = {
 	0x70, 0x23, 0xBD, 0xCB, 0x3A, 0xFD, 0x73, 0x48, 0x46, 0x1C, 0x06, 0xCD,
 	0x81, 0xFD, 0x38, 0xEB, 0xFD, 0xA8, 0xFB, 0xBA, 0x90, 0x4F, 0x8E, 0x3E,
@@ -184,8 +184,8 @@ static const unsigned char testVector4[64] = {
 		.allowsSwappableMemory = true
 	    })) && memcmp(output, testVector2, 64) == 0)
 
-	/* The third test vector is too expensive for m68k Amigas. */
-#ifndef OF_AMIGAOS_M68K
+	/* The third test vector is too expensive for m68k Amigas / MiNT. */
+#if !defined(OF_AMIGAOS_M68K) && !defined(OF_MINT)
 	TEST(@"scrypt test vector #3",
 	    R(OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
