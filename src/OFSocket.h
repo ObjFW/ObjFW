@@ -137,7 +137,7 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
-#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS)
+#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS) && !defined(OF_MINT)
 struct sockaddr_un {
 	sa_family_t sun_family;
 	char sun_path[108];
