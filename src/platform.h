@@ -149,6 +149,8 @@
 # define OF_MSDOS
 #elif defined(__riscos__)
 # define OF_ACORN_RISC_OS
+#elif defined(__MINT__)
+# define OF_MINT
 #endif
 
 #if defined(__ELF__)

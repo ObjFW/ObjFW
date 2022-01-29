@@ -68,6 +68,10 @@
 # include <proto/dos.h>
 #endif
 
+#ifdef OF_MINT
+# include <bits/local_lim.h>
+#endif
+
 @interface OFDefaultFileManager: OFFileManager
 @end
 
