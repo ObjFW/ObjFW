@@ -23,7 +23,7 @@ jobs:
           - --with-tls=gnutls --disable-shared
     steps:
     - name: Install dependencies
-      run: sudo apt install openssl-dev gnutls-dev
+      run: sudo apt install libssl-dev gnutls-dev
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh
