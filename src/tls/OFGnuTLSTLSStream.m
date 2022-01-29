@@ -245,7 +245,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			    asyncWriteData: [OFData dataWithItems: "" count: 0]
 			       runLoopMode: runLoopMode];
 		else
-			[_underlyingStream asyncReadIntoBuffer: (void *)"" 
+			[_underlyingStream asyncReadIntoBuffer: (void *)""
 							length: 0
 						   runLoopMode: runLoopMode];
 
@@ -253,14 +253,14 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		return;
 	}
 
-	if (status != GNUTLS_E_SUCCESS)
+	if (status == GNUTLS_E_SUCCESS)
+		_handshakeDone = true;
+	else
 		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: OFTLSStreamErrorCodeUnknown];
-
-	_handshakeDone = true;
 
 	if ([_delegate respondsToSelector:
 	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
@@ -291,13 +291,13 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 				return true;
 		}
 
-		if (status != GNUTLS_E_SUCCESS)
+		if (status == GNUTLS_E_SUCCESS)
+			_handshakeDone = true;
+		else
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
 				      errorCode: OFTLSStreamErrorCodeUnknown];
-
-		_handshakeDone = true;
 	}
 
 	if ([_delegate respondsToSelector:
@@ -327,20 +327,20 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
 				[_underlyingStream
-				    asyncReadIntoBuffer: (void *)"" 
+				    asyncReadIntoBuffer: (void *)""
 						 length: 0
 					    runLoopMode: runLoopMode];
 				return nil;
 			}
 		}
 
-		if (status != GNUTLS_E_SUCCESS)
+		if (status == GNUTLS_E_SUCCESS)
+			_handshakeDone = true;
+		else
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
 				      errorCode: OFTLSStreamErrorCodeUnknown];
-
-		_handshakeDone = true;
 	}
 
 	if ([_delegate respondsToSelector:
