@@ -136,8 +136,10 @@ OFAllocZeroedMemory(size_t count, size_t size)
 void *
 OFResizeMemory(void *pointer, size_t count, size_t size)
 {
-	if OF_UNLIKELY (count == 0 || size == 0)
+	if OF_UNLIKELY (count == 0 || size == 0) {
+		free(pointer);
 		return NULL;
+	}
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
