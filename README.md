@@ -32,6 +32,7 @@ other place, you are most likely using a mirror.
  * [Documentation](#documentation)
  * [Bugs and feature requests](#bugs)
  * [Support and community](#support)
+ * [Donations](#donations)
  * [Commercial use](#commercial-use)
 
 
@@ -362,6 +363,15 @@ other place, you are most likely using a mirror.
      above
 
   Please don't hesitate to join any or all of those!
+
+
+<h1 id="donations">Donations</h1>
+
+  If you want to donate to ObjFW, you can either donate via
+  [GitHub Sponsors](https://github.com/sponsors/Midar), by sending Bitcoin to
+  `bc1q9vhsedt47jpj6h7ydjejw8umj0hretnkxn7xec` or by sending Solana to
+  `D3swLoAxd1a82Ux8zxyh7QNENcMjrkwdB1mvmXooxH6E`. Any amount is appreciated and
+  will help to finance the necessary caffeine to continue ObjFW development 🙂.
 
 
 <h1 id="commercial-use">Commercial use</h1>
