@@ -23,7 +23,9 @@ jobs:
           - --with-tls=gnutls --disable-shared
     steps:
     - name: Install dependencies
-      run: sudo apt install gobjc libssl-dev gnutls-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install gobjc libssl-dev gnutls-dev
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh
