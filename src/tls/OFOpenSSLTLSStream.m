@@ -124,7 +124,18 @@ static SSL_CTX *clientContext;
 		}
 	}
 
-	if ((ret = SSL_read_ex(_SSL, buffer, length, &bytesRead)) != 1) {
+	ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
+
+	if (BIO_ctrl_pending(_writeBIO) > 0) {
+		int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
+
+		OFEnsure(tmp >= 0);
+
+		[_underlyingStream writeBuffer: _buffer length: tmp];
+		[_underlyingStream flushWriteBuffer];
+	}
+
+	if (ret != 1) {
 		/*
 		 * The underlying stream might have had data ready, but not
 		 * enough for OpenSSL to return decrypted data. This means the
