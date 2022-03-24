@@ -80,7 +80,6 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
-	with_tls="no"
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
