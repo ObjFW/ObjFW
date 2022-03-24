@@ -1589,18 +1589,29 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AS_IF([test x"$with_tls" = x"openssl" \
 		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
-		AC_CHECK_LIB(ssl, SSL_set1_host, [
+		case "$host_os" in
+		morphos*)
+			ssl="ssl_shared"
+			crypto="crypto_shared"
+			;;
+		*)
+			ssl="ssl"
+			crypto="crypto"
+			;;
+		esac
+
+		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
 				AC_DEFINE(HAVE_OPENSSL, 1,
 					[Whether we have OpenSSL])
 
 				tls_support="OpenSSL"
-				TLS_LIBS="-lssl -lcrypto $TLS_LIBS"
+				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
 
 				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
 					"OFOpenSSLTLSStream.m")
 			])
-		], [], [-lcrypto])
+		], [], [-l$crypto])
 	])
 
 	AS_IF([test x"$with_tls" = x"gnutls" \
