@@ -126,7 +126,7 @@ static SSL_CTX *clientContext;
 
 	ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
 
-	if (BIO_ctrl_pending(_writeBIO) > 0) {
+	while (BIO_ctrl_pending(_writeBIO) > 0) {
 		int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
 
 		OFEnsure(tmp >= 0);
@@ -178,7 +178,7 @@ static SSL_CTX *clientContext;
 							     errNo: errNo];
 	}
 
-	if (BIO_ctrl_pending(_writeBIO) > 0) {
+	while (BIO_ctrl_pending(_writeBIO) > 0) {
 		int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
 
 		OFEnsure(tmp >= 0);
@@ -258,7 +258,7 @@ static SSL_CTX *clientContext;
 
 	status = SSL_do_handshake(_SSL);
 
-	if (BIO_ctrl_pending(_writeBIO) > 0) {
+	while (BIO_ctrl_pending(_writeBIO) > 0) {
 		int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
 
 		OFEnsure(tmp >= 0);
@@ -317,7 +317,7 @@ static SSL_CTX *clientContext;
 
 		status = SSL_do_handshake(_SSL);
 
-		if (BIO_ctrl_pending(_writeBIO) > 0) {
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
 			int tmp = BIO_read(_writeBIO, buffer, bufferSize);
 
 			OFEnsure(tmp >= 0);
@@ -371,7 +371,7 @@ static SSL_CTX *clientContext;
 		int status;
 		OFRunLoopMode runLoopMode;
 
-		if (BIO_ctrl_pending(_writeBIO) > 0) {
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
 			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
 
 			OFEnsure(tmp >= 0);
@@ -382,7 +382,7 @@ static SSL_CTX *clientContext;
 
 		status = SSL_do_handshake(_SSL);
 
-		if (BIO_ctrl_pending(_writeBIO) > 0) {
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
 			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
 
 			OFEnsure(tmp >= 0);
