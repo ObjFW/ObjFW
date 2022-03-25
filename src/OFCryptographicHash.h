@@ -101,6 +101,11 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
+ * @brief Performs the final calculation of the cryptographic hash.
+ */
+- (void)calculate;
+
+/**
  * @brief Resets all state so that a new hash can be calculated.
  *
  * @warning This invalidates any pointer previously returned by @ref digest. If

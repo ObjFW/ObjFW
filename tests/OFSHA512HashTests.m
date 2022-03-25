@@ -46,6 +46,9 @@ const uint8_t testFileSHA512[64] =
 
 	TEST(@"-[copy]", (SHA512Copy = [[SHA512 copy] autorelease]))
 
+	TEST(@"-[calculate]",
+	    R([SHA512 calculate]) && R([SHA512Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(SHA512.digest, testFileSHA512, 64) == 0 &&
 	    memcmp(SHA512Copy.digest, testFileSHA512, 64) == 0)

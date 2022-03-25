@@ -13,6 +13,7 @@ SRCS = OFAllocFailedException.m				\
        OFException.m					\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
+       OFHashNotCalculatedException.m			\
        OFInitializationFailedException.m		\
        OFInvalidArgumentException.m			\
        OFInvalidEncodingException.m			\

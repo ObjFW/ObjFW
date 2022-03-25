@@ -43,6 +43,8 @@ const uint8_t testFileMD5[16] =
 
 	TEST(@"-[copy]", (MD5Copy = [[MD5 copy] autorelease]))
 
+	TEST(@"-[calculate]", R([MD5 calculate]) && R([MD5Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(MD5.digest, testFileMD5, 16) == 0 &&
 	    memcmp(MD5Copy.digest, testFileMD5, 16) == 0)

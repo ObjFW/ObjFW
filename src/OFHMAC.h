@@ -104,6 +104,11 @@ OF_SUBCLASSING_RESTRICTED
 - (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
+ * @brief Performs the final calculation of the HMAC.
+ */
+- (void)calculate;
+
+/**
  * @brief Resets the HMAC so that it can be calculated for a new message.
  *
  * @note This does not reset the key so that a new HMAC with the same key can

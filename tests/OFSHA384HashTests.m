@@ -45,6 +45,9 @@ const uint8_t testFileSHA384[48] =
 
 	TEST(@"-[copy]", (SHA384Copy = [[SHA384 copy] autorelease]))
 
+	TEST(@"-[calculate]",
+	    R([SHA384 calculate]) && R([SHA384Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(SHA384.digest, testFileSHA384, 48) == 0 &&
 	    memcmp(SHA384Copy.digest, testFileSHA384, 48) == 0)
