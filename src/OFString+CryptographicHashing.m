@@ -39,6 +39,7 @@ stringByHashing(Class <OFCryptographicHash> class, OFString *self)
 	char cString[digestSize * 2];
 
 	[hash updateWithBuffer: self.UTF8String length: self.UTF8StringLength];
+	[hash calculate];
 	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {

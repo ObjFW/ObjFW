@@ -53,8 +53,11 @@ help(void)
 static void
 printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
-	const unsigned char *digest = hash.digest;
 	size_t digestSize = hash.digestSize;
+	const unsigned char *digest;
+
+	[hash calculate];
+	digest = hash.digest;
 
 	[OFStdOut writeFormat: @"%@ ", algo];
 

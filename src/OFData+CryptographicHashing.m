@@ -41,6 +41,7 @@ stringByHashing(Class <OFCryptographicHash> class, OFData *self)
 
 	[hash updateWithBuffer: self->_items
 			length: self->_count * self->_itemSize];
+	[hash calculate];
 	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {

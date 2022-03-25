@@ -44,6 +44,9 @@ const uint8_t testFileSHA224[28] =
 
 	TEST(@"-[copy]", (SHA224Copy = [[SHA224 copy] autorelease]))
 
+	TEST(@"-[calculate]",
+	    R([SHA224 calculate]) && R([SHA224Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(SHA224.digest, testFileSHA224, 28) == 0 &&
 	    memcmp(SHA224Copy.digest, testFileSHA224, 28) == 0)

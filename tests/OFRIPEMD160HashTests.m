@@ -44,6 +44,9 @@ const uint8_t testFileRIPEMD160[20] =
 
 	TEST(@"-[copy]", (RIPEMD160Copy = [[RIPEMD160 copy] autorelease]))
 
+	TEST(@"-[calculate]",
+	    R([RIPEMD160 calculate]) && R([RIPEMD160Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(RIPEMD160.digest, testFileRIPEMD160, 20) == 0 &&
 	    memcmp(RIPEMD160Copy.digest, testFileRIPEMD160, 20) == 0)

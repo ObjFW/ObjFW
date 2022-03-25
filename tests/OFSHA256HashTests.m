@@ -44,6 +44,9 @@ const uint8_t testFileSHA256[32] =
 
 	TEST(@"-[copy]", (SHA256Copy = [[SHA256 copy] autorelease]))
 
+	TEST(@"-[calculate]",
+	    R([SHA256 calculate]) && R([SHA256Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(SHA256.digest, testFileSHA256, 32) == 0 &&
 	    memcmp(SHA256Copy.digest, testFileSHA256, 32) == 0)

@@ -103,6 +103,13 @@ static const uint8_t SHA512Digest[] =
 	}
 	[file close];
 
+	TEST(@"-[calculate] with MD5", R([HMACMD5 calculate]))
+	TEST(@"-[calculate] with SHA-1", R([HMACSHA1 calculate]))
+	TEST(@"-[calculate] with RIPEMD-160", R([HMACRMD160 calculate]))
+	TEST(@"-[calculate] with SHA-256", R([HMACSHA256 calculate]))
+	TEST(@"-[calculate] with SHA-384", R([HMACSHA384 calculate]))
+	TEST(@"-[calculate] with SHA-512", R([HMACSHA512 calculate]))
+
 	TEST(@"-[digest] with MD5",
 	    memcmp(HMACMD5.digest, MD5Digest, HMACMD5.digestSize) == 0)
 	TEST(@"-[digest] with SHA-1",

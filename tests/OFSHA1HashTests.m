@@ -44,6 +44,8 @@ const uint8_t testFileSHA1[20] =
 
 	TEST(@"-[copy]", (SHA1Copy = [[SHA1 copy] autorelease]))
 
+	TEST(@"-[calculate]", R([SHA1 calculate]) && R([SHA1Copy calculate]))
+
 	TEST(@"-[digest]",
 	    memcmp(SHA1.digest, testFileSHA1, 20) == 0 &&
 	    memcmp(SHA1Copy.digest, testFileSHA1, 20) == 0)

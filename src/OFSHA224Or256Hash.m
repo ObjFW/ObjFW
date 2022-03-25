@@ -22,6 +22,7 @@
 #import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
 static const size_t blockSize = 64;
@@ -234,8 +235,17 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (const unsigned char *)digest
 {
+	if (!_calculated)
+		@throw [OFHashNotCalculatedException exceptionWithObject: self];
+
+	return (const unsigned char *)_iVars->state;
+}
+
+- (void)calculate
+{
 	if (_calculated)
-		return (const unsigned char *)_iVars->state;
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithObject: self];
 
 	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
 	OFZeroMemory(_iVars->buffer.bytes + _iVars->bufferLength + 1,
@@ -255,8 +265,6 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	byteSwapVectorIfLE(_iVars->state, 8);
 	_calculated = true;
-
-	return (const unsigned char *)_iVars->state;
 }
 
 - (void)reset
