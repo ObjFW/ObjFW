@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *namespace;
 #else
 @property OF_NULLABLE_PROPERTY (copy, nonatomic,
-    getter=namespace, setter=setNamespace:) OFString *namespace_;
+    getter=namespace, setter=setNamespace:) OFString *nameSpace;
 #endif
 
 /**
@@ -101,25 +101,25 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new XML element with the specified name and namespace.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @return A new autoreleased OFXMLElement with the specified element name and
  *	   namespace
  */
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (nullable OFString *)namespace_;
+		      namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief Creates a new XML element with the specified name, namespace and
  * 	  string value.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @param stringValue The value for the element
  * @return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (nullable OFString *)namespace_
+		      namespace: (nullable OFString *)nameSpace
 		    stringValue: (nullable OFString *)stringValue;
 
 /**
@@ -175,25 +175,25 @@ OF_ASSUME_NONNULL_BEGIN
  *	  and namespace.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @return An initialized OFXMLElement with the specified element name and
  *	   namespace
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_;
+		   namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief Initializes an already allocated OFXMLElement with the specified name,
  *	  namespace and value.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @param stringValue The value for the element
  * @return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
+		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (nullable OFString *)stringValue;
 
 /**
@@ -230,17 +230,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Sets a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param namespace_ The namespace for which the prefix is set
+ * @param nameSpace The namespace for which the prefix is set
  */
-- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
+- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)nameSpace;
 
 /**
  * @brief Binds a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param namespace_ The namespace for which the prefix is bound
+ * @param nameSpace The namespace for which the prefix is bound
  */
-- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
+- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)nameSpace;
 
 /**
  * @brief Adds the specified attribute.
@@ -272,11 +272,11 @@ OF_ASSUME_NONNULL_BEGIN
  * added.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The value of the attribute
  */
 - (void)addAttributeWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
+		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (OFString *)stringValue;
 
 /**
