@@ -164,7 +164,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Whether the XML parser has finished parsing.
  */
-@property (readonly, nonatomic) bool hasFinishedParsing;
+@property (readonly, nonatomic, getter=hasFinishedParsing) bool finishedParsing;
 
 /**
  * @brief The depth limit for the XML parser.

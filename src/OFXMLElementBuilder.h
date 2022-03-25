@@ -73,12 +73,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which did not expect the close tag
  * @param name The name of the close tag
  * @param prefix The prefix of the close tag
- * @param namespace_ The namespace of the close tag
+ * @param nameSpace The namespace of the close tag
  */
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
   didNotExpectCloseTag: (OFString *)name
 		prefix: (nullable OFString *)prefix
-	     namespace: (nullable OFString *)namespace_;
+	     namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief This callback is called when the XML parser for the element builder
