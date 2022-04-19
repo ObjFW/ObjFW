@@ -26,7 +26,6 @@ SRCS = OFApplication.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
-       OFHuffmanTree.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -183,6 +182,7 @@ SRCS += OFASPrintF.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
+	OFHuffmanTree.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
