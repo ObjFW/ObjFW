@@ -72,7 +72,7 @@ static OFString *const module = @"OFSPXSocket";
 - (void)SPXSocketTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSPXSocket *sockClient, *sockServer, *sockAccepted;
+	OFSPXSocket *sockClient, *sockServer = nil, *sockAccepted;
 	OFSocketAddress address1;
 	const OFSocketAddress *address2;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];
