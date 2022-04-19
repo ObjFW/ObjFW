@@ -48,8 +48,8 @@
 	@try {
 		_applicationName = [applicationName copy];
 	} @catch (id e) {
-		@throw e;
 		[self release];
+		@throw e;
 	}
 
 	return self;
