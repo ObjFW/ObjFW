@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -206,6 +206,11 @@
 #ifdef OF_HAVE_IPX
 	case AF_IPX:
 		sender->family = OFSocketAddressFamilyIPX;
+		break;
+#endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		sender->family = OFSocketAddressFamilyUNIX;
 		break;
 #endif
 	default:

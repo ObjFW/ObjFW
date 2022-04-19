@@ -5,8 +5,6 @@ SRCS = test.m
 
 include ../../buildsys.mk
 
-post-all: ${RUN_TESTS}
-
 .PHONY: run
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
@@ -68,5 +66,7 @@ run:
 	exit $$EXIT
 
 CPPFLAGS += -I../../src -I../../src/runtime -I../..
-LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L../../src -lobjfw						\
+	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+	${LIBS}
 LD = ${OBJC}

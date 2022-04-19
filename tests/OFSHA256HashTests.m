@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,6 +43,9 @@ const uint8_t testFileSHA256[32] =
 	[file close];
 
 	TEST(@"-[copy]", (SHA256Copy = [[SHA256 copy] autorelease]))
+
+	TEST(@"-[calculate]",
+	    R([SHA256 calculate]) && R([SHA256Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(SHA256.digest, testFileSHA256, 32) == 0 &&

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -72,7 +72,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 - (void)SPXStreamSocketTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSPXStreamSocket *sockClient, *sockServer, *sockAccepted;;
+	OFSPXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	OFSocketAddress address1;
 	const OFSocketAddress *address2;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,9 +45,13 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFUUID.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
 #import "OFColor.h"
+
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"
@@ -72,7 +76,7 @@
 # import "OFSequencedPacketSocket.h"
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
-# import "OFTLSSocket.h"
+# import "OFTLSStream.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
@@ -82,6 +86,10 @@
 #  import "OFIPXSocket.h"
 #  import "OFSPXSocket.h"
 #  import "OFSPXStreamSocket.h"
+# endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXStreamSocket.h"
 # endif
 #endif
 #ifdef OF_HAVE_SOCKETS
@@ -222,6 +230,9 @@
 # import "OFThreadJoinFailedException.h"
 # import "OFThreadStartFailedException.h"
 # import "OFThreadStillRunningException.h"
+#endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFTLSHandshakeFailedException.h"
 #endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"

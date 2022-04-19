@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,6 +43,9 @@ const uint8_t testFileRIPEMD160[20] =
 	[file close];
 
 	TEST(@"-[copy]", (RIPEMD160Copy = [[RIPEMD160 copy] autorelease]))
+
+	TEST(@"-[calculate]",
+	    R([RIPEMD160 calculate]) && R([RIPEMD160Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(RIPEMD160.digest, testFileRIPEMD160, 20) == 0 &&

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -163,7 +163,7 @@ CONSTRUCTOR_P(ObjFWRT, 4000)
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFWRT, 4000)
+DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
 }

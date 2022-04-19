@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,6 +42,7 @@
 #import "OFDate.h"
 
 #import "OFObserveFailedException.h"
+#import "OFWriteFailedException.h"
 
 #include "OFRunLoopConstants.inc"
 
@@ -569,15 +570,20 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		const char *dataItems = _data.items;
+		length = dataLength - _writtenLength;
+		[object writeBuffer: dataItems + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: dataItems + _writtenLength
-				      length: dataLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= dataLength);
 
 	if (_writtenLength != dataLength && exception == nil)
 		return true;
@@ -641,15 +647,20 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		const char *cString = [_string cStringWithEncoding: _encoding];
+		length = cStringLength - _writtenLength;
+		[object writeBuffer: cString + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: cString + _writtenLength
-				      length: cStringLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= cStringLength);
 
 	if (_writtenLength != cStringLength && exception == nil)
 		return true;
@@ -1416,8 +1427,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	OFRunLoopState *state = stateForMode(self, mode, false);
 
-	if (state == nil)
+	/* {} required to avoid -Wmisleading-indentation false positive. */
+	if (state == nil) {
 		return;
+	}
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];

@@ -106,6 +106,16 @@ macOS
   * Runtimes: Apple, ObjFW
 
 
+MiNT
+----
+
+  * OS Versions: FreeMiNT 1.19
+  * Architectures: m68k
+  * Runtimes: ObjFW
+  * Compilers: GCC 4.6.4 (MiNT 20130415)
+  * Limitations: No shared libraries, no threads
+
+
 MorphOS
 -------
 
@@ -195,7 +205,7 @@ Wii
 Windows
 -------
 
-  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10,
+  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
                  Wine (x86 & x64)
   * Architectures: x86, x86_64
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),

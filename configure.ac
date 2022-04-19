@@ -45,6 +45,7 @@ m68k-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	with_tls="no"
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
@@ -65,6 +66,7 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	with_tls="no"
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -136,6 +138,11 @@ hppa*-*-hpux*)
 	dnl We need -latomic for GCC's atomics to work.
 	LIBS="$LIBS -latomic"
 	;;
+*-*-mint*)
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	with_tls="no"
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
@@ -179,6 +186,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
@@ -227,6 +235,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
@@ -416,7 +425,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdlib.h>
 
 	#if defined(__GLIBC__) || defined(__MINGW32__) || \
-	    defined(__NEWLIB__) || defined(__MORPHOS__)
+	    defined(__NEWLIB__) || defined(__MORPHOS__) || defined(__MINT__)
 	egrep_cpp_yes
 	#endif
 ], [
@@ -627,6 +636,9 @@ case "$objc_runtime" in
 esac
 
 case "$host_os" in
+mint*)
+	dnl _Unwind_Backtrace crashes on MiNT
+	;;
 hpux*)
 	dnl _Unwind_Backtrace() returns complete garbage on HP-UX.
 	;;
@@ -816,6 +828,10 @@ AC_CHECK_FUNCS(strtof truncf)
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
+	*-*-mint*)
+		dnl asprintf is not in headers
+		have_asprintf="no"
+		;;
 	*-*-mingw*)
 		dnl asprintf from MinGW is broken on older Windows versions
 		have_asprintf="no"
@@ -967,6 +983,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	AC_DEFINE(OF_HAVE_THREADS, 1, [Whether we have threads])
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
+	AC_SUBST(OBJC_SYNC, objc_sync)
 
 	AC_ARG_ENABLE(compiler-tls,
 		AS_HELP_STRING([--disable-compiler-tls],
@@ -1327,6 +1344,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
 			[Whether we have netipx/ipx.h])
 	])
+	AC_CHECK_HEADER(sys/un.h, [
+		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
+	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
@@ -1452,6 +1472,40 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AC_CHECK_HEADERS(afunix.h, [
+		AC_DEFINE(OF_HAVE_AFUNIX_H, 1, [Whether we have afunix.h])
+	], [], [
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
+	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
+		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
+			[Whether we have UNIX sockets])
+		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
+	], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_UN_H
+		# include <sys/un.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+		#ifdef HAVE_AFUNIX_H
+		# include <afunix.h>
+		#endif
+
+		#ifdef __morphos__
+		# error MorphOS has the struct but does not support it
+		#endif
+
+		#ifdef __MINT__
+		# error Gives invalid argument at runtime
+		#endif
+	])
+
 	AC_CHECK_FUNCS(paccept accept4, break)
 
 	AC_CHECK_FUNCS(kqueue1 kqueue, [
@@ -1497,6 +1551,111 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
+	AC_ARG_WITH(tls,
+		AS_HELP_STRING([--with-tls], [
+			enable TLS support using the specified library
+			(yes, openssl, gnutls, securetransport or no)]))
+	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
+	tls_support="no"
+
+	AS_IF([test x"$with_tls" = x"securetransport" \
+		-o x"$with_tls" = x"yes"], [
+		AC_CHECK_HEADERS(Security/SecureTransport.h, [
+			old_LIBS="$LIBS"
+			LIBS="-framework Security -framework Foundation $LIBS"
+
+			AC_CHECK_FUNC(SSLHandshake, [
+				AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
+					[Whether we have Secure Transport])
+
+				tls_support="Secure Transport"
+				TLS_LIBS="-framework Foundation $TLS_LIBS"
+				TLS_LIBS="-framework Security $TLS_LIBS"
+
+				AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
+					"OFSecureTransportTLSStream.m")
+
+				AC_CHECK_FUNCS(SSLCreateContext)
+			], [])
+
+			LIBS="$old_LIBS"
+		])
+	])
+
+	AS_IF([test x"$with_tls" = x"openssl" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		case "$host_os" in
+		morphos*)
+			ssl="ssl_shared"
+			crypto="crypto_shared"
+			;;
+		*)
+			ssl="ssl"
+			crypto="crypto"
+			;;
+		esac
+
+		AC_CHECK_LIB($ssl, SSL_set1_host, [
+			AC_CHECK_HEADER(openssl/ssl.h, [
+				AC_DEFINE(HAVE_OPENSSL, 1,
+					[Whether we have OpenSSL])
+
+				tls_support="OpenSSL"
+				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
+
+				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
+					"OFOpenSSLTLSStream.m")
+			])
+		], [], [-l$crypto])
+	])
+
+	AS_IF([test x"$with_tls" = x"gnutls" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
+
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
+	])
+
+	AS_IF([test x"$tls_support" != x"no"], [
+		AC_SUBST(TLS, "tls")
+		AC_SUBST(TLS_CPPFLAGS)
+		AC_SUBST(TLS_LIBS)
+		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
+			[Whether we have an implementation for TLS])
+		AC_CONFIG_FILES(src/tls/Info.plist)
+
+		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+
+		AS_IF([test x"$enable_shared" != x"no"], [
+			AC_SUBST(OBJFWTLS_SHARED_LIB,
+				"${LIB_PREFIX}objfwtls${LIB_SUFFIX}")
+		])
+		AS_IF([test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"], [
+			AC_SUBST(OBJFWTLS_STATIC_LIB, "libobjfwtls.a")
+		])
+		AS_IF([test x"$build_framework" = x"yes"], [
+			AC_SUBST(OBJFWTLS_FRAMEWORK, "ObjFWTLS.framework")
+		])
+	])
+
+	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
+		AC_MSG_ERROR(m4_normalize([
+			No TLS implementation was found. Please install OpenSSL,
+			GnuTLS or use --without-tls.
+		]))
+	])
+
 	AS_IF([test x"$enable_threads" != x"no"], [
 		AC_SUBST(OF_HTTP_CLIENT_TESTS_M, "OFHTTPClientTests.m")
 	])
@@ -1504,6 +1663,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
+		AC_SUBST(OFHTTP_LIBS)
 	])
 ])
 
@@ -1543,6 +1703,9 @@ darwin*)
 	], [
 		AC_MSG_RESULT(yes)
 		have_subprocesses="yes"
+
+		AC_CHECK_FUNCS(posix_spawnp)
+		AC_CHECK_HEADERS(spawn.h)
 	], [
 		AC_MSG_RESULT(no)
 		have_subprocesses="no"
@@ -1908,7 +2071,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	esac
 
 	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(RUN_TESTS, "run")
 		AC_SUBST(WRAPPER, "$WINE")
 	])
 
@@ -1922,8 +2084,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-], [
-	AC_SUBST(RUN_TESTS, "run")
 ])
 
 AC_ARG_WITH(fish_completions,

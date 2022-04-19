@@ -1,6 +1,8 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}
+SUBDIRS = ${TESTPLUGIN}	\
+	  ${OBJC_SYNC}	\
+	  terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -22,6 +24,7 @@ SRCS = ForwardingTests.m		\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMethodSignatureTests.m		\
+       OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
        OFPBKDF2Tests.m			\
@@ -54,9 +57,6 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA256HashTests.m	\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
-SRCS_IPX = OFIPXSocketTests.m		\
-	   OFSPXSocketTests.m		\
-	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
@@ -66,7 +66,13 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+		    OFUNIXStreamSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -74,8 +80,6 @@ IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
-
-post-all: ${RUN_TESTS}
 
 .PHONY: run run-on-ios run-on-android
 run:

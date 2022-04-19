@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -408,6 +408,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
+#ifdef OF_HAVE_FILES
 /**
  * @brief Returns an array with all subpaths of the specified directory.
  *
@@ -419,7 +420,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Changes the current working directory.
  *

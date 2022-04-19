@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -359,15 +359,11 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 
 #if defined(OF_ELF)
 # if defined(OF_X86_64) || defined(OF_X86) || \
+    defined(OF_POWERPC64) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
     defined(OF_SPARC64) || defined(OF_SPARC)
 #  define OF_ASM_LOOKUP
-# endif
-# if defined(OF_POWERPC64) || defined(OF_POWERPC)
-#  if !defined(_CALL_ELF) || _CALL_ELF == 1
-#   define OF_ASM_LOOKUP
-#  endif
 # endif
 #elif defined(OF_WINDOWS)
 # if defined(OF_X86_64) || defined(OF_X86)

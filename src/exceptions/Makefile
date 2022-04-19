@@ -13,6 +13,7 @@ SRCS = OFAllocFailedException.m				\
        OFException.m					\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
+       OFHashNotCalculatedException.m			\
        OFInitializationFailedException.m		\
        OFInvalidArgumentException.m			\
        OFInvalidEncodingException.m			\
@@ -61,7 +62,8 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
 	       OFObserveFailedException.m		\
-	       OFResolveHostFailedException.m
+	       OFResolveHostFailedException.m		\
+	       OFTLSHandshakeFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

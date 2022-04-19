@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,6 +43,8 @@ const uint8_t testFileSHA1[20] =
 	[file close];
 
 	TEST(@"-[copy]", (SHA1Copy = [[SHA1 copy] autorelease]))
+
+	TEST(@"-[calculate]", R([SHA1 calculate]) && R([SHA1Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(SHA1.digest, testFileSHA1, 20) == 0 &&

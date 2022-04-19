@@ -6,6 +6,8 @@ SRCS = FuncArrayGenerator.m	\
        LibraryGenerator.m	\
        LinkLibGenerator.m
 
+include ../../buildsys.mk
+
 .PHONY: run
 run: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
@@ -67,8 +69,6 @@ run: all
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
-
-include ../../buildsys.mk
 
 CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
 LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}

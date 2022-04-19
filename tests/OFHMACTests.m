@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -102,6 +102,13 @@ static const uint8_t SHA512Digest[] =
 		[HMACSHA512 updateWithBuffer: buffer length: length];
 	}
 	[file close];
+
+	TEST(@"-[calculate] with MD5", R([HMACMD5 calculate]))
+	TEST(@"-[calculate] with SHA-1", R([HMACSHA1 calculate]))
+	TEST(@"-[calculate] with RIPEMD-160", R([HMACRMD160 calculate]))
+	TEST(@"-[calculate] with SHA-256", R([HMACSHA256 calculate]))
+	TEST(@"-[calculate] with SHA-384", R([HMACSHA384 calculate]))
+	TEST(@"-[calculate] with SHA-512", R([HMACSHA512 calculate]))
 
 	TEST(@"-[digest] with MD5",
 	    memcmp(HMACMD5.digest, MD5Digest, HMACMD5.digestSize) == 0)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -339,101 +339,6 @@
 	return OFFromBigEndianDouble(ret);
 }
 
-- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint16_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifndef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap16(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint32_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifndef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap32(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint64_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifndef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap64(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(float);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifndef OF_FLOAT_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwapFloat(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(double);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifndef OF_FLOAT_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwapDouble(buffer[i]);
-#endif
-
-	return size;
-}
-
 - (uint16_t)readLittleEndianInt16
 {
 	uint16_t ret;
@@ -467,106 +372,6 @@
 	double ret;
 	[self readIntoBuffer: (char *)&ret exactLength: 8];
 	return OFFromLittleEndianDouble(ret);
-}
-
-- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
-				     count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint16_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifdef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap16(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t *)buffer
-				     count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint32_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifdef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap32(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t *)buffer
-				     count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint64_t);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifdef OF_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwap64(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readLittleEndianFloatsIntoBuffer: (float *)buffer
-				     count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(float);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifdef OF_FLOAT_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwapFloat(buffer[i]);
-#endif
-
-	return size;
-}
-
-- (size_t)readLittleEndianDoublesIntoBuffer: (double *)buffer
-				      count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(double);
-
-	[self readIntoBuffer: buffer exactLength: size];
-
-#ifdef OF_FLOAT_BIG_ENDIAN
-	for (size_t i = 0; i < count; i++)
-		buffer[i] = OFByteSwapDouble(buffer[i]);
-#endif
-
-	return size;
 }
 
 - (OFData *)readDataWithCount: (size_t)count
@@ -1056,40 +861,62 @@
 				 encoding: OFStringEncodingUTF8];
 }
 
-- (void)flushWriteBuffer
+- (bool)flushWriteBuffer
 {
+	size_t bytesWritten;
+
 	if (_writeBuffer == NULL)
-		return;
+		return true;
 
-	[self lowlevelWriteBuffer: _writeBuffer length: _writeBufferLength];
+	bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
+					  length: _writeBufferLength];
 
-	OFFreeMemory(_writeBuffer);
-	_writeBuffer = NULL;
-	_writeBufferLength = 0;
+	if (bytesWritten == 0)
+		return false;
+
+	if (bytesWritten == _writeBufferLength) {
+		OFFreeMemory(_writeBuffer);
+		_writeBuffer = NULL;
+		_writeBufferLength = 0;
+
+		return true;
+	}
+
+	OFEnsure(bytesWritten <= _writeBufferLength);
+
+	memmove(_writeBuffer, _writeBuffer + bytesWritten,
+	    _writeBufferLength - bytesWritten);
+	_writeBufferLength -= bytesWritten;
+	@try {
+		_writeBuffer = OFResizeMemory(_writeBuffer,
+		    _writeBufferLength, 1);
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't care, as we only made it smaller. */
+	}
+
+	return false;
 }
 
-- (size_t)writeBuffer: (const void *)buffer
-	       length: (size_t)length
+- (void)writeBuffer: (const void *)buffer length: (size_t)length
 {
 	if (!_buffersWrites) {
 		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
 							 length: length];
 
-		if (_canBlock && bytesWritten < length)
+		if (bytesWritten < length)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
 				   bytesWritten: bytesWritten
 					  errNo: 0];
-
-		return bytesWritten;
 	} else {
+		if (SIZE_MAX - _writeBufferLength < length)
+			@throw [OFOutOfRangeException exception];
+
 		_writeBuffer = OFResizeMemory(_writeBuffer,
 		    _writeBufferLength + length, 1);
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
-
-		return length;
 	}
 }
 
@@ -1239,141 +1066,6 @@
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint16_t);
-
-#ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap16(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint32_t);
-
-#ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap32(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint64_t);
-
-#ifdef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap64(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeBigEndianFloats: (const float *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(float);
-
-#ifdef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	float *tmp = OFAllocMemory(count, sizeof(float));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwapFloat(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeBigEndianDoubles: (const double *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(double);
-
-#ifdef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	double *tmp = OFAllocMemory(count, sizeof(double));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwapDouble(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
 - (void)writeLittleEndianInt16: (uint16_t)int16
 {
 	int16 = OFToLittleEndian16(int16);
@@ -1404,142 +1096,7 @@
 	[self writeBuffer: (char *)&double_ length: 8];
 }
 
-- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint16_t);
-
-#ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint16_t *tmp = OFAllocMemory(count, sizeof(uint16_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap16(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint32_t);
-
-#ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint32_t *tmp = OFAllocMemory(count, sizeof(uint32_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap32(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(uint64_t);
-
-#ifndef OF_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	uint64_t *tmp = OFAllocMemory(count, sizeof(uint64_t));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwap64(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeLittleEndianFloats: (const float *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(float);
-
-#ifndef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	float *tmp = OFAllocMemory(count, sizeof(float));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwapFloat(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeLittleEndianDoubles: (const double *)buffer count: (size_t)count
-{
-	size_t size;
-
-	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
-		@throw [OFOutOfRangeException exception];
-
-	size = count * sizeof(double);
-
-#ifndef OF_FLOAT_BIG_ENDIAN
-	[self writeBuffer: buffer length: size];
-#else
-	double *tmp = OFAllocMemory(count, sizeof(double));
-
-	@try {
-		for (size_t i = 0; i < count; i++)
-			tmp[i] = OFByteSwapDouble(buffer[i]);
-
-		[self writeBuffer: tmp length: size];
-	} @finally {
-		OFFreeMemory(tmp);
-	}
-#endif
-
-	return size;
-}
-
-- (size_t)writeData: (OFData *)data
+- (void)writeData: (OFData *)data
 {
 	void *pool;
 	size_t length;
@@ -1553,16 +1110,14 @@
 	[self writeBuffer: data.items length: length];
 
 	objc_autoreleasePoolPop(pool);
-
-	return length;
 }
 
-- (size_t)writeString: (OFString *)string
+- (void)writeString: (OFString *)string
 {
-	return [self writeString: string encoding: OFStringEncodingUTF8];
+	[self writeString: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
+- (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	void *pool;
 	size_t length;
@@ -1577,16 +1132,14 @@
 		   length: length];
 
 	objc_autoreleasePoolPop(pool);
-
-	return length;
 }
 
-- (size_t)writeLine: (OFString *)string
+- (void)writeLine: (OFString *)string
 {
-	return [self writeLine: string encoding: OFStringEncodingUTF8];
+	[self writeLine: string encoding: OFStringEncodingUTF8];
 }
 
-- (size_t)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
+- (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
 	char *buffer;
@@ -1602,23 +1155,18 @@
 	} @finally {
 		OFFreeMemory(buffer);
 	}
-
-	return stringLength + 1;
 }
 
-- (size_t)writeFormat: (OFConstantString *)format, ...
+- (void)writeFormat: (OFConstantString *)format, ...
 {
 	va_list arguments;
-	size_t ret;
 
 	va_start(arguments, format);
-	ret = [self writeFormat: format arguments: arguments];
+	[self writeFormat: format arguments: arguments];
 	va_end(arguments);
-
-	return ret;
 }
 
-- (size_t)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
+- (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int length;
@@ -1635,8 +1183,6 @@
 	} @finally {
 		free(UTF8String);
 	}
-
-	return length;
 }
 
 - (bool)hasDataInReadBuffer

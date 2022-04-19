@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,6 +43,9 @@ const uint8_t testFileSHA224[28] =
 	[file close];
 
 	TEST(@"-[copy]", (SHA224Copy = [[SHA224 copy] autorelease]))
+
+	TEST(@"-[calculate]",
+	    R([SHA224 calculate]) && R([SHA224Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(SHA224.digest, testFileSHA224, 28) == 0 &&

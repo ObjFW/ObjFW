@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS}
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -53,6 +53,8 @@ SRCS = OFASPrintF.m			\
        OFMutableTriple.m		\
        OFMutableURL.m			\
        OFMutableZIPArchiveEntry.m	\
+       OFNotification.m			\
+       OFNotificationCenter.m		\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\
@@ -88,7 +90,7 @@ SRCS = OFASPrintF.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       ${OF_SUBUPROCESS_M}		\
+       ${OF_SUBPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -97,6 +99,7 @@ SRCS = OFASPrintF.m			\
        OFTriple.m			\
        OFURL.m				\
        OFURLHandler.m			\
+       OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -120,9 +123,6 @@ SRCS_FILES = OFFile.m			\
 	     OFINIFile.m		\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
-SRCS_IPX = OFIPXSocket.m	\
-	   OFSPXSocket.m	\
-	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
@@ -139,8 +139,15 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
+	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocket.m	\
+	   OFSPXSocket.m	\
+	   OFSPXStreamSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+		    OFUNIXStreamSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\
@@ -166,7 +173,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFTLSSocket.h			\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\
@@ -203,11 +209,11 @@ SRCS += OFAdjacentArray.m		\
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
-		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,8 +33,12 @@
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
-#import "OFTLSSocket.h"
+#import "OFTLSStream.h"
 #import "OFURL.h"
+
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
 
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -77,6 +81,14 @@
 
 - (void)downloadNextURL;
 @end
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFHTTP)
 
@@ -278,17 +290,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 @implementation OFHTTP
-#ifdef OF_HAVE_PLUGINS
-+ (void)initialize
-{
-	if (self != [OFHTTP class])
-		return;
-
-	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
-	OFDLOpen(@LIB_PREFIX @"objopenssl" @LIB_SUFFIX, OFDLOpenFlagLazy);
-}
-#endif
-
 - (instancetype)init
 {
 	self = [super init];
@@ -536,7 +537,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 					 currentDirectoryPath]
 			permissions: (_continue ? @"rwc" : @"wc")];
 
-	/* In case we use ObjOpenSSL for https later */
+	/* In case we use OpenSSL for HTTPS later */
 	[sandbox unveilPath: @"/etc/ssl" permissions: @"r"];
 
 	sandbox.allowsUnveil = false;
@@ -583,13 +584,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 
--    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OFTCPSocket *)sock
-	  request: (OFHTTPRequest *)request
+-	(void)client: (OFHTTPClient *)client
+  didCreateTLSStream: (OFTLSStream *)stream
+	     request: (OFHTTPRequest *)request
 {
-	if (_insecure && [sock respondsToSelector:
-	    @selector(setVerifiesCertificates:)])
-		((id <OFTLSSocket>)sock).verifiesCertificates = false;
+	stream.verifiesCertificates = !_insecure;
 }
 
 -     (void)client: (OFHTTPClient *)client
@@ -845,11 +844,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 
-			[OFStdErr writeLine: OF_LOCALIZED(@"no_ssl_library",
-			    @"%[prog]: No TLS library loaded!\n"
-			    @"  In order to download via https, you need to "
-			    @"preload an TLS library for ObjFW\n"
-			    @"  such as ObjOpenSSL!",
+			[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
+			    @"%[prog]: No TLS support in ObjFW!\n"
+			    @"  In order to download via HTTPS, you need to "
+			    @"either build ObjFW with TLS\n"
+			    @"  support or preload a library adding TLS "
+			    @"support to ObjFW!",
 			    @"prog", [OFApplication programName])];
 		} else if ([exception isKindOfClass:
 		    [OFReadOrWriteFailedException class]]) {

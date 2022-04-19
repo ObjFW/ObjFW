@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -94,15 +94,13 @@
 			OFSocketAddressSetPort(address, rnd);
 
 			if ((ret = bind(_socket, &address->sockaddr.sockaddr,
-			    address->length)) == 0) {
-				port = rnd;
+			    address->length)) == 0)
 				break;
-			}
 
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				uint16_t port = OFSocketAddressPort(port);
+				port = OFSocketAddressPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;

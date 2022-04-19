@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #include "platform.h"
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+#if defined(OF_WINDOWS) || defined(OF_MSDOS) || defined(OF_MINT)
 # import "platform/Windows/OFString+PathAdditions.m"
 #elif defined(OF_AMIGAOS)
 # import "platform/AmigaOS/OFString+PathAdditions.m"

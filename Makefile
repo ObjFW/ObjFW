@@ -16,6 +16,9 @@ include buildsys.mk
 
 utils tests: src
 
+check: tests
+	cd tests && ${MAKE} -s run
+
 docs:
 	rm -fr docs
 	doxygen >/dev/null

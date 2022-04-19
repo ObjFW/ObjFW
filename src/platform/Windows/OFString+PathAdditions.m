@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -14,8 +14,8 @@
  */
 
 /*
- * This file is also used for MS-DOS! Don't forget to #ifdef Windows-specific
- * parts!
+ * This file is also used for MS-DOS and MiNT! Don't forget to #ifdef
+ * Windows-specific parts!
  */
 
 #include "config.h"

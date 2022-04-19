@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -102,6 +102,11 @@ OF_SUBCLASSING_RESTRICTED
  * @param length The length of the buffer
  */
 - (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
+
+/**
+ * @brief Performs the final calculation of the HMAC.
+ */
+- (void)calculate;
 
 /**
  * @brief Resets the HMAC so that it can be calculated for a new message.

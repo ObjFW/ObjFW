@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -331,6 +331,7 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self numberTests];
 	[self streamTests];
+	[self notificationCenterTests];
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self RIPEMD160HashTests];
@@ -354,6 +355,10 @@ main(int argc, char *argv[])
 	[self IPXSocketTests];
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
+# endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+	[self UNIXDatagramSocketTests];
+	[self UNIXStreamSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif
