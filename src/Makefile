@@ -10,13 +10,9 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASPrintF.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
-       OFBase64.m			\
        OFBlock.m			\
-       OFCRC16.m			\
-       OFCRC32.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\
@@ -80,7 +76,6 @@ SRCS = OFASPrintF.m			\
        OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
-       OFStrPTime.m			\
        OFStream.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
@@ -179,10 +174,14 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    platform.h				\
 	    ${USE_INCLUDES_ATOMIC}
 
-SRCS += OFAdjacentArray.m		\
+SRCS += OFASPrintF.m			\
+	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
+	OFCRC16.m			\
+	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
@@ -200,6 +199,7 @@ SRCS += OFAdjacentArray.m		\
 	OFRectValue.m			\
 	OFSandbox.m			\
 	OFSizeValue.m			\
+	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
