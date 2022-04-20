@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFBindFailedException: OFException
 {
 	/* IP */
-	OFString *_host;
+	OFString *_Nullable _host;
 	uint16_t _port;
 	/* IPX */
 	uint8_t _packetType;
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The host on which binding failed.
  */
-@property (readonly, nonatomic) OFString *host;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
 
 /**
  * @brief The port on which binding failed.
