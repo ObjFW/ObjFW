@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The condition for which is still being waited.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /**
  * @brief Creates a new, autoreleased condition still waiting exception.
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition for which is still being waited
  * @return A new, autoreleased condition still waiting exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition;
++ (instancetype)exceptionWithCondition: (OFCondition *)condition;
 
 /**
  * @brief Initializes an already allocated condition still waiting exception.
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition for which is still being waited
  * @return An initialized condition still waiting exception
  */
-- (instancetype)initWithCondition: (nullable OFCondition *)condition
+- (instancetype)initWithCondition: (OFCondition *)condition
     OF_DESIGNATED_INITIALIZER;
 @end
 
