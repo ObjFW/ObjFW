@@ -29,7 +29,7 @@
 
 - (instancetype)init
 {
-	return [self initWithCondition: nil];
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithCondition: (OFCondition *)condition
