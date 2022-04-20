@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The condition which could not be signaled.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /**
  * @brief The errno of the error that occurred.
@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased condition signal failed exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition
++ (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo;
 
 /**
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized condition signal failed exception
  */
-- (instancetype)initWithCondition: (nullable OFCondition *)condition
+- (instancetype)initWithCondition: (OFCondition *)condition
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;
