@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFConnectionFailedException: OFException
 {
-	OFString *_host;
+	OFString *_Nullable _host;
 	uint16_t _port;
 	unsigned char _node[IPX_NODE_LEN];
 	uint32_t _network;
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithHost: (nullable OFString *)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
@@ -130,7 +130,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
-- (instancetype)initWithHost: (nullable OFString *)host
+- (instancetype)initWithHost: (OFString *)host
 			port: (uint16_t)port
 		      socket: (id)socket
 		       errNo: (int)errNo;
