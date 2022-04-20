@@ -49,6 +49,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithCondition: (OFCondition *)condition;
 
+- (instancetype)init OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated condition still waiting exception.
  *
