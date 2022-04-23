@@ -38,9 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The object which does not (fully) implement the selector.
  */
-@property (readonly, nonatomic) id object;
-
-+ (instancetype)exception OF_UNAVAILABLE;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id object;
 
 /**
  * @brief Creates a new, autoreleased not implemented exception.
@@ -52,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (nullable id)object;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated not implemented exception.
@@ -63,6 +61,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSelector: (SEL)selector
 			  object: (nullable id)object OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

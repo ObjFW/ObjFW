@@ -28,6 +28,11 @@
 	return [[[self alloc] initWithLock: lock errNo: errNo] autorelease];
 }
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (instancetype)initWithLock: (id <OFLocking>)lock errNo: (int)errNo
 {
 	self = [super init];

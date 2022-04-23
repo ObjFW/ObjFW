@@ -72,8 +72,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased bind failed exception.
  *
@@ -87,6 +85,8 @@ OF_ASSUME_NONNULL_BEGIN
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased bind failed exception.
@@ -113,8 +113,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 			   socket: (id)socket
 			    errNo: (int)errNo;
-
-- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated bind failed exception.
@@ -154,6 +152,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath: (OFString *)path
 		      socket: (id)socket
 		       errNo: (int)errNo;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
