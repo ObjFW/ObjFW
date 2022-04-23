@@ -50,8 +50,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock
 			    errNo: (int)errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Initializes an already allocated lock failed exception.
  *
@@ -61,8 +59,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithLock: (nullable id <OFLocking>)lock
 		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
-
-- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
