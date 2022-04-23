@@ -56,6 +56,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated condition broadcast failed exception.
  *

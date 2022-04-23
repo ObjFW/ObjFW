@@ -27,9 +27,9 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithCondition: (OFCondition *)condition
@@ -39,6 +39,11 @@
 	_condition = [condition retain];
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
