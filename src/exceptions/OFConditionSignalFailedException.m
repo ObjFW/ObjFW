@@ -31,6 +31,11 @@
 					  errNo: errNo] autorelease];
 }
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo
 {
 	self = [super init];
