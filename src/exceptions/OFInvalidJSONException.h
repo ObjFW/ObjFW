@@ -39,8 +39,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) size_t line;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased invalid JSON exception.
  *
@@ -51,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithString: (nullable OFString *)string
 			       line: (size_t)line;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated invalid JSON exception.
@@ -62,6 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithString: (nullable OFString *)string
 			  line: (size_t)line OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
