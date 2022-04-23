@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithLock: lock errNo: errNo] autorelease];
 }
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)initWithLock: (id <OFLocking>)lock errNo: (int)errNo
 {
 	self = [super init];
@@ -41,11 +36,6 @@
 	_errNo = errNo;
 
 	return self;
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -57,8 +47,11 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"A lock of type %@ could not be locked: %s",
-	    [_lock class], strerror(_errNo)];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"A lock of type %@ could not be locked: %s",
+		    [_lock class], strerror(_errNo)];
+	else
+		return @"A lock could not be locked!";
 }
 @end
