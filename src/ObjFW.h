@@ -181,6 +181,7 @@
 # import "OFGetWindowsRegistryValueFailedException.h"
 #endif
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPRequestFailedException.h"
 #endif
