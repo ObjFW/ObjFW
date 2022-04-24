@@ -30,13 +30,16 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	OFSocketAddress address1, address2;
 	char buffer[5];
 
-#ifdef OF_HAVE_FILES
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
 	path = [[OFSystemInfo temporaryDirectoryPath]
 	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectoryPath is
+	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",
 					   [[OFUUID UUID] UUIDString]];
