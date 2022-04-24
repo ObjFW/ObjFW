@@ -32,6 +32,11 @@
 				 errorCode: errorCode] autorelease];
 }
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
 		   errorCode: (OFDNSResolverErrorCode)errorCode
@@ -48,6 +53,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
