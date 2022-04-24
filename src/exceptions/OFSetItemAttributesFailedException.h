@@ -55,8 +55,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFFileAttributeKey failedAttribute;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased set item attributes failed exception.
  *
@@ -72,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated set item attributes failed exception.
@@ -88,6 +86,8 @@ OF_ASSUME_NONNULL_BEGIN
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
