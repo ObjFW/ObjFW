@@ -108,6 +108,8 @@ OF_SUBCLASSING_RESTRICTED
 		      object: (nullable id)object
 		    userInfo: (nullable OFDictionary *)userInfo
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
