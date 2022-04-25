@@ -46,8 +46,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased undefined key exception.
  *
@@ -71,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
 				key: (OFString *)key
 			      value: (nullable id)value;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated undefined key exception.
@@ -95,6 +93,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithObject: (id)object
 			   key: (OFString *)key
 			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

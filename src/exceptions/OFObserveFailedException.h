@@ -41,8 +41,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased observe failed exception.
  *
@@ -53,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated observe failed exception.
@@ -64,6 +62,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithObserver: (OFKernelEventObserver *)observer
 			   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
