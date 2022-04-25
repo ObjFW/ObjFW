@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 			       valueName: (nullable OFString *)valueName
 				  status: (LSTATUS)status;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated get Windows registry value failed
@@ -79,6 +79,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			  valueName: (nullable OFString *)valueName
 			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

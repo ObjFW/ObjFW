@@ -22,11 +22,6 @@
 @synthesize host = _host, port = _port, network = _network, path = _path;
 @synthesize socket = _socket, errNo = _errNo;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)sock
@@ -36,6 +31,11 @@
 				      port: port
 				    socket: sock
 				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (instancetype)exceptionWithNode: (unsigned char [IPX_NODE_LEN])node
@@ -58,11 +58,6 @@
 	return [[[self alloc] initWithPath: path
 				    socket: sock
 				     errNo: errNo] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithHost: (OFString *)host
@@ -123,6 +118,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
