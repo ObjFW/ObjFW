@@ -52,6 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
 			 errorCode: (OFDNSResolverErrorCode)errorCode;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated DNS query failed exception.
  *
@@ -61,6 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithQuery: (OFDNSQuery *)query
 		    errorCode: (OFDNSResolverErrorCode)errorCode;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 #ifdef __cplusplus
