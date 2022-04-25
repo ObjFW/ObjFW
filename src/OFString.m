@@ -1006,9 +1006,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			    attributesOfItemAtPath: path].fileSize;
 		} @catch (OFRetrieveItemAttributesFailedException *e) {
 			@throw [OFOpenItemFailedException
-			    exceptionWithURL: [OFURL fileURLWithPath: path]
-					mode: @"r"
-				       errNo: e.errNo];
+			    exceptionWithPath: path
+					 mode: @"r"
+					errNo: e.errNo];
 		}
 
 		objc_autoreleasePoolPop(pool);
