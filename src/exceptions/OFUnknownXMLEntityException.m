@@ -26,9 +26,9 @@
 	return [[[self alloc] initWithEntityName: entityName] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithEntityName: (OFString *)entityName
@@ -43,6 +43,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
