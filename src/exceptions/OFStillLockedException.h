@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFStillLockedException: OFException
 {
-	id <OFLocking> _lock;
+	id <OFLocking> _Nullable _lock;
 }
 
 /**
