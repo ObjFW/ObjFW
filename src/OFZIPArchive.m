@@ -37,7 +37,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
-#import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSeekFailedException.h"
 #import "OFTruncatedDataException.h"
@@ -442,9 +441,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw [OFInvalidArgumentException exception];
 
 	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
-		@throw [OFOpenItemFailedException exceptionWithPath: path
-							       mode: @"r"
-							      errNo: ENOENT];
+		@throw [OFInvalidArgumentException exception];
 
 	[self of_closeLastReturnedStream];
 
@@ -498,10 +495,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	entry = [[entry_ mutableCopy] autorelease];
 
 	if ([_pathToEntryMap objectForKey: entry.fileName] != nil)
-		@throw [OFOpenItemFailedException
-		    exceptionWithPath: entry.fileName
-				 mode: @"w"
-				errNo: EEXIST];
+		@throw [OFInvalidArgumentException exception];
 
 	if (entry.compressionMethod != OFZIPArchiveEntryCompressionMethodNone)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
