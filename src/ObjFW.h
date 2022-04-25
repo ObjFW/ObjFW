@@ -200,7 +200,6 @@
 #endif
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
