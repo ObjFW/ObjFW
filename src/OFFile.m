@@ -238,9 +238,9 @@ parseMode(const char *mode, bool *append)
 
 		if (handle == -1)
 			@throw [OFOpenItemFailedException
-			    exceptionWithPath: path
-					 mode: mode
-					errNo: errno];
+			    exceptionWithURL: [OFURL fileURLWithPath: path]
+					mode: mode
+				       errNo: errno];
 #else
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
@@ -251,6 +251,7 @@ parseMode(const char *mode, bool *append)
 			if ((handle->handle = Open([path cStringWithEncoding:
 			    [OFLocale encoding]], flags)) == 0) {
 				int errNo;
+				OFURL *URL;
 
 				switch (IoErr()) {
 				case ERROR_OBJECT_IN_USE:
@@ -272,10 +273,11 @@ parseMode(const char *mode, bool *append)
 					break;
 				}
 
+				URL = [OFURL fileURLWithPath: path];
 				@throw [OFOpenItemFailedException
-				    exceptionWithPath: path
-						 mode: mode
-						errNo: errNo];
+				    exceptionWithURL: URL
+						mode: mode
+					       errNo: errNo];
 			}
 
 			if (handle->append) {
@@ -288,11 +290,13 @@ parseMode(const char *mode, bool *append)
 # else
 				if (Seek(handle->handle, 0, OFFSET_END) == -1) {
 # endif
+					OFURL *URL =
+					    [OFURL fileURLWithPath: path];
 					Close(handle->handle);
 					@throw [OFOpenItemFailedException
-					    exceptionWithPath: path
-							 mode: mode
-							errNo: EIO];
+					    exceptionWithURL: URL
+							mode: mode
+						       errNo: EIO];
 				}
 			}
 
