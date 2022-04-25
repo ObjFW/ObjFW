@@ -23,7 +23,6 @@ SRCS = OFAllocFailedException.m				\
        OFLinkFailedException.m				\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
-       OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
        OFNotOpenException.m				\
