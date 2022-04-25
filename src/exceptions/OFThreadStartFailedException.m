@@ -29,6 +29,11 @@
 	return [[[self alloc] initWithThread: thread errNo: errNo] autorelease];
 }
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (instancetype)initWithThread: (OFThread *)thread errNo: (int)errNo
 {
 	self = [super init];

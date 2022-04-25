@@ -23,11 +23,6 @@ int _OFTLSHandshakeFailedException_reference;
 @implementation OFTLSHandshakeFailedException
 @synthesize stream = _stream, host = _host, errorCode = _errorCode;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithStream: (OFTLSStream *)stream
 			       host: (OFString *)host
 			  errorCode: (OFTLSStreamErrorCode)errorCode
@@ -37,9 +32,9 @@ int _OFTLSHandshakeFailedException_reference;
 				   errorCode: errorCode] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithStream: (OFTLSStream *)stream
@@ -58,6 +53,11 @@ int _OFTLSHandshakeFailedException_reference;
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
