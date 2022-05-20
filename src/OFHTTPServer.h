@@ -64,7 +64,8 @@ OF_ASSUME_NONNULL_BEGIN
   didReceiveExceptionOnListeningSocket: (id)exception;
 
 /**
- * @brief This method is called when a client socket encountered an exception.
+ * @brief This method is called when a socket for a client encountered an
+ * exception.
  *
  * This can happen when the OFHTTPServer tries to properly close the
  * connection. If no headers have been sent yet, it will send headers, and if

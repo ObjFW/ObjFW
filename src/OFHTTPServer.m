@@ -538,16 +538,23 @@ normalizedKey(OFString *key)
 	if (_port != 80)
 		URL.port = [OFNumber numberWithUnsignedShort: _port];
 
-	if ((pos = [_path rangeOfString: @"?"].location) != OFNotFound) {
-		OFString *path, *query;
+	@try {
+		if ((pos = [_path rangeOfString: @"?"].location) !=
+		    OFNotFound) {
+			OFString *path, *query;
 
-		path = [_path substringToIndex: pos];
-		query = [_path substringFromIndex: pos + 1];
+			path = [_path substringToIndex: pos];
+			query = [_path substringFromIndex: pos + 1];
 
-		URL.URLEncodedPath = path;
-		URL.URLEncodedQuery = query;
-	} else
-		URL.URLEncodedPath = _path;
+			URL.URLEncodedPath = path;
+			URL.URLEncodedQuery = query;
+		} else
+			URL.URLEncodedPath = _path;
+	} @catch (OFInvalidFormatException *e) {
+		objc_autoreleasePoolPop(pool);
+		[self sendErrorAndClose: 400];
+		return;
+	}
 
 	[URL makeImmutable];
 
