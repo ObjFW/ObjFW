@@ -110,13 +110,6 @@ typedef struct OF_BOXABLE {
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
- * @brief Creates a new OFHTTPRequest.
- *
- * @return A new, autoreleased OFHTTPRequest
- */
-+ (instancetype)request;
-
-/**
  * @brief Creates a new OFHTTPRequest with the specified URL.
  *
  * @param URL The URL for the request
@@ -131,6 +124,8 @@ typedef struct OF_BOXABLE {
  * @return An initialized OFHTTPRequest
  */
 - (instancetype)initWithURL: (OFURL *)URL;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 #ifdef __cplusplus

@@ -80,39 +80,31 @@ OFHTTPRequestMethodParseName(OFString *string)
 @implementation OFHTTPRequest
 @synthesize URL = _URL, method = _method, headers = _headers;
 
-+ (instancetype)request
-{
-	return [[[self alloc] init] autorelease];
-}
-
 + (instancetype)requestWithURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
-- (instancetype)init
+- (instancetype)initWithURL: (OFURL *)URL
 {
 	self = [super init];
 
-	_method = OFHTTPRequestMethodGet;
-	_protocolVersion.major = 1;
-	_protocolVersion.minor = 1;
-
-	return self;
-}
-
-- (instancetype)initWithURL: (OFURL *)URL
-{
-	self = [self init];
-
 	@try {
 		_URL = [URL copy];
+		_method = OFHTTPRequestMethodGet;
+		_protocolVersion.major = 1;
+		_protocolVersion.minor = 1;
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
