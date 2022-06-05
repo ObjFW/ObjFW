@@ -46,16 +46,20 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *runtimeFuncArrayURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
-	    [OFFile fileWithURL: runtimeLibraryURL
-			   mode: @"r"]];
-	OFFile *runtimeLinkLib = [OFFile fileWithURL: runtimeLinkLibURL
-						mode: @"w"];
-	OFFile *runtimeGlueHeader = [OFFile fileWithURL: runtimeGlueHeaderURL
-						   mode: @"w"];
-	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
-					     mode: @"w"];
-	OFFile *runtimeFuncArray = [OFFile fileWithURL: runtimeFuncArrayURL
-						  mode: @"w"];
+	    [OFFile fileWithPath: runtimeLibraryURL.fileSystemRepresentation
+			    mode: @"r"]];
+	OFFile *runtimeLinkLib =
+	    [OFFile fileWithPath: runtimeLinkLibURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlueHeader =
+	    [OFFile fileWithPath: runtimeGlueHeaderURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlue =
+	    [OFFile fileWithPath: runtimeGlueURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeFuncArray =
+	    [OFFile fileWithPath: runtimeFuncArrayURL.fileSystemRepresentation
+			    mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary
 	     implementation: runtimeLinkLib] autorelease];
