@@ -66,26 +66,6 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode;
 
 /**
- * @brief Creates a new OFFile with the specified URL and mode.
- *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | Read-only
- *	       `r+`           | Read-write
- *	       `w`            | Write-only, create or truncate
- *	       `wx`           | Write-only, create or fail, exclusive
- *	       `w+`           | Read-write, create or truncate
- *	       `w+x`          | Read-write, create or fail, exclusive
- *	       `a`            | Write-only, create or append
- *	       `a+`           | Read-write, create or append
- * @return A new autoreleased OFFile
- */
-+ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode;
-
-/**
  * @brief Creates a new OFFile with the specified native file handle.
  *
  * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this
@@ -94,8 +74,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithHandle: (OFFileHandle)handle;
-
-- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -124,36 +102,14 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Initializes an already allocated OFFile.
  *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | read-only
- *	       `rb`           | read-only, binary
- *	       `r+`           | read-write
- *	       `rb+` or `r+b` | read-write, binary
- *	       `w`            | write-only, create, truncate
- *	       `wb`           | write-only, create, truncate, binary
- *	       `w`            | read-write, create, truncate
- *	       `wb+` or `w+b` | read-write, create, truncate, binary
- *	       `a`            | write-only, create, append
- *	       `ab`           | write-only, create, append, binary
- *	       `a+`           | read-write, create, append
- *	       `ab+` or `a+b` | read-write, create, append, binary
- * @return An initialized OFFile
- */
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
-
-/**
- * @brief Initializes an already allocated OFFile.
- *
  * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this
  *		 is a file descriptor. The handle is closed when the OFFile
  *		 object is deallocated!
  * @return An initialized OFFile
  */
 - (instancetype)initWithHandle: (OFFileHandle)handle OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

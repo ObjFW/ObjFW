@@ -191,19 +191,9 @@ parseMode(const char *mode, bool *append)
 	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
-}
-
 + (instancetype)fileWithHandle: (OFFileHandle)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
@@ -329,25 +319,6 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *fileSystemRepresentation;
-
-	@try {
-		fileSystemRepresentation = URL.fileSystemRepresentation;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithPath: fileSystemRepresentation mode: mode];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
 - (instancetype)initWithHandle: (OFFileHandle)handle
 {
 	self = [super init];
@@ -355,6 +326,11 @@ parseMode(const char *mode, bool *append)
 	_handle = handle;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (bool)lowlevelIsAtEndOfStream
