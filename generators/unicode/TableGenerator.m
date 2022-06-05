@@ -55,8 +55,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		_decompositionTableSize       = SIZE_MAX;
 		_decompositionCompatTableSize = SIZE_MAX;
 	} @catch (id e) {
-		@throw e;
 		[self release];
+		@throw e;
 	}
 
 	return self;
