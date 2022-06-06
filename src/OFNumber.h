@@ -124,7 +124,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
-#ifdef OF_HAVE_UNAVAILABLE
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType OF_UNAVAILABLE;
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
@@ -133,7 +132,6 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)valueWithPoint: (OFPoint)point OF_UNAVAILABLE;
 + (instancetype)valueWithSize: (OFSize)size OF_UNAVAILABLE;
 + (instancetype)valueWithRect: (OFRect)rect OF_UNAVAILABLE;
-#endif
 
 /**
  * @brief Creates a new OFNumber with the specified `bool`.
@@ -240,10 +238,8 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)numberWithDouble: (double)value;
 
 - (instancetype)init OF_UNAVAILABLE;
-#ifdef OF_HAVE_UNAVAILABLE
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType OF_UNAVAILABLE;
-#endif
 
 /**
  * @brief Initializes an already allocated OFNumber with the specified `bool`.
