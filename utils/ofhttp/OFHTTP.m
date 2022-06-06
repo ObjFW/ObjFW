@@ -588,7 +588,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didCreateTLSStream: (OFTLSStream *)stream
 	     request: (OFHTTPRequest *)request
 {
-	stream.verifiesCertificates = !_insecure;
+	/* Use setter instead of property access to work around GCC bug. */
+	[stream setVerifiesCertificates: !_insecure];
 }
 
 -     (void)client: (OFHTTPClient *)client
