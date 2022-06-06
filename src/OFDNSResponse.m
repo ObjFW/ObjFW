@@ -56,7 +56,7 @@
 	return self;
 }
 
-- (instancetype)init OF_UNAVAILABLE
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
