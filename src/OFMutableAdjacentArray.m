@@ -107,8 +107,6 @@
 			[newObject retain];
 			[objects[i] release];
 			objects[i] = newObject;
-
-			return;
 		}
 	}
 }
@@ -173,7 +171,10 @@
 
 			[object release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -196,7 +197,10 @@
 
 			[object release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
