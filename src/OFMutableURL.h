@@ -131,8 +131,8 @@ OF_ASSUME_NONNULL_BEGIN
  * following dictionary:
  *
  *     @{
- *         @"key1": "value1",
- *         @"key2": "value2"
+ *         @"key1": @"value1",
+ *         @"key2": @"value2"
  *     }
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
@@ -177,7 +177,7 @@ OF_ASSUME_NONNULL_BEGIN
 		isDirectory: (bool)isDirectory;
 
 /**
- * @brief Resolves relative sub paths.
+ * @brief Resolves relative subpaths.
  */
 - (void)standardizePath;
 
