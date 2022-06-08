@@ -45,11 +45,11 @@ typedef enum {
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFMessagePackRepresentation>
 {
-	unsigned char *_items;
+	unsigned char *_Nullable _items;
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
 @private
-	OFData *_parentData;
+	OFData *_Nullable _parentData;
 	OF_RESERVE_IVARS(OFData, 4)
 }
 
@@ -68,7 +68,8 @@ typedef enum {
  *
  * @warning The pointer is only valid until the OFData is changed!
  */
-@property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *items
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The first item of the OFData or `NULL`.
@@ -175,9 +176,9 @@ typedef enum {
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the string representation.
+ *	  the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
  */
 + (instancetype)dataWithStringRepresentation: (OFString *)string;
@@ -192,7 +193,7 @@ typedef enum {
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of size 1.
  *
  * @param items The items to store in the OFData
@@ -202,7 +203,7 @@ typedef enum {
 - (instancetype)initWithItems: (const void *)items count: (size_t)count;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size.
  *
  * @param items The items to store in the OFData
@@ -274,9 +275,9 @@ typedef enum {
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the string representation.
+ *	  containing the data of the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
  */
 - (instancetype)initWithStringRepresentation: (OFString *)string;
