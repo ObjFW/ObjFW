@@ -34,8 +34,32 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
+/**
+ * @brief A block for enumerating an OFDictionary.
+ *
+ * @param key The current key
+ * @param object The object for the current key
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration.
+ */
 typedef void (^OFDictionaryEnumerationBlock)(id key, id object, bool *stop);
+
+/**
+ * @brief A block for filtering an OFDictionary.
+ *
+ * @param key The key to inspect
+ * @param object The object for the key to inspect
+ * @return Whether the object should be in the filtered dictionary.
+ */
 typedef bool (^OFDictionaryFilterBlock)(id key, id object);
+
+/**
+ * @brief A block for mapping keys to objects in an OFDictionary.
+ *
+ * @param key The key to map
+ * @param object The current object for the key
+ * @return The object to map the key to
+ */
 typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 #endif
 
@@ -106,9 +130,8 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  * @param objects An array of objects
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)
-    dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
-		  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
++ (instancetype)dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+			      forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /**
  * @brief Creates a new OFDictionary with the specified keys and objects.
