@@ -152,7 +152,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning You should never call this yourself, except if you do not use
  *	    @ref OFApplication. In this case, you need to allocate exactly one
- *	    instance of OFLocale, which will be come the current locale, and
+ *	    instance of OFLocale, which will become the current locale, and
  *	    call this method.
  */
 - (instancetype)init;
