@@ -590,7 +590,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, _writtenLength, exception);
+		newData = _block(_writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -667,7 +667,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newString = _block(_string, _writtenLength, exception);
+		newString = _block(_writtenLength, exception);
 
 		if (newString == nil)
 			return false;
@@ -861,7 +861,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, &_receiver, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -962,7 +962,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
