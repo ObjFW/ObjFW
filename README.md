@@ -33,6 +33,7 @@ other place, you are most likely using a mirror.
  * [Bugs and feature requests](#bugs)
  * [Support and community](#support)
  * [Donating](#donating)
+ * [Thanks](#thanks)
  * [Commercial use](#commercial-use)
 
 
@@ -369,6 +370,12 @@ other place, you are most likely using a mirror.
 
   If you want to donate to ObjFW, you can read about possible ways to do so
   [here](https://objfw.nil.im/wiki?name=Donating).
+
+
+<h1 id="thanks">Thanks</h1>
+
+  * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
+    Mini to the project!
 
 
 <h1 id="commercial-use">Commercial use</h1>
