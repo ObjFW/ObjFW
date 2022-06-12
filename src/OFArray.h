@@ -436,15 +436,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObjectsFromArray:
     (OFArray OF_GENERIC(ObjectType) *)array;
 
-/**
- * @brief Creates a new array with all occurrences of the specified object
- *	  removed.
- *
- * @param object The object to remove
- * @return A new array with all occurrences of the specified object removed
- */
-- (OFArray OF_GENERIC(ObjectType) *)arrayByRemovingObject: (ObjectType)object;
-
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Executes a block for each object.

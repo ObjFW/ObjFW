@@ -143,16 +143,6 @@ typedef bool (^OFSetFilterBlock)(id object);
 - (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
 /**
- * @brief Initializes an already allocated set with the specified objects.
- *
- * @param objects An array of objects for the set
- * @param count The number of objects in the specified array
- * @return An initialized set with the specified objects
- */
-- (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-			  count: (size_t)count;
-
-/**
  * @brief Initializes an already allocated set with the specified object and
  *	  va_list.
  *
@@ -162,6 +152,16 @@ typedef bool (^OFSetFilterBlock)(id object);
  */
 - (instancetype)initWithObject: (ObjectType)firstObject
 		     arguments: (va_list)arguments;
+
+/**
+ * @brief Initializes an already allocated set with the specified objects.
+ *
+ * @param objects An array of objects for the set
+ * @param count The number of objects in the specified array
+ * @return An initialized set with the specified objects
+ */
+- (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
+			  count: (size_t)count;
 
 /**
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.
@@ -187,30 +187,12 @@ typedef bool (^OFSetFilterBlock)(id object);
 - (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /**
- * @brief Creates a new set which contains the objects which are in the
- *	  receiver, but not in the specified set.
- *
- * @param set The set whose objects will not be in the new set
- */
-- (OFSet OF_GENERIC(ObjectType) *)setBySubtractingSet:
-    (OFSet OF_GENERIC(ObjectType) *)set;
-
-/**
- * @brief Creates a new set by creating the intersection of the receiver and
- *	  the specified set.
- *
- * @param set The set to intersect with
- */
-- (OFSet OF_GENERIC(ObjectType) *)setByIntersectingWithSet:
-    (OFSet OF_GENERIC(ObjectType) *)set;
-
-/**
  * @brief Creates a new set by creating the union of the receiver and the
  *	  specified set.
  *
  * @param set The set to create the union with
  */
-- (OFSet OF_GENERIC(ObjectType) *)setByAddingSet:
+- (OFSet OF_GENERIC(ObjectType) *)setByAddingObjectsFromSet:
     (OFSet OF_GENERIC(ObjectType) *)set;
 
 /**

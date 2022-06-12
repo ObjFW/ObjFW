@@ -387,23 +387,7 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFSet *)setBySubtractingSet: (OFSet *)set
-{
-	OFMutableSet *new = [[self mutableCopy] autorelease];
-	[new minusSet: set];
-	[new makeImmutable];
-	return new;
-}
-
-- (OFSet *)setByIntersectingWithSet: (OFSet *)set
-{
-	OFMutableSet *new = [[self mutableCopy] autorelease];
-	[new intersectSet: set];
-	[new makeImmutable];
-	return new;
-}
-
-- (OFSet *)setByAddingSet: (OFSet *)set
+- (OFSet *)setByAddingObjectsFromSet: (OFSet *)set
 {
 	OFMutableSet *new = [[self mutableCopy] autorelease];
 	[new unionSet: set];
