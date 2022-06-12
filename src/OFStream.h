@@ -65,7 +65,6 @@ typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
  * @brief A block which is called when data was written asynchronously to a
  *	  stream.
  *
- * @param data The data which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -73,14 +72,13 @@ typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
  *		    success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(OFData *_Nonnull data,
-    size_t bytesWritten, id _Nullable exception);
+typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(size_t bytesWritten,
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when a string was written asynchronously to a
  *	  stream.
  *
- * @param string The string which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -89,7 +87,7 @@ typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(OFData *_Nonnull data,
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
-    OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
+    size_t bytesWritten, id _Nullable exception);
 #endif
 
 /**

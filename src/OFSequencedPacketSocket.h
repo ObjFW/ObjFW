@@ -40,13 +40,12 @@ typedef bool (^OFSequencedPacketSocketAsyncReceiveBlock)(size_t length,
 /**
  * @brief A block which is called when a packet has been sent.
  *
- * @param data The data which was sent
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFSequencedPacketSocketAsyncSendDataBlock)(
-    OFData *_Nonnull data, id _Nullable exception);
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when the socket accepted a connection.

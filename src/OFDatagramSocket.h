@@ -41,14 +41,11 @@ typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
 /**
  * @brief A block which is called when a packet has been sent.
  *
- * @param data The data which was sent
- * @param receiver The receiver for the packet
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
-    OFData *_Nonnull data, const OFSocketAddress *_Nonnull receiver,
     id _Nullable exception);
 #endif
 
