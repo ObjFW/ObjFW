@@ -29,8 +29,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
 @property (class, readonly, nonatomic) OFString *ObjFWVersion;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMajor;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMinor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMajor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMinor;
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
@@ -89,14 +89,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The major version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMajor;
++ (unsigned short)ObjFWVersionMajor;
 
 /**
  * @brief The minor version of ObjFW.
  *
  * @return The minor version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMinor;
++ (unsigned short)ObjFWVersionMinor;
 
 /**
  * @brief Returns the name of the operating system the application is running

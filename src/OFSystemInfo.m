@@ -321,12 +321,12 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return @PACKAGE_VERSION;
 }
 
-+ (unsigned int)ObjFWVersionMajor
++ (unsigned short)ObjFWVersionMajor
 {
 	return OBJFW_VERSION_MAJOR;
 }
 
-+ (unsigned int)ObjFWVersionMinor
++ (unsigned short)ObjFWVersionMinor
 {
 	return OBJFW_VERSION_MINOR;
 }
