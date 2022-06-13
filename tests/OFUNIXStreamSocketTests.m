@@ -50,7 +50,9 @@ static OFString *const module = @"OFUNIXStreamSocket";
 	@try {
 		TEST(@"-[bindToPath:]", R([sockServer bindToPath: path]))
 	} @catch (OFBindFailedException *e) {
-		if (e.errNo == EAFNOSUPPORT) {
+		switch (e.errNo) {
+		case EAFNOSUPPORT:
+		case EPERM:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFUNIXStreamSocket] -[bindToPath:]: "
@@ -58,8 +60,9 @@ static OFString *const module = @"OFUNIXStreamSocket";
 
 			objc_autoreleasePoolPop(pool);
 			return;
-		} else
+		default:
 			@throw e;
+		}
 	}
 
 	@try {

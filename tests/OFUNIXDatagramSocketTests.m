@@ -50,7 +50,9 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	@try {
 		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
 	} @catch (OFBindFailedException *e) {
-		if (e.errNo == EAFNOSUPPORT) {
+		switch (e.errNo) {
+		case EAFNOSUPPORT:
+		case EPERM:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFUNIXDatagramSocket] -[bindToPath:]: "
@@ -59,8 +61,9 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 
 			objc_autoreleasePoolPop(pool);
 			return;
-		} else
+		default:
 			@throw e;
+		}
 	}
 
 	@try {
