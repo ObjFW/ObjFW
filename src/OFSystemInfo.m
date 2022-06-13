@@ -26,7 +26,7 @@
 #ifdef HAVE_SYS_UTSNAME_H
 # include <sys/utsname.h>
 #endif
-#if defined(OF_MACOS) || defined(OF_NETBSD)
+#if defined(OF_MACOS) || defined(OF_IOS) || defined(OF_NETBSD)
 # include <sys/sysctl.h>
 #endif
 
