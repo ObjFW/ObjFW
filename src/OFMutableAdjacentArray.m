@@ -164,12 +164,12 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
-			object = objects[i];
+			id tmp = objects[i];
 
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			[tmp release];
 
 			objects = _array.items;
 			i--;
