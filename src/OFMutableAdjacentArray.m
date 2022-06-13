@@ -154,6 +154,7 @@
 - (void)removeObject: (id)object
 {
 	id const *objects;
+	id removedObject;
 	size_t count;
 
 	if (object == nil)
@@ -164,12 +165,12 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
-			object = objects[i];
+			removedObject = objects[i];
 
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			[removedObject release];
 
 			objects = _array.items;
 			i--;
