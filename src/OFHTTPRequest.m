@@ -133,12 +133,11 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (id)copy
 {
-	OFHTTPRequest *copy = [[OFHTTPRequest alloc] init];
+	OFHTTPRequest *copy = [[OFHTTPRequest alloc] initWithURL: _URL];
 
 	@try {
 		copy->_method = _method;
 		copy->_protocolVersion = _protocolVersion;
-		copy.URL = _URL;
 		copy.headers = _headers;
 		copy.remoteAddress = self.remoteAddress;
 	} @catch (id e) {
