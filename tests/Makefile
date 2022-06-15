@@ -210,6 +210,11 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
+# Clang on Windows creates an invalid call into
+# objc_retainAutoreleasedReturnValue() in init with any optimization level
+# greater 0.
+# TODO: Investigate further and file a bug against Clang
+OBJCFLAGS_RuntimeARCTests.m += -O0
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}
