@@ -13,8 +13,8 @@
  * file.
  */
 
-#import "OFPlugin.h"
+#import "OFObject.h"
 
-@interface TestPlugin: OFPlugin
+@interface TestPlugin: OFObject
 - (int)test: (int)num;
 @end

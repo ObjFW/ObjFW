@@ -44,8 +44,8 @@ OF_DESTRUCTOR()
 }
 @end
 
-id
-OFPluginInit(void)
+Class
+class(void)
 {
-	return [[[TestPlugin alloc] init] autorelease];
+	return [TestPlugin class];
 }
