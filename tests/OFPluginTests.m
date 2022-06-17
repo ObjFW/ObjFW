@@ -41,7 +41,8 @@ static OFString *const module = @"OFPlugin";
 	TEST(@"+[pluginWithPath:]", (plugin = [OFPlugin pluginWithPath: path]))
 
 	TEST(@"-[addressForSymbol:]",
-	    (class = (Class (*)(void))[plugin addressForSymbol: @"class"]))
+	    (class = (Class (*)(void))(uintptr_t)
+	    [plugin addressForSymbol: @"class"]))
 
 	test = [[class() alloc] init];
 	@try {
