@@ -28,22 +28,22 @@
 #endif
 
 void
-OFOnce(OFOnceControl *control, void (*func)(void))
+OFOnce(OFOnceControl *control, void (*function)(void))
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*control == 0) {
-		func();
+		function();
 		*control = 1;
 	}
 #elif defined(OF_HAVE_PTHREADS)
-	pthread_once(control, func);
+	pthread_once(control, function);
 #elif defined(OF_HAVE_ATOMIC_OPS)
 	/* Avoid atomic operations in case it's already done. */
 	if (*control == 2)
 		return;
 
 	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
-		func();
+		function();
 
 		OFMemoryBarrier();
 
@@ -75,7 +75,7 @@ OFOnce(OFOnceControl *control, void (*func)(void))
 	Permit();
 
 	if (run) {
-		func();
+		function();
 		*control = 2;
 	}
 #else
