@@ -160,9 +160,14 @@ other place, you are most likely using a mirror.
 <h3 id="building-framework">Building as a framework</h3>
 
   When building for macOS or iOS, everything is built as a `.framework` by
-  default if `--disable-shared` has not been specified to `configure`.
+  default if `--disable-shared` has not been specified to `./configure`. The
+  frameworks will end up in `$PREFIX/Library/Frameworks`.
 
-  To build for iOS, use something like this:
+  To build for macOS, just follow the
+  <a href="#installation">regular instructions</a> above.
+
+  To build for iOS, follow the regular instructions, but instead of
+  `./configure` do something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
     $ export OBJC="$clang -arch armv7 -arch arm64"
@@ -170,7 +175,8 @@ other place, you are most likely using a mirror.
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
     $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
-  To build for the iOS simulator, use something like this:
+  To build for the iOS simulator, follow the regular instructions, but instead
+  of `./configure` use something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
     $ export OBJC="$clang -arch arm64 -arch x86_64"
