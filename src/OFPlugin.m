@@ -67,7 +67,7 @@
 		if ([OFSystemInfo isWindowsNT])
 			_handle = LoadLibraryW(path.UTF16String);
 		else
-			_handle LoadLibraryA(
+			_handle = LoadLibraryA(
 			    [path cStringWithEncoding: [OFLocale encoding]]);
 #endif
 
