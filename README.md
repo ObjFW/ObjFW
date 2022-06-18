@@ -374,7 +374,7 @@ other place, you are most likely using a mirror.
 
 <h1 id="thanks">Thanks</h1>
 
-  * Thank you to [Jonathan Neuschäfer](http://github.com/neuschaefer) for
+  * Thank you to [Jonathan Neuschäfer](https://github.com/neuschaefer) for
     reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in
     2017!
   * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
