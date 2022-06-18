@@ -148,8 +148,7 @@ SRCS_THREADS = OFCondition.m		\
 	       OFPlainMutex.m		\
 	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFTLSKey.m		\
-	       OFThreadPool.m
+	       OFTLSKey.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 

@@ -262,7 +262,6 @@
 # import "OFPlainThread.h"
 # import "OFRecursiveMutex.h"
 # import "OFTLSKey.h"
-# import "OFThreadPool.h"
 #endif
 
 #import "OFPBKDF2.h"
