@@ -207,10 +207,11 @@ Windows
 
   * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
                  Wine (x86 & x64)
-  * Architectures: x86, x86_64
+  * Architectures: x86, x86_64, AArch64
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),
                Clang 3.9.0 from msys2 (x86),
                Clang 10.0 from msys2 (x86 & x86_64)
+               Clang 14.0.4 from msys2 (AArch64)
   * Runtimes: ObjFW
 
 
