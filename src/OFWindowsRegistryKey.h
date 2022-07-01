@@ -76,11 +76,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the subkey to open
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Opens the subkey at the specified path.
@@ -90,12 +89,11 @@ OF_SUBCLASSING_RESTRICTED
  *		  `ulOptions`. Usually 0.
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+				   options: (DWORD)options
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Creates a subkey at the specified path or opens it if it already

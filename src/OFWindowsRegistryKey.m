@@ -116,19 +116,13 @@ OF_DIRECT_MEMBERS
 		    [path cStringWithEncoding: [OFLocale encoding]], options,
 		    securityAndAccessRights, &subKey);
 
-	if (status != ERROR_SUCCESS) {
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
-
+	if (status != ERROR_SUCCESS)
 		@throw [OFOpenWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
 				     options: options
 		     securityAndAccessRights: securityAndAccessRights
 				      status: status];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -373,7 +367,6 @@ OF_DIRECT_MEMBERS
 	OFData *data = [self dataForValueNamed: name type: &type];
 
 	if (data == nil)
-		/* TODO: This exception is not ideal. */
 		@throw [OFUndefinedKeyException exceptionWithObject: self
 								key: name
 							      value: nil];
@@ -407,7 +400,6 @@ OF_DIRECT_MEMBERS
 	OFData *data = [self dataForValueNamed: name type: &type];
 
 	if (data == nil)
-		/* TODO: This exception is not ideal. */
 		@throw [OFUndefinedKeyException exceptionWithObject: self
 								key: name
 							      value: nil];
