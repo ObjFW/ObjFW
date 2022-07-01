@@ -193,6 +193,38 @@ OF_SUBCLASSING_RESTRICTED
 	     type: (DWORD)type;
 
 /**
+ * @brief Returns the DWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The DWORD for the specified value
+ */
+- (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the DWORD for the specified value.
+ *
+ * @param dword The DWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Returns the QWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The QWORD for the specified value
+ */
+- (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the QWORD for the specified value.
+ *
+ * @param qword The QWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
+
+/**
  * @brief Deletes the specified value.
  *
  * @param name The value to delete
