@@ -579,7 +579,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (_insecure)
 		_HTTPClient.allowsInsecureRedirects = true;
 
+#ifdef OF_WINDOWS
+	_useUnicode = [OFSystemInfo isWindowsNT];
+#else
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
+#endif
 
 	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
