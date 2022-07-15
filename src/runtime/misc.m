@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,13 +15,29 @@
 
 #include "config.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "ObjFWRT.h"
 #include "private.h"
 
-static objc_enumeration_mutation_handler_t enumerationMutationHandler = NULL;
+#ifdef OF_WINDOWS
+# include <windows.h>
+#endif
+
+#ifdef OF_AMIGAOS
+# define USE_INLINE_STDARG
+# include <proto/exec.h>
+# include <clib/debug_protos.h>
+# define __NOLIBBASE__
+# define Class IntuitionClass
+# include <proto/intuition.h>
+# undef Class
+# undef __NOLIBBASE__
+#endif
+
+static objc_enumeration_mutation_handler enumerationMutationHandler = NULL;
 
 void
 objc_enumerationMutation(id object)
@@ -35,7 +49,99 @@ objc_enumerationMutation(id object)
 }
 
 void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
+objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
 {
 	enumerationMutationHandler = handler;
+}
+
+void
+objc_error(const char *title, const char *format, ...)
+{
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+# define messageLen 512
+	char message[messageLen];
+	int status;
+	va_list args;
+
+	va_start(args, format);
+	status = vsnprintf(message, messageLen, format, args);
+	if (status <= 0 || status >= messageLen)
+		message[0] = '\0';
+	va_end(args);
+# undef BUF_LEN
+#endif
+
+#if defined(OF_WINDOWS)
+	fprintf(stderr, "[%s] %s\n", title, message);
+	fflush(stderr);
+
+	MessageBoxA(NULL, message, title,
+	    MB_OK | MB_SYSTEMMODAL | MB_ICONERROR);
+
+	exit(EXIT_FAILURE);
+#elif defined(OF_AMIGAOS)
+	struct Library *IntuitionBase;
+# ifdef OF_AMIGAOS4
+	struct IntuitionIFace *IIntuition;
+# endif
+	struct EasyStruct easy;
+
+# ifndef OF_AMIGAOS4
+	kprintf("[%s] %s\n", title, message);
+# endif
+
+	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
+		exit(EXIT_FAILURE);
+
+# ifdef OF_AMIGAOS4
+	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
+	    "main", 1, NULL)) == NULL)
+		exit(EXIT_FAILURE);
+# endif
+
+	easy.es_StructSize = sizeof(easy);
+	easy.es_Flags = 0;
+	easy.es_Title = (void *)title;
+	easy.es_TextFormat = (void *)"%s";
+	easy.es_GadgetFormat = (void *)"OK";
+
+	EasyRequest(NULL, &easy, NULL, (ULONG)message);
+
+# ifdef OF_AMIGAOS4
+	DropInterface((struct Interface *)IIntuition);
+# endif
+
+	CloseLibrary(IntuitionBase);
+
+	exit(EXIT_FAILURE);
+#else
+	va_list args;
+
+	va_start(args, format);
+
+	fprintf(stderr, "[%s] ", title);
+	vfprintf(stderr, format, args);
+	fprintf(stderr, "\n");
+	fflush(stderr);
+
+	va_end(args);
+
+	abort();
+#endif
+
+	OF_UNREACHABLE
+}
+
+char *
+objc_strdup(const char *string)
+{
+	char *copy;
+	size_t length = strlen(string);
+
+	if ((copy = (char *)malloc(length + 1)) == NULL)
+		return NULL;
+
+	memcpy(copy, string, length + 1);
+
+	return copy;
 }

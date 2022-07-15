@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,35 +34,6 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)allocMemoryForNItems: (size_t)nitems
-		      withSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-		toSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void *)resizeMemory: (void *)ptr
-	      toNItems: (size_t)nitems
-	      withSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)freeMemory: (void *)ptr
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)retain
 {
 	return self;
@@ -77,7 +46,7 @@
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (void)release

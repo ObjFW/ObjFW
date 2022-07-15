@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -87,14 +85,14 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD_HASH(hash, [_firstObject hash]);
-	OF_HASH_ADD_HASH(hash, [_secondObject hash]);
+	OFHashAddHash(&hash, [_firstObject hash]);
+	OFHashAddHash(&hash, [_secondObject hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

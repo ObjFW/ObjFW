@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -69,10 +67,10 @@ class_conformsToProtocol(Class class, Protocol *protocol)
 			    protocol))
 				return true;
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
-	if ((categories = objc_categories_for_class(class)) == NULL) {
-		objc_global_mutex_unlock();
+	if ((categories = objc_categoriesForClass(class)) == NULL) {
+		objc_globalMutex_unlock();
 		return false;
 	}
 
@@ -83,14 +81,14 @@ class_conformsToProtocol(Class class, Protocol *protocol)
 			for (long j = 0; j < protocolList->count; j++) {
 				if (protocol_conformsToProtocol(
 				    protocolList->list[j], protocol)) {
-					objc_global_mutex_unlock();
+					objc_globalMutex_unlock();
 					return true;
 				}
 			}
 		}
 	}
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return false;
 }

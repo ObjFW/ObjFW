@@ -2,7 +2,6 @@ include ../../extra.mk
 
 SUBDIRS = lookup-asm
 SUBDIRS_AFTER = ${LINKLIB}
-CLEAN = amiga-library-functable.inc inline.h
 DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
@@ -33,31 +32,24 @@ SRCS = arc.m			\
        synchronized.m		\
        tagged-pointer.m		\
        ${USE_SRCS_THREADS}
-SRCS_THREADS = threading.m	\
-	       ../mutex.m	\
-	       ../once.m	\
-	       ../tlskey.m
+SRCS_THREADS = OFOnce.m		\
+	       OFPlainMutex.m	\
+	       OFTLSKey.m	\
+	       threading.m
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 
-OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
-LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
+OBJS_EXTRA = lookup-asm/lookup-asm.a
+LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
 AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
-		       ${LOOKUP_ASM_LOOKUP_ASM_A}	\
+		       lookup-asm/lookup-asm.amigalib.a	\
 		       amiga-end.amigalib.o
 
 include ../../buildsys.mk
 
-${OBJFWRT_AMIGA_LIB}: inline.h
-
-${SFDC_INLINE_H}: ${SFD_FILE}
-	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<; \
-
-${CVINCLUDE_INLINE_H}: morphos.fd morphos-clib.h
-	cvinclude.pl --quiet --fd=morphos.fd --clib=morphos-clib.h --inlines=$@
-
 CPPFLAGS += -I. -I.. -I../..					\
+	    -DOBJC_COMPILING_RUNTIME				\
 	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
 	    -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}		\
 	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,8 +14,8 @@
  */
 
 /*
- * This file is also used for MS-DOS! Don't forget to #ifdef Windows-specific
- * parts!
+ * This file is also used for MS-DOS and MiNT! Don't forget to #ifdef
+ * Windows-specific parts!
  */
 
 #include "config.h"
@@ -159,8 +157,8 @@ int _OFString_PathAdditions_reference;
 
 	fileName = self.lastPathComponent;
 	pos = [fileName rangeOfString: @"."
-			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0) {
+			      options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
@@ -205,7 +203,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	components = [components objectsInRange:
-	    of_range(0, components.count - 1)];
+	    OFRangeMake(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
 	[ret retain];
@@ -228,8 +226,8 @@ int _OFString_PathAdditions_reference;
 	fileName = components.lastObject;
 
 	pos = [fileName rangeOfString: @"."
-			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0) {
+			      options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
 		return [[self copy] autorelease];
 	}
@@ -290,7 +288,7 @@ int _OFString_PathAdditions_reference;
 			    ![parent hasSuffix: @"://"] &&
 			    (![parent hasPrefix: @"\\"] || i != 1)) {
 				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
+				    OFRangeMake(i - 1, 2)];
 
 				done = false;
 				break;
@@ -341,7 +339,7 @@ int _OFString_PathAdditions_reference;
 		     stringByURLEncodingWithAllowedCharacters:
 		     [OFCharacterSet URLHostAllowedCharacterSet]];
 		path = [OFString pathWithComponents: [components
-		    objectsInRange: of_range(2, components.count - 2)]];
+		    objectsInRange: OFRangeMake(2, components.count - 2)]];
 	}
 
 	path = [path stringByReplacingOccurrencesOfString: @"\\"

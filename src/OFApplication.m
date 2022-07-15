@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,6 +32,7 @@
 # import "OFFileManager.h"
 #endif
 #import "OFLocale.h"
+#import "OFNotificationCenter.h"
 #import "OFPair.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
@@ -75,15 +74,18 @@ extern char **environ;
 OF_DIRECT_MEMBERS
 @interface OFApplication ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char **[])argv;
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t *[])argv;
+- (void)of_setArgumentCount: (int *)argc
+	  andArgumentValues: (char **[])argv
+       andWideArgumentCount: (int)wargc
+      andWideArgumentValues: (wchar_t *[])wargv;
 #endif
 - (void)of_run;
 @end
 
+const OFNotificationName OFApplicationWillTerminateNotification =
+    @"OFApplicationWillTerminateNotification";
 static OFApplication *app = nil;
 
 static void
@@ -91,19 +93,23 @@ atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
 
+	[[OFNotificationCenter defaultCenter]
+	    postNotificationName: OFApplicationWillTerminateNotification
+			  object: app];
+
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
 		[delegate applicationWillTerminate];
 
 	[delegate release];
 
-#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && defined(OF_AMIGAOS)
-	of_socket_deinit();
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
+    defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+	OFSocketDeinit();
 #endif
 }
 
 int
-of_application_main(int *argc, char **argv[],
-    id <OFApplicationDelegate> delegate)
+OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
 #ifdef OF_WINDOWS
 	wchar_t **wargv, **wenvp;
@@ -117,12 +123,13 @@ of_application_main(int *argc, char **argv[],
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-		[app of_setArgumentCount: wargc
+		[app of_setArgumentCount: argc
+		       andArgumentValues: argv
+		    andWideArgumentCount: wargc
 		   andWideArgumentValues: wargv];
 	} else
 #endif
-		[app of_setArgumentCount: argc
-		       andArgumentValues: argv];
+		[app of_setArgumentCount: argc andArgumentValues: argv];
 
 	app.delegate = delegate;
 
@@ -201,14 +208,14 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-+ (void)activateSandbox: (OFSandbox *)sandbox
++ (void)of_activateSandbox: (OFSandbox *)sandbox
 {
-	[app activateSandbox: sandbox];
+	[app of_activateSandbox: sandbox];
 }
 
-+ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
++ (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
-	[app activateSandboxForChildProcesses: sandbox];
+	[app of_activateSandboxForChildProcesses: sandbox];
 }
 #endif
 
@@ -228,7 +235,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 #if defined(OF_WINDOWS)
 		if ([OFSystemInfo isWindowsNT]) {
-			of_char16_t *env, *env0;
+			OFChar16 *env, *env0;
 			env = env0 = GetEnvironmentStringsW();
 
 			while (*env != 0) {
@@ -236,7 +243,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				OFString *tmp, *key, *value;
 				size_t length, pos;
 
-				length = of_string_utf16_length(env);
+				length = OFUTF16StringLength(env);
 				tmp = [OFString stringWithUTF16String: env
 							       length: length];
 				env += length + 1;
@@ -252,7 +259,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);
@@ -260,10 +267,8 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				key = [tmp substringToIndex: pos];
-				value = [tmp substringFromRange: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				value = [tmp substringFromIndex: pos + 1];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -296,7 +301,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				}
 
 				pos = [tmp rangeOfString: @"="].location;
-				if (pos == OF_NOT_FOUND) {
+				if (pos == OFNotFound) {
 					fprintf(stderr,
 					    "Warning: Invalid environment "
 					    "variable: %s\n", tmp.UTF8String);
@@ -305,9 +310,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				key = [tmp substringToIndex: pos];
 				value = [tmp substringFromIndex: pos + 1];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -319,7 +322,7 @@ SIGNAL_HANDLER(SIGUSR2)
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =
 		    [fileManager contentsOfDirectoryAtPath: @"ENV:"];
-		const of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		struct Process *proc;
 		struct LocalVar *firstLocalVar;
 
@@ -336,13 +339,11 @@ SIGNAL_HANDLER(SIGUSR2)
 			if ([fileManager directoryExistsAtPath: path])
 				continue;
 
-			file = [OFFile fileWithPath: path
-					       mode: @"r"];
+			file = [OFFile fileWithPath: path mode: @"r"];
 
 			value = [file readLineWithEncoding: encoding];
 			if (value != nil)
-				[_environment setObject: value
-						 forKey: name];
+				[_environment setObject: value forKey: name];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -375,9 +376,7 @@ SIGNAL_HANDLER(SIGUSR2)
 			    stringWithCString: (const char *)iter->lv_Value
 				     encoding: encoding
 				       length: length];
-
-			[_environment setObject: value
-					 forKey: key];
+			[_environment setObject: value forKey: key];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -389,8 +388,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 
 		if (env != NULL) {
-			const of_string_encoding_t encoding =
-			    [OFLocale encoding];
+			OFStringEncoding encoding = [OFLocale encoding];
 
 			for (; *env != NULL; env++) {
 				void *pool = objc_autoreleasePoolPush();
@@ -410,9 +408,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				value = [OFString
 				    stringWithCString: sep + 1
 					     encoding: encoding];
-
-				[_environment setObject: value
-						 forKey: key];
+				[_environment setObject: value forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -432,36 +428,31 @@ SIGNAL_HANDLER(SIGUSR2)
 			OFString *home = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: home
-					 forKey: @"HOME"];
+			[_environment setObject: home forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
 			OFString *path = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: path
-					 forKey: @"PATH"];
+			[_environment setObject: path forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
 			OFString *shell = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: shell
-					 forKey: @"SHELL"];
+			[_environment setObject: shell forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
 			OFString *tmpdir = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: tmpdir
-					 forKey: @"TMPDIR"];
+			[_environment setObject: tmpdir forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
 			OFString *user = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[_environment setObject: user
-					 forKey: @"USER"];
+			[_environment setObject: user forKey: @"USER"];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -484,12 +475,11 @@ SIGNAL_HANDLER(SIGUSR2)
 	[super dealloc];
 }
 
-- (void)of_setArgumentCount: (int *)argc
-	  andArgumentValues: (char ***)argv
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
-	of_string_encoding_t encoding;
+	OFStringEncoding encoding;
 
 	_argc = argc;
 	_argv = argv;
@@ -518,19 +508,24 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t **)argv
+- (void)of_setArgumentCount: (int *)argc
+	  andArgumentValues: (char **[])argv
+       andWideArgumentCount: (int)wargc
+      andWideArgumentValues: (wchar_t *[])wargv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
 
-	if (argc > 0) {
-		_programName = [[OFString alloc] initWithUTF16String: argv[0]];
+	_argc = argc;
+	_argv = argv;
+
+	if (wargc > 0) {
+		_programName = [[OFString alloc] initWithUTF16String: wargv[0]];
 		arguments = [[OFMutableArray alloc] init];
 
-		for (int i = 1; i < argc; i++)
+		for (int i = 1; i < wargc; i++)
 			[arguments addObject:
-			    [OFString stringWithUTF16String: argv[i]]];
+			    [OFString stringWithUTF16String: wargv[i]]];
 
 		[arguments makeImmutable];
 		_arguments = arguments;
@@ -540,8 +535,7 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 #endif
 
-- (void)getArgumentCount: (int **)argc
-       andArgumentValues: (char ****)argv
+- (void)getArgumentCount: (int **)argc andArgumentValues: (char ****)argv
 {
 	*argc = _argc;
 	*argv = _argv;
@@ -626,12 +620,12 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_HAVE_SANDBOX
-- (void)activateSandbox: (OFSandbox *)sandbox
+- (void)of_activateSandbox: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
-	of_string_encoding_t encoding = [OFLocale encoding];
-	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+	OFStringEncoding encoding = [OFLocale encoding];
+	OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
 	size_t unveiledPathsCount;
 	const char *promises;
 
@@ -643,7 +637,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 	for (size_t i = sandbox->_unveiledPathsIndex;
 	    i < unveiledPathsCount; i++) {
-		of_sandbox_unveil_path_t unveiledPath =
+		OFSandboxUnveilPath unveiledPath =
 		    [unveiledPaths objectAtIndex: i];
 		OFString *path = unveiledPath.firstObject;
 		OFString *permissions = unveiledPath.secondObject;
@@ -671,7 +665,7 @@ SIGNAL_HANDLER(SIGUSR2)
 # endif
 }
 
-- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
+- (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();

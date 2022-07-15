@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,7 +32,7 @@ int _OFXMLElement_Serialization_reference;
 	id object;
 
 	if ((class = objc_getClass([_name cStringWithEncoding:
-	    OF_STRING_ENCODING_ASCII])) == Nil)
+	    OFStringEncodingASCII])) == Nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![class conformsToProtocol: @protocol(OFSerialization)])

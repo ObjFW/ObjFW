@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,9 +19,6 @@
 
 #import "OFIPSocketAsyncConnector.h"
 #import "OFData.h"
-#ifdef OF_HAVE_SCTP
-# import "OFSCTPSocket.h"
-#endif
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -74,15 +69,9 @@
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((of_tcp_socket_async_connect_block_t)_block)(
-			    _exception);
-# ifdef OF_HAVE_SCTP
-		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
-			((of_sctp_socket_async_connect_block_t)_block)(
-			    _exception);
-# endif
+			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
 		else
-			OF_ENSURE(0);
+			OFEnsure(0);
 	} else {
 #endif
 		if ([_delegate respondsToSelector:
@@ -96,8 +85,7 @@
 #endif
 }
 
-- (void)of_socketDidConnect: (id)sock
-		  exception: (id)exception
+- (void)of_socketDidConnect: (id)sock exception: (id)exception
 {
 	if (exception != nil) {
 		/*
@@ -127,8 +115,7 @@
 					 selector: selector
 					   object: runLoop.currentMode
 					  repeats: false];
-			[runLoop addTimer: timer
-				  forMode: runLoop.currentMode];
+			[runLoop addTimer: timer forMode: runLoop.currentMode];
 		}
 
 		return;
@@ -145,16 +132,15 @@
 							errNo: errNo];
 }
 
-- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	of_socket_address_t address = *(const of_socket_address_t *)
+	OFSocketAddress address = *(const OFSocketAddress *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
 	int errNo;
 
-	of_socket_address_set_port(&address, _port);
+	OFSocketAddressSetPort(&address, _port);
 
-	if (![_socket of_createSocketForAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [[OFConnectionFailedException alloc]
 			    initWithHost: _host
@@ -185,10 +171,13 @@
 	[_socket setCanBlock: false];
 #endif
 
-	if (![_socket of_connectSocketToAddress: &address
-					  errNo: &errNo]) {
+	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
 #if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
+# ifdef OF_WINDOWS
+		if (errNo == EINPROGRESS || errNo == EWOULDBLOCK) {
+# else
 		if (errNo == EINPROGRESS) {
+# endif
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
 						      delegate: self];
@@ -238,16 +227,15 @@
 	    [OFRunLoop currentRunLoop].currentMode];
 }
 
-- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, _port);
+		OFSocketAddress address = OFSocketAddressParseIP(_host, _port);
 
 		_socketAddresses = [[OFData alloc]
 		    initWithItems: &address
-			 itemSize: sizeof(address)
-			    count: 1];
+			    count: 1
+			 itemSize: sizeof(address)];
 
 		[self tryNextAddressWithRunLoopMode: runLoopMode];
 		return;
@@ -256,7 +244,7 @@
 
 	[[OFThread DNSResolver]
 	    asyncResolveAddressesForHost: _host
-			   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+			   addressFamily: OFSocketAddressFamilyAny
 			     runLoopMode: runLoopMode
 				delegate: self];
 }

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,14 +19,10 @@
 
 #ifndef OF_WINDOWS
 # include <dlfcn.h>
-# define OF_RTLD_LAZY RTLD_LAZY
-# define OF_RTLD_NOW  RTLD_NOW
-typedef void *of_plugin_handle_t;
+typedef void *OFPluginHandle;
 #else
 # include <windows.h>
-# define OF_RTLD_LAZY 0
-# define OF_RTLD_NOW  0
-typedef HMODULE of_plugin_handle_t;
+typedef HMODULE OFPluginHandle;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -36,32 +30,52 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
  *
- * @brief Provides a system for loading plugins at runtime.
+ * @brief A class representing a loaded plugin (shared library).
+ *
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFPlugin: OFObject
 {
-	of_plugin_handle_t _pluginHandle;
-	OF_RESERVE_IVARS(OFPlugin, 4)
+	OFPluginHandle _handle;
 }
 
 /**
- * @brief Loads a plugin from a file.
+ * @brief Returns the plugin path for a plugin with the specified name.
  *
- * @param path Path to the plugin file. The suffix is appended automatically.
- * @return The loaded plugin
+ * E.g. on ELF systems, it appends .so, while on macOS and iOS, it creates the
+ * appropriate plugin path. This can also be prefixed by a directory.
+ *
+ * @param name The name to return the plugin path for
+ * @return The plugin path
  */
-+ (OF_KINDOF(OFPlugin *))pluginFromFile: (OFString *)path;
-@end
++ (OFString *)pathForName: (OFString *)name;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
-extern void *of_dlsym(of_plugin_handle_t handle, const char *symbol);
-extern OFString *_Nullable of_dlerror(void);
-extern void of_dlclose(of_plugin_handle_t handle);
-#ifdef __cplusplus
-}
-#endif
+/**
+ * @brief Creates a new OFPlugin by loading the plugin with the specified path.
+ *
+ * @param path The path to the plugin file. The suffix is appended
+ *	       automatically.
+ * @return An new, autoreleased OFPlugin
+ */
++ (instancetype)pluginWithPath: (OFString *)path;
+
+/**
+ * @brief Initializes an already allocated OFPlugin by loading the plugin with
+ *	  the specified path.
+ *
+ * @param path The path to the plugin file. The suffix is appended
+ *	       automatically.
+ * @return An initialized OFPlugin
+ */
+- (instancetype)initWithPath: (OFString *)path;
+
+/**
+ * @brief Returns the address for the specified symbol, or `nil` if not found.
+ *
+ * @param symbol The symbol to return the address for
+ * @return The address for the speccified symbol, or `nil` if not found
+ */
+- (nullable void *)addressForSymbol: (OFString *)symbol;
+@end
 
 OF_ASSUME_NONNULL_END

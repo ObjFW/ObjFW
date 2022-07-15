@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,13 +23,13 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	cmp	r0, #0
-	beq	ret_nil
+	beq	returnNilMethod
 
 	tst	r0, #1
-	bne	.Ltagged_pointer_\name
+	bne	.LtaggedPointer_\name
 
 	ldr	r2, [r0, #0]
 	ldr	r2, [r2, #32]
@@ -58,23 +56,23 @@
 #endif
 
 	cmp	r2, #0
-	beq	\not_found(PLT)
+	beq	\notFound(PLT)
 
 	mov	r0, r2
 	bx	lr
 
-.Ltagged_pointer_\name:
-	ldr	r2, .Lgot$indirect_.Ltagged_pointer_\name
+.LtaggedPointer_\name:
+	ldr	r2, .Lgot$indirect_.LtaggedPointer_\name
 	add	r2, pc, r2
 
-	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+4
+	ldr	r3, .Lgot$indirect_.LtaggedPointer_\name+4
 	ldr	r3, [r2, r3]
 	ldr	r3, [r3]
 	eor	r0, r0, r3
 	and	r0, r0, #0xE
 	lsl	r0, r0, #1
 
-	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+8
+	ldr	r3, .Lgot$indirect_.LtaggedPointer_\name+8
 	ldr	r3, [r2, r3]
 	ldr	r2, [r3, r0]
 	ldr	r2, [r2, #32]
@@ -83,18 +81,18 @@
 .type \name, %function
 .size \name, .-\name
 
-.Lgot$indirect_.Ltagged_pointer_\name:
-	.long	_GLOBAL_OFFSET_TABLE_-(.Ltagged_pointer_\name+12)
-	.long	objc_tagged_pointer_secret(GOT)
-	.long	objc_tagged_pointer_classes(GOT)
+.Lgot$indirect_.LtaggedPointer_\name:
+	.long	_GLOBAL_OFFSET_TABLE_-(.LtaggedPointer_\name+12)
+	.long	objc_taggedPointerSecret(GOT)
+	.long	objc_taggedPointerClasses(GOT)
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	mov	r2, r0
 	ldr	r0, [r0, #0]
 	cmp	r0, #0
-	beq	ret_nil
+	beq	returnNilMethod
 
 	ldr	r2, [r2, #4]
 	ldr	r2, [r2, #32]
@@ -104,16 +102,16 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	adr	r0, nil_method
+returnNilMethod:
+	adr	r0, nilMethod
 	bx	lr
 
-nil_method:
+nilMethod:
 	mov	r0, #0
 	bx	lr
 

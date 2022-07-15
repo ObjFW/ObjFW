@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +15,7 @@
 
 #import "OFObject.h"
 #import "OFLocking.h"
-
-#import "mutex.h"
+#import "OFPlainMutex.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutex: OFObject <OFLocking>
 {
-	of_mutex_t _mutex;
+	OFPlainMutex _mutex;
 	bool _initialized;
 	OFString *_Nullable _name;
 	OF_RESERVE_IVARS(OFMutex, 4)

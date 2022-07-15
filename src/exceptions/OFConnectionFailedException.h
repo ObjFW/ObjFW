@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +19,7 @@
 # error No sockets available!
 #endif
 
-#import "socket.h"
+#import "OFSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -33,18 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFConnectionFailedException: OFException
 {
-	id _socket;
-	OFString *_host;
+	OFString *_Nullable _host;
 	uint16_t _port;
 	unsigned char _node[IPX_NODE_LEN];
 	uint32_t _network;
+	OFString *_Nullable _path;
+	id _socket;
 	int _errNo;
 }
-
-/**
- * @brief The socket which could not connect.
- */
-@property (readonly, nonatomic) id socket;
 
 /**
  * @brief The host to which the connection failed.
@@ -67,11 +61,19 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) uint32_t network;
 
 /**
+ * @brief The path to which the connection failed.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
+
+/**
+ * @brief The socket which could not connect.
+ */
+@property (readonly, nonatomic) id socket;
+
+/**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
-
-+ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased connection failed exception.
@@ -82,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithHost: (nullable OFString *)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
@@ -103,7 +105,19 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates a new, autoreleased connection failed exception.
+ *
+ * @param path The path to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased connection failed exception
+ */
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated connection failed exception.
@@ -114,7 +128,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
-- (instancetype)initWithHost: (nullable OFString *)host
+- (instancetype)initWithHost: (OFString *)host
 			port: (uint16_t)port
 		      socket: (id)socket
 		       errNo: (int)errNo;
@@ -134,6 +148,20 @@ OF_ASSUME_NONNULL_BEGIN
 			port: (uint16_t)port
 		      socket: (id)socket
 		       errNo: (int)errNo;
+
+/**
+ * @brief Initializes an already allocated connection failed exception.
+ *
+ * @param path The path to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error that occurred
+ * @return An initialized connection failed exception
+ */
+- (instancetype)initWithPath: (OFString *)path
+		      socket: (id)socket
+		       errNo: (int)errNo;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

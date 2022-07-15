@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,75 +17,75 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFNumber";
+static OFString *const module = @"OFNumber";
 
 @implementation TestsAppDelegate (OFNumberTests)
 - (void)numberTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFNumber *num;
+	OFNumber *number;
 
 	TEST(@"+[numberWithLongLong:]",
-	    (num = [OFNumber numberWithLongLong: 123456789]))
+	    (number = [OFNumber numberWithLongLong: 123456789]))
 
 	TEST(@"-[isEqual:]",
-	    [num isEqual: [OFNumber numberWithLong: 123456789]])
+	    [number isEqual: [OFNumber numberWithLong: 123456789]])
 
-	TEST(@"-[hash]", num.hash == 0x82D8BC42)
+	TEST(@"-[hash]", number.hash == 0x82D8BC42)
 
-	TEST(@"-[charValue]", num.charValue == 21)
+	TEST(@"-[charValue]", number.charValue == 21)
 
-	TEST(@"-[doubleValue]", num.doubleValue == 123456789.L)
+	TEST(@"-[doubleValue]", number.doubleValue == 123456789.L)
 
 	TEST(@"signed char minimum & maximum unmodified",
-	    (num = [OFNumber numberWithChar: SCHAR_MIN]) &&
-	    num.charValue == SCHAR_MIN &&
-	    (num = [OFNumber numberWithChar: SCHAR_MAX]) &&
-	    num.charValue == SCHAR_MAX)
+	    (number = [OFNumber numberWithChar: SCHAR_MIN]) &&
+	    number.charValue == SCHAR_MIN &&
+	    (number = [OFNumber numberWithChar: SCHAR_MAX]) &&
+	    number.charValue == SCHAR_MAX)
 
 	TEST(@"short minimum & maximum unmodified",
-	    (num = [OFNumber numberWithShort: SHRT_MIN]) &&
-	    num.shortValue == SHRT_MIN &&
-	    (num = [OFNumber numberWithShort: SHRT_MAX]) &&
-	    num.shortValue == SHRT_MAX)
+	    (number = [OFNumber numberWithShort: SHRT_MIN]) &&
+	    number.shortValue == SHRT_MIN &&
+	    (number = [OFNumber numberWithShort: SHRT_MAX]) &&
+	    number.shortValue == SHRT_MAX)
 
 	TEST(@"int minimum & maximum unmodified",
-	    (num = [OFNumber numberWithInt: INT_MIN]) &&
-	    num.intValue == INT_MIN &&
-	    (num = [OFNumber numberWithInt: INT_MAX]) &&
-	    num.intValue == INT_MAX)
+	    (number = [OFNumber numberWithInt: INT_MIN]) &&
+	    number.intValue == INT_MIN &&
+	    (number = [OFNumber numberWithInt: INT_MAX]) &&
+	    number.intValue == INT_MAX)
 
 	TEST(@"long minimum & maximum unmodified",
-	    (num = [OFNumber numberWithLong: LONG_MIN]) &&
-	    num.longValue == LONG_MIN &&
-	    (num = [OFNumber numberWithLong: LONG_MAX]) &&
-	    num.longValue == LONG_MAX)
+	    (number = [OFNumber numberWithLong: LONG_MIN]) &&
+	    number.longValue == LONG_MIN &&
+	    (number = [OFNumber numberWithLong: LONG_MAX]) &&
+	    number.longValue == LONG_MAX)
 
 	TEST(@"long long minimum & maximum unmodified",
-	    (num = [OFNumber numberWithLongLong: LLONG_MIN]) &&
-	    num.longLongValue == LLONG_MIN &&
-	    (num = [OFNumber numberWithLongLong: LLONG_MAX]) &&
-	    num.longLongValue == LLONG_MAX)
+	    (number = [OFNumber numberWithLongLong: LLONG_MIN]) &&
+	    number.longLongValue == LLONG_MIN &&
+	    (number = [OFNumber numberWithLongLong: LLONG_MAX]) &&
+	    number.longLongValue == LLONG_MAX)
 
 	TEST(@"unsigned char maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedChar: UCHAR_MAX]) &&
-	    num.unsignedCharValue == UCHAR_MAX)
+	    (number = [OFNumber numberWithUnsignedChar: UCHAR_MAX]) &&
+	    number.unsignedCharValue == UCHAR_MAX)
 
 	TEST(@"unsigned short maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedShort: USHRT_MAX]) &&
-	    num.unsignedShortValue == USHRT_MAX)
+	    (number = [OFNumber numberWithUnsignedShort: USHRT_MAX]) &&
+	    number.unsignedShortValue == USHRT_MAX)
 
 	TEST(@"unsigned int maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedInt: UINT_MAX]) &&
-	    num.unsignedIntValue == UINT_MAX)
+	    (number = [OFNumber numberWithUnsignedInt: UINT_MAX]) &&
+	    number.unsignedIntValue == UINT_MAX)
 
 	TEST(@"unsigned long maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedLong: ULONG_MAX]) &&
-	    num.unsignedLongValue == ULONG_MAX)
+	    (number = [OFNumber numberWithUnsignedLong: ULONG_MAX]) &&
+	    number.unsignedLongValue == ULONG_MAX)
 
 	TEST(@"unsigned long long maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedLongLong: ULLONG_MAX]) &&
-	    num.unsignedLongLongValue == ULLONG_MAX)
+	    (number = [OFNumber numberWithUnsignedLongLong: ULLONG_MAX]) &&
+	    number.unsignedLongLongValue == ULLONG_MAX)
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,28 +15,28 @@
 
 #import "OFString.h"
 
-#define OF_UNICODE_UPPERCASE_TABLE_SIZE 0x1EA
-#define OF_UNICODE_LOWERCASE_TABLE_SIZE 0x1EA
-#define OF_UNICODE_TITLECASE_TABLE_SIZE 0x1EA
-#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x1EA
-#define OF_UNICODE_DECOMPOSITION_TABLE_SIZE 0x2FB
-#define OF_UNICODE_DECOMPOSITION_COMPAT_TABLE_SIZE 0x2FB
+#define OFUnicodeUppercaseTableSize 0x1EA
+#define OFUnicodeLowercaseTableSize 0x1EA
+#define OFUnicodeTitlecaseTableSize 0x1EA
+#define OFUnicodeCaseFoldingTableSize 0x1EA
+#define OFUnicodeDecompositionTableSize 0x2FB
+#define OFUnicodeDecompositionCompatTableSize 0x2FB
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const of_unichar_t *const _Nonnull
-    of_unicode_uppercase_table[OF_UNICODE_UPPERCASE_TABLE_SIZE];
-extern const of_unichar_t *const _Nonnull
-    of_unicode_lowercase_table[OF_UNICODE_LOWERCASE_TABLE_SIZE];
-extern const of_unichar_t *const _Nonnull
-    of_unicode_titlecase_table[OF_UNICODE_TITLECASE_TABLE_SIZE];
-extern const of_unichar_t *const _Nonnull
-    of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
+extern const OFUnichar *const _Nonnull
+    OFUnicodeUppercaseTable[OFUnicodeUppercaseTableSize];
+extern const OFUnichar *const _Nonnull
+    OFUnicodeLowercaseTable[OFUnicodeLowercaseTableSize];
+extern const OFUnichar *const _Nonnull
+    OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];
+extern const OFUnichar *const _Nonnull
+    OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];
 extern const char *const _Nullable *const _Nonnull
-    of_unicode_decomposition_table[OF_UNICODE_DECOMPOSITION_TABLE_SIZE];
+    OFUnicodeDecompositionTable[OFUnicodeDecompositionTableSize];
 extern const char *const _Nullable *const _Nonnull
-    of_unicode_decomposition_compat_table[OF_UNICODE_DECOMPOSITION_COMPAT_TABLE_SIZE];
+    OFUnicodeDecompositionCompatTable[OFUnicodeDecompositionCompatTableSize];
 #ifdef __cplusplus
 }
 #endif

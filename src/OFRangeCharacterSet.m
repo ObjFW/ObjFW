@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,7 +26,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	self = [super init];
 
@@ -45,7 +43,7 @@
 	return self;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character >= _range.location &&
 	    character < _range.location + _range.length);

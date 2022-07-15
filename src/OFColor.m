@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,30 +16,29 @@
 #include "config.h"
 
 #import "OFColor.h"
-
-#import "once.h"
+#import "OFOnce.h"
 
 #import "OFInvalidArgumentException.h"
 
 @implementation OFColor
-#define PREDEFINED_COLOR(name, r, g, b)					\
-	static OFColor *name##Color = nil;				\
-									\
-	static void							\
-	initPredefinedColor_##name(void)				\
-	{								\
-		name##Color = [[OFColor alloc] initWithRed: r		\
-						     green: g		\
-						      blue: b		\
-						     alpha: 1];		\
-	}								\
-									\
-	+ (OFColor *)name						\
-	{								\
-		static of_once_t onceControl = OF_ONCE_INIT;		\
-		of_once(&onceControl, initPredefinedColor_##name);	\
-									\
-		return name##Color;					\
+#define PREDEFINED_COLOR(name, redValue, greenValue, blueValue)		   \
+	static OFColor *name##Color = nil;				   \
+									   \
+	static void							   \
+	initPredefinedColor_##name(void)				   \
+	{								   \
+		name##Color = [[OFColor alloc] initWithRed: redValue	   \
+						     green: greenValue	   \
+						      blue: blueValue	   \
+						     alpha: 1];		   \
+	}								   \
+									   \
+	+ (OFColor *)name						   \
+	{								   \
+		static OFOnceControl onceControl = OFOnceControlInitValue; \
+		OFOnce(&onceControl, initPredefinedColor_##name);	   \
+									   \
+		return name##Color;					   \
 	}
 
 PREDEFINED_COLOR(black,   0.00f, 0.00f, 0.00f)
@@ -124,28 +121,28 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 	float tmp;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_red);
+	tmp = OFToLittleEndianFloat(_red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_green);
+	tmp = OFToLittleEndianFloat(_green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_blue);
+	tmp = OFToLittleEndianFloat(_blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	tmp = OF_BSWAP_FLOAT_IF_LE(_alpha);
+	tmp = OFToLittleEndianFloat(_alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OF_HASH_ADD(hash, ((char *)&tmp)[i]);
+		OFHashAdd(&hash, ((char *)&tmp)[i]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

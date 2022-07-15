@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -78,11 +76,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the subkey to open
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Opens the subkey at the specified path.
@@ -92,12 +89,11 @@ OF_SUBCLASSING_RESTRICTED
  *		  `ulOptions`. Usually 0.
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+				   options: (DWORD)options
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Creates a subkey at the specified path or opens it if it already
@@ -138,68 +134,100 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the data for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The data for the specified value
  */
-- (nullable OFData *)dataForValue: (nullable OFString *)value
-			     type: (nullable DWORD *)type;
+- (nullable OFData *)dataForValueNamed: (nullable OFString *)name
+				  type: (nullable DWORD *)type;
 
 /**
  * @brief Sets the data for the specified value.
  *
  * @param data The data to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  * @param type The type for the value
  */
 - (void)setData: (nullable OFData *)data
-       forValue: (nullable OFString *)value
+  forValueNamed: (nullable OFString *)name
 	   type: (DWORD)type;
 
 /**
  * @brief Returns the string for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @return The string for the specified value
  */
-- (nullable OFString *)stringForValue: (nullable OFString *)value;
+- (nullable OFString *)stringForValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Returns the string for the specified value at the specified path.
  *
- * @param value The name of the value to return
+ * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
  */
-- (nullable OFString *)stringForValue: (nullable OFString *)value
-				 type: (nullable DWORD *)type;
+- (nullable OFString *)stringForValueNamed: (nullable OFString *)name
+				      type: (nullable DWORD *)type;
 
 /**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  */
 - (void)setString: (nullable OFString *)string
-	 forValue: (nullable OFString *)value;
+    forValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Sets the string for the specified value.
  *
  * @param string The string to set the value to
- * @param value The name of the value to set
+ * @param name The name of the value to set
  * @param type The type for the value
  */
 - (void)setString: (nullable OFString *)string
-	 forValue: (nullable OFString *)value
+    forValueNamed: (nullable OFString *)name
 	     type: (DWORD)type;
+
+/**
+ * @brief Returns the DWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The DWORD for the specified value
+ */
+- (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the DWORD for the specified value.
+ *
+ * @param dword The DWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Returns the QWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The QWORD for the specified value
+ */
+- (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the QWORD for the specified value.
+ *
+ * @param qword The QWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Deletes the specified value.
  *
- * @param value The value to delete
+ * @param name The value to delete
  */
-- (void)deleteValue: (nullable OFString *)value;
+- (void)deleteValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Deletes the specified subkey.

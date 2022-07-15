@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,8 +48,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
@@ -64,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  target: (OFString *)target
 			   errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated create symbolic link failed
@@ -78,6 +74,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithURL: (OFURL *)URL
 		     target: (OFString *)target
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

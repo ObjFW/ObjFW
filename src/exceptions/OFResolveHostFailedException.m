@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,33 +20,44 @@
 #import "OFString.h"
 
 @implementation OFResolveHostFailedException
-@synthesize host = _host, addressFamily = _addressFamily, error = _error;
+@synthesize host = _host, addressFamily = _addressFamily;
+@synthesize errorCode = _errorCode;
 
 + (instancetype)exceptionWithHost: (OFString *)host
-		    addressFamily: (of_socket_address_family_t)addressFamily
-			    error: (of_dns_resolver_error_t)error
+		    addressFamily: (OFSocketAddressFamily)addressFamily
+			errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	return [[[self alloc] initWithHost: host
 			     addressFamily: addressFamily
-				     error: error] autorelease];
+				 errorCode: errorCode] autorelease];
+}
+
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
-		       error: (of_dns_resolver_error_t)error
+	       addressFamily: (OFSocketAddressFamily)addressFamily
+		   errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	self = [super init];
 
 	@try {
 		_host = [host copy];
 		_addressFamily = addressFamily;
-		_error = error;
+		_errorCode = errorCode;
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -62,6 +71,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"The host %@ could not be resolved: %@",
-	    _host, of_dns_resolver_error_to_string(_error)];
+	    _host, OFDNSResolverErrorCodeDescription(_errorCode)];
 }
 @end

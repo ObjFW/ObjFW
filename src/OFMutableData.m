@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,8 +42,7 @@
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-+ (instancetype)dataWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
++ (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	return [[[self alloc] initWithItemSize: itemSize
 				      capacity: capacity] autorelease];
@@ -56,6 +53,7 @@
 	self = [super init];
 
 	_itemSize = 1;
+	_freeWhenDone = true;
 
 	return self;
 }
@@ -69,6 +67,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		_itemSize = itemSize;
+		_freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -83,8 +82,7 @@
 			     capacity: capacity];
 }
 
-- (instancetype)initWithItemSize: (size_t)itemSize
-			capacity: (size_t)capacity
+- (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
 	self = [super init];
 
@@ -92,11 +90,10 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = [self allocMemoryWithSize: itemSize
-					     count: capacity];
-
+		_items = OFAllocMemory(capacity, itemSize);
 		_itemSize = itemSize;
 		_capacity = capacity;
+		_freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -106,12 +103,10 @@
 }
 
 - (instancetype)initWithItems: (const void *)items
-		     itemSize: (size_t)itemSize
 			count: (size_t)count
+		     itemSize: (size_t)itemSize
 {
-	self = [super initWithItems: items
-			   itemSize: itemSize
-			      count: count];
+	self = [super initWithItems: items count: count itemSize: itemSize];
 
 	_capacity = _count;
 
@@ -119,16 +114,14 @@
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
-			   itemSize: (size_t)itemSize
 			      count: (size_t)count
+			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	self = [self initWithItems: items
-			  itemSize: itemSize
-			     count: count];
+	self = [self initWithItems: items count: count itemSize: itemSize];
 
 	if (freeWhenDone)
-		free(items);
+		OFFreeMemory(items);
 
 	return self;
 }
@@ -171,15 +164,15 @@
 	return _items + (_count - 1) * _itemSize;
 }
 
-- (OFData *)subdataWithRange: (of_range_t)range
+- (OFData *)subdataWithRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
 		@throw [OFOutOfRangeException exception];
 
 	return [OFData dataWithItems: _items + (range.location * _itemSize)
-			    itemSize: _itemSize
-			       count: range.length];
+			       count: range.length
+			    itemSize: _itemSize];
 }
 
 - (void)addItem: (const void *)item
@@ -188,9 +181,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + 1 > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + 1];
+		_items = OFResizeMemory(_items, _count + 1, _itemSize);
 		_capacity = _count + 1;
 	}
 
@@ -199,24 +190,18 @@
 	_count++;
 }
 
-- (void)insertItem: (const void *)item
-	   atIndex: (size_t)idx
+- (void)insertItem: (const void *)item atIndex: (size_t)idx
 {
-	[self insertItems: item
-		  atIndex: idx
-		    count: 1];
+	[self insertItems: item atIndex: idx count: 1];
 }
 
-- (void)addItems: (const void *)items
-	   count: (size_t)count
+- (void)addItems: (const void *)items count: (size_t)count
 {
 	if (count > SIZE_MAX - _count)
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -232,9 +217,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -251,9 +234,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
+		_items = OFResizeMemory(_items, _count + count, _itemSize);
 		_capacity = _count + count;
 	}
 
@@ -263,10 +244,10 @@
 
 - (void)removeItemAtIndex: (size_t)idx
 {
-	[self removeItemsInRange: of_range(idx, 1)];
+	[self removeItemsInRange: OFRangeMake(idx, 1)];
 }
 
-- (void)removeItemsInRange: (of_range_t)range
+- (void)removeItemsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -278,9 +259,7 @@
 
 	_count -= range.length;
 	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
@@ -294,9 +273,7 @@
 
 	_count--;
 	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
+		_items = OFResizeMemory(_items, _count, _itemSize);
 		_capacity = _count;
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only made it smaller */
@@ -305,8 +282,7 @@
 
 - (void)removeAllItems
 {
-	[self freeMemory: _items];
-
+	OFFreeMemory(_items);
 	_items = NULL;
 	_count = 0;
 	_capacity = 0;
@@ -315,12 +291,21 @@
 - (id)copy
 {
 	return [[OFData alloc] initWithItems: _items
-				    itemSize: _itemSize
-				       count: _count];
+				       count: _count
+				    itemSize: _itemSize];
 }
 
 - (void)makeImmutable
 {
+	if (_capacity != _count) {
+		@try {
+			_items = OFResizeMemory(_items, _count, _itemSize);
+			_capacity = _count;
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only made it smaller */
+		}
+	}
+
 	object_setClass(self, [OFData class]);
 }
 @end

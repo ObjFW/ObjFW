@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,24 +34,23 @@ int _OFString_URLEncoding_reference;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = self.characters;
+	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
-	bool (*characterIsMember)(id, SEL, of_unichar_t) =
-	    (bool (*)(id, SEL, of_unichar_t))[allowedCharacters
+	bool (*characterIsMember)(id, SEL, OFUnichar) =
+	    (bool (*)(id, SEL, OFUnichar))[allowedCharacters
 	    methodForSelector: @selector(characterIsMember:)];
 
 	for (size_t i = 0; i < length; i++) {
-		of_unichar_t c = characters[i];
+		OFUnichar c = characters[i];
 
 		if (characterIsMember(allowedCharacters,
 		    @selector(characterIsMember:), c))
-			[ret appendCharacters: &c
-				       length: 1];
+			[ret appendCharacters: &c length: 1];
 		else {
 			char buffer[4];
 			size_t bufferLen;
 
-			if ((bufferLen = of_string_utf8_encode(c, buffer)) == 0)
+			if ((bufferLen = OFUTF8StringEncode(c, buffer)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			for (size_t j = 0; j < bufferLen; j++) {
@@ -68,8 +65,7 @@ int _OFString_URLEncoding_reference;
 				escaped[2] =
 				    (low  > 9 ? low  - 10 + 'A' : low  + '0');
 
-				[ret appendUTF8String: escaped
-					       length: 3];
+				[ret appendUTF8String: escaped length: 3];
 			}
 		}
 	}
@@ -88,8 +84,9 @@ int _OFString_URLEncoding_reference;
 	char byte = 0;
 	int state = 0;
 	size_t i = 0;
+	OFString *ret;
 
-	retCString = of_malloc(1, length + 1);
+	retCString = OFAllocMemory(length + 1, 1);
 
 	while (length--) {
 		char c = *string++;
@@ -112,7 +109,7 @@ int _OFString_URLEncoding_reference;
 			else if (c >= 'a' && c <= 'f')
 				byte += (c - 'a' + 10) << shift;
 			else {
-				of_free(retCString);
+				OFFreeMemory(retCString);
 				@throw [OFInvalidFormatException exception];
 			}
 
@@ -130,18 +127,25 @@ int _OFString_URLEncoding_reference;
 	objc_autoreleasePoolPop(pool);
 
 	if (state != 0) {
-		of_free(retCString);
+		OFFreeMemory(retCString);
 		@throw [OFInvalidFormatException exception];
 	}
 
 	@try {
-		retCString = of_realloc(retCString, 1, i + 1);
+		retCString = OFResizeMemory(retCString, 1, i + 1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care if it fails, as we only made it smaller. */
 	}
 
-	return [OFString stringWithUTF8StringNoCopy: retCString
-					     length: i
-				       freeWhenDone: true];
+	@try {
+		ret = [OFString stringWithUTF8StringNoCopy: retCString
+						    length: i
+					      freeWhenDone: true];
+	} @catch (id e) {
+		OFFreeMemory(retCString);
+		@throw e;
+	}
+
+	return ret;
 }
 @end

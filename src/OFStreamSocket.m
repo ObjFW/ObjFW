@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,9 +13,13 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
+
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define __NO_EXT_QNX
+#define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <assert.h>
 #include <errno.h>
@@ -27,6 +29,7 @@
 #import "OFStreamSocket+Private.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket+Private.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -39,8 +42,6 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "socket_helpers.h"
-
 @implementation OFStreamSocket
 @dynamic delegate;
 @synthesize listening = _listening;
@@ -50,7 +51,7 @@
 	if (self != [OFStreamSocket class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -70,7 +71,7 @@
 			abort();
 		}
 
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -81,7 +82,7 @@
 
 - (void)dealloc
 {
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		[self close];
 
 	[super dealloc];
@@ -89,18 +90,17 @@
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	ssize_t ret;
 
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
@@ -108,7 +108,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -117,7 +117,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	if (ret == 0)
@@ -126,10 +126,9 @@
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
@@ -143,7 +142,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	int bytesWritten;
 
@@ -155,7 +154,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	return (size_t)bytesWritten;
@@ -165,15 +164,15 @@
 - (void)setCanBlock: (bool)canBlock
 {
 # ifdef OF_WINDOWS
-	u_long v = canBlock;
+	u_long v = !canBlock;
 # else
-	char v = canBlock;
+	char v = !canBlock;
 # endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_canBlock = canBlock;
 }
@@ -184,7 +183,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -199,7 +198,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -217,7 +216,7 @@
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
 	    &len) != 0)
-		return of_socket_errno();
+		return OFSocketErrNo();
 
 	return errNo;
 }
@@ -230,14 +229,14 @@
 
 - (void)listenWithBacklog: (int)backlog
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backlog) == -1)
 		@throw [OFListenFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_listening = true;
 }
@@ -258,24 +257,25 @@
 	if ((client->_socket = paccept(_socket,
 	    &client->_remoteAddress.sockaddr.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
-	    INVALID_SOCKET)
+	    OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket,
 	    &client->_remoteAddress.sockaddr.sockaddr,
-	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
+	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
+	    OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    &client->_remoteAddress.sockaddr.sockaddr,
-	    &client->_remoteAddress.length)) == INVALID_SOCKET)
+	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
@@ -288,21 +288,25 @@
 
 	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
 	case AF_INET:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPv4;
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
 #ifdef OF_HAVE_IPX
 	case AF_IPX:
-		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		client->_remoteAddress.family = OFSocketAddressFamilyIPX;
+		break;
+#endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		client->_remoteAddress.family = OFSocketAddressFamilyUNIX;
 		break;
 #endif
 	default:
-		client->_remoteAddress.family =
-		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		client->_remoteAddress.family = OFSocketAddressFamilyUnknown;
 		break;
 	}
 
@@ -311,10 +315,10 @@
 
 - (void)asyncAccept
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
@@ -323,14 +327,13 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncAcceptWithBlock: (of_stream_socket_async_accept_block_t)block
+- (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
-				   block: block];
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
 }
 
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			     block: (of_stream_socket_async_accept_block_t)block
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			     block: (OFStreamSocketAsyncAcceptBlock)block
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
@@ -339,9 +342,9 @@
 }
 #endif
 
-- (const of_socket_address_t *)remoteAddress
+- (const OFSocketAddress *)remoteAddress
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_remoteAddress.length == 0)
@@ -355,14 +358,14 @@
 
 - (void)close
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	_listening = false;
 	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 
 	_atEndOfStream = false;
 

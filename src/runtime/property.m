@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,18 +21,23 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
-# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
-# define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
-static of_spinlock_t spinlocks[NUM_SPINLOCKS];
+# import "OFPlainMutex.h"
+# define numSpinlocks 8	/* needs to be a power of 2 */
+static OFSpinlock spinlocks[numSpinlocks];
+
+static OF_INLINE size_t
+spinlockSlot(const void *ptr)
+{
+	return ((size_t)((uintptr_t)ptr >> 4) & (numSpinlocks - 1));
+}
 #endif
 
 #ifdef OF_HAVE_THREADS
 OF_CONSTRUCTOR()
 {
-	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
-		if (!of_spinlock_new(&spinlocks[i]))
-			OBJC_ERROR("Failed to initialize spinlocks!")
+	for (size_t i = 0; i < numSpinlocks; i++)
+		if (OFSpinlockNew(&spinlocks[i]) != 0)
+			OBJC_ERROR("Failed to create spinlocks!");
 }
 #endif
 
@@ -44,13 +47,15 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(ptr);
+		size_t slot = spinlockSlot(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+				OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -67,9 +72,10 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(ptr);
+		size_t slot = spinlockSlot(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 #endif
 			id old = *ptr;
@@ -88,7 +94,8 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+				OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #endif
 
@@ -119,13 +126,15 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(src);
+		size_t slot = spinlockSlot(src);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -140,13 +149,15 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		unsigned hash = SPINLOCK_HASH(src);
+		size_t slot = spinlockSlot(src);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		if (OFSpinlockLock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
+			OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -169,7 +180,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
 	count = 0;
 	if (class->info & OBJC_CLASS_INFO_NEW_ABI)
@@ -181,7 +192,7 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_global_mutex_unlock();
+		objc_globalMutex_unlock();
 		return NULL;
 	}
 
@@ -193,13 +204,16 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 	for (iter = class->propertyList; iter != NULL; iter = iter->next)
 		for (unsigned int j = 0; j < iter->count; j++)
 			properties[i++] = &iter->properties[j];
-	OF_ENSURE(i == count);
+
+	if (i != count)
+		OBJC_ERROR("Fatal internal inconsistency!");
+
 	properties[count] = NULL;
 
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 
 	return properties;
 }
@@ -221,18 +235,18 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	switch (*name) {
 	case 'T':
-		ret = of_strdup(property->getter.typeEncoding);
+		ret = objc_strdup(property->getter.typeEncoding);
 		nullIsError = true;
 		break;
 	case 'G':
 		if (property->attributes & OBJC_PROPERTY_GETTER) {
-			ret = of_strdup(property->getter.name);
+			ret = objc_strdup(property->getter.name);
 			nullIsError = true;
 		}
 		break;
 	case 'S':
 		if (property->attributes & OBJC_PROPERTY_SETTER) {
-			ret = of_strdup(property->setter.name);
+			ret = objc_strdup(property->setter.name);
 			nullIsError = true;
 		}
 		break;
@@ -255,7 +269,7 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	if (nullIsError && ret == NULL)
 		OBJC_ERROR("Not enough memory to copy property attribute "
-		    "value");
+		    "value!");
 
 	return ret;
 }

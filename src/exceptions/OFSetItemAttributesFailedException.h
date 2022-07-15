@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,8 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSetItemAttributesFailedException: OFException
 {
 	OFURL *_URL;
-	of_file_attributes_t _attributes;
-	of_file_attribute_key_t _failedAttribute;
+	OFFileAttributes _attributes;
+	OFFileAttributeKey _failedAttribute;
 	int _errNo;
 }
 
@@ -50,14 +48,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The attributes that should have been set.
  */
-@property (readonly, nonatomic) of_file_attributes_t attributes;
+@property (readonly, nonatomic) OFFileAttributes attributes;
 
 /**
  * @brief The first attribute that could not be set.
  */
-@property (readonly, nonatomic) of_file_attribute_key_t failedAttribute;
-
-+ (instancetype)exception OF_UNAVAILABLE;
+@property (readonly, nonatomic) OFFileAttributeKey failedAttribute;
 
 /**
  * @brief Creates a new, autoreleased set item attributes failed exception.
@@ -70,11 +66,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased set item attributes failed exception
  */
 + (instancetype)exceptionWithURL: (OFURL *)URL
-		      attributes: (of_file_attributes_t)attributes
-		 failedAttribute: (of_file_attribute_key_t)failedAttribute
+		      attributes: (OFFileAttributes)attributes
+		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated set item attributes failed exception.
@@ -87,9 +83,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized set item attributes failed exception
  */
 - (instancetype)initWithURL: (OFURL *)URL
-		 attributes: (of_file_attributes_t)attributes
-	    failedAttribute: (of_file_attribute_key_t)failedAttribute
+		 attributes: (OFFileAttributes)attributes
+	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

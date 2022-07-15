@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,23 +20,36 @@
 #import "plugin/TestPlugin.h"
 
 #ifndef OF_IOS
-# define PLUGIN_PATH @"plugin/TestPlugin"
+static OFString *const pluginName = @"plugin/TestPlugin";
 #else
-# define PLUGIN_PATH @"PlugIns/TestPlugin"
+static OFString *const pluginName = @"PlugIns/TestPlugin";
 #endif
 
-static OFString *module = @"OFPlugin";
+static OFString *const module = @"OFPlugin";
 
 @implementation TestsAppDelegate (OFPluginTests)
 - (void)pluginTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	TestPlugin *plugin;
+	OFString *path;
+	OFPlugin *plugin;
+	Class (*class)(void);
+	TestPlugin *test;
 
-	TEST(@"+[pluginFromFile:]",
-	    (plugin = [OFPlugin pluginFromFile: PLUGIN_PATH]))
+	TEST(@"+[pathForName:]", (path = [OFPlugin pathForName: pluginName]))
 
-	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
+	TEST(@"+[pluginWithPath:]", (plugin = [OFPlugin pluginWithPath: path]))
+
+	TEST(@"-[addressForSymbol:]",
+	    (class = (Class (*)(void))(uintptr_t)
+	    [plugin addressForSymbol: @"class"]))
+
+	test = [[class() alloc] init];
+	@try {
+		TEST(@"TestPlugin's -[test:]", [test test: 1234] == 2468)
+	} @finally {
+		[test release];
+	}
 
 	objc_autoreleasePoolPop(pool);
 }

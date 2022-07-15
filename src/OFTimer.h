@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param timer The timer which fired
  */
-typedef void (^of_timer_block_t)(OFTimer *timer);
+typedef void (^OFTimerBlock)(OFTimer *timer);
 #endif
 
 /**
@@ -46,14 +44,14 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFTimer: OFObject <OFComparing>
 {
 	OFDate *_fireDate;
-	of_time_interval_t _interval;
+	OFTimeInterval _interval;
 	id _target;
 	id _Nullable _object1, _object2, _object3, _object4;
 	SEL _selector;
 	unsigned char _arguments;
 	bool _repeats;
 #ifdef OF_HAVE_BLOCKS
-	of_timer_block_t _block;
+	OFTimerBlock _block;
 #endif
 	bool _valid;
 #ifdef OF_HAVE_THREADS
@@ -61,19 +59,19 @@ OF_SUBCLASSING_RESTRICTED
 	bool _done;
 #endif
 	OFRunLoop *_Nullable _inRunLoop;
-	of_run_loop_mode_t _Nullable _inRunLoopMode;
+	OFRunLoopMode _Nullable _inRunLoopMode;
 }
 
 /**
  * @brief The time interval in which the timer will repeat, if it is a
  *	  repeating timer.
  */
-@property (readonly, nonatomic) of_time_interval_t timeInterval;
+@property (readonly, nonatomic) OFTimeInterval timeInterval;
 
 /**
- * @brief Whether the timer is repeating.
+ * @brief Whether the timer repeats.
  */
-@property (readonly, nonatomic, getter=isRepeating) bool repeating;
+@property (readonly, nonatomic) bool repeats;
 
 /**
  * @brief Whether the timer is valid.
@@ -99,7 +97,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 				       repeats: (bool)repeats;
@@ -114,7 +112,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (nullable id)object
@@ -133,7 +131,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (nullable id)object1
@@ -155,7 +153,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (nullable id)object1
@@ -180,7 +178,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (nullable id)object1
@@ -198,9 +196,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param block The block to invoke when the timer fires
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
 				       repeats: (bool)repeats
-					 block: (of_timer_block_t)block;
+					 block: (OFTimerBlock)block;
 #endif
 
 /**
@@ -212,7 +210,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			      repeats: (bool)repeats;
@@ -227,7 +225,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (nullable id)object
@@ -246,7 +244,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (nullable id)object1
@@ -268,7 +266,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (nullable id)object1
@@ -293,7 +291,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (nullable id)object1
@@ -311,9 +309,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param block The block to invoke when the timer fires
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
++ (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
 			      repeats: (bool)repeats
-				block: (of_timer_block_t)block;
+				block: (OFTimerBlock)block;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -331,7 +329,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			 repeats: (bool)repeats;
@@ -350,7 +348,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (nullable id)object
@@ -373,7 +371,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (nullable id)object1
@@ -399,7 +397,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (nullable id)object1
@@ -428,7 +426,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			  target: (id)target
 			selector: (SEL)selector
 			  object: (nullable id)object1
@@ -450,10 +448,18 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized timer
  */
 - (instancetype)initWithFireDate: (OFDate *)fireDate
-			interval: (of_time_interval_t)interval
+			interval: (OFTimeInterval)interval
 			 repeats: (bool)repeats
-			   block: (of_timer_block_t)block;
+			   block: (OFTimerBlock)block;
 #endif
+
+/**
+ * @brief Compares the timer to another timer.
+ *
+ * @param timer The timer to compare the string to
+ * @return The result of the comparison
+ */
+- (OFComparisonResult)compare: (OFTimer *)timer;
 
 /**
  * @brief Fires the timer, meaning it will execute the specified selector on the

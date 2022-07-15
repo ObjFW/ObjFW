@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,8 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(size_t length,
-    id _Nullable exception);
+typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception);
 
 /**
  * @brief A block which is called when a line was read asynchronously from a
@@ -61,14 +58,13 @@ typedef bool (^of_stream_async_read_block_t)(size_t length,
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
+typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
     id _Nullable exception);
 
 /**
  * @brief A block which is called when data was written asynchronously to a
  *	  stream.
  *
- * @param data The data which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -76,14 +72,13 @@ typedef bool (^of_stream_async_read_line_block_t)(OFString *_Nullable line,
  *		    success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OFData *_Nonnull data, size_t bytesWritten, id _Nullable exception);
+typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(size_t bytesWritten,
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when a string was written asynchronously to a
  *	  stream.
  *
- * @param string The string which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -91,8 +86,8 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  *		    success
  * @return The string to repeat the write with or nil if it should not repeat
  */
-typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
-    OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
+typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
+    size_t bytesWritten, id _Nullable exception);
 #endif
 
 /**
@@ -163,7 +158,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (nullable OFString *)stream: (OFStream *)stream
 	       didWriteString: (OFString *)string
-		     encoding: (of_string_encoding_t)encoding
+		     encoding: (OFStringEncoding)encoding
 		 bytesWritten: (size_t)bytesWritten
 		    exception: (nullable id)exception;
 @end
@@ -210,7 +205,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Whether writes are buffered.
  */
-@property (nonatomic, nonatomic) bool buffersWrites;
+@property (nonatomic) bool buffersWrites;
 
 /**
  * @brief Whether data is present in the internal read buffer.
@@ -250,8 +245,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		 The buffer *must* be *at least* this big!
  * @return The number of bytes read
  */
-- (size_t)readIntoBuffer: (void *)buffer
-		  length: (size_t)length;
+- (size_t)readIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Reads exactly the specified length bytes from the stream into a
@@ -268,8 +262,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  */
- - (void)readIntoBuffer: (void *)buffer
-	    exactLength: (size_t)length;
+ - (void)readIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -292,8 +285,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  */
-- (void)asyncReadIntoBuffer: (void *)buffer
-		     length: (size_t)length;
+- (void)asyncReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Asynchronously reads *at most* size bytes from the stream into a
@@ -318,7 +310,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -336,8 +328,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  */
-- (void)asyncReadIntoBuffer: (void *)buffer
-		exactLength: (size_t)length;
+- (void)asyncReadIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -358,7 +349,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -388,7 +379,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads *at most* ref size bytes from the stream into a
@@ -418,8 +409,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block;
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -444,7 +435,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		      block: (of_stream_async_read_block_t)block;
+		      block: (OFStreamAsyncReadBlock)block;
 
 /**
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -470,8 +461,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		      block: (of_stream_async_read_block_t)block;
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		      block: (OFStreamAsyncReadBlock)block;
 # endif
 #endif
 
@@ -536,81 +527,6 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 - (double)readBigEndianDouble;
 
 /**
- * @brief Reads the specified number of uint16_ts from the stream which are
- *	  encoded in big endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint16_ts
- * @param count The number of uint16_ts to read
- * @return The number of bytes read
- */
-- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer
-				  count: (size_t)count;
-
-/**
- * @brief Reads the specified number of uint32_ts from the stream which are
- *	  encoded in big endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint32_ts
- * @param count The number of uint32_ts to read
- * @return The number of bytes read
- */
-- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer
-				  count: (size_t)count;
-
-/**
- * @brief Reads the specified number of uint64_ts from the stream which are
- *	  encoded in big endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint64_ts
- * @param count The number of uint64_ts to read
- * @return The number of bytes read
- */
-- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer
-				  count: (size_t)count;
-
-/**
- * @brief Reads the specified number of floats from the stream which are encoded
- *	  in big endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 floats
- * @param count The number of floats to read
- * @return The number of bytes read
- */
-- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
-				  count: (size_t)count;
-
-/**
- * @brief Reads the specified number of doubles from the stream which are
- *	  encoded in big endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 doubles
- * @param count The number of doubles to read
- * @return The number of bytes read
- */
-- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
-				   count: (size_t)count;
-
-/**
  * @brief Reads a uint16_t from the stream which is encoded in little endian.
  *
  * @warning Only call this when you know that enough data is available!
@@ -661,81 +577,6 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 - (double)readLittleEndianDouble;
 
 /**
- * @brief Reads the specified number of uint16_ts from the stream which are
- *	  encoded in little endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint16_ts
- * @param count The number of uint16_ts to read
- * @return The number of bytes read
- */
-- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
-				     count: (size_t)count;
-
-/**
- * @brief Reads the specified number of uint32_ts from the stream which are
- *	  encoded in little endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint32_ts
- * @param count The number of uint32_ts to read
- * @return The number of bytes read
- */
-- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t *)buffer
-				     count: (size_t)count;
-
-/**
- * @brief Reads the specified number of uint64_ts from the stream which are
- *	  encoded in little endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 uint64_ts
- * @param count The number of uint64_ts to read
- * @return The number of bytes read
- */
-- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t *)buffer
-				     count: (size_t)count;
-
-/**
- * @brief Reads the specified number of floats from the stream which are
- *	  encoded in little endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 floats
- * @param count The number of floats to read
- * @return The number of bytes read
- */
-- (size_t)readLittleEndianFloatsIntoBuffer: (float *)buffer
-				     count: (size_t)count;
-
-/**
- * @brief Reads the specified number of doubles from the stream which are
- *	  encoded in little endian.
- *
- * @warning Only call this when you know that enough data is available!
- *	    Otherwise you will get an exception!
- *
- * @param buffer A buffer of sufficient size to store the specified number of
- *		 doubles
- * @param count The number of doubles to read
- * @return The number of bytes read
- */
-- (size_t)readLittleEndianDoublesIntoBuffer: (double *)buffer
-				      count: (size_t)count;
-
-/**
  * @brief Reads the specified number of items with an item size of 1 from the
  *	  stream and returns them as OFData.
  *
@@ -758,8 +599,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param count The number of items to read
  * @return OFData with count items.
  */
-- (OFData *)readDataWithItemSize: (size_t)itemSize
-			   count: (size_t)count;
+- (OFData *)readDataWithItemSize: (size_t)itemSize count: (size_t)count;
 
 /**
  * @brief Returns OFData with all the remaining data of the stream.
@@ -801,7 +641,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return A string with the specified length
  */
 - (OFString *)readStringWithLength: (size_t)length
-			  encoding: (of_string_encoding_t)encoding;
+			  encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads until a newline, `\0` or end of stream occurs.
@@ -819,7 +659,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)readLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)readLineWithEncoding: (OFStringEncoding)encoding;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -840,7 +680,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *
  * @param encoding The encoding used by the stream
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -852,8 +692,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param encoding The encoding used by the stream
  * @param runLoopMode The run loop mode in which to perform the async read
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -869,7 +709,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
+- (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -885,8 +725,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-			    block: (of_stream_async_read_line_block_t)block;
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+			    block: (OFStreamAsyncReadLineBlock)block;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -903,9 +743,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
-			    block: (of_stream_async_read_line_block_t)block;
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
+			    block: (OFStreamAsyncReadLineBlock)block;
 # endif
 #endif
 
@@ -927,7 +767,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
-- (nullable OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)tryReadLineWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -949,7 +789,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *	   stream has been reached.
  */
 - (nullable OFString *)readTillDelimiter: (OFString *)delimiter
-				encoding: (of_string_encoding_t)encoding;
+				encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to reads until the specified string or `\0` is found or the end
@@ -973,23 +813,31 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *	   stream has been reached.
  */
 - (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter
-				   encoding: (of_string_encoding_t)encoding;
+				   encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes everything in the write buffer to the stream.
+ *
+ * @return Whether the write buffer was flushed entirely. On non-blocking
+ *	   sockets, this can return `false` if flushing the write buffer in its
+ *	   entirety would block.
  */
-- (void)flushWriteBuffer;
+- (bool)flushWriteBuffer;
 
 /**
  * @brief Writes from a buffer into the stream.
  *
+ * In non-blocking mode, if less than the specified length could be written, an
+ * @ref OFWriteFailedException is thrown with @ref OFWriteFailedException#errNo
+ * being set to `EWOULDBLOCK` or `EAGAIN` (you need to check for both, as they
+ * are not the same on some systems) and
+ * @ref OFWriteFailedException#bytesWritten being set to the number of bytes
+ * that were written, if any.
+ *
  * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written
- * @return The number of bytes written. This can only differ from the specified
- *	   length in non-blocking mode.
  */
-- (size_t)writeBuffer: (const void *)buffer
-	       length: (size_t)length;
+- (void)writeBuffer: (const void *)buffer length: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -1012,7 +860,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param runLoopMode The run loop mode in which to perform the async write
  */
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode;
+	   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Asynchronously writes a string in UTF-8 encoding into the stream.
@@ -1036,7 +884,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		   stream
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding;
+		encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1051,8 +899,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param runLoopMode The run loop mode in which to perform the async write
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -1067,7 +915,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-		 block: (of_stream_async_write_data_block_t)block;
+		 block: (OFStreamAsyncWriteDataBlock)block;
 
 /**
  * @brief Asynchronously writes data into the stream.
@@ -1082,8 +930,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-	   runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 block: (of_stream_async_write_data_block_t)block;
+	   runLoopMode: (OFRunLoopMode)runLoopMode
+		 block: (OFStreamAsyncWriteDataBlock)block;
 
 /**
  * @brief Asynchronously writes a string into the stream.
@@ -1097,7 +945,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		   block: (of_stream_async_write_string_block_t)block;
+		   block: (OFStreamAsyncWriteStringBlock)block;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1114,8 +962,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-		   block: (of_stream_async_write_string_block_t)block;
+		encoding: (OFStringEncoding)encoding
+		   block: (OFStreamAsyncWriteStringBlock)block;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
@@ -1133,14 +981,16 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		encoding: (of_string_encoding_t)encoding
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   block: (of_stream_async_write_string_block_t)block;
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
+		   block: (OFStreamAsyncWriteStringBlock)block;
 # endif
 #endif
 
 /**
  * @brief Writes a uint8_t into the stream.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int8 A uint8_t
  */
@@ -1149,12 +999,16 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a uint16_t into the stream, encoded in big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int16 A uint16_t
  */
 - (void)writeBigEndianInt16: (uint16_t)int16;
 
 /**
  * @brief Writes a uint32_t into the stream, encoded in big endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int32 A uint32_t
  */
@@ -1163,12 +1017,16 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a uint64_t into the stream, encoded in big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int64 A uint64_t
  */
 - (void)writeBigEndianInt64: (uint64_t)int64;
 
 /**
  * @brief Writes a float into the stream, encoded in big endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param float_ A float
  */
@@ -1177,72 +1035,16 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a double into the stream, encoded in big endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param double_ A double
  */
 - (void)writeBigEndianDouble: (double)double_;
 
 /**
- * @brief Writes the specified number of uint16_ts into the stream, encoded in
- *	  big endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of uint16_ts to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
-			 count: (size_t)count;
-
-/**
- * @brief Writes the specified number of uint32_ts into the stream, encoded in
- *	  big endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of uint32_ts to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
-			 count: (size_t)count;
-
-/**
- * @brief Writes the specified number of uint64_ts into the stream, encoded in
- *	  big endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of uint64_ts to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
-			 count: (size_t)count;
-
-/**
- * @brief Writes the specified number of floats into the stream, encoded in big
- *	  endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of floats to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeBigEndianFloats: (const float *)buffer
-			 count: (size_t)count;
-
-/**
- * @brief Writes the specified number of doubles into the stream, encoded in
- *	  big endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of doubles to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeBigEndianDoubles: (const double *)buffer
-			  count: (size_t)count;
-
-/**
  * @brief Writes a uint16_t into the stream, encoded in little endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int16 A uint16_t
  */
@@ -1251,12 +1053,16 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a uint32_t into the stream, encoded in little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param int32 A uint32_t
  */
 - (void)writeLittleEndianInt32: (uint32_t)int32;
 
 /**
  * @brief Writes a uint64_t into the stream, encoded in little endian.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int64 A uint64_t
  */
@@ -1265,6 +1071,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a float into the stream, encoded in little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param float_ A float
  */
 - (void)writeLittleEndianFloat: (float)float_;
@@ -1272,141 +1080,87 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 /**
  * @brief Writes a double into the stream, encoded in little endian.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param double_ A double
  */
 - (void)writeLittleEndianDouble: (double)double_;
 
 /**
- * @brief Writes the specified number of uint16_ts into the stream, encoded in
- *	  little endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of uint16_ts to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
-			    count: (size_t)count;
-
-/**
- * @brief Writes the specified number of uint32_ts into the stream, encoded in
- *	  little endian.
- *
- * @param count The number of uint32_ts to write
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @return The number of bytes written to the stream
- */
-- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
-			    count: (size_t)count;
-
-/**
- * @brief Writes the specified number of uint64_ts into the stream, encoded in
- *	  little endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of uint64_ts to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
-			    count: (size_t)count;
-
-/**
- * @brief Writes the specified number of floats into the stream, encoded in
- *	  little endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of floats to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeLittleEndianFloats: (const float *)buffer
-			    count: (size_t)count;
-
-/**
- * @brief Writes the specified number of doubles into the stream, encoded in
- *	  little endian.
- *
- * @param buffer The buffer from which the data is written to the stream after
- *		 it has been byte swapped if necessary
- * @param count The number of doubles to write
- * @return The number of bytes written to the stream
- */
-- (size_t)writeLittleEndianDoubles: (const double *)buffer
-			     count: (size_t)count;
-
-/**
  * @brief Writes OFData into the stream.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param data The OFData to write into the stream
- * @return The number of bytes written
  */
-- (size_t)writeData: (OFData *)data;
+- (void)writeData: (OFData *)data;
 
 /**
  * @brief Writes a string into the stream, without the trailing zero.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
- * @return The number of bytes written
  */
-- (size_t)writeString: (OFString *)string;
+- (void)writeString: (OFString *)string;
 
 /**
  * @brief Writes a string into the stream in the specified encoding, without
  *	  the trailing zero.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
- * @return The number of bytes written
  */
-- (size_t)writeString: (OFString *)string
-	     encoding: (of_string_encoding_t)encoding;
+- (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a string into the stream with a trailing newline.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
- * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString *)string;
+- (void)writeLine: (OFString *)string;
 
 /**
  * @brief Writes a string into the stream in the specified encoding with a
  *	  trailing newline.
  *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
+ *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
- * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString *)string
-	   encoding: (of_string_encoding_t)encoding;
+- (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param format A string used as format
- * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString *)format, ...;
+- (void)writeFormat: (OFConstantString *)format, ...;
 
 /**
  * @brief Writes a formatted string into the stream.
  *
  * See printf for the format syntax. As an addition, `%@` is available as
- * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t *`.
+ * format specifier for objects, `%C` for `OFUnichar` and `%S` for
+ * `const OFUnichar *`.
+ *
+ * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string
- * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString *)format
-	    arguments: (va_list)arguments;
+- (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
 #ifdef OF_HAVE_SOCKETS
 /**
@@ -1436,8 +1190,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param buffer The buffer to unread
  * @param length The length of the buffer to unread
  */
-- (void)unreadFromBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)unreadFromBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Closes the stream.
@@ -1458,8 +1211,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the buffer
  * @return The number of bytes read
  */
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length;
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
  * @brief Performs a lowlevel write.
@@ -1473,8 +1225,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param length The length of the data to write
  * @return The number of bytes written
  */
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length;
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Returns whether the lowlevel is at the end of the stream.

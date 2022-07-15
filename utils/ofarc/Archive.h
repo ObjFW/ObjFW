@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,10 +20,10 @@
 @protocol Archive <OFObject>
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding;
+			 encoding: (OFStringEncoding)encoding;
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding;
+		      encoding: (OFStringEncoding)encoding;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;

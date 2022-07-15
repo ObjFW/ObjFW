@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,49 +24,52 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
  *
- * @brief A class for representing an HTTP request reply as a stream.
+ * @brief A class for representing an HTTP request response as a stream.
  */
 @interface OFHTTPResponse: OFStream
 {
-	of_http_request_protocol_version_t _protocolVersion;
+	OFHTTPRequestProtocolVersion _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
 	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
 /**
- * @brief The protocol version of the HTTP request reply.
+ * @brief The protocol version of the HTTP request response.
  */
-@property (nonatomic) of_http_request_protocol_version_t protocolVersion;
+@property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
- * @brief The protocol version of the HTTP request reply as a string.
+ * @brief The protocol version of the HTTP request response as a string.
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 
 /**
- * @brief The status code of the reply to the HTTP request.
+ * @brief The status code of the response to the HTTP request.
  */
 @property (nonatomic) short statusCode;
 
 /**
- * @brief The headers of the reply to the HTTP request.
+ * @brief The headers of the response to the HTTP request.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
     *headers;
 
 /**
- * @brief The reply as a string, trying to detect the encoding.
- */
-@property (readonly, nonatomic) OFString *string;
-
-/**
- * @brief Returns the reply as a string, trying to detect the encoding and
+ * @brief Read the response as a string, trying to detect the encoding and
  *	  falling back to the specified encoding if not detectable.
  *
- * @return The reply as a string
+ * @return The response as a string
  */
-- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding;
+- (OFString *)readString;
+
+/**
+ * @brief Rread the response as a string, trying to detect the encoding and
+ *	  falling back to the specified encoding if not detectable.
+ *
+ * @return The response as a string
+ */
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 @end
 
 #ifdef __cplusplus
@@ -80,7 +81,7 @@ extern "C" {
  * @param code The HTTP status code to return a description string for
  * @return A description string for the specified HTTP status code
  */
-extern OFString *_Nonnull of_http_status_code_to_string(short code);
+extern OFString *_Nonnull OFHTTPStatusCodeString(short code);
 #ifdef __cplusplus
 }
 #endif

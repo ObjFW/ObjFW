@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,9 +51,11 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef id
 #endif
 
+extern unsigned long OFHashSeed;
+
 #ifdef OF_PSP
 static int
-exit_cb(int arg1, int arg2, void *arg)
+exitCallback(int arg1, int arg2, void *arg)
 {
 	sceKernelExitGame();
 
@@ -63,10 +63,10 @@ exit_cb(int arg1, int arg2, void *arg)
 }
 
 static int
-callback_thread(SceSize args, void *argp)
+threadCallback(SceSize args, void *argp)
 {
 	sceKernelRegisterExitCallback(
-	    sceKernelCreateCallback("Exit Callback", exit_cb, NULL));
+	    sceKernelCreateCallback("Exit Callback", exitCallback, NULL));
 	sceKernelSleepThreadCB();
 
 	return 0;
@@ -85,14 +85,14 @@ main(int argc, char *argv[])
 	 * This does not work on Win32 if ObjFW is built as a DLL.
 	 *
 	 * On AmigaOS, some destructors need to be able to send messages.
-	 * Calling objc_exit() via atexit() would result in the runtime being
+	 * Calling objc_deinit() via atexit() would result in the runtime being
 	 * destructed before for the destructors ran.
 	 */
-	atexit(objc_exit);
+	atexit(objc_deinit);
 #endif
 
 	/* We need deterministic hashes for tests */
-	of_hash_seed = 0;
+	OFHashSeed = 0;
 
 #ifdef OF_WII
 	GXRModeObj *rmode;
@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_DIGITAL);
 
-	if ((tid = sceKernelCreateThread("update_thread", callback_thread,
+	if ((tid = sceKernelCreateThread("update_thread", threadCallback,
 	    0x11, 0xFA0, 0, 0)) >= 0)
 		sceKernelStartThread(tid, 0, 0);
 #endif
@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 #if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
 	defined(OF_NINTENDO_3DS)
 	@try {
-		return of_application_main(&argc, &argv,
+		return OFApplicationMain(&argc, &argv,
 		    [[TestsAppDelegate alloc] init]);
 	} @catch (id e) {
 		OFString *string = [OFString stringWithFormat:
@@ -150,13 +150,13 @@ main(int argc, char *argv[])
 		    @"\nBacktrace:\n  %@\n\n",
 		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
-		[of_stdout setForegroundColor: [OFColor red]];
-		[of_stdout writeString: string];
-		[of_stdout writeString: backtrace];
+		[OFStdOut setForegroundColor: [OFColor red]];
+		[OFStdOut writeString: string];
+		[OFStdOut writeString: backtrace];
 
 # if defined(OF_WII)
-		[of_stdout reset];
-		[of_stdout writeString: @"Press home button to exit!"];
+		[OFStdOut reset];
+		[OFStdOut writeString: @"Press home button to exit!"];
 
 		for (;;) {
 			WPAD_ScanPads();
@@ -169,8 +169,8 @@ main(int argc, char *argv[])
 # elif defined(OF_PSP)
 		sceKernelSleepThreadCB();
 # elif defined(OF_NINTENDO_DS)
-		[of_stdout reset];
-		[of_stdout writeString: @"Press start button to exit!"];
+		[OFStdOut reset];
+		[OFStdOut writeString: @"Press start button to exit!"];
 
 		for (;;) {
 			swiWaitForVBlank();
@@ -179,8 +179,8 @@ main(int argc, char *argv[])
 				[OFApplication terminateWithStatus: 1];
 		}
 # elif defined(OF_NINTENDO_3DS)
-		[of_stdout reset];
-		[of_stdout writeString: @"Press start button to exit!"];
+		[OFStdOut reset];
+		[OFStdOut writeString: @"Press start button to exit!"];
 
 		for (;;) {
 			hidScanInput();
@@ -195,44 +195,40 @@ main(int argc, char *argv[])
 # endif
 	}
 #else
-	return of_application_main(&argc, &argv,
-	    [[TestsAppDelegate alloc] init]);
+	return OFApplicationMain(&argc, &argv, [[TestsAppDelegate alloc] init]);
 #endif
 }
 
 @implementation TestsAppDelegate
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module
 {
-	if (of_stdout.hasTerminal) {
-		[of_stdout setForegroundColor: [OFColor yellow]];
-		[of_stdout writeFormat: @"[%@] %@: testing...", module, test];
+	if (OFStdOut.hasTerminal) {
+		[OFStdOut setForegroundColor: [OFColor yellow]];
+		[OFStdOut writeFormat: @"[%@] %@: testing...", module, test];
 	} else
-		[of_stdout writeFormat: @"[%@] %@: ", module, test];
+		[OFStdOut writeFormat: @"[%@] %@: ", module, test];
 }
 
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module
 {
-	if (of_stdout.hasTerminal) {
-		[of_stdout setForegroundColor: [OFColor lime]];
-		[of_stdout eraseLine];
-		[of_stdout writeFormat: @"\r[%@] %@: ok\n", module, test];
+	if (OFStdOut.hasTerminal) {
+		[OFStdOut setForegroundColor: [OFColor lime]];
+		[OFStdOut eraseLine];
+		[OFStdOut writeFormat: @"\r[%@] %@: ok\n", module, test];
 	} else
-		[of_stdout writeLine: @"ok"];
+		[OFStdOut writeLine: @"ok"];
 }
 
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module
 {
-	if (of_stdout.hasTerminal) {
-		[of_stdout setForegroundColor: [OFColor red]];
-		[of_stdout eraseLine];
-		[of_stdout writeFormat: @"\r[%@] %@: failed\n", module, test];
+	if (OFStdOut.hasTerminal) {
+		[OFStdOut setForegroundColor: [OFColor red]];
+		[OFStdOut eraseLine];
+		[OFStdOut writeFormat: @"\r[%@] %@: failed\n", module, test];
 
 #ifdef OF_WII
-		[of_stdout reset];
-		[of_stdout writeLine: @"Press A to continue!"];
+		[OFStdOut reset];
+		[OFStdOut writeLine: @"Press A to continue!"];
 
 		for (;;) {
 			WPAD_ScanPads();
@@ -244,8 +240,8 @@ main(int argc, char *argv[])
 		}
 #endif
 #ifdef OF_PSP
-		[of_stdout reset];
-		[of_stdout writeLine: @"Press X to continue!"];
+		[OFStdOut reset];
+		[OFStdOut writeLine: @"Press X to continue!"];
 
 		for (;;) {
 			SceCtrlData pad;
@@ -261,8 +257,8 @@ main(int argc, char *argv[])
 		}
 #endif
 #ifdef OF_NINTENDO_DS
-		[of_stdout reset];
-		[of_stdout writeString: @"Press A to continue!"];
+		[OFStdOut reset];
+		[OFStdOut writeString: @"Press A to continue!"];
 
 		for (;;) {
 			swiWaitForVBlank();
@@ -272,8 +268,8 @@ main(int argc, char *argv[])
 		}
 #endif
 #ifdef OF_NINTENDO_3DS
-		[of_stdout reset];
-		[of_stdout writeString: @"Press A to continue!"];
+		[OFStdOut reset];
+		[OFStdOut writeString: @"Press A to continue!"];
 
 		for (;;) {
 			hidScanInput();
@@ -285,11 +281,11 @@ main(int argc, char *argv[])
 		}
 #endif
 
-		[of_stdout writeString: @"\r"];
-		[of_stdout reset];
-		[of_stdout eraseLine];
+		[OFStdOut writeString: @"\r"];
+		[OFStdOut reset];
+		[OFStdOut eraseLine];
 	} else
-		[of_stdout writeLine: @"failed"];
+		[OFStdOut writeLine: @"failed"];
 }
 
 - (void)applicationDidFinishLaunching
@@ -301,7 +297,7 @@ main(int argc, char *argv[])
 
 	if (!CFURLGetFileSystemRepresentation(resourcesURL, true, resourcesPath,
 	    PATH_MAX)) {
-		[of_stderr writeString: @"Failed to locate resources!\n"];
+		[OFStdErr writeString: @"Failed to locate resources!\n"];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -335,6 +331,7 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self numberTests];
 	[self streamTests];
+	[self notificationCenterTests];
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self RIPEMD160HashTests];
@@ -354,13 +351,14 @@ main(int argc, char *argv[])
 	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
-# ifdef OF_HAVE_SCTP
-	[self SCTPSocketTests];
-# endif
 # ifdef OF_HAVE_IPX
 	[self IPXSocketTests];
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
+# endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+	[self UNIXDatagramSocketTests];
+	[self UNIXStreamSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif
@@ -383,8 +381,6 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
-	[self ASN1DERParsingTests];
-	[self ASN1DERRepresentationTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
@@ -398,13 +394,13 @@ main(int argc, char *argv[])
 	[self systemInfoTests];
 	[self localeTests];
 
-	[of_stdout reset];
+	[OFStdOut reset];
 
 #if defined(OF_IOS)
-	[of_stdout writeFormat: @"%d tests failed!", _fails];
+	[OFStdOut writeFormat: @"%d tests failed!", _fails];
 	[OFApplication terminateWithStatus: _fails];
 #elif defined(OF_WII)
-	[of_stdout writeString: @"Press home button to exit!"];
+	[OFStdOut writeString: @"Press home button to exit!"];
 
 	for (;;) {
 		WPAD_ScanPads();
@@ -415,11 +411,11 @@ main(int argc, char *argv[])
 		VIDEO_WaitVSync();
 	}
 #elif defined(OF_PSP)
-	[of_stdout writeFormat: @"%d tests failed!", _fails];
+	[OFStdOut writeFormat: @"%d tests failed!", _fails];
 
 	sceKernelSleepThreadCB();
 #elif defined(OF_NINTENDO_DS)
-	[of_stdout writeString: @"Press start button to exit!"];
+	[OFStdOut writeString: @"Press start button to exit!"];
 
 	for (;;) {
 		swiWaitForVBlank();
@@ -428,7 +424,7 @@ main(int argc, char *argv[])
 			[OFApplication terminateWithStatus: _fails];
 	}
 #elif defined(OF_NINTENDO_3DS)
-	[of_stdout writeString: @"Press start button to exit!"];
+	[OFStdOut writeString: @"Press start button to exit!"];
 
 	for (;;) {
 		hidScanInput();

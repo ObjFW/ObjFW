@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,17 +17,17 @@
 
 #import "OFSHA224Hash.h"
 
-#define DIGEST_SIZE 28
+static const size_t digestSize = 28;
 
 @implementation OFSHA224Hash
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (void)of_resetState

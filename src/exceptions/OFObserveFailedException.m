@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -68,6 +66,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"An observer of class %@ failed to observe: %@",
-	    _observer.class, of_strerror(_errNo)];
+	    _observer.class, OFStrError(_errNo)];
 }
 @end

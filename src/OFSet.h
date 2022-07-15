@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stop A pointer to a variable that can be set to true to stop the
  *             enumeration
  */
-typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
+typedef void (^OFSetEnumerationBlock)(id object, bool *stop);
 
 /**
  * @brief A block for filtering an OFSet.
@@ -50,7 +48,7 @@ typedef void (^of_set_enumeration_block_t)(id object, bool *stop);
  * @param object The object to inspect
  * @return Whether the object should be in the filtered set
  */
-typedef bool (^of_set_filter_block_t)(id object);
+typedef bool (^OFSetFilterBlock)(id object);
 #endif
 
 /**
@@ -145,6 +143,17 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
 /**
+ * @brief Initializes an already allocated set with the specified object and
+ *	  va_list.
+ *
+ * @param firstObject The first object for the set
+ * @param arguments A va_list with the other objects
+ * @return An initialized set with the specified object and va_list
+ */
+- (instancetype)initWithObject: (ObjectType)firstObject
+		     arguments: (va_list)arguments;
+
+/**
  * @brief Initializes an already allocated set with the specified objects.
  *
  * @param objects An array of objects for the set
@@ -155,15 +164,11 @@ typedef bool (^of_set_filter_block_t)(id object);
 			  count: (size_t)count;
 
 /**
- * @brief Initializes an already allocated set with the specified object and
- *	  va_list.
+ * @brief Returns an OFEnumerator to enumerate through all objects of the set.
  *
- * @param firstObject The first object for the set
- * @param arguments A va_list with the other objects
- * @return An initialized set with the specified object and va_list
+ * @return An OFEnumerator to enumerate through all objects of the set
  */
-- (instancetype)initWithObject: (ObjectType)firstObject
-		     arguments: (va_list)arguments;
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 /**
  * @brief Returns whether the receiver is a subset of the specified set.
@@ -182,30 +187,12 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /**
- * @brief Creates a new set which contains the objects which are in the
- *	  receiver, but not in the specified set.
- *
- * @param set The set whose objects will not be in the new set
- */
-- (OFSet OF_GENERIC(ObjectType) *)setBySubtractingSet:
-    (OFSet OF_GENERIC(ObjectType) *)set;
-
-/**
- * @brief Creates a new set by creating the intersection of the receiver and
- *	  the specified set.
- *
- * @param set The set to intersect with
- */
-- (OFSet OF_GENERIC(ObjectType) *)setByIntersectingWithSet:
-    (OFSet OF_GENERIC(ObjectType) *)set;
-
-/**
  * @brief Creates a new set by creating the union of the receiver and the
  *	  specified set.
  *
  * @param set The set to create the union with
  */
-- (OFSet OF_GENERIC(ObjectType) *)setByAddingSet:
+- (OFSet OF_GENERIC(ObjectType) *)setByAddingObjectsFromSet:
     (OFSet OF_GENERIC(ObjectType) *)set;
 
 /**
@@ -241,8 +228,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -250,7 +236,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param block The block to execute for each object in the set
  */
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block;
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block;
 
 /**
  * @brief Creates a new set, only containing the objects for which the block
@@ -259,8 +245,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param block A block which determines if the object should be in the new set
  * @return A new, autoreleased OFSet
  */
-- (OFSet OF_GENERIC(ObjectType) *)filteredSetUsingBlock:
-    (of_set_filter_block_t)block;
+- (OFSet OF_GENERIC(ObjectType) *)
+    filteredSetUsingBlock: (OFSetFilterBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType

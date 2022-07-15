@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -60,15 +58,13 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFMutableMapTableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
@@ -172,9 +168,7 @@ static struct {
 	size_t count = self.count;
 	id *cArray;
 
-	cArray = [self allocMemoryWithSize: sizeof(id)
-				     count: count];
-
+	cArray = OFAllocMemory(count, sizeof(id));
 	@try {
 		size_t i;
 
@@ -186,9 +180,9 @@ static struct {
 
 		for (i = 0; i < count; i++)
 			if (![set containsObject: cArray[i]])
-			      [self removeObject: cArray[i]];
+				[self removeObject: cArray[i]];
 	} @finally {
-		[self freeMemory: cArray];
+		OFFreeMemory(cArray);
 	}
 
 	objc_autoreleasePoolPop(pool);

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,11 +31,11 @@
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetWindowsRegistryValueFailedException.h"
+#import "OFUndefinedKeyException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
-- (instancetype)of_initWithHKey: (HKEY)hKey
-			  close: (bool)close;
+- (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close;
 @end
 
 @implementation OFWindowsRegistryKey
@@ -71,8 +69,7 @@ OF_DIRECT_MEMBERS
 					close: false] autorelease];
 }
 
-- (instancetype)of_initWithHKey: (HKEY)hKey
-			  close: (bool)close
+- (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close
 {
 	self = [super init];
 
@@ -119,19 +116,13 @@ OF_DIRECT_MEMBERS
 		    [path cStringWithEncoding: [OFLocale encoding]], options,
 		    securityAndAccessRights, &subKey);
 
-	if (status != ERROR_SUCCESS) {
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
-
+	if (status != ERROR_SUCCESS)
 		@throw [OFOpenWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
 				     options: options
 		     securityAndAccessRights: securityAndAccessRights
 				      status: status];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -187,8 +178,7 @@ OF_DIRECT_MEMBERS
 	    autorelease];
 }
 
-- (OFData *)dataForValue: (OFString *)value
-		    type: (DWORD *)type
+- (OFData *)dataForValueNamed: (OFString *)name type: (DWORD *)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	BYTE stackBuffer[256], *buffer = stackBuffer;
@@ -199,11 +189,11 @@ OF_DIRECT_MEMBERS
 
 	for (;;) {
 		if (winNT)
-			status = RegQueryValueExW(_hKey, value.UTF16String,
+			status = RegQueryValueExW(_hKey, name.UTF16String,
 			    NULL, type, buffer, &length);
 		else
 			status = RegQueryValueExA(_hKey,
-			    [value cStringWithEncoding: [OFLocale encoding]],
+			    [name cStringWithEncoding: [OFLocale encoding]],
 			    NULL, type, buffer, &length);
 
 		switch (status) {
@@ -237,14 +227,14 @@ OF_DIRECT_MEMBERS
 		default:
 			@throw [OFGetWindowsRegistryValueFailedException
 			    exceptionWithRegistryKey: self
-					       value: value
+					   valueName: name
 					      status: status];
 		}
 	}
 }
 
 - (void)setData: (OFData *)data
-       forValue: (OFString *)value
+  forValueNamed: (OFString *)name
 	   type: (DWORD)type
 {
 	size_t length = data.count * data.itemSize;
@@ -254,35 +244,32 @@ OF_DIRECT_MEMBERS
 		@throw [OFOutOfRangeException exception];
 
 	if ([OFSystemInfo isWindowsNT])
-		status = RegSetValueExW(_hKey, value.UTF16String, 0, type,
+		status = RegSetValueExW(_hKey, name.UTF16String, 0, type,
 		    data.items, (DWORD)length);
 	else
 		status = RegSetValueExA(_hKey,
-		    [value cStringWithEncoding: [OFLocale encoding]], 0, type,
+		    [name cStringWithEncoding: [OFLocale encoding]], 0, type,
 		    data.items, (DWORD)length);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFSetWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
-				       value: value
+				   valueName: name
 					data: data
 					type: type
 				      status: status];
 }
 
-- (OFString *)stringForValue: (OFString *)value
+- (OFString *)stringForValueNamed: (OFString *)name
 {
-	return [self stringForValue: value
-			       type: NULL];
+	return [self stringForValueNamed: name type: NULL];
 }
 
-- (OFString *)stringForValue: (OFString *)value
-			type: (DWORD *)typeOut
+- (OFString *)stringForValueNamed: (OFString *)name type: (DWORD *)typeOut
 {
 	void *pool = objc_autoreleasePoolPush();
 	DWORD type;
-	OFData *data = [self dataForValue: value
-				     type: &type];
+	OFData *data = [self dataForValueNamed: name type: &type];
 	OFString *ret;
 
 	if (data == nil)
@@ -295,7 +282,7 @@ OF_DIRECT_MEMBERS
 		@throw [OFInvalidFormatException exception];
 
 	if ([OFSystemInfo isWindowsNT]) {
-		const of_char16_t *UTF16String = data.items;
+		const OFChar16 *UTF16String = data.items;
 		size_t length = data.count;
 
 		if (length % 2 == 1)
@@ -344,16 +331,13 @@ OF_DIRECT_MEMBERS
 	return [ret autorelease];
 }
 
-- (void)setString: (OFString *)string
-	 forValue: (OFString *)value
+- (void)setString: (OFString *)string forValueNamed: (OFString *)name
 {
-	[self setString: string
-	       forValue: value
-		   type: REG_SZ];
+	[self setString: string forValueNamed: name type: REG_SZ];
 }
 
 - (void)setString: (OFString *)string
-	 forValue: (OFString *)value
+    forValueNamed: (OFString *)name
 	     type: (DWORD)type
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -361,39 +345,101 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		data = [OFData dataWithItems: string.UTF16String
-				    itemSize: sizeof(of_char16_t)
-				       count: string.UTF16StringLength + 1];
+				       count: string.UTF16StringLength + 1
+				    itemSize: sizeof(OFChar16)];
 	else {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		const char *cString = [string cStringWithEncoding: encoding];
 		size_t length = [string cStringLengthWithEncoding: encoding];
 
-		data = [OFData dataWithItems: cString
-				       count: length + 1];
+		data = [OFData dataWithItems: cString count: length + 1];
 	}
 
-	[self setData: data
-	     forValue: value
-		 type: type];
+	[self setData: data forValueNamed: name type: type];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)deleteValue: (OFString *)value
+- (uint32_t)DWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type, ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_DWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setDWORD: (uint32_t)dword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &dword count: sizeof(dword)];
+	[self setData: data forValueNamed: name type: REG_DWORD];
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint64_t)QWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
+	uint64_t ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_QWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setQWORD: (uint64_t)qword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &qword count: sizeof(qword)];
+	[self setData: data forValueNamed: name type: REG_QWORD];
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)deleteValueNamed: (OFString *)name
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
 
 	if ([OFSystemInfo isWindowsNT])
-		status = RegDeleteValueW(_hKey, value.UTF16String);
+		status = RegDeleteValueW(_hKey, name.UTF16String);
 	else
 		status = RegDeleteValueA(_hKey,
-		    [value cStringWithEncoding: [OFLocale encoding]]);
+		    [name cStringWithEncoding: [OFLocale encoding]]);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFDeleteWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
-				       value: value
+				   valueName: name
 				      status: status];
 
 	objc_autoreleasePoolPop(pool);

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +17,12 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
-of_forward_stret:
+OFForward:
+OFForward_stret:
 	stp	fp, lr, [sp, #-208]!
 	mov	fp, sp
 	sub	sp, sp, #208
@@ -98,11 +96,11 @@ of_forward_stret:
 	mov	sp, fp
 	ldp	fp, lr, [sp], #208
 
-	b	of_method_not_found
-.type of_forward, %function
-.size of_forward, .-of_forward
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+	b	OFMethodNotFound
+.type OFForward, %function
+.size OFForward, .-OFForward
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	adrp	x0, module

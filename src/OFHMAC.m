@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,13 +19,14 @@
 #import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFInvalidArgumentException.h"
 
 @implementation OFHMAC
 @synthesize hashClass = _hashClass;
 @synthesize allowsSwappableMemory = _allowsSwappableMemory;
 
-+ (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)class
++ (instancetype)HMACWithHashClass: (Class <OFCryptographicHash>)class
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithHashClass: class
@@ -40,7 +39,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithHashClass: (Class <OFCryptoHash>)class
+- (instancetype)initWithHashClass: (Class <OFCryptographicHash>)class
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	self = [super init];
@@ -61,8 +60,7 @@
 	[super dealloc];
 }
 
-- (void)setKey: (const void *)key
-	length: (size_t)length
+- (void)setKey: (const void *)key length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blockSize = [_hashClass blockSize];
@@ -83,12 +81,11 @@
 
 	@try {
 		if (length > blockSize) {
-			id <OFCryptoHash> hash = [_hashClass
-			    cryptoHashWithAllowsSwappableMemory:
+			id <OFCryptographicHash> hash = [_hashClass
+			    hashWithAllowsSwappableMemory:
 			    _allowsSwappableMemory];
-
-			[hash updateWithBuffer: key
-					length: length];
+			[hash updateWithBuffer: key length: length];
+			[hash calculate];
 
 			length = hash.digestSize;
 			if OF_UNLIKELY (length > blockSize)
@@ -109,9 +106,9 @@
 			innerKeyPadItems[i] ^= 0x36;
 		}
 
-		_outerHash = [[_hashClass cryptoHashWithAllowsSwappableMemory:
+		_outerHash = [[_hashClass hashWithAllowsSwappableMemory:
 		    _allowsSwappableMemory] retain];
-		_innerHash = [[_hashClass cryptoHashWithAllowsSwappableMemory:
+		_innerHash = [[_hashClass hashWithAllowsSwappableMemory:
 		    _allowsSwappableMemory] retain];
 
 		[_outerHash updateWithBuffer: outerKeyPadItems
@@ -133,8 +130,7 @@
 	_calculated = false;
 }
 
-- (void)updateWithBuffer: (const void *)buffer
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer length: (size_t)length
 {
 	if (_innerHash == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -143,21 +139,29 @@
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithObject: self];
 
-	[_innerHash updateWithBuffer: buffer
-			      length: length];
+	[_innerHash updateWithBuffer: buffer length: length];
+}
+
+- (void)calculate
+{
+	if (_calculated)
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithObject: self];
+
+	if (_outerHash == nil || _innerHash == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	[_innerHash calculate];
+	[_outerHash updateWithBuffer: _innerHash.digest
+			      length: _innerHash.digestSize];
+	[_outerHash calculate];
+	_calculated = true;
 }
 
 - (const unsigned char *)digest
 {
-	if (_outerHash == nil || _innerHash == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (_calculated)
-		return _outerHash.digest;
-
-	[_outerHash updateWithBuffer: _innerHash.digest
-			      length: _innerHash.digestSize];
-	_calculated = true;
+	if (!_calculated)
+		@throw [OFHashNotCalculatedException exceptionWithObject: self];
 
 	return _outerHash.digest;
 }

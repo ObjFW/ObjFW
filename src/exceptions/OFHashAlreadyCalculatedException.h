@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,8 +34,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) id object;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased hash already calculated exception.
  *
@@ -46,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated hash already calculated exception.
@@ -55,6 +51,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized hash already calculated exception
  */
 - (instancetype)initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

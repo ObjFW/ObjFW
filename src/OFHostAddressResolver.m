@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,8 +40,8 @@
 }
 @end
 
-static const of_run_loop_mode_t resolveRunLoopMode =
-    @"of_host_address_resolver_resolve_mode";
+static const OFRunLoopMode resolveRunLoopMode =
+    @"OFHostAddressResolverResolveRunLoopMode";
 
 static bool
 isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
@@ -68,20 +66,19 @@ isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
 
 static bool
 addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
-    const of_socket_address_t **address,
-    of_socket_address_family_t addressFamily)
+    const OFSocketAddress **address, OFSocketAddressFamily addressFamily)
 {
 	switch ([record recordType]) {
 #ifdef OF_HAVE_IPV6
-	case OF_DNS_RECORD_TYPE_AAAA:
-		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV6 &&
-		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+	case OFDNSRecordTypeAAAA:
+		if (addressFamily != OFSocketAddressFamilyIPv6 &&
+		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
 		break;
 #endif
-	case OF_DNS_RECORD_TYPE_A:
-		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV4 &&
-		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+	case OFDNSRecordTypeA:
+		if (addressFamily != OFSocketAddressFamilyIPv4 &&
+		    addressFamily != OFSocketAddressFamilyAny)
 			return false;
 		break;
 	default:
@@ -93,7 +90,7 @@ addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
 }
 
 static void
-callDelegateInMode(of_run_loop_mode_t runLoopMode,
+callDelegateInMode(OFRunLoopMode runLoopMode,
     id <OFDNSResolverHostDelegate> delegate, OFDNSResolver *resolver,
     OFString *host, OFData *addresses, id exception)
 {
@@ -116,10 +113,10 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 @implementation OFHostAddressResolver: OFObject
 - (instancetype)initWithHost: (OFString *)host
-	       addressFamily: (of_socket_address_family_t)addressFamily
+	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
-		 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 runLoopMode: (OFRunLoopMode)runLoopMode
 		    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	self = [super init];
@@ -165,12 +162,12 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		domainName = _host;
 
 #ifdef OF_HAVE_IPV6
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+	if (_addressFamily == OFSocketAddressFamilyIPv6 ||
+	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RECORD_TYPE_AAAA];
+			       DNSClass: OFDNSClassIN
+			     recordType: OFDNSRecordTypeAAAA];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -178,12 +175,12 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	}
 #endif
 
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+	if (_addressFamily == OFSocketAddressFamilyIPv4 ||
+	    _addressFamily == OFSocketAddressFamilyAny) {
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RECORD_TYPE_A];
+			       DNSClass: OFDNSClassIN
+			     recordType: OFDNSRecordTypeA];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -199,7 +196,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	_numExpectedResponses--;
 
 	if ([exception isKindOfClass: [OFDNSQueryFailedException class]] &&
-	    [exception error] == OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR &&
+	    [exception errorCode] == OFDNSResolverErrorCodeServerNameError &&
 	    !_isFQDN && _numExpectedResponses == 0 && _addresses.count == 0 &&
 	    _searchDomainIndex + 1 < _settings->_searchDomains.count) {
 		_searchDomainIndex++;
@@ -209,10 +206,10 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 	for (OF_KINDOF(OFDNSResourceRecord *) record in
 	    [response.answerRecords objectForKey: query.domainName]) {
-		const of_socket_address_t *address = NULL;
+		const OFSocketAddress *address = NULL;
 		OFDNSQuery *CNAMEQuery;
 
-		if ([record DNSClass] != OF_DNS_CLASS_IN)
+		if ([record DNSClass] != OFDNSClassIN)
 			continue;
 
 		if (addressForRecord(record, &address, _addressFamily)) {
@@ -220,12 +217,12 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 			continue;
 		}
 
-		if ([record recordType] != OF_DNS_RECORD_TYPE_CNAME)
+		if ([record recordType] != OFDNSRecordTypeCNAME)
 			continue;
 
 		/* FIXME: Check if it's already in answers */
 		CNAMEQuery = [OFDNSQuery queryWithDomainName: [record alias]
-						    DNSClass: OF_DNS_CLASS_IN
+						    DNSClass: OFDNSClassIN
 						  recordType: query.recordType];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: CNAMEQuery
@@ -247,13 +244,13 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: [exception error]];
+				    errorCode: [exception errorCode]];
 
 		if (exception == nil)
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+				    errorCode: OFDNSResolverErrorCodeNoResult];
 	} else
 		exception = nil;
 
@@ -271,16 +268,15 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	OFArray OF_GENERIC(OFString *) *aliases;
 
 	@try {
-		of_socket_address_t address =
-		    of_socket_address_parse_ip(_host, 0);
+		OFSocketAddress address = OFSocketAddressParseIP(_host, 0);
 		OFData *addresses = nil;
 		id exception = nil;
 
 		if (_addressFamily == address.family ||
-		    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
+		    _addressFamily == OFSocketAddressFamilyAny)
 			addresses = [OFData dataWithItems: &address
-						 itemSize: sizeof(address)
-						    count: 1];
+						    count: 1
+						 itemSize: sizeof(address)];
 		else
 			exception = [OFInvalidArgumentException exception];
 
@@ -294,20 +290,20 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 	if ((aliases = [_settings->_staticHosts objectForKey: _host]) != nil) {
 		OFMutableData *addresses = [OFMutableData
-		    dataWithItemSize: sizeof(of_socket_address_t)];
+		    dataWithItemSize: sizeof(OFSocketAddress)];
 		id exception = nil;
 
 		for (OFString *alias in aliases) {
-			of_socket_address_t address;
+			OFSocketAddress address;
 
 			@try {
-				address = of_socket_address_parse_ip(alias, 0);
+				address = OFSocketAddressParseIP(alias, 0);
 			} @catch (OFInvalidFormatException *e) {
 				continue;
 			}
 
 			if (_addressFamily != address.family &&
-			    _addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
+			    _addressFamily != OFSocketAddressFamilyAny)
 				continue;
 
 			[addresses addItem: &address];
@@ -320,7 +316,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 			exception = [OFResolveHostFailedException
 			    exceptionWithHost: _host
 				addressFamily: _addressFamily
-					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+				    errorCode: OFDNSResolverErrorCodeNoResult];
 		}
 
 		callDelegateInMode(_runLoopMode, _delegate, _resolver, _host,
@@ -332,7 +328,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 	_isFQDN = isFQDN(_host, _settings->_minNumberOfDotsInAbsoluteName);
 	_addresses = [[OFMutableData alloc]
-	    initWithItemSize: sizeof(of_socket_address_t)];
+	    initWithItemSize: sizeof(OFSocketAddress)];
 
 	[self sendQueries];
 
@@ -353,20 +349,16 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	[self asyncResolve];
 
 	while (!delegate->_done)
-		[runLoop runMode: resolveRunLoopMode
-		      beforeDate: nil];
+		[runLoop runMode: resolveRunLoopMode beforeDate: nil];
 
 	/* Cleanup */
-	[runLoop runMode: resolveRunLoopMode
-	      beforeDate: [OFDate date]];
+	[runLoop runMode: resolveRunLoopMode beforeDate: [OFDate date]];
 
 	if (delegate->_exception != nil)
 		@throw delegate->_exception;
 
 	ret = [delegate->_addresses copy];
-
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 @end

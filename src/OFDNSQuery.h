@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,8 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFDNSQuery: OFObject <OFCopying>
 {
 	OFString *_domainName;
-	of_dns_class_t _DNSClass;
-	of_dns_record_type_t _recordType;
+	OFDNSClass _DNSClass;
+	OFDNSRecordType _recordType;
 	OF_RESERVE_IVARS(OFDNSQuery, 4)
 }
 
@@ -43,12 +41,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The DNS class of the query.
  */
-@property (readonly, nonatomic) of_dns_class_t DNSClass;
+@property (readonly, nonatomic) OFDNSClass DNSClass;
 
 /**
  * @brief The record type of the query.
  */
-@property (readonly, nonatomic) of_dns_record_type_t recordType;
+@property (readonly, nonatomic) OFDNSRecordType recordType;
 
 /**
  * @brief Creates a new, autoreleased OFDNSQuery.
@@ -59,8 +57,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFDNSQuery
  */
 + (instancetype)queryWithDomainName: (OFString *)domainName
-			   DNSClass: (of_dns_class_t)DNSClass
-			 recordType: (of_dns_record_type_t)recordType;
+			   DNSClass: (OFDNSClass)DNSClass
+			 recordType: (OFDNSRecordType)recordType;
 
 /**
  * @brief Initializes an already allocated OFDNSQuery.
@@ -71,8 +69,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFDNSQuery
  */
 - (instancetype)initWithDomainName: (OFString *)domainName
-			  DNSClass: (of_dns_class_t)DNSClass
-			recordType: (of_dns_record_type_t)recordType
+			  DNSClass: (OFDNSClass)DNSClass
+			recordType: (OFDNSRecordType)recordType
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

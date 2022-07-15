@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -66,7 +64,8 @@ OF_ASSUME_NONNULL_BEGIN
   didReceiveExceptionOnListeningSocket: (id)exception;
 
 /**
- * @brief This method is called when a client socket encountered an exception.
+ * @brief This method is called when a socket for a client encountered an
+ * exception.
  *
  * This can happen when the OFHTTPServer tries to properly close the
  * connection. If no headers have been sent yet, it will send headers, and if
@@ -95,9 +94,6 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFString *_Nullable _host;
 	uint16_t _port;
-	bool _usesTLS;
-	OFString *_Nullable _certificateFile, *_Nullable _privateKeyFile;
-	const char *_Nullable _privateKeyPassphrase;
 	id <OFHTTPServerDelegate> _Nullable _delegate;
 	OFString *_Nullable _name;
 	OFTCPSocket *_Nullable _listeningSocket;
@@ -122,42 +118,6 @@ OF_SUBCLASSING_RESTRICTED
  * @ref OFAlreadyConnectedException.
  */
 @property (nonatomic) uint16_t port;
-
-/**
- * @brief Whether the HTTP server uses TLS.
- *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
- */
-@property (nonatomic) bool usesTLS;
-
-/**
- * @brief The path to the X.509 certificate file to use for TLS.
- *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
- */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
-
-/**
- * @brief The path to the PKCS#8 private key file to use for TLS.
- *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
- */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
-
-/**
- * @brief The passphrase to decrypt the PKCS#8 private key file for TLS.
- *
- * @warning You have to ensure that this is in secure memory protected from
- *	    swapping! This is also the reason why this is not an OFString.
- *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
- */
-@property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    const char *privateKeyPassphrase;
 
 /**
  * @brief The delegate for the HTTP server.

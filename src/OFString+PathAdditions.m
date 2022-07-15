@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +17,12 @@
 
 #include "platform.h"
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-# import "platform/windows/OFString+PathAdditions.m"
+#if defined(OF_WINDOWS) || defined(OF_MSDOS) || defined(OF_MINT)
+# import "platform/Windows/OFString+PathAdditions.m"
 #elif defined(OF_AMIGAOS)
-# import "platform/amiga/OFString+PathAdditions.m"
+# import "platform/AmigaOS/OFString+PathAdditions.m"
 #elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 # import "platform/libfat/OFString+PathAdditions.m"
 #else
-# import "platform/posix/OFString+PathAdditions.m"
+# import "platform/POSIX/OFString+PathAdditions.m"
 #endif

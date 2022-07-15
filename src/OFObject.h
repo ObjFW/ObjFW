@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,9 +30,9 @@
 #include <stdbool.h>
 #include <limits.h>
 
-#include "block.h"
 #include "macros.h"
-#include "once.h"
+
+#include "OFOnce.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -58,12 +56,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** The left object is smaller than the right */
-	OF_ORDERED_ASCENDING = -1,
+	OFOrderedAscending = -1,
 	/** Both objects are equal */
-	OF_ORDERED_SAME = 0,
+	OFOrderedSame = 0,
 	/** The left object is bigger than the right */
-	OF_ORDERED_DESCENDING = 1
-} of_comparison_result_t;
+	OFOrderedDescending = 1
+} OFComparisonResult;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -73,44 +71,48 @@ typedef enum {
  * @param right The right object
  * @return The order of the objects
  */
-typedef of_comparison_result_t (^of_comparator_t)(id _Nonnull left,
-    id _Nonnull right);
+typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**
- * @brief An enum for storing endianess.
+ * @brief An enum for representing endianess.
  */
 typedef enum {
 	/** Most significant byte first (big endian) */
-	OF_BYTE_ORDER_BIG_ENDIAN,
+	OFByteOrderBigEndian,
 	/** Least significant byte first (little endian) */
-	OF_BYTE_ORDER_LITTLE_ENDIAN
-} of_byte_order_t;
+	OFByteOrderLittleEndian,
+	/** Native byte order of the system */
+#ifdef OF_BIG_ENDIAN
+	OFByteOrderNative = OFByteOrderBigEndian
+#else
+	OFByteOrderNative = OFByteOrderLittleEndian
+#endif
+} OFByteOrder;
 
 /**
- * @struct of_range_t OFObject.h ObjFW/OFObject.h
+ * @struct OFRange OFObject.h ObjFW/OFObject.h
  *
  * @brief A range.
  */
-struct OF_BOXABLE of_range_t {
+typedef struct OF_BOXABLE {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
 	size_t length;
-};
-typedef struct of_range_t of_range_t;
+} OFRange;
 
 /**
- * @brief Creates a new of_range_t.
+ * @brief Creates a new OFRange.
  *
  * @param start The starting index of the range
  * @param length The length of the range
- * @return An of_range with the specified start and length
+ * @return An OFRangeith the specified start and length
  */
-static OF_INLINE of_range_t OF_CONST_FUNC
-of_range(size_t start, size_t length)
+static OF_INLINE OFRange OF_CONST_FUNC
+OFRangeMake(size_t start, size_t length)
 {
-	of_range_t range = { start, length };
+	OFRange range = { start, length };
 
 	return range;
 }
@@ -123,7 +125,7 @@ of_range(size_t start, size_t length)
  * @return Whether the two ranges are equal
  */
 static OF_INLINE bool
-of_range_equal(of_range_t range1, of_range_t range2)
+OFRangeEqual(OFRange range1, OFRange range2)
 {
 	if (range1.location != range2.location)
 		return false;
@@ -137,32 +139,31 @@ of_range_equal(of_range_t range1, of_range_t range2)
 /**
  * @brief A time interval in seconds.
  */
-typedef double of_time_interval_t;
+typedef double OFTimeInterval;
 
 /**
- * @struct of_point_t OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint OFObject.h ObjFW/OFObject.h
  *
  * @brief A point.
  */
-struct OF_BOXABLE of_point_t {
+typedef struct OF_BOXABLE {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
 	float y;
-};
-typedef struct of_point_t of_point_t;
+} OFPoint;
 
 /**
- * @brief Creates a new of_point_t.
+ * @brief Creates a new OFPoint.
  *
  * @param x The x coordinate of the point
  * @param y The x coordinate of the point
- * @return An of_point_t with the specified coordinates
+ * @return An OFPoint with the specified coordinates
  */
-static OF_INLINE of_point_t OF_CONST_FUNC
-of_point(float x, float y)
+static OF_INLINE OFPoint OF_CONST_FUNC
+OFPointMake(float x, float y)
 {
-	of_point_t point = { x, y };
+	OFPoint point = { x, y };
 
 	return point;
 }
@@ -175,7 +176,7 @@ of_point(float x, float y)
  * @return Whether the two points are equal
  */
 static OF_INLINE bool
-of_point_equal(of_point_t point1, of_point_t point2)
+OFPointEqual(OFPoint point1, OFPoint point2)
 {
 	if (point1.x != point2.x)
 		return false;
@@ -187,103 +188,153 @@ of_point_equal(of_point_t point1, of_point_t point2)
 }
 
 /**
- * @struct of_dimension_t OFObject.h ObjFW/OFObject.h
+ * @struct OFSize OFObject.h ObjFW/OFObject.h
  *
- * @brief A dimension.
+ * @brief A size.
  */
-struct OF_BOXABLE of_dimension_t {
-	/** The width of the dimension */
+typedef struct OF_BOXABLE {
+	/** The width of the size */
 	float width;
-	/** The height of the dimension */
+	/** The height of the size */
 	float height;
-};
-typedef struct of_dimension_t of_dimension_t;
+} OFSize;
 
 /**
- * @brief Creates a new of_dimension_t.
+ * @brief Creates a new OFSize.
  *
- * @param width The width of the dimension
- * @param height The height of the dimension
- * @return An of_dimension_t with the specified width and height
+ * @param width The width of the size
+ * @param height The height of the size
+ * @return An OFSize with the specified width and height
  */
-static OF_INLINE of_dimension_t OF_CONST_FUNC
-of_dimension(float width, float height)
+static OF_INLINE OFSize OF_CONST_FUNC
+OFSizeMake(float width, float height)
 {
-	of_dimension_t dimension = { width, height };
+	OFSize size = { width, height };
 
-	return dimension;
+	return size;
 }
 
 /**
- * @brief Returns whether the two dimensions are equal.
+ * @brief Returns whether the two sizes are equal.
  *
- * @param dimension1 The first dimension for the comparison
- * @param dimension2 The second dimension for the comparison
- * @return Whether the two dimensions are equal
+ * @param size1 The first size for the comparison
+ * @param size2 The second size for the comparison
+ * @return Whether the two sizes are equal
  */
 static OF_INLINE bool
-of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
+OFSizeEqual(OFSize size1, OFSize size2)
 {
-	if (dimension1.width != dimension2.width)
+	if (size1.width != size2.width)
 		return false;
 
-	if (dimension1.height != dimension2.height)
+	if (size1.height != size2.height)
 		return false;
 
 	return true;
 }
 
 /**
- * @struct of_rectangle_t OFObject.h ObjFW/OFObject.h
+ * @struct OFRect OFObject.h ObjFW/OFObject.h
  *
  * @brief A rectangle.
  */
-struct OF_BOXABLE of_rectangle_t {
+typedef struct OF_BOXABLE {
 	/** The point from where the rectangle originates */
-	of_point_t origin;
+	OFPoint origin;
 	/** The size of the rectangle */
-	of_dimension_t size;
-};
-typedef struct of_rectangle_t of_rectangle_t;
+	OFSize size;
+} OFRect;
 
 /**
- * @brief Creates a new of_rectangle_t.
+ * @brief Creates a new OFRect.
  *
  * @param x The x coordinate of the top left corner of the rectangle
  * @param y The y coordinate of the top left corner of the rectangle
  * @param width The width of the rectangle
  * @param height The height of the rectangle
- * @return An of_rectangle_t with the specified origin and size
+ * @return An OFRect with the specified origin and size
  */
-static OF_INLINE of_rectangle_t OF_CONST_FUNC
-of_rectangle(float x, float y, float width, float height)
+static OF_INLINE OFRect OF_CONST_FUNC
+OFRectMake(float x, float y, float width, float height)
 {
-	of_rectangle_t rectangle = {
-		of_point(x, y),
-		of_dimension(width, height)
+	OFRect rect = {
+		OFPointMake(x, y),
+		OFSizeMake(width, height)
 	};
 
-	return rectangle;
+	return rect;
 }
 
 /**
  * @brief Returns whether the two rectangles are equal.
  *
- * @param rectangle1 The first rectangle for the comparison
- * @param rectangle2 The second rectangle for the comparison
+ * @param rect1 The first rectangle for the comparison
+ * @param rect2 The second rectangle for the comparison
  * @return Whether the two rectangles are equal
  */
 static OF_INLINE bool
-of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
+OFRectEqual(OFRect rect1, OFRect rect2)
 {
-	if (!of_point_equal(rectangle1.origin, rectangle2.origin))
+	if (!OFPointEqual(rect1.origin, rect2.origin))
 		return false;
 
-	if (!of_dimension_equal(rectangle1.size, rectangle2.size))
+	if (!OFSizeEqual(rect1.size, rect2.size))
 		return false;
 
 	return true;
 }
+
+/**
+ * @brief Adds the specified byte to the hash.
+ *
+ * @param hash A pointer to a hash to add the byte to
+ * @param byte The byte to add to the hash
+ */
+static OF_INLINE void
+OFHashAdd(unsigned long *_Nonnull hash, unsigned char byte)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += byte;
+	tmp += tmp << 10;
+	tmp ^= tmp >> 6;
+
+	*hash = tmp;
+}
+
+/**
+ * @brief Adds the specified hash to the hash.
+ *
+ * @param hash A pointer to a hash to add the hash to
+ * @param otherHash The hash to add to the hash
+ */
+static OF_INLINE void
+OFHashAddHash(unsigned long *_Nonnull hash, unsigned long otherHash)
+{
+	OFHashAdd(hash, (otherHash >> 24) & 0xFF);
+	OFHashAdd(hash, (otherHash >> 16) & 0xFF);
+	OFHashAdd(hash, (otherHash >>  8) & 0xFF);
+	OFHashAdd(hash, otherHash & 0xFF);
+}
+
+/**
+ * @brief Finalizes the specified hash.
+ *
+ * @param hash A pointer to the hash to finalize
+ */
+static OF_INLINE void
+OFHashFinalize(unsigned long *_Nonnull hash)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += tmp << 3;
+	tmp ^= tmp >> 11;
+	tmp += tmp << 15;
+
+	*hash = tmp;
+}
+
+static const size_t OFNotFound = SIZE_MAX;
 
 #ifdef __OBJC__
 @class OFMethodSignature;
@@ -403,8 +454,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
  *		 selector
  * @return The object returned by the method specified by the selector
  */
-- (nullable id)performSelector: (SEL)selector
-		    withObject: (nullable id)object;
+- (nullable id)performSelector: (SEL)selector withObject: (nullable id)object;
 
 /**
  * @brief Performs the specified selector with the specified objects.
@@ -539,7 +589,7 @@ OF_ROOT_CLASS
 @property (class, readonly, nonatomic) OFString *description;
 # endif
 
-# ifdef __cplusplus
+# ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
 # else
 @property (readonly, nonatomic, getter=class) Class class_;
@@ -579,10 +629,9 @@ OF_ROOT_CLASS
  * is unloaded.
  *
  * @warning This is not supported by the Apple runtime and currently only
- *	    called by the ObjFW runtime when objc_unregister_class() or
- *	    objc_exit() has been called!
+ *	    called by the ObjFW runtime when @ref objc_deinit has been called!
  *	    In the future, this might also be called by the ObjFW runtime when
- *	    the class is part of a plugin that has been unloaded.
+ *	    the class is part of a plugin that is being unloaded.
  */
 + (void)unload;
 
@@ -807,97 +856,6 @@ OF_ROOT_CLASS
 - (nullable OFMethodSignature *)methodSignatureForSelector: (SEL)selector;
 
 /**
- * @brief Allocates memory and stores it in the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size is 0.
- */
-- (nullable void *)allocMemoryWithSize: (size_t)size OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory for the specified number of items and stores it in
- *	  the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of each item to allocate
- * @param count The number of items to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size or count is 0.
- */
-- (nullable void *)allocMemoryWithSize: (size_t)size
-				 count: (size_t)count OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory, initializes it with zeros and stores it in the
- *	  object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-    OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Allocates memory for the specified number of items, initializes it
- *	  with zeros and stores it in the object's memory pool.
- *
- * It will be free'd automatically when the object is deallocated.
- *
- * @param size The size of each item to allocate
- * @param count The number of items to allocate
- * @return A pointer to the allocated memory. May return NULL if the specified
- *	   size or count is 0.
- */
-- (nullable void *)allocZeroedMemoryWithSize: (size_t)size
-				       count: (size_t)count
-    OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Resizes memory in the object's memory pool to the specified size.
- *
- * If the pointer is NULL, this is equivalent to allocating memory.
- * If the size is 0, this is equivalent to freeing memory.
- *
- * @param pointer A pointer to the already allocated memory
- * @param size The new size for the memory chunk
- * @return A pointer to the resized memory chunk
- */
-- (nullable void *)resizeMemory: (nullable void *)pointer
-			   size: (size_t)size OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Resizes memory in the object's memory pool to the specific number of
- *	  items of the specified size.
- *
- * If the pointer is NULL, this is equivalent to allocating memory.
- * If the size or number of items is 0, this is equivalent to freeing memory.
- *
- * @param pointer A pointer to the already allocated memory
- * @param size The size of each item to resize to
- * @param count The number of items to resize to
- * @return A pointer to the resized memory chunk
- */
-- (nullable void *)resizeMemory: (nullable void *)pointer
-			   size: (size_t)size
-			  count: (size_t)count OF_WARN_UNUSED_RESULT;
-
-/**
- * @brief Frees allocated memory and removes it from the object's memory pool.
- *
- * Does nothing if the pointer is NULL.
- *
- * @param pointer A pointer to the allocated memory
- */
-- (void)freeMemory: (nullable void *)pointer;
-
-/**
  * @brief Deallocates the object.
  *
  * It is automatically called when the retain count reaches zero.
@@ -912,8 +870,7 @@ OF_ROOT_CLASS
  * @param selector The selector to perform
  * @param delay The delay after which the selector will be performed
  */
-- (void)performSelector: (SEL)selector
-	     afterDelay: (of_time_interval_t)delay;
+- (void)performSelector: (SEL)selector afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified object after the
@@ -926,7 +883,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	     withObject: (nullable id)object
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -942,7 +899,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -961,7 +918,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector with the specified objects after the
@@ -983,7 +940,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 # ifdef OF_HAVE_THREADS
 /**
@@ -1164,7 +1121,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1179,7 +1136,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1197,7 +1154,7 @@ OF_ROOT_CLASS
 	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1218,7 +1175,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 
 /**
  * @brief Performs the specified selector on the specified thread with the
@@ -1242,7 +1199,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
-	     afterDelay: (of_time_interval_t)delay;
+	     afterDelay: (OFTimeInterval)delay;
 # endif
 
 /**
@@ -1313,16 +1270,16 @@ typedef void OFObject;
  *
  * @brief A protocol for comparing objects.
  *
- * This protocol is implemented by objects that can be compared.
+ * This protocol is implemented by objects that can be compared. Its only method, @ref compare:, should be overridden with a stronger type.
  */
 @protocol OFComparing
 /**
- * @brief Compares the object with another object.
+ * @brief Compares the object to another object.
  *
  * @param object An object to compare the object to
  * @return The result of the comparison
  */
-- (of_comparison_result_t)compare: (id <OFComparing>)object;
+- (OFComparisonResult)compare: (id <OFComparing>)object;
 @end
 #endif
 
@@ -1330,7 +1287,10 @@ typedef void OFObject;
 extern "C" {
 #endif
 /**
- * @brief Allocates memory for the specified number of items.
+ * @brief Allocates memory for the specified number of items of the specified
+ *	  size.
+ *
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
@@ -1340,12 +1300,14 @@ extern "C" {
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_malloc(size_t count, size_t size)
+extern void *_Nullable OFAllocMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Allocates memory for the specified number of items and initializes it
- *	  with zeros.
+ * @brief Allocates memory for the specified number of items of the specified
+ *	  size and initializes it with zeros.
+ *
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * Throws @ref OFOutOfMemoryException if allocating failed and
  * @ref OFOutOfRangeException if the requested size exceeds the address space.
@@ -1355,11 +1317,13 @@ extern void *_Nullable of_malloc(size_t count, size_t size)
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-extern void *_Nullable of_calloc(size_t count, size_t size)
+extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Resizes memory to the specific number of items of the specified size.
+ * @brief Resizes memory to the specified number of items of the specified size.
+ *
+ * To free the allocated memory, use @ref OFFreeMemory.
  *
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
@@ -1372,17 +1336,17 @@ extern void *_Nullable of_calloc(size_t count, size_t size)
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
  */
-extern void *_Nullable of_realloc(void *_Nullable pointer, size_t count,
+extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;
 
 /**
- * @brief Frees allocated memory.
+ * @brief Frees memory allocated by @ref OFAllocMemory, @ref OFAllocZeroedMemory
+ *	  or @ref OFResizeMemory.
  *
- * Does nothing if the pointer is NULL.
- *
- * @param pointer A pointer to the allocated memory
+ * @param pointer A pointer to the memory to free or nil (passing nil ooes
+ *		  nothing)
  */
-extern void of_free(void *_Nullable pointer);
+extern void OFFreeMemory(void *_Nullable pointer);
 
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
@@ -1393,19 +1357,44 @@ extern id _Nullable objc_constructInstance(Class _Nullable class_,
 extern void *_Nullable objc_destructInstance(id _Nullable object);
 # endif
 #endif
-extern id of_alloc_object(Class class_, size_t extraSize,
-    size_t extraAlignment, void *_Nullable *_Nullable extra);
-extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
-extern uint32_t of_hash_seed;
-/* These do *NOT* provide cryptographically secure randomness! */
-extern uint16_t of_random16(void);
-extern uint32_t of_random32(void);
-extern uint64_t of_random64(void);
+extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
+    void *_Nullable *_Nullable extra);
+extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
+
+/**
+ * @brief Returns 16 bit or non-cryptographical randomness.
+ *
+ * @return 16 bit or non-cryptographical randomness
+ */
+extern uint16_t OFRandom16(void);
+
+/**
+ * @brief Returns 32 bit or non-cryptographical randomness.
+ *
+ * @return 32 bit or non-cryptographical randomness
+ */
+extern uint32_t OFRandom32(void);
+
+/**
+ * @brief Returns 64 bit or non-cryptographical randomness.
+ *
+ * @return 64 bit or non-cryptographical randomness
+ */
+extern uint64_t OFRandom64(void);
+
+/**
+ * @brief Initializes the specified hash.
+ *
+ * @param hash A pointer to the hash to initialize
+ */
+extern void OFHashInit(unsigned long *_Nonnull hash);
 #ifdef __cplusplus
 }
 #endif
 
 OF_ASSUME_NONNULL_END
+
+#include "OFBlock.h"
 
 #ifdef __OBJC__
 # import "OFObject+KeyValueCoding.h"

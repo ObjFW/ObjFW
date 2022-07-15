@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,10 +36,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) size_t bytesWritten;
 
-+ (instancetype)exceptionWithObject: (id)object
-		    requestedLength: (size_t)requestedLength
-			      errNo: (int)errNo OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased write failed exception.
  *
@@ -58,9 +52,9 @@ OF_ASSUME_NONNULL_BEGIN
 		       bytesWritten: (size_t)bytesWritten
 			      errNo: (int)errNo;
 
-- (instancetype)initWithObject: (id)object
-	       requestedLength: (size_t)requestedLength
-			 errNo: (int)errNo OF_UNAVAILABLE;
++ (instancetype)exceptionWithObject: (id)object
+		    requestedLength: (size_t)requestedLength
+			      errNo: (int)errNo OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated write failed exception.
@@ -77,6 +71,10 @@ OF_ASSUME_NONNULL_BEGIN
 	       requestedLength: (size_t)requestedLength
 		  bytesWritten: (size_t)bytesWritten
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithObject: (id)object
+	       requestedLength: (size_t)requestedLength
+			 errNo: (int)errNo OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

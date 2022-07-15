@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,9 +33,7 @@
 - (id)copy
 {
 	OFMutableZIPArchiveEntry *copy = [self mutableCopy];
-
 	[copy makeImmutable];
-
 	return copy;
 }
 
@@ -89,12 +85,14 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setVersionMadeBy: (uint16_t)versionMadeBy
+- (void)setVersionMadeBy:
+    (OFZIPArchiveEntryAttributeCompatibility)versionMadeBy
 {
 	_versionMadeBy = versionMadeBy;
 }
 
-- (void)setMinVersionNeeded: (uint16_t)minVersionNeeded
+- (void)setMinVersionNeeded:
+    (OFZIPArchiveEntryAttributeCompatibility)minVersionNeeded
 {
 	_minVersionNeeded = minVersionNeeded;
 }
@@ -112,7 +110,8 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setCompressionMethod: (uint16_t)compressionMethod
+- (void)setCompressionMethod:
+    (OFZIPArchiveEntryCompressionMethod)compressionMethod
 {
 	_compressionMethod = compressionMethod;
 }

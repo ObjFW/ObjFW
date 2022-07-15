@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,7 +14,6 @@
  */
 
 #import "OFObject.h"
-#import "OFASN1DERRepresentation.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 #import "OFSerialization.h"
@@ -30,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
-    OFMessagePackRepresentation, OFASN1DERRepresentation>
+    OFMessagePackRepresentation>
 /**
  * @brief Returns an OFNull singleton.
  *

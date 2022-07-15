@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -63,8 +61,7 @@
 	return self;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -111,8 +108,7 @@
 		for (size_t i = 0; i < count; i++)
 			[objects[i] retain];
 
-		[_array addItems: objects
-			   count: count];
+		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
@@ -128,8 +124,7 @@
 	return self;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [self init];
 
@@ -146,8 +141,7 @@
 		if (!ok)
 			@throw [OFInvalidArgumentException exception];
 
-		[_array addItems: objects
-			   count: count];
+		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
@@ -168,11 +162,11 @@
 
 		if ((![element.name isEqual: @"OFArray"] &&
 		    ![element.name isEqual: @"OFMutableArray"]) ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
-		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
+		    [element elementsForNamespace: OFSerializationNS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			id object;
 
@@ -212,8 +206,7 @@
 	return *((id *)[_array itemAtIndex: idx]);
 }
 
-- (void)getObjects: (id *)buffer
-	   inRange: (of_range_t)range
+- (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -232,7 +225,7 @@
 	size_t count;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	objects = _array.items;
 	count = _array.count;
@@ -241,7 +234,7 @@
 		if ([objects[i] isEqual: object])
 			return i;
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
@@ -250,7 +243,7 @@
 	size_t count;
 
 	if (object == nil)
-		return OF_NOT_FOUND;
+		return OFNotFound;
 
 	objects = _array.items;
 	count = _array.count;
@@ -259,11 +252,11 @@
 		if (objects[i] == object)
 			return i;
 
-	return OF_NOT_FOUND;
+	return OFNotFound;
 }
 
 
-- (OFArray *)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _array.count)
@@ -274,8 +267,7 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [OFAdjacentSubarray arrayWithArray: self
-					    range: range];
+	return [OFAdjacentSubarray arrayWithArray: self range: range];
 }
 
 - (bool)isEqual: (id)object
@@ -312,19 +304,19 @@
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < count; i++)
-		OF_HASH_ADD_HASH(hash, [objects[i] hash]);
+		OFHashAddHash(&hash, [objects[i] hash]);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count_
 {
@@ -350,7 +342,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;

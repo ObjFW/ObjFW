@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,11 +24,10 @@
 @synthesize authorityRecords = _authorityRecords;
 @synthesize additionalRecords = _additionalRecords;
 
-+ (instancetype)
-    responseWithDomainName: (OFString *)domainName
-	     answerRecords: (of_dns_response_records_t)answerRecords
-	  authorityRecords: (of_dns_response_records_t)authorityRecords
-	 additionalRecords: (of_dns_response_records_t)additionalRecords
++ (instancetype)responseWithDomainName: (OFString *)domainName
+			 answerRecords: (OFDNSResponseRecords)answerRecords
+		      authorityRecords: (OFDNSResponseRecords)authorityRecords
+		     additionalRecords: (OFDNSResponseRecords)additionalRecords
 {
 	return [[[self alloc]
 	    initWithDomainName: domainName
@@ -40,9 +37,9 @@
 }
 
 - (instancetype)initWithDomainName: (OFString *)domainName
-		     answerRecords: (of_dns_response_records_t)answerRecords
-		  authorityRecords: (of_dns_response_records_t)authorityRecords
-		 additionalRecords: (of_dns_response_records_t)additionalRecords
+		     answerRecords: (OFDNSResponseRecords)answerRecords
+		  authorityRecords: (OFDNSResponseRecords)authorityRecords
+		 additionalRecords: (OFDNSResponseRecords)additionalRecords
 {
 	self = [super init];
 
@@ -59,7 +56,7 @@
 	return self;
 }
 
-- (instancetype)init OF_UNAVAILABLE
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -104,14 +101,14 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _domainName.hash);
-	OF_HASH_ADD_HASH(hash, [_answerRecords hash]);
-	OF_HASH_ADD_HASH(hash, [_authorityRecords hash]);
-	OF_HASH_ADD_HASH(hash, [_additionalRecords hash]);
-	OF_HASH_FINALIZE(hash);
+	OFHashInit(&hash);
+	OFHashAddHash(&hash, _domainName.hash);
+	OFHashAddHash(&hash, [_answerRecords hash]);
+	OFHashAddHash(&hash, [_authorityRecords hash]);
+	OFHashAddHash(&hash, [_additionalRecords hash]);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

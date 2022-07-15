@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,8 +20,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFMutableUTF8String: OFMutableString
 {
-	struct of_string_utf8_ivars *restrict _s;
-	struct of_string_utf8_ivars _storage;
+	struct OFUTF8StringIvars *restrict _s;
+	struct OFUTF8StringIvars _storage;
 }
 @end
 

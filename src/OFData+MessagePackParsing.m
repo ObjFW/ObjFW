@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -120,8 +118,7 @@ parseTable(const unsigned char *buffer, size_t length, id *object, size_t count,
 		pos += parseObject(buffer + pos, length - pos, &value,
 		    depthLimit);
 
-		[*object setObject: value
-			    forKey: key];
+		[*object setObject: value forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -137,7 +134,7 @@ createDate(OFData *data)
 		uint32_t timestamp;
 
 		memcpy(&timestamp, data.items, 4);
-		timestamp = OF_BSWAP32_IF_LE(timestamp);
+		timestamp = OFFromBigEndian32(timestamp);
 
 		return [OFDate dateWithTimeIntervalSince1970: timestamp];
 	}
@@ -145,7 +142,7 @@ createDate(OFData *data)
 		uint64_t combined;
 
 		memcpy(&combined, data.items, 8);
-		combined = OF_BSWAP64_IF_LE(combined);
+		combined = OFFromBigEndian64(combined);
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)(combined & 0x3FFFFFFFF) +
@@ -158,8 +155,8 @@ createDate(OFData *data)
 		memcpy(&nanoseconds, data.items, 4);
 		memcpy(&seconds, (char *)data.items + 4, 8);
 
-		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
-		seconds = OF_BSWAP64_IF_LE(seconds);
+		nanoseconds = OFFromBigEndian32(nanoseconds);
+		seconds = OFFromBigEndian64(seconds);
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)seconds + (double)nanoseconds / 1000000000];
@@ -290,7 +287,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		memcpy(&f, buffer + 1, 4);
 
-		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f)];
+		*object = [OFNumber numberWithFloat: OFFromBigEndianFloat(f)];
 		return 5;
 	case 0xCB:; /* float 64 */
 		double d;
@@ -300,7 +297,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		memcpy(&d, buffer + 1, 8);
 
-		*object = [OFNumber numberWithDouble: OF_BSWAP_DOUBLE_IF_LE(d)];
+		*object = [OFNumber numberWithDouble: OFFromBigEndianDouble(d)];
 		return 9;
 	/* nil */
 	case 0xC0:
@@ -324,8 +321,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 2
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 2 count: count];
 
 		return count + 2;
 	case 0xC5: /* bin 16 */
@@ -337,8 +333,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 3
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 3 count: count];
 
 		return count + 3;
 	case 0xC6: /* bin 32 */
@@ -350,8 +345,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFData dataWithItems: buffer + 5
-					  count: count];
+		*object = [OFData dataWithItems: buffer + 5 count: count];
 
 		return count + 5;
 	/* Extensions */
@@ -364,8 +358,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 3)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 3
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 3 count: count];
 		@try {
 			*object = createExtension(buffer[2], data);
 		} @finally {
@@ -382,8 +375,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 4)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 4
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 4 count: count];
 		@try {
 			*object = createExtension(buffer[3], data);
 		} @finally {
@@ -400,8 +392,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < count + 6)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 6
-					       count: count];
+		data = [[OFData alloc] initWithItems: buffer + 6 count: count];
 		@try {
 			*object = createExtension(buffer[5], data);
 		} @finally {
@@ -413,8 +404,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 1];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 1];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -426,8 +416,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 4)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 2];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 2];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -439,8 +428,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 6)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 4];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 4];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -452,8 +440,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 10)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 8];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 8];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
@@ -465,8 +452,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 18)
 			@throw [OFTruncatedDataException exception];
 
-		data = [[OFData alloc] initWithItems: buffer + 2
-					       count: 16];
+		data = [[OFData alloc] initWithItems: buffer + 2 count: 16];
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {

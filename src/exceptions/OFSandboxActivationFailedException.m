@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,8 +27,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox
-			       errNo: (int)errNo
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
 	return [[[self alloc] initWithSandbox: sandbox
 					errNo: errNo] autorelease];
@@ -41,8 +38,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSandbox: (OFSandbox *)sandbox
-			  errNo: (int)errNo
+- (instancetype)initWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
 	self = [super init];
 
@@ -62,6 +58,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"The sandbox could not be applied: %@", of_strerror(_errNo)];
+	    @"The sandbox could not be applied: %@", OFStrError(_errNo)];
 }
 @end

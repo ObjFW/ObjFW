@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,11 +23,6 @@
 @implementation OFHTTPRequestFailedException
 @synthesize request = _request, response = _response;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response
 {
@@ -37,9 +30,9 @@
 				     response: response] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithRequest: (OFHTTPRequest *)request
@@ -53,6 +46,11 @@
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
 	[_request release];
@@ -63,7 +61,7 @@
 
 - (OFString *)description
 {
-	const char *method = of_http_request_method_to_string(_request.method);
+	const char *method = OFHTTPRequestMethodName(_request.method);
 
 	return [OFString stringWithFormat:
 	    @"An HTTP %s request with URL %@ failed with code %hd!", method,

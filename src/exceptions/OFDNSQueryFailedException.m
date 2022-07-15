@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,30 +19,30 @@
 #import "OFString.h"
 
 OFString *
-of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
+OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 {
-	switch (error) {
-	case OF_DNS_RESOLVER_ERROR_TIMEOUT:
+	switch (errorCode) {
+	case OFDNSResolverErrorCodeTimeout:
 		return @"The query timed out.";
-	case OF_DNS_RESOLVER_ERROR_CANCELED:
+	case OFDNSResolverErrorCodeCanceled:
 		return @"The query was canceled.";
-	case OF_DNS_RESOLVER_ERROR_NO_RESULT:
+	case OFDNSResolverErrorCodeNoResult:
 		return @"No result for the specified host with the specified "
 		    @"type and class.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT:
+	case OFDNSResolverErrorCodeServerInvalidFormat:
 		return @"The server considered the query to be malformed.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_FAILURE:
+	case OFDNSResolverErrorCodeServerFailure:
 		return @"The server was unable to process due to an internal "
 		    @"error.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR:
+	case OFDNSResolverErrorCodeServerNameError:
 		return @"The server returned an error that the domain does not "
 		    @"exist.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED:
+	case OFDNSResolverErrorCodeServerNotImplemented:
 		return @"The server does not have support for the requested "
 		    @"query.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_REFUSED:
+	case OFDNSResolverErrorCodeServerRefused:
 		return @"The server refused the query.";
-	case OF_DNS_RESOLVER_ERROR_NO_NAME_SERVER:
+	case OFDNSResolverErrorCodeNoNameServer:
 		return @"There was no name server to query.";
 	default:
 		return @"Unknown error.";
@@ -52,29 +50,39 @@ of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
 }
 
 @implementation OFDNSQueryFailedException
-@synthesize query = _query, error = _error;
+@synthesize query = _query, errorCode = _errorCode;
 
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
-			     error: (of_dns_resolver_error_t)error
+			 errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	return [[[self alloc] initWithQuery: query
-				      error: error] autorelease];
+				  errorCode: errorCode] autorelease];
+}
+
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithQuery: (OFDNSQuery *)query
-			error: (of_dns_resolver_error_t)error
+		    errorCode: (OFDNSResolverErrorCode)errorCode
 {
 	self = [super init];
 
 	@try {
 		_query = [query copy];
-		_error = error;
+		_errorCode = errorCode;
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -88,6 +96,6 @@ of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
 {
 	return [OFString stringWithFormat:
 	    @"DNS query %@ could not be performed: %@",
-	    _query, of_dns_resolver_error_to_string(_error)];
+	    _query, OFDNSResolverErrorCodeDescription(_errorCode)];
 }
 @end

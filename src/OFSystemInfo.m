@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,16 +26,19 @@
 #ifdef HAVE_SYS_UTSNAME_H
 # include <sys/utsname.h>
 #endif
-#if defined(OF_MACOS) || defined(OF_NETBSD)
+#if defined(OF_MACOS) || defined(OF_IOS) || defined(OF_NETBSD)
 # include <sys/sysctl.h>
+#endif
+
+#ifdef OF_AMIGAOS
+# include <exec/execbase.h>
+# include <proto/exec.h>
 #endif
 
 #if defined(OF_AMIGAOS4)
 # include <exec/exectags.h>
-# include <proto/exec.h>
 #elif defined(OF_MORPHOS)
 # include <exec/system.h>
-# include <proto/exec.h>
 #endif
 
 #import "OFSystemInfo.h"
@@ -45,11 +46,10 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFOnce.h"
 #import "OFString.h"
 
 #import "OFNotImplementedException.h"
-
-#import "once.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
@@ -93,7 +93,7 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 #endif
 
 #if defined(OF_X86_64) || defined(OF_X86)
-struct x86_regs {
+struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
 #endif
@@ -166,7 +166,7 @@ initOperatingSystemVersion(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		of_string_encoding_t encoding = [OFLocale encoding];
+		OFStringEncoding encoding = [OFLocale encoding];
 		char systemDir[PATH_MAX];
 		UINT systemDirLen;
 		OFString *systemDirString;
@@ -217,12 +217,10 @@ initOperatingSystemVersion(void)
 # endif
 #elif defined(OF_ANDROID)
 	/* TODO */
-#elif defined(OF_MORPHOS)
-	/* TODO */
-#elif defined(OF_AMIGAOS4)
-	/* TODO */
-#elif defined(OF_AMIGAOS_M68K)
-	/* TODO */
+#elif defined(OF_AMIGAOS)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"Kickstart %u.%u",
+			    SysBase->LibNode.lib_Version, SysBase->SoftVer];
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)
 	/* Intentionally nothing */
@@ -239,18 +237,18 @@ initOperatingSystemVersion(void)
 }
 
 #if defined(OF_X86_64) || defined(OF_X86)
-static OF_INLINE struct x86_regs OF_CONST_FUNC
-x86_cpuid(uint32_t eax, uint32_t ecx)
+static OF_INLINE struct X86Regs OF_CONST_FUNC
+x86CPUID(uint32_t eax, uint32_t ecx)
 {
-	struct x86_regs regs;
+	struct X86Regs regs;
 
-# if defined(OF_X86_64_ASM)
+# if defined(OF_X86_64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
-# elif defined(OF_X86_ASM)
+# elif defined(OF_X86) && defined(__GNUC__)
 	/*
 	 * This workaround is required by older GCC versions when using -fPIC,
 	 * as ebx is a special register in PIC code. Yes, GCC is indeed not
@@ -323,28 +321,28 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return @PACKAGE_VERSION;
 }
 
-+ (unsigned int)ObjFWVersionMajor
++ (unsigned short)ObjFWVersionMajor
 {
 	return OBJFW_VERSION_MAJOR;
 }
 
-+ (unsigned int)ObjFWVersionMinor
++ (unsigned short)ObjFWVersionMinor
 {
 	return OBJFW_VERSION_MINOR;
 }
 
 + (OFString *)operatingSystemName
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initOperatingSystemName);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initOperatingSystemName);
 
 	return operatingSystemName;
 }
 
 + (OFString *)operatingSystemVersion
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initOperatingSystemVersion);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initOperatingSystemVersion);
 
 	return operatingSystemVersion;
 }
@@ -357,8 +355,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(
@@ -392,7 +389,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 
-		[path deleteCharactersInRange: of_range(0, 1)];
+		[path deleteCharactersInRange: OFRangeMake(0, 1)];
 		[path prependString: home];
 	}
 
@@ -450,8 +447,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 #  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	/* (1) to disable dead code warning when it is not a weak symbol */
-	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+	if (@available(macOS 10.12, iOS 10, *)) {
 		sysdir_search_path_enumeration_state state;
 
 		state = sysdir_start_search_path_enumeration(
@@ -484,12 +480,11 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 
-		[path deleteCharactersInRange: of_range(0, 1)];
+		[path deleteCharactersInRange: OFRangeMake(0, 1)];
 		[path prependString: home];
 	}
 
 	[path appendString: @"/Preferences"];
-
 	[path makeImmutable];
 
 	return path;
@@ -528,12 +523,67 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return [var stringByAppendingPathComponent: @".config"];
 # endif
 }
+
++ (OFString *)temporaryDirectoryPath
+{
+# if defined(OF_MACOS) || defined(OF_IOS)
+	char buffer[PATH_MAX];
+	size_t length;
+
+	if ((length = confstr(_CS_DARWIN_USER_TEMP_DIR, buffer, PATH_MAX)) == 0)
+		return @"/tmp";
+
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]
+				    length: length - 1];
+# elif defined(OF_WINDOWS)
+	if ([self isWindowsNT]) {
+		wchar_t buffer[PATH_MAX];
+
+		if (!GetTempPathW(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithUTF16String: buffer];
+	} else {
+		char buffer[PATH_MAX];
+
+		if (!GetTempPathA(PATH_MAX, buffer))
+			return nil;
+
+		return [OFString stringWithCString: buffer
+					  encoding: [OFLocale encoding]];
+	}
+# elif defined(OF_HAIKU)
+	char pathC[PATH_MAX];
+
+	if (find_directory(B_SYSTEM_TEMP_DIRECTORY, 0, false,
+	    pathC, PATH_MAX) != B_OK)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return [OFString stringWithUTF8String: pathC];
+# elif defined(OF_AMIGAOS)
+	return @"T:";
+# elif defined(OF_MSDOS)
+	return [[OFApplication environment] objectForKey: @"TEMP"];
+# elif defined(OF_MINT)
+	return @"u:\\tmp";
+# else
+	OFString *path =
+	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
+
+	if (path != nil)
+		return path;
+
+	return @"/tmp";
+# endif
+}
 #endif
 
 + (OFString *)CPUVendor
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
-	struct x86_regs regs = x86_cpuid(0, 0);
+#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+	struct X86Regs regs = x86CPUID(0, 0);
 	uint32_t buffer[3];
 
 	if (regs.eax == 0)
@@ -544,8 +594,10 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	buffer[2] = regs.ecx;
 
 	return [OFString stringWithCString: (char *)buffer
-				  encoding: OF_STRING_ENCODING_ASCII
+				  encoding: OFStringEncodingASCII
 				    length: 12];
+#elif defined(OF_M68K)
+	return @"Motorola";
 #else
 	return nil;
 #endif
@@ -553,14 +605,17 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+	struct X86Regs regs = x86CPUID(0x80000000, 0);
 	uint32_t buffer[12];
 	size_t i;
 
+	if (regs.eax < 0x80000004)
+		return nil;
+
 	i = 0;
 	for (uint32_t eax = 0x80000002; eax <= 0x80000004; eax++) {
-		struct x86_regs regs = x86_cpuid(eax, 0);
-
+		regs = x86CPUID(eax, 0);
 		buffer[i++] = regs.eax;
 		buffer[i++] = regs.ebx;
 		buffer[i++] = regs.ecx;
@@ -568,7 +623,18 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	}
 
 	return [OFString stringWithCString: (char *)buffer
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
+#elif defined(OF_MACOS) || defined(OF_IOS)
+	char buffer[128];
+	size_t length = sizeof(buffer);
+
+	if (sysctlbyname("machdep.cpu.brand_string", &buffer, &length,
+	    NULL, 0) != 0)
+		return nil;
+
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]
+				    length: length];
 #elif defined(OF_AMIGAOS4)
 	CONST_STRPTR model, version;
 
@@ -579,7 +645,20 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 		return [OFString stringWithFormat: @"%s V%s", model, version];
 	else
 		return [OFString stringWithCString: model
-					  encoding: OF_STRING_ENCODING_ASCII];
+					  encoding: OFStringEncodingASCII];
+#elif defined(OF_AMIGAOS_M68K)
+	if (SysBase->AttnFlags & AFF_68060)
+		return @"68060";
+	if (SysBase->AttnFlags & AFF_68040)
+		return @"68040";
+	if (SysBase->AttnFlags & AFF_68030)
+		return @"68030";
+	if (SysBase->AttnFlags & AFF_68020)
+		return @"68020";
+	if (SysBase->AttnFlags & AFF_68010)
+		return @"68010";
+	else
+		return @"68000";
 #else
 	return nil;
 #endif
@@ -588,57 +667,57 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_X86_64) || defined(OF_X86)
 + (bool)supportsMMX
 {
-	return (x86_cpuid(1, 0).edx & (1u << 23));
+	return (x86CPUID(1, 0).edx & (1u << 23));
 }
 
 + (bool)supportsSSE
 {
-	return (x86_cpuid(1, 0).edx & (1u << 25));
+	return (x86CPUID(1, 0).edx & (1u << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86_cpuid(1, 0).edx & (1u << 26));
+	return (x86CPUID(1, 0).edx & (1u << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 0));
+	return (x86CPUID(1, 0).ecx & (1u << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 9));
+	return (x86CPUID(1, 0).ecx & (1u << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 19));
+	return (x86CPUID(1, 0).ecx & (1u << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 20));
+	return (x86CPUID(1, 0).ecx & (1u << 20));
 }
 
 + (bool)supportsAVX
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 28));
+	return (x86CPUID(1, 0).ecx & (1u << 28));
 }
 
 + (bool)supportsAVX2
 {
-	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1u << 5));
+	return x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5));
 }
 
 + (bool)supportsAESNI
 {
-	return (x86_cpuid(1, 0).ecx & (1u << 25));
+	return (x86CPUID(1, 0).ecx & (1u << 25));
 }
 
 + (bool)supportsSHAExtensions
 {
-	return (x86_cpuid(7, 0).ebx & (1u << 29));
+	return (x86CPUID(7, 0).ebx & (1u << 29));
 }
 #endif
 

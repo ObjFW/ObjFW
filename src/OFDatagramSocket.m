@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,6 +15,11 @@
 
 #include "config.h"
 
+#ifndef _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED
+#endif
+#define _HPUX_ALT_XOPEN_SOCKET_API
+
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -25,8 +28,10 @@
 
 #import "OFDatagramSocket.h"
 #import "OFData.h"
-#import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 
 #import "OFGetOptionFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -37,9 +42,6 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
-
 @implementation OFDatagramSocket
 @synthesize delegate = _delegate;
 
@@ -48,7 +50,7 @@
 	if (self != [OFDatagramSocket class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -68,7 +70,7 @@
 			abort();
 		}
 
-		_socket = INVALID_SOCKET;
+		_socket = OFInvalidSocketHandle;
 		_canBlock = true;
 	} @catch (id e) {
 		[self release];
@@ -80,7 +82,7 @@
 
 - (void)dealloc
 {
-	if (_socket != INVALID_SOCKET)
+	if (_socket != OFInvalidSocketHandle)
 		[self close];
 
 	[super dealloc];
@@ -116,12 +118,12 @@
 
 	_canBlock = canBlock;
 #elif defined(OF_WINDOWS)
-	u_long v = canBlock;
+	u_long v = !canBlock;
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	_canBlock = canBlock;
 #else
@@ -137,7 +139,7 @@
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 #ifdef OF_WII
 	_canSendToBroadcastAddresses = canSendToBroadcastAddresses;
@@ -154,7 +156,7 @@
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 
 	return v;
 #else
@@ -164,11 +166,11 @@
 
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_socket_address_t *)sender
+		     sender: (OFSocketAddress *)sender
 {
 	ssize_t ret;
 
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	sender->length = (socklen_t)sizeof(sender->sockaddr);
@@ -179,7 +181,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -189,42 +191,46 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	switch (sender->sockaddr.sockaddr.sa_family) {
 	case AF_INET:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		sender->family = OFSocketAddressFamilyIPv4;
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		sender->family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
 #ifdef OF_HAVE_IPX
 	case AF_IPX:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPX;
+		sender->family = OFSocketAddressFamilyIPX;
+		break;
+#endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		sender->family = OFSocketAddressFamilyUNIX;
 		break;
 #endif
 	default:
-		sender->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		sender->family = OFSocketAddressFamilyUnknown;
 		break;
 	}
 
 	return ret;
 }
 
-- (void)asyncReceiveIntoBuffer: (void *)buffer
-			length: (size_t)length
+- (void)asyncReceiveIntoBuffer: (void *)buffer length: (size_t)length
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default];
+			 runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
@@ -239,18 +245,18 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (of_datagram_socket_async_receive_block_t)block
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default
+			 runLoopMode: OFDefaultRunLoopMode
 			       block: block];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			 block: (of_datagram_socket_async_receive_block_t)block
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
@@ -263,9 +269,9 @@
 
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_socket_address_t *)receiver
+	  receiver: (const OFSocketAddress *)receiver
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
@@ -281,7 +287,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #else
 	int bytesWritten;
 
@@ -294,7 +300,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: of_socket_errno()];
+				  errNo: OFSocketErrNo()];
 #endif
 
 	if ((size_t)bytesWritten != length)
@@ -305,16 +311,16 @@
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
+	     receiver: (const OFSocketAddress *)receiver
 {
 	[self asyncSendData: data
 		   receiver: receiver
-		runLoopMode: of_run_loop_mode_default];
+		runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data
@@ -328,19 +334,19 @@
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-		block: (of_datagram_socket_async_send_data_block_t)block
+	     receiver: (const OFSocketAddress *)receiver
+		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
 		   receiver: receiver
-		runLoopMode: of_run_loop_mode_default
+		runLoopMode: OFDefaultRunLoopMode
 		      block: block];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     receiver: (const of_socket_address_t *)receiver
-	  runLoopMode: (of_run_loop_mode_t)runLoopMode
-		block: (of_datagram_socket_async_send_data_block_t)block
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data
@@ -354,7 +360,7 @@
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: of_run_loop_mode_default];
+					      mode: OFDefaultRunLoopMode];
 }
 
 - (int)fileDescriptorForReading
@@ -362,7 +368,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -377,7 +383,7 @@
 #ifndef OF_WINDOWS
 	return _socket;
 #else
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		return -1;
 
 	if (_socket > INT_MAX)
@@ -389,10 +395,10 @@
 
 - (void)close
 {
-	if (_socket == INVALID_SOCKET)
+	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_socket = OFInvalidSocketHandle;
 }
 @end

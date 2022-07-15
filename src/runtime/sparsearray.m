@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,17 +22,15 @@
 #import "private.h"
 
 struct objc_sparsearray *
-objc_sparsearray_new(uint8_t indexSize)
+objc_sparsearray_new(uint8_t levels)
 {
 	struct objc_sparsearray *sparsearray;
 
-	if ((sparsearray = calloc(1, sizeof(*sparsearray))) == NULL)
+	if ((sparsearray = calloc(1, sizeof(*sparsearray))) == NULL ||
+	    (sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
 		OBJC_ERROR("Failed to allocate memory for sparse array!");
 
-	if ((sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
-		OBJC_ERROR("Failed to allocate memory for sparse array!");
-
-	sparsearray->indexSize = indexSize;
+	sparsearray->levels = levels;
 
 	return sparsearray;
 }
@@ -44,9 +40,9 @@ objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
 
-	for (uint8_t i = 0; i < sparsearray->indexSize - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->levels - 1; i++) {
 		uintptr_t j =
-		    (idx >> ((sparsearray->indexSize - i - 1) * 8)) & 0xFF;
+		    (idx >> ((sparsearray->levels - i - 1) * 8)) & 0xFF;
 
 		if ((iter = iter->next[j]) == NULL)
 			return NULL;
@@ -61,9 +57,9 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
 
-	for (uint8_t i = 0; i < sparsearray->indexSize - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->levels - 1; i++) {
 		uintptr_t j =
-		    (idx >> ((sparsearray->indexSize - i - 1) * 8)) & 0xFF;
+		    (idx >> ((sparsearray->levels - i - 1) * 8)) & 0xFF;
 
 		if (iter->next[j] == NULL)
 			if ((iter->next[j] = calloc(1,
@@ -92,6 +88,6 @@ freeSparsearrayData(struct objc_sparsearray_data *data, uint8_t depth)
 void
 objc_sparsearray_free(struct objc_sparsearray *sparsearray)
 {
-	freeSparsearrayData(sparsearray->data, sparsearray->indexSize);
+	freeSparsearrayData(sparsearray->data, sparsearray->levels);
 	free(sparsearray);
 }

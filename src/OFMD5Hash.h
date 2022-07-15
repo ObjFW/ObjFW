@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +13,7 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,13 +25,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which provides methods to create an MD5 hash.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFMD5Hash: OFObject <OFCryptoHash>
+@interface OFMD5Hash: OFObject <OFCryptographicHash>
 {
 	OFSecureData *_iVarsData;
-	struct of_md5_hash_ivars {
+	struct {
 		uint32_t state[4];
 		uint64_t bits;
-		union of_md5_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[16];
 		} buffer;

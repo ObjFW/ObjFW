@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"Runtime (ARC)";
+static OFString *const module = @"Runtime (ARC)";
 
 @interface RuntimeARCTest: OFObject
 @end
@@ -29,7 +27,16 @@ static OFString *module = @"Runtime (ARC)";
 {
 	self = [super init];
 
+#ifdef OF_WINDOWS
+	/*
+	 * Clang has a bug on Windows where it creates an invalid call into
+	 * objc_retainAutoreleasedReturnValue(). Work around it by not using an
+	 * autoreleased exception.
+	 */
+	@throw [[OFException alloc] init];
+#else
 	@throw [OFException exception];
+#endif
 
 	return self;
 }
@@ -39,8 +46,16 @@ static OFString *module = @"Runtime (ARC)";
 - (void)runtimeARCTests
 {
 	id object;
+	__weak id weak;
 
 	EXPECT_EXCEPTION(@"Exceptions in init", OFException,
 	    object = [[RuntimeARCTest alloc] init])
+
+	object = [[OFObject alloc] init];
+	weak = object;
+	TEST(@"weakly referencing an object", weak == object)
+
+	object = nil;
+	TEST(@"weak references becoming nil", weak == nil)
 }
 @end

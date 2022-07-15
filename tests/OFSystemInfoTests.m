@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,27 +25,27 @@
 	OFString *userConfigPath, *userDataPath;
 #endif
 
-	[of_stdout setForegroundColor: [OFColor lime]];
+	[OFStdOut setForegroundColor: [OFColor lime]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Page size: %zd\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Page size: %zd\n",
 	    [OFSystemInfo pageSize]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Number of CPUs: %zd\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Number of CPUs: %zd\n",
 	    [OFSystemInfo numberOfCPUs]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] ObjFW version: %@\n",
 	    [OFSystemInfo ObjFWVersion]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version major: %u\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] ObjFW version major: %u\n",
 	    [OFSystemInfo ObjFWVersionMajor]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] ObjFW version minor: %u\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] ObjFW version minor: %u\n",
 	    [OFSystemInfo ObjFWVersionMinor]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Operating system name: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Operating system name: %@\n",
 	    [OFSystemInfo operatingSystemName]];
 
-	[of_stdout writeFormat:
+	[OFStdOut writeFormat:
 	    @"[OFSystemInfo] Operating system version: %@\n",
 	    [OFSystemInfo operatingSystemVersion]];
 
@@ -57,7 +55,7 @@
 	} @catch (OFNotImplementedException *e) {
 		userConfigPath = @"Not implemented";
 	}
-	[of_stdout writeFormat: @"[OFSystemInfo] User config path: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] User config path: %@\n",
 	    userConfigPath];
 
 	@try {
@@ -65,53 +63,53 @@
 	} @catch (OFNotImplementedException *e) {
 		userDataPath = @"Not implemented";
 	}
-	[of_stdout writeFormat: @"[OFSystemInfo] User data path: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] User data path: %@\n",
 	    userDataPath];
 #endif
 
-	[of_stdout writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
 	    [OFSystemInfo CPUVendor]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] CPU model: %@\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] CPU model: %@\n",
 	    [OFSystemInfo CPUModel]];
 
 #if defined(OF_X86_64) || defined(OF_X86)
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
 	    [OFSystemInfo supportsMMX]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE: %d\n",
 	    [OFSystemInfo supportsSSE]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE2: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE2: %d\n",
 	    [OFSystemInfo supportsSSE2]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE3: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE3: %d\n",
 	    [OFSystemInfo supportsSSE3]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSSE3: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSSE3: %d\n",
 	    [OFSystemInfo supportsSSSE3]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE4.1: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE4.1: %d\n",
 	    [OFSystemInfo supportsSSE41]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SSE4.2: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE4.2: %d\n",
 	    [OFSystemInfo supportsSSE42]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports AVX: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports AVX: %d\n",
 	    [OFSystemInfo supportsAVX]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports AVX2: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports AVX2: %d\n",
 	    [OFSystemInfo supportsAVX2]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports AES-NI: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports AES-NI: %d\n",
 	    [OFSystemInfo supportsAESNI]];
 
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
 	    [OFSystemInfo supportsSHAExtensions]];
 #endif
 
 #ifdef OF_POWERPC
-	[of_stdout writeFormat: @"[OFSystemInfo] Supports AltiVec: %d\n",
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports AltiVec: %d\n",
 	    [OFSystemInfo supportsAltiVec]];
 #endif
 

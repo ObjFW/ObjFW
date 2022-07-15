@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +29,7 @@
 }
 
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
-			     offset: (of_offset_t)offset
+			     offset: (OFFileOffset)offset
 			     whence: (int)whence
 			      errNo: (int)errNo
 {
@@ -47,7 +45,7 @@
 }
 
 - (instancetype)initWithStream: (OFSeekableStream *)stream
-			offset: (of_offset_t)offset
+			offset: (OFFileOffset)offset
 			whence: (int)whence
 			 errNo: (int)errNo
 {
@@ -72,6 +70,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Seeking failed in stream of type %@: %@",
-	    _stream.class, of_strerror(_errNo)];
+	    _stream.class, OFStrError(_errNo)];
 }
 @end

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,82 +17,80 @@
 
 #include "platform.h"
 
-.intel_syntax noprefix
-
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
-	test	rdi, rdi
-	jz	short ret_nil
+	testq	%rdi, %rdi
+	jz	returnNilMethod
 
-	bt	edi, 0
-	jc	short .Ltagged_pointer_\name
+	testb	$1, %dil
+	jnz	.LtaggedPointer_\name
 
-	mov	r8, [rdi]
-	mov	r8, [r8+64]
+	movq	(%rdi), %r8
+	movq	64(%r8), %r8
 
 .Lmain_\name:
-	mov	rax, [rsi]
-	movzx	ecx, ah
-	movzx	edx, al
+	movq	(%rsi), %rax
+	movzbl	%ah, %ecx
+	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shr	eax, 16
+	shrl	$16, %eax
 
-	mov	r8,  [r8+rax*8]
+	movq	(%r8,%rax,8), %r8
 #endif
-	mov	r8,  [r8+rcx*8]
-	mov	rax, [r8+rdx*8]
+	movq	(%r8,%rcx,8), %r8
+	movq	(%r8,%rdx,8), %rax
 
-	test	rax, rax
-	jz	short \not_found@PLT
+	testq	%rax, %rax
+	jz	\notFound@PLT
 
 	ret
 
-.Ltagged_pointer_\name:
-	mov	rax, [rip+objc_tagged_pointer_secret@GOTPCREL]
-	xor	rdi, [rax]
-	and	dil, 0xE
-	movzx	r8, dil
+.LtaggedPointer_\name:
+	movq	objc_taggedPointerSecret@GOTPCREL(%rip), %rax
+	xorq	(%rax), %rdi
+	andb	$0xE, %dil
+	movzbl	%dil, %r8d
 
-	mov	rax, [rip+objc_tagged_pointer_classes@GOTPCREL]
-	mov	r8, [rax+r8*4]
-	mov	r8, [r8+64]
+	movq	objc_taggedPointerClasses@GOTPCREL(%rip), %rax
+	movq	(%rax,%r8,4), %r8
+	movq	64(%r8), %r8
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	mov	r8, rdi
-	mov	rdi, [rdi]
-	test	rdi, rdi
-	jz	short ret_nil
+	movq	%rdi, %r8
+	movq	(%rdi), %rdi
+	testq	%rdi, %rdi
+	jz	returnNilMethod
 
-	mov	r8, [r8+8]
-	mov	r8, [r8+64]
-	jmp	short .Lmain_\lookup
+	movq	8(%r8), %r8
+	movq	64(%r8), %r8
+	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	lea	rax, [rip+nil_method]
+returnNilMethod:
+	leaq	nilMethod(%rip), %rax
 	ret
 
-nil_method:
-	xor	rax, rax
+nilMethod:
+	xorq	%rax, %rax
 	ret
 
 #ifdef OF_LINUX

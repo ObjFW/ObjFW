@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,14 +17,15 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
+OFForward:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
+#ifdef OF_PIC
 	stw	%r30, 104(%r1)
 
 	bl	0f
@@ -34,6 +33,7 @@ of_forward:
 	mflr	%r30
 	addis	%r30, %r30, .Lbiased_got2-0b@ha
 	addi	%r30, %r30, .Lbiased_got2-0b@l
+#endif
 
 	/* Save all arguments */
 	stw	%r3, 8(%r1)
@@ -55,21 +55,40 @@ of_forward:
 	stfd	%f7, 88(%r1)
 	stfd	%f8, 96(%r1)
 
+#ifdef OF_PIC
 	bl	object_getClass+0x8000@plt
 
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	class_respondsToSelector+0x8000@plt
+#else
+	bl	object_getClass
+
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	class_respondsToSelector
+#endif
 
 	cmpwi	%r3, 0
 	beq-	0f
 
 	lwz	%r3, 8(%r1)
+#ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
+#else
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	objc_msg_lookup
+#endif
 	mtctr	%r3
 
 	lwz	%r3, 8(%r1)
+#ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+#else
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+#endif
 	lwz	%r5, 12(%r1)
 	bctrl
 
@@ -82,7 +101,11 @@ of_forward:
 	stw	%r3, 8(%r1)
 
 	lwz	%r4, 12(%r1)
+#ifdef OF_PIC
 	bl	objc_msg_lookup+0x8000@plt
+#else
+	bl	objc_msg_lookup
+#endif
 	mtctr	%r3
 
 	/* Restore all arguments */
@@ -105,7 +128,9 @@ of_forward:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
+#ifdef OF_PIC
 	lwz	%r30, 104(%r1)
+#endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
@@ -114,22 +139,30 @@ of_forward:
 0:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
-	lwz	%r0, .Lgot_of_method_not_found-.Lbiased_got2(%r30)
-	mtctr	%r0
 
+#ifdef OF_PIC
+	lwz	%r0, .Lgot_OFMethodNotFound-.Lbiased_got2(%r30)
+	mtctr	%r0
 	lwz	%r30, 104(%r1)
+#endif
+
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
+#ifdef OF_PIC
 	bctr
-.type of_forward, @function
-.size of_forward, .-of_forward
+#else
+	b	OFMethodNotFound
+#endif
+.type OFForward, @function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
+#ifdef OF_PIC
 	stw	%r30, 104(%r1)
 
 	bl	0f
@@ -137,6 +170,7 @@ of_forward_stret:
 	mflr	%r30
 	addis	%r30, %r30, .Lbiased_got2-0b@ha
 	addi	%r30, %r30, .Lbiased_got2-0b@l
+#endif
 
 	/* Save all arguments */
 	stw	%r3, 8(%r1)
@@ -159,21 +193,40 @@ of_forward_stret:
 	stfd	%f8, 96(%r1)
 
 	mr	%r3, %r4
-	bl	object_getClass+0x800@plt
+#ifdef OF_PIC
+	bl	object_getClass+0x8000@plt
 
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	class_respondsToSelector+0x8000@plt
+#else
+	bl	object_getClass
+
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	class_respondsToSelector
+#endif
 
 	cmpwi	%r3, 0
 	beq-	0f
 
 	lwz	%r3, 12(%r1)
+#ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
+#else
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	objc_msg_lookup
+#endif
 	mtctr	%r3
 
 	lwz	%r3, 12(%r1)
+#ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+#else
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+#endif
 	lwz	%r5, 16(%r1)
 	bctrl
 
@@ -186,7 +239,11 @@ of_forward_stret:
 	stw	%r3, 12(%r1)
 
 	lwz	%r4, 16(%r1)
+#ifdef OF_PIC
 	bl	objc_msg_lookup_stret+0x8000@plt
+#else
+	bl	objc_msg_lookup_stret
+#endif
 	mtctr	%r3
 
 	/* Restore all arguments */
@@ -209,6 +266,9 @@ of_forward_stret:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
+#ifdef OF_PIC
+	lwz	%r30, 104(%r1)
+#endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
@@ -218,22 +278,30 @@ of_forward_stret:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 	lwz	%r5, 16(%r1)
-	lwz	%r0, .Lgot_of_method_not_found_stret-.Lbiased_got2(%r30)
-	mtctr	%r0
 
+#ifdef OF_PIC
+	lwz	%r0, .Lgot_OFMethodNotFound_stret-.Lbiased_got2(%r30)
+	mtctr	%r0
 	lwz	%r30, 104(%r1)
+#endif
+
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
+#ifdef OF_PIC
 	bctr
-.type of_forward_stret, @function
-.size of_forward_stret, .-of_forward_stret
+#else
+	b	OFMethodNotFound_stret
+#endif
+.type OFForward_stret, @function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 	stwu	%r1, -16(%r1)
 	mflr	%r0
 	stw	%r0, 20(%r1)
+#ifdef OF_PIC
 	stw	%r30, 8(%r1)
 
 	bl	0f
@@ -246,6 +314,12 @@ init:
 	bl	__objc_exec_class+0x8000@plt
 
 	lwz	%r30, 8(%r1)
+#else
+	lis	%r3, module@ha
+	la	%r3, module@l(%r3)
+	bl	__objc_exec_class
+#endif
+
 	lwz	%r0, 20(%r1)
 	addi	%r1, %r1, 16
 	mtlr	%r0
@@ -270,16 +344,18 @@ symtab:
 module:
 	.long 8, 16, 0, symtab
 
+#ifdef OF_PIC
 .section .got2, "aw"
 .Lbiased_got2 = .+0x8000
 .Lgot_module:
 	.long module
 .Lgot_sel_forwardingTargetForSelector_:
 	.long sel_forwardingTargetForSelector_
-.Lgot_of_method_not_found:
-	.long of_method_not_found
-.Lgot_of_method_not_found_stret:
-	.long of_method_not_found_stret
+.Lgot_OFMethodNotFound:
+	.long OFMethodNotFound
+.Lgot_OFMethodNotFound_stret:
+	.long OFMethodNotFound_stret
+#endif
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", @progbits

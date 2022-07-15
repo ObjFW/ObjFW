@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +22,7 @@
 @implementation OFPointValue
 @synthesize pointValue = _point;
 
-- (instancetype)initWithPoint: (of_point_t)point
+- (instancetype)initWithPoint: (OFPoint)point
 {
 	self = [super init];
 
@@ -35,11 +33,10 @@
 
 - (const char *)objCType
 {
-	return @encode(of_point_t);
+	return @encode(OFPoint);
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != sizeof(_point))
 		@throw [OFOutOfRangeException exception];
@@ -50,6 +47,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFValue: of_point_t { %f, %f }>", _point.x, _point.y];
+	    @"<OFValue: OFPoint { %f, %f }>", _point.x, _point.y];
 }
 @end

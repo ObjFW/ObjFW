@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,15 +60,13 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	return (id)[[OFMapTableSet alloc] initWithObjects: objects
 						    count: count];
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	return (id)[[OFMapTableSet alloc] initWithObject: firstObject
 					       arguments: arguments];
@@ -144,8 +140,7 @@ static struct {
 	return ret;
 }
 
-+ (instancetype)setWithObjects: (id const *)objects
-			 count: (size_t)count
++ (instancetype)setWithObjects: (id const *)objects count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
 					count: count] autorelease];
@@ -177,8 +172,7 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -189,15 +183,13 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [self initWithObject: firstObject
-			 arguments: arguments];
+	ret = [self initWithObject: firstObject arguments: arguments];
 	va_end(arguments);
 
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -233,12 +225,10 @@ static struct {
 	return ret;
 }
 
-- (void)setValue: (id)value
-	  forKey: (OFString *)key
+- (void)setValue: (id)value forKey: (OFString *)key
 {
 	for (id object in self)
-		[object setValue: value
-			  forKey: key];
+		[object setValue: value forKey: key];
 }
 
 - (bool)containsObject: (id)object
@@ -251,7 +241,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -335,10 +325,8 @@ static struct {
 
 		objc_autoreleasePoolPop(pool2);
 	}
-	[ret replaceOccurrencesOfString: @"\n"
-			     withString: @"\n\t"];
+	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @"\n)}"];
-
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
@@ -381,16 +369,14 @@ static struct {
 
 	if ([self isKindOfClass: [OFMutableSet class]])
 		element = [OFXMLElement elementWithName: @"OFMutableSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 	else
 		element = [OFXMLElement elementWithName: @"OFSet"
-					      namespace: OF_SERIALIZATION_NS];
+					      namespace: OFSerializationNS];
 
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
-
 		[element addChild: object.XMLElementBySerializing];
-
 		objc_autoreleasePoolPop(pool2);
 	}
 
@@ -401,39 +387,11 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFSet *)setBySubtractingSet: (OFSet *)set
+- (OFSet *)setByAddingObjectsFromSet: (OFSet *)set
 {
-	OFMutableSet *new;
-
-	new = [[self mutableCopy] autorelease];
-	[new minusSet: set];
-
-	[new makeImmutable];
-
-	return new;
-}
-
-- (OFSet *)setByIntersectingWithSet: (OFSet *)set
-{
-	OFMutableSet *new;
-
-	new = [[self mutableCopy] autorelease];
-	[new intersectSet: set];
-
-	[new makeImmutable];
-
-	return new;
-}
-
-- (OFSet *)setByAddingSet: (OFSet *)set
-{
-	OFMutableSet *new;
-
-	new = [[self mutableCopy] autorelease];
+	OFMutableSet *new = [[self mutableCopy] autorelease];
 	[new unionSet: set];
-
 	[new makeImmutable];
-
 	return new;
 }
 
@@ -442,7 +400,6 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *ret = [[[self objectEnumerator] allObjects] retain];
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 
@@ -451,12 +408,11 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	id ret = [[[self objectEnumerator] nextObject] retain];
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFSetEnumerationBlock)block
 {
 	bool stop = false;
 
@@ -468,7 +424,7 @@ static struct {
 	}
 }
 
-- (OFSet *)filteredSetUsingBlock: (of_set_filter_block_t)block
+- (OFSet *)filteredSetUsingBlock: (OFSetFilterBlock)block
 {
 	OFMutableSet *ret = [OFMutableSet set];
 

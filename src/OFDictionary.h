@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,10 +34,33 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
-typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
-     bool *stop);
-typedef bool (^of_dictionary_filter_block_t)(id key, id object);
-typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
+/**
+ * @brief A block for enumerating an OFDictionary.
+ *
+ * @param key The current key
+ * @param object The object for the current key
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration.
+ */
+typedef void (^OFDictionaryEnumerationBlock)(id key, id object, bool *stop);
+
+/**
+ * @brief A block for filtering an OFDictionary.
+ *
+ * @param key The key to inspect
+ * @param object The object for the key to inspect
+ * @return Whether the object should be in the filtered dictionary.
+ */
+typedef bool (^OFDictionaryFilterBlock)(id key, id object);
+
+/**
+ * @brief A block for mapping keys to objects in an OFDictionary.
+ *
+ * @param key The key to map
+ * @param object The current object for the key
+ * @return The object to map the key to
+ */
+typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 #endif
 
 /**
@@ -100,8 +121,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)dictionaryWithObject: (ObjectType)object
-			      forKey: (KeyType)key;
++ (instancetype)dictionaryWithObject: (ObjectType)object forKey: (KeyType)key;
 
 /**
  * @brief Creates a new OFDictionary with the specified keys and objects.
@@ -110,9 +130,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param objects An array of objects
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)
-    dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
-		  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
++ (instancetype)dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+			      forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /**
  * @brief Creates a new OFDictionary with the specified keys and objects.
@@ -154,8 +173,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object
  * @return An initialized OFDictionary
  */
-- (instancetype)initWithObject: (ObjectType)object
-			forKey: (KeyType)key;
+- (instancetype)initWithObject: (ObjectType)object forKey: (KeyType)key;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -198,8 +216,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param arguments A va_list of the other arguments
  * @return An initialized OFDictionary
  */
-- (instancetype)initWithKey: (KeyType)firstKey
-		  arguments: (va_list)arguments;
+- (instancetype)initWithKey: (KeyType)firstKey arguments: (va_list)arguments;
 
 /**
  * @brief Returns the object for the given key or `nil` if the key was not
@@ -236,8 +253,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param key The key to set
  * @param value The value to set the key to
  */
-- (void)setValue: (nullable id)value
-	  forKey: (OFString *)key;
+- (void)setValue: (nullable id)value forKey: (OFString *)key;
 
 /**
  * @brief Checks whether the dictionary contains an object equal to the
@@ -278,8 +294,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *
  * @param block The block to execute for each key / object pair.
  */
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block;
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block;
 
 /**
  * @brief Creates a new dictionary, mapping each object using the specified
@@ -288,8 +303,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param block A block which maps an object for each object
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, id) *)mappedDictionaryUsingBlock:
-    (of_dictionary_map_block_t)block;
+- (OFDictionary OF_GENERIC(KeyType, id) *)
+    mappedDictionaryUsingBlock: (OFDictionaryMapBlock)block;
 
 /**
  * @brief Creates a new dictionary, only containing the objects for which the
@@ -299,8 +314,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *		dictionary
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, ObjectType) *)filteredDictionaryUsingBlock:
-    (of_dictionary_filter_block_t)block;
+- (OFDictionary OF_GENERIC(KeyType, ObjectType) *)
+    filteredDictionaryUsingBlock: (OFDictionaryFilterBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef KeyType

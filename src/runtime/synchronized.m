@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,21 +22,21 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
+# import "OFPlainMutex.h"
 
-static struct lock_s {
-	id	      object;
-	int	      count;
-	of_rmutex_t   rmutex;
-	struct lock_s *next;
+static struct Lock {
+	id object;
+	int count;
+	OFPlainRecursiveMutex rmutex;
+	struct Lock *next;
 } *locks = NULL;
 
-static of_mutex_t mutex;
+static OFPlainMutex mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (!of_mutex_new(&mutex))
-		OBJC_ERROR("Failed to create mutex!")
+	if (OFPlainMutexNew(&mutex) != 0)
+		OBJC_ERROR("Failed to create mutex!");
 }
 #endif
 
@@ -49,9 +47,9 @@ objc_sync_enter(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock_s *lock;
+	struct Lock *lock;
 
-	if (!of_mutex_lock(&mutex))
+	if (OFPlainMutexLock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 
 	/* Look if we already have a lock */
@@ -61,10 +59,10 @@ objc_sync_enter(id object)
 
 		lock->count++;
 
-		if (!of_mutex_unlock(&mutex))
+		if (OFPlainMutexUnlock(&mutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
-		if (!of_rmutex_lock(&lock->rmutex))
+		if (OFPlainRecursiveMutexLock(&lock->rmutex) != 0)
 			OBJC_ERROR("Failed to lock mutex!");
 
 		return 0;
@@ -74,7 +72,7 @@ objc_sync_enter(id object)
 	if ((lock = malloc(sizeof(*lock))) == NULL)
 		OBJC_ERROR("Failed to allocate memory for mutex!");
 
-	if (!of_rmutex_new(&lock->rmutex))
+	if (OFPlainRecursiveMutexNew(&lock->rmutex) != 0)
 		OBJC_ERROR("Failed to create mutex!");
 
 	lock->object = object;
@@ -83,10 +81,10 @@ objc_sync_enter(id object)
 
 	locks = lock;
 
-	if (!of_mutex_unlock(&mutex))
+	if (OFPlainMutexUnlock(&mutex) != 0)
 		OBJC_ERROR("Failed to unlock mutex!");
 
-	if (!of_rmutex_lock(&lock->rmutex))
+	if (OFPlainRecursiveMutexLock(&lock->rmutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 #endif
 
@@ -100,9 +98,9 @@ objc_sync_exit(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock_s *lock, *last = NULL;
+	struct Lock *lock, *last = NULL;
 
-	if (!of_mutex_lock(&mutex))
+	if (OFPlainMutexLock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
 
 	for (lock = locks; lock != NULL; lock = lock->next) {
@@ -111,11 +109,11 @@ objc_sync_exit(id object)
 			continue;
 		}
 
-		if (!of_rmutex_unlock(&lock->rmutex))
+		if (OFPlainRecursiveMutexUnlock(&lock->rmutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		if (--lock->count == 0) {
-			if (!of_rmutex_free(&lock->rmutex))
+			if (OFPlainRecursiveMutexFree(&lock->rmutex) != 0)
 				OBJC_ERROR("Failed to destroy mutex!");
 
 			if (last != NULL)
@@ -126,13 +124,13 @@ objc_sync_exit(id object)
 			free(lock);
 		}
 
-		if (!of_mutex_unlock(&mutex))
+		if (OFPlainMutexUnlock(&mutex) != 0)
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		return 0;
 	}
 
-	OBJC_ERROR("objc_sync_exit() was called for an object not locked!");
+	OBJC_ERROR("objc_sync_exit() was called for an unlocked object!");
 #else
 	return 0;
 #endif

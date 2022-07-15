@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,12 +28,12 @@ OF_DESTRUCTOR()
 		/*
 		 * musl has broken dlclose(): Instead of calling the destructor
 		 * on dlclose(), they call it on exit(). This of course means
-		 * that our tests might have already called objc_exit() and the
-		 * class is already gone.
+                 * that our tests might have already called objc_deinit() and
+                 * the class is already gone.
 		 */
 		return;
 
-	objc_unregister_class(class);
+	objc_unregisterClass(class);
 }
 #endif
 
@@ -46,8 +44,8 @@ OF_DESTRUCTOR()
 }
 @end
 
-id
-init_plugin(void)
+Class
+class(void)
 {
-	return [[[TestPlugin alloc] init] autorelease];
+	return [TestPlugin class];
 }

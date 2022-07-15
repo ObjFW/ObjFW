@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,35 +19,32 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFValue";
+static OFString *const module = @"OFValue";
 
 @implementation TestsAppDelegate (OFValueTests)
 - (void)valueTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_range_t range = of_range(1, 64), range2;
-	of_point_t point = of_point(1.5f, 3.0f), point2;
-	of_dimension_t dimension = of_dimension(4.5f, 5.0f), dimension2;
-	of_rectangle_t rectangle = of_rectangle(1.5f, 3.0f, 4.5f, 6.0f);
-	of_rectangle_t rectangle2;
+	OFRange range = OFRangeMake(1, 64), range2;
+	OFPoint point = OFPointMake(1.5f, 3.0f), point2;
+	OFSize size = OFSizeMake(4.5f, 5.0f), size2;
+	OFRect rect = OFRectMake(1.5f, 3.0f, 4.5f, 6.0f), rect2;
 	OFValue *value;
 	void *pointer = &value;
 
 	TEST(@"+[valueWithBytes:objCType:]",
 	    (value = [OFValue valueWithBytes: &range
-				    objCType: @encode(of_range_t)]))
+				    objCType: @encode(OFRange)]))
 
-	TEST(@"-[objCType]", strcmp(value.objCType, @encode(of_range_t)) == 0)
+	TEST(@"-[objCType]", strcmp(value.objCType, @encode(OFRange)) == 0)
 
 	TEST(@"-[getValue:size:]",
-	    R([value getValue: &range2
-			 size: sizeof(of_range_t)]) &&
-	    of_range_equal(range2, range))
+	    R([value getValue: &range2 size: sizeof(OFRange)]) &&
+	    OFRangeEqual(range2, range))
 
 	EXPECT_EXCEPTION(@"-[getValue:size:] with wrong size throws",
 	    OFOutOfRangeException,
-	    [value getValue: &range
-		       size: sizeof(of_range_t) - 1])
+	    [value getValue: &range size: sizeof(OFRange) - 1])
 
 	TEST(@"+[valueWithPointer:]",
 	    (value = [OFValue valueWithPointer: pointer]))
@@ -81,16 +76,15 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithRange: range]))
 
 	TEST(@"-[rangeValue]",
-	    of_range_equal(value.rangeValue, range) &&
+	    OFRangeEqual(value.rangeValue, range) &&
 	    (value = [OFValue valueWithBytes: &range
-				    objCType: @encode(of_range_t)]) &&
-	    of_range_equal(value.rangeValue, range))
+				    objCType: @encode(OFRange)]) &&
+	    OFRangeEqual(value.rangeValue, range))
 
 	TEST(@"-[getValue:size:] for OFRangeValue",
 	    (value = [OFValue valueWithRange: range]) &&
-	    R([value getValue: &range2
-			 size: sizeof(range2)]) &&
-	    of_range_equal(range2, range))
+	    R([value getValue: &range2 size: sizeof(range2)]) &&
+	    OFRangeEqual(range2, range))
 
 	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
 	    OFOutOfRangeException,
@@ -101,74 +95,67 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithPoint: point]))
 
 	TEST(@"-[pointValue]",
-	    of_point_equal(value.pointValue, point) &&
+	    OFPointEqual(value.pointValue, point) &&
 	    (value = [OFValue valueWithBytes: &point
-				    objCType: @encode(of_point_t)]) &&
-	    of_point_equal(value.pointValue, point))
+				    objCType: @encode(OFPoint)]) &&
+	    OFPointEqual(value.pointValue, point))
 
 	TEST(@"-[getValue:size:] for OFPointValue",
 	    (value = [OFValue valueWithPoint: point]) &&
-	    R([value getValue: &point2
-			 size: sizeof(point2)]) &&
-	    of_point_equal(point2, point))
+	    R([value getValue: &point2 size: sizeof(point2)]) &&
+	    OFPointEqual(point2, point))
 
 	EXPECT_EXCEPTION(@"-[pointValue] with wrong size throws",
 	    OFOutOfRangeException,
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] pointValue])
 
-	TEST(@"+[valueWithDimension:]",
-	    (value = [OFValue valueWithDimension: dimension]))
+	TEST(@"+[valueWithSize:]",
+	    (value = [OFValue valueWithSize: size]))
 
-	TEST(@"-[dimensionValue]",
-	    of_dimension_equal(value.dimensionValue, dimension) &&
-	    (value = [OFValue valueWithBytes: &dimension
-				    objCType: @encode(of_dimension_t)]) &&
-	    of_dimension_equal(value.dimensionValue, dimension))
+	TEST(@"-[sizeValue]",
+	    OFSizeEqual(value.sizeValue, size) &&
+	    (value = [OFValue valueWithBytes: &size
+				    objCType: @encode(OFSize)]) &&
+	    OFSizeEqual(value.sizeValue, size))
 
-	TEST(@"-[getValue:size:] for OFDimensionValue",
-	    (value = [OFValue valueWithDimension: dimension]) &&
-	    R([value getValue: &dimension2
-			 size: sizeof(dimension2)]) &&
-	    of_dimension_equal(dimension2, dimension))
+	TEST(@"-[getValue:size:] for OFSizeValue",
+	    (value = [OFValue valueWithSize: size]) &&
+	    R([value getValue: &size2 size: sizeof(size2)]) &&
+	    OFSizeEqual(size2, size))
 
-	EXPECT_EXCEPTION(@"-[dimensionValue] with wrong size throws",
+	EXPECT_EXCEPTION(@"-[sizeValue] with wrong size throws",
 	    OFOutOfRangeException,
 	    [[OFValue valueWithBytes: "a"
-			    objCType: @encode(char)] dimensionValue])
+			    objCType: @encode(char)] sizeValue])
 
-	TEST(@"+[valueWithRectangle:]",
-	    (value = [OFValue valueWithRectangle: rectangle]))
+	TEST(@"+[valueWithRect:]",
+	    (value = [OFValue valueWithRect: rect]))
 
-	TEST(@"-[rectangleValue]",
-	    of_rectangle_equal(value.rectangleValue, rectangle) &&
-	    (value = [OFValue valueWithBytes: &rectangle
-				    objCType: @encode(of_rectangle_t)]) &&
-	    of_rectangle_equal(value.rectangleValue, rectangle))
+	TEST(@"-[rectValue]",
+	    OFRectEqual(value.rectValue, rect) &&
+	    (value = [OFValue valueWithBytes: &rect
+				    objCType: @encode(OFRect)]) &&
+	    OFRectEqual(value.rectValue, rect))
 
-	TEST(@"-[getValue:size:] for OFRectangleValue",
-	    (value = [OFValue valueWithRectangle: rectangle]) &&
-	    R([value getValue: &rectangle2
-			 size: sizeof(rectangle2)]) &&
-	    of_rectangle_equal(rectangle2, rectangle))
+	TEST(@"-[getValue:size:] for OFRectValue",
+	    (value = [OFValue valueWithRect: rect]) &&
+	    R([value getValue: &rect2 size: sizeof(rect2)]) &&
+	    OFRectEqual(rect2, rect))
 
-	EXPECT_EXCEPTION(@"-[rectangleValue] with wrong size throws",
+	EXPECT_EXCEPTION(@"-[rectValue] with wrong size throws",
 	    OFOutOfRangeException,
-	    [[OFValue valueWithBytes: "a"
-			    objCType: @encode(char)] rectangleValue])
+	    [[OFValue valueWithBytes: "a" objCType: @encode(char)] rectValue])
 
 	TEST(@"-[isEqual:]",
-	    [[OFValue valueWithRectangle: rectangle]
-	    isEqual: [OFValue valueWithBytes: &rectangle
-				    objCType: @encode(of_rectangle_t)]] &&
-	    ![[OFValue valueWithBytes: "a"
-			     objCType: @encode(signed char)]
+	    [[OFValue valueWithRect: rect]
+	    isEqual: [OFValue valueWithBytes: &rect
+				    objCType: @encode(OFRect)]] &&
+	    ![[OFValue valueWithBytes: "a" objCType: @encode(signed char)]
 	    isEqual: [OFValue valueWithBytes: "a"
 				    objCType: @encode(unsigned char)]] &&
-	    ![[OFValue valueWithBytes: "a"
-			     objCType: @encode(char)]
-	    isEqual: [OFValue valueWithBytes: "b"
-				    objCType: @encode(char)]])
+	    ![[OFValue valueWithBytes: "a" objCType: @encode(char)]
+	    isEqual: [OFValue valueWithBytes: "b" objCType: @encode(char)]])
 
 	objc_autoreleasePoolPop(pool);
 }

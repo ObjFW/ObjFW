@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,9 +48,9 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 	mode = [OFNumber numberWithUnsignedShort:
 	    mode.unsignedShortValue & 0777];
 
-	of_file_attributes_t attributes = [OFDictionary
+	OFFileAttributes attributes = [OFDictionary
 	    dictionaryWithObject: mode
-			  forKey: of_file_attribute_key_posix_permissions];
+			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
@@ -63,7 +61,7 @@ static void
 setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFDate *modificationDate = entry.modificationDate;
-	of_file_attributes_t attributes;
+	OFFileAttributes attributes;
 
 	if (modificationDate == nil) {
 		/*
@@ -78,7 +76,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
-			  forKey: of_file_attribute_key_modification_date];
+			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -92,7 +90,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
-			 encoding: (of_string_encoding_t)encoding
+			 encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithStream: stream
 					mode: mode
@@ -101,7 +99,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
-		      encoding: (of_string_encoding_t)encoding
+		      encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -109,7 +107,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		_archive = [[OFLHAArchive alloc] initWithStream: stream
 							   mode: mode];
 
-		if (encoding != OF_STRING_ENCODING_AUTODETECT)
+		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
 		[self release];
@@ -133,7 +131,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[of_stdout writeLine: entry.fileName];
+		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
 			OFString *date = [entry.date
@@ -145,8 +143,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			OFString *CRC16 = [OFString stringWithFormat:
 			    @"%04" PRIX16, entry.CRC16];
 
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_compressed_size",
 			    @"["
 			    @"    'Compressed: ',"
@@ -156,8 +154,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			    @"    ]"
 			    @"]".objectByParsingJSON,
 			    @"size", compressedSize)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_uncompressed_size",
 			    @"["
 			    @"    'Uncompressed: ',"
@@ -167,17 +165,17 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			    @"    ]"
 			    @"]".objectByParsingJSON,
 			    @"size", uncompressedSize)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_compression_method",
 			    @"Compression method: %[method]",
 			    @"method", entry.compressionMethod)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_crc16",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_crc16",
 			    @"CRC16: %[crc16]",
 			    @"crc16", CRC16)];
-			[of_stdout writeString: @"\t"];
-			[of_stdout writeLine: OF_LOCALIZED(@"list_date",
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(@"list_date",
 			    @"Date: %[date]",
 			    @"date", date)];
 
@@ -186,33 +184,33 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				    stringWithFormat:
 				    @"%ho", entry.mode.unsignedShortValue];
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(@"list_mode",
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(@"list_mode",
 				    @"Mode: %[mode]",
 				    @"mode", modeString)];
 			}
 			if (entry.UID != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(@"list_uid",
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(@"list_uid",
 				    @"UID: %[uid]",
 				    @"uid", entry.UID)];
 			}
 			if (entry.GID != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(@"list_gid",
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(@"list_gid",
 				    @"GID: %[gid]",
 				    @"gid", entry.GID)];
 			}
 			if (entry.owner != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_owner",
 				    @"Owner: %[owner]",
 				    @"owner", entry.owner)];
 			}
 			if (entry.group != nil) {
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_group",
 				    @"Group: %[group]",
 				    @"group", entry.group)];
@@ -223,8 +221,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				    stringWithFormat: @"%" PRIu8,
 						      entry.headerLevel];
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_header_level",
 				    @"Header level: %[level]",
 				    @"level", headerLevel)];
@@ -234,8 +232,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					    [OFString stringWithFormat: @"%c",
 					    entry.operatingSystemIdentifier];
 
-					[of_stdout writeString: @"\t"];
-					[of_stdout writeLine: OF_LOCALIZED(
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_osid",
 					    @"Operating system identifier: "
 					    "%[osid]",
@@ -246,8 +244,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					OFString *modificationDate =
 					    entry.modificationDate.description;
 
-					[of_stdout writeString: @"\t"];
-					[of_stdout writeLine: OF_LOCALIZED(
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_modification_date",
 					    @"Modification date: %[date]",
 					    @"date", modificationDate)];
@@ -258,8 +256,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				OFString *extensions =
 				    indent(entry.extensions.description);
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_extensions",
 				    @"Extensions: %[extensions]",
 				    @"extensions", extensions)];
@@ -294,7 +292,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		outFileName = [app safeLocalPathForPath: fileName];
 		if (outFileName == nil) {
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"refusing_to_extract_file",
 			    @"Refusing to extract %[file]!",
 			    @"file", fileName)];
@@ -304,7 +302,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -315,8 +313,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			setModificationDate(outFileName, entry);
 
 			if (app->_outputLevel >= 0) {
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -330,13 +328,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if (![app shouldExtractFile: fileName
-				outFileName: outFileName])
+		if (![app shouldExtractFile: fileName outFileName: outFileName])
 			goto outer_loop_end;
 
 		stream = [_archive streamForReadingCurrentEntry];
-		output = [OFFile fileWithPath: outFileName
-					 mode: @"w"];
+		output = [OFFile fileWithPath: outFileName mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
@@ -360,8 +356,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[of_stdout writeString: @"\r"];
-				[of_stdout writeString: OF_LOCALIZED(
+				[OFStdOut writeString: @"\r"];
+				[OFStdOut writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -373,8 +369,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -386,7 +382,7 @@ outer_loop_end:
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"file_not_in_archive",
 			    @"File %[file] is not in the archive!",
 			    @"file", file)];
@@ -401,7 +397,7 @@ outer_loop_end:
 	OFLHAArchiveEntry *entry;
 
 	if (files_.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"print_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"print_no_file_specified",
 		    @"Need one or more files to print!")];
 		app->_exitStatus = 1;
 		return;
@@ -420,7 +416,7 @@ outer_loop_end:
 
 		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: of_stdout
+							 toStream: OFStdOut
 							 fileName: fileName];
 
 			if (length < 0) {
@@ -437,7 +433,7 @@ outer_loop_end:
 	}
 
 	for (OFString *file in files) {
-		[of_stderr writeLine: OF_LOCALIZED(@"file_not_in_archive",
+		[OFStdErr writeLine: OF_LOCALIZED(@"file_not_in_archive",
 		    @"File %[file] is not in the archive!",
 		    @"file", file)];
 		app->_exitStatus = 1;
@@ -449,7 +445,7 @@ outer_loop_end:
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
 	if (files.count < 1) {
-		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
 		    @"Need one or more files to add!")];
 		app->_exitStatus = 1;
 		return;
@@ -457,13 +453,13 @@ outer_loop_end:
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
-		of_file_attributes_t attributes;
-		of_file_type_t type;
+		OFFileAttributes attributes;
+		OFFileAttributeType type;
 		OFMutableLHAArchiveEntry *entry;
 		OFStream *output;
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -478,20 +474,25 @@ outer_loop_end:
 		entry.date = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID =
-		    [OFNumber numberWithUnsignedLong: attributes.filePOSIXUID];
-		entry.GID =
-		    [OFNumber numberWithUnsignedLong: attributes.filePOSIXGID];
-		entry.owner = attributes.fileOwner;
-		entry.group = attributes.fileGroup;
+		entry.UID = [OFNumber numberWithUnsignedLong:
+		    attributes.fileOwnerAccountID];
+		entry.GID = [OFNumber numberWithUnsignedLong:
+		    attributes.fileGroupOwnerAccountID];
+		entry.owner = attributes.fileOwnerAccountName;
+		entry.group = attributes.fileGroupOwnerAccountName;
 #endif
 
-		if ([type isEqual: of_file_type_directory])
+		if ([type isEqual: OFFileTypeDirectory]) {
 			entry.compressionMethod = @"-lhd-";
+
+			if (![entry.fileName hasSuffix: @"/"])
+				entry.fileName = [entry.fileName
+				    stringByAppendingString: @"/"];
+		}
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if ([type isEqual: of_file_type_regular]) {
+		if ([type isEqual: OFFileTypeRegular]) {
 			unsigned long long written = 0;
 			unsigned long long size = attributes.fileSize;
 			int8_t percent = -1, newPercent;
@@ -522,8 +523,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[of_stdout writeString: @"\r"];
-					[of_stdout writeString: OF_LOCALIZED(
+					[OFStdOut writeString: @"\r"];
+					[OFStdOut writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -533,8 +534,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[of_stdout writeString: @"\r"];
-			[of_stdout writeLine: OF_LOCALIZED(
+			[OFStdOut writeString: @"\r"];
+			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

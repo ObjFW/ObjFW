@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,25 +21,17 @@
 @implementation OFLoadPluginFailedException
 @synthesize path = _path, error = _error;
 
++ (instancetype)exceptionWithPath: (OFString *)path error: (OFString *)error
+{
+	return [[[self alloc] initWithPath: path error: error] autorelease];
+}
+
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    error: (OFString *)error
-{
-	return [[[self alloc] initWithPath: path
-				     error: error] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPath: (OFString *)path
-		       error: (OFString *)error
+- (instancetype)initWithPath: (OFString *)path error: (OFString *)error
 {
 	self = [super init];
 
@@ -54,6 +44,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

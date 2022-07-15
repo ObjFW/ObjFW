@@ -52,11 +52,13 @@
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  Ungültige Antwort vom Server!"
     ],
-    "no_ssl_library": [
-        "%[prog]: Keine TLS-Bibliothek geladen!\n",
-        "  Um Dateien über https zu laden, müssen Sie eine TLS-Bibliothek für ",
-        "ObjFW,\n",
-        "  wie z.B. ObjOpenSSL, mittels LD_PRELOAD laden."
+    "no_tls_support": [
+        "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
+        "  Um via HTTPS runterzuladen, müssen Sie entweder ObjFW mit TLS-",
+        "Unterstützung\n",
+        "  kompilieren oder eine Bibliothek mittels „preoad” laden, welche ",
+        "TLS-Support\n",
+        "  zu ObjFW hinzufügt!"
     ],
     "download_failed_read_or_write_failed_any": "Lesen oder Schreiben",
     "download_failed_read_or_write_failed_read": "Lesen",

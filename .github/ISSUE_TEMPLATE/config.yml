@@ -15,7 +15,27 @@ contact_links:
     url: https://matrix.to/#/%23objfw:nil.im
     about: Please use this for interactive questions and support.
   - name: ObjFW IRC Channel
-    url: https://webchat.freenode.net/?channels=objfw
+    url: https://webchat.oftc.net/?channels=%23objfw
+    about:
+      Please use this for interactive questions and support - it is bridged to 
+      the Matrix room above.
+  - name: ObjFW Slack Channel
+    url: https://objfw.nil.im/slack
+    about:
+      Please use this for interactive questions and support - it is bridged to 
+      the Matrix room above.
+  - name: ObjFW Discord Channel
+    url: https://objfw.nil.im/discord
+    about:
+      Please use this for interactive questions and support - it is bridged to 
+      the Matrix room above.
+  - name: ObjFW Telegram Room
+    url: https://t.me/objfw
+    about:
+      Please use this for interactive questions and support - it is bridged to 
+      the Matrix room above.
+  - name: ObjFW Gitter Room
+    url: https://gitter.im/ObjFW/ObjFW
     about:
       Please use this for interactive questions and support - it is bridged to 
       the Matrix room above.

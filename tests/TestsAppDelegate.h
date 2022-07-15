@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,41 +15,35 @@
 
 #import "ObjFW.h"
 
-#define TEST(test, ...)					\
-	{						\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		if (__VA_ARGS__)			\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define TEST(test, ...)							\
+	{								\
+		[self outputTesting: test inModule: module];		\
+									\
+		if (__VA_ARGS__)					\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
-#define EXPECT_EXCEPTION(test, exception, code)		\
-	{						\
-		bool caught = false;			\
-							\
-		[self outputTesting: test		\
-			   inModule: module];		\
-							\
-		@try {					\
-			code;				\
-		} @catch (exception *e) {		\
-			caught = true;			\
-		}					\
-							\
-		if (caught)				\
-			[self outputSuccess: test	\
-				   inModule: module];	\
-		else {					\
-			[self outputFailure: test	\
-				   inModule: module];	\
-			_fails++;			\
-		}					\
+#define EXPECT_EXCEPTION(test, exception, code)				\
+	{								\
+		bool caught = false;					\
+									\
+		[self outputTesting: test inModule: module];		\
+									\
+		@try {							\
+			code;						\
+		} @catch (exception *e) {				\
+			caught = true;					\
+		}							\
+									\
+		if (caught)						\
+			[self outputSuccess: test inModule: module];	\
+		else {							\
+			[self outputFailure: test inModule: module];	\
+			_fails++;					\
+		}							\
 	}
 #define R(...) (__VA_ARGS__, 1)
 
@@ -62,20 +54,9 @@
 	int _fails;
 }
 
-- (void)outputTesting: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputSuccess: (OFString *)test
-	     inModule: (OFString *)module;
-- (void)outputFailure: (OFString *)test
-	     inModule: (OFString *)module;
-@end
-
-@interface TestsAppDelegate (OFASN1DERParsingTests)
-- (void)ASN1DERParsingTests;
-@end
-
-@interface TestsAppDelegate (OFASN1DERRepresentationTests)
-- (void)ASN1DERRepresentationTests;
+- (void)outputTesting: (OFString *)test inModule: (OFString *)module;
+- (void)outputSuccess: (OFString *)test inModule: (OFString *)module;
+- (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
 @interface TestsAppDelegate (OFArrayTests)
@@ -158,12 +139,20 @@
 - (void)methodSignatureTests;
 @end
 
+@interface TestsAppDelegate (OFNotificationCenterTests)
+- (void)notificationCenterTests;
+@end
+
 @interface TestsAppDelegate (OFNumberTests)
 - (void)numberTests;
 @end
 
 @interface TestsAppDelegate (OFObjectTests)
 - (void)objectTests;
+@end
+
+@interface TestsAppDelegate (OFPBKDF2Tests)
+- (void)PBKDF2Tests;
 @end
 
 @interface TestsAppDelegate (OFPropertyListTests)
@@ -186,7 +175,7 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (ScryptTests)
+@interface TestsAppDelegate (OFScryptTests)
 - (void)scryptTests;
 @end
 
@@ -208,10 +197,6 @@
 
 @interface TestsAppDelegate (OFSHA512HashTests)
 - (void)SHA512HashTests;
-@end
-
-@interface TestsAppDelegate (OFSCTPSocketTests)
-- (void)SCTPSocketTests;
 @end
 
 @interface TestsAppDelegate (OFSPXSocketTests)
@@ -238,6 +223,10 @@
 - (void)HMACTests;
 @end
 
+@interface TestsAppDelegate (OFSocketTests)
+- (void)socketTests;
+@end
+
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
@@ -256,6 +245,14 @@
 
 @interface TestsAppDelegate (OFUDPSocketTests)
 - (void)UDPSocketTests;
+@end
+
+@interface TestsAppDelegate (OFUNIXDatagramSocketTests)
+- (void)UNIXDatagramSocketTests;
+@end
+
+@interface TestsAppDelegate (OFUNIXStreamSocketTests)
+- (void)UNIXStreamSocketTests;
 @end
 
 @interface TestsAppDelegate (OFURLTests)
@@ -281,12 +278,4 @@
 @interface TestsAppDelegate (OFXMLParserTests)
     <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
-@end
-
-@interface TestsAppDelegate (PBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
-@interface TestsAppDelegate (SocketTests)
-- (void)socketTests;
 @end

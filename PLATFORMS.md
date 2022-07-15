@@ -68,6 +68,17 @@ Haiku
   * Runtimes: ObjFW
 
 
+HP-UX
+-----
+
+  * OS versions: 11i v1 (PA-RISC 2.0), 11i v3 (Itanium)
+  * Architectures: Itanium, PA-RISC 2.0
+  * Compilers: GCC 4.7.2, GCC 7.5.0
+  * Runtimes: ObjFW
+  * Notes: Exception handling on Itanium in 32 bit mode is broken, you need to
+           use 64 bit mode by passing `OBJC="gcc -mlp64"` to `configure`.
+
+
 iOS
 ---
 
@@ -95,14 +106,23 @@ macOS
   * Runtimes: Apple, ObjFW
 
 
+MiNT
+----
+
+  * OS Versions: FreeMiNT 1.19
+  * Architectures: m68k
+  * Runtimes: ObjFW
+  * Compilers: GCC 4.6.4 (MiNT 20130415)
+  * Limitations: No shared libraries, no threads
+
+
 MorphOS
 -------
 
-  * OS Versions: 3.9-3.11
+  * OS Versions: 3.14
   * Architectures: PowerPC
-  * Compilers: GCC 5.3.0, GCC 5.4.0
+  * Compilers: GCC 9.3.0
   * Runtimes: ObjFW
-  * Notes: libnix and ixemul are both supported
 
 
 NetBSD
@@ -185,12 +205,13 @@ Wii
 Windows
 -------
 
-  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10,
+  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
                  Wine (x86 & x64)
-  * Architectures: x86, x86_64
+  * Architectures: x86, x86_64, AArch64
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),
                Clang 3.9.0 from msys2 (x86),
-               Clang 10.0 from msys2 (x86 & x86_64)
+               Clang 10.0 from msys2 (x86 & x86_64),
+               Clang 14.0.4 from msys2 (AArch64)
   * Runtimes: ObjFW
 
 

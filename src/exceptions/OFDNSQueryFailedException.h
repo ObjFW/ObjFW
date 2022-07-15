@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFDNSQueryFailedException: OFException
 {
 	OFDNSQuery *_query;
-	of_dns_resolver_error_t _error;
+	OFDNSResolverErrorCode _errorCode;
 }
 
 /**
@@ -40,35 +38,40 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFDNSQuery *query;
 
 /**
- * @brief The error from the resolver.
+ * @brief The error code from the resolver.
  */
-@property (readonly, nonatomic) of_dns_resolver_error_t error;
+@property (readonly, nonatomic) OFDNSResolverErrorCode errorCode;
 
 /**
  * @brief Creates a new, autoreleased DNS query failed exception.
  *
  * @param query The query which could not be performed
- * @param error The error from the resolver
+ * @param errorCode The error from the resolver
  * @return A new, autoreleased address translation failed exception
  */
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
-			     error: (of_dns_resolver_error_t)error;
+			 errorCode: (OFDNSResolverErrorCode)errorCode;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated DNS query failed exception.
  *
  * @param query The query which could not be performed
- * @param error The error from the resolver
+ * @param errorCode The error from the resolver
  * @return An initialized address translation failed exception
  */
 - (instancetype)initWithQuery: (OFDNSQuery *)query
-			error: (of_dns_resolver_error_t)error;
+		    errorCode: (OFDNSResolverErrorCode)errorCode;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *of_dns_resolver_error_to_string(of_dns_resolver_error_t error);
+extern OFString *OFDNSResolverErrorCodeDescription(
+    OFDNSResolverErrorCode errorCode);
 #ifdef __cplusplus
 }
 #endif

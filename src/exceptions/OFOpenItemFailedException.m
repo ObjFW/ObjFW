@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,11 +22,6 @@
 @implementation OFOpenItemFailedException
 @synthesize URL = _URL, path = _path, mode = _mode, errNo = _errNo;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithURL: (OFURL *)URL
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
@@ -47,9 +40,9 @@
 				     errNo: errNo] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithURL: (OFURL *)URL
@@ -88,6 +81,11 @@
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
 	[_URL release];
@@ -109,9 +107,9 @@
 	if (_mode != nil)
 		return [OFString stringWithFormat:
 		    @"Failed to open item %@ with mode %@: %@",
-		    item, _mode, of_strerror(_errNo)];
+		    item, _mode, OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@: %@", item, of_strerror(_errNo)];
+		    @"Failed to open item %@: %@", item, OFStrError(_errNo)];
 }
 @end

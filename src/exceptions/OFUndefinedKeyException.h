@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUndefinedKeyException: OFException
 {
 	id _object;
-	OFString *_key;
+	OFString *_Nullable _key;
 	id _Nullable _value;
 }
 
@@ -41,64 +39,62 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The key which is undefined.
  */
-@property (readonly, nonatomic) OFString *key;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *key;
 
 /**
  * @brief The value for the undefined key
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
 
+/**
+ * @brief Creates a new, autoreleased undefined key exception.
+ *
+ * @param object The object on which the key is undefined
+ * @param key The key which is undefined
+ *
+ * @return A new, autoreleased undefined key exception
+ */
++ (instancetype)exceptionWithObject: (id)object key: (OFString *)key;
+
+/**
+ * @brief Creates a new, autoreleased undefined key exception.
+ *
+ * @param object The object on which the key is undefined
+ * @param key The key which is undefined
+ * @param value The value for the undefined key
+ *
+ * @return A new, autoreleased undefined key exception
+ */
++ (instancetype)exceptionWithObject: (id)object
+				key: (nullable OFString *)key
+			      value: (nullable id)value;
+
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
- * @brief Creates a new, autoreleased undefined key exception.
+ * @brief Initializes an already allocated undefined key exception.
  *
  * @param object The object on which the key is undefined
  * @param key The key which is undefined
  *
- * @return A new, autoreleased undefined key exception
+ * @return An initialized undefined key exception
  */
-+ (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key;
+- (instancetype)initWithObject: (id)object key: (OFString *)key;
 
 /**
- * @brief Creates a new, autoreleased undefined key exception.
+ * @brief Initializes an already allocated undefined key exception.
  *
  * @param object The object on which the key is undefined
  * @param key The key which is undefined
  * @param value The value for the undefined key
  *
- * @return A new, autoreleased undefined key exception
+ * @return An initialized undefined key exception
  */
-+ (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key
-			      value: (nullable id)value;
+- (instancetype)initWithObject: (id)object
+			   key: (nullable OFString *)key
+			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated undefined key exception.
- *
- * @param object The object on which the key is undefined
- * @param key The key which is undefined
- *
- * @return An initialized undefined key exception
- */
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key;
-
-/**
- * @brief Initializes an already allocated undefined key exception.
- *
- * @param object The object on which the key is undefined
- * @param key The key which is undefined
- * @param value The value for the undefined key
- *
- * @return An initialized undefined key exception
- */
-- (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
-			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

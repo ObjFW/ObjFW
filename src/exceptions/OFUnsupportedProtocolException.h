@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,13 +29,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFUnsupportedProtocolException: OFException
 {
-	OFURL *_URL;
+	OFURL *_Nullable _URL;
 }
 
 /**
  * @brief The URL whose protocol is unsupported.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFURL *URL;
 
 /**
  * @brief Creates a new, autoreleased unsupported protocol exception.
@@ -45,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL whose protocol is unsupported
  * @return A new, autoreleased unsupported protocol exception
  */
-+ (instancetype)exceptionWithURL: (OFURL*)URL;
++ (instancetype)exceptionWithURL: (nullable OFURL*)URL;
 
 /**
  * @brief Initializes an already allocated unsupported protocol exception
@@ -53,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- (instancetype)initWithURL: (OFURL*)URL OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (nullable OFURL*)URL OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

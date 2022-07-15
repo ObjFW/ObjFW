@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,11 +31,9 @@
 		[self inheritMethodsFromClass: [OFMapTableDictionary class]];
 }
 
-- (void)setObject: (id)object
-	   forKey: (id)key
+- (void)setObject: (id)object forKey: (id)key
 {
-	[_mapTable setObject: object
-		      forKey: key];
+	[_mapTable setObject: object forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
@@ -51,7 +47,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFDictionaryReplaceBlock)block
 {
 	@try {
 		[_mapTable replaceObjectsUsingBlock:

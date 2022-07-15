@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,8 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_SERIALIZATION_NS @"https://objfw.nil.im/serialization"
-
+@class OFConstantString;
 @class OFXMLElement;
 
 /**
@@ -42,5 +39,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFConstantString *const OFSerializationNS;
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -55,8 +53,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased open item failed exception.
  *
@@ -81,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     mode: (nullable OFString *)mode
 			    errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated open item failed exception.
@@ -106,6 +102,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath: (OFString *)path
 			mode: (nullable OFString *)mode
 		       errNo: (int)errNo;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,11 +24,9 @@
 @implementation OFMessagePackExtension
 @synthesize type = _type, data = _data;
 
-+ (instancetype)extensionWithType: (int8_t)type
-			     data: (OFData *)data
++ (instancetype)extensionWithType: (int8_t)type data: (OFData *)data
 {
-	return [[[self alloc] initWithType: type
-				      data: data] autorelease];
+	return [[[self alloc] initWithType: type data: data] autorelease];
 }
 
 - (instancetype)init
@@ -38,8 +34,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithType: (int8_t)type
-			data: (OFData *)data
+- (instancetype)initWithType: (int8_t)type data: (OFData *)data
 {
 	self = [super init];
 
@@ -125,9 +120,8 @@
 		prefix = 0xC8;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP16_IF_LE((uint16_t)count);
-		[ret addItems: &length
-			count: 2];
+		length = OFToBigEndian16((uint16_t)count);
+		[ret addItems: &length count: 2];
 
 		[ret addItem: &_type];
 	} else {
@@ -138,16 +132,13 @@
 		prefix = 0xC9;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP32_IF_LE((uint32_t)count);
-		[ret addItems: &length
-			count: 4];
+		length = OFToBigEndian32((uint32_t)count);
+		[ret addItems: &length count: 4];
 
 		[ret addItem: &_type];
 	}
 
-	[ret addItems: _data.items
-		count: _data.count];
-
+	[ret addItems: _data.items count: _data.count];
 	[ret makeImmutable];
 
 	return ret;
@@ -179,14 +170,14 @@
 
 - (unsigned long)hash
 {
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
-	OF_HASH_ADD(hash, (uint8_t)_type);
-	OF_HASH_ADD_HASH(hash, _data.hash);
+	OFHashAdd(&hash, (uint8_t)_type);
+	OFHashAddHash(&hash, _data.hash);
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }

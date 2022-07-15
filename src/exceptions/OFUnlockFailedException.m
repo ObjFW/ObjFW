@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,15 +23,12 @@
 @implementation OFUnlockFailedException
 @synthesize lock = _lock, errNo = _errNo;
 
-+ (instancetype)exceptionWithLock: (id <OFLocking>)lock
-			    errNo: (int)errNo
++ (instancetype)exceptionWithLock: (id <OFLocking>)lock errNo: (int)errNo
 {
-	return [[[self alloc] initWithLock: lock
-				     errNo: errNo] autorelease];
+	return [[[self alloc] initWithLock: lock errNo: errNo] autorelease];
 }
 
-- (instancetype)initWithLock: (id <OFLocking>)lock
-		       errNo: (int)errNo
+- (instancetype)initWithLock: (id <OFLocking>)lock errNo: (int)errNo
 {
 	self = [super init];
 
@@ -41,11 +36,6 @@
 	_errNo = errNo;
 
 	return self;
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -57,8 +47,11 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"A lock of type %@ could not be unlocked: %s",
-	    [_lock class], strerror(_errNo)];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"A lock of type %@ could not be unlocked: %s",
+		    [_lock class], strerror(_errNo)];
+	else
+		return @"A lock could not be unlocked!";
 }
 @end

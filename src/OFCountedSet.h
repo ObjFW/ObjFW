@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
+typedef void (^OFCountedSetEnumerationBlock)(id object, size_t count,
     bool *stop);
 #endif
 
@@ -61,8 +59,7 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
  *
  * @param block The block to execute for each object in the set
  */
-- (void)enumerateObjectsAndCountUsingBlock:
-    (of_counted_set_enumeration_block_t)block;
+- (void)enumerateObjectsAndCountUsingBlock: (OFCountedSetEnumerationBlock)block;
 #endif
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType

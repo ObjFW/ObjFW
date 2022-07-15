@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,15 +17,14 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFWindowsRegistryKey";
+static OFString *const module = @"OFWindowsRegistryKey";
 
 @implementation TestsAppDelegate (OFWindowsRegistryKeyTests)
 - (void)windowsRegistryKeyTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithItems: "abcdef"
-				       count: 6];
-	OFWindowsRegistryKey *softwareKey, *ObjFWKey;
+	OFData *data = [OFData dataWithItems: "abcdef" count: 6];
+	OFWindowsRegistryKey *softwareKey, *objFWKey;
 	DWORD type;
 
 	TEST(@"+[OFWindowsRegistryKey classesRootKey]",
@@ -45,42 +42,41 @@ static OFString *module = @"OFWindowsRegistryKey";
 	TEST(@"+[OFWindowsRegistryKey usersKey]",
 	    [OFWindowsRegistryKey usersKey])
 
-	TEST(@"-[openSubkeyAtPath:securityAndAccessRights:]",
+	TEST(@"-[openSubkeyAtPath:securityAndAccessRights:] #1",
 	    (softwareKey = [[OFWindowsRegistryKey currentUserKey]
 		   openSubkeyAtPath: @"Software"
-	    securityAndAccessRights: KEY_ALL_ACCESS]) &&
+	    securityAndAccessRights: KEY_ALL_ACCESS]))
+
+	EXPECT_EXCEPTION(@"-[openSubkeyAtPath:securityAndAccessRights:] #2",
+	    OFOpenWindowsRegistryKeyFailedException,
 	    [[OFWindowsRegistryKey currentUserKey]
 		   openSubkeyAtPath: @"nonexistent"
-	    securityAndAccessRights: KEY_ALL_ACCESS] == nil)
+	    securityAndAccessRights: KEY_ALL_ACCESS])
 
 	TEST(@"-[createSubkeyAtPath:securityAndAccessRights:]",
-	    (ObjFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
+	    (objFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
 				securityAndAccessRights: KEY_ALL_ACCESS]))
 
-	TEST(@"-[setData:forValue:type:]",
-	    R([ObjFWKey setData: data
-		       forValue: @"data"
-			   type: REG_BINARY]))
+	TEST(@"-[setData:forValueNamed:type:]",
+	    R([objFWKey setData: data forValueNamed: @"data" type: REG_BINARY]))
 
-	TEST(@"-[dataForValue:subkeyPath:flags:type:]",
-	    [[ObjFWKey dataForValue: @"data"
-			       type: &type] isEqual: data] &&
+	TEST(@"-[dataForValueNamed:subkeyPath:flags:type:]",
+	    [[objFWKey dataForValueNamed: @"data" type: &type] isEqual: data] &&
 	    type == REG_BINARY)
 
-	TEST(@"-[setString:forValue:type:]",
-	    R([ObjFWKey setString: @"foobar"
-			 forValue: @"string"]) &&
-	    R([ObjFWKey setString: @"%PATH%;foo"
-			 forValue: @"expand"
+	TEST(@"-[setString:forValueNamed:type:]",
+	    R([objFWKey setString: @"foobar" forValueNamed: @"string"]) &&
+	    R([objFWKey setString: @"%PATH%;foo"
+		    forValueNamed: @"expand"
 			     type: REG_EXPAND_SZ]))
 
 	TEST(@"-[stringForValue:subkeyPath:]",
-	    [[ObjFWKey stringForValue: @"string"] isEqual: @"foobar"] &&
-	    [[ObjFWKey stringForValue: @"expand"
-				 type: &type] isEqual: @"%PATH%;foo"] &&
+	    [[objFWKey stringForValueNamed: @"string"] isEqual: @"foobar"] &&
+	    [[objFWKey stringForValueNamed: @"expand" type: &type]
+	    isEqual: @"%PATH%;foo"] &&
 	    type == REG_EXPAND_SZ)
 
-	TEST(@"-[deleteValue:]", R([ObjFWKey deleteValue: @"data"]))
+	TEST(@"-[deleteValueNamed:]", R([objFWKey deleteValueNamed: @"data"]))
 
 	TEST(@"-[deleteSubkeyAtPath:]",
 	    R([softwareKey deleteSubkeyAtPath: @"ObjFW"]))

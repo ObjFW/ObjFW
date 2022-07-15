@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,8 +29,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
 @property (class, readonly, nonatomic) OFString *ObjFWVersion;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMajor;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMinor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMajor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMinor;
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
@@ -91,14 +89,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The major version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMajor;
++ (unsigned short)ObjFWVersionMajor;
 
 /**
  * @brief The minor version of ObjFW.
  *
  * @return The minor version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMinor;
++ (unsigned short)ObjFWVersionMinor;
 
 /**
  * @brief Returns the name of the operating system the application is running
@@ -120,10 +118,11 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the path where user data for the application can be stored.
  *
- * On Unix systems, this adheres to the XDG Base Directory specification.@n
- * On Mac OS X and iOS, it uses the `NSApplicationSupportDirectory` directory.@n
+ * On UNIX systems, this adheres to the XDG Base Directory specification.@n
+ * On macOS and iOS, it uses the `NSApplicationSupportDirectory` directory.@n
  * On Windows, it uses the `APPDATA` environment variable.@n
- * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.@n
+ * On AmigaOS and MorphOS, it returns `PROGDIR:`.
  *
  * @return The path where user data for the application can be stored
  */
@@ -133,15 +132,34 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the path where user configuration for the application can be
  *	  stored.
  *
- * On Unix systems, this adheres to the XDG Base Directory specification.@n
- * On Mac OS X and iOS, it uses the `Preferences` directory inside of
+ * On UNIX systems, this adheres to the XDG Base Directory specification.@n
+ * On macOS and iOS, it uses the `Preferences` directory inside of
  * `NSLibraryDirectory` directory.@n
  * On Windows, it uses the `APPDATA` environment variable.@n
  * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ * On AmigaOS and MorphOS, it returns `PROGDIR:`.
  *
  * @return The path where user configuration for the application can be stored
  */
 + (nullable OFString *)userConfigPath;
+
+/**
+ * @brief Returns a path where temporary files for can be stored.
+ * 
+ * If possible, returns a temporary directory for the user, otherwise returns a
+ * global temporary directory.
+ *
+ * On UNIX systems, this adheres to the XDG Base Directory specification and
+ * returns `/tmp` if `XDG_RUNTIME_DIR` is not set.@n
+ * On macOS and iOS, this uses `_CS_DARWIN_USER_TEMP_DIR`, falling back to
+ * `/tmp` if this fails.@n
+ * On Windows, it uses `GetTempPath`.@n
+ * On Haiku, it uses the `B_SYSTEM_TEMP_DIRECTORY` directory.
+ * On AmigaOS and MorphOS, it returns `T:`.
+ *
+ * @return A path where temporary files can be stored
+ */
++ (nullable OFString *)temporaryDirectoryPath;
 #endif
 
 /**

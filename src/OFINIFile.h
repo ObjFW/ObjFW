@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,6 +33,11 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
+ * @brief All categories in the INI file.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFINICategory *) *categories;
+
+/**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
  * @param path The path to the file whose contents the OFINIFile should contain
@@ -53,7 +56,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  */
 + (instancetype)fileWithPath: (OFString *)path
-		    encoding: (of_string_encoding_t)encoding;
+		    encoding: (OFStringEncoding)encoding;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -77,7 +80,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFINIFile with the contents of the specified file
  */
 - (instancetype)initWithPath: (OFString *)path
-		    encoding: (of_string_encoding_t)encoding
+		    encoding: (OFStringEncoding)encoding
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -105,8 +108,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding;
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,7 +37,7 @@
 {
 	self = [super init];
 
-	if (!of_mutex_new(&_mutex)) {
+	if (OFPlainMutexNew(&_mutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -53,8 +51,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		if (!of_mutex_free(&_mutex)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = OFPlainMutexFree(&_mutex);
+
+		if (error != 0) {
+			OFEnsure(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,19 +67,23 @@
 
 - (void)lock
 {
-	if (!of_mutex_lock(&_mutex))
+	int error = OFPlainMutexLock(&_mutex);
+
+	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
-							  errNo: errno];
+							  errNo: error];
 }
 
 - (bool)tryLock
 {
-	if (!of_mutex_trylock(&_mutex)) {
-		if (errno == EBUSY)
+	int error = OFPlainMutexTryLock(&_mutex);
+
+	if (error != 0) {
+		if (error == EBUSY)
 			return false;
 		else
 			@throw [OFLockFailedException exceptionWithLock: self
-								  errNo: errno];
+								  errNo: error];
 	}
 
 	return true;
@@ -87,9 +91,11 @@
 
 - (void)unlock
 {
-	if (!of_mutex_unlock(&_mutex))
+	int error = OFPlainMutexUnlock(&_mutex);
+
+	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self
-							    errNo: errno];
+							    errNo: error];
 }
 
 - (OFString *)description

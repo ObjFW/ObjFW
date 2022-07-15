@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"Runtime";
+static OFString *const module = @"Runtime";
 
 @interface OFObject (SuperTest)
 - (id)superTest;
@@ -65,29 +63,30 @@ static OFString *module = @"Runtime";
 - (void)runtimeTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
-	OFString *t, *foo;
+	RuntimeTest *test = [[[RuntimeTest alloc] init] autorelease];
+	OFString *string, *foo;
 #ifdef OF_OBJFW_RUNTIME
-	int cid1, cid2;
+	int classID;
 	uintmax_t value;
 	id object;
 #endif
 
 	EXPECT_EXCEPTION(@"Calling a non-existent method via super",
-	    OFNotImplementedException, [rt superTest])
+	    OFNotImplementedException, [test superTest])
 
 	TEST(@"Calling a method via a super with self == nil",
-	    [rt nilSuperTest] == nil)
+	    [test nilSuperTest] == nil)
 
-	t = [OFMutableString stringWithString: @"foo"];
+	string = [OFMutableString stringWithString: @"foo"];
 	foo = @"foo";
 
-	[rt setFoo: t];
-	TEST(@"copy, nonatomic properties", [rt.foo isEqual: foo] &&
-	    rt.foo != foo && rt.foo.retainCount == 1)
+	test.foo = string;
+	TEST(@"copy, nonatomic properties", [test.foo isEqual: foo] &&
+	    test.foo != foo && test.foo.retainCount == 1)
 
-	rt.bar = t;
-	TEST(@"retain, atomic properties", rt.bar == t && t.retainCount == 3)
+	test.bar = string;
+	TEST(@"retain, atomic properties",
+	    test.bar == string && string.retainCount == 3)
 
 #ifdef OF_OBJFW_RUNTIME
 	if (sizeof(uintptr_t) == 8)
@@ -98,14 +97,15 @@ static OFString *module = @"Runtime";
 		abort();
 
 	TEST(@"Tagged pointers",
-	    (cid1 = objc_registerTaggedPointerClass([OFString class])) != -1 &&
-	    (cid2 = objc_registerTaggedPointerClass([OFNumber class])) != -1 &&
-	    (object = objc_createTaggedPointer(cid2, (uintptr_t)value)) &&
+	    objc_registerTaggedPointerClass([OFString class]) != -1 &&
+	    (classID = objc_registerTaggedPointerClass([OFNumber class])) !=
+	    -1 &&
+	    (object = objc_createTaggedPointer(classID, (uintptr_t)value)) &&
 	    object_getClass(object) == [OFNumber class] &&
 	    [object class] == [OFNumber class] &&
 	    object_getTaggedPointerValue(object) == value &&
-	    objc_createTaggedPointer(cid2, UINTPTR_MAX >> 4) != nil &&
-	    objc_createTaggedPointer(cid2, (UINTPTR_MAX >> 4) + 1) == nil)
+	    objc_createTaggedPointer(classID, UINTPTR_MAX >> 4) != nil &&
+	    objc_createTaggedPointer(classID, (UINTPTR_MAX >> 4) + 1) == nil)
 #endif
 
 	objc_autoreleasePoolPop(pool);

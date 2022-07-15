@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSeekFailedException: OFException
 {
 	OFSeekableStream *_stream;
-	of_offset_t _offset;
+	OFFileOffset _offset;
 	int _whence, _errNo;
 }
 
@@ -41,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The offset to which seeking failed.
  */
-@property (readonly, nonatomic) of_offset_t offset;
+@property (readonly, nonatomic) OFFileOffset offset;
 
 /**
  * @brief To what the offset is relative.
@@ -53,8 +51,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased seek failed exception.
  *
@@ -65,11 +61,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased seek failed exception
  */
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
-			     offset: (of_offset_t)offset
+			     offset: (OFFileOffset)offset
 			     whence: (int)whence
 			      errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated seek failed exception.
@@ -81,9 +77,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized seek failed exception
  */
 - (instancetype)initWithStream: (OFSeekableStream *)stream
-			offset: (of_offset_t)offset
+			offset: (OFFileOffset)offset
 			whence: (int)whence
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

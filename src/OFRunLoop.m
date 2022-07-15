@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,8 +42,10 @@
 #import "OFDate.h"
 
 #import "OFObserveFailedException.h"
+#import "OFWriteFailedException.h"
 
-const of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
+#include "OFRunLoopConstants.inc"
+
 static OFRunLoop *mainRunLoop = nil;
 
 @interface OFRunLoopState: OFObject
@@ -78,12 +78,6 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-OF_DIRECT_MEMBERS
-@interface OFRunLoop ()
-- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
-			     create: (bool)create;
-@end
-
 #ifdef OF_HAVE_SOCKETS
 @interface OFRunLoopQueueItem: OFObject
 {
@@ -98,7 +92,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_block_t _block;
+	OFStreamAsyncReadBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -109,7 +103,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_block_t _block;
+	OFStreamAsyncReadBlock _block;
 # endif
 	void *_buffer;
 	size_t _exactLength, _readLength;
@@ -120,9 +114,9 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_read_line_block_t _block;
+	OFStreamAsyncReadLineBlock _block;
 # endif
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 }
 @end
 
@@ -130,7 +124,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_write_data_block_t _block;
+	OFStreamAsyncWriteDataBlock _block;
 # endif
 	OFData *_data;
 	size_t _writtenLength;
@@ -141,10 +135,10 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_write_string_block_t _block;
+	OFStreamAsyncWriteStringBlock _block;
 # endif
 	OFString *_string;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	size_t _writtenLength;
 }
 @end
@@ -167,7 +161,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_datagram_socket_async_receive_block_t _block;
+	OFDatagramSocketAsyncReceiveBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -178,10 +172,10 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_datagram_socket_async_send_data_block_t _block;
+	OFDatagramSocketAsyncSendDataBlock _block;
 # endif
 	OFData *_data;
-	of_socket_address_t _receiver;
+	OFSocketAddress _receiver;
 }
 @end
 
@@ -189,7 +183,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_sequenced_packet_socket_async_receive_block_t _block;
+	OFSequencedPacketSocketAsyncReceiveBlock _block;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -200,7 +194,7 @@ OF_DIRECT_MEMBERS
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_sequenced_packet_socket_async_send_data_block_t _block;
+	OFSequencedPacketSocketAsyncSendDataBlock _block;
 # endif
 	OFData *_data;
 }
@@ -284,23 +278,24 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			of_list_object_t *listObject = queue.firstListObject;
+			OFListItem listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
 			 * so that our queue is now empty, in which case we
 			 * should do nothing.
 			 */
-			if (listObject != NULL) {
+			if (listItem != NULL) {
 				/*
 				 * Make sure we keep the target until after we
 				 * are done removing the object. The reason for
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listObject->object retain] autorelease];
+				[[OFListItemObject(listItem) retain]
+				    autorelease];
 
-				[queue removeListObject: listObject];
+				[queue removeListItem: listItem];
 
 				if (queue.count == 0) {
 					[_kernelEventObserver
@@ -327,23 +322,24 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
-			of_list_object_t *listObject = queue.firstListObject;
+			OFListItem listItem = queue.firstListItem;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
 			 * so that our queue is now empty, in which case we
 			 * should do nothing.
 			 */
-			if (listObject != NULL) {
+			if (listItem != NULL) {
 				/*
 				 * Make sure we keep the target until after we
 				 * are done removing the object. The reason for
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				[[listObject->object retain] autorelease];
+				[[OFListItemObject(listItem) retain]
+				    autorelease];
 
-				[queue removeListObject: listObject];
+				[queue removeListItem: listItem];
 
 				if (queue.count == 0) {
 					[_kernelEventObserver
@@ -431,8 +427,7 @@ OF_DIRECT_MEMBERS
 	id exception = nil;
 
 	@try {
-		length = [object readIntoBuffer: _buffer
-					 length: _length];
+		length = [object readIntoBuffer: _buffer length: _length];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -575,22 +570,27 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		const char *dataItems = _data.items;
+		length = dataLength - _writtenLength;
+		[object writeBuffer: dataItems + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: dataItems + _writtenLength
-				      length: dataLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= dataLength);
 
 	if (_writtenLength != dataLength && exception == nil)
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, _writtenLength, exception);
+		newData = _block(_writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -647,22 +647,27 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		const char *cString = [_string cStringWithEncoding: _encoding];
+		length = cStringLength - _writtenLength;
+		[object writeBuffer: cString + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: cString + _writtenLength
-				      length: cStringLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= cStringLength);
 
 	if (_writtenLength != cStringLength && exception == nil)
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newString = _block(_string, _writtenLength, exception);
+		newString = _block(_writtenLength, exception);
 
 		if (newString == nil)
 			return false;
@@ -740,9 +745,7 @@ OF_DIRECT_MEMBERS
 				   object: object
 				   object: exception
 				  repeats: false];
-
-		[runLoop addTimer: timer
-			  forMode: runLoop.currentMode];
+		[runLoop addTimer: timer forMode: runLoop.currentMode];
 	}
 
 	return false;
@@ -765,15 +768,14 @@ OF_DIRECT_MEMBERS
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
 		if ([object isKindOfClass: [OFStreamSocket class]])
-			return ((of_stream_socket_async_accept_block_t)
-			    _block)(acceptedSocket, exception);
+			return ((OFStreamSocketAsyncAcceptBlock)_block)(
+			    acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
-			return
-			    ((of_sequenced_packet_socket_async_accept_block_t)
+			return ((OFSequencedPacketSocketAsyncAcceptBlock)
 			    _block)(acceptedSocket, exception);
 		else
-			OF_ENSURE(0);
+			OFEnsure(0);
 	} else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -802,7 +804,7 @@ OF_DIRECT_MEMBERS
 - (bool)handleObject: (id)object
 {
 	size_t length;
-	of_socket_address_t address;
+	OFSocketAddress address;
 	id exception = nil;
 
 	@try {
@@ -859,7 +861,7 @@ OF_DIRECT_MEMBERS
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, &_receiver, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -911,8 +913,7 @@ OF_DIRECT_MEMBERS
 	id exception = nil;
 
 	@try {
-		length = [object receiveIntoBuffer: _buffer
-					    length: _length];
+		length = [object receiveIntoBuffer: _buffer length: _length];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -961,7 +962,7 @@ OF_DIRECT_MEMBERS
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -1028,19 +1029,45 @@ OF_DIRECT_MEMBERS
 	mainRunLoop = [runLoop retain];
 }
 
+static OFRunLoopState *
+stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
+{
+	OFRunLoopState *state;
+
+#ifdef OF_HAVE_THREADS
+	[self->_statesMutex lock];
+	@try {
+#endif
+		state = [self->_states objectForKey: mode];
+
+		if (create && state == nil) {
+			state = [[OFRunLoopState alloc] init];
+			@try {
+				[self->_states setObject: state forKey: mode];
+			} @finally {
+				[state release];
+			}
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[self->_statesMutex unlock];
+	}
+#endif
+
+	return state;
+}
+
 #ifdef OF_HAVE_SOCKETS
 # define NEW_READ(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
-						  create: true];	\
+	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
 	OFList *queue = [state->_readQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_readQueues setObject: queue			\
-				       forKey: object];			\
+		[state->_readQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1051,15 +1078,13 @@ OF_DIRECT_MEMBERS
 # define NEW_WRITE(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
-						  create: true];	\
+	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
 	OFList *queue = [state->_writeQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[state->_writeQueues setObject: queue			\
-					  forKey: object];		\
+		[state->_writeQueues setObject: queue forKey: object];	\
 	}								\
 									\
 	if (queue.count == 0)						\
@@ -1076,9 +1101,9 @@ OF_DIRECT_MEMBERS
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (of_stream_async_read_block_t)block
+			   block: (OFStreamAsyncReadBlock)block
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1098,9 +1123,9 @@ OF_DIRECT_MEMBERS
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
-			    mode: (of_run_loop_mode_t)mode
+			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (of_stream_async_read_block_t)block
+			   block: (OFStreamAsyncReadBlock)block
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1118,10 +1143,10 @@ OF_DIRECT_MEMBERS
 
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
-			    encoding: (of_string_encoding_t)encoding
-				mode: (of_run_loop_mode_t)mode
+			    encoding: (OFStringEncoding)encoding
+				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (of_stream_async_read_line_block_t)block
+			       block: (OFStreamAsyncReadLineBlock)block
 # endif
 			    delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1139,9 +1164,9 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			     data: (OFData *)data
-			     mode: (of_run_loop_mode_t)mode
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (of_stream_async_write_data_block_t)block
+			    block: (OFStreamAsyncWriteDataBlock)block
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1159,10 +1184,10 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   string: (OFString *)string
-			 encoding: (of_string_encoding_t)encoding
-			     mode: (of_run_loop_mode_t)mode
+			 encoding: (OFStringEncoding)encoding
+			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (of_stream_async_write_string_block_t)block
+			    block: (OFStreamAsyncWriteStringBlock)block
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1180,7 +1205,7 @@ OF_DIRECT_MEMBERS
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 + (void)of_addAsyncConnectForSocket: (id)sock
-			       mode: (of_run_loop_mode_t)mode
+			       mode: (OFRunLoopMode)mode
 			   delegate: (id <OFRunLoopConnectDelegate>)delegate
 {
 	NEW_WRITE(OFRunLoopConnectQueueItem, sock, mode)
@@ -1192,7 +1217,7 @@ OF_DIRECT_MEMBERS
 # endif
 
 + (void)of_addAsyncAcceptForSocket: (id)sock
-			      mode: (of_run_loop_mode_t)mode
+			      mode: (OFRunLoopMode)mode
 			     block: (id)block
 			  delegate: (id)delegate
 {
@@ -1209,9 +1234,9 @@ OF_DIRECT_MEMBERS
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)sock
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_datagram_socket_async_receive_block_t)block
+     block: (OFDatagramSocketAsyncReceiveBlock)block
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1229,10 +1254,10 @@ OF_DIRECT_MEMBERS
 
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
       data: (OFData *)data
-  receiver: (const of_socket_address_t *)receiver
-      mode: (of_run_loop_mode_t)mode
+  receiver: (const OFSocketAddress *)receiver
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_datagram_socket_async_send_data_block_t)block
+     block: (OFDatagramSocketAsyncSendDataBlock)block
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1252,9 +1277,9 @@ OF_DIRECT_MEMBERS
 							sock
     buffer: (void *)buffer
     length: (size_t)length
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_sequenced_packet_socket_async_receive_block_t)block
+     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {
@@ -1272,9 +1297,9 @@ OF_DIRECT_MEMBERS
 
 + (void)of_addAsyncSendForSequencedPacketSocket: (OFSequencedPacketSocket *)sock
       data: (OFData *)data
-      mode: (of_run_loop_mode_t)mode
+      mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (of_sequenced_packet_socket_async_send_data_block_t)block
+     block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {
@@ -1292,13 +1317,11 @@ OF_DIRECT_MEMBERS
 # undef NEW_WRITE
 # undef QUEUE_ITEM
 
-+ (void)of_cancelAsyncRequestsForObject: (id)object
-				   mode: (of_run_loop_mode_t)mode
++ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoopState *state = [runLoop of_stateForMode: mode
-						  create: false];
+	OFRunLoopState *state = stateForMode(runLoop, mode, false);
 	OFList *queue;
 
 	if (state == nil)
@@ -1345,8 +1368,7 @@ OF_DIRECT_MEMBERS
 
 		state = [[OFRunLoopState alloc] init];
 		@try {
-			[_states setObject: state
-				    forKey: of_run_loop_mode_default];
+			[_states setObject: state forKey: OFDefaultRunLoopMode];
 		} @finally {
 			[state release];
 		}
@@ -1372,46 +1394,14 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
-			     create: (bool)create
-{
-	OFRunLoopState *state;
-
-#ifdef OF_HAVE_THREADS
-	[_statesMutex lock];
-	@try {
-#endif
-		state = [_states objectForKey: mode];
-
-		if (create && state == nil) {
-			state = [[OFRunLoopState alloc] init];
-			@try {
-				[_states setObject: state
-					    forKey: mode];
-			} @finally {
-				[state release];
-			}
-		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_statesMutex unlock];
-	}
-#endif
-
-	return state;
-}
-
 - (void)addTimer: (OFTimer *)timer
 {
-	[self addTimer: timer
-	       forMode: of_run_loop_mode_default];
+	[self addTimer: timer forMode: OFDefaultRunLoopMode];
 }
 
-- (void)addTimer: (OFTimer *)timer
-	 forMode: (of_run_loop_mode_t)mode
+- (void)addTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: true];
+	OFRunLoopState *state = stateForMode(self, mode, true);
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1424,8 +1414,7 @@ OF_DIRECT_MEMBERS
 	}
 #endif
 
-	[timer of_setInRunLoop: self
-			  mode: mode];
+	[timer of_setInRunLoop: self mode: mode];
 
 #if defined(OF_HAVE_SOCKETS)
 	[state->_kernelEventObserver cancel];
@@ -1434,25 +1423,23 @@ OF_DIRECT_MEMBERS
 #endif
 }
 
-- (void)of_removeTimer: (OFTimer *)timer
-	       forMode: (of_run_loop_mode_t)mode
+- (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
-	if (state == nil)
+	/* {} required to avoid -Wmisleading-indentation false positive. */
+	if (state == nil) {
 		return;
+	}
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
 	@try {
 #endif
-		of_list_object_t *iter;
-
-		for (iter = state->_timersQueue.firstListObject; iter != NULL;
-		    iter = iter->next) {
-			if ([iter->object isEqual: timer]) {
-				[state->_timersQueue removeListObject: iter];
+		for (OFListItem iter = state->_timersQueue.firstListItem;
+		    iter != NULL; iter = OFListItemNext(iter)) {
+			if ([OFListItemObject(iter) isEqual: timer]) {
+				[state->_timersQueue removeListItem: iter];
 				break;
 			}
 		}
@@ -1464,23 +1451,20 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_AMIGAOS
-- (void)addExecSignal: (ULONG)signal
-	       target: (id)target
-	     selector: (SEL)selector
+- (void)addExecSignal: (ULONG)signal target: (id)target selector: (SEL)selector
 {
 	[self addExecSignal: signal
-		    forMode: of_run_loop_mode_default
+		    forMode: OFDefaultRunLoopMode
 		     target: target
 		   selector: selector];
 }
 
 - (void)addExecSignal: (ULONG)signal
-	      forMode: (of_run_loop_mode_t)mode
+	      forMode: (OFRunLoopMode)mode
 	       target: (id)target
 	     selector: (SEL)selector
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: true];
+	OFRunLoopState *state = stateForMode(self, mode, true);
 
 # ifdef OF_HAVE_THREADS
 	[state->_execSignalsMutex lock];
@@ -1513,18 +1497,17 @@ OF_DIRECT_MEMBERS
 		selector: (SEL)selector
 {
 	[self removeExecSignal: signal
-		       forMode: of_run_loop_mode_default
+		       forMode: OFDefaultRunLoopMode
 			target: target
 		      selector: selector];
 }
 
 - (void)removeExecSignal: (ULONG)signal
-		 forMode: (of_run_loop_mode_t)mode
+		 forMode: (OFRunLoopMode)mode
 		  target: (id)target
 		selector: (SEL)selector
 {
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
 		return;
@@ -1584,17 +1567,14 @@ OF_DIRECT_MEMBERS
 
 	while (!_stop &&
 	    (deadline == nil || deadline.timeIntervalSinceNow >= 0))
-		[self runMode: of_run_loop_mode_default
-		   beforeDate: deadline];
+		[self runMode: OFDefaultRunLoopMode beforeDate: deadline];
 }
 
-- (void)runMode: (of_run_loop_mode_t)mode
-     beforeDate: (OFDate *)deadline
+- (void)runMode: (OFRunLoopMode)mode beforeDate: (OFDate *)deadline
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_run_loop_mode_t previousMode = _currentMode;
-	OFRunLoopState *state = [self of_stateForMode: mode
-					       create: false];
+	OFRunLoopMode previousMode = _currentMode;
+	OFRunLoopState *state = stateForMode(self, mode, false);
 
 	if (state == nil)
 		return;
@@ -1613,19 +1593,19 @@ OF_DIRECT_MEMBERS
 			[state->_timersQueueMutex lock];
 			@try {
 #endif
-				of_list_object_t *listObject =
-				    state->_timersQueue.firstListObject;
+				OFListItem listItem =
+				    state->_timersQueue.firstListItem;
 
-				if (listObject != NULL && [listObject->object
-				    fireDate].timeIntervalSinceNow <= 0) {
-					timer = [[listObject->object
+				if (listItem != NULL &&
+				    [OFListItemObject(listItem) fireDate]
+				    .timeIntervalSinceNow <= 0) {
+					timer = [[OFListItemObject(listItem)
 					    retain] autorelease];
 
 					[state->_timersQueue
-					    removeListObject: listObject];
+					    removeListItem: listItem];
 
-					[timer of_setInRunLoop: nil
-							  mode: nil];
+					[timer of_setInRunLoop: nil mode: nil];
 				} else
 					break;
 #ifdef OF_HAVE_THREADS
@@ -1654,7 +1634,7 @@ OF_DIRECT_MEMBERS
 
 		/* Watch for I/O events until the next timer is due */
 		if (nextTimer != nil || deadline != nil) {
-			of_time_interval_t timeout;
+			OFTimeInterval timeout;
 
 			if (nextTimer != nil && deadline == nil)
 				timeout = nextTimer.timeIntervalSinceNow;
@@ -1728,8 +1708,7 @@ OF_DIRECT_MEMBERS
 
 - (void)stop
 {
-	OFRunLoopState *state = [self of_stateForMode: of_run_loop_mode_default
-					       create: false];
+	OFRunLoopState *state = stateForMode(self, OFDefaultRunLoopMode, false);
 
 	_stop = true;
 

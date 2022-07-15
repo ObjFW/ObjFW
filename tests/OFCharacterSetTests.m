@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,13 +21,13 @@
 #import "OFBitSetCharacterSet.h"
 #import "OFRangeCharacterSet.h"
 
-static OFString *module = nil;
+static OFString *module;
 
 @interface SimpleCharacterSet: OFCharacterSet
 @end
 
 @implementation SimpleCharacterSet
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	return (character % 2 == 0);
 }
@@ -39,19 +37,19 @@ static OFString *module = nil;
 - (void)characterSetTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFCharacterSet *cs, *ics;
+	OFCharacterSet *characterSet, *invertedCharacterSet;
 	bool ok;
 
 	module = @"OFCharacterSet";
 
-	cs = [[[SimpleCharacterSet alloc] init] autorelease];
+	characterSet = [[[SimpleCharacterSet alloc] init] autorelease];
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c % 2 == 0) {
-			if (![cs characterIsMember: c])
+			if (![characterSet characterIsMember: c])
 				ok = false;
-		} else if ([cs characterIsMember: c])
+		} else if ([characterSet characterIsMember: c])
 			ok = false;
 	}
 	TEST(@"-[characterIsMember:]", ok);
@@ -59,16 +57,16 @@ static OFString *module = nil;
 	module = @"OFBitSetCharacterSet";
 
 	TEST(@"+[characterSetWithCharactersInString:]",
-	    (cs = [OFCharacterSet characterSetWithCharactersInString:
+	    (characterSet = [OFCharacterSet characterSetWithCharactersInString:
 	    @"0123456789"]) &&
-	    [cs isKindOfClass: [OFBitSetCharacterSet class]])
+	    [characterSet isKindOfClass: [OFBitSetCharacterSet class]])
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
-			if (![cs characterIsMember: c])
+			if (![characterSet characterIsMember: c])
 				ok = false;
-		} else if ([cs characterIsMember: c])
+		} else if ([characterSet characterIsMember: c])
 			ok = false;
 	}
 	TEST(@"-[characterIsMember:]", ok);
@@ -76,32 +74,33 @@ static OFString *module = nil;
 	module = @"OFRangeCharacterSet";
 
 	TEST(@"+[characterSetWithRange:]",
-	    (cs = [OFCharacterSet characterSetWithRange: of_range('0', 10)]) &&
-	    [cs isKindOfClass: [OFRangeCharacterSet class]])
+	    (characterSet = [OFCharacterSet
+	    characterSetWithRange: OFRangeMake('0', 10)]) &&
+	    [characterSet isKindOfClass: [OFRangeCharacterSet class]])
 
 	ok = true;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
-			if (![cs characterIsMember: c])
+			if (![characterSet characterIsMember: c])
 				ok = false;
-		} else if ([cs characterIsMember: c])
+		} else if ([characterSet characterIsMember: c])
 			ok = false;
 	}
 	TEST(@"-[characterIsMember:]", ok);
 
 	ok = true;
-	ics = cs.invertedSet;
-	for (of_unichar_t c = 0; c < 65536; c++) {
+	invertedCharacterSet = characterSet.invertedSet;
+	for (OFUnichar c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
-			if ([ics characterIsMember: c])
+			if ([invertedCharacterSet characterIsMember: c])
 				ok = false;
-		} else if (![ics characterIsMember: c])
+		} else if (![invertedCharacterSet characterIsMember: c])
 			ok = false;
 	}
 	TEST(@"-[invertedSet]", ok);
 
 	TEST(@"Inverting -[invertedSet] returns original set",
-	    ics.invertedSet == cs)
+	    invertedCharacterSet.invertedSet == characterSet)
 
 	objc_autoreleasePoolPop(pool);
 }

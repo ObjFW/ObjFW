@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,8 +25,6 @@
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
-
-extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 @implementation OFMutableURL
 @dynamic scheme, URLEncodedScheme, host, URLEncodedHost, port, user;
@@ -59,7 +55,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedScheme != nil)
-		of_url_verify_escaped(URLEncodedScheme,
+		OFURLVerifyIsEscaped(URLEncodedScheme,
 		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 	old = _URLEncodedScheme;
@@ -72,7 +68,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _URLEncodedHost;
 
-	if (of_url_is_ipv6_host(host))
+	if (OFURLIsIPv6Host(host))
 		_URLEncodedHost = [[OFString alloc]
 		    initWithFormat: @"[%@]", host];
 	else
@@ -91,11 +87,11 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 	if ([URLEncodedHost hasPrefix: @"["] &&
 	    [URLEncodedHost hasSuffix: @"]"]) {
-		if (!of_url_is_ipv6_host([URLEncodedHost substringWithRange:
-		    of_range(1, URLEncodedHost.length - 2)]))
+		if (!OFURLIsIPv6Host([URLEncodedHost substringWithRange:
+		    OFRangeMake(1, URLEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (URLEncodedHost != nil)
-		of_url_verify_escaped(URLEncodedHost,
+		OFURLVerifyIsEscaped(URLEncodedHost,
 		    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 	old = _URLEncodedHost;
@@ -128,7 +124,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedUser != nil)
-		of_url_verify_escaped(URLEncodedUser,
+		OFURLVerifyIsEscaped(URLEncodedUser,
 		    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 	old = _URLEncodedUser;
@@ -155,7 +151,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedPassword != nil)
-		of_url_verify_escaped(URLEncodedPassword,
+		OFURLVerifyIsEscaped(URLEncodedPassword,
 		    [OFCharacterSet URLPasswordAllowedCharacterSet]);
 
 	old = _URLEncodedPassword;
@@ -181,7 +177,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedPath != nil)
-		of_url_verify_escaped(URLEncodedPath,
+		OFURLVerifyIsEscaped(URLEncodedPath,
 		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 	old = _URLEncodedPath;
@@ -227,7 +223,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedQuery != nil)
-		of_url_verify_escaped(URLEncodedQuery,
+		OFURLVerifyIsEscaped(URLEncodedQuery,
 		    [OFCharacterSet URLQueryAllowedCharacterSet]);
 
 	old = _URLEncodedQuery;
@@ -295,7 +291,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	OFString *old;
 
 	if (URLEncodedFragment != nil)
-		of_url_verify_escaped(URLEncodedFragment,
+		OFURLVerifyIsEscaped(URLEncodedFragment,
 		    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 
 	old = _URLEncodedFragment;
@@ -314,8 +310,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 
 - (void)appendPathComponent: (OFString *)component
 {
-	[self appendPathComponent: component
-		      isDirectory: false];
+	[self appendPathComponent: component isDirectory: false];
 
 #ifdef OF_HAVE_FILES
 	if ([_URLEncodedScheme isEqual: @"file"] &&
@@ -407,7 +402,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 			if ([current isEqual: @".."] && parent != nil &&
 			    ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
+				    OFRangeMake(i - 1, 2)];
 
 				done = false;
 				break;
@@ -415,8 +410,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 		}
 	}
 
-	[array insertObject: @""
-		    atIndex: 0];
+	[array insertObject: @"" atIndex: 0];
 	if (endsWithEmpty)
 		[array addObject: @""];
 

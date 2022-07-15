@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFNumber: OFValue <OFComparing, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
-	union of_number_value {
+	union {
 		double float_;
 		long long signed_;
 		unsigned long long unsigned_;
@@ -126,16 +124,14 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
-#ifdef OF_HAVE_UNAVAILABLE
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType OF_UNAVAILABLE;
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
-+ (instancetype)valueWithRange: (of_range_t)range OF_UNAVAILABLE;
-+ (instancetype)valueWithPoint: (of_point_t)point OF_UNAVAILABLE;
-+ (instancetype)valueWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
-+ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
-#endif
++ (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
++ (instancetype)valueWithPoint: (OFPoint)point OF_UNAVAILABLE;
++ (instancetype)valueWithSize: (OFSize)size OF_UNAVAILABLE;
++ (instancetype)valueWithRect: (OFRect)rect OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new OFNumber with the specified `bool`.
@@ -242,16 +238,8 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)numberWithDouble: (double)value;
 
 - (instancetype)init OF_UNAVAILABLE;
-#ifdef OF_HAVE_UNAVAILABLE
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType OF_UNAVAILABLE;
-- (instancetype)initWithPointer: (const void *)pointer OF_UNAVAILABLE;
-- (instancetype)initWithNonretainedObject: (id)object OF_UNAVAILABLE;
-- (instancetype)initWithRange: (of_range_t)range OF_UNAVAILABLE;
-- (instancetype)initWithPoint: (of_point_t)point OF_UNAVAILABLE;
-- (instancetype)initWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
-- (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
-#endif
 
 /**
  * @brief Initializes an already allocated OFNumber with the specified `bool`.
@@ -363,6 +351,14 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFNumber
  */
 - (instancetype)initWithDouble: (double)value;
+
+/**
+ * @brief Compares the number to another number.
+ *
+ * @param number The number to compare the number to
+ * @return The result of the comparison
+ */
+- (OFComparisonResult)compare: (OFNumber *)number;
 @end
 
 OF_ASSUME_NONNULL_END

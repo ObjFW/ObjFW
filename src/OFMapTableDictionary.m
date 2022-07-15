@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,13 +59,13 @@ equal(void *object1, void *object2)
 	return [(id)object1 isEqual: (id)object2];
 }
 
-static const of_map_table_functions_t keyFunctions = {
+static const OFMapTableFunctions keyFunctions = {
 	.retain = copy,
 	.release = release,
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t objectFunctions = {
+static const OFMapTableFunctions objectFunctions = {
 	.retain = retain,
 	.release = release,
 	.hash = hash,
@@ -139,8 +137,7 @@ static const of_map_table_functions_t objectFunctions = {
 		objectEnumerator = [dictionary objectEnumerator];
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[_mapTable setObject: object
-				      forKey: key];
+			[_mapTable setObject: object forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -151,14 +148,12 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithObject: (id)object
-			forKey: (id)key
+- (instancetype)initWithObject: (id)object forKey: (id)key
 {
 	self = [self initWithCapacity: 1];
 
 	@try {
-		[_mapTable setObject: object
-			      forKey: key];
+		[_mapTable setObject: object forKey: key];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -177,8 +172,7 @@ static const of_map_table_functions_t objectFunctions = {
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[_mapTable setObject: objects[i]
-				      forKey: keys[i]];
+			[_mapTable setObject: objects[i] forKey: keys[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -187,8 +181,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithKey: (id)firstKey
-		  arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -220,8 +213,7 @@ static const of_map_table_functions_t objectFunctions = {
 			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setObject: object
-			      forKey: key];
+		[_mapTable setObject: object forKey: key];
 
 		for (i = 1; i < count; i++) {
 			key = va_arg(arguments, id);
@@ -230,8 +222,7 @@ static const of_map_table_functions_t objectFunctions = {
 			if (key == nil || object == nil)
 				@throw [OFInvalidArgumentException exception];
 
-			[_mapTable setObject: object
-				      forKey: key];
+			[_mapTable setObject: object forKey: key];
 		}
 	} @catch (id e) {
 		[self release];
@@ -252,9 +243,9 @@ static const of_map_table_functions_t objectFunctions = {
 		OFXMLElement *keyElement, *objectElement;
 
 		keys = [element elementsForName: @"key"
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 		objects = [element elementsForName: @"object"
-					 namespace: OF_SERIALIZATION_NS];
+					 namespace: OFSerializationNS];
 
 		if (keys.count != objects.count)
 			@throw [OFInvalidFormatException exception];
@@ -272,9 +263,9 @@ static const of_map_table_functions_t objectFunctions = {
 			OFXMLElement *key, *object;
 
 			key = [keyElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 			object = [objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS].firstObject;
+			    OFSerializationNS].firstObject;
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException exception];
@@ -344,8 +335,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	keys = [self allocMemoryWithSize: sizeof(*keys)
-				   count: count];
+	keys = OFAllocMemory(count, sizeof(*keys));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -363,10 +353,9 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: keys
-					  count: count];
+		ret = [OFArray arrayWithObjects: keys count: count];
 	} @finally {
-		[self freeMemory: keys];
+		OFFreeMemory(keys);
 	}
 
 	return ret;
@@ -379,8 +368,7 @@ static const of_map_table_functions_t objectFunctions = {
 	size_t count;
 
 	count = _mapTable.count;
-	objects = [self allocMemoryWithSize: sizeof(*objects)
-				      count: count];
+	objects = OFAllocMemory(count, sizeof(*objects));
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -398,10 +386,9 @@ static const of_map_table_functions_t objectFunctions = {
 
 		objc_autoreleasePoolPop(pool);
 
-		ret = [OFArray arrayWithObjects: objects
-					  count: count];
+		ret = [OFArray arrayWithObjects: objects count: count];
 	} @finally {
-		[self freeMemory: objects];
+		OFFreeMemory(objects);
 	}
 
 	return ret;
@@ -421,7 +408,7 @@ static const of_map_table_functions_t objectFunctions = {
 			object: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count
 {
@@ -431,8 +418,7 @@ static const of_map_table_functions_t objectFunctions = {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndObjectsUsingBlock:
-    (of_dictionary_enumeration_block_t)block
+- (void)enumerateKeysAndObjectsUsingBlock: (OFDictionaryEnumerationBlock)block
 {
 	@try {
 		[_mapTable enumerateKeysAndObjectsUsingBlock:

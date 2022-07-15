@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,9 +14,8 @@
  */
 
 #import "OFObject.h"
-
 #ifdef OF_HAVE_SOCKETS
-# import "socket.h"
+# import "OFSocket.h"
 #endif
 
 #ifdef OF_AMIGAOS
@@ -124,13 +121,13 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
-#if defined(OF_HAVE_PIPE)
-	int _cancelFD[2];
-#elif defined(OF_AMIGAOS)
+#if defined(OF_AMIGAOS)
 	struct Task *_waitingTask;
 	ULONG _cancelSignal;
+#elif defined(OF_HAVE_PIPE)
+	int _cancelFD[2];
 #else
-	of_socket_t _cancelFD[2];
+	OFSocketHandle _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_AMIGAOS
@@ -215,7 +212,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param timeInterval The time to wait for an event, in seconds
  */
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval;
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval;
 
 /**
  * @brief Observes all objects until an event happens on an object or the

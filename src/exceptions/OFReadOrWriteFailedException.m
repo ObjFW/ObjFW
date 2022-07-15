@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -65,9 +63,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to read or write %zu bytes from / to an object of type "
-	    @"%@: %@",
-	    _requestedLength, [_object class], of_strerror(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@: %@",
+		    _requestedLength, [_object class], OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@",
+		    _requestedLength, [_object class]];
 }
 @end

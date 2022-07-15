@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,192 +19,209 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFData";
-const char *str = "Hello!";
+static OFString *const module = @"OFData";
 
 @implementation TestsAppDelegate (OFDataTests)
 - (void)dataTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableData *mutable;
-	OFData *immutable;
+	OFMutableData *mutableData;
+	OFData *data;
 	void *raw[2];
-	of_range_t range;
+	OFRange range;
 
 	TEST(@"+[dataWithItemSize:]",
-	    (mutable = [OFMutableData dataWithItemSize: 4096]))
+	    (mutableData = [OFMutableData dataWithItemSize: 4096]))
 
-	OFObject *tmp = [[[OFObject alloc] init] autorelease];
-	raw[0] = [tmp allocMemoryWithSize: 4096];
-	raw[1] = [tmp allocMemoryWithSize: 4096];
+	raw[0] = OFAllocMemory(1, 4096);
+	raw[1] = OFAllocMemory(1, 4096);
 	memset(raw[0], 0xFF, 4096);
 	memset(raw[1], 0x42, 4096);
 
-	TEST(@"-[addItem:]", R([mutable addItem: raw[0]]) &&
-	    R([mutable addItem: raw[1]]))
+	TEST(@"-[addItem:]", R([mutableData addItem: raw[0]]) &&
+	    R([mutableData addItem: raw[1]]))
 
 	TEST(@"-[itemAtIndex:]",
-	    memcmp([mutable itemAtIndex: 0], raw[0], 4096) == 0 &&
-	    memcmp([mutable itemAtIndex: 1], raw[1], 4096) == 0)
+	    memcmp([mutableData itemAtIndex: 0], raw[0], 4096) == 0 &&
+	    memcmp([mutableData itemAtIndex: 1], raw[1], 4096) == 0)
 
-	TEST(@"-[lastItem]", memcmp(mutable.lastItem, raw[1], 4096) == 0)
+	TEST(@"-[lastItem]", memcmp(mutableData.lastItem, raw[1], 4096) == 0)
 
-	TEST(@"-[count]", mutable.count == 2)
+	TEST(@"-[count]", mutableData.count == 2)
 
 	TEST(@"-[isEqual:]",
-	    (immutable = [OFData dataWithItems: mutable.items
-				      itemSize: mutable.itemSize
-					 count: mutable.count]) &&
-	    [immutable isEqual: mutable] &&
-	    R([mutable removeLastItem]) && ![mutable isEqual: immutable])
+	    (data = [OFData dataWithItems: mutableData.items
+				    count: mutableData.count
+				 itemSize: mutableData.itemSize]) &&
+	    [data isEqual: mutableData] &&
+	    R([mutableData removeLastItem]) && ![mutableData isEqual: data])
 
 	TEST(@"-[mutableCopy]",
-	    (mutable = [[immutable mutableCopy] autorelease]) &&
-	    [mutable isEqual: immutable])
+	    (mutableData = [[data mutableCopy] autorelease]) &&
+	    [mutableData isEqual: data])
 
-	TEST(@"-[compare]", [mutable compare: immutable] == 0 &&
-	    R([mutable removeLastItem]) &&
-	    [immutable compare: mutable] == OF_ORDERED_DESCENDING &&
-	    [mutable compare: immutable] == OF_ORDERED_ASCENDING &&
-	    [[OFData dataWithItems: "aa"
-			     count: 2] compare:
-	    [OFData dataWithItems: "z"
-			    count: 1]] == OF_ORDERED_ASCENDING)
+	TEST(@"-[compare]", [mutableData compare: data] == 0 &&
+	    R([mutableData removeLastItem]) &&
+	    [data compare: mutableData] == OFOrderedDescending &&
+	    [mutableData compare: data] == OFOrderedAscending &&
+	    [[OFData dataWithItems: "aa" count: 2] compare:
+	    [OFData dataWithItems: "z" count: 1]] == OFOrderedAscending)
 
-	TEST(@"-[hash]", immutable.hash == 0x634A529F)
+	TEST(@"-[hash]", data.hash == 0x634A529F)
 
-	mutable = [OFMutableData dataWithItems: "abcdef"
-					 count: 6];
+	mutableData = [OFMutableData dataWithItems: "abcdef" count: 6];
 
-	TEST(@"-[removeLastItem]", R([mutable removeLastItem]) &&
-	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
+	TEST(@"-[removeLastItem]",
+	    R([mutableData removeLastItem]) && mutableData.count == 5 &&
+	    memcmp(mutableData.items, "abcde", 5) == 0)
 
 	TEST(@"-[removeItemsInRange:]",
-	    R([mutable removeItemsInRange: of_range(1, 2)]) &&
-	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
+	    R([mutableData removeItemsInRange: OFRangeMake(1, 2)]) &&
+	    mutableData.count == 3 && memcmp(mutableData.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
-	    R([mutable insertItems: "bc"
-			   atIndex: 1
-			     count: 2]) && mutable.count == 5 &&
-	    memcmp(mutable.items, "abcde", 5) == 0)
+	    R([mutableData insertItems: "bc" atIndex: 1 count: 2]) &&
+	    mutableData.count == 5 &&
+	    memcmp(mutableData.items, "abcde", 5) == 0)
 
-	immutable = [OFData dataWithItems: "aaabaccdacaabb"
-				 itemSize: 2
-				    count: 7];
-	TEST(@"-[rangeOfString:options:range:]",
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 0 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "ac"
-							   itemSize: 2
-							      count: 1]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 2 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
-							   itemSize: 2
-							      count: 2]
-				     options: 0
-				       range: of_range(0, 7)]) &&
-	    range.location == 5 && range.length == 2 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
-				     options: 0
-				       range: of_range(1, 6)]) &&
-	    range.location == 5 && range.length == 1 &&
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							   itemSize: 2
-							      count: 1]
-				     options: OF_DATA_SEARCH_BACKWARDS
-				       range: of_range(0, 5)]) &&
+	data = [OFData dataWithItems: "aaabaccdacaabb" count: 7 itemSize: 2];
+
+	range = [data rangeOfData: [OFData dataWithItems: "aa"
+						   count: 1
+						itemSize: 2]
+			  options: 0
+			    range: OFRangeMake(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #1",
+	    range.location == 0 && range.length == 1)
+
+	range = [data rangeOfData: [OFData dataWithItems: "aa"
+						   count: 1
+						itemSize: 2]
+			  options: OFDataSearchBackwards
+			    range: OFRangeMake(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #2",
+	    range.location == 5 && range.length == 1)
+
+	range = [data rangeOfData: [OFData dataWithItems: "ac"
+						   count: 1
+						itemSize: 2]
+			  options: 0
+			    range: OFRangeMake(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #3",
+	    range.location == 2 && range.length == 1)
+
+	range = [data rangeOfData: [OFData dataWithItems: "aabb"
+						   count: 2
+						itemSize: 2]
+			  options: 0
+			    range: OFRangeMake(0, 7)];
+	TEST(@"-[rangeOfData:options:range:] #4",
+	    range.location == 5 && range.length == 2)
+
+	TEST(@"-[rangeOfData:options:range:] #5",
+	    R(range = [data rangeOfData: [OFData dataWithItems: "aa"
+							 count: 1
+						      itemSize: 2]
+				options: 0
+				  range: OFRangeMake(1, 6)]) &&
+	    range.location == 5 && range.length == 1)
+
+	range = [data rangeOfData: [OFData dataWithItems: "aa"
+						   count: 1
+						itemSize: 2]
+			  options: OFDataSearchBackwards
+			    range: OFRangeMake(0, 5)];
+	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)
 
 	EXPECT_EXCEPTION(
-	    @"-[rangeOfString:options:range:] failing on different itemSize",
+	    @"-[rangeOfData:options:range:] failing on different itemSize",
 	    OFInvalidArgumentException,
-	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
-						 itemSize: 3
-						    count: 1]
-			   options: 0
-			     range: of_range(0, 1)])
+	    [data rangeOfData: [OFData dataWithItems: "aaa"
+					       count: 1
+					    itemSize: 3]
+		      options: 0
+			range: OFRangeMake(0, 1)])
 
 	EXPECT_EXCEPTION(
 	    @"-[rangeOfData:options:range:] failing on out of range",
 	    OFOutOfRangeException,
-	    [immutable rangeOfData: [OFData dataWithItems: ""
-						 itemSize: 2
-						    count: 0]
-			   options: 0
-			     range: of_range(8, 1)])
+	    [data rangeOfData: [OFData dataWithItems: "" count: 0 itemSize: 2]
+		      options: 0
+			range: OFRangeMake(8, 1)])
 
 	TEST(@"-[subdataWithRange:]",
-	    [[immutable subdataWithRange: of_range(2, 4)]
-	    isEqual: [OFData dataWithItems: "accdacaa"
-				  itemSize: 2
-				     count: 4]] &&
-	    [[mutable subdataWithRange: of_range(2, 3)]
-	    isEqual: [OFData dataWithItems: "cde"
-				     count: 3]])
+	    [[data subdataWithRange: OFRangeMake(2, 4)]
+	    isEqual: [OFData dataWithItems: "accdacaa" count: 4 itemSize: 2]] &&
+	    [[mutableData subdataWithRange: OFRangeMake(2, 3)]
+	    isEqual: [OFData dataWithItems: "cde" count: 3]])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #1",
-	    OFOutOfRangeException, [immutable subdataWithRange: of_range(7, 1)])
+	    OFOutOfRangeException,
+	    [data subdataWithRange: OFRangeMake(7, 1)])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
-	    OFOutOfRangeException, [mutable subdataWithRange: of_range(6, 1)])
+	    OFOutOfRangeException,
+	    [mutableData subdataWithRange: OFRangeMake(6, 1)])
 
-	TEST(@"-[MD5Hash]", [mutable.MD5Hash isEqual: @"abcde".MD5Hash])
+	TEST(@"-[stringByMD5Hashing]",
+	    [mutableData.stringByMD5Hashing
+	    isEqual: @"ab56b4d92b40713acc5af89985d4b786"])
 
-	TEST(@"-[RIPEMD160Hash]", [mutable.RIPEMD160Hash
-	    isEqual: @"abcde".RIPEMD160Hash])
+	TEST(@"-[stringByRIPEMD160Hashing]",
+	    [mutableData.stringByRIPEMD160Hashing
+	    isEqual: @"973398b6e6c6cfa6b5e6a5173f195ce3274bf828"])
 
-	TEST(@"-[SHA1Hash]", [mutable.SHA1Hash isEqual: @"abcde".SHA1Hash])
+	TEST(@"-[stringBySHA1Hashing]",
+	    [mutableData.stringBySHA1Hashing
+	    isEqual: @"03de6c570bfe24bfc328ccd7ca46b76eadaf4334"])
 
-	TEST(@"-[SHA224Hash]", [mutable.SHA224Hash
-	    isEqual: @"abcde".SHA224Hash])
+	TEST(@"-[stringBySHA224Hashing]",
+	    [mutableData.stringBySHA224Hashing
+	    isEqual: @"bdd03d560993e675516ba5a50638b6531ac2ac3d5847c61916cfced6"
+	    ])
 
-	TEST(@"-[SHA256Hash]", [mutable.SHA256Hash
-	    isEqual: @"abcde".SHA256Hash])
+	TEST(@"-[stringBySHA256Hashing]",
+	    [mutableData.stringBySHA256Hashing
+	    isEqual: @"36bbe50ed96841d10443bcb670d6554f0a34b761be67ec9c4a8ad2c0"
+		     @"c44ca42c"])
 
-	TEST(@"-[SHA384Hash]", [mutable.SHA384Hash
-	    isEqual: @"abcde".SHA384Hash])
+	TEST(@"-[stringBySHA384Hashing]",
+	    [mutableData.stringBySHA384Hashing
+	    isEqual: @"4c525cbeac729eaf4b4665815bc5db0c84fe6300068a727cf74e2813"
+		     @"521565abc0ec57a37ee4d8be89d097c0d2ad52f0"])
 
-	TEST(@"-[SHA512Hash]", [mutable.SHA512Hash
-	    isEqual: @"abcde".SHA512Hash])
+	TEST(@"-[stringBySHA512Hashing]",
+	    [mutableData.stringBySHA512Hashing
+	    isEqual: @"878ae65a92e86cac011a570d4c30a7eaec442b85ce8eca0c2952b5e3"
+		     @"cc0628c2e79d889ad4d5c7c626986d452dd86374b6ffaa7cd8b67665"
+		     @"bef2289a5c70b0a1"])
 
 	TEST(@"-[stringByBase64Encoding]",
-	    [mutable.stringByBase64Encoding isEqual: @"YWJjZGU="])
+	    [mutableData.stringByBase64Encoding isEqual: @"YWJjZGU="])
 
 	TEST(@"+[dataWithBase64EncodedString:]",
-	    memcmp([[OFData dataWithBase64EncodedString: @"YWJjZGU="]
-	    items], "abcde", 5) == 0)
+	    memcmp([[OFData dataWithBase64EncodedString: @"YWJjZGU="] items],
+	    "abcde", 5) == 0)
 
 	TEST(@"Building strings",
-	    (mutable = [OFMutableData dataWithItems: str
-					       count: 6]) &&
-	    R([mutable addItem: ""]) &&
-	    strcmp(mutable.items, str) == 0)
+	    (mutableData = [OFMutableData dataWithItems: "Hello!" count: 6]) &&
+	    R([mutableData addItem: ""]) &&
+	    strcmp(mutableData.items, "Hello!") == 0)
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
-	    OFOutOfRangeException, [mutable itemAtIndex: mutable.count])
+	    OFOutOfRangeException, [mutableData itemAtIndex: mutableData.count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
-	    OFOutOfRangeException, [mutable addItems: raw[0]
-					       count: SIZE_MAX])
+	    OFOutOfRangeException,
+	    [mutableData addItems: raw[0] count: SIZE_MAX])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
-	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
+	    [mutableData removeItemsInRange: OFRangeMake(mutableData.count, 1)])
+
+	OFFreeMemory(raw[0]);
+	OFFreeMemory(raw[1]);
 
 	objc_autoreleasePoolPop(pool);
 }

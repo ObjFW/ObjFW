@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,7 +42,7 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#define BUFFER_SIZE 4096
+#define bufferSize 4096
 
 OF_APPLICATION_DELEGATE(OFArc)
 
@@ -83,15 +81,15 @@ help(OFStream *stream, bool full, int status)
 }
 
 static void
-mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
-    of_unichar_t shortOption2, OFString *longOption2)
+mutuallyExclusiveError(OFUnichar shortOption1, OFString *longOption1,
+    OFUnichar shortOption2, OFString *longOption2)
 {
 	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
 								shortOption1];
 	OFString *shortOption2Str = [OFString stringWithFormat: @"%C",
 								shortOption2];
 
-	[of_stderr writeLine: OF_LOCALIZED(@"2_options_mutually_exclusive",
+	[OFStdErr writeLine: OF_LOCALIZED(@"2_options_mutually_exclusive",
 	    @"Error: -%[shortopt1] / --%[longopt1] and "
 	    @"-%[shortopt2] / --%[longopt2] "
 	    @"are mutually exclusive!",
@@ -103,11 +101,11 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 }
 
 static void
-mutuallyExclusiveError5(of_unichar_t shortOption1, OFString *longOption1,
-    of_unichar_t shortOption2, OFString *longOption2,
-    of_unichar_t shortOption3, OFString *longOption3,
-    of_unichar_t shortOption4, OFString *longOption4,
-    of_unichar_t shortOption5, OFString *longOption5)
+mutuallyExclusiveError5(OFUnichar shortOption1, OFString *longOption1,
+    OFUnichar shortOption2, OFString *longOption2,
+    OFUnichar shortOption3, OFString *longOption3,
+    OFUnichar shortOption4, OFString *longOption4,
+    OFUnichar shortOption5, OFString *longOption5)
 {
 	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
 								shortOption1];
@@ -120,7 +118,7 @@ mutuallyExclusiveError5(of_unichar_t shortOption1, OFString *longOption1,
 	OFString *shortOption5Str = [OFString stringWithFormat: @"%C",
 								shortOption5];
 
-	[of_stderr writeLine: OF_LOCALIZED(@"5_options_mutually_exclusive",
+	[OFStdErr writeLine: OF_LOCALIZED(@"5_options_mutually_exclusive",
 	    @"Error: -%[shortopt1] / --%[longopt1], "
 	    @"-%[shortopt2] / --%[longopt2], -%[shortopt3] / --%[longopt3], "
 	    @"-%[shortopt4] / --%[longopt4] and\n"
@@ -141,17 +139,38 @@ mutuallyExclusiveError5(of_unichar_t shortOption1, OFString *longOption1,
 static void
 writingNotSupported(OFString *type)
 {
-	[of_stderr writeLine: OF_LOCALIZED(
+	[OFStdErr writeLine: OF_LOCALIZED(
 	    @"writing_not_supported",
 	    @"Writing archives of type %[type] is not (yet) supported!",
 	    @"type", type)];
+}
+
+static void
+addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
+{
+	OFMutableArray *expandedFiles =
+	    [OFMutableArray arrayWithCapacity: files.count];
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	for (OFString *file in files) {
+		OFFileAttributes attributes =
+		    [fileManager attributesOfItemAtPath: file];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[expandedFiles addObjectsFromArray: 
+			    [fileManager subpathsOfDirectoryAtPath: file]];
+		else
+			[expandedFiles addObject: file];
+	}
+
+	[archive addFiles: expandedFiles];
 }
 
 @implementation OFArc
 - (void)applicationDidFinishLaunching
 {
 	OFString *outputDir, *encodingString, *type;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
 		{ 'c', @"create", 0, NULL, NULL },
 		{ 'C', @"directory", 1, NULL, &outputDir },
@@ -167,8 +186,8 @@ writingNotSupported(OFString *type)
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	of_unichar_t option, mode = '\0';
-	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
+	OFUnichar option, mode = '\0';
+	OFStringEncoding encoding = OFStringEncodingAutodetect;
 	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
@@ -184,7 +203,7 @@ writingNotSupported(OFString *type)
 	/* Dropped after parsing options */
 	sandbox.allowsUnveil = true;
 
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -240,10 +259,10 @@ writingNotSupported(OFString *type)
 			mode = option;
 			break;
 		case 'h':
-			help(of_stdout, true, 0);
+			help(OFStdOut, true, 0);
 			break;
 		case '=':
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"option_takes_no_argument",
 			    @"%[prog]: Option --%[opt] takes no argument",
 			    @"prog", [OFApplication programName],
@@ -253,7 +272,7 @@ writingNotSupported(OFString *type)
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"long_option_requires_argument",
 				    @"%[prog]: Option --%[opt] requires an "
 				    @"argument",
@@ -263,7 +282,7 @@ writingNotSupported(OFString *type)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"option_requires_argument",
 				    @"%[prog]: Option -%[opt] requires an "
 				    @"argument",
@@ -275,7 +294,7 @@ writingNotSupported(OFString *type)
 			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -284,7 +303,7 @@ writingNotSupported(OFString *type)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[of_stderr writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -298,9 +317,9 @@ writingNotSupported(OFString *type)
 
 	@try {
 		if (encodingString != nil)
-			encoding = of_string_parse_encoding(encodingString);
+			encoding = OFStringEncodingParseName(encodingString);
 	} @catch (OFInvalidArgumentException *e) {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"invalid_encoding",
 		    @"%[prog]: Invalid encoding: %[encoding]",
 		    @"prog", [OFApplication programName],
@@ -315,10 +334,10 @@ writingNotSupported(OFString *type)
 	case 'a':
 	case 'c':
 		if (remainingArguments.count < 1)
-			help(of_stderr, false, 1);
+			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFRangeMake(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -326,11 +345,10 @@ writingNotSupported(OFString *type)
 				permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
-			[sandbox unveilPath: path
-				permissions: @"r"];
+			[sandbox unveilPath: path permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self
@@ -339,11 +357,11 @@ writingNotSupported(OFString *type)
 				   mode: mode
 			       encoding: encoding];
 
-		[archive addFiles: files];
+		addFiles(archive, files);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
-			help(of_stderr, false, 1);
+			help(OFStdErr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -351,7 +369,7 @@ writingNotSupported(OFString *type)
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self
@@ -364,7 +382,7 @@ writingNotSupported(OFString *type)
 		break;
 	case 'p':
 		if (remainingArguments.count < 1)
-			help(of_stderr, false, 1);
+			help(OFStdErr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -372,11 +390,11 @@ writingNotSupported(OFString *type)
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFRangeMake(1, remainingArguments.count - 1)];
 
 		archive = [self
 		    openArchiveWithPath: remainingArguments.firstObject
@@ -388,10 +406,10 @@ writingNotSupported(OFString *type)
 		break;
 	case 'x':
 		if (remainingArguments.count < 1)
-			help(of_stderr, false, 1);
+			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, remainingArguments.count - 1)];
+		    OFRangeMake(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -400,18 +418,20 @@ writingNotSupported(OFString *type)
 
 		if (files.count > 0)
 			for (OFString *path in files)
-				[sandbox unveilPath: path
-					permissions: @"wc"];
+				[sandbox unveilPath: path permissions: @"wc"];
 		else {
-			OFString *path = (outputDir != nil
-			    ? outputDir : OF_PATH_CURRENT_DIRECTORY);
+			OFString *path = outputDir;
+
+			if (path == nil)
+				path = [[OFFileManager defaultManager]
+				    currentDirectoryPath];
+
 			/* We need 'r' to change the directory to it. */
-			[sandbox unveilPath: path
-				permissions: @"rwc"];
+			[sandbox unveilPath: path permissions: @"rwc"];
 		}
 
 		sandbox.allowsUnveil = false;
-		[OFApplication activateSandbox: sandbox];
+		[OFApplication of_activateSandbox: sandbox];
 #endif
 
 		archive = [self
@@ -437,8 +457,8 @@ writingNotSupported(OFString *type)
 			OFString *error = [OFString
 			    stringWithCString: strerror(e.errNo)
 				     encoding: [OFLocale encoding]];
-			[of_stderr writeString: @"\r"];
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
 			    @"dir", e.URL.fileSystemRepresentation,
@@ -448,8 +468,8 @@ writingNotSupported(OFString *type)
 			OFString *error = [OFString
 			    stringWithCString: strerror(e.errNo)
 				     encoding: [OFLocale encoding]];
-			[of_stderr writeString: @"\r"];
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
 			    @"Failed to open file %[file]: %[error]",
 			    @"file", e.path,
@@ -459,7 +479,7 @@ writingNotSupported(OFString *type)
 
 		break;
 	default:
-		help(of_stderr, true, 1);
+		help(OFStdErr, true, 1);
 		break;
 	}
 
@@ -469,7 +489,7 @@ writingNotSupported(OFString *type)
 - (id <Archive>)openArchiveWithPath: (OFString *)path
 			       type: (OFString *)type
 			       mode: (char)mode
-			   encoding: (of_string_encoding_t)encoding
+			   encoding: (OFStringEncoding)encoding
 {
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;
@@ -502,26 +522,25 @@ writingNotSupported(OFString *type)
 		switch (mode) {
 		case 'a':
 		case 'c':
-			file = of_stdout;
+			file = OFStdOut;
 			break;
 		case 'l':
 		case 'p':
 		case 'x':
-			file = of_stdin;
+			file = OFStdIn;
 			break;
 		default:
 			@throw [OFInvalidArgumentException exception];
 		}
 	} else {
 		@try {
-			file = [OFFile fileWithPath: path
-					       mode: fileModeString];
+			file = [OFFile fileWithPath: path mode: fileModeString];
 		} @catch (OFOpenItemFailedException *e) {
 			OFString *error = [OFString
 			    stringWithCString: strerror(e.errNo)
 				     encoding: [OFLocale encoding]];
-			[of_stderr writeString: @"\r"];
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
 			    @"Failed to open file %[file]: %[error]",
 			    @"file", e.path,
@@ -570,7 +589,7 @@ writingNotSupported(OFString *type)
 							   mode: modeString
 						       encoding: encoding];
 		else {
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",
 			    @"Unknown archive type: %[type]",
 			    @"type", type)];
@@ -588,7 +607,7 @@ writingNotSupported(OFString *type)
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
-		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", path,
 		    @"error", error)];
@@ -597,13 +616,13 @@ writingNotSupported(OFString *type)
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
-		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
 		    @"Failed to seek in file %[file]: %[error]",
 		    @"file", path,
 		    @"error", error)];
 		goto error;
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"file_is_not_a_valid_archive",
 		    @"File %[file] is not a valid archive!",
 		    @"file", path)];
@@ -637,24 +656,24 @@ error:
 
 	if (_overwrite == -1) {
 		if (_outputLevel >= 0) {
-			[of_stdout writeString: @" "];
-			[of_stdout writeLine:
+			[OFStdOut writeString: @" "];
+			[OFStdOut writeLine:
 			    OF_LOCALIZED(@"file_skipped", @"skipped")];
 		}
 		return false;
 	}
 
 	do {
-		[of_stderr writeString: @"\r"];
-		[of_stderr writeString: OF_LOCALIZED(@"ask_overwrite",
+		[OFStdErr writeString: @"\r"];
+		[OFStdErr writeString: OF_LOCALIZED(@"ask_overwrite",
 		    @"Overwrite %[file]? [ynAN?]",
 		    @"file", fileName)];
-		[of_stderr writeString: @" "];
+		[OFStdErr writeString: @" "];
 
-		line = [of_stdin readLine];
+		line = [OFStdIn readLine];
 
 		if ([line isEqual: @"?"])
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"ask_overwrite_help",
 			    @" y: yes\n"
 			    @" n: no\n"
@@ -670,7 +689,7 @@ error:
 
 	if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 		if (_outputLevel >= 0)
-			[of_stdout writeLine: OF_LOCALIZED(@"skipping_file",
+			[OFStdOut writeLine: OF_LOCALIZED(@"skipping_file",
 			    @"Skipping %[file]...",
 			    @"file", fileName)];
 
@@ -678,7 +697,7 @@ error:
 	}
 
 	if (_outputLevel >= 0)
-		[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
@@ -689,18 +708,17 @@ error:
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName
 {
-	char buffer[BUFFER_SIZE];
+	char buffer[bufferSize];
 	size_t length;
 
 	@try {
-		length = [input readIntoBuffer: buffer
-					length: BUFFER_SIZE];
+		length = [input readIntoBuffer: buffer length: bufferSize];
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
-		[of_stdout writeString: @"\r"];
-		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", fileName,
 		    @"error", error)];
@@ -708,14 +726,13 @@ error:
 	}
 
 	@try {
-		[output writeBuffer: buffer
-			     length: length];
+		[output writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
-		[of_stdout writeString: @"\r"];
-		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_write_file",
+		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_write_file",
 		    @"Failed to write file %[file]: %[error]",
 		    @"file", fileName,
 		    @"error", error)];

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -40,22 +38,19 @@
 	return [super init];
 }
 
-- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
-			     whence: (int)whence
+- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_offset_t)seekToOffset: (of_offset_t)offset
-		     whence: (int)whence
+- (OFFileOffset)seekToOffset: (OFFileOffset)offset whence: (int)whence
 {
 	if (whence == SEEK_CUR)
 		offset -= _readBufferLength;
 
-	offset = [self lowlevelSeekToOffset: offset
-				     whence: whence];
+	offset = [self lowlevelSeekToOffset: offset whence: whence];
 
-	[self freeMemory: _readBufferMemory];
+	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;
 

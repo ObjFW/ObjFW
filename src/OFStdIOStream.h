@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for providing standard input, output and error as OFStream.
  *
- * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
+ * The global variables @ref OFStdIn, @ref OFStdOut and @ref OFStdErr are
  * instances of this class and need no initialization.
  */
 #ifdef OF_STDIO_STREAM_WIN32_CONSOLE_H
@@ -120,7 +118,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setCursorPosition: (of_point_t)position;
+- (void)setCursorPosition: (OFPoint)position;
 
 /**
  * @brief Moves the cursor to the specified relative position. Does nothing if
@@ -128,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param position The position to move the cursor to
  */
-- (void)setRelativeCursorPosition: (of_point_t)position;
+- (void)setRelativeCursorPosition: (OFPoint)position;
 @end
 
 #ifdef __cplusplus
@@ -139,25 +137,36 @@ extern "C" {
 /**
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdin;
+extern OFStdIOStream *_Nullable OFStdIn;
 
 /**
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stdout;
+extern OFStdIOStream *_Nullable OFStdOut;
 
 /**
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *_Nullable of_stderr;
+extern OFStdIOStream *_Nullable OFStdErr;
 
 /**
- * @brief Log the specified printf-style format to @ref of_stderr.
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
  *
- * This prefixes the output with the date, timestamp, process name and PID and
- * allows `%@` as a printf-style formatted to print objects.
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
  */
-extern void of_log(OFConstantString *format, ...);
+extern void OFLog(OFConstantString *format, ...);
+
+/**
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
+ * @param arguments The arguments for the format
+ */
+extern void OFLogV(OFConstantString *format, va_list arguments);
 #ifdef __cplusplus
 }
 #endif

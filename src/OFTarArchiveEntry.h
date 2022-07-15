@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,24 +24,24 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of the archive entry.
  */
-typedef enum of_tar_archive_entry_type_t {
+typedef enum {
 	/** Normal file */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_FILE		   = '0',
+	OFTarArchiveEntryTypeFile	     = '0',
 	/** Hard link */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_LINK		   = '1',
+	OFTarArchiveEntryTypeLink	     = '1',
 	/** Symbolic link */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK	   = '2',
+	OFTarArchiveEntryTypeSymlink	     = '2',
 	/** Character device */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE = '3',
+	OFTarArchiveEntryTypeCharacterDevice = '3',
 	/** Block device */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE	   = '4',
+	OFTarArchiveEntryTypeBlockDevice     = '4',
 	/** Directory */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY	   = '5',
+	OFTarArchiveEntryTypeDirectory	     = '5',
 	/** FIFO */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_FIFO		   = '6',
+	OFTarArchiveEntryTypeFIFO	     = '6',
 	/** Contiguous file */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_CONTIGUOUS_FILE  = '7',
-} of_tar_archive_entry_type_t;
+	OFTarArchiveEntryTypeContiguousFile  = '7',
+} OFTarArchiveEntryType;
 
 /**
  * @class OFTarArchiveEntry OFTarArchiveEntry.h ObjFW/OFTarArchiveEntry.h
@@ -57,7 +55,7 @@ typedef enum of_tar_archive_entry_type_t {
 	unsigned long long _size;
 	unsigned long _UID, _GID;
 	OFDate *_modificationDate;
-	of_tar_archive_entry_type_t _type;
+	OFTarArchiveEntryType _type;
 	OFString *_Nullable _targetFileName;
 	OFString *_Nullable _owner, *_Nullable _group;
 	unsigned long _deviceMajor, _deviceMinor;
@@ -97,9 +95,9 @@ typedef enum of_tar_archive_entry_type_t {
 /**
  * @brief The type of the archive entry.
  *
- * See @ref of_tar_archive_entry_type_t.
+ * See @ref OFTarArchiveEntryType.
  */
-@property (readonly, nonatomic) of_tar_archive_entry_type_t type;
+@property (readonly, nonatomic) OFTarArchiveEntryType type;
 
 /**
  * @brief The file name of the target (for a hard link or symbolic link).

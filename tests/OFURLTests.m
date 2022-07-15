@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,25 +17,25 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFURL";
-static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
+static OFString *const module = @"OFURL";
+static OFString *URLString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
     @"pa%3Fth?que%23ry=1&f%26oo=b%3dar#frag%23ment";
 
 @implementation TestsAppDelegate (OFURLTests)
 - (void)URLTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURL *u1, *u2, *u3, *u4, *u5, *u6, *u7;
-	OFMutableURL *mu;
+	OFURL *URL1, *URL2, *URL3, *URL4, *URL5, *URL6, *URL7;
+	OFMutableURL *mutableURL;
 
 	TEST(@"+[URLWithString:]",
-	    R(u1 = [OFURL URLWithString: url_str]) &&
-	    R(u2 = [OFURL URLWithString: @"http://foo:80"]) &&
-	    R(u3 = [OFURL URLWithString: @"http://bar/"]) &&
-	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]) &&
-	    R(u5 = [OFURL URLWithString: @"http://foo/bar/qux/foo%2fbar"]) &&
-	    R(u6 = [OFURL URLWithString: @"https://[12:34::56:abcd]/"]) &&
-	    R(u7 = [OFURL URLWithString: @"https://[12:34::56:abcd]:234/"]))
+	    R(URL1 = [OFURL URLWithString: URLString]) &&
+	    R(URL2 = [OFURL URLWithString: @"http://foo:80"]) &&
+	    R(URL3 = [OFURL URLWithString: @"http://bar/"]) &&
+	    R(URL4 = [OFURL URLWithString: @"file:///etc/passwd"]) &&
+	    R(URL5 = [OFURL URLWithString: @"http://foo/bar/qux/foo%2fbar"]) &&
+	    R(URL6 = [OFURL URLWithString: @"https://[12:34::56:abcd]/"]) &&
+	    R(URL7 = [OFURL URLWithString: @"https://[12:34::56:abcd]:234/"]))
 
 	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -72,9 +70,8 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [OFURL URLWithString: @"https://[f]:f/"])
 
 	TEST(@"+[URLWithString:relativeToURL:]",
-	    [[[OFURL URLWithString: @"/foo"
-		     relativeToURL: u1] string] isEqual:
-	    @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
+	    [[[OFURL URLWithString: @"/foo" relativeToURL: URL1] string]
+	    isEqual: @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
 	    [[[OFURL URLWithString: @"foo/bar?q"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
 	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
@@ -82,7 +79,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/?x"]]
 	    string] isEqual: @"http://h/qux/foo/bar"] &&
 	    [[[OFURL URLWithString: @"http://foo/?q"
-		     relativeToURL: u1] string] isEqual: @"http://foo/?q"] &&
+		     relativeToURL: URL1] string] isEqual: @"http://foo/?q"] &&
 	    [[[OFURL URLWithString: @"foo"
 		     relativeToURL: [OFURL URLWithString: @"http://foo/bar"]]
 	    string] isEqual: @"http://foo/foo"] &&
@@ -93,26 +90,22 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #1",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"`" relativeToURL: URL1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #2",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"/`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"/`" relativeToURL: URL1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #3",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"?`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"?`" relativeToURL: URL1])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #4",
 	    OFInvalidFormatException,
-	    [OFURL URLWithString: @"#`"
-		   relativeToURL: u1])
+	    [OFURL URLWithString: @"#`" relativeToURL: URL1])
 
 #ifdef OF_HAVE_FILES
 	TEST(@"+[fileURLWithPath:]",
@@ -142,30 +135,31 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 #endif
 
 	TEST(@"-[string]",
-	    [u1.string isEqual: url_str] &&
-	    [u2.string isEqual: @"http://foo:80"] &&
-	    [u3.string isEqual: @"http://bar/"] &&
-	    [u4.string isEqual: @"file:///etc/passwd"])
+	    [URL1.string isEqual: URLString] &&
+	    [URL2.string isEqual: @"http://foo:80"] &&
+	    [URL3.string isEqual: @"http://bar/"] &&
+	    [URL4.string isEqual: @"file:///etc/passwd"])
 
 	TEST(@"-[scheme]",
-	    [u1.scheme isEqual: @"ht:tp"] && [u4.scheme isEqual: @"file"])
+	    [URL1.scheme isEqual: @"ht:tp"] && [URL4.scheme isEqual: @"file"])
 
-	TEST(@"-[user]", [u1.user isEqual: @"us:er"] && u4.user == nil)
+	TEST(@"-[user]", [URL1.user isEqual: @"us:er"] && URL4.user == nil)
 	TEST(@"-[password]",
-	    [u1.password isEqual: @"p@w"] && u4.password == nil)
-	TEST(@"-[host]", [u1.host isEqual: @"ho:st"] &&
-	    [u6.host isEqual: @"12:34::56:abcd"] &&
-	    [u7.host isEqual: @"12:34::56:abcd"])
-	TEST(@"-[port]", u1.port.unsignedShortValue == 1234 &&
-	    [u4 port] == nil && u7.port.unsignedShortValue == 234)
+	    [URL1.password isEqual: @"p@w"] && URL4.password == nil)
+	TEST(@"-[host]", [URL1.host isEqual: @"ho:st"] &&
+	    [URL6.host isEqual: @"12:34::56:abcd"] &&
+	    [URL7.host isEqual: @"12:34::56:abcd"])
+	TEST(@"-[port]", URL1.port.unsignedShortValue == 1234 &&
+	    [URL4 port] == nil && URL7.port.unsignedShortValue == 234)
 	TEST(@"-[path]",
-	    [u1.path isEqual: @"/pa?th"] && [u4.path isEqual: @"/etc/passwd"])
+	    [URL1.path isEqual: @"/pa?th"] &&
+	    [URL4.path isEqual: @"/etc/passwd"])
 	TEST(@"-[pathComponents]",
-	    [u1.pathComponents isEqual:
+	    [URL1.pathComponents isEqual:
 	    [OFArray arrayWithObjects: @"/", @"pa?th", nil]] &&
-	    [u4.pathComponents isEqual:
+	    [URL4.pathComponents isEqual:
 	    [OFArray arrayWithObjects: @"/", @"etc", @"passwd", nil]] &&
-	    [u5.pathComponents isEqual:
+	    [URL5.pathComponents isEqual:
 	    [OFArray arrayWithObjects: @"/", @"bar", @"qux", @"foo/bar", nil]])
 	TEST(@"-[lastPathComponent]",
 	    [[[OFURL URLWithString: @"http://host/foo//bar/baz"]
@@ -176,137 +170,146 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    lastPathComponent] isEqual: @"foo"] &&
 	    [[[OFURL URLWithString: @"http://host/"]
 	    lastPathComponent] isEqual: @"/"] &&
-	    [u5.lastPathComponent isEqual: @"foo/bar"])
+	    [URL5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
-	    [u1.query isEqual: @"que#ry=1&f&oo=b=ar"] && u4.query == nil)
+	    [URL1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URL4.query == nil)
 	TEST(@"-[queryDictionary]",
-	    [u1.queryDictionary isEqual:
+	    [URL1.queryDictionary isEqual:
 	    [OFDictionary dictionaryWithKeysAndObjects:
 	    @"que#ry", @"1", @"f&oo", @"b=ar", nil]]);
 	TEST(@"-[fragment]",
-	    [u1.fragment isEqual: @"frag#ment"] && u4.fragment == nil)
+	    [URL1.fragment isEqual: @"frag#ment"] && URL4.fragment == nil)
 
-	TEST(@"-[copy]", R(u4 = [[u1 copy] autorelease]))
+	TEST(@"-[copy]", R(URL4 = [[URL1 copy] autorelease]))
 
-	TEST(@"-[isEqual:]", [u1 isEqual: u4] && ![u2 isEqual: u3] &&
-	    [[OFURL URLWithString: @"HTTP://bar/"] isEqual: u3])
+	TEST(@"-[isEqual:]", [URL1 isEqual: URL4] && ![URL2 isEqual: URL3] &&
+	    [[OFURL URLWithString: @"HTTP://bar/"] isEqual: URL3])
 
-	TEST(@"-[hash:]", u1.hash == u4.hash && u2.hash != u3.hash)
+	TEST(@"-[hash:]", URL1.hash == URL4.hash && URL2.hash != URL3.hash)
 
 	EXPECT_EXCEPTION(@"Detection of invalid format",
 	    OFInvalidFormatException, [OFURL URLWithString: @"http"])
 
-	mu = [OFMutableURL URL];
+	mutableURL = [OFMutableURL URL];
 
 	TEST(@"-[setScheme:]",
-	    (mu.scheme = @"ht:tp") && [mu.URLEncodedScheme isEqual: @"ht%3Atp"])
+	    (mutableURL.scheme = @"ht:tp") &&
+	    [mutableURL.URLEncodedScheme isEqual: @"ht%3Atp"])
 
 	TEST(@"-[setURLEncodedScheme:]",
-	    (mu.URLEncodedScheme = @"ht%3Atp") && [mu.scheme isEqual: @"ht:tp"])
+	    (mutableURL.URLEncodedScheme = @"ht%3Atp") &&
+	    [mutableURL.scheme isEqual: @"ht:tp"])
 
 	EXPECT_EXCEPTION(
 	    @"-[setURLEncodedScheme:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedScheme = @"~")
+	    OFInvalidFormatException, mutableURL.URLEncodedScheme = @"~")
 
 	TEST(@"-[setHost:]",
-	    (mu.host = @"ho:st") && [mu.URLEncodedHost isEqual: @"ho%3Ast"] &&
-	    (mu.host = @"12:34:ab") &&
-	    [mu.URLEncodedHost isEqual: @"[12:34:ab]"] &&
-	    (mu.host = @"12:34:aB") &&
-	    [mu.URLEncodedHost isEqual: @"[12:34:aB]"] &&
-	    (mu.host = @"12:34:g") &&
-	    [mu.URLEncodedHost isEqual: @"12%3A34%3Ag"])
+	    (mutableURL.host = @"ho:st") &&
+	    [mutableURL.URLEncodedHost isEqual: @"ho%3Ast"] &&
+	    (mutableURL.host = @"12:34:ab") &&
+	    [mutableURL.URLEncodedHost isEqual: @"[12:34:ab]"] &&
+	    (mutableURL.host = @"12:34:aB") &&
+	    [mutableURL.URLEncodedHost isEqual: @"[12:34:aB]"] &&
+	    (mutableURL.host = @"12:34:g") &&
+	    [mutableURL.URLEncodedHost isEqual: @"12%3A34%3Ag"])
 
 	TEST(@"-[setURLEncodedHost:]",
-	    (mu.URLEncodedHost = @"ho%3Ast") && [mu.host isEqual: @"ho:st"] &&
-	    (mu.URLEncodedHost = @"[12:34]") && [mu.host isEqual: @"12:34"] &&
-	    (mu.URLEncodedHost = @"[12::ab]") && [mu.host isEqual: @"12::ab"])
+	    (mutableURL.URLEncodedHost = @"ho%3Ast") &&
+	    [mutableURL.host isEqual: @"ho:st"] &&
+	    (mutableURL.URLEncodedHost = @"[12:34]") &&
+	    [mutableURL.host isEqual: @"12:34"] &&
+	    (mutableURL.URLEncodedHost = @"[12::ab]") &&
+	    [mutableURL.host isEqual: @"12::ab"])
 
 	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
-	    " #1", OFInvalidFormatException, mu.URLEncodedHost = @"/")
+	    " #1", OFInvalidFormatException, mutableURL.URLEncodedHost = @"/")
 
 	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
-	    " #2", OFInvalidFormatException, mu.URLEncodedHost = @"[12:34")
+	    " #2", OFInvalidFormatException,
+	    mutableURL.URLEncodedHost = @"[12:34")
 
 	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails"
-	    " #3", OFInvalidFormatException, mu.URLEncodedHost = @"[a::g]")
+	    " #3", OFInvalidFormatException,
+	    mutableURL.URLEncodedHost = @"[a::g]")
 
 	TEST(@"-[setUser:]",
-	    (mu.user = @"us:er") && [mu.URLEncodedUser isEqual: @"us%3Aer"])
+	    (mutableURL.user = @"us:er") &&
+	    [mutableURL.URLEncodedUser isEqual: @"us%3Aer"])
 
 	TEST(@"-[setURLEncodedUser:]",
-	    (mu.URLEncodedUser = @"us%3Aer") && [mu.user isEqual: @"us:er"])
+	    (mutableURL.URLEncodedUser = @"us%3Aer") &&
+	    [mutableURL.user isEqual: @"us:er"])
 
 	EXPECT_EXCEPTION(@"-[setURLEncodedUser:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedHost = @"/")
+	    OFInvalidFormatException, mutableURL.URLEncodedHost = @"/")
 
 	TEST(@"-[setPassword:]",
-	    (mu.password = @"pass:word") &&
-	    [mu.URLEncodedPassword isEqual: @"pass%3Aword"])
+	    (mutableURL.password = @"pass:word") &&
+	    [mutableURL.URLEncodedPassword isEqual: @"pass%3Aword"])
 
 	TEST(@"-[setURLEncodedPassword:]",
-	    (mu.URLEncodedPassword = @"pass%3Aword") &&
-	    [mu.password isEqual: @"pass:word"])
+	    (mutableURL.URLEncodedPassword = @"pass%3Aword") &&
+	    [mutableURL.password isEqual: @"pass:word"])
 
 	EXPECT_EXCEPTION(
 	    @"-[setURLEncodedPassword:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedPassword = @"/")
+	    OFInvalidFormatException, mutableURL.URLEncodedPassword = @"/")
 
 	TEST(@"-[setPath:]",
-	    (mu.path = @"pa/th@?") && [mu.URLEncodedPath isEqual: @"pa/th@%3F"])
+	    (mutableURL.path = @"pa/th@?") &&
+	    [mutableURL.URLEncodedPath isEqual: @"pa/th@%3F"])
 
 	TEST(@"-[setURLEncodedPath:]",
-	    (mu.URLEncodedPath = @"pa/th@%3F") && [mu.path isEqual: @"pa/th@?"])
+	    (mutableURL.URLEncodedPath = @"pa/th@%3F") &&
+	    [mutableURL.path isEqual: @"pa/th@?"])
 
 	EXPECT_EXCEPTION(@"-[setURLEncodedPath:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedPath = @"?")
+	    OFInvalidFormatException, mutableURL.URLEncodedPath = @"?")
 
 	TEST(@"-[setQuery:]",
-	    (mu.query = @"que/ry?#") &&
-	    [mu.URLEncodedQuery isEqual: @"que/ry?%23"])
+	    (mutableURL.query = @"que/ry?#") &&
+	    [mutableURL.URLEncodedQuery isEqual: @"que/ry?%23"])
 
 	TEST(@"-[setURLEncodedQuery:]",
-	    (mu.URLEncodedQuery = @"que/ry?%23") &&
-	    [mu.query isEqual: @"que/ry?#"])
+	    (mutableURL.URLEncodedQuery = @"que/ry?%23") &&
+	    [mutableURL.query isEqual: @"que/ry?#"])
 
 	EXPECT_EXCEPTION(
 	    @"-[setURLEncodedQuery:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedQuery = @"`")
+	    OFInvalidFormatException, mutableURL.URLEncodedQuery = @"`")
 
 	TEST(@"-[setQueryDictionary:]",
-	    (mu.queryDictionary = [OFDictionary dictionaryWithKeysAndObjects:
+	    (mutableURL.queryDictionary =
+	    [OFDictionary dictionaryWithKeysAndObjects:
 	    @"foo&bar", @"baz=qux", @"f=oobar", @"b&azqux", nil]) &&
-	    [mu.URLEncodedQuery isEqual:
+	    [mutableURL.URLEncodedQuery isEqual:
 	    @"foo%26bar=baz%3Dqux&f%3Doobar=b%26azqux"])
 
 	TEST(@"-[setFragment:]",
-	    (mu.fragment = @"frag/ment?#") &&
-	    [mu.URLEncodedFragment isEqual: @"frag/ment?%23"])
+	    (mutableURL.fragment = @"frag/ment?#") &&
+	    [mutableURL.URLEncodedFragment isEqual: @"frag/ment?%23"])
 
 	TEST(@"-[setURLEncodedFragment:]",
-	    (mu.URLEncodedFragment = @"frag/ment?%23") &&
-	    [mu.fragment isEqual: @"frag/ment?#"])
+	    (mutableURL.URLEncodedFragment = @"frag/ment?%23") &&
+	    [mutableURL.fragment isEqual: @"frag/ment?#"])
 
 	EXPECT_EXCEPTION(
 	    @"-[setURLEncodedFragment:] with invalid characters fails",
-	    OFInvalidFormatException, mu.URLEncodedFragment = @"`")
+	    OFInvalidFormatException, mutableURL.URLEncodedFragment = @"`")
 
 	TEST(@"-[URLByAppendingPathComponent:isDirectory:]",
 	    [[[OFURL URLWithString: @"file:///foo/bar"]
-	    URLByAppendingPathComponent: @"qux"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qux"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qu?x"
-			    isDirectory: false] isEqual:
+	    URLByAppendingPathComponent: @"qu?x" isDirectory: false] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx"]] &&
 	    [[[OFURL URLWithString: @"file:///foo/bar/"]
-	    URLByAppendingPathComponent: @"qu?x"
-			    isDirectory: true] isEqual:
+	    URLByAppendingPathComponent: @"qu?x" isDirectory: true] isEqual:
 	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx/"]])
 
 	TEST(@"-[URLByStandardizingPath]",

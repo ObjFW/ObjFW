@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,21 +16,21 @@
 #include "config.h"
 
 #import "OFXMLElementBuilder.h"
-#import "OFXMLElement.h"
-#import "OFXMLAttribute.h"
-#import "OFXMLCharacters.h"
-#import "OFXMLCDATA.h"
-#import "OFXMLComment.h"
-#import "OFXMLProcessingInstructions.h"
-#import "OFXMLParser.h"
 #import "OFArray.h"
+#import "OFXMLAttribute.h"
+#import "OFXMLCDATA.h"
+#import "OFXMLCharacters.h"
+#import "OFXMLComment.h"
+#import "OFXMLElement.h"
+#import "OFXMLParser.h"
+#import "OFXMLProcessingInstruction.h"
 
 #import "OFMalformedXMLException.h"
 
 @implementation OFXMLElementBuilder
 @synthesize delegate = _delegate;
 
-+ (instancetype)elementBuilder
++ (instancetype)builder
 {
 	return [[[self alloc] init] autorelease];
 }
@@ -58,19 +56,20 @@
 	[super dealloc];
 }
 
--		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)pi
+-			  (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructionWithTarget: (OFString *)target
+				  data: (OFString *)data
 {
-	OFXMLProcessingInstructions *node = [OFXMLProcessingInstructions
-	    processingInstructionsWithString: pi];
+	OFXMLProcessingInstruction *node = [OFXMLProcessingInstruction
+	    processingInstructionWithTarget: target
+				       data: data];
 	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 -    (void)parser: (OFXMLParser *)parser
@@ -138,8 +137,7 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate  elementBuilder: self
-		    didBuildParentlessNode: node];
+		[_delegate  elementBuilder: self didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
@@ -152,22 +150,20 @@
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
   foundComment: (OFString *)comment
 {
-	OFXMLComment *node = [OFXMLComment commentWithString: comment];
+	OFXMLComment *node = [OFXMLComment commentWithText: comment];
 	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self
-		   didBuildParentlessNode: node];
+		[_delegate elementBuilder: self didBuildParentlessNode: node];
 }
 
 -      (OFString *)parser: (OFXMLParser *)parser

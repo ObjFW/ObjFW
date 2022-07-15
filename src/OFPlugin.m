@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,114 +30,88 @@
 #import "OFInitializationFailedException.h"
 #import "OFLoadPluginFailedException.h"
 
-typedef OFPlugin *(*init_plugin_t)(void);
-
-of_plugin_handle_t
-of_dlopen(OFString *path, int flags)
-{
-#ifndef OF_WINDOWS
-	return dlopen([path cStringWithEncoding: [OFLocale encoding]], flags);
-#else
-	if (path == nil)
-		return GetModuleHandle(NULL);
-
-	if ([OFSystemInfo isWindowsNT])
-		return LoadLibraryW(path.UTF16String);
-	else
-		return LoadLibraryA(
-		    [path cStringWithEncoding: [OFLocale encoding]]);
+#ifndef RTLD_LAZY
+# define RTLD_LAZY 0
 #endif
-}
-
-void *
-of_dlsym(of_plugin_handle_t handle, const char *symbol)
-{
-#ifndef OF_WINDOWS
-	return dlsym(handle, symbol);
-#else
-	return (void *)(uintptr_t)GetProcAddress(handle, symbol);
-#endif
-}
-
-void
-of_dlclose(of_plugin_handle_t handle)
-{
-#ifndef OF_WINDOWS
-	dlclose(handle);
-#else
-	FreeLibrary(handle);
-#endif
-}
-
-OFString *
-of_dlerror(void)
-{
-#ifndef OF_WINDOWS
-	return [OFString stringWithCString: dlerror()
-				  encoding: [OFLocale encoding]];
-#else
-	return nil;
-#endif
-}
 
 @implementation OFPlugin
-+ (id)pluginFromFile: (OFString *)path
++ (instancetype)pluginWithPath: (OFString *)path
 {
-	void *pool = objc_autoreleasePoolPush();
-	of_plugin_handle_t handle;
-	init_plugin_t initPlugin;
-	OFPlugin *plugin;
-
-#if defined(OF_MACOS)
-	path = [path stringByAppendingFormat: @".bundle/Contents/MacOS/%@",
-					      path.lastPathComponent];
-#elif defined(OF_IOS)
-	path = [path stringByAppendingFormat: @".bundle/%@",
-					      path.lastPathComponent];
-#else
-	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
-#endif
-
-	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
-		@throw [OFLoadPluginFailedException
-		    exceptionWithPath: path
-				error: of_dlerror()];
-
-	objc_autoreleasePoolPop(pool);
-
-	initPlugin = (init_plugin_t)(uintptr_t)of_dlsym(handle, "init_plugin");
-	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
-		of_dlclose(handle);
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-	}
-
-	plugin->_pluginHandle = handle;
-	return plugin;
+	return [[[self alloc] initWithPath: path] autorelease];
 }
 
-- (instancetype)init
++ (OFString *)pathForName: (OFString *)name
 {
-	if ([self isMemberOfClass: [OFPlugin class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
+#if defined(OF_MACOS)
+	return [name stringByAppendingFormat: @".bundle/Contents/MacOS/%@",
+					      name.lastPathComponent];
+#elif defined(OF_IOS)
+	return [name stringByAppendingFormat: @".bundle/%@",
+					      name.lastPathComponent];
+#else
+	return [name stringByAppendingString: @PLUGIN_SUFFIX];
+#endif
+}
+
+- (instancetype)initWithPath: (OFString *)path
+{
+	self = [super init];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+#ifndef OF_WINDOWS
+		_handle = dlopen(
+		    [path cStringWithEncoding: [OFLocale encoding]], RTLD_LAZY);
+#else
+		if ([OFSystemInfo isWindowsNT])
+			_handle = LoadLibraryW(path.UTF16String);
+		else
+			_handle = LoadLibraryA(
+			    [path cStringWithEncoding: [OFLocale encoding]]);
+#endif
+
+		if (_handle == NULL) {
+#ifndef OF_WINDOWS
+			OFString *error = [OFString
+			    stringWithCString: dlerror()
+				     encoding: [OFLocale encoding]];
+#else
+			OFString *error = nil;
+#endif
+			@throw [OFLoadPluginFailedException
+			    exceptionWithPath: path
+					error: error];
 		}
 
-		abort();
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
 
-	return [super init];
+	return self;
+}
+
+- (void *)addressForSymbol: (OFString *)symbol
+{
+#ifndef OF_WINDOWS
+	return dlsym(_handle,
+	    [symbol cStringWithEncoding: [OFLocale encoding]]);
+#else
+	return (void *)(uintptr_t)GetProcAddress(_handle,
+	    [symbol cStringWithEncoding: [OFLocale encoding]]);
+#endif
 }
 
 - (void)dealloc
 {
-	of_plugin_handle_t h = _pluginHandle;
+#ifndef OF_WINDOWS
+	dlclose(_handle);
+#else
+	FreeLibrary(_handle);
+#endif
 
 	[super dealloc];
-
-	of_dlclose(h);
 }
 @end

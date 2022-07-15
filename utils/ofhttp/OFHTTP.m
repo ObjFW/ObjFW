@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,8 +33,12 @@
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
-#import "OFTLSSocket.h"
+#import "OFTLSStream.h"
 #import "OFURL.h"
+
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
 
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -66,8 +68,9 @@
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
 	bool _detectedFileName, _quiet, _verbose, _insecure, _ignoreStatus;
+	bool _useUnicode;
 	OFStream *_body;
-	of_http_request_method_t _method;
+	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
@@ -79,12 +82,20 @@
 - (void)downloadNextURL;
 @end
 
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
+
 OF_APPLICATION_DELEGATE(OFHTTP)
 
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[of_stderr writeLine:
+	[OFStdErr writeLine:
 	    OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[cehHmoOPqv] url1 [url2 ...]",
 	    @"prog", [OFApplication programName])];
@@ -133,14 +144,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	const char *UTF8String;
 	size_t UTF8StringLength;
 	enum {
-		DISPOSITION_TYPE,
-		DISPOSITION_TYPE_SEMICOLON,
-		DISPOSITION_PARAM_NAME_SKIP_SPACE,
-		DISPOSITION_PARAM_NAME,
-		DISPOSITION_PARAM_VALUE,
-		DISPOSITION_PARAM_QUOTED,
-		DISPOSITION_PARAM_UNQUOTED,
-		DISPOSITION_EXPECT_SEMICOLON
+		stateDispositionType,
+		stateDispositionTypeSemicolon,
+		stateDispositionParamNameSkipSpace,
+		stateDispositionParamName,
+		stateDispositionParamValue,
+		stateDispositionParamQuoted,
+		stateDispositionParamUnquoted,
+		stateDispositionExpectSemicolon
 	} state;
 	size_t last;
 	OFString *type = nil, *paramName = nil, *paramValue;
@@ -154,60 +165,60 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	UTF8String = contentDisposition.UTF8String;
 	UTF8StringLength = contentDisposition.UTF8StringLength;
-	state = DISPOSITION_TYPE;
+	state = stateDispositionType;
 	params = [OFMutableDictionary dictionary];
 	last = 0;
 
 	for (size_t i = 0; i < UTF8StringLength; i++) {
 		switch (state) {
-		case DISPOSITION_TYPE:
+		case stateDispositionType:
 			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {
 				type = [OFString
 				    stringWithUTF8String: UTF8String
 						  length: i];
 
 				state = (UTF8String[i] == ';'
-				    ? DISPOSITION_PARAM_NAME_SKIP_SPACE
-				    : DISPOSITION_TYPE_SEMICOLON);
+				    ? stateDispositionParamNameSkipSpace
+				    : stateDispositionTypeSemicolon);
 				last = i + 1;
 			}
 			break;
-		case DISPOSITION_TYPE_SEMICOLON:
+		case stateDispositionTypeSemicolon:
 			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = stateDispositionParamNameSkipSpace;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ') {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}
 			break;
-		case DISPOSITION_PARAM_NAME_SKIP_SPACE:
+		case stateDispositionParamNameSkipSpace:
 			if (UTF8String[i] != ' ') {
-				state = DISPOSITION_PARAM_NAME;
+				state = stateDispositionParamName;
 				last = i;
 				i--;
 			}
 			break;
-		case DISPOSITION_PARAM_NAME:
+		case stateDispositionParamName:
 			if (UTF8String[i] == '=') {
 				paramName = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				state = DISPOSITION_PARAM_VALUE;
+				state = stateDispositionParamValue;
 			}
 			break;
-		case DISPOSITION_PARAM_VALUE:
+		case stateDispositionParamValue:
 			if (UTF8String[i] == '"') {
-				state = DISPOSITION_PARAM_QUOTED;
+				state = stateDispositionParamQuoted;
 				last = i + 1;
 			} else {
-				state = DISPOSITION_PARAM_UNQUOTED;
+				state = stateDispositionParamUnquoted;
 				last = i;
 				i--;
 			}
 			break;
-		case DISPOSITION_PARAM_QUOTED:
+		case stateDispositionParamQuoted:
 			if (UTF8String[i] == '"') {
 				paramValue = [OFString
 				    stringWithUTF8String: UTF8String + last
@@ -216,10 +227,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[params setObject: paramValue
 					   forKey: paramName.lowercaseString];
 
-				state = DISPOSITION_EXPECT_SEMICOLON;
+				state = stateDispositionExpectSemicolon;
 			}
 			break;
-		case DISPOSITION_PARAM_UNQUOTED:
+		case stateDispositionParamUnquoted:
 			if (UTF8String[i] <= 31 || UTF8String[i] >= 127)
 				return nil;
 
@@ -237,13 +248,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[params setObject: paramValue
 					   forKey: paramName.lowercaseString];
 
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = stateDispositionParamNameSkipSpace;
 				break;
 			}
 			break;
-		case DISPOSITION_EXPECT_SEMICOLON:
+		case stateDispositionExpectSemicolon:
 			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				state = stateDispositionParamNameSkipSpace;
 				last = i + 1;
 			} else if (UTF8String[i] != ' ') {
 				objc_autoreleasePoolPop(pool);
@@ -253,14 +264,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		}
 	}
 
-	if (state == DISPOSITION_PARAM_UNQUOTED) {
+	if (state == stateDispositionParamUnquoted) {
 		paramValue = [OFString
 		    stringWithUTF8String: UTF8String + last
 				  length: UTF8StringLength - last];
 
 		[params setObject: paramValue
 			   forKey: paramName.lowercaseString];
-	} else if (state != DISPOSITION_EXPECT_SEMICOLON) {
+	} else if (state != stateDispositionExpectSemicolon) {
 		objc_autoreleasePoolPop(pool);
 		return nil;
 	}
@@ -279,23 +290,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 @implementation OFHTTP
-#ifdef OF_HAVE_PLUGINS
-+ (void)initialize
-{
-	if (self != [OFHTTP class])
-		return;
-
-	/* Opportunistically try loading ObjOpenSSL and ignore any errors. */
-	of_dlopen(@"objopenssl", OF_RTLD_LAZY);
-}
-#endif
-
 - (instancetype)init
 {
 	self = [super init];
 
 	@try {
-		_method = OF_HTTP_REQUEST_METHOD_GET;
+		_method = OFHTTPRequestMethodGet;
 
 		_clientHeaders = [[OFMutableDictionary alloc]
 		    initWithObject: @"OFHTTP"
@@ -304,7 +304,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
 
-		_buffer = [self allocMemoryWithSize: [OFSystemInfo pageSize]];
+		_buffer = OFAllocMemory(1, [OFSystemInfo pageSize]);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -318,8 +318,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	size_t pos = [header rangeOfString: @":"].location;
 	OFString *name, *value;
 
-	if (pos == OF_NOT_FOUND) {
-		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_header",
+	if (pos == OFNotFound) {
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_input_header",
 		    @"%[prog]: Headers must to be in format name:value!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
@@ -331,8 +331,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	value = [header substringFromIndex: pos + 1]
 	    .stringByDeletingEnclosingWhitespaces;
 
-	[_clientHeaders setObject: value
-			   forKey: name];
+	[_clientHeaders setObject: value forKey: name];
 }
 
 - (void)setBody: (OFString *)path
@@ -343,10 +342,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_body = nil;
 
 	if ([path isEqual: @"-"])
-		_body = [of_stdin copy];
+		_body = [OFStdIn copy];
 	else {
-		_body = [[OFFile alloc] initWithPath: path
-						mode: @"r"];
+		_body = [[OFFile alloc] initWithPath: path mode: @"r"];
 
 		@try {
 			unsigned long long fileSize =
@@ -373,9 +371,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	method = method.uppercaseString;
 
 	@try {
-		_method = of_http_request_method_from_string(method);
+		_method = OFHTTPRequestMethodParseName(method);
 	} @catch (OFInvalidArgumentException *e) {
-		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_method",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_input_method",
 		    @"%[prog]: Invalid request method %[method]!",
 		    @"prog", [OFApplication programName],
 		    @"method", method)];
@@ -390,11 +388,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	@try {
 		size_t pos = [proxy
 		    rangeOfString: @":"
-			  options: OF_STRING_SEARCH_BACKWARDS].location;
+			  options: OFStringSearchBackwards].location;
 		OFString *host;
 		unsigned long long port;
 
-		if (pos == OF_NOT_FOUND)
+		if (pos == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringToIndex: pos];
@@ -407,7 +405,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFTCPSocket setSOCKS5Host: host];
 		[OFTCPSocket setSOCKS5Port: (uint16_t)port];
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeLine: OF_LOCALIZED(@"invalid_input_proxy",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_input_proxy",
 		    @"%[prog]: Proxy must to be in format host:port!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
@@ -417,7 +415,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 - (void)applicationDidFinishLaunching
 {
 	OFString *outputPath;
-	const of_options_parser_option_t options[] = {
+	const OFOptionsParserOption options[] = {
 		{ 'b', @"body",	1, NULL, NULL },
 		{ 'c', @"continue", 0, &_continue, NULL },
 		{ 'f', @"force", 0, &_force, NULL },
@@ -434,7 +432,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
-	of_unichar_t option;
+	OFUnichar option;
 
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [OFSandbox sandbox];
@@ -449,7 +447,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	/* Dropped after parsing options */
 	sandbox.allowsUnveil = true;
 
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -465,7 +463,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[self setBody: optionsParser.argument];
 			break;
 		case 'h':
-			help(of_stdout, true, 0);
+			help(OFStdOut, true, 0);
 			break;
 		case 'H':
 			[self addHeader: optionsParser.argument];
@@ -478,7 +476,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"long_argument_missing",
 				    @"%[prog]: Argument for option --%[opt] "
 				    @"missing"
@@ -488,7 +486,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%c",
 				    optionsParser.lastOption];
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"argument_missing",
 				    @"%[prog]: Argument for option -%[opt] "
 				    @"missing",
@@ -499,7 +497,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '=':
-			[of_stderr writeLine:
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"option_takes_no_argument",
 			    @"%[prog]: Option --%[opt] takes no argument",
 			    @"prog", [OFApplication programName],
@@ -509,7 +507,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
@@ -518,7 +516,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%c",
 				    optionsParser.lastOption];
-				[of_stderr writeLine:
+				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
@@ -531,25 +529,29 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 #ifdef OF_HAVE_SANDBOX
-	[sandbox unveilPath: (outputPath != nil
-				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
-		permissions: (_continue ? @"rwc" : @"wc")];
-	/* In case we use ObjOpenSSL for https later */
-	[sandbox unveilPath: @"/etc/ssl"
-		permissions: @"r"];
+	if (outputPath != nil)
+		[sandbox unveilPath: outputPath
+			permissions: (_continue ? @"rwc" : @"wc")];
+	else
+		[sandbox unveilPath: [[OFFileManager defaultManager]
+					 currentDirectoryPath]
+			permissions: (_continue ? @"rwc" : @"wc")];
+
+	/* In case we use OpenSSL for HTTPS later */
+	[sandbox unveilPath: @"/etc/ssl" permissions: @"r"];
 
 	sandbox.allowsUnveil = false;
-	[OFApplication activateSandbox: sandbox];
+	[OFApplication of_activateSandbox: sandbox];
 #endif
 
 	_outputPath = [outputPath copy];
 	_URLs = [optionsParser.remainingArguments copy];
 
 	if (_URLs.count < 1)
-		help(of_stderr, false, 1);
+		help(OFStdErr, false, 1);
 
 	if (_quiet && _verbose) {
-		[of_stderr writeLine: OF_LOCALIZED(@"quiet_xor_verbose",
+		[OFStdErr writeLine: OF_LOCALIZED(@"quiet_xor_verbose",
 		    @"%[prog]: -q / --quiet and -v / --verbose are mutually "
 		    @"exclusive!",
 		    @"prog", [OFApplication programName])];
@@ -557,7 +559,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	if (_outputPath != nil && _detectFileName) {
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"output_xor_detect_filename",
 		    @"%[prog]: -o / --output and -O / --detect-filename are "
 		    @"mutually exclusive!",
@@ -566,7 +568,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	if (_outputPath != nil && _URLs.count > 1) {
-		[of_stderr writeLine:
+		[OFStdErr writeLine:
 		    OF_LOCALIZED(@"output_only_with_one_url",
 		    @"%[prog]: Cannot use -o / --output when more than one URL "
 		    @"has been specified!",
@@ -577,17 +579,21 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (_insecure)
 		_HTTPClient.allowsInsecureRedirects = true;
 
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+#ifdef OF_WINDOWS
+	_useUnicode = [OFSystemInfo isWindowsNT];
+#else
+	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
+#endif
+
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 
--    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OFTCPSocket *)sock
-	  request: (OFHTTPRequest *)request
+-	(void)client: (OFHTTPClient *)client
+  didCreateTLSStream: (OFTLSStream *)stream
+	     request: (OFHTTPRequest *)request
 {
-	if (_insecure && [sock respondsToSelector:
-	    @selector(setVerifiesCertificates:)])
-		((id <OFTLSSocket>)sock).verifiesCertificates = false;
+	/* Use setter instead of property access to work around GCC bug. */
+	[stream setVerifiesCertificates: !_insecure];
 }
 
 -     (void)client: (OFHTTPClient *)client
@@ -597,12 +603,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	/* TODO: Do asynchronously and print status */
 	while (!_body.atEndOfStream) {
 		char buffer[4096];
-		size_t length;
-
-		length = [_body readIntoBuffer: buffer
-					length: 4096];
-		[body writeBuffer: buffer
-			   length: length];
+		size_t length = [_body readIntoBuffer: buffer length: 4096];
+		[body writeBuffer: buffer length: length];
 	}
 }
 
@@ -622,14 +624,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[of_stdout writeFormat: @"  %@: %@\n",
-						key, object];
+			[OFStdOut writeFormat: @"  %@: %@\n", key, object];
 
 		objc_autoreleasePoolPop(pool);
 	}
 
-	if (!_quiet)
-		[of_stdout writeFormat: @"☇ %@", URL.string];
+	if (!_quiet) {
+		if (_useUnicode)
+			[OFStdOut writeFormat: @"☇ %@", URL.string];
+		else
+			[OFStdOut writeFormat: @"< %@", URL.string];
+	}
 
 	_length = 0;
 
@@ -650,13 +655,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[of_stdout writeString: @"\n  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"download_error",
+			[OFStdOut writeString: @"\n  "];
+			[OFStdOut writeLine: OF_LOCALIZED(@"download_error",
 			    @"Error!")];
 		}
 
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
-		[of_stderr writeLine: OF_LOCALIZED(
+		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"download_failed_exception",
 		    @"%[prog]: Failed to download <%[url]>!\n"
 		    @"  %[exception]",
@@ -670,11 +675,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		return false;
 	}
 
+	[_output writeBuffer: buffer length: length];
+
 	_received += length;
-
-	[_output writeBuffer: buffer
-		      length: length];
-
 	[_progressBar setReceived: _received];
 
 	if (response.atEndOfStream) {
@@ -684,8 +687,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[of_stdout writeString: @"\n  "];
-			[of_stdout writeLine:
+			[OFStdOut writeString: @"\n  "];
+			[OFStdOut writeLine:
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
@@ -710,7 +713,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    [headers objectForKey: @"Content-Length"];
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
-		[of_stdout writeFormat: @" ➜ %hd\n", statusCode];
+		if (_useUnicode)
+			[OFStdOut writeFormat: @" ➜ %hd\n", statusCode];
+		else
+			[OFStdOut writeFormat: @" -> %hd\n", statusCode];
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -764,8 +770,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			OFString *key, *object;
 
 			if (statusCode / 100 == 2 && _currentFileName != nil) {
-				[of_stdout writeString: @"  "];
-				[of_stdout writeLine: OF_LOCALIZED(
+				[OFStdOut writeString: @"  "];
+				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"info_name_unaligned",
 				    @"Name: %[name]",
 				    @"name", _currentFileName)];
@@ -773,21 +779,24 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil)
-				[of_stdout writeFormat: @"  %@: %@\n",
-							key, object];
+				[OFStdOut writeFormat: @"  %@: %@\n",
+						       key, object];
 
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
-			    @"Name: %[name]",
-			    @"name", _currentFileName)];
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_type",
+			[OFStdOut writeString: @"  "];
+
+			if (_currentFileName != nil)
+				[OFStdOut writeLine: OF_LOCALIZED(@"info_name",
+				    @"Name: %[name]",
+				    @"name", _currentFileName)];
+
+			[OFStdOut writeString: @"  "];
+			[OFStdOut writeLine: OF_LOCALIZED(@"info_type",
 			    @"Type: %[type]",
 			    @"type", type)];
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_size",
+			[OFStdOut writeString: @"  "];
+			[OFStdOut writeLine: OF_LOCALIZED(@"info_size",
 			    @"Size: %[size]",
 			    @"size", lengthString)];
 		}
@@ -803,9 +812,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		if ([exception isKindOfClass:
 		    [OFResolveHostFailedException class]]) {
 			if (!_quiet)
-				[of_stdout writeString: @"\n"];
+				[OFStdOut writeString: @"\n"];
 
-			[of_stderr writeLine:
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_resolve_host_failed",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  Failed to resolve host: %[exception]",
@@ -815,9 +824,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFConnectionFailedException class]]) {
 			if (!_quiet)
-				[of_stdout writeString: @"\n"];
+				[OFStdOut writeString: @"\n"];
 
-			[of_stderr writeLine:
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_failed_connection_failed",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  Connection failed: %[exception]",
@@ -827,9 +836,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFInvalidServerReplyException class]]) {
 			if (!_quiet)
-				[of_stdout writeString: @"\n"];
+				[OFStdOut writeString: @"\n"];
 
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_invalid_server_reply",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  Invalid server reply!",
@@ -838,13 +847,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFUnsupportedProtocolException class]]) {
 			if (!_quiet)
-				[of_stdout writeString: @"\n"];
+				[OFStdOut writeString: @"\n"];
 
-			[of_stderr writeLine: OF_LOCALIZED(@"no_ssl_library",
-			    @"%[prog]: No TLS library loaded!\n"
-			    @"  In order to download via https, you need to "
-			    @"preload an TLS library for ObjFW\n"
-			    @"  such as ObjOpenSSL!",
+			[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
+			    @"%[prog]: No TLS support in ObjFW!\n"
+			    @"  In order to download via HTTPS, you need to "
+			    @"either build ObjFW with TLS\n"
+			    @"  support or preload a library adding TLS "
+			    @"support to ObjFW!",
 			    @"prog", [OFApplication programName])];
 		} else if ([exception isKindOfClass:
 		    [OFReadOrWriteFailedException class]]) {
@@ -853,7 +863,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"Read or write failed");
 
 			if (!_quiet)
-				[of_stdout writeString: @"\n"];
+				[OFStdOut writeString: @"\n"];
 
 			if ([exception isKindOfClass:
 			    [OFReadFailedException class]])
@@ -868,7 +878,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				    @"write",
 				    @"Write failed");
 
-			[of_stderr writeLine: OF_LOCALIZED(
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_read_or_write_failed",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  %[error]: %[exception]",
@@ -888,9 +898,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			statusCode = response.statusCode;
 			codeString = [OFString stringWithFormat: @"%hd %@",
-			    statusCode,
-			    of_http_status_code_to_string(statusCode)];
-			[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
+			    statusCode, OFHTTPStatusCodeString(statusCode)];
+			[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
 			    @"%[prog]: Failed to download <%[url]>!\n"
 			    @"  HTTP status code: %[code]",
 			    @"prog", [OFApplication programName],
@@ -906,7 +915,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 after_exception_handling:
-	if (_method == OF_HTTP_REQUEST_METHOD_HEAD)
+	if (_method == OFHTTPRequestMethodHead)
 		goto next;
 
 	if (_detectFileNameRequest) {
@@ -924,11 +933,11 @@ after_exception_handling:
 	}
 
 	if ([_outputPath isEqual: @"-"])
-		_output = of_stdout;
+		_output = [OFStdOut copy];
 	else {
 		if (!_continue && !_force && [[OFFileManager defaultManager]
 		    fileExistsAtPath: _currentFileName]) {
-			[of_stderr writeLine:
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"output_already_exists",
 			    @"%[prog]: File %[filename] already exists!",
 			    @"prog", [OFApplication programName],
@@ -944,7 +953,7 @@ after_exception_handling:
 			_output = [[OFFile alloc] initWithPath: _currentFileName
 							  mode: mode];
 		} @catch (OFOpenItemFailedException *e) {
-			[of_stderr writeLine:
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"failed_to_open_output",
 			    @"%[prog]: Failed to open file %[filename]: "
 			    @"%[exception]",
@@ -960,7 +969,8 @@ after_exception_handling:
 	if (!_quiet) {
 		_progressBar = [[ProgressBar alloc]
 		    initWithLength: _length
-		       resumedFrom: _resumedFrom];
+		       resumedFrom: _resumedFrom
+			useUnicode: _useUnicode];
 		[_progressBar setReceived: _received];
 		[_progressBar draw];
 	}
@@ -969,16 +979,14 @@ after_exception_handling:
 	_currentFileName = nil;
 
 	response.delegate = self;
-	[response asyncReadIntoBuffer: _buffer
-			       length: [OFSystemInfo pageSize]];
+	[response asyncReadIntoBuffer: _buffer length: [OFSystemInfo pageSize]];
 	return;
 
 next:
 	[_currentFileName release];
 	_currentFileName = nil;
 
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 
 - (void)downloadNextURL
@@ -990,7 +998,7 @@ next:
 
 	_received = _length = _resumedFrom = 0;
 
-	if (_output != of_stdout)
+	if (_output != OFStdOut)
 		[_output release];
 	_output = nil;
 
@@ -1001,7 +1009,7 @@ next:
 		URLString = [_URLs objectAtIndex: _URLIndex++];
 		URL = [OFURL URLWithString: URLString];
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeLine: OF_LOCALIZED(@"invalid_url",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_url",
 		    @"%[prog]: Invalid URL: <%[url]>!",
 		    @"prog", [OFApplication programName],
 		    @"url", URLString)];
@@ -1011,7 +1019,7 @@ next:
 	}
 
 	if (![URL.scheme isEqual: @"http"] && ![URL.scheme isEqual: @"https"]) {
-		[of_stderr writeLine: OF_LOCALIZED(@"invalid_scheme",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_scheme",
 		    @"%[prog]: Invalid scheme: <%[url]>!",
 		    @"prog", [OFApplication programName],
 		    @"url", URLString)];
@@ -1023,12 +1031,16 @@ next:
 	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
 
 	if (_detectFileName && !_detectedFileName) {
-		if (!_quiet)
-			[of_stdout writeFormat: @"⠒ %@", URL.string];
+		if (!_quiet) {
+			if (_useUnicode)
+				[OFStdOut writeFormat: @"⠒ %@", URL.string];
+			else
+				[OFStdOut writeFormat: @"? %@", URL.string];
+		}
 
 		request = [OFHTTPRequest requestWithURL: URL];
 		request.headers = clientHeaders;
-		request.method = OF_HTTP_REQUEST_METHOD_HEAD;
+		request.method = OFHTTPRequestMethodHead;
 
 		_detectFileNameRequest = true;
 		[_HTTPClient asyncPerformRequest: request];
@@ -1047,6 +1059,14 @@ next:
 	if (_currentFileName == nil)
 		_currentFileName = [URL.path.lastPathComponent copy];
 
+	if ([_currentFileName isEqual: @"/"]) {
+		[_currentFileName release];
+		_currentFileName = nil;
+	}
+
+	if (_currentFileName == nil)
+		_currentFileName = @"unnamed";
+
 	if (_continue) {
 		@try {
 			unsigned long long size =
@@ -1061,14 +1081,17 @@ next:
 
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];
-			[clientHeaders setObject: range
-					  forKey: @"Range"];
+			[clientHeaders setObject: range forKey: @"Range"];
 		} @catch (OFRetrieveItemAttributesFailedException *e) {
 		}
 	}
 
-	if (!_quiet)
-		[of_stdout writeFormat: @"⇣ %@", URL.string];
+	if (!_quiet) {
+		if (_useUnicode)
+			[OFStdOut writeFormat: @"⇣ %@", URL.string];
+		else
+			[OFStdOut writeFormat: @"< %@", URL.string];
+	}
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	request.headers = clientHeaders;
@@ -1079,7 +1102,6 @@ next:
 	return;
 
 next:
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
+	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
 }
 @end

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,7 +34,7 @@
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
-#define EVENTLIST_SIZE 64
+#define eventListSize 64
 
 @implementation OFKqueueKernelEventObserver
 - (instancetype)init
@@ -89,11 +87,11 @@
 	event.ident = object.fileDescriptorForReading;
 	event.filter = EVFILT_READ;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
@@ -110,11 +108,11 @@
 	event.ident = object.fileDescriptorForWriting;
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_ADD;
-#ifndef OF_NETBSD
-	event.udata = object;
-#else
-	event.udata = (intptr_t)object;
-#endif
+	/*
+	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
+	 * switched this to `void *` in NetBSD 10.
+	 */
+	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
@@ -155,10 +153,10 @@
 	[super removeObjectForWriting: object];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	struct timespec timeout;
-	struct kevent eventList[EVENTLIST_SIZE];
+	struct kevent eventList[eventListSize];
 	int events;
 
 	if ([self of_processReadBuffers])
@@ -167,7 +165,7 @@
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
 
-	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
+	events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)
@@ -186,7 +184,7 @@
 			char buffer;
 
 			assert(eventList[i].filter == EVFILT_READ);
-			OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
 		}

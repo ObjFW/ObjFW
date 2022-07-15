@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +17,8 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
+
+#import "amiga-glue.h"
 
 #include <exec/libraries.h>
 #include <exec/nodes.h>
@@ -48,6 +48,13 @@ _start()
 	return -1;
 }
 
+#ifdef OF_AMIGAOS_M68K
+void
+__init_eh(void)
+{
+}
+#endif
+
 struct ObjFWRTBase {
 	struct Library library;
 	void *segList;
@@ -62,105 +69,11 @@ extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
 
-extern bool glue_objc_init(void);
-extern void glue___objc_exec_class(void);
-extern IMP glue_objc_msg_lookup(void);
-extern IMP glue_objc_msg_lookup_stret(void);
-extern IMP glue_objc_msg_lookup_super(void);
-extern IMP glue_objc_msg_lookup_super_stret(void);
-extern Class glue_objc_lookUpClass(void);
-extern Class glue_objc_getClass(void);
-extern Class glue_objc_getRequiredClass(void);
-extern Class glue_objc_lookup_class(void);
-extern Class glue_objc_get_class(void);
-extern void glue_objc_exception_throw(void);
-extern int glue_objc_sync_enter(void);
-extern int glue_objc_sync_exit(void);
-extern id glue_objc_getProperty(void);
-extern void glue_objc_setProperty(void);
-extern void glue_objc_getPropertyStruct(void);
-extern void glue_objc_setPropertyStruct(void);
-extern void glue_objc_enumerationMutation(void);
-extern int glue___gnu_objc_personality(void);
-extern id glue_objc_retain(void);
-extern id glue_objc_retainBlock(void);
-extern id glue_objc_retainAutorelease(void);
-extern void glue_objc_release(void);
-extern id glue_objc_autorelease(void);
-extern id glue_objc_autoreleaseReturnValue(void);
-extern id glue_objc_retainAutoreleaseReturnValue(void);
-extern id glue_objc_retainAutoreleasedReturnValue(void);
-extern id glue_objc_storeStrong(void);
-extern id glue_objc_storeWeak(void);
-extern id glue_objc_loadWeakRetained(void);
-extern id glue_objc_initWeak(void);
-extern void glue_objc_destroyWeak(void);
-extern id glue_objc_loadWeak(void);
-extern void glue_objc_copyWeak(void);
-extern void glue_objc_moveWeak(void);
-extern SEL glue_sel_registerName(void);
-extern const char *glue_sel_getName(void);
-extern bool glue_sel_isEqual(void);
-extern Class glue_objc_allocateClassPair(void);
-extern void glue_objc_registerClassPair(void);
-extern unsigned int glue_objc_getClassList(void);
-extern Class *glue_objc_copyClassList(void);
-extern bool glue_class_isMetaClass(void);
-extern const char *glue_class_getName(void);
-extern Class glue_class_getSuperclass(void);
-extern unsigned long glue_class_getInstanceSize(void);
-extern bool glue_class_respondsToSelector(void);
-extern bool glue_class_conformsToProtocol(void);
-extern IMP glue_class_getMethodImplementation(void);
-extern IMP glue_class_getMethodImplementation_stret(void);
-extern Method glue_class_getInstanceMethod(void);
-extern bool glue_class_addMethod(void);
-extern IMP glue_class_replaceMethod(void);
-extern Class glue_object_getClass(void);
-extern Class glue_object_setClass(void);
-extern const char *glue_object_getClassName(void);
-extern const char *glue_protocol_getName(void);
-extern bool glue_protocol_isEqual(void);
-extern bool glue_protocol_conformsToProtocol(void);
-extern objc_uncaught_exception_handler_t
-    glue_objc_setUncaughtExceptionHandler(void);
-extern void glue_objc_setForwardHandler(void);
-extern void glue_objc_setEnumerationMutationHandler(void);
-extern id glue_objc_constructInstance(void);
-extern void glue_objc_exit(void);
-extern Ivar *glue_class_copyIvarList(void);
-extern const char *glue_ivar_getName(void);
-extern const char *glue_ivar_getTypeEncoding(void);
-extern ptrdiff_t glue_ivar_getOffset(void);
-extern Method *glue_class_copyMethodList(void);
-extern SEL glue_method_getName(void);
-extern const char *glue_method_getTypeEncoding(void);
-extern objc_property_t *glue_class_copyPropertyList(void);
-extern const char *glue_property_getName(void);
-extern char *glue_property_copyAttributeValue(void);
-extern void *glue_objc_destructInstance(void);
-extern void *glue_objc_autoreleasePoolPush(void);
-extern void glue_objc_autoreleasePoolPop(void);
-extern id glue__objc_rootAutorelease(void);
-extern struct objc_hashtable *glue_objc_hashtable_new(void);
-extern void glue_objc_hashtable_set(void);
-extern void *glue_objc_hashtable_get(void);
-extern void glue_objc_hashtable_delete(void);
-extern void glue_objc_hashtable_free(void);
-extern void glue_objc_setTaggedPointerSecret(void);
-extern int glue_objc_registerTaggedPointerClass(void);
-extern bool glue_object_isTaggedPointer(void);
-extern Class glue_object_getTaggedPointerClass(void);
-extern uintptr_t glue_object_getTaggedPointerValue(void);
-extern id glue_objc_createTaggedPointer(void);
-
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct objc_libc libc;
-FILE *stdout;
-FILE *stderr;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -331,8 +244,9 @@ lib_open(void)
 }
 
 static void *
-expunge(struct ObjFWRTBase *base)
+expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 {
+#define SysBase sysBase
 	void *segList;
 
 	if (base->parent != NULL) {
@@ -352,6 +266,7 @@ expunge(struct ObjFWRTBase *base)
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
 	return segList;
+#undef SysBase
 }
 
 static void *__saveds
@@ -359,12 +274,19 @@ lib_expunge(void)
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
-	return expunge(base);
+	return expunge(base, SysBase);
 }
 
 static void *__saveds
 lib_close(void)
 {
+	/*
+	 * SysBase becomes invalid during this function, so we store it in
+	 * sysBase and add a define to make the inlines use the right one.
+	 */
+	struct ExecBase *sysBase = SysBase;
+#define SysBase sysBase
+
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
 	if (base->parent != NULL) {
@@ -388,9 +310,10 @@ lib_close(void)
 
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
-		return expunge(base);
+		return expunge(base, sysBase);
 
 	return NULL;
+#undef SysBase
 }
 
 static void *
@@ -400,8 +323,7 @@ lib_null(void)
 }
 
 bool
-objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
-    FILE *stderr_)
+objc_init(unsigned int version, struct objc_libc *libc_)
 {
 #ifdef OF_AMIGAOS_M68K
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
@@ -409,14 +331,15 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
 	register struct ObjFWRTBase *r12 __asm__("r12");
 	struct ObjFWRTBase *base = r12;
 #endif
+#ifdef OF_MORPHOS
+	void *frame;
+#endif
 	uintptr_t *iter, *iter0;
 
 	if (version > 1)
 		return false;
 
 	memcpy(&libc, libc_, sizeof(libc));
-	stdout = stdout_;
-	stderr = stderr_;
 
 #ifdef OF_AMIGAOS_M68K
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
@@ -429,10 +352,14 @@ objc_init(unsigned int version, struct objc_libc *libc_, FILE *stdout_,
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
 	__asm__ (
-	    "lis	%0, ctors+4@ha\n\t"
-	    "la		%0, ctors+4@l(%0)\n\t"
-	    : "=r"(iter0)
+	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
+	    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
+	    "lis	%1, __CTOR_LIST__@ha\n\t"
+	    "la		%1, __CTOR_LIST__@l(%1)\n\t"
+	    : "=r"(frame), "=r"(iter0)
 	);
+
+	libc.__register_frame(frame);
 #endif
 
 	for (iter = iter0; *iter != 0; iter++);
@@ -469,33 +396,6 @@ void
 free(void *ptr)
 {
 	libc.free(ptr);
-}
-
-int
-fprintf(FILE *restrict stream, const char *restrict fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	va_start(args, fmt);
-	ret = libc.vfprintf(stream, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-fflush(FILE *restrict stream)
-{
-	return libc.fflush(stream);
-}
-
-void
-abort(void)
-{
-	libc.abort();
-
-	OF_UNREACHABLE
 }
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
@@ -580,6 +480,42 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
+#ifdef OF_AMIGAOS_M68K
+int
+snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, size, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
+    va_list args)
+{
+	return libc.vsnprintf(str, size, fmt, args);
+}
+#endif
+
+int
+atexit(void (*function)(void))
+{
+	return libc.atexit(function);
+}
+
+void
+exit(int status)
+{
+	libc.exit(status);
+
+	OF_UNREACHABLE
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
@@ -595,96 +531,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
-	(CONST_APTR)glue_objc_init,
-	(CONST_APTR)glue___objc_exec_class,
-	(CONST_APTR)glue_objc_msg_lookup,
-	(CONST_APTR)glue_objc_msg_lookup_stret,
-	(CONST_APTR)glue_objc_msg_lookup_super,
-	(CONST_APTR)glue_objc_msg_lookup_super_stret,
-	(CONST_APTR)glue_objc_lookUpClass,
-	(CONST_APTR)glue_objc_getClass,
-	(CONST_APTR)glue_objc_getRequiredClass,
-	(CONST_APTR)glue_objc_lookup_class,
-	(CONST_APTR)glue_objc_get_class,
-	(CONST_APTR)glue_objc_exception_throw,
-	(CONST_APTR)glue_objc_sync_enter,
-	(CONST_APTR)glue_objc_sync_exit,
-	(CONST_APTR)glue_objc_getProperty,
-	(CONST_APTR)glue_objc_setProperty,
-	(CONST_APTR)glue_objc_getPropertyStruct,
-	(CONST_APTR)glue_objc_setPropertyStruct,
-	(CONST_APTR)glue_objc_enumerationMutation,
-	(CONST_APTR)glue___gnu_objc_personality,
-	(CONST_APTR)glue_objc_retain,
-	(CONST_APTR)glue_objc_retainBlock,
-	(CONST_APTR)glue_objc_retainAutorelease,
-	(CONST_APTR)glue_objc_release,
-	(CONST_APTR)glue_objc_autorelease,
-	(CONST_APTR)glue_objc_autoreleaseReturnValue,
-	(CONST_APTR)glue_objc_retainAutoreleaseReturnValue,
-	(CONST_APTR)glue_objc_retainAutoreleasedReturnValue,
-	(CONST_APTR)glue_objc_storeStrong,
-	(CONST_APTR)glue_objc_storeWeak,
-	(CONST_APTR)glue_objc_loadWeakRetained,
-	(CONST_APTR)glue_objc_initWeak,
-	(CONST_APTR)glue_objc_destroyWeak,
-	(CONST_APTR)glue_objc_loadWeak,
-	(CONST_APTR)glue_objc_copyWeak,
-	(CONST_APTR)glue_objc_moveWeak,
-	(CONST_APTR)glue_sel_registerName,
-	(CONST_APTR)glue_sel_getName,
-	(CONST_APTR)glue_sel_isEqual,
-	(CONST_APTR)glue_objc_allocateClassPair,
-	(CONST_APTR)glue_objc_registerClassPair,
-	(CONST_APTR)glue_objc_getClassList,
-	(CONST_APTR)glue_objc_copyClassList,
-	(CONST_APTR)glue_class_isMetaClass,
-	(CONST_APTR)glue_class_getName,
-	(CONST_APTR)glue_class_getSuperclass,
-	(CONST_APTR)glue_class_getInstanceSize,
-	(CONST_APTR)glue_class_respondsToSelector,
-	(CONST_APTR)glue_class_conformsToProtocol,
-	(CONST_APTR)glue_class_getMethodImplementation,
-	(CONST_APTR)glue_class_getMethodImplementation_stret,
-	(CONST_APTR)glue_class_getInstanceMethod,
-	(CONST_APTR)glue_class_addMethod,
-	(CONST_APTR)glue_class_replaceMethod,
-	(CONST_APTR)glue_object_getClass,
-	(CONST_APTR)glue_object_setClass,
-	(CONST_APTR)glue_object_getClassName,
-	(CONST_APTR)glue_protocol_getName,
-	(CONST_APTR)glue_protocol_isEqual,
-	(CONST_APTR)glue_protocol_conformsToProtocol,
-	(CONST_APTR)glue_objc_setUncaughtExceptionHandler,
-	(CONST_APTR)glue_objc_setForwardHandler,
-	(CONST_APTR)glue_objc_setEnumerationMutationHandler,
-	(CONST_APTR)glue_objc_constructInstance,
-	(CONST_APTR)glue_objc_exit,
-	(CONST_APTR)glue_class_copyIvarList,
-	(CONST_APTR)glue_ivar_getName,
-	(CONST_APTR)glue_ivar_getTypeEncoding,
-	(CONST_APTR)glue_ivar_getOffset,
-	(CONST_APTR)glue_class_copyMethodList,
-	(CONST_APTR)glue_method_getName,
-	(CONST_APTR)glue_method_getTypeEncoding,
-	(CONST_APTR)glue_class_copyPropertyList,
-	(CONST_APTR)glue_property_getName,
-	(CONST_APTR)glue_property_copyAttributeValue,
-	(CONST_APTR)glue_objc_destructInstance,
-	(CONST_APTR)glue_objc_autoreleasePoolPush,
-	(CONST_APTR)glue_objc_autoreleasePoolPop,
-	(CONST_APTR)glue__objc_rootAutorelease,
-	(CONST_APTR)glue_objc_hashtable_new,
-	(CONST_APTR)glue_objc_hashtable_set,
-	(CONST_APTR)glue_objc_hashtable_get,
-	(CONST_APTR)glue_objc_hashtable_delete,
-	(CONST_APTR)glue_objc_hashtable_free,
-	(CONST_APTR)glue_objc_setTaggedPointerSecret,
-	(CONST_APTR)glue_objc_registerTaggedPointerClass,
-	(CONST_APTR)glue_object_isTaggedPointer,
-	(CONST_APTR)glue_object_getTaggedPointerClass,
-	(CONST_APTR)glue_object_getTaggedPointerValue,
-	(CONST_APTR)glue_objc_createTaggedPointer,
+#include "amiga-funcarray.inc"
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
@@ -721,7 +568,7 @@ struct Resident resident = {
 	.rt_Pri = 0,
 	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
 	.rt_IdString = (char *)"ObjFWRT " VERSION_STRING
-	    " \xA9 2008-2019 Jonathan Schleifer",
+	    " \xA9 2008-2022 Jonathan Schleifer",
 	.rt_Init = &init_table,
 #ifdef OF_MORPHOS
 	.rt_Revision = OBJFWRT_LIB_MINOR,
@@ -731,9 +578,14 @@ struct Resident resident = {
 
 #ifdef OF_MORPHOS
 __asm__ (
-    ".section .ctors, \"aw\", @progbits\n"
-    "ctors:\n"
-    "	.long -1\n"
+    ".section .eh_frame, \"aw\"\n"
+    ".globl __EH_FRAME_BEGIN__\n"
+    ".type __EH_FRAME_BEGIN__, @object\n"
+    "__EH_FRAME_BEGIN__:\n"
+    ".section .ctors, \"aw\"\n"
+    ".globl __CTOR_LIST__\n"
+    ".type __CTOR_LIST__, @object\n"
+    "__CTOR_LIST__:\n"
     ".section .text"
 );
 #endif

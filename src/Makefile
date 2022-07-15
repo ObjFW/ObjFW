@@ -1,7 +1,7 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions ${ENCODINGS} forwarding invocation
-SUBDIRS_AFTER = ${BRIDGE}
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding
+SUBDIRS_AFTER = ${BRIDGE} ${TLS}
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -10,18 +10,7 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASN1BitString.m		\
-       OFASN1Boolean.m			\
-       OFASN1Enumerated.m		\
-       OFASN1IA5String.m		\
-       OFASN1Integer.m			\
-       OFASN1NumericString.m		\
-       OFASN1ObjectIdentifier.m		\
-       OFASN1OctetString.m		\
-       OFASN1PrintableString.m		\
-       OFASN1UTF8String.m		\
-       OFASN1Value.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
        OFCharacterSet.m			\
@@ -29,8 +18,7 @@ SRCS = OFASN1BitString.m		\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERParsing.m		\
-       OFData+CryptoHashing.m		\
+       OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
@@ -45,8 +33,8 @@ SRCS = OFASN1BitString.m		\
        OFLHAArchiveEntry.m		\
        OFList.m				\
        OFLocale.m			\
-       OFMapTable.m			\
        OFMD5Hash.m			\
+       OFMapTable.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
@@ -60,20 +48,19 @@ SRCS = OFASN1BitString.m		\
        OFMutableTriple.m		\
        OFMutableURL.m			\
        OFMutableZIPArchiveEntry.m	\
+       OFNotification.m			\
+       OFNotificationCenter.m		\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
        OFObject+Serialization.m		\
+       OFOnce.m				\
        OFOptionsParser.m		\
+       OFPBKDF2.m			\
        OFPair.m				\
-       ${OF_PROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
-       OFSandbox.m			\
-       OFSecureData.m			\
-       OFSeekableStream.m		\
-       OFSet.m				\
        OFSHA1Hash.m			\
        OFSHA224Hash.m			\
        OFSHA224Or256Hash.m		\
@@ -81,17 +68,23 @@ SRCS = OFASN1BitString.m		\
        OFSHA384Hash.m			\
        OFSHA384Or512Hash.m		\
        OFSHA512Hash.m			\
+       OFScrypt.m			\
+       OFSecureData.m			\
+       OFSeekableStream.m		\
+       OFSerialization.m		\
+       OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
        OFStream.m			\
        OFString.m			\
-       OFString+CryptoHashing.m		\
+       OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
+       ${OF_SUBPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -100,6 +93,7 @@ SRCS = OFASN1BitString.m		\
        OFTriple.m			\
        OFURL.m				\
        OFURLHandler.m			\
+       OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -110,19 +104,9 @@ SRCS = OFASN1BitString.m		\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
-       OFXMLProcessingInstructions.m	\
+       OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
-       base64.m				\
-       crc16.m				\
-       crc32.m				\
-       huffman_tree.m			\
-       of_asprintf.m			\
-       of_strptime.m			\
-       once.m				\
-       pbkdf2.m				\
-       scrypt.m				\
-       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
@@ -133,11 +117,7 @@ SRCS_FILES = OFFile.m			\
 	     OFINIFile.m		\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
-SRCS_IPX = OFIPXSocket.m	\
-	   OFSPXSocket.m	\
-	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SCTP = OFSCTPSocket.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
@@ -150,54 +130,58 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
 	       OFSequencedPacketSocket.m	\
+	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
+	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
-	       socket.m				\
 	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocket.m	\
+	   OFSPXSocket.m	\
+	   OFSPXStreamSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+		    OFUNIXStreamSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
+	       OFPlainCondition.m	\
+	       OFPlainMutex.m		\
+	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m		\
-	       condition.m		\
-	       mutex.m			\
-	       thread.m			\
-	       tlskey.m
+	       OFTLSKey.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
-INCLUDES_ATOMIC = atomic.h			\
-		  atomic_builtins.h		\
-		  atomic_no_threads.h		\
-		  atomic_osatomic.h		\
-		  atomic_powerpc.h		\
-		  atomic_sync_builtins.h	\
-		  atomic_x86.h
+INCLUDES_ATOMIC = OFAtomic.h			\
+		  platform/GCC4/OFAtomic.h	\
+		  platform/GCC4.7/OFAtomic.h	\
+		  platform/PowerPC/OFAtomic.h	\
+		  platform/macOS/OFAtomic.h	\
+		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
-	    OFCryptoHash.h			\
+	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFSerialization.h			\
-	    OFTLSSocket.h			\
 	    ObjFW.h				\
-	    block.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
 	    ${USE_INCLUDES_ATOMIC}
 
-SRCS += OFAdjacentArray.m		\
+SRCS += OFASPrintF.m			\
+	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
+	OFCRC16.m			\
+	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
-	OFDimensionValue.m		\
+	OFHuffmanTree.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -211,35 +195,35 @@ SRCS += OFAdjacentArray.m		\
 	OFPointerValue.m		\
 	OFRangeCharacterSet.m		\
 	OFRangeValue.m			\
-	OFRectangleValue.m		\
+	OFRectValue.m			\
+	OFSandbox.m			\
+	OFSizeValue.m			\
+	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
-	${RUNTIME_INSTANCE_M}
+	${RUNTIME_INSTANCE_M}		\
+       ${UNICODE_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
-		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
 
-OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\
-	     ${EXCEPTIONS_EXCEPTIONS_A} \
-	     ${ENCODINGS_ENCODINGS_A}	\
-	     ${FORWARDING_FORWARDING_A}	\
-	     ${INVOCATION_INVOCATION_A}
-LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
-		 ${EXCEPTIONS_EXCEPTIONS_LIB_A}	\
-		 ${ENCODINGS_ENCODINGS_LIB_A}	\
-		 ${FORWARDING_FORWARDING_LIB_A}	\
-		 ${INVOCATION_INVOCATION_LIB_A}
+OBJS_EXTRA = exceptions/exceptions.a	\
+	     encodings/encodings.a	\
+	     forwarding/forwarding.a
+LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
+		 encodings/encodings.lib.a	\
+		 forwarding/forwarding.lib.a
 
 include ../buildsys.mk
 

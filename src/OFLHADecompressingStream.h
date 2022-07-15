@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,17 +14,18 @@
  */
 
 #import "OFStream.h"
+#import "OFHuffmanTree.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE 4096
+#define OFLHADecompressingStreamBufferSize 4096
 
 OF_DIRECT_MEMBERS
 @interface OFLHADecompressingStream: OFStream
 {
 	OFStream *_stream;
 	uint8_t _distanceBits, _dictionaryBits;
-	unsigned char _buffer[OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE];
+	unsigned char _buffer[OFLHADecompressingStreamBufferSize];
 	uint32_t _bytesConsumed;
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
@@ -36,8 +35,10 @@ OF_DIRECT_MEMBERS
 	uint32_t _slidingWindowIndex, _slidingWindowMask;
 	int _state;
 	uint16_t _symbolsLeft;
-	struct of_huffman_tree *_Nullable _codeLenTree, *_Nullable _litLenTree;
-	struct of_huffman_tree *_Nullable _distTree, *_Nullable _treeIter;
+	OFHuffmanTree _Nullable _codeLenTree;
+	OFHuffmanTree _Nullable _litLenTree;
+	OFHuffmanTree _Nullable _distTree;
+	OFHuffmanTree _Nullable _treeIter;
 	uint16_t _codesCount, _codesReceived;
 	bool _currentIsExtendedLength, _skip;
 	uint8_t *_Nullable _codesLengths;

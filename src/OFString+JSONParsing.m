@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,6 +29,10 @@
 #import "OFNull.h"
 
 #import "OFInvalidJSONException.h"
+
+#ifndef INFINITY
+# define INFINITY __builtin_inf()
+#endif
 
 int _OFString_JSONParsing_reference;
 
@@ -107,10 +109,10 @@ skipWhitespacesAndComments(const char **pointer, const char *stop, size_t *line)
 	}
 }
 
-static inline of_char16_t
+static inline OFChar16
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
-	of_char16_t ret = 0;
+	OFChar16 ret = 0;
 
 	if (pointer + 5 >= stop)
 		return 0xFFFF;
@@ -148,13 +150,13 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	if (++(*pointer) + 1 >= stop)
 		return nil;
 
-	buffer = of_malloc(1, stop - *pointer);
+	buffer = OFAllocMemory(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		/* Parse escape codes */
 		if (**pointer == '\\') {
 			if (++(*pointer) >= stop) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
@@ -187,28 +189,27 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				break;
 			/* Parse Unicode escape sequence */
 			case 'u':;
-				of_char16_t c1, c2;
-				of_unichar_t c;
+				OFChar16 c1, c2;
+				OFUnichar c;
 				size_t l;
 
 				c1 = parseUnicodeEscape(*pointer - 1, stop);
 				if (c1 == 0xFFFF) {
-					of_free(buffer);
+					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				/* Low surrogate */
 				if ((c1 & 0xFC00) == 0xDC00) {
-					of_free(buffer);
+					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				/* Normal character */
 				if ((c1 & 0xFC00) != 0xD800) {
-					l = of_string_utf8_encode(c1,
-					    buffer + i);
+					l = OFUTF8StringEncode(c1, buffer + i);
 					if (l == 0) {
-						of_free(buffer);
+						OFFreeMemory(buffer);
 						return nil;
 					}
 
@@ -225,16 +226,16 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				 */
 				c2 = parseUnicodeEscape(*pointer + 5, stop);
 				if (c2 == 0xFFFF) {
-					of_free(buffer);
+					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				c = (((c1 & 0x3FF) << 10) |
 				    (c2 & 0x3FF)) + 0x10000;
 
-				l = of_string_utf8_encode(c, buffer + i);
+				l = OFUTF8StringEncode(c, buffer + i);
 				if (l == 0) {
-					of_free(buffer);
+					OFFreeMemory(buffer);
 					return nil;
 				}
 
@@ -256,7 +257,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				(*line)++;
 				break;
 			default:
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 		/* End of string found */
@@ -267,7 +268,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				ret = [OFString stringWithUTF8String: buffer
 							      length: i];
 			} @finally {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 			}
 
 			(*pointer)++;
@@ -276,7 +277,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		/* Newlines in strings are disallowed */
 		} else if (**pointer == '\n' || **pointer == '\r') {
 			(*line)++;
-			of_free(buffer);
+			OFFreeMemory(buffer);
 			return nil;
 		} else {
 			buffer[i++] = **pointer;
@@ -284,7 +285,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		}
 	}
 
-	of_free(buffer);
+	OFFreeMemory(buffer);
 	return nil;
 }
 
@@ -294,7 +295,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	char *buffer;
 	size_t i = 0;
 
-	buffer = of_malloc(1, stop - *pointer);
+	buffer = OFAllocMemory(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		if ((**pointer >= 'a' && **pointer <= 'z') ||
@@ -305,32 +306,32 @@ parseIdentifier(const char **pointer, const char *stop)
 			buffer[i++] = **pointer;
 			(*pointer)++;
 		} else if (**pointer == '\\') {
-			of_char16_t c1, c2;
-			of_unichar_t c;
+			OFChar16 c1, c2;
+			OFUnichar c;
 			size_t l;
 
 			if (++(*pointer) >= stop || **pointer != 'u') {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			c1 = parseUnicodeEscape(*pointer - 1, stop);
 			if (c1 == 0xFFFF) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			/* Low surrogate */
 			if ((c1 & 0xFC00) == 0xDC00) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			/* Normal character */
 			if ((c1 & 0xFC00) != 0xD800) {
-				l = of_string_utf8_encode(c1, buffer + i);
+				l = OFUTF8StringEncode(c1, buffer + i);
 				if (l == 0) {
-					of_free(buffer);
+					OFFreeMemory(buffer);
 					return nil;
 				}
 
@@ -347,15 +348,15 @@ parseIdentifier(const char **pointer, const char *stop)
 			 */
 			c2 = parseUnicodeEscape(*pointer + 5, stop);
 			if (c2 == 0xFFFF) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
 
-			l = of_string_utf8_encode(c, buffer + i);
+			l = OFUTF8StringEncode(c, buffer + i);
 			if (l == 0) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
@@ -365,7 +366,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			OFString *ret;
 
 			if (i == 0 || (buffer[0] >= '0' && buffer[0] <= '9')) {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 				return nil;
 			}
 
@@ -373,7 +374,7 @@ parseIdentifier(const char **pointer, const char *stop)
 				ret = [OFString stringWithUTF8String: buffer
 							      length: i];
 			} @finally {
-				of_free(buffer);
+				OFFreeMemory(buffer);
 			}
 
 			return ret;
@@ -384,7 +385,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	 * It is never possible to end with an identifier, thus we should never
 	 * reach stop.
 	 */
-	of_free(buffer);
+	OFFreeMemory(buffer);
 	return nil;
 }
 
@@ -502,8 +503,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		if (object == nil)
 			return nil;
 
-		[dictionary setObject: object
-			       forKey: key];
+		[dictionary setObject: object forKey: key];
 
 		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
@@ -548,8 +548,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		}
 	}
 
-	string = [[OFString alloc] initWithUTF8String: *pointer
-					       length: i];
+	string = [[OFString alloc] initWithUTF8String: *pointer length: i];
 	*pointer += i;
 
 	@try {

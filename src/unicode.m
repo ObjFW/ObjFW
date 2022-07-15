@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,10 +17,10 @@
 
 #import "OFString.h"
 
-static const of_unichar_t emptyPage[0x100] = { 0 };
+static const OFUnichar emptyPage[0x100] = { 0 };
 static const char *emptyDecompositionPage[0x100] = { NULL };
 
-static const of_unichar_t uppercasePage0[0x100] = {
+static const OFUnichar uppercasePage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -57,7 +55,7 @@ static const of_unichar_t uppercasePage0[0x100] = {
 	216, 217, 218, 219, 220, 221, 222, 376,
 };
 
-static const of_unichar_t uppercasePage1[0x100] = {
+static const OFUnichar uppercasePage1[0x100] = {
 	0, 256, 0, 258, 0, 260, 0, 262,
 	0, 264, 0, 266, 0, 268, 0, 270,
 	0, 272, 0, 274, 0, 276, 0, 278,
@@ -92,7 +90,7 @@ static const of_unichar_t uppercasePage1[0x100] = {
 	0, 504, 0, 506, 0, 508, 0, 510,
 };
 
-static const of_unichar_t uppercasePage2[0x100] = {
+static const OFUnichar uppercasePage2[0x100] = {
 	0, 512, 0, 514, 0, 516, 0, 518,
 	0, 520, 0, 522, 0, 524, 0, 526,
 	0, 528, 0, 530, 0, 532, 0, 534,
@@ -127,7 +125,7 @@ static const of_unichar_t uppercasePage2[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage3[0x100] = {
+static const OFUnichar uppercasePage3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -162,7 +160,7 @@ static const of_unichar_t uppercasePage3[0x100] = {
 	1015, 0, 0, 1018, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage4[0x100] = {
+static const OFUnichar uppercasePage4[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -197,7 +195,7 @@ static const of_unichar_t uppercasePage4[0x100] = {
 	0, 1272, 0, 1274, 0, 1276, 0, 1278,
 };
 
-static const of_unichar_t uppercasePage5[0x100] = {
+static const OFUnichar uppercasePage5[0x100] = {
 	0, 1280, 0, 1282, 0, 1284, 0, 1286,
 	0, 1288, 0, 1290, 0, 1292, 0, 1294,
 	0, 1296, 0, 1298, 0, 1300, 0, 1302,
@@ -232,7 +230,7 @@ static const of_unichar_t uppercasePage5[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage16[0x100] = {
+static const OFUnichar uppercasePage16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -267,7 +265,7 @@ static const of_unichar_t uppercasePage16[0x100] = {
 	7352, 7353, 7354, 0, 0, 7357, 7358, 7359,
 };
 
-static const of_unichar_t uppercasePage19[0x100] = {
+static const OFUnichar uppercasePage19[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -302,7 +300,7 @@ static const of_unichar_t uppercasePage19[0x100] = {
 	5104, 5105, 5106, 5107, 5108, 5109, 0, 0,
 };
 
-static const of_unichar_t uppercasePage28[0x100] = {
+static const OFUnichar uppercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -337,7 +335,7 @@ static const of_unichar_t uppercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage29[0x100] = {
+static const OFUnichar uppercasePage29[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -372,7 +370,7 @@ static const of_unichar_t uppercasePage29[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage30[0x100] = {
+static const OFUnichar uppercasePage30[0x100] = {
 	0, 7680, 0, 7682, 0, 7684, 0, 7686,
 	0, 7688, 0, 7690, 0, 7692, 0, 7694,
 	0, 7696, 0, 7698, 0, 7700, 0, 7702,
@@ -407,7 +405,7 @@ static const of_unichar_t uppercasePage30[0x100] = {
 	0, 7928, 0, 7930, 0, 7932, 0, 7934,
 };
 
-static const of_unichar_t uppercasePage31[0x100] = {
+static const OFUnichar uppercasePage31[0x100] = {
 	7944, 7945, 7946, 7947, 7948, 7949, 7950, 7951,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7960, 7961, 7962, 7963, 7964, 7965, 0, 0,
@@ -442,7 +440,7 @@ static const of_unichar_t uppercasePage31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage33[0x100] = {
+static const OFUnichar uppercasePage33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -477,7 +475,7 @@ static const of_unichar_t uppercasePage33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage36[0x100] = {
+static const OFUnichar uppercasePage36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -512,7 +510,7 @@ static const of_unichar_t uppercasePage36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage44[0x100] = {
+static const OFUnichar uppercasePage44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -547,7 +545,7 @@ static const of_unichar_t uppercasePage44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage45[0x100] = {
+static const OFUnichar uppercasePage45[0x100] = {
 	4256, 4257, 4258, 4259, 4260, 4261, 4262, 4263,
 	4264, 4265, 4266, 4267, 4268, 4269, 4270, 4271,
 	4272, 4273, 4274, 4275, 4276, 4277, 4278, 4279,
@@ -582,7 +580,7 @@ static const of_unichar_t uppercasePage45[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage166[0x100] = {
+static const OFUnichar uppercasePage166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -617,7 +615,7 @@ static const of_unichar_t uppercasePage166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage167[0x100] = {
+static const OFUnichar uppercasePage167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -652,7 +650,7 @@ static const of_unichar_t uppercasePage167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage171[0x100] = {
+static const OFUnichar uppercasePage171[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -687,7 +685,7 @@ static const of_unichar_t uppercasePage171[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage255[0x100] = {
+static const OFUnichar uppercasePage255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -722,7 +720,7 @@ static const of_unichar_t uppercasePage255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage260[0x100] = {
+static const OFUnichar uppercasePage260[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -757,7 +755,7 @@ static const of_unichar_t uppercasePage260[0x100] = {
 	66768, 66769, 66770, 66771, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage268[0x100] = {
+static const OFUnichar uppercasePage268[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -792,7 +790,7 @@ static const of_unichar_t uppercasePage268[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage280[0x100] = {
+static const OFUnichar uppercasePage280[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -827,7 +825,7 @@ static const of_unichar_t uppercasePage280[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage366[0x100] = {
+static const OFUnichar uppercasePage366[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -862,7 +860,7 @@ static const of_unichar_t uppercasePage366[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t uppercasePage489[0x100] = {
+static const OFUnichar uppercasePage489[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -897,7 +895,7 @@ static const of_unichar_t uppercasePage489[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage0[0x100] = {
+static const OFUnichar lowercasePage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -932,7 +930,7 @@ static const of_unichar_t lowercasePage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage1[0x100] = {
+static const OFUnichar lowercasePage1[0x100] = {
 	257, 0, 259, 0, 261, 0, 263, 0,
 	265, 0, 267, 0, 269, 0, 271, 0,
 	273, 0, 275, 0, 277, 0, 279, 0,
@@ -967,7 +965,7 @@ static const of_unichar_t lowercasePage1[0x100] = {
 	505, 0, 507, 0, 509, 0, 511, 0,
 };
 
-static const of_unichar_t lowercasePage2[0x100] = {
+static const OFUnichar lowercasePage2[0x100] = {
 	513, 0, 515, 0, 517, 0, 519, 0,
 	521, 0, 523, 0, 525, 0, 527, 0,
 	529, 0, 531, 0, 533, 0, 535, 0,
@@ -1002,7 +1000,7 @@ static const of_unichar_t lowercasePage2[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage3[0x100] = {
+static const OFUnichar lowercasePage3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1037,7 +1035,7 @@ static const of_unichar_t lowercasePage3[0x100] = {
 	0, 1010, 1019, 0, 0, 891, 892, 893,
 };
 
-static const of_unichar_t lowercasePage4[0x100] = {
+static const OFUnichar lowercasePage4[0x100] = {
 	1104, 1105, 1106, 1107, 1108, 1109, 1110, 1111,
 	1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119,
 	1072, 1073, 1074, 1075, 1076, 1077, 1078, 1079,
@@ -1072,7 +1070,7 @@ static const of_unichar_t lowercasePage4[0x100] = {
 	1273, 0, 1275, 0, 1277, 0, 1279, 0,
 };
 
-static const of_unichar_t lowercasePage5[0x100] = {
+static const OFUnichar lowercasePage5[0x100] = {
 	1281, 0, 1283, 0, 1285, 0, 1287, 0,
 	1289, 0, 1291, 0, 1293, 0, 1295, 0,
 	1297, 0, 1299, 0, 1301, 0, 1303, 0,
@@ -1107,7 +1105,7 @@ static const of_unichar_t lowercasePage5[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage16[0x100] = {
+static const OFUnichar lowercasePage16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1142,7 +1140,7 @@ static const of_unichar_t lowercasePage16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage19[0x100] = {
+static const OFUnichar lowercasePage19[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1177,7 +1175,7 @@ static const of_unichar_t lowercasePage19[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage28[0x100] = {
+static const OFUnichar lowercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1212,7 +1210,7 @@ static const of_unichar_t lowercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage30[0x100] = {
+static const OFUnichar lowercasePage30[0x100] = {
 	7681, 0, 7683, 0, 7685, 0, 7687, 0,
 	7689, 0, 7691, 0, 7693, 0, 7695, 0,
 	7697, 0, 7699, 0, 7701, 0, 7703, 0,
@@ -1247,7 +1245,7 @@ static const of_unichar_t lowercasePage30[0x100] = {
 	7929, 0, 7931, 0, 7933, 0, 7935, 0,
 };
 
-static const of_unichar_t lowercasePage31[0x100] = {
+static const OFUnichar lowercasePage31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7936, 7937, 7938, 7939, 7940, 7941, 7942, 7943,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1282,7 +1280,7 @@ static const of_unichar_t lowercasePage31[0x100] = {
 	8056, 8057, 8060, 8061, 8179, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage33[0x100] = {
+static const OFUnichar lowercasePage33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1317,7 +1315,7 @@ static const of_unichar_t lowercasePage33[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage36[0x100] = {
+static const OFUnichar lowercasePage36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1352,7 +1350,7 @@ static const of_unichar_t lowercasePage36[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage44[0x100] = {
+static const OFUnichar lowercasePage44[0x100] = {
 	11312, 11313, 11314, 11315, 11316, 11317, 11318, 11319,
 	11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327,
 	11328, 11329, 11330, 11331, 11332, 11333, 11334, 11335,
@@ -1387,7 +1385,7 @@ static const of_unichar_t lowercasePage44[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage166[0x100] = {
+static const OFUnichar lowercasePage166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1422,7 +1420,7 @@ static const of_unichar_t lowercasePage166[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage167[0x100] = {
+static const OFUnichar lowercasePage167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1457,7 +1455,7 @@ static const of_unichar_t lowercasePage167[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage255[0x100] = {
+static const OFUnichar lowercasePage255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1492,7 +1490,7 @@ static const of_unichar_t lowercasePage255[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage260[0x100] = {
+static const OFUnichar lowercasePage260[0x100] = {
 	66600, 66601, 66602, 66603, 66604, 66605, 66606, 66607,
 	66608, 66609, 66610, 66611, 66612, 66613, 66614, 66615,
 	66616, 66617, 66618, 66619, 66620, 66621, 66622, 66623,
@@ -1527,7 +1525,7 @@ static const of_unichar_t lowercasePage260[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage268[0x100] = {
+static const OFUnichar lowercasePage268[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1562,7 +1560,7 @@ static const of_unichar_t lowercasePage268[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage280[0x100] = {
+static const OFUnichar lowercasePage280[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1597,7 +1595,7 @@ static const of_unichar_t lowercasePage280[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage366[0x100] = {
+static const OFUnichar lowercasePage366[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1632,7 +1630,7 @@ static const of_unichar_t lowercasePage366[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t lowercasePage489[0x100] = {
+static const OFUnichar lowercasePage489[0x100] = {
 	125218, 125219, 125220, 125221, 125222, 125223, 125224, 125225,
 	125226, 125227, 125228, 125229, 125230, 125231, 125232, 125233,
 	125234, 125235, 125236, 125237, 125238, 125239, 125240, 125241,
@@ -1667,7 +1665,7 @@ static const of_unichar_t lowercasePage489[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t titlecasePage1[0x100] = {
+static const OFUnichar titlecasePage1[0x100] = {
 	0, 256, 0, 258, 0, 260, 0, 262,
 	0, 264, 0, 266, 0, 268, 0, 270,
 	0, 272, 0, 274, 0, 276, 0, 278,
@@ -1702,7 +1700,7 @@ static const of_unichar_t titlecasePage1[0x100] = {
 	0, 504, 0, 506, 0, 508, 0, 510,
 };
 
-static const of_unichar_t titlecasePage16[0x100] = {
+static const OFUnichar titlecasePage16[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1737,7 +1735,7 @@ static const of_unichar_t titlecasePage16[0x100] = {
 	4344, 4345, 4346, 0, 0, 4349, 4350, 4351,
 };
 
-static const of_unichar_t casefoldingPage0[0x100] = {
+static const OFUnichar caseFoldingPage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1772,7 +1770,7 @@ static const of_unichar_t casefoldingPage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t casefoldingPage1[0x100] = {
+static const OFUnichar caseFoldingPage1[0x100] = {
 	257, 0, 259, 0, 261, 0, 263, 0,
 	265, 0, 267, 0, 269, 0, 271, 0,
 	273, 0, 275, 0, 277, 0, 279, 0,
@@ -1807,7 +1805,7 @@ static const of_unichar_t casefoldingPage1[0x100] = {
 	505, 0, 507, 0, 509, 0, 511, 0,
 };
 
-static const of_unichar_t casefoldingPage3[0x100] = {
+static const OFUnichar caseFoldingPage3[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1842,7 +1840,7 @@ static const of_unichar_t casefoldingPage3[0x100] = {
 	0, 1010, 1019, 0, 0, 891, 892, 893,
 };
 
-static const of_unichar_t casefoldingPage19[0x100] = {
+static const OFUnichar caseFoldingPage19[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1877,7 +1875,7 @@ static const of_unichar_t casefoldingPage19[0x100] = {
 	5104, 5105, 5106, 5107, 5108, 5109, 0, 0,
 };
 
-static const of_unichar_t casefoldingPage28[0x100] = {
+static const OFUnichar caseFoldingPage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1912,7 +1910,7 @@ static const of_unichar_t casefoldingPage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static const of_unichar_t casefoldingPage30[0x100] = {
+static const OFUnichar caseFoldingPage30[0x100] = {
 	7681, 0, 7683, 0, 7685, 0, 7687, 0,
 	7689, 0, 7691, 0, 7693, 0, 7695, 0,
 	7697, 0, 7699, 0, 7701, 0, 7703, 0,
@@ -1947,7 +1945,7 @@ static const of_unichar_t casefoldingPage30[0x100] = {
 	7929, 0, 7931, 0, 7933, 0, 7935, 0,
 };
 
-static const of_unichar_t casefoldingPage31[0x100] = {
+static const OFUnichar caseFoldingPage31[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	7936, 7937, 7938, 7939, 7940, 7941, 7942, 7943,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1982,7 +1980,7 @@ static const of_unichar_t casefoldingPage31[0x100] = {
 	8056, 8057, 8060, 8061, 8179, 0, 0, 0,
 };
 
-static const of_unichar_t casefoldingPage171[0x100] = {
+static const OFUnichar caseFoldingPage171[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -12366,7 +12364,7 @@ static const char *const decompCompatPage507[0x100] = {
 	NULL, NULL,
 };
 
-const of_unichar_t *const of_unicode_uppercase_table[0x1EA] = {
+const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
 	uppercasePage0, uppercasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -12492,7 +12490,7 @@ const of_unichar_t *const of_unicode_uppercase_table[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const of_unichar_t *const of_unicode_lowercase_table[0x1EA] = {
+const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
 	lowercasePage0, lowercasePage1, lowercasePage2, lowercasePage3,
 	lowercasePage4, lowercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -12618,7 +12616,7 @@ const of_unichar_t *const of_unicode_lowercase_table[0x1EA] = {
 	emptyPage, lowercasePage489
 };
 
-const of_unichar_t *const of_unicode_titlecase_table[0x1EA] = {
+const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
 	uppercasePage0, titlecasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -12744,18 +12742,18 @@ const of_unichar_t *const of_unicode_titlecase_table[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const of_unichar_t *const of_unicode_casefolding_table[0x1EA] = {
-	casefoldingPage0, casefoldingPage1, lowercasePage2,
-	casefoldingPage3, lowercasePage4, lowercasePage5,
+const OFUnichar *const OFUnicodeCaseFoldingTable[0x1EA] = {
+	caseFoldingPage0, caseFoldingPage1, lowercasePage2,
+	caseFoldingPage3, lowercasePage4, lowercasePage5,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, lowercasePage16, emptyPage,
-	emptyPage, casefoldingPage19, emptyPage,
+	emptyPage, caseFoldingPage19, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
-	emptyPage, casefoldingPage28, emptyPage,
-	casefoldingPage30, casefoldingPage31, emptyPage,
+	emptyPage, caseFoldingPage28, emptyPage,
+	caseFoldingPage30, caseFoldingPage31, emptyPage,
 	lowercasePage33, emptyPage, emptyPage,
 	lowercasePage36, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
@@ -12802,7 +12800,7 @@ const of_unichar_t *const of_unicode_casefolding_table[0x1EA] = {
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, lowercasePage166, lowercasePage167,
 	emptyPage, emptyPage, emptyPage,
-	casefoldingPage171, emptyPage, emptyPage,
+	caseFoldingPage171, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
@@ -12911,7 +12909,7 @@ const of_unichar_t *const of_unicode_casefolding_table[0x1EA] = {
 	lowercasePage489
 };
 
-const char *const *of_unicode_decomposition_table[0x2FB] = {
+const char *const *OFUnicodeDecompositionTable[0x2FB] = {
 	decompositionPage0, decompositionPage1, decompositionPage2,
 	decompositionPage3, decompositionPage4, emptyDecompositionPage,
 	decompositionPage6, emptyDecompositionPage, emptyDecompositionPage,
@@ -13169,7 +13167,7 @@ const char *const *of_unicode_decomposition_table[0x2FB] = {
 	decompositionPage762
 };
 
-const char *const *of_unicode_decomposition_compat_table[0x2FB] = {
+const char *const *OFUnicodeDecompositionCompatTable[0x2FB] = {
 	decompCompatPage0, decompCompatPage1, decompCompatPage2,
 	decompCompatPage3, decompositionPage4, decompCompatPage5,
 	decompCompatPage6, emptyDecompositionPage, emptyDecompositionPage,

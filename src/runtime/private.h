@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,7 +40,7 @@ struct objc_class {
 	long instanceSize;
 	struct objc_ivar_list *_Nullable ivars;
 	struct objc_method_list *_Nullable methodList;
-	struct objc_dtable *_Nonnull DTable;
+	struct objc_dtable *_Nonnull dTable;
 	Class _Nullable *_Nullable subclassList;
 	void *_Nullable siblingClass;
 	struct objc_protocol_list *_Nullable protocols;
@@ -203,7 +201,7 @@ struct objc_sparsearray {
 	struct objc_sparsearray_data {
 		void *_Nullable next[256];
 	} *_Nonnull data;
-	uint8_t indexSize;
+	uint8_t levels;
 };
 
 struct objc_dtable {
@@ -225,9 +223,6 @@ struct objc_libc {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
-	int (*_Nonnull fflush)(FILE *_Nonnull);
-	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
 # else
@@ -248,9 +243,21 @@ struct objc_libc {
 # else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
+# ifdef OF_AMIGAOS_M68K
 	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
 	    void *_Nonnull);
 	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
+# endif
+# ifdef OF_MORPHOS
+	void (*_Nonnull __register_frame)(void *_Nonnull);
+	void (*_Nonnull __deregister_frame)(void *_Nonnull);
+# endif
+# ifdef OF_AMIGAOS_M68K
+	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
+	    const char *_Nonnull restrict fmt, va_list args);
+# endif
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
+	void (*_Nonnull exit)(int);
 };
 #endif
 
@@ -263,26 +270,32 @@ struct objc_libc {
 	register type reg_##name __asm__(#reg);	\
 	type name = reg_##name;
 # endif
-# undef stdout
-# undef stderr
-extern FILE *stdout, *stderr;
+
+extern bool objc_init(unsigned int, struct objc_libc *);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)
+# else
+#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
+	__gnu_objc_personality_v0(version, actions, *exClass, ex, ctx)
+# endif
 #endif
 
-extern void objc_register_all_categories(struct objc_symtab *_Nonnull);
+extern void objc_registerAllCategories(struct objc_symtab *_Nonnull);
 extern struct objc_category *_Nullable *_Nullable
-    objc_categories_for_class(Class _Nonnull);
-extern void objc_unregister_all_categories(void);
-extern void objc_initialize_class(Class _Nonnull);
-extern void objc_update_dtable(Class _Nonnull);
-extern void objc_register_all_classes(struct objc_symtab *_Nonnull);
-extern Class _Nullable objc_classname_to_class(const char *_Nonnull, bool);
-extern void objc_unregister_class(Class _Nonnull);
-extern void objc_unregister_all_classes(void);
-extern uint32_t objc_hash_string(const void *_Nonnull);
-extern bool objc_equal_string(const void *_Nonnull, const void *_Nonnull);
+    objc_categoriesForClass(Class _Nonnull);
+extern void objc_unregisterAllCategories(void);
+extern void objc_initializeClass(Class _Nonnull);
+extern void objc_updateDTable(Class _Nonnull);
+extern void objc_registerAllClasses(struct objc_symtab *_Nonnull);
+extern Class _Nullable objc_classnameToClass(const char *_Nonnull, bool);
+extern void objc_unregisterClass(Class _Nonnull);
+extern void objc_unregisterAllClasses(void);
+extern uint32_t objc_string_hash(const void *_Nonnull);
+extern bool objc_string_equal(const void *_Nonnull, const void *_Nonnull);
 extern struct objc_hashtable *_Nonnull objc_hashtable_new(
     objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t);
-extern struct objc_hashtable_bucket objc_deleted_bucket;
+extern struct objc_hashtable_bucket objc_deletedBucket;
 extern void objc_hashtable_set(struct objc_hashtable *_Nonnull,
     const void *_Nonnull, const void *_Nonnull);
 extern void *_Nullable objc_hashtable_get(struct objc_hashtable *_Nonnull,
@@ -290,9 +303,9 @@ extern void *_Nullable objc_hashtable_get(struct objc_hashtable *_Nonnull,
 extern void objc_hashtable_delete(struct objc_hashtable *_Nonnull,
     const void *_Nonnull);
 extern void objc_hashtable_free(struct objc_hashtable *_Nonnull);
-extern void objc_register_selector(struct objc_selector *_Nonnull);
-extern void objc_register_all_selectors(struct objc_symtab *_Nonnull);
-extern void objc_unregister_all_selectors(void);
+extern void objc_registerSelector(struct objc_selector *_Nonnull);
+extern void objc_registerAllSelectors(struct objc_symtab *_Nonnull);
+extern void objc_unregisterAllSelectors(void);
 extern struct objc_sparsearray *_Nonnull objc_sparsearray_new(uint8_t);
 extern void *_Nullable objc_sparsearray_get(struct objc_sparsearray *_Nonnull,
     uintptr_t);
@@ -306,19 +319,20 @@ extern void objc_dtable_set(struct objc_dtable *_Nonnull, uint32_t,
     IMP _Nullable);
 extern void objc_dtable_free(struct objc_dtable *_Nonnull);
 extern void objc_dtable_cleanup(void);
-extern void objc_init_static_instances(struct objc_symtab *_Nonnull);
-extern void objc_forget_pending_static_instances(void);
-extern void objc_zero_weak_references(id _Nonnull);
+extern void objc_initStaticInstances(struct objc_symtab *_Nonnull);
+extern void objc_forgetPendingStaticInstances(void);
+extern void objc_zeroWeakReferences(id _Nonnull);
 extern Class _Nullable object_getTaggedPointerClass(id _Nonnull);
 #ifdef OF_HAVE_THREADS
-extern void objc_global_mutex_lock(void);
-extern void objc_global_mutex_unlock(void);
-extern void objc_global_mutex_free(void);
+extern void objc_globalMutex_lock(void);
+extern void objc_globalMutex_unlock(void);
+extern void objc_globalMutex_free(void);
 #else
-# define objc_global_mutex_lock()
-# define objc_global_mutex_unlock()
-# define objc_global_mutex_free()
+# define objc_globalMutex_lock()
+# define objc_globalMutex_unlock()
+# define objc_globalMutex_free()
 #endif
+extern char *_Nullable objc_strdup(const char *_Nonnull string);
 
 static inline IMP _Nullable
 objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
@@ -337,8 +351,15 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #endif
 }
 
+extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
+    const char *_Nonnull format, ...);
+#define OBJC_ERROR(...)							\
+	objc_error("ObjFWRT @ " __FILE__ ":" OF_STRINGIFY(__LINE__),	\
+	    __VA_ARGS__)
+
 #if defined(OF_ELF)
-# if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
+# if defined(OF_X86_64) || defined(OF_X86) || \
+    defined(OF_POWERPC64) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
     defined(OF_SPARC64) || defined(OF_SPARC)
@@ -353,16 +374,6 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #endif
-
-#define OBJC_ERROR(...)							\
-	{								\
-		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
-		fprintf(stderr, __VA_ARGS__);				\
-		fprintf(stderr, "\n");					\
-		fflush(stderr);						\
-		abort();						\
-		OF_UNREACHABLE						\
-	}
 
 @interface DummyObject
 {

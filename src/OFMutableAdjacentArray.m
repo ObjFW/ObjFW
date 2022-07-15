@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,15 +59,13 @@
 	_mutations++;
 }
 
-- (void)insertObject: (id)object
-	     atIndex: (size_t)idx
+- (void)insertObject: (id)object atIndex: (size_t)idx
 {
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
-		[_array insertItem: &object
-			   atIndex: idx];
+		[_array insertItem: &object atIndex: idx];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -78,16 +74,13 @@
 	_mutations++;
 }
 
-- (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)idx
+- (void)insertObjectsFromArray: (OFArray *)array atIndex: (size_t)idx
 {
 	id const *objects = array.objects;
 	size_t count = array.count;
 
 	@try {
-		[_array insertItems: objects
-			    atIndex: idx
-			      count: count];
+		[_array insertItems: objects atIndex: idx count: count];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -98,8 +91,7 @@
 	_mutations++;
 }
 
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject
+- (void)replaceObject: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -115,14 +107,11 @@
 			[newObject retain];
 			[objects[i] release];
 			objects[i] = newObject;
-
-			return;
 		}
 	}
 }
 
-- (void)replaceObjectAtIndex: (size_t)idx
-		  withObject: (id)object
+- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
 	id *objects;
 	id oldObject;
@@ -140,8 +129,7 @@
 	[oldObject release];
 }
 
-- (void)replaceObjectIdenticalTo: (id)oldObject
-		      withObject: (id)newObject
+- (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
 	size_t count;
@@ -176,14 +164,17 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
-			object = objects[i];
+			id tmp = objects[i];
 
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			[tmp release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -206,7 +197,10 @@
 
 			[object release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -233,7 +227,7 @@
 	[_array removeAllItems];
 }
 
-- (void)removeObjectsInRange: (of_range_t)range
+- (void)removeObjectsInRange: (OFRange)range
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -243,8 +237,7 @@
 	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	copy = [self allocMemoryWithSize: sizeof(*copy)
-				   count: range.length];
+	copy = OFAllocMemory(range.length, sizeof(*copy));
 	memcpy(copy, objects + range.location, range.length * sizeof(id));
 
 	@try {
@@ -254,7 +247,7 @@
 		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
-		[self freeMemory: copy];
+		OFFreeMemory(copy);
 	}
 }
 
@@ -275,8 +268,7 @@
 #endif
 }
 
-- (void)exchangeObjectAtIndex: (size_t)idx1
-	    withObjectAtIndex: (size_t)idx2
+- (void)exchangeObjectAtIndex: (size_t)idx1 withObjectAtIndex: (size_t)idx2
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;
@@ -305,7 +297,7 @@
 	}
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id *)objects
 			     count: (int)count_
 {
@@ -342,7 +334,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
+- (void)enumerateObjectsUsingBlock: (OFArrayEnumerationBlock)block
 {
 	id const *objects = _array.items;
 	size_t count = _array.count;
@@ -358,7 +350,7 @@
 	}
 }
 
-- (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (OFArrayReplaceBlock)block
 {
 	id *objects = _array.mutableItems;
 	size_t count = _array.count;

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +15,8 @@
 
 #include "config.h"
 
-.globl _of_forward
-.globl _of_forward_stret
+.globl _OFForward
+.globl _OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 str_forwardingTargetForSelector_:
@@ -34,7 +32,7 @@ sel_forwardingTargetForSelector_:
 .section __TEXT, __text, regular, pure_instructions
 .arm
 .align 2
-_of_forward:
+_OFForward:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
@@ -70,7 +68,7 @@ L0:
 0:
 	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
-	b	_of_method_not_found
+	b	_OFMethodNotFound
 
 .data_region
 sel_forwardingTargetForSelector_$indirect_L0:
@@ -78,7 +76,7 @@ sel_forwardingTargetForSelector_$indirect_L0:
 .end_data_region
 
 .align 2
-_of_forward_stret:
+_OFForward_stret:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
@@ -118,7 +116,7 @@ L1:
 0:
 	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
-	b	_of_method_not_found_stret
+	b	_OFMethodNotFound_stret
 
 .data_region
 sel_forwardingTargetForSelector_$indirect_L1:

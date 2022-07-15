@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -49,8 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param try The try block to execute
  * @param finally The finally block to call at the end
  */
-+ (void)try: (void (^)(void))try
-    finally: (void (^)(void))finally;
++ (void)try: (void (^)(void))try finally: (void (^)(void))finally;
 
 /**
  * @brief Execute the specified try block and call the catch block if an

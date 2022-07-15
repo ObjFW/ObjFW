@@ -16,10 +16,10 @@ name="$2"
 test -z "$name" && show_help
 
 case "$1" in
-	app)
-		test -f "$name.m" && already_exists "$name.m"
+app)
+	test -f "$name.m" && already_exists "$name.m"
 
-		cat >"$name.m" <<__EOF__
+	cat >"$name.m" <<__EOF__
 #import <ObjFW/ObjFW.h>
 
 @interface $name: OFObject <OFApplicationDelegate>
@@ -34,12 +34,12 @@ OF_APPLICATION_DELEGATE($name)
 }
 @end
 __EOF__
-		;;
-	class)
-		test -f "$name.h" && already_exists "$name.h"
-		test -f "$name.m" && already_exists "$name.m"
+	;;
+class)
+	test -f "$name.h" && already_exists "$name.h"
+	test -f "$name.m" && already_exists "$name.m"
 
-		cat >"$name.h" <<__EOF__
+	cat >"$name.h" <<__EOF__
 #import <ObjFW/ObjFW.h>
 
 @interface $name: OFObject
@@ -51,8 +51,8 @@ __EOF__
 @implementation $name
 @end
 __EOF__
-		;;
-	*)
-		show_help
-		;;
+	;;
+*)
+	show_help
+	;;
 esac

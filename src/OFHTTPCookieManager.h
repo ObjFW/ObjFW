@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -56,8 +54,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param cookie The cookie to add to the manager
  * @param URL The URL for which the cookie should be added
  */
-- (void)addCookie: (OFHTTPCookie *)cookie
-	   forURL: (OFURL *)URL;
+- (void)addCookie: (OFHTTPCookie *)cookie forURL: (OFURL *)URL;
 
 /**
  * @brief Adds the specified cookies for the specified URL.

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,17 +19,17 @@
 #import "private.h"
 
 #ifdef OF_HAVE_THREADS
-# import "mutex.h"
+# import "OFPlainMutex.h"
 #endif
 
-struct weak_ref {
+struct WeakRef {
 	id **locations;
 	size_t count;
 };
 
 static struct objc_hashtable *hashtable;
 #ifdef OF_HAVE_THREADS
-static of_spinlock_t spinlock;
+static OFSpinlock spinlock;
 #endif
 
 static uint32_t
@@ -51,8 +49,8 @@ OF_CONSTRUCTOR()
 	hashtable = objc_hashtable_new(hash, equal, 2);
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_new(&spinlock))
-		OBJC_ERROR("Failed to create spinlock!")
+	if (OFSpinlockNew(&spinlock) != 0)
+		OBJC_ERROR("Failed to create spinlock!");
 #endif
 }
 
@@ -119,11 +117,11 @@ objc_storeStrong(id *object, id value)
 id
 objc_storeWeak(id *object, id value)
 {
-	struct weak_ref *old;
+	struct WeakRef *old;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+	if (OFSpinlockLock(&spinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*object != nil &&
@@ -157,7 +155,7 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -170,7 +168,7 @@ objc_storeWeak(id *object, id value)
 		if ((ref->locations = realloc(ref->locations,
 		    (ref->count + 1) * sizeof(id *))) == NULL)
 			OBJC_ERROR("Not enough memory to allocate weak "
-			    "reference!")
+			    "reference!");
 
 		ref->locations[ref->count++] = object;
 	} else
@@ -179,8 +177,8 @@ objc_storeWeak(id *object, id value)
 	*object = value;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+	if (OFSpinlockUnlock(&spinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	return value;
@@ -190,11 +188,11 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+	if (OFSpinlockLock(&spinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*object != nil &&
@@ -202,8 +200,8 @@ objc_loadWeakRetained(id *object)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+	if (OFSpinlockUnlock(&spinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	if (class_respondsToSelector(object_getClass(value),
@@ -241,11 +239,11 @@ objc_copyWeak(id *dest, id *src)
 void
 objc_moveWeak(id *dest, id *src)
 {
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+	if (OFSpinlockLock(&spinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*src != nil &&
@@ -262,19 +260,19 @@ objc_moveWeak(id *dest, id *src)
 	*src = nil;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+	if (OFSpinlockUnlock(&spinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
 void
-objc_zero_weak_references(id value)
+objc_zeroWeakReferences(id value)
 {
-	struct weak_ref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		OBJC_ERROR("Failed to lock spinlock!")
+	if (OFSpinlockLock(&spinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if ((ref = objc_hashtable_get(hashtable, value)) != NULL) {
@@ -287,7 +285,7 @@ objc_zero_weak_references(id value)
 	}
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		OBJC_ERROR("Failed to unlock spinlock!")
+	if (OFSpinlockUnlock(&spinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }

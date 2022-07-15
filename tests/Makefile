@@ -1,6 +1,8 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}
+SUBDIRS = ${TESTPLUGIN}	\
+	  ${OBJC_SYNC}	\
+	  terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -11,8 +13,6 @@ DISTCLEAN = Info.plist
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
-       OFASN1DERParsingTests.m		\
-       OFASN1DERRepresentationTests.m	\
        OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
@@ -24,9 +24,12 @@ SRCS = ForwardingTests.m		\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMethodSignatureTests.m		\
+       OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
+       OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
+       OFScryptTests.m			\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -36,10 +39,8 @@ SRCS = ForwardingTests.m		\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
-       PBKDF2Tests.m			\
        RuntimeTests.m			\
        ${RUNTIME_ARC_TESTS_M}		\
-       ScryptTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
@@ -56,21 +57,22 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA256HashTests.m	\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
-SRCS_IPX = OFIPXSocketTests.m		\
-	   OFSPXSocketTests.m		\
-	   OFSPXStreamSocketTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
+	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       SocketTests.m			\
 	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_SCTP}
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+		    OFUNIXStreamSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -79,16 +81,15 @@ IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
-post-all: ${RUN_TESTS}
-
 .PHONY: run run-on-ios run-on-android
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
-	rm -f objfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
+	rm -f objfw${OBJFW_LIB_MAJOR}.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
-	rm -f objfwrt.dll libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
+	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
 	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
@@ -98,8 +99,9 @@ run:
 		${LN_S} ../src/libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} \
 		    libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../src/objfw.dll; then \
-		${LN_S} ../src/objfw.dll objfw.dll; \
+	if test -f ../src/objfw${OBJFW_LIB_MAJOR}.dll; then \
+		${LN_S} ../src/objfw${OBJFW_LIB_MAJOR}.dll \
+			objfw${OBJFW_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
 		${LN_S} ../src/libobjfw.dylib \
@@ -113,8 +115,9 @@ run:
 	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
 		${LN_S} ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../src/runtime/objfwrt.dll; then \
-		${LN_S} ../src/runtime/objfwrt.dll objfwrt.dll; \
+	if test -f ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll; then \
+		${LN_S} ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll \
+			objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
@@ -131,10 +134,12 @@ run:
 	ASAN_OPTIONS=allocator_may_return_null=1 \
 	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
-	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} objfw.dll; \
+	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
+	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
-	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} objfwrt.dll; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 

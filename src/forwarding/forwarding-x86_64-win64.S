@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,158 +15,164 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 .section .text
-of_forward:
-	push	rbp
-	mov	rbp, rsp
+OFForward:
+	pushq	%rbp
+	movq	%rsp, %rbp
 
 	/* Save all arguments */
-	sub	rsp, 0x90	/* 16-byte alignment */
-	mov	[rbp-0x28], rax
-	mov	[rbp-0x30], rcx
-	mov	[rbp-0x38], rdx
-	mov	[rbp-0x40], r8
-	mov	[rbp-0x48], r9
-	movaps	[rbp-0x60], xmm0
-	movaps	[rbp-0x70], xmm1
-	movaps	[rbp-0x80], xmm2
-	movaps	[rbp-0x90], xmm3
+	subq	$0x90, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x28(%rbp)
+	movq	%rcx, -0x30(%rbp)
+	movq	%rdx, -0x38(%rbp)
+	movq	%r8, -0x40(%rbp)
+	movq	%r9, -0x48(%rbp)
+	movaps	%xmm0, -0x60(%rbp)
+	movaps	%xmm1, -0x70(%rbp)
+	movaps	%xmm2, -0x80(%rbp)
+	movaps	%xmm3, -0x90(%rbp)
 
 	call	object_getClass
 
-	mov	rcx, rax
-	mov	rdx, offset sel_forwardingTargetForSelector_
+	movq	%rax, %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
 	call	class_respondsToSelector
 
-	test	rax, rax
-	jz	short 0f
+	testq	%rax, %rax
+	jz	0f
 
-	mov	rcx, [rbp-0x30]
-	mov	rdx, offset sel_forwardingTargetForSelector_
+	movq	-0x30(%rbp), %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
 	call	objc_msg_lookup
 
-	mov	rcx, [rbp-0x30]
-	mov	rdx, offset sel_forwardingTargetForSelector_
-	mov	r8,  [rbp-0x38]
-	call	rax
+	movq	-0x30(%rbp), %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
+	movq	-0x38(%rbp), %r8
+	call	*%rax
 
-	test	rax, rax
-	jz	short 0f
-	cmp	rax, [rbp-0x30]
-	je	short 0f
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x30(%rbp), %rax
+	je	0f
 
-	mov	[rbp-0x30], rax
+	movq	%rax, -0x30(%rbp)
 
-	mov	rcx, rax
-	mov	rdx, [rbp-0x38]
+	movq	%rax, %rcx
+	movq	-0x38(%rbp), %rdx
 	call	objc_msg_lookup
-	mov	r11, rax
+	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movaps	xmm3, [rbp-0x90]
-	movaps	xmm2, [rbp-0x80]
-	movaps	xmm1, [rbp-0x70]
-	movaps	xmm0, [rbp-0x60]
-	mov	r9,   [rbp-0x48]
-	mov	r8,   [rbp-0x40]
-	mov	rdx,  [rbp-0x38]
-	mov	rcx,  [rbp-0x30]
-	mov	rax,  [rbp-0x28]
+	movaps	-0x90(%rbp), %xmm3
+	movaps	-0x80(%rbp), %xmm2
+	movaps	-0x70(%rbp), %xmm1
+	movaps	-0x60(%rbp), %xmm0
+	movq	-0x48(%rbp), %r9
+	movq	-0x40(%rbp), %r8
+	movq	-0x38(%rbp), %rdx
+	movq	-0x30(%rbp), %rcx
+	movq	-0x28(%rbp), %rax
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	r11
+	jmpq	*%r11
 
 0:
-	mov	rcx, [rbp-0x30]
-	mov	rdx, [rbp-0x38]
+	movq	-0x30(%rbp), %rcx
+	movq	-0x38(%rbp), %rdx
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	of_method_not_found
+	jmp	OFMethodNotFound
+.def OFForward
+.scl 2
+.type 32
+.endef
 
-of_forward_stret:
-	push	rbp
-	mov	rbp, rsp
+OFForward_stret:
+	pushq	%rbp
+	movq	%rsp, %rbp
 
 	/* Save all arguments */
-	sub	rsp, 0x90	/* 16-byte alignment */
-	mov	[rbp-0x28], rax
-	mov	[rbp-0x30], rcx
-	mov	[rbp-0x38], rdx
-	mov	[rbp-0x40], r8
-	mov	[rbp-0x48], r9
-	movaps	[rbp-0x60], xmm0
-	movaps	[rbp-0x70], xmm1
-	movaps	[rbp-0x80], xmm2
-	movaps	[rbp-0x90], xmm3
+	subq	$0x90, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x28(%rbp)
+	movq	%rcx, -0x30(%rbp)
+	movq	%rdx, -0x38(%rbp)
+	movq	%r8, -0x40(%rbp)
+	movq	%r9, -0x48(%rbp)
+	movaps	%xmm0, -0x60(%rbp)
+	movaps	%xmm1, -0x70(%rbp)
+	movaps	%xmm2, -0x80(%rbp)
+	movaps	%xmm3, -0x90(%rbp)
 
-	mov	rcx, rdx
+	movq	%rdx, %rcx
 	call	object_getClass
 
-	mov	rcx, rax
-	mov	rdx, offset sel_forwardingTargetForSelector_
+	movq	%rax, %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
 	call	class_respondsToSelector
 
-	test	rax, rax
-	jz	short 0f
+	testq	%rax, %rax
+	jz	0f
 
-	mov	rcx, [rbp-0x38]
-	mov	rdx, offset sel_forwardingTargetForSelector_
+	movq	-0x38(%rbp), %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
 	call	objc_msg_lookup
 
-	mov	rcx, [rbp-0x38]
-	mov	rdx, offset sel_forwardingTargetForSelector_
-	mov	r8,  [rbp-0x40]
-	call	rax
+	movq	-0x38(%rbp), %rcx
+	leaq	sel_forwardingTargetForSelector_(%rip), %rdx
+	movq	-0x40(%rbp), %r8
+	call	*%rax
 
-	test	rax, rax
-	jz	short 0f
-	cmp	rax, [rbp-0x38]
-	je	short 0f
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x38(%rbp), %rax
+	je	0f
 
-	mov	[rbp-0x38], rax
+	movq	%rax, -0x38(%rbp)
 
-	mov	rcx, rax
-	mov	rdx, [rbp-0x40]
+	movq	%rax, %rcx
+	movq	-0x40(%rbp), %rdx
 	call	objc_msg_lookup_stret
-	mov	r11, rax
+	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movaps	xmm3, [rbp-0x90]
-	movaps	xmm2, [rbp-0x80]
-	movaps	xmm1, [rbp-0x70]
-	movaps	xmm0, [rbp-0x60]
-	mov	r9,   [rbp-0x48]
-	mov	r8,   [rbp-0x40]
-	mov	rdx,  [rbp-0x38]
-	mov	rcx,  [rbp-0x30]
-	mov	rax,  [rbp-0x28]
+	movaps	-0x90(%rbp), %xmm3
+	movaps	-0x80(%rbp), %xmm2
+	movaps	-0x70(%rbp), %xmm1
+	movaps	-0x60(%rbp), %xmm0
+	movq	-0x48(%rbp), %r9
+	movq	-0x40(%rbp), %r8
+	movq	-0x38(%rbp), %rdx
+	movq	-0x30(%rbp), %rcx
+	movq	-0x28(%rbp), %rax
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	r11
+	jmpq	*%r11
 
 0:
-	mov	rcx, [rbp-0x30]
-	mov	rdx, [rbp-0x38]
-	mov	r8,  [rbp-0x40]
+	movq	-0x30(%rbp), %rcx
+	movq	-0x38(%rbp), %rdx
+	movq	-0x40(%rbp), %r8
 
-	mov	rsp, rbp
-	pop	rbp
+	movq	%rbp, %rsp
+	popq	%rbp
 
-	jmp	of_method_not_found_stret
+	jmp	OFMethodNotFound_stret
+.def OFForward_stret
+.scl 2
+.type 32
+.endef
 
 init:
-	mov	rcx, offset module
+	leaq	module(%rip), %rcx
 	jmp	__objc_exec_class
 
 .section .ctors, "aw"

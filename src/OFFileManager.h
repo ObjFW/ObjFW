@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,53 +46,53 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Possible keys for file URLs are:
  *
- *  * @ref of_file_attribute_key_size
- *  * @ref of_file_attribute_key_type
- *  * @ref of_file_attribute_key_posix_permissions
- *  * @ref of_file_attribute_key_posix_uid
- *  * @ref of_file_attribute_key_posix_gid
- *  * @ref of_file_attribute_key_owner
- *  * @ref of_file_attribute_key_group
- *  * @ref of_file_attribute_key_last_access_date
- *  * @ref of_file_attribute_key_modification_date
- *  * @ref of_file_attribute_key_status_change_date
- *  * @ref of_file_attribute_key_creation_date
- *  * @ref of_file_attribute_key_symbolic_link_destination
+ *  * @ref OFFileSize
+ *  * @ref OFFileType
+ *  * @ref OFFilePOSIXPermissions
+ *  * @ref OFFileOwnerAccountID
+ *  * @ref OFFileGroupOwnerAccountID
+ *  * @ref OFFileOwnerAccountName
+ *  * @ref OFFileGroupOwnerAccountName
+ *  * @ref OFFileLastAccessDate
+ *  * @ref OFFileModificationDate
+ *  * @ref OFFileStatusChangeDate
+ *  * @ref OFFileCreationDate
+ *  * @ref OFFileSymbolicLinkDestination
  *
  * Other URL schemes might not have all keys and might have keys not listed.
  */
-typedef OFConstantString *of_file_attribute_key_t;
+typedef OFConstantString *OFFileAttributeKey;
 
 /**
  * @brief The type of a file.
  *
  * Possibles values for file URLs are:
  *
- *  * @ref of_file_type_regular
- *  * @ref of_file_type_directory
- *  * @ref of_file_type_symbolic_link
- *  * @ref of_file_type_fifo
- *  * @ref of_file_type_character_special
- *  * @ref of_file_type_block_special
- *  * @ref of_file_type_socket
+ *  * @ref OFFileTypeRegular
+ *  * @ref OFFileTypeDirectory
+ *  * @ref OFFileTypeSymbolicLink
+ *  * @ref OFFileTypeFIFO
+ *  * @ref OFFileTypeCharacterSpecial
+ *  * @ref OFFileTypeBlockSpecial
+ *  * @ref OFFileTypeSocket
+ *  * @ref OFFileTypeUnknown
  *
  * Other URL schemes might not have all types and might have types not listed.
  */
-typedef OFConstantString *of_file_type_t;
+typedef OFConstantString *OFFileAttributeType;
 
 /**
- * @brief A dictionary mapping keys of type @ref of_file_attribute_key_t
- *	  to their attribute values.
+ * @brief A dictionary mapping keys of type @ref OFFileAttributeKey to their
+ *	  attribute values.
  */
-typedef OFDictionary OF_GENERIC(of_file_attribute_key_t, id)
-    *of_file_attributes_t;
+typedef OFDictionary OF_GENERIC(OFFileAttributeKey, id) *OFFileAttributes;
 
 /**
- * @brief A mutable dictionary mapping keys of type
- *	  @ref of_file_attribute_key_t to their attribute values.
+ * @brief A mutable dictionary mapping keys of type @ref OFFileAttributeKey to
+ *	  their attribute values.
  */
-typedef OFMutableDictionary OF_GENERIC(of_file_attribute_key_t, id)
-    *of_mutable_file_attributes_t;
+typedef OFMutableDictionary OF_GENERIC(OFFileAttributeKey, id)
+    *OFMutableFileAttributes;
 
 #ifdef __cplusplus
 extern "C" {
@@ -105,17 +103,17 @@ extern "C" {
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileSize.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_size;
+extern const OFFileAttributeKey OFFileSize;
 
 /**
  * @brief The type of the file.
  *
- * The corresponding value is of type @ref of_file_type_t.
+ * The corresponding value is of type @ref OFFileAttributeType.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileType.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_type;
+extern const OFFileAttributeKey OFFileType;
 
 /**
  * @brief The POSIX permissions of the file as an @ref OFNumber.
@@ -123,39 +121,39 @@ extern const of_file_attribute_key_t of_file_attribute_key_type;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#filePOSIXPermissions.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
+extern const OFFileAttributeKey OFFilePOSIXPermissions;
 
 /**
- * @brief The POSIX UID of the file as an @ref OFNumber.
+ * @brief The account ID of the owner of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref OFDictionary#filePOSIXUID.
+ * via @ref OFDictionary#fileOwnerAccountID.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
+extern const OFFileAttributeKey OFFileOwnerAccountID;
 
 /**
- * @brief The POSIX GID of the file as an @ref OFNumber.
+ * @brief The account ID of the group owner of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref OFDictionary#filePOSIXGID.
+ * via @ref OFDictionary#fileGroupOwnerAccountID.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
+extern const OFFileAttributeKey OFFileGroupOwnerAccountID;
 
 /**
- * @brief The owner of the file as an OFString.
+ * @brief The account name of the owner of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref OFDictionary#fileOwner.
+ * via @ref OFDictionary#fileOwnerAccountName.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_owner;
+extern const OFFileAttributeKey OFFileOwnerAccountName;
 
 /**
- * @brief The group of the file as an OFString.
+ * @brief The account name of the group owner of the file as an OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref OFDictionary#fileGroup.
+ * via @ref OFDictionary#fileGroupOwnerAccountName.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_group;
+extern const OFFileAttributeKey OFFileGroupOwnerAccountName;
 
 /**
  * @brief The last access date of the file as an @ref OFDate.
@@ -163,7 +161,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_group;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileLastAccessDate.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
+extern const OFFileAttributeKey OFFileLastAccessDate;
 
 /**
  * @brief The last modification date of the file as an @ref OFDate.
@@ -171,7 +169,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileModificationDate.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
+extern const OFFileAttributeKey OFFileModificationDate;
 
 /**
  * @brief The last status change date of the file as an @ref OFDate.
@@ -179,7 +177,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileStatusChangeDate.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
+extern const OFFileAttributeKey OFFileStatusChangeDate;
 
 /**
  * @brief The creation date of the file as an @ref OFDate.
@@ -187,7 +185,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileCreationDate.
  */
-extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
+extern const OFFileAttributeKey OFFileCreationDate;
 
 /**
  * @brief The destination of a symbolic link as an OFString.
@@ -195,43 +193,51 @@ extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileSymbolicLinkDestination.
  */
-extern const of_file_attribute_key_t
-    of_file_attribute_key_symbolic_link_destination;
+extern const OFFileAttributeKey OFFileSymbolicLinkDestination;
 
 /**
  * @brief A regular file.
  */
-extern const of_file_type_t of_file_type_regular;
+extern const OFFileAttributeType OFFileTypeRegular;
 
 /**
  * @brief A directory.
  */
-extern const of_file_type_t of_file_type_directory;
+extern const OFFileAttributeType OFFileTypeDirectory;
 
 /**
  * @brief A symbolic link.
  */
-extern const of_file_type_t of_file_type_symbolic_link;
+extern const OFFileAttributeType OFFileTypeSymbolicLink;
 
 /**
  * @brief A FIFO.
  */
-extern const of_file_type_t of_file_type_fifo;
+extern const OFFileAttributeType OFFileTypeFIFO;
 
 /**
  * @brief A character special file.
  */
-extern const of_file_type_t of_file_type_character_special;
+extern const OFFileAttributeType OFFileTypeCharacterSpecial;
 
 /**
  * @brief A block special file.
  */
-extern const of_file_type_t of_file_type_block_special;
+extern const OFFileAttributeType OFFileTypeBlockSpecial;
 
 /**
  * @brief A socket.
  */
-extern const of_file_type_t of_file_type_socket;
+extern const OFFileAttributeType OFFileTypeSocket;
+
+/**
+ * @brief An unknown file type.
+ *
+ * This is different from not having an @ref OFFileType at all in that it means
+ * that retrieving file types is supported, but the particular file type is
+ * unknown.
+ */
+extern const OFFileAttributeType OFFileTypeUnknown;
 #ifdef __cplusplus
 }
 #endif
@@ -273,9 +279,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to return the attributes for
  * @return A dictionary of attributes for the specified path, with the keys of
- *	   type @ref of_file_attribute_key_t
+ *	   type @ref OFFileAttributeKey
  */
-- (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path;
+- (OFFileAttributes)attributesOfItemAtPath: (OFString *)path;
 #endif
 
 /**
@@ -283,9 +289,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to return the attributes for
  * @return A dictionary of attributes for the specified URL, with the keys of
- *	   type @ref of_file_attribute_key_t
+ *	   type @ref OFFileAttributeKey
  */
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -296,7 +302,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param attributes The attributes to set for the specified path
  * @param path The path of the item to set the attributes for
  */
-- (void)setAttributes: (of_file_attributes_t)attributes
+- (void)setAttributes: (OFFileAttributes)attributes
 	 ofItemAtPath: (OFString *)path;
 #endif
 
@@ -308,8 +314,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param attributes The attributes to set for the specified URL
  * @param URL The URL of the item to set the attributes for
  */
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL;
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -378,8 +383,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param URL The URL of the directory to create
  * @param createParents Whether to create the parents of the directory
  */
-- (void)createDirectoryAtURL: (OFURL *)URL
-	       createParents: (bool)createParents;
+- (void)createDirectoryAtURL: (OFURL *)URL createParents: (bool)createParents;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -394,16 +398,28 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Returns an array with the items in the specified directory.
+ * @brief Returns an array with the URLs of the items in the specified
+ *	  directory.
  *
  * @note `.` and `..` are not part of the returned array.
  *
  * @param URL The URL to the directory whose items should be returned
- * @return An array of OFString with the items in the specified directory
+ * @return An array with the URLs of the items in the specified directory
  */
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
 #ifdef OF_HAVE_FILES
+/**
+ * @brief Returns an array with all subpaths of the specified directory.
+ *
+ * @note `.` and `..` (of the directory itself or any subdirectory) are not
+ * part of the returned array.
+ *
+ * @param path The path to the directory whose subpaths should be returned
+ * @return An array of OFString with the subpaths of the specified directory
+ */
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path;
+
 /**
  * @brief Changes the current working directory.
  *
@@ -431,8 +447,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
  */
-- (void)copyItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -448,8 +463,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination URL
  */
-- (void)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -465,8 +479,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  */
-- (void)moveItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -482,8 +495,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  */
-- (void)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -517,8 +529,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The path to the item for which a link should be created
  * @param destination The path to the item which should link to the source
  */
-- (void)linkItemAtPath: (OFString *)source
-		toPath: (OFString *)destination;
+- (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
 
 /**
@@ -532,8 +543,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
  */
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination;
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /**
@@ -574,89 +584,84 @@ OF_SUBCLASSING_RESTRICTED
 
 @interface OFDictionary (FileAttributes)
 /**
- * @brief The @ref of_file_attribute_key_size key from the dictionary.
+ * @brief The @ref OFFileSize key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) unsigned long long fileSize;
 
 /**
- * @brief The @ref of_file_attribute_key_type key from the dictionary.
+ * @brief The @ref OFFileType key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) of_file_type_t fileType;
+@property (readonly, nonatomic) OFFileAttributeType fileType;
 
 /**
- * @brief The @ref of_file_attribute_key_posix_permissions key from the
- *	  dictionary.
+ * @brief The @ref OFFilePOSIXPermissions key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) unsigned long filePOSIXPermissions;
 
 /**
- * @brief The @ref of_file_attribute_key_posix_uid key from the dictionary.
+ * @brief The @ref OFFileOwnerAccountID key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) unsigned long filePOSIXUID;
+@property (readonly, nonatomic) unsigned long fileOwnerAccountID;
 
 /**
- * @brief The @ref of_file_attribute_key_posix_gid key from the dictionary.
+ * @brief The @ref OFFileGroupOwnerAccountID key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) unsigned long filePOSIXGID;
+@property (readonly, nonatomic) unsigned long fileGroupOwnerAccountID;
 
 /**
- * @brief The @ref of_file_attribute_key_owner key from the dictionary.
+ * @brief The @ref OFFileOwnerAccountName key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) OFString *fileOwner;
+@property (readonly, nonatomic) OFString *fileOwnerAccountName;
 
 /**
- * @brief The @ref of_file_attribute_key_group key from the dictionary.
+ * @brief The @ref OFFileGroupOwnerAccountName key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
-@property (readonly, nonatomic) OFString *fileGroup;
+@property (readonly, nonatomic) OFString *fileGroupOwnerAccountName;
 
 /**
- * @brief The @ref of_file_attribute_key_last_access_date key from the
- *	  dictionary.
+ * @brief The @ref OFFileLastAccessDate key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileLastAccessDate;
 
 /**
- * @brief The @ref of_file_attribute_key_modification_date key from the
- *	  dictionary.
+ * @brief The @ref OFFileModificationDate key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileModificationDate;
 
 /**
- * @brief The @ref of_file_attribute_key_status_change_date key from the
- *	  dictionary.
+ * @brief The @ref OFFileStatusChangeDate key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileStatusChangeDate;
 
 /**
- * @brief The @ref of_file_attribute_key_creation_date key from the dictionary.
+ * @brief The @ref OFFileCreationDate key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileCreationDate;
 
 /**
- * @brief The @ref of_file_attribute_key_symbolic_link_destination key from the
- *	  dictionary.
+ * @brief The @ref OFFileSymbolicLinkDestination key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */

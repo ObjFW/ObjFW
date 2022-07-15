@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,17 +23,11 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFStream.h"
-#import "OFStream+Private.h"
-#ifndef OF_HAVE_PIPE
-# import "OFStreamSocket.h"
-#endif
-
-#ifdef HAVE_KQUEUE
-# import "OFKqueueKernelEventObserver.h"
-#endif
 #ifdef HAVE_EPOLL
 # import "OFEpollKernelEventObserver.h"
+#endif
+#ifdef HAVE_KQUEUE
+# import "OFKqueueKernelEventObserver.h"
 #endif
 #ifdef HAVE_POLL
 # import "OFPollKernelEventObserver.h"
@@ -43,25 +35,21 @@
 #ifdef HAVE_SELECT
 # import "OFSelectKernelEventObserver.h"
 #endif
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
+#import "OFStream.h"
+#import "OFStream+Private.h"
+#ifndef OF_HAVE_PIPE
+# import "OFStreamSocket.h"
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#import "socket.h"
-#import "socket_helpers.h"
-
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
 #endif
-
-enum {
-	QUEUE_ADD = 0,
-	QUEUE_REMOVE = 1,
-	QUEUE_READ = 0,
-	QUEUE_WRITE = 2
-};
-#define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
 @implementation OFKernelEventObserver
 @synthesize delegate = _delegate;
@@ -74,7 +62,7 @@ enum {
 	if (self != [OFKernelEventObserver class])
 		return;
 
-	if (!of_socket_init())
+	if (!OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -115,14 +103,14 @@ enum {
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
 
-#if defined(OF_HAVE_PIPE)
+#if defined(OF_HAVE_PIPE) && !defined(OF_AMIGAOS)
 		if (pipe(_cancelFD))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 #elif !defined(OF_AMIGAOS)
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
-		if (_cancelFD[0] == INVALID_SOCKET)
+		if (_cancelFD[0] == OFInvalidSocketHandle)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
@@ -140,7 +128,7 @@ enum {
 			    exceptionWithClass: self.class];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (of_getsockname(_cancelFD[0],
+		if (OFGetSockName(_cancelFD[0],
 		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -152,7 +140,7 @@ enum {
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			_cancelAddr.sin_port = OF_BSWAP16_IF_LE(rnd);
+			_cancelAddr.sin_port = OFToBigEndian16(rnd);
 			ret = bind(_cancelFD[0],
 			    (struct sockaddr *)&_cancelAddr,
 			    sizeof(_cancelAddr));
@@ -160,7 +148,7 @@ enum {
 			if (ret == 0)
 				break;
 
-			if (of_socket_errno() != EADDRINUSE)
+			if (OFSocketErrNo() != EADDRINUSE)
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
 		}
@@ -176,7 +164,7 @@ enum {
 
 - (void)dealloc
 {
-#if defined(OF_HAVE_PIPE)
+#if defined(OF_HAVE_PIPE) && !defined(OF_AMIGAOS)
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
@@ -247,7 +235,7 @@ enum {
 	[self observeForTimeInterval: -1];
 }
 
-- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -259,9 +247,7 @@ enum {
 
 - (void)cancel
 {
-#if defined(OF_HAVE_PIPE)
-	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
-#elif defined(OF_AMIGAOS)
+#if defined(OF_AMIGAOS)
 	Forbid();
 
 	if (_waitingTask != NULL) {
@@ -270,11 +256,13 @@ enum {
 	}
 
 	Permit();
+#elif defined(OF_HAVE_PIPE)
+	OFEnsure(write(_cancelFD[1], "", 1) > 0);
 #elif defined(OF_WII)
-	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
+	OFEnsure(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, 8) > 0);
 #else
-	OF_ENSURE(sendto(_cancelFD[1], (void *)"", 1, 0,
+	OFEnsure(sendto(_cancelFD[1], (void *)"", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) > 0);
 #endif
 }

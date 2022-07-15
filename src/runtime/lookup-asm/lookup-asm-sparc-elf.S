@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,12 +23,12 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	tst	%o0
-	bz	ret_nil
+	bz	returnNilMethod
 	 btst	1, %o0
-	bnz	.Ltagged_pointer_\name	
+	bnz	.LtaggedPointer_\name	
 	 nop
 
 	ld	[%o0], %o2
@@ -64,10 +62,10 @@
 
 0:
 	mov	%o7, %g1
-	call	\not_found
+	call	\notFound
 	 mov	%g1, %o7
 
-.Ltagged_pointer_\name:
+.LtaggedPointer_\name:
 #ifdef OF_PIC
 	mov	%o7, %g1
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
@@ -78,8 +76,8 @@
 	mov	%g1, %o7
 #endif
 
-	sethi	%hi(objc_tagged_pointer_secret), %o2
-	or	%o2, %lo(objc_tagged_pointer_secret), %o2
+	sethi	%hi(objc_taggedPointerSecret), %o2
+	or	%o2, %lo(objc_taggedPointerSecret), %o2
 #ifdef OF_PIC
 	ld	[%o3 + %o2], %o2
 #endif
@@ -88,8 +86,8 @@
 	and	%o0, 0xE, %o0
 	sll	%o0, 1, %o0
 
-	sethi	%hi(objc_tagged_pointer_classes), %o2
-	or	%o2, %lo(objc_tagged_pointer_classes), %o2
+	sethi	%hi(objc_taggedPointerClasses), %o2
+	or	%o2, %lo(objc_taggedPointerClasses), %o2
 #ifdef OF_PIC
 	ld	[%o3 + %o2], %o2
 #endif
@@ -101,12 +99,12 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	mov	%o0, %o2
 	ld	[%o0], %o0
 	cmp	%o0, 0
-	be	ret_nil
+	be	returnNilMethod
 	 nop
 
 	ld	[%o2 + 4], %o2
@@ -116,12 +114,12 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
+returnNilMethod:
 #ifdef OF_PIC
 	mov	%o7, %g1
 
@@ -131,18 +129,18 @@ ret_nil:
 0:
 	add	%o7, %o1, %o1
 
-	sethi	%hi(nil_method), %o0
-	or	%o0, %lo(nil_method), %o0
+	sethi	%hi(nilMethod), %o0
+	or	%o0, %lo(nilMethod), %o0
 
 	jmpl	%g1 + 8, %g0
 	 ld	[%o1 + %o0], %o0
 #else
-	sethi	%hi(nil_method), %o0
+	sethi	%hi(nilMethod), %o0
 	retl
-	 or	%o0, %lo(nil_method), %o0
+	 or	%o0, %lo(nilMethod), %o0
 #endif
 
-nil_method:
+nilMethod:
 	retl
 	 clr	%o0
 

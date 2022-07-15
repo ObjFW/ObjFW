@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,8 +29,7 @@
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseFile: (OFString *)path
-	    encoding: (of_string_encoding_t)encoding;
+- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding;
 @end
 
 static bool
@@ -42,20 +39,22 @@ isWhitespaceLine(OFString *line)
 	size_t length = line.UTF8StringLength;
 
 	for (size_t i = 0; i < length; i++)
-		if (!of_ascii_isspace(cString[i]))
+		if (!OFASCIIIsSpace(cString[i]))
 			return false;
 
 	return true;
 }
 
 @implementation OFINIFile
+@synthesize categories = _categories;
+
 + (instancetype)fileWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
 
 + (instancetype)fileWithPath: (OFString *)path
-		    encoding: (of_string_encoding_t)encoding
+		    encoding: (OFStringEncoding)encoding
 {
 	return [[[self alloc] initWithPath: path
 				  encoding: encoding] autorelease];
@@ -68,20 +67,18 @@ isWhitespaceLine(OFString *line)
 
 - (instancetype)initWithPath: (OFString *)path
 {
-	return [self initWithPath: path
-			 encoding: OF_STRING_ENCODING_UTF_8];
+	return [self initWithPath: path encoding: OFStringEncodingUTF8];
 }
 
 - (instancetype)initWithPath: (OFString *)path
-		    encoding: (of_string_encoding_t)encoding
+		    encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self of_parseFile: path
-			  encoding: encoding];
+		[self of_parseFile: path encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -114,8 +111,7 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)of_parseFile: (OFString *)path
-	    encoding: (of_string_encoding_t)encoding
+- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;
@@ -123,8 +119,7 @@ isWhitespaceLine(OFString *line)
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -144,8 +139,7 @@ isWhitespaceLine(OFString *line)
 				@throw [OFInvalidFormatException exception];
 
 			categoryName = [line substringWithRange:
-			    of_range(1, line.length - 2)];
-
+			    OFRangeMake(1, line.length - 2)];
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];
@@ -162,16 +156,13 @@ isWhitespaceLine(OFString *line)
 
 - (void)writeToFile: (OFString *)path
 {
-	[self writeToFile: path
-		 encoding: OF_STRING_ENCODING_UTF_8];
+	[self writeToFile: path encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToFile: (OFString *)path
-	   encoding: (of_string_encoding_t)encoding
+- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"w"];
+	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)
@@ -181,5 +172,11 @@ isWhitespaceLine(OFString *line)
 			first = false;
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@: %@>",
+					   self.class, _categories];
 }
 @end

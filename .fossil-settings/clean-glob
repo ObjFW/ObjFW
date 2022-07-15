@@ -8,6 +8,7 @@
 *.library
 *.map
 *.o
+*.sl
 *.so
 *.so.*
 */.deps
@@ -23,13 +24,15 @@ config.status
 configure
 docs
 extra.mk
-generators/gen_tables
+generators/library/gen_libraries
+generators/unicode/gen_tables
 src/Info.plist
 src/bridge/Info.plist
+src/libobjfw.*
 src/objfw-defs.h
 src/runtime/Info.plist
-src/runtime/amiga-library-functable.inc
-src/runtime/inline.h
+src/runtime/libobjfwrt.*
+src/tls/Info.plist
 tests/DerivedData
 tests/EBOOT.PBP
 tests/Info.plist
@@ -46,4 +49,3 @@ utils/ofarc/ofarc
 utils/ofdns/ofdns
 utils/ofhash/ofhash
 utils/ofhttp/ofhttp
-utils/ofsock/ofsock

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,7 +36,7 @@
 {
 	self = [super init];
 
-	if (!of_condition_new(&_condition)) {
+	if (OFPlainConditionNew(&_condition) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -52,8 +50,10 @@
 - (void)dealloc
 {
 	if (_conditionInitialized) {
-		if (!of_condition_free(&_condition)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = OFPlainConditionFree(&_condition);
+
+		if (error != 0) {
+			OFEnsure(error == EBUSY);
 
 			@throw [OFConditionStillWaitingException
 			    exceptionWithCondition: self];
@@ -65,49 +65,57 @@
 
 - (void)wait
 {
-	if (!of_condition_wait(&_condition, &_mutex))
+	int error = OFPlainConditionWait(&_condition, &_mutex);
+
+	if (error != 0)
 		@throw [OFConditionWaitFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 
 #ifdef OF_AMIGAOS
 - (void)waitForConditionOrExecSignal: (ULONG *)signalMask
 {
-	if (!of_condition_wait_or_signal(&_condition, &_mutex, signalMask))
+	int error = OFPlainConditionWaitOrExecSignal(&_condition, &_mutex,
+	    signalMask);
+
+	if (error != 0)
 		@throw [OFConditionWaitFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 #endif
 
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 {
-	if (!of_condition_timed_wait(&_condition, &_mutex, timeInterval)) {
-		if (errno == ETIMEDOUT)
-			return false;
-		else
-			@throw [OFConditionWaitFailedException
-			    exceptionWithCondition: self
-					     errNo: errno];
-	}
+	int error = OFPlainConditionTimedWait(&_condition, &_mutex,
+	    timeInterval);
+
+	if (error == ETIMEDOUT)
+		return false;
+
+	if (error != 0)
+		@throw [OFConditionWaitFailedException
+		    exceptionWithCondition: self
+				     errNo: error];
 
 	return true;
 }
 
 #ifdef OF_AMIGAOS
-- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+- (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
-	if (!of_condition_timed_wait_or_signal(&_condition, &_mutex,
-	    timeInterval, signalMask)) {
-		if (errno == ETIMEDOUT)
-			return false;
-		else
-			@throw [OFConditionWaitFailedException
-			    exceptionWithCondition: self
-					     errNo: errno];
-	}
+	int error = OFPlainConditionTimedWaitOrExecSignal(&_condition, &_mutex,
+	    timeInterval, signalMask);
+
+	if (error == ETIMEDOUT)
+		return false;
+
+	if (error != 0)
+		@throw [OFConditionWaitFailedException
+		    exceptionWithCondition: self
+				     errNo: error];
 
 	return true;
 }
@@ -119,8 +127,7 @@
 }
 
 #ifdef OF_AMIGAOS
-- (bool)waitUntilDate: (OFDate *)date
-	 orExecSignal: (ULONG *)signalMask
+- (bool)waitUntilDate: (OFDate *)date orExecSignal: (ULONG *)signalMask
 {
 	return [self waitForTimeInterval: date.timeIntervalSinceNow
 			    orExecSignal: signalMask];
@@ -129,17 +136,21 @@
 
 - (void)signal
 {
-	if (!of_condition_signal(&_condition))
+	int error = OFPlainConditionSignal(&_condition);
+
+	if (error != 0)
 		@throw [OFConditionSignalFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 
 - (void)broadcast
 {
-	if (!of_condition_broadcast(&_condition))
+	int error = OFPlainConditionBroadcast(&_condition);
+
+	if (error != 0)
 		@throw [OFConditionBroadcastFailedException
 		    exceptionWithCondition: self
-				     errNo: errno];
+				     errNo: error];
 }
 @end

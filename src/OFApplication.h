@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +16,7 @@
 #include <signal.h>
 
 #import "OFObject.h"
+#import "OFNotification.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +28,11 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFSandbox;
 @class OFString;
+
+/**
+ * @brief A notification that will be sent when the application will terminate.
+ */
+extern const OFNotificationName OFApplicationWillTerminateNotification;
 
 /**
  * @brief Specify the class to be used as the application delegate.
@@ -54,12 +58,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @end
  * @endcode
  */
-#define OF_APPLICATION_DELEGATE(class_)					\
-	int								\
-	main(int argc, char *argv[])					\
-	{								\
-		return of_application_main(&argc, &argv,		\
-		    (class_ *)[[class_ alloc] init]);			\
+#define OF_APPLICATION_DELEGATE(class_)			\
+	int						\
+	main(int argc, char *argv[])			\
+	{						\
+		return OFApplicationMain(&argc, &argv,	\
+		    (class_ *)[[class_ alloc] init]);	\
 	}
 
 #ifdef OF_HAVE_PLEDGE
@@ -147,6 +151,10 @@ OF_ASSUME_NONNULL_BEGIN
  * In order to create a new OFApplication, you should create a class conforming
  * to the optional @ref OFApplicationDelegate protocol and put
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
+ *
+ * When the application is about to be terminated,
+ * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFApplication: OFObject
@@ -202,14 +210,7 @@ OF_SUBCLASSING_RESTRICTED
     id <OFApplicationDelegate> delegate;
 
 #ifdef OF_HAVE_SANDBOX
-/**
- * @brief The sandbox currently active for this application.
- */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFSandbox *activeSandbox;
-
-/**
- * @brief The sandbox currently active for child processes of this application.
- */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFSandbox *activeSandboxForChildProcesses;
 #endif
@@ -255,37 +256,8 @@ OF_SUBCLASSING_RESTRICTED
 + (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 #ifdef OF_HAVE_SANDBOX
-/**
- * @brief Activates the specified sandbox for the application.
- *
- * This is only available if `OF_HAVE_SANDBOX` is defined.
- *
- * @warning If you allow `exec()`, but do not call
- *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
- *	    not have its permissions restricted!
- *
- * @note Once a sandbox has been activated, you cannot activate a different
- *	 sandbox. You can however change the active sandbox and reactivate it.
- *
- * @param sandbox The sandbox to activate
- */
-+ (void)activateSandbox: (OFSandbox *)sandbox;
-
-/**
- * @brief Activates the specified sandbox for child processes of the
- *	  application.
- *
- * This is only available if `OF_HAVE_SANDBOX` is defined.
- *
- * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
- * @ref OFInvalidArgumentException is raised.
- *
- * @note Once a sandbox has been activated, you cannot activate a different
- *	 sandbox. You can however change the active sandbox and reactivate it.
- *
- * @param sandbox The sandbox to activate
- */
-+ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox;
++ (void)of_activateSandbox: (OFSandbox *)sandbox;
++ (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -312,45 +284,16 @@ OF_SUBCLASSING_RESTRICTED
 - (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 #ifdef OF_HAVE_SANDBOX
-/**
- * @brief Activates the specified sandbox for the application.
- *
- * This is only available if `OF_HAVE_SANDBOX` is defined.
- *
- * @warning If you allow `exec()`, but do not call
- *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
- *	    not have its permissions restricted!
- *
- * @note Once a sandbox has been activated, you cannot activate a different
- *	 sandbox. You can however change the active sandbox and reactivate it.
- *
- * @param sandbox The sandbox to activate
- */
-- (void)activateSandbox: (OFSandbox *)sandbox;
-
-/**
- * @brief Activates the specified sandbox for child processes of the
- *	  application.
- *
- * This is only available if `OF_HAVE_SANDBOX` is defined.
- *
- * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
- * @ref OFInvalidArgumentException is raised.
- *
- * @note Once a sandbox has been activated, you cannot activate a different
- *	 sandbox. You can however change the active sandbox and reactivate it.
- *
- * @param sandbox The sandbox to activate
- */
-- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox;
+- (void)of_activateSandbox: (OFSandbox *)sandbox;
+- (void)of_activateSandboxForChildProcesses: (OFSandbox *)sandbox;
 #endif
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int *_Nonnull,
-    char *_Nullable *_Nonnull[_Nonnull], id <OFApplicationDelegate>);
+extern int OFApplicationMain(int *_Nonnull, char *_Nullable *_Nonnull[_Nonnull],
+    id <OFApplicationDelegate>);
 #ifdef __cplusplus
 }
 #endif

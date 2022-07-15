@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,99 +17,97 @@
 
 #include "platform.h"
 
-.intel_syntax noprefix
-
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
-	mov	edx, [esp+4]
-	test	edx, edx
-	jz	short ret_nil
+	movl	4(%esp), %edx
+	testl	%edx, %edx
+	jz	returnNilMethod
 
-	bt	edx, 0
-	jc	short .Ltagged_pointer_\name
+	testb	$1, %dl
+	jnz	.LtaggedPointer_\name
 
-	mov	edx, [edx]
-	mov	edx, [edx+32]
+	movl	(%edx), %edx
+	movl	32(%edx), %edx
 
 .Lmain_\name:
-	mov	eax, [esp+8]
+	movl	8(%esp), %eax
 
 #ifdef OF_SELUID24
-	movzx	ecx, byte ptr [eax+2]
-	mov	edx, [edx+ecx*4]
+	movzbl	2(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
 #endif
-	movzx	ecx, byte ptr [eax+1]
-	mov	edx, [edx+ecx*4]
-	movzx	ecx, byte ptr [eax]
-	mov	eax, [edx+ecx*4]
+	movzbl	1(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
+	movzbl	(%eax), %ecx
+	movl	(%edx,%ecx,4), %eax
 
-	test	eax, eax
-	jz	short 0f
+	testl	%eax, %eax
+	jz	0f
 
 	ret
 
 0:
-	call	get_eip
-	add	eax, offset _GLOBAL_OFFSET_TABLE_
-	lea	eax, [eax+\not_found@GOTOFF]
-	jmp	eax
+	call	getEIP
+	addl	$_GLOBAL_OFFSET_TABLE_, %eax
+	lea	\notFound@GOTOFF(%eax), %eax
+	jmp	*%eax
 
-.Ltagged_pointer_\name:
-	call	get_eip
-	add	eax, offset _GLOBAL_OFFSET_TABLE_
+.LtaggedPointer_\name:
+	call	getEIP
+	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	lea	ecx, [eax+objc_tagged_pointer_secret@GOTOFF]
-	xor	edx, [ecx]
-	and	dl, 0xE
-	movzx	edx, dl
+	leal	objc_taggedPointerSecret@GOTOFF(%eax), %ecx
+	xorl	(%ecx), %edx
+	andb	$0xE, %dl
+	movzbl	%dl, %edx
 
-	lea	eax, [eax+objc_tagged_pointer_classes@GOTOFF]
-	mov	edx, [eax+edx*2]
-	mov	edx, [edx+32]
+	leal	objc_taggedPointerClasses@GOTOFF(%eax), %eax
+	movl	(%eax,%edx,2), %edx
+	movl	32(%edx), %edx
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	mov	edx, [esp+4]
-	mov	eax, [edx]
-	test	eax, eax
-	jz	short ret_nil
+	movl	4(%esp), %edx
+	movl	(%edx), %eax
+	testl	%eax, %eax
+	jz	returnNilMethod
 
-	mov	[esp+4], eax
-	mov	edx, [edx+4]
-	mov	edx, [edx+32]
-	jmp	short .Lmain_\lookup
+	movl	%eax, 4(%esp)
+	mov	4(%edx), %edx
+	mov	32(%edx), %edx
+	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	call	get_eip
-	add	eax, offset _GLOBAL_OFFSET_TABLE_
-	lea	eax, [eax+nil_method@GOTOFF]
+returnNilMethod:
+	call	getEIP
+	addl	$_GLOBAL_OFFSET_TABLE_, %eax
+	leal	nilMethod@GOTOFF(%eax), %eax
 	ret
 
-nil_method:
-	xor	eax, eax
+nilMethod:
+	xorl	%eax, %eax
 	ret
 
-get_eip:
-	mov	eax, [esp]
+getEIP:
+	movl	(%esp), %eax
 	ret
 
 #ifdef OF_LINUX

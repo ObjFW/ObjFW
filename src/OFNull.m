@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,8 +23,9 @@
 #import "OFInvalidArgumentException.h"
 
 @interface OFNull ()
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
-					 depth: (size_t)depth;
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
+			       depth: (size_t)depth;
 @end
 
 static OFNull *null = nil;
@@ -51,7 +50,7 @@ static OFNull *null = nil;
 	pool = objc_autoreleasePoolPush();
 
 	if (![element.name isEqual: self.className] ||
-	    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+	    ![element.namespace isEqual: OFSerializationNS])
 		@throw [OFInvalidArgumentException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -75,7 +74,7 @@ static OFNull *null = nil;
 	OFXMLElement *element;
 
 	element = [OFXMLElement elementWithName: self.className
-				      namespace: OF_SERIALIZATION_NS];
+				      namespace: OFSerializationNS];
 
 	[element retain];
 
@@ -86,17 +85,17 @@ static OFNull *null = nil;
 
 - (OFString *)JSONRepresentation
 {
-	return [self of_JSONRepresentationWithOptions: 0
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
 }
 
-- (OFString *)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions:
+    (OFJSONRepresentationOptions)options
 {
-	return [self of_JSONRepresentationWithOptions: options
-						depth: 0];
+	return [self of_JSONRepresentationWithOptions: options depth: 0];
 }
 
-- (OFString *)of_JSONRepresentationWithOptions: (int)options
+- (OFString *)
+    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
 					 depth: (size_t)depth
 {
 	return @"null";
@@ -105,17 +104,7 @@ static OFNull *null = nil;
 - (OFData *)messagePackRepresentation
 {
 	uint8_t type = 0xC0;
-
-	return [OFData dataWithItems: &type
-			       count: 1];
-}
-
-- (OFData *)ASN1DERRepresentation
-{
-	const unsigned char bytes[] = { OF_ASN1_TAG_NUMBER_NULL, 0 };
-
-	return [OFData dataWithItems: bytes
-			       count: sizeof(bytes)];
+	return [OFData dataWithItems: &type count: 1];
 }
 
 - (instancetype)autorelease
@@ -134,7 +123,7 @@ static OFNull *null = nil;
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 - (void)dealloc

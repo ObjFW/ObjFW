@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,8 +13,8 @@
  * file.
  */
 
-#import "OFPlugin.h"
+#import "OFObject.h"
 
-@interface TestPlugin: OFPlugin
+@interface TestPlugin: OFObject
 - (int)test: (int)num;
 @end

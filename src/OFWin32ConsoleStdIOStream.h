@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,8 +13,6 @@
  * file.
  */
 
-#define OF_STDIO_STREAM_WIN32CONSOLE_H
-
 #import "OFStdIOStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -25,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	HANDLE _handle;
 	WORD _attributes;
-	of_char16_t _incompleteUTF16Surrogate;
+	OFChar16 _incompleteUTF16Surrogate;
 	char _incompleteUTF8Surrogate[4];
 	size_t _incompleteUTF8SurrogateLen;
 }

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,36 +18,35 @@
 #import "OFSortedList.h"
 
 @implementation OFSortedList
-- (of_list_object_t *)appendObject: (id)object
+- (OFListItem)appendObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)prependObject: (id)object
+- (OFListItem)prependObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		  beforeListObject: (of_list_object_t *)listObject
+- (OFListItem)insertObject: (id)object beforeListItem: (OFListItem)listItem
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id)object
-		   afterListObject: (of_list_object_t *)listObject
+- (OFListItem)insertObject: (id)object afterListItem: (OFListItem)listItem
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t *)insertObject: (id <OFComparing>)object
+- (OFListItem)insertObject: (id <OFComparing>)object
 {
-	of_list_object_t *iter;
+	OFListItem iter;
 
-	for (iter = _lastListObject; iter != NULL; iter = iter->previous) {
-		if ([object compare: iter->object] != OF_ORDERED_ASCENDING)
-			return [super insertObject: object
-				   afterListObject: iter];
+	for (iter = _lastListItem; iter != NULL;
+	    iter = OFListItemPrevious(iter)) {
+		if ([object compare: OFListItemObject(iter)] !=
+		    OFOrderedAscending)
+			return [super insertObject: object afterListItem: iter];
 	}
 
 	return [super prependObject: object];

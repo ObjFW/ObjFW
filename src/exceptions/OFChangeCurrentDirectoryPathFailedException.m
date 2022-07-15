@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,25 +21,17 @@
 @implementation OFChangeCurrentDirectoryPathFailedException
 @synthesize path = _path, errNo = _errNo;
 
++ (instancetype)exceptionWithPath: (OFString *)path errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path errNo: errNo] autorelease];
+}
+
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo
-{
-	return [[[self alloc] initWithPath: path
-				     errNo: errNo] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithPath: (OFString *)path
-		       errNo: (int)errNo
+- (instancetype)initWithPath: (OFString *)path errNo: (int)errNo
 {
 	self = [super init];
 
@@ -56,6 +46,11 @@
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
 	[_path release];
@@ -67,6 +62,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to change the current directory path to %@: %@",
-	    _path, of_strerror(_errNo)];
+	    _path, OFStrError(_errNo)];
 }
 @end

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +21,7 @@
 #include <assert.h>
 
 #import "OFMutableUTF8String.h"
+#import "OFASPrintF.h"
 #import "OFString.h"
 #import "OFUTF8String.h"
 
@@ -32,7 +31,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "of_asprintf.h"
 #import "unicode.h"
 
 @implementation OFMutableUTF8String
@@ -45,12 +43,10 @@
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
-	@try {
-		self = [self initWithUTF8String: UTF8String];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	self = [self initWithUTF8String: UTF8String];
+
+	if (freeWhenDone)
+		OFFreeMemory(UTF8String);
 
 	return self;
 }
@@ -59,23 +55,21 @@
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	@try {
-		self = [self initWithUTF8String: UTF8String
-					 length: UTF8StringLength];
-	} @finally {
-		if (freeWhenDone)
-			free(UTF8String);
-	}
+	self = [self initWithUTF8String: UTF8String length: UTF8StringLength];
+
+	if (freeWhenDone)
+		OFFreeMemory(UTF8String);
 
 	return self;
 }
 
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
-		     wordMiddleTable: (const of_unichar_t *const[])middleTable
+#ifdef OF_HAVE_UNICODE_TABLES
+- (void)of_convertWithWordStartTable: (const OFUnichar *const [])startTable
+		     wordMiddleTable: (const OFUnichar *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
-		 wordMiddleTableSize: (size_t)middleTableSize OF_DIRECT
+		 wordMiddleTableSize: (size_t)middleTableSize
 {
-	of_unichar_t *unicodeString;
+	OFUnichar *unicodeString;
 	size_t unicodeLen, newCStringLength;
 	size_t i, j;
 	char *newCString;
@@ -83,11 +77,11 @@
 
 	if (!_s->isUTF8) {
 		uint8_t t;
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 
 		assert(startTableSize >= 1 && middleTableSize >= 1);
 
-		_s->hashed = false;
+		_s->hasHash = false;
 
 		for (i = 0; i < _s->cStringLength; i++) {
 			if (isStart)
@@ -95,7 +89,7 @@
 			else
 				table = middleTable;
 
-			isStart = of_ascii_isspace(_s->cString[i]);
+			isStart = OFASCIIIsSpace(_s->cString[i]);
 
 			if ((t = table[0][(uint8_t)_s->cString[i]]) != 0)
 				_s->cString[i] = t;
@@ -105,16 +99,15 @@
 	}
 
 	unicodeLen = self.length;
-	unicodeString = [self allocMemoryWithSize: sizeof(of_unichar_t)
-					    count: unicodeLen];
+	unicodeString = OFAllocMemory(unicodeLen, sizeof(OFUnichar));
 
 	i = j = 0;
 	newCStringLength = 0;
 
 	while (i < _s->cStringLength) {
-		const of_unichar_t *const *table;
+		const OFUnichar *const *table;
 		size_t tableSize;
-		of_unichar_t c;
+		OFUnichar c;
 		ssize_t cLen;
 
 		if (isStart) {
@@ -125,18 +118,18 @@
 			tableSize = middleTableSize;
 		}
 
-		cLen = of_string_utf8_decode(_s->cString + i,
+		cLen = OFUTF8StringDecode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
 		if (cLen <= 0 || c > 0x10FFFF) {
-			[self freeMemory: unicodeString];
+			OFFreeMemory(unicodeString);
 			@throw [OFInvalidEncodingException exception];
 		}
 
-		isStart = of_ascii_isspace(c);
+		isStart = OFASCIIIsSpace(c);
 
 		if (c >> 8 < tableSize) {
-			of_unichar_t tc = table[c >> 8][c & 0xFF];
+			OFUnichar tc = table[c >> 8][c & 0xFF];
 
 			if (tc)
 				c = tc;
@@ -152,7 +145,7 @@
 		else if (c < 0x110000)
 			newCStringLength += 4;
 		else {
-			[self freeMemory: unicodeString];
+			OFFreeMemory(unicodeString);
 			@throw [OFInvalidEncodingException exception];
 		}
 
@@ -160,9 +153,9 @@
 	}
 
 	@try {
-		newCString = [self allocMemoryWithSize: newCStringLength + 1];
+		newCString = OFAllocMemory(newCStringLength + 1, 1);
 	} @catch (id e) {
-		[self freeMemory: unicodeString];
+		OFFreeMemory(unicodeString);
 		@throw e;
 	}
 
@@ -171,10 +164,10 @@
 	for (i = 0; i < unicodeLen; i++) {
 		size_t d;
 
-		if ((d = of_string_utf8_encode(unicodeString[i],
+		if ((d = OFUTF8StringEncode(unicodeString[i],
 		    newCString + j)) == 0) {
-			[self freeMemory: unicodeString];
-			[self freeMemory: newCString];
+			OFFreeMemory(unicodeString);
+			OFFreeMemory(newCString);
 			@throw [OFInvalidEncodingException exception];
 		}
 		j += d;
@@ -182,10 +175,10 @@
 
 	assert(j == newCStringLength);
 	newCString[j] = 0;
-	[self freeMemory: unicodeString];
+	OFFreeMemory(unicodeString);
 
-	[self freeMemory: _s->cString];
-	_s->hashed = false;
+	OFFreeMemory(_s->cString);
+	_s->hasHash = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
 
@@ -194,17 +187,17 @@
 	 * need to change it.
 	 */
 }
+#endif
 
-- (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)idx
+- (void)setCharacter: (OFUnichar)character atIndex: (size_t)idx
 {
 	char buffer[4];
-	of_unichar_t c;
+	OFUnichar c;
 	size_t lenNew;
 	ssize_t lenOld;
 
 	if (_s->isUTF8)
-		idx = of_string_utf8_get_position(_s->cString, idx,
+		idx = OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
 	if (idx >= _s->cStringLength)
@@ -212,26 +205,25 @@
 
 	/* Shortcut if old and new character both are ASCII */
 	if (character < 0x80 && !(_s->cString[idx] & 0x80)) {
-		_s->hashed = false;
+		_s->hasHash = false;
 		_s->cString[idx] = character;
 		return;
 	}
 
-	if ((lenNew = of_string_utf8_encode(character, buffer)) == 0)
+	if ((lenNew = OFUTF8StringEncode(character, buffer)) == 0)
 		@throw [OFInvalidEncodingException exception];
 
-	if ((lenOld = of_string_utf8_decode(_s->cString + idx,
+	if ((lenOld = OFUTF8StringDecode(_s->cString + idx,
 	    _s->cStringLength - idx, &c)) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	if (lenNew == (size_t)lenOld)
 		memcpy(_s->cString + idx, buffer, lenNew);
 	else if (lenNew > (size_t)lenOld) {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength -
-						  lenOld + lenNew + 1];
+		_s->cString = OFResizeMemory(_s->cString,
+		    _s->cStringLength - lenOld + lenNew + 1, 1);
 
 		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
 		    _s->cStringLength - idx - lenOld);
@@ -256,9 +248,8 @@
 			_s->isUTF8 = true;
 
 		@try {
-			_s->cString = [self
-			    resizeMemory: _s->cString
-				    size: _s->cStringLength + 1];
+			_s->cString = OFResizeMemory(_s->cString,
+			    _s->cStringLength + 1, 1);
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't really care, as we only made it smaller */
 		}
@@ -276,7 +267,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
+	switch (OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -284,10 +275,9 @@
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->hasHash = false;
+	_s->cString = OFResizeMemory(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String,
 	    UTF8StringLength + 1);
 
@@ -306,7 +296,7 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (of_string_utf8_check(UTF8String, UTF8StringLength, &length)) {
+	switch (OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -314,10 +304,9 @@
 		@throw [OFInvalidEncodingException exception];
 	}
 
-	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->hasHash = false;
+	_s->cString = OFResizeMemory(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
@@ -327,7 +316,7 @@
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 {
 	[self appendCString: cString
 		   encoding: encoding
@@ -335,12 +324,11 @@
 }
 
 - (void)appendCString: (const char *)cString
-	     encoding: (of_string_encoding_t)encoding
+	     encoding: (OFStringEncoding)encoding
 	       length: (size_t)cStringLength
 {
-	if (encoding == OF_STRING_ENCODING_UTF_8)
-		[self appendUTF8String: cString
-				length: cStringLength];
+	if (encoding == OFStringEncodingUTF8)
+		[self appendUTF8String: cString length: cStringLength];
 	else {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -362,10 +350,9 @@
 
 	UTF8StringLength = string.UTF8StringLength;
 
-	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->hasHash = false;
+	_s->cString = OFResizeMemory(_s->cString,
+	    _s->cStringLength + UTF8StringLength + 1, 1);
 	memcpy(_s->cString + _s->cStringLength, string.UTF8String,
 	    UTF8StringLength);
 
@@ -382,19 +369,16 @@
 		_s->isUTF8 = true;
 }
 
-- (void)appendCharacters: (const of_unichar_t *)characters
-		  length: (size_t)length
+- (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
 {
-	char *tmp;
+	char *tmp = OFAllocMemory((length * 4) + 1, 1);
 
-	tmp = [self allocMemoryWithSize: (length * 4) + 1];
 	@try {
 		size_t j = 0;
 		bool isUTF8 = false;
 
 		for (size_t i = 0; i < length; i++) {
-			size_t len = of_string_utf8_encode(characters[i],
-			    tmp + j);
+			size_t len = OFUTF8StringEncode(characters[i], tmp + j);
 
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -407,9 +391,9 @@
 
 		tmp[j] = '\0';
 
-		_s->hashed = false;
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + j + 1];
+		_s->hasHash = false;
+		_s->cString = OFResizeMemory(_s->cString,
+		    _s->cStringLength + j + 1, 1);
 		memcpy(_s->cString + _s->cStringLength, tmp, j + 1);
 
 		_s->cStringLength += j;
@@ -418,12 +402,11 @@
 		if (isUTF8)
 			_s->isUTF8 = true;
 	} @finally {
-		[self freeMemory: tmp];
+		OFFreeMemory(tmp);
 	}
 }
 
-- (void)appendFormat: (OFConstantString *)format
-	   arguments: (va_list)arguments
+- (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
 	char *UTF8String;
 	int UTF8StringLength;
@@ -431,13 +414,12 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
 	@try {
-		[self appendUTF8String: UTF8String
-				length: UTF8StringLength];
+		[self appendUTF8String: UTF8String length: UTF8StringLength];
 	} @finally {
 		free(UTF8String);
 	}
@@ -447,7 +429,7 @@
 {
 	size_t i, j;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	/* We reverse all bytes and restore UTF-8 later, if necessary */
 	for (i = 0, j = _s->cStringLength - 1; i < _s->cStringLength / 2;
@@ -523,8 +505,7 @@
 	}
 }
 
-- (void)insertString: (OFString *)string
-	     atIndex: (size_t)idx
+- (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
 	size_t newCStringLength;
 
@@ -532,13 +513,12 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8)
-		idx = of_string_utf8_get_position(_s->cString, idx,
+		idx = OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
 	newCStringLength = _s->cStringLength + string.UTF8StringLength;
-	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: newCStringLength + 1];
+	_s->hasHash = false;
+	_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1, 1);
 
 	memmove(_s->cString + idx + string.UTF8StringLength,
 	    _s->cString + idx, _s->cStringLength - idx);
@@ -557,7 +537,7 @@
 		_s->isUTF8 = true;
 }
 
-- (void)deleteCharactersInRange: (of_range_t)range
+- (void)deleteCharactersInRange: (OFRange)range
 {
 	size_t start = range.location;
 	size_t end = range.location + range.length;
@@ -566,28 +546,28 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		start = of_string_utf8_get_position(_s->cString, start,
+		start = OFUTF8StringIndexToPosition(_s->cString, start,
 		    _s->cStringLength);
-		end = of_string_utf8_get_position(_s->cString, end,
+		end = OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
 
 	memmove(_s->cString + start, _s->cString + end,
 	    _s->cStringLength - end);
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->length -= range.length;
 	_s->cStringLength -= end - start;
 	_s->cString[_s->cStringLength] = 0;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, _s->cStringLength + 1,
+		    1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
 }
 
-- (void)replaceCharactersInRange: (of_range_t)range
+- (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement
 {
 	size_t start = range.location;
@@ -603,15 +583,15 @@
 	newLength = _s->length - range.length + replacement.length;
 
 	if (_s->isUTF8) {
-		start = of_string_utf8_get_position(_s->cString, start,
+		start = OFUTF8StringIndexToPosition(_s->cString, start,
 		    _s->cStringLength);
-		end = of_string_utf8_get_position(_s->cString, end,
+		end = OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
 
 	newCStringLength = _s->cStringLength - (end - start) +
 	    replacement.UTF8StringLength;
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	/*
 	 * If the new string is bigger, we need to resize it first so we can
@@ -622,8 +602,8 @@
 	 * lost due to the resize!
 	 */
 	if (newCStringLength > _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
+		    1);
 
 	memmove(_s->cString + start + replacement.UTF8StringLength,
 	    _s->cString + end, _s->cStringLength - end);
@@ -636,8 +616,8 @@
 	 * done with memmove().
 	 */
 	if (newCStringLength < _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
+		    1);
 
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
@@ -653,7 +633,7 @@
 - (void)replaceOccurrencesOfString: (OFString *)string
 			withString: (OFString *)replacement
 			   options: (int)options
-			     range: (of_range_t)range
+			     range: (OFRange)range
 {
 	const char *searchString = string.UTF8String;
 	const char *replacementString = replacement.UTF8String;
@@ -670,9 +650,9 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
-		range.location = of_string_utf8_get_position(_s->cString,
+		range.location = OFUTF8StringIndexToPosition(_s->cString,
 		    range.location, _s->cStringLength);
-		range.length = of_string_utf8_get_position(
+		range.length = OFUTF8StringIndexToPosition(
 		    _s->cString + range.location, range.length,
 		    _s->cStringLength - range.location);
 	}
@@ -690,12 +670,11 @@
 			continue;
 
 		@try {
-			newCString = [self resizeMemory: newCString
-						   size: newCStringLength +
-							 i - last +
-							 replacementLength + 1];
+			newCString = OFResizeMemory(newCString,
+			    newCStringLength + i - last + replacementLength + 1,
+			    1);
 		} @catch (id e) {
-			[self freeMemory: newCString];
+			OFFreeMemory(newCString);
 			@throw e;
 		}
 		memcpy(newCString + newCStringLength, _s->cString + last,
@@ -711,11 +690,10 @@
 	}
 
 	@try {
-		newCString = [self resizeMemory: newCString
-					   size: newCStringLength +
-						 _s->cStringLength - last + 1];
+		newCString = OFResizeMemory(newCString,
+		    newCStringLength + _s->cStringLength - last + 1, 1);
 	} @catch (id e) {
-		[self freeMemory: newCString];
+		OFFreeMemory(newCString);
 		@throw e;
 	}
 	memcpy(newCString + newCStringLength, _s->cString + last,
@@ -723,8 +701,8 @@
 	newCStringLength += _s->cStringLength - last;
 	newCString[newCStringLength] = 0;
 
-	[self freeMemory: _s->cString];
-	_s->hashed = false;
+	OFFreeMemory(_s->cString);
+	_s->hasHash = false;
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
@@ -742,10 +720,10 @@
 	size_t i;
 
 	for (i = 0; i < _s->cStringLength; i++)
-		if (!of_ascii_isspace(_s->cString[i]))
+		if (!OFASCIIIsSpace(_s->cString[i]))
 			break;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 	_s->cStringLength -= i;
 	_s->length -= i;
 
@@ -753,8 +731,8 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, _s->cStringLength + 1,
+		    1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -765,11 +743,11 @@
 	size_t d;
 	char *p;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		*p = '\0';
@@ -780,8 +758,8 @@
 	_s->length -= d;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, _s->cStringLength + 1,
+		    1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -792,11 +770,11 @@
 	size_t d, i;
 	char *p;
 
-	_s->hashed = false;
+	_s->hasHash = false;
 
 	d = 0;
 	for (p = _s->cString + _s->cStringLength - 1; p >= _s->cString; p--) {
-		if (!of_ascii_isspace(*p))
+		if (!OFASCIIIsSpace(*p))
 			break;
 
 		*p = '\0';
@@ -807,7 +785,7 @@
 	_s->length -= d;
 
 	for (i = 0; i < _s->cStringLength; i++)
-		if (!of_ascii_isspace(_s->cString[i]))
+		if (!OFASCIIIsSpace(_s->cString[i]))
 			break;
 
 	_s->cStringLength -= i;
@@ -817,8 +795,8 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = OFResizeMemory(_s->cString, _s->cStringLength + 1,
+		    1);
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}

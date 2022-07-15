@@ -13,6 +13,7 @@ SRCS = OFAllocFailedException.m				\
        OFException.m					\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
+       OFHashNotCalculatedException.m			\
        OFInitializationFailedException.m		\
        OFInvalidArgumentException.m			\
        OFInvalidEncodingException.m			\
@@ -22,7 +23,6 @@ SRCS = OFAllocFailedException.m				\
        OFLinkFailedException.m				\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
-       OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
        OFNotOpenException.m				\
@@ -33,7 +33,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
        OFRetrieveItemAttributesFailedException.m	\
-       OFSandboxActivationFailedException.m		\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
@@ -62,7 +61,8 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
 	       OFObserveFailedException.m		\
-	       OFResolveHostFailedException.m
+	       OFResolveHostFailedException.m		\
+	       OFTLSHandshakeFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\
@@ -77,7 +77,9 @@ SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 	       OFOpenWindowsRegistryKeyFailedException.m	\
 	       OFSetWindowsRegistryValueFailedException.m
 
-INCLUDES = ${SRCS:.m=.h}
+INCLUDES := ${SRCS:.m=.h}
+
+SRCS += OFSandboxActivationFailedException.m
 
 include ../../buildsys.mk
 

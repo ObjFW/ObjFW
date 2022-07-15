@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,19 +21,14 @@
 @implementation OFGetCurrentDirectoryPathFailedException
 @synthesize errNo = _errNo;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithErrNo: (int)errNo
 {
 	return [[[self alloc] initWithErrNo: errNo] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithErrNo: (int)errNo
@@ -47,10 +40,15 @@
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Getting the current directory path failed: %@",
-	    of_strerror(_errNo)];
+	    OFStrError(_errNo)];
 }
 @end

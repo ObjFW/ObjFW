@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,9 +27,9 @@
 	self = [super init];
 
 	@try {
-		_size = of_sizeof_type_encoding(objCType);
+		_size = OFSizeOfTypeEncoding(objCType);
 		_objCType = objCType;
-		_bytes = [self allocMemoryWithSize: _size];
+		_bytes = OFAllocMemory(1, _size);
 
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
@@ -42,8 +40,14 @@
 	return self;
 }
 
-- (void)getValue: (void *)value
-	    size: (size_t)size
+- (void)dealloc
+{
+	OFFreeMemory(_bytes);
+
+	[super dealloc];
+}
+
+- (void)getValue: (void *)value size: (size_t)size
 {
 	if (size != _size)
 		@throw [OFOutOfRangeException exception];

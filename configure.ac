@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.1-dev, js@nil.im)
+AC_INIT(ObjFW, 1.1dev, js@nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
@@ -19,127 +19,131 @@ BUILDSYS_INIT
 
 AC_CANONICAL_HOST
 
-AC_ARG_WITH(ixemul,
-	AS_HELP_STRING([--with-ixemul], [build with ixemul]))
-
 dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
 case "$host" in
-	arm-*-riscos*)
-		AS_IF([test x"$OBJCFLAGS" = x""], [
-			OBJCFLAGS="-O2 -g"
-		])
-		flags="-mfloat-abi=softfp -mfpu=vfp -mlibscl"
-		ASFLAGS="$ASFLAGS -mfloat-abi=softfp -mfpu=vfp"
-		OBJCFLAGS="$OBJCFLAGS $flags"
-		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
-		LDFLAGS="$LDFLAGS $flags"
+arm-*-riscos*)
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2 -g"])
+	flags="-mfloat-abi=softfp -mfpu=vfp -mlibscl"
+	ASFLAGS="$ASFLAGS -mfloat-abi=softfp -mfpu=vfp"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+	LDFLAGS="$LDFLAGS $flags"
 
-		enable_shared="no"
-		enable_threads="no"
-		enable_sockets="no"
-		enable_files="no"
-		;;
-	m68k-*-amigaos*)
-		AS_IF([test x"$OBJCFLAGS" = x""], [
-			OBJCFLAGS="-O0"
-		])
-		OBJCFLAGS="$OBJCFLAGS -noixemul"
-		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
-		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
-		LDFLAGS="$LDFLAGS -noixemul"
+	enable_shared="no"
+	enable_threads="no"
+	enable_sockets="no"
+	enable_files="no"
+	;;
+m68k-*-amigaos*)
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0"])
+	OBJCFLAGS="$OBJCFLAGS -noixemul"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
+	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
+	LDFLAGS="$LDFLAGS -noixemul"
+	LIBS="$LIBS -ldebug"
 
-		enable_files="yes"	# Required for reading ENV:
-		enable_shared="no"
-		supports_amiga_lib="yes"
+	enable_files="yes"	# Required for reading ENV:
+	enable_shared="no"
+	with_tls="no"
+	supports_amiga_lib="yes"
 
-		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
-			AC_SUBST(SFDC_TARGET, m68k-amigaos)
-			AC_SUBST(SFD_FILE, amigaos3.sfd)
-			AC_SUBST(SFDC_INLINE_H, inline.h)
-			dnl For 68000, GCC emits calls to helper functions that
-			dnl do not work properly in a library.
-			t="-mcpu=68020 -fbaserel -noixemul"
-			AC_SUBST(AMIGA_LIB_CFLAGS, "$t -ffreestanding")
-			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"$t -resident -nostartfiles")
-		])
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
+		dnl For 68000, GCC emits calls to helper functions that
+		dnl do not work properly in a library.
+		t="-mcpu=68020 -fbaserel -noixemul -ffreestanding"
+		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		t="$t -resident -nostartfiles -nodefaultlibs -ldebug -lc"
+		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+	])
 
-		AC_SUBST(LIBBASES_M, libbases.m)
-		;;
-	powerpc-*-amigaos*)
-		CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+	AC_SUBST(LIBBASES_M, libbases.m)
+	;;
+powerpc-*-amigaos*)
+	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
 
-		enable_files="yes"	# Required for reading ENV:
-		enable_shared="no"
+	enable_files="yes"	# Required for reading ENV:
+	enable_shared="no"
+	with_tls="no"
 
-		AC_SUBST(LIBBASES_M, libbases.m)
-		;;
-	*-morphos*)
-		AS_IF([test x"$with_ixemul" != x"yes"], [
-			AS_IF([test x"$OBJCFLAGS" = x""], [
-				OBJCFLAGS="-O2 -g"
-			])
-			OBJCFLAGS="$OBJCFLAGS -noixemul"
-			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
-			LDFLAGS="$LDFLAGS -noixemul"
-			enable_files="yes"	# Required for reading ENV:
-			supports_amiga_lib="yes"
-			check_pedantic="no"	# Breaks generated inlines
+	AC_SUBST(LIBBASES_M, libbases.m)
+	;;
+*-morphos*)
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2 -g"])
+	OBJCFLAGS="$OBJCFLAGS -noixemul"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
+	LDFLAGS="$LDFLAGS -noixemul"
+	LIBS="$LIBS -ldebug"
 
-			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
-				t="-mresident32 -ffreestanding -noixemul"
-				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-				t="-mresident32 -nostartfiles -nodefaultlibs"
-				t="$t -noixemul -lc"
-				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-			])
+	enable_files="yes"	# Required for reading ENV:
+	enable_shared="no"
+	supports_amiga_lib="yes"
 
-			AC_SUBST(LIBBASES_M, libbases.m)
-		])
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFW_LIB_MAJOR}ppc.library'])
+		t="-mresident32 -ffreestanding -noixemul"
+		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul -ldebug"
+		AC_SUBST(AMIGA_LIB_LDFLAGS, "$t -lc")
+	])
 
-		enable_shared="no"
-		enable_threads="no"
-		;;
-	*-msdosdjgpp*)
-		enable_shared="no"
-		enable_threads="no"
-		enable_sockets="no"
-		;;
-	*-*-mingw*)
-		LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
-		LIBS="$LIBS -lversion"
+	AC_SUBST(LIBBASES_M, libbases.m)
+	;;
+*-msdosdjgpp*)
+	enable_shared="no"
+	enable_threads="no"
+	enable_sockets="no"
+	;;
+*-*-mingw*)
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+	LIBS="$LIBS -lversion"
 
-		AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
-		;;
-	*-psp-*)
-		AS_IF([test x"$DEVKITPSP" = x""], [
-			AC_MSG_ERROR(
-				[DEVKITPSP is not set! Please set DEVKITPSP.])
-		])
+	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
+	;;
+*-psp-*)
+	AS_IF([test x"$DEVKITPSP" = x""], [
+		AC_MSG_ERROR([DEVKITPSP is not set! Please set DEVKITPSP.])
+	])
 
-		AS_IF([test x"$OBJCFLAGS" = x""], [
-			OBJCFLAGS="-O2"
-		])
-		OBJCFLAGS="$OBJCFLAGS -G0"
-		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
-		CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
-		LDFLAGS="$LDFLAGS -G0"
-		LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
-		LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
-		LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
-		LIBS="$LIBS -lpsputility -lpspuser -lpspkernel -lgcc -lpsplibc"
-		enable_shared="no"
-		enable_threads="no"	# TODO
-		enable_sockets="no"	# TODO
-		check_pedantic="no"
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2"])
+	OBJCFLAGS="$OBJCFLAGS -G0"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
+	CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
+	LDFLAGS="$LDFLAGS -G0"
+	LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
+	LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
+	LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
+	LIBS="$LIBS -lpsputility -lpspuser -lpspkernel -lgcc -lpsplibc"
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+	check_pedantic="no"
 
-		AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
-		;;
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+	;;
+hppa*-*-hpux*)
+	dnl Don't default to -g: It creates errors from the assembler and breaks
+	dnl exceptions.
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2"])
+	dnl HP-UX 11.11's inttypes.h defines UINTPTR_MAX etc. to nothing. GCC's
+	dnl stdint.h defines those correctly, but if inttypes.h gets included
+	dnl after something included stdint.h, it gets broken again. Therefore,
+	dnl always include inttypes.h as the very first thing.
+	dnl We need to put this into OBJCFLAGS and not CPPFLAGS as CPPFLAGS are
+	dnl also used for .S files.
+	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
+	dnl We need -latomic for GCC's atomics to work.
+	LIBS="$LIBS -latomic"
+	;;
+*-*-mint*)
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	with_tls="no"
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
@@ -150,10 +154,19 @@ AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
 ])
 
 AC_LANG([Objective C])
-AC_PROG_OBJC([clang egcc gcc])
+case "$host_os" in
+morphos*)
+	dnl Don't use clang on MorphOS - it does not support baserel, which is
+	dnl required for the .library.
+	potential_compilers="gcc"
+	;;
+*)
+	potential_compilers="clang egcc gcc"
+	;;
+esac
+AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_LN_S
-AC_PROG_INSTALL
 AC_PROG_EGREP
 
 BUILDSYS_CHECK_IOS
@@ -175,6 +188,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
@@ -246,6 +260,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
 	enable_shared="no"
 	enable_threads="no"	# TODO
+	with_tls="no"
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
@@ -264,40 +279,30 @@ dnl for registering the frames.
 LDFLAGS="$LDFLAGS -fexceptions"
 
 case "$OBJC" in
-	*clang*)
-		case "$host" in
-			dnl Clang generates MIPS assembly not accepted by GNU
-			dnl as, however, Clang's integrated assembler doesn't
-			dnl accept everything used in ObjFW's assembly files.
-			dnl Therefore, use the integrated assembler for ObjC
-			dnl files, but not for assembly files.
-			mips*-*-*)
-				flag="-integrated-as"
-				OBJCFLAGS="$OBJCFLAGS $flag"
-				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
-				;;
-			dnl Don't use -no-integrated-as on Darwin. It breaks
-			dnl building for the iOS simulator.
-			i?86-*-darwin* | x86_64-*-darwin*)
-				;;
-			dnl Many older Clang versions don't support jmp short.
-			i?86-*-* | x86_64-*-*)
-				ASFLAGS="$ASFLAGS -no-integrated-as"
-				;;
-			dnl Clang's assembler on Windows is not complete yet
-			dnl and cannot compile all .S files.
-			*-*-mingw*)
-				ASFLAGS="$ASFLAGS -no-integrated-as"
-				;;
-			dnl Clang generates assembly output on SPARC64 that
-			dnl OpenBSD's assembler does not accept.
-			sparc64-*-*openbsd*)
-				flag="-integrated-as"
-				OBJCFLAGS="$OBJCFLAGS $flag"
-				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
-				;;
-		esac
+*clang*)
+	case "$host" in
+	mips*-*-*)
+		dnl Clang generates MIPS assembly not accepted by GNU as,
+		dnl however, Clang's integrated assembler doesn't accept
+		dnl everything used in ObjFW's assembly files. Therefore, use
+		dnl the integrated assembler for ObjC files, but not for
+		dnl assembly files.
+		OBJCFLAGS="$OBJCFLAGS -integrated-as"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -integrated-as"
 		;;
+	i?86-*-darwin* | x86_64-*-darwin*)
+		dnl Don't use -no-integrated-as on Darwin. It breaks building
+		dnl for the iOS simulator.
+		;;
+	sparc64-*-*openbsd*)
+		dnl Clang generates assembly output on SPARC64 that OpenBSD's
+		dnl assembler does not accept.
+		flag="-integrated-as"
+		OBJCFLAGS="$OBJCFLAGS $flag"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+		;;
+	esac
+	;;
 esac
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
@@ -311,14 +316,7 @@ AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
 	])
 ])
 
-case "$build_os" in
-	morphos*)
-		# MorphOS 3.10 has a buggy ixemul that does not work with -pipe.
-		;;
-	*)
-		AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
-		;;
-esac
+AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
 	flag="-Xclang -fno-constant-cfstrings"
@@ -343,31 +341,32 @@ AX_CHECK_COMPILER_FLAGS([-Wmissing-method-return-type -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wmissing-method-return-type"])
 
 case "$host" in
-	m68k-*-amigaos*)
-		dnl The inline headers generate code that triggers
-		dnl -Wpointer-sign.
-		OBJCFLAGS="$OBJCFLAGS -Wno-pointer-sign"
-		;;
+m68k-*-amigaos*)
+	dnl The inline headers generate code that triggers -Wpointer-sign.
+	OBJCFLAGS="$OBJCFLAGS -Wno-pointer-sign"
+	;;
 esac
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
-AC_TRY_COMPILE([
-	#ifdef __has_attribute
-	# if __has_attribute(objc_root_class)
-	__attribute__((__objc_root_class__))
-	# endif
-	#endif
-	@interface Foo
-	{
-		id bar;
-	}
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			id bar;
+		}
 
-	@property (nonatomic, retain) id bar;
-	@end
-], [
-	Foo *foo = (id)0;
-	[foo setBar: (id)0];
-	foo = [foo bar];
+		@property (nonatomic, retain) id bar;
+		@end
+	], [[
+		Foo *foo = (id)0;
+		[foo setBar: (id)0];
+		foo = [foo bar];
+	]])
 ], [
 	AC_MSG_RESULT(yes)
 ], [
@@ -384,13 +383,8 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(FORWARDING_FORWARDING_LIB_A, "forwarding/forwarding.lib.a")
-	AC_SUBST(INVOCATION_LIB_A, "invocation.lib.a")
-	AC_SUBST(INVOCATION_INVOCATION_LIB_A, "invocation/invocation.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
 
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
@@ -414,22 +408,22 @@ AS_IF([test x"$build_framework" = x"yes"], [
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
 AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
-
-AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
-	enable_static="yes"
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
+	AC_SUBST(FORWARDING_A, "forwarding.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+	enable_static="yes"
+])
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
-	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(FORWARDING_FORWARDING_A, "forwarding/forwarding.a")
-	AC_SUBST(INVOCATION_A, "invocation.a")
-	AC_SUBST(INVOCATION_INVOCATION_A, "invocation/invocation.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
-	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -455,7 +449,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdlib.h>
 
 	#if defined(__GLIBC__) || defined(__MINGW32__) || \
-	    defined(__NEWLIB__) || defined(__MORPHOS__)
+	    defined(__NEWLIB__) || defined(__MORPHOS__) || defined(__MINT__)
 	egrep_cpp_yes
 	#endif
 ], [
@@ -467,9 +461,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 ])
 
 case "$host_os" in
-	solaris*)
-		CPPFLAGS="-D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS $CPPFLAGS"
-		;;
+solaris*)
+	CPPFLAGS="-D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS $CPPFLAGS"
+	;;
 esac
 
 objc_runtime="ObjFW runtime"
@@ -499,15 +493,15 @@ AS_IF([test x"$enable_runtime" != x"yes"], [
 AC_MSG_RESULT($objc_runtime)
 
 case "$objc_runtime" in
-	"ObjFW runtime")
-		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
-			[Whether we use the ObjFW runtime])
+"ObjFW runtime")
+	AC_DEFINE(OF_OBJFW_RUNTIME, 1, [Whether we use the ObjFW runtime])
 
-		AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
+	AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
 
-		old_OBJCFLAGS="$OBJCFLAGS"
-		OBJCFLAGS="$OBJCFLAGS -Xclang -fobjc-runtime=objfw"
-		AC_TRY_LINK([
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
 			#ifdef __has_attribute
 			# if __has_attribute(objc_root_class)
 			__attribute__((__objc_root_class__))
@@ -533,61 +527,59 @@ case "$objc_runtime" in
 			__objc_exec_class(void *module)
 			{
 			}
-		], [
+		], [[
 			[Test test];
-		], [
-			flag="-Xclang -fobjc-runtime=objfw"
-			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
-			AC_MSG_RESULT(yes)
-		], [
-			flag="-fgnu-runtime"
-			OBJCFLAGS="$old_OBJCFLAGS $flag"
-			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
-			AC_MSG_RESULT(no)
-			old_compiler="yes"
-		])
+		]])
+	], [
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+		AC_MSG_RESULT(yes)
+	], [
+		OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -fgnu-runtime"
+		AC_MSG_RESULT(no)
+		old_compiler="yes"
+	])
 
-		AC_SUBST(RUNTIME, "runtime")
-		AC_CONFIG_FILES(src/runtime/Info.plist)
+	AC_SUBST(RUNTIME, "runtime")
+	AC_CONFIG_FILES(src/runtime/Info.plist)
 
-		AS_IF([test x"$enable_shared" != x"no"], [
-			AC_SUBST(OBJFWRT_SHARED_LIB,
-				"${LIB_PREFIX}objfwrt${LIB_SUFFIX}")
-		])
+	AS_IF([test x"$enable_shared" != x"no"], [
+		AC_SUBST(OBJFWRT_SHARED_LIB,
+			"${LIB_PREFIX}objfwrt${LIB_SUFFIX}")
+	])
 
-		AS_IF([test x"$enable_static" = x"yes"], [
-			AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
-		])
+	AS_IF([test x"$enable_static" = x"yes"], [
+		AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
+	])
 
-		AS_IF([test x"$build_framework" = x"yes"], [
-			AC_SUBST(OBJFWRT_FRAMEWORK, "ObjFWRT.framework")
-			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
-		])
+	AS_IF([test x"$build_framework" = x"yes"], [
+		AC_SUBST(OBJFWRT_FRAMEWORK, "ObjFWRT.framework")
+		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
+	])
 
-		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
-			AC_SUBST(LINKLIB, linklib)
-			tmp="../src/runtime/linklib/libobjfwrt.library.a"
-			AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
-			AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
-		], [
-			AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
-		])
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
+		AC_SUBST(LINKLIB, linklib)
+		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
+		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
+	], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	])
 
-		AS_IF([test x"$enable_shared" = x"no" \
-				-a x"$enable_amiga_lib" = x"no"], [
-			tmp="../src/runtime/libobjfwrt.a"
-			AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
-			AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
-		])
+	AS_IF([test x"$enable_shared" = x"no" \
+	    -a x"$enable_amiga_lib" = x"no"], [
+		AC_SUBST(LIBOBJFWRT_DEP, "../src/runtime/libobjfwrt.a")
+		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../../src/runtime/libobjfwrt.a")
+	])
 
-		AS_IF([test x"$enable_seluid24" = x"yes"], [
-			AC_DEFINE(OF_SELUID24, 1,
-				[Whether to use 24 bit selector UIDs])
-		])
+	AS_IF([test x"$enable_seluid24" = x"yes"], [
+		AC_DEFINE(OF_SELUID24, 1, [Whether to use 24 bit selector UIDs])
+	])
 
-		AC_MSG_CHECKING(for exception type)
-		AC_TRY_COMPILE([
+	AC_MSG_CHECKING(for exception type)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
 			extern void foo();
 		], [
 			@try {
@@ -595,139 +587,153 @@ case "$objc_runtime" in
 			} @finally {
 				foo();
 			}
-		], [
-			AS_IF([$EGREP __gnu_objc_personality_v0 \
-					conftest.$ac_objext >/dev/null], [
-				exception_type="DWARF"
-			])
-			AS_IF([$EGREP __gnu_objc_personality_sj0 \
-					conftest.$ac_objext >/dev/null], [
-				exception_type="SjLj"
-			])
-			AS_IF([$EGREP __gnu_objc_personality_seh0 \
-					conftest.$ac_objext >/dev/null], [
-				exception_type="SEH"
-			])
+		])
+	], [
+		AS_IF([$EGREP __gnu_objc_personality_v0 conftest.$ac_objext \
+		    >/dev/null], [
+			exception_type="DWARF"
+		])
+		AS_IF([$EGREP __gnu_objc_personality_sj0 conftest.$ac_objext \
+		    >/dev/null], [
+			exception_type="SjLj"
+		])
+		AS_IF([$EGREP __gnu_objc_personality_seh0 conftest.$ac_objext \
+		    >/dev/null], [
+			exception_type="SEH"
+		])
 
+		case "$exception_type" in
+		DWARF)
+			AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
+				[Whether DWARF exceptions are used])
 			raise_exception="_Unwind_RaiseException"
+			;;
+		SjLj)
+			AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
+				[Whether SjLj exceptions are used])
+			raise_exception="_Unwind_SjLj_RaiseException"
+			;;
+		SEH)
+			AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
+				[Whether SEH exceptions are used])
+			raise_exception="_Unwind_RaiseException"
+			;;
+		*)
+			AC_MSG_RESULT(unknown)
+			AC_MSG_ERROR([Exception type not detected!])
+			;;
+		esac
 
-			case "$exception_type" in
-			DWARF)
-				AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
-					[Whether DWARF exceptions are used])
-				;;
-			SjLj)
-				AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
-					[Whether SjLj exceptions are used])
-				raise_exception="_Unwind_SjLj_RaiseException"
-				;;
-			SEH)
-				AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
-					[Whether SEH exceptions are used])
-				;;
-			*)
-				AC_MSG_RESULT(unknown)
-				AC_MSG_ERROR([Exception type not detected!])
-				;;
-			esac
+		AC_MSG_RESULT($exception_type)
+	], [
+		AC_MSG_RESULT(exceptions unavailable!)
+		AC_MSG_ERROR([Exceptions not accepted by compiler!])
+	])
 
-			AC_MSG_RESULT($exception_type)
-		], [
-			AC_MSG_RESULT(exceptions unavailable!)
-			AC_MSG_ERROR([Exceptions not accepted by compiler!])
-		])
+	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
+		dnl c++abi requires pthread on OpenBSD
+		AS_IF([test x"$ac_lib" = x"c++abi"], [LIBS="$LIBS -lpthread"])
+	], [
+		AC_MSG_ERROR([$raise_exception missing!])
+	], [-lpthread])
 
-		AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc], [
-			dnl c++abi requires pthread on OpenBSD
-			AS_IF([test x"$ac_lib" = x"c++abi"], [
-				LIBS="$LIBS -lpthread"
-			])
-		], [
-			AC_MSG_ERROR([$raise_exception missing!])
-		], [-lpthread])
+	AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
+	;;
+"Apple runtime")
+	AC_DEFINE(OF_APPLE_RUNTIME, 1, [Whether we use the Apple ObjC runtime])
 
-		AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
-		;;
-	"Apple runtime")
-		AC_DEFINE(OF_APPLE_RUNTIME, 1,
-			[Whether we use the Apple ObjC runtime])
+	AC_CHECK_LIB(objc, objc_msgSend, [
+		AC_SUBST(RUNTIME_LIBS, "-lobjc")
+		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-lobjc")
+	], [
+		AC_MSG_ERROR([libobjc not found!])
+	])
 
-		AC_CHECK_LIB(objc, objc_msgSend, [
-			AC_SUBST(RUNTIME_LIBS, "-lobjc")
-			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-lobjc")
-		], [
-			AC_MSG_ERROR([libobjc not found!])
-		])
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -lobjc"
 
-		AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-			AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
-		])
-		AC_CHECK_FUNC(objc_constructInstance, [], [
-			AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
-		])
-		;;
+	AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
+		AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
+	])
+	AC_CHECK_FUNC(objc_constructInstance, [], [
+		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
+	])
+
+	OBJCFLAGS="$old_OBJCFLAGS"
+	;;
 esac
 
-AC_CHECK_FUNCS(_Unwind_Backtrace)
+case "$host_os" in
+mint*)
+	dnl _Unwind_Backtrace crashes on MiNT
+	;;
+hpux*)
+	dnl _Unwind_Backtrace() returns complete garbage on HP-UX.
+	;;
+*)
+	AC_CHECK_FUNCS(_Unwind_Backtrace)
+	;;
+esac
 
 case "$host_os" in
-	darwin*)
-		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
-		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
-			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
-			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
-				["-Wl,-reexport-lobjc"])
-			LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
-		])
+darwin*)
+	AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
+	AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
+		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
+		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK, ["-Wl,-reexport-lobjc"])
+		LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
+	])
 
-		AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
-			AS_IF([test x"$exception_type" = x"DWARF"], [
-				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
-			])
-			AS_IF([test x"$exception_type" = x"SjLj"], [
-				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
-			])
-			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
-			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
-				["-Wl,-reexport_framework,ObjFWRT"])
+	AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
+		AS_IF([test x"$exception_type" = x"DWARF"], [
+			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
 		])
-
-		AC_CHECK_HEADERS(sysdir.h)
-		AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
-
-		AS_IF([test x"$host_is_ios" = x"yes"], [
-			AC_SUBST(TESTS_STATIC_LIB, tests.a)
-			TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
+		AS_IF([test x"$exception_type" = x"SjLj"], [
+			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
 		])
-		;;
+		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
+		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
+			["-Wl,-reexport_framework,ObjFWRT"])
+	])
+
+	AC_CHECK_HEADERS(sysdir.h)
+	AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
+
+	AS_IF([test x"$host_is_ios" = x"yes"], [
+		AC_SUBST(TESTS_STATIC_LIB, tests.a)
+		TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
+	])
+	;;
 esac
 
 AC_MSG_CHECKING(whether Objective C compiler supports ARC)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -fobjc-arc -fobjc-arc-exceptions"
-AC_TRY_COMPILE([
-	#ifdef __has_attribute
-	# if __has_attribute(objc_root_class)
-	__attribute__((__objc_root_class__))
-	# endif
-	#endif
-	@interface Foo
-	{
-		struct objc_class *_isa;
-	}
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			struct objc_class *_isa;
+		}
 
-	+ (id)alloc;
-	@end
+		+ (id)alloc;
+		@end
 
-	@implementation Foo
-	+ (id)alloc
-	{
-		return (id)0;
-	}
-	@end
-], [
-	__weak id foo = [Foo alloc];
-	(void)foo;
+		@implementation Foo
+		+ (id)alloc
+		{
+			return (id)0;
+		}
+		@end
+	], [[
+		__weak id foo = [Foo alloc];
+		(void)foo;
+	]])
 ], [
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
@@ -744,35 +750,6 @@ AS_IF([test x"$ac_cv_c_bigendian" = x"universal"], [
 	AC_DEFINE(OF_UNIVERSAL, 1, [Whether we are building a universal binary])
 ])
 
-AC_MSG_CHECKING(for SIZE_MAX)
-AC_EGREP_CPP(egrep_cpp_yes, [
-	#include <stdint.h>
-	#include <limits.h>
-
-	#ifdef SIZE_MAX
-	egrep_cpp_yes
-	#endif
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-	AC_MSG_CHECKING(for SIZE_T_MAX)
-	AC_EGREP_CPP(egrep_cpp_yes, [
-		#include <stdint.h>
-		#include <limits.h>
-
-		#ifdef SIZE_T_MAX
-		egrep_cpp_yes
-		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		size_max="SIZE_T_MAX"
-	], [
-		AC_MSG_RESULT(no)
-		size_max="(~(size_t)0)"
-	])
-	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
-])
 AC_MSG_CHECKING(for SSIZE_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
@@ -785,8 +762,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(SSIZE_MAX, [((ssize_t)(SIZE_MAX / 2))],
-		[Maximum value for ssize_t])
+	AC_DEFINE(SSIZE_MAX, [(SIZE_MAX / 2)], [Maximum value for ssize_t])
 ])
 AC_MSG_CHECKING(for UINTPTR_MAX)
 AC_EGREP_CPP(egrep_cpp_yes, [
@@ -800,7 +776,9 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
-	AC_DEFINE(UINTPTR_MAX, [(~(uintptr_t)0)], [Maximum value for uintptr_t])
+	AC_CHECK_SIZEOF(uintptr_t)
+	AC_DEFINE(UINTPTR_MAX,
+		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
@@ -827,9 +805,10 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 AC_MSG_CHECKING(for floating point endianess)
 fp_endianess="unknown"
 AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
-	AC_TRY_COMPILE([
-		double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
-	], [
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
+		])
 	], [
 		AS_IF([$EGREP BigEnd conftest.$ac_objext >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
@@ -849,70 +828,49 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
-AC_MSG_CHECKING(for INFINITY)
-AC_TRY_COMPILE([
-	#include <stdio.h>
-	#include <math.h>
-], [
-	printf("%f", INFINITY);
-], [
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-
-	AC_MSG_CHECKING(for __builtin_inf)
-	AC_TRY_COMPILE([
-		#include <stdio.h>
-	], [
-		printf("%f", __builtin_inf());
-	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(INFINITY, [(__builtin_inf())],
-			[Workaround for missing INFINITY])
-	], [
-		AC_MSG_RESULT(no)
-
-		AC_MSG_ERROR([Neither INFINITY or __builtin_inf was found!])
-	])
-])
-
 case "$host_cpu" in
-	arm* | earm*)
-		AC_MSG_CHECKING(for VFP2 or above)
-		AC_TRY_COMPILE([], [
+arm* | earm*)
+	AC_MSG_CHECKING(for VFP2 or above)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
 			#if !defined(__arm64__) && !defined(__aarch64__) && \
 			    !defined(__ARM64_ARCH_8__)
 			__asm__ __volatile__ (
 			    "vstmdb	sp!, {d0-d7}"
 			);
 			#endif
-		], [
-			AC_DEFINE(HAVE_VFP2, 1, [Whether we have VFP2 or above])
-			AC_MSG_RESULT(yes)
-		], [
-			AC_MSG_RESULT(no)
 		])
-		;;
+	], [
+		AC_DEFINE(HAVE_VFP2, 1, [Whether we have VFP2 or above])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
 esac
 
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
+AC_CHECK_FUNCS(strtof truncf)
+
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
-		*-*-mingw*)
-			dnl asprintf from MinGW is broken on older Windows
-			dnl versions
-			have_asprintf="no"
-			;;
-		*-psp-*)
-			dnl asprintf is broken on the PSP
-			have_asprintf="no"
-			;;
-		*)
-			have_asprintf="yes"
-			AC_DEFINE(HAVE_ASPRINTF, 1,
-				[Whether we have asprintf()])
+	*-*-mint*)
+		dnl asprintf is not in headers
+		have_asprintf="no"
+		;;
+	*-*-mingw*)
+		dnl asprintf from MinGW is broken on older Windows versions
+		have_asprintf="no"
+		;;
+	*-psp-*)
+		dnl asprintf is broken on the PSP
+		have_asprintf="no"
+		;;
+	*)
+		have_asprintf="yes"
+		AC_DEFINE(HAVE_ASPRINTF, 1, [Whether we have asprintf()])
 		;;
 	esac
 ], [
@@ -933,35 +891,31 @@ AC_DEFUN([ENCODING_FLAG], [
 		AS_HELP_STRING([--disable-$1],
 			[Disables support for $3]))
 	AS_IF([test x"$enable_$2" != x"no"], [
-		AC_DEFINE($4, 1,
-			[Whether we have support for $3])
-		ENCODINGS_SRCS="$ENCODINGS_SRCS $2.m"
+		AC_DEFINE($4, 1, [Whether we have support for $3])
+		ENCODINGS_SRCS="$ENCODINGS_SRCS $1.m"
 	])
 ])
 ENCODING_FLAG(codepage-437, codepage_437, [Codepage 437], HAVE_CODEPAGE_437)
 ENCODING_FLAG(codepage-850, codepage_850, [Codepage 850], HAVE_CODEPAGE_850)
 ENCODING_FLAG(codepage-858, codepage_858, [Codepage 858], HAVE_CODEPAGE_858)
-ENCODING_FLAG(iso-8859-2, iso_8859-2, [ISO 8859-2], HAVE_ISO_8859_2)
-ENCODING_FLAG(iso-8859-3, iso_8859-3, [ISO 8859-3], HAVE_ISO_8859_3)
-ENCODING_FLAG(iso-8859-15, iso_8859-15, [ISO 8859-15], HAVE_ISO_8859_15)
-ENCODING_FLAG(koi8-r, koi8-r, [KOI8-R], HAVE_KOI8_R)
-ENCODING_FLAG(koi8-u, koi8-u, [KOI8-U], HAVE_KOI8_U)
+ENCODING_FLAG(iso-8859-2, iso_8859_2, [ISO 8859-2], HAVE_ISO_8859_2)
+ENCODING_FLAG(iso-8859-3, iso_8859_3, [ISO 8859-3], HAVE_ISO_8859_3)
+ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
+ENCODING_FLAG(koi8-r, koi8_r, [KOI8-R], HAVE_KOI8_R)
+ENCODING_FLAG(koi8-u, koi8_u, [KOI8-U], HAVE_KOI8_U)
 ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
-ENCODING_FLAG(windows-1251, windows-1251, [Windows-1251], HAVE_WINDOWS_1251)
-ENCODING_FLAG(windows-1252, windows-1252, [Windows-1252], HAVE_WINDOWS_1252)
+ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
+ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
 
+AS_IF([test x"$ENCODINGS_SRCS" = x""], [
+	ENCODINGS_SRCS="dummy.m"
+])
 AC_SUBST(ENCODINGS_SRCS)
-AS_IF([test x"$ENCODINGS_SRCS" != x""], [
-	AC_SUBST(ENCODINGS, "encodings")
-
-	AS_IF([test x"$enable_shared" != x"no"], [
-		AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
-		AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
-	])
-	AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
-		AC_SUBST(ENCODINGS_A, "encodings.a")
-		AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
-	])
+AS_IF([test x"$enable_shared" != x"no"], [
+	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
+])
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+	AC_SUBST(ENCODINGS_A, "encodings.a")
 ])
 
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
@@ -971,16 +925,16 @@ AS_IF([test x"$host_os" != x"morphos"], [
 ])
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
 case "$host_os" in
-	netbsd*)
-		dnl dladdr exists on NetBSD, but it is completely broken.
-		dnl When using it with code that uses __thread, it freezes the
-		dnl process so that it has to be killed using SIGKILL.
-		dnl When disabling __thread, it doesn't freeze, but all symbols
-		dnl are wrong.
-		;;
-	*)
-		AC_CHECK_FUNCS(dladdr)
-		;;
+netbsd*)
+	dnl dladdr exists on NetBSD, but it is completely broken.
+	dnl When using it with code that uses __thread, it freezes the process
+	dnl so that it has to be killed using SIGKILL.
+	dnl When disabling __thread, it doesn't freeze, but all symbols are
+	dnl wrong.
+	;;
+*)
+	AC_CHECK_FUNCS(dladdr)
+	;;
 esac
 
 AC_CHECK_HEADERS(sys/mman.h)
@@ -1009,24 +963,28 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread")
+		AC_CHECK_LIB(pthread, main, LIBS="$LIBS -lpthread")
 
-		AC_TRY_LINK([
-			#include <pthread.h>
-		], [
-			pthread_create(NULL, NULL, NULL, NULL);
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <pthread.h>
+			], [
+				pthread_create(NULL, NULL, NULL, NULL);
+			])
 		], [], [
 			AC_MSG_ERROR(No supported threads found!)
 		])
 
 		AC_DEFINE(OF_HAVE_PTHREADS, 1, [Whether we have pthreads])
 
-		AC_TRY_COMPILE([
-			#include <pthread.h>
-		], [
-			pthread_mutexattr_t attr;
-			pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <pthread.h>
+			], [
+				pthread_mutexattr_t attr;
+				pthread_mutexattr_settype(&attr,
+				    PTHREAD_MUTEX_RECURSIVE);
+			])
 		], [
 			AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
 				[If pthread mutexes can be recursive])
@@ -1053,20 +1011,26 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	AC_DEFINE(OF_HAVE_THREADS, 1, [Whether we have threads])
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
+	AC_SUBST(OBJC_SYNC, objc_sync)
 
 	AC_ARG_ENABLE(compiler-tls,
 		AS_HELP_STRING([--disable-compiler-tls],
 			[disable compiler thread local storage]))
 
 	case "$host" in
-		aarch64*-*-android*)
-			# Compiler TLS is broken on AArch64 Android with Clang
-			enable_compiler_tls="no"
-			;;
-		m68k-*-amigaos | powerpc-*-amigaos)
-			# Compiler TLS is broken on AmigaOS
-			enable_compiler_tls="no"
-			;;
+	aarch64*-*-android*)
+		dnl Compiler TLS is broken on AArch64 Android with Clang
+		enable_compiler_tls="no"
+		;;
+	m68k-*-amigaos* | powerpc-*-amigaos*)
+		dnl Compiler TLS is broken on AmigaOS
+		enable_compiler_tls="no"
+		;;
+	*-*-morphos*)
+		dnl Compiler TLS needs helpers that we don't want in the
+		dnl .library
+		enable_compiler_tls="no"
+		;;
 	esac
 
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
@@ -1076,18 +1040,22 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		])
 
 		AC_MSG_CHECKING(whether _Thread_local works)
-		AC_TRY_LINK([
-			static _Thread_local int x = 0;
-		], [
-			x++;
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				static _Thread_local int x = 0;
+			], [
+				x++;
+			])
 		], [
 			AS_IF([test x"$enable_shared" != x"no"], [
 				old_OBJCFLAGS="$OBJCFLAGS"
 				OBJCFLAGS="$OBJCFLAGS -fPIC"
-				AC_TRY_COMPILE([
-					static _Thread_local int x = 0;
-				], [
-					x++;
+				AC_COMPILE_IFELSE([
+					AC_LANG_PROGRAM([
+						static _Thread_local int x = 0;
+					], [
+						x++;
+					])
 				], [
 					AC_MSG_RESULT(yes)
 					AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
@@ -1109,23 +1077,29 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 		AS_IF([test x"$have_thread_local" != x"yes"], [
 			AC_MSG_CHECKING(whether __thread works)
-			AC_TRY_LINK([
-				/* It seems __thread is buggy with GCC 4.1 */
-				#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
-				# error buggy
-				#endif
+			AC_LINK_IFELSE([
+				AC_LANG_PROGRAM([
+					/*
+					 * It seems __thread is buggy with
+					 * GCC 4.1 */
+					#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
+					# error buggy
+					#endif
 
-				__thread int x = 0;
-			], [
-				x++;
+					__thread int x = 0;
+				], [
+					x++;
+				])
 			], [
 				AS_IF([test x"$enable_shared" != x"no"], [
 					old_OBJCFLAGS="$OBJCFLAGS"
 					OBJCFLAGS="$OBJCFLAGS -fPIC"
-					AC_TRY_COMPILE([
-						__thread int x = 0;
-					], [
-						x++;
+					AC_COMPILE_IFELSE([
+						AC_LANG_PROGRAM([
+							__thread int x = 0;
+						], [
+							x++;
+						])
 					], [
 						AC_MSG_RESULT(yes)
 						AC_DEFINE(OF_HAVE___THREAD, 1,
@@ -1164,16 +1138,18 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	])
 
 	AC_MSG_CHECKING(whether __atomic_* works)
-	AC_TRY_LINK([
-		#include <stdbool.h>
-		#include <stdint.h>
-	], [
-		int32_t i, j;
-		if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
-			j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
-		while (!__atomic_compare_exchange_n(&i, &j, 1, false,
-		    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
-		__atomic_thread_fence(__ATOMIC_SEQ_CST);
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdbool.h>
+			#include <stdint.h>
+		], [
+			int32_t i, j;
+			if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
+				j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
+			while (!__atomic_compare_exchange_n(&i, &j, 1, false,
+			    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
+			__atomic_thread_fence(__ATOMIC_SEQ_CST);
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		test x"$atomic_ops" = x"none" && \
@@ -1185,11 +1161,15 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	])
 
 	AC_MSG_CHECKING(whether __sync_* works)
-	AC_TRY_LINK([#include <stdint.h>], [
-		int32_t i, j;
-		if (__sync_add_and_fetch(&i, 1))
-			j = __sync_sub_and_fetch(&i, 1);
-		while (!__sync_bool_compare_and_swap(&i, 0, 1));
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdint.h>
+		], [
+			int32_t i, j;
+			if (__sync_add_and_fetch(&i, 1))
+				j = __sync_sub_and_fetch(&i, 1);
+			while (!__sync_bool_compare_and_swap(&i, 0, 1));
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		test x"$atomic_ops" = x"none" && \
@@ -1226,16 +1206,15 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_SUBST(OFHASH, "ofhash")
 
 	case "$host_os" in
-		msdosdjgpp*)
-			dnl DJGPP has the type, but it's not really usable.
-			;;
-		*)
-			AC_CHECK_TYPE(off64_t, [
-				AC_DEFINE(OF_HAVE_OFF64_T, 1,
-					[Whether we have off64_t])
-				AC_CHECK_FUNCS([lseek64 lstat64 open64 stat64])
-			])
-			;;
+	msdosdjgpp*)
+		dnl DJGPP has the type, but it's not really usable.
+		;;
+	*)
+		AC_CHECK_TYPE(off64_t, [
+			AC_DEFINE(OF_HAVE_OFF64_T, 1, [Whether we have off64_t])
+			AC_CHECK_FUNCS([lseek64 lstat64 open64 stat64])
+		])
+		;;
 	esac
 
 	AC_CHECK_HEADERS([pwd.h grp.h])
@@ -1259,13 +1238,15 @@ AS_IF([test x"$enable_files" != x"no"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(for readdir_r)
-	AC_TRY_COMPILE([
-		#include <dirent.h>
-	], [
-		DIR *dir = 0;
-		struct dirent entry, *result;
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <dirent.h>
+		], [
+			DIR *dir = 0;
+			struct dirent entry, *result;
 
-		readdir_r(dir, &entry, &result);
+			readdir_r(dir, &entry, &result);
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(HAVE_READDIR_R, 1, [Whether we have readdir_r()])
@@ -1275,8 +1256,21 @@ AS_IF([test x"$enable_files" != x"no"], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
-AC_CHECK_HEADERS(fcntl.h dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
+AC_CHECK_HEADERS(dirent.h)
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r])
+
+case "$host_os" in
+amigaos* | morphos*)
+	dnl We don't want fcntl() or nanosleep() on AmigaOS / MorphOS, despite
+	dnl a symbol existing. The reason is that we cannot use fcntl() for
+	dnl sockets and that nanosleep() is yet another function that uses
+	dnl errno, so would need to be passed from the linklib.
+	;;
+*)
+	AC_CHECK_HEADERS(fcntl.h)
+	AC_CHECK_FUNCS([fcntl nanosleep])
+	;;
+esac
 
 AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
@@ -1284,24 +1278,26 @@ AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
 	AC_MSG_CHECKING(whether *_l functions need _GNU_SOURCE)
-	AC_TRY_COMPILE([
-		#include <stdlib.h>
-		#include <stdio.h>
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdlib.h>
+			#include <stdio.h>
 
-		#include <locale.h>
-		#ifdef HAVE_XLOCALE_H
-		# include <xlocale.h>
-		#endif
-	], [
-		#ifdef HAVE_STRTOD_L
-		(void)strtod_l;
-		#endif
-		#ifdef HAVE_STRTOF_L
-		(void)strtof_l;
-		#endif
-		#ifdef HAVE_ASPRINTF_L
-		(void)asprintf_l;
-		#endif
+			#include <locale.h>
+			#ifdef HAVE_XLOCALE_H
+			# include <xlocale.h>
+			#endif
+		], [
+			#ifdef HAVE_STRTOD_L
+			(void)strtod_l;
+			#endif
+			#ifdef HAVE_STRTOF_L
+			(void)strtof_l;
+			#endif
+			#ifdef HAVE_ASPRINTF_L
+			(void)asprintf_l;
+			#endif
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1314,13 +1310,15 @@ dnl This check needs to happen after the above, as _GNU_SOURCE can change the
 dnl return type.
 AC_CHECK_FUNCS(strerror_r, [
 	AC_MSG_CHECKING(for return type of strerror_r)
-	AC_TRY_COMPILE([
-		#include <stdio.h>
-		#include <string.h>
-	], [
-		switch (strerror_r(0, NULL, 0)) {
-		case 0:;
-		}
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+			#include <string.h>
+		], [
+			switch (strerror_r(0, NULL, 0)) {
+			case 0:;
+			}
+		])
 	], [
 		AC_MSG_RESULT(int)
 	], [
@@ -1333,15 +1331,9 @@ AC_CHECK_FUNCS(strerror_r, [
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
 
-case "$host_os" in
-	amigaos*)
-		;;
-	*)
-		AC_CHECK_FUNC(pipe, [
-			AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
-		])
-		;;
-esac
+AC_CHECK_FUNC(pipe, [
+	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
+])
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
@@ -1350,17 +1342,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
 
 	case "$host_os" in
-		amigaos*)
-			;;
-		haiku*)
-			LIBS="$LIBS -lnetwork"
-			;;
-		mingw*)
-			LIBS="$LIBS -lws2_32 -liphlpapi"
-			;;
-		*)
-			AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
-			;;
+	amigaos* | morphos*)
+		;;
+	haiku*)
+		LIBS="$LIBS -lnetwork"
+		;;
+	mingw*)
+		LIBS="$LIBS -lws2_32 -liphlpapi"
+		;;
+	*)
+		AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
+		;;
 	esac
 
 	AC_CHECK_HEADER(sys/socket.h, [
@@ -1375,16 +1367,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADER(netinet/sctp.h, [
-		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
-		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
-			[Whether we have netinet/sctp.h])
-		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
-	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 	AC_CHECK_HEADER(netipx/ipx.h, [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
 			[Whether we have netipx/ipx.h])
+	])
+	AC_CHECK_HEADER(sys/un.h, [
+		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
@@ -1415,6 +1404,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
 		])
 	], [
+		dnl Work around a bug in autoconf 2.61 that creates a broken
+		dnl configure if this branch is empty.
+		:
 	], [
 		#ifdef _WIN32
 		typedef int BOOL;
@@ -1508,6 +1500,40 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AC_CHECK_HEADERS(afunix.h, [
+		AC_DEFINE(OF_HAVE_AFUNIX_H, 1, [Whether we have afunix.h])
+	], [], [
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
+	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
+		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
+			[Whether we have UNIX sockets])
+		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
+	], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_UN_H
+		# include <sys/un.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+		#ifdef HAVE_AFUNIX_H
+		# include <afunix.h>
+		#endif
+
+		#ifdef __morphos__
+		# error MorphOS has the struct but does not support it
+		#endif
+
+		#ifdef __MINT__
+		# error Gives invalid argument at runtime
+		#endif
+	])
+
 	AC_CHECK_FUNCS(paccept accept4, break)
 
 	AC_CHECK_FUNCS(kqueue1 kqueue, [
@@ -1537,22 +1563,126 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 
 	case "$host_os" in
-		amigaos* | mingw* | morphos*)
+	amigaos* | mingw* | morphos*)
+		AC_DEFINE(HAVE_SELECT, 1, [Whether we have select() or similar])
+		AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
+			"OFSelectKernelEventObserver.m")
+		;;
+	*)
+		AC_CHECK_HEADERS(sys/select.h)
+		AC_CHECK_FUNC(select, [
 			AC_DEFINE(HAVE_SELECT, 1,
 				[Whether we have select() or similar])
 			AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
 				"OFSelectKernelEventObserver.m")
+		])
+		;;
+	esac
+
+	AC_ARG_WITH(tls,
+		AS_HELP_STRING([--with-tls], [
+			enable TLS support using the specified library
+			(yes, openssl, gnutls, securetransport or no)]))
+	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
+	tls_support="no"
+
+	AS_IF([test x"$with_tls" = x"securetransport" \
+		-o x"$with_tls" = x"yes"], [
+		AC_CHECK_HEADERS(Security/SecureTransport.h, [
+			old_LIBS="$LIBS"
+			LIBS="-framework Security -framework Foundation $LIBS"
+
+			AC_CHECK_FUNC(SSLHandshake, [
+				AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
+					[Whether we have Secure Transport])
+
+				tls_support="Secure Transport"
+				TLS_LIBS="-framework Foundation $TLS_LIBS"
+				TLS_LIBS="-framework Security $TLS_LIBS"
+
+				AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
+					"OFSecureTransportTLSStream.m")
+
+				AC_CHECK_FUNCS(SSLCreateContext)
+			], [])
+
+			LIBS="$old_LIBS"
+		])
+	])
+
+	AS_IF([test x"$with_tls" = x"openssl" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		case "$host_os" in
+		morphos*)
+			ssl="ssl_shared"
+			crypto="crypto_shared"
 			;;
 		*)
-			AC_CHECK_HEADERS(sys/select.h)
-			AC_CHECK_FUNC(select, [
-				AC_DEFINE(HAVE_SELECT, 1,
-					[Whether we have select() or similar])
-				AC_SUBST(OF_SELECT_KERNEL_EVENT_OBSERVER_M,
-					"OFSelectKernelEventObserver.m")
-			])
+			ssl="ssl"
+			crypto="crypto"
 			;;
-	esac
+		esac
+
+		AC_CHECK_LIB($ssl, SSL_set1_host, [
+			AC_CHECK_HEADER(openssl/ssl.h, [
+				AC_DEFINE(HAVE_OPENSSL, 1,
+					[Whether we have OpenSSL])
+
+				tls_support="OpenSSL"
+				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
+
+				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
+					"OFOpenSSLTLSStream.m")
+			])
+		], [], [-l$crypto])
+	])
+
+	AS_IF([test x"$with_tls" = x"gnutls" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
+
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
+	])
+
+	AS_IF([test x"$tls_support" != x"no"], [
+		AC_SUBST(TLS, "tls")
+		AC_SUBST(TLS_CPPFLAGS)
+		AC_SUBST(TLS_LIBS)
+		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
+			[Whether we have an implementation for TLS])
+		AC_CONFIG_FILES(src/tls/Info.plist)
+
+		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+
+		AS_IF([test x"$enable_shared" != x"no"], [
+			AC_SUBST(OBJFWTLS_SHARED_LIB,
+				"${LIB_PREFIX}objfwtls${LIB_SUFFIX}")
+		])
+		AS_IF([test x"$enable_static" = x"yes" \
+		    -o x"$enable_shared" = x"no"], [
+			AC_SUBST(OBJFWTLS_STATIC_LIB, "libobjfwtls.a")
+		])
+		AS_IF([test x"$build_framework" = x"yes"], [
+			AC_SUBST(OBJFWTLS_FRAMEWORK, "ObjFWTLS.framework")
+		])
+	])
+
+	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
+		AC_MSG_ERROR(m4_normalize([
+			No TLS implementation was found. Please install OpenSSL,
+			GnuTLS or use --without-tls.
+		]))
+	])
 
 	AS_IF([test x"$enable_threads" != x"no"], [
 		AC_SUBST(OF_HTTP_CLIENT_TESTS_M, "OFHTTPClientTests.m")
@@ -1561,19 +1691,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
+		AC_SUBST(OFHTTP_LIBS)
 	])
-	AC_SUBST(OFSOCK, "ofsock")
 ])
 
 AC_DEFUN([CHECK_BUILTIN_BSWAP], [
 	AC_MSG_CHECKING(for __builtin_bswap$1)
-	AC_TRY_LINK([
-		#include <stdint.h>
-		#include <stdio.h>
-		#include <errno.h>
-	], [
-		uint$1_t i = errno;
-		printf("%d", (int)__builtin_bswap$1(i));
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdint.h>
+			#include <stdio.h>
+			#include <errno.h>
+		], [
+			uint$1_t i = errno;
+			printf("%d", (int)__builtin_bswap$1(i));
+		])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(OF_HAVE_BUILTIN_BSWAP$1, 1,
@@ -1586,45 +1718,62 @@ CHECK_BUILTIN_BSWAP(16)
 CHECK_BUILTIN_BSWAP(32)
 CHECK_BUILTIN_BSWAP(64)
 
-case "$host" in
-	arm*-apple-darwin*)
-		have_processes="no"
-		;;
-	*-*-mingw*)
-		have_processes="yes"
-		;;
-	*-*-msdosdjgpp*)
-		have_processes="no"
-		;;
-	*)
-		AC_HEADER_SYS_WAIT
-		AC_CHECK_FUNCS(kill)
+case "$host_os" in
+darwin*)
+	AC_MSG_CHECKING(whether we are compiling for macOS)
+	AC_EGREP_CPP(egrep_cpp_yes, [
+		#include <TargetConditionals.h>
 
-		AC_CHECK_FUNCS(posix_spawnp, [
-			AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
-				have_processes="yes"
+		#if (!defined(TARGET_OS_IPHONE) || !TARGET_OS_IPHONE) && \
+		    (!defined(TARGET_OS_SIMULATOR) || !TARGET_OS_SIMULATOR)
+		egrep_cpp_yes
+		#endif
+	], [
+		AC_MSG_RESULT(yes)
+		have_subprocesses="yes"
 
-				AC_CHECK_HEADERS(spawn.h)
+		AC_CHECK_FUNCS(posix_spawnp)
+		AC_CHECK_HEADERS(spawn.h)
+	], [
+		AC_MSG_RESULT(no)
+		have_subprocesses="no"
+	])
+	;;
+mingw*)
+	have_subprocesses="yes"
+	;;
+msdosdjgpp*)
+	have_subprocesses="no"
+	;;
+*)
+	AC_HEADER_SYS_WAIT
+	AC_CHECK_FUNCS(kill)
+
+	AC_CHECK_FUNCS(posix_spawnp, [
+		AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
+			have_subprocesses="yes"
+
+			AC_CHECK_HEADERS(spawn.h)
+		])
+	], [
+		AC_CHECK_FUNCS([vfork dup2 execvp _exit], [
+			AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
+			    -a x"$ac_cv_func_pipe" = x"yes" \
+			    -a x"$ac_cv_func_dup2" = x"yes" \
+			    -a x"$ac_cv_func_execvp" = x"yes" \
+			    -a x"$ac_cv_func_kill" = x"yes" \
+			    -a x"$ac_cv_func__exit" = x"yes"], [
+				have_subprocesses="yes"
 			])
 		], [
-			AC_CHECK_FUNCS([vfork dup2 execvp _exit], [
-				AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
-				    -a x"$ac_cv_func_pipe" = x"yes" \
-				    -a x"$ac_cv_func_dup2" = x"yes" \
-				    -a x"$ac_cv_func_execvp" = x"yes" \
-				    -a x"$ac_cv_func_kill" = x"yes" \
-				    -a x"$ac_cv_func__exit" = x"yes"], [
-					have_processes="yes"
-				])
-			], [
-				break
-			])
+			break
 		])
-		;;
+	])
+	;;
 esac
-AS_IF([test x"$have_processes" = x"yes"], [
-	AC_SUBST(OF_PROCESS_M, "OFProcess.m")
-	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
+AS_IF([test x"$have_subprocesses" = x"yes"], [
+	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
+	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])
@@ -1660,9 +1809,11 @@ dnl by providing a wrapper for unistd.h which takes care of this.
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Xclang -fblocks"
-AC_TRY_COMPILE([], [
-	int (^foo)(int bar);
-	foo = ^ (int bar) { return 0; }
+AC_COMPILE_IFELSE([
+	AC_LANG_PROGRAM([], [
+		int (^foo)(int bar);
+		foo = ^ (int bar) { return 0; }
+	])
 ], [
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fblocks"
 	AC_SUBST(OF_BLOCK_TESTS_M, "OFBlockTests.m")
@@ -1676,24 +1827,26 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-		}
-		@end
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+			}
+			@end
 
-		static struct {
-			struct objc_class *_isa;
-		} object;
-	], [
-		Foo *test = (Foo *)&object;
-		(void)test; /* Get rid of unused variable warning */
+			static struct {
+				struct objc_class *_isa;
+			} object;
+		], [
+			Foo *test = (Foo *)&object;
+			(void)test; /* Get rid of unused variable warning */
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1703,32 +1856,33 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(
 	    whether we need -Wno-unused-property-ivar due to Clang bugs)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-			Foo *_foo;
-		}
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+				Foo *_foo;
+			}
 
-		@property (readonly, nonatomic) Foo *foo;
+			@property (readonly, nonatomic) Foo *foo;
 
-		+ (Foo *)foo;
-		@end
+			+ (Foo *)foo;
+			@end
 
-		@implementation Foo
-		@synthesize foo = _foo;
+			@implementation Foo
+			@synthesize foo = _foo;
 
-		+ (Foo *)foo
-		{
-			return (Foo *)0;
-		}
-		@end
-	], [
+			+ (Foo *)foo
+			{
+				return (Foo *)0;
+			}
+			@end
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1739,26 +1893,27 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
-	AC_TRY_COMPILE([
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			struct objc_class *_isa;
-		}
-		@end
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+			}
+			@end
 
-		@implementation Foo
-		- (void)foo
-		{
-			struct objc_class *c = _isa;
-			(void)c;
-		}
-		@end
-	], [
+			@implementation Foo
+			- (void)foo
+			{
+				struct objc_class *c = _isa;
+				(void)c;
+			}
+			@end
+		])
 	], [
 		AC_MSG_RESULT(no)
 	], [
@@ -1769,68 +1924,72 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
 	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
-	AC_TRY_COMPILE([
-		#include <stdlib.h>
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([[
+			#include <stdlib.h>
 
-		typedef void *SEL;
+			struct objc_selector;
+			typedef const struct objc_selector *SEL;
 
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Object
-		- (void)doesNotRecognizeSelector: (SEL)selector
-		#ifdef __clang__
-		    __attribute__((__noreturn__))
-		#endif
-		    ;
-		- (void)dealloc;
-		@end
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Object
+			- (void)doesNotRecognizeSelector: (SEL)selector
+			#ifdef __clang__
+			    __attribute__((__noreturn__))
+			#endif
+			    ;
+			- (void)dealloc;
+			@end
 
-		@interface Foo: Object
-		@end
+			@interface Foo: Object
+			@end
 
-		void
-		test(void)
-		{
-			if (sizeof(int) == 4)
-				__asm__ ("");
-			else if (sizeof(int) == 8)
-				__asm__ ("");
-			else
-				abort();
-		}
+			void
+			test(void)
+			{
+				if (sizeof(int) == 4)
+					__asm__ ("");
+				else if (sizeof(int) == 8)
+					__asm__ ("");
+				else
+					abort();
+			}
 
-		/*
-		 * Unfortunately, this cannot be shorter, as it only works when
-		 * it is used inside a macro.
-		 */
-		#ifdef __clang__
-		# define OF_DEALLOC_UNSUPPORTED				\
-			[self doesNotRecognizeSelector: _cmd];		\
+			/*
+			 * Unfortunately, this cannot be shorter, as it only
+			 * works when it is used inside a macro.
+			 */
+			#ifdef __clang__
+			# define OF_DEALLOC_UNSUPPORTED			\
+				[self doesNotRecognizeSelector: _cmd];	\
 									\
-			abort();					\
+				abort();				\
 									\
-			_Pragma("clang diagnostic push ignore \"-Wunreachable-code\"");	\
-			[super dealloc];				\
-			_Pragma("clang diagnostic pop");
-		#else
-		# define OF_DEALLOC_UNSUPPORTED				\
-			[self doesNotRecognizeSelector: _cmd];		\
+				_Pragma("clang diagnostic push ignore	\
+				    \"-Wunreachable-code\"");		\
+				[super dealloc];			\
+				_Pragma("clang diagnostic pop");
+			#else
+			# define OF_DEALLOC_UNSUPPORTED			\
+				[self doesNotRecognizeSelector: _cmd];	\
 									\
-			abort();					\
+				abort();				\
 									\
-			[super dealloc];
-		#endif
+				[super dealloc];
+			#endif
 
-		@implementation Foo
-		- (void)dealloc
-		{
-			OF_DEALLOC_UNSUPPORTED
-		}
-		@end
-	], [], [
+			@implementation Foo
+			- (void)dealloc
+			{
+				OF_DEALLOC_UNSUPPORTED
+			}
+			@end
+		]])
+	], [
 		AC_MSG_RESULT(yes)
 	], [
 		AC_MSG_RESULT(no)
@@ -1840,18 +1999,24 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
-	AC_TRY_COMPILE([
-		/**
-		 * @class Test conftest.m conftest.m
-		 */
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Test
-		@end
-	], [
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			/**
+			 * @class Test conftest.m conftest.m
+			 */
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Test
+			@end
+
+			/**
+			 * @struct Foo conftest.m conftest.m
+			 */
+			typedef struct {} Foo;
+		])
 	], [
 		AC_MSG_RESULT(yes)
 	], [
@@ -1863,37 +2028,39 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		old_OBJCFLAGS="$OBJCFLAGS"
 		OBJCFLAGS="$OBJCFLAGS -pedantic"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
-		AC_TRY_COMPILE([
-			#include <stdlib.h>
+		AC_COMPILE_IFELSE([
+			AC_LANG_SOURCE([
+				#include <stdlib.h>
 
-			#include <assert.h>
+				#include <assert.h>
 
-			#ifdef __has_attribute
-			# if __has_attribute(objc_root_class)
-			__attribute__((__objc_root_class__))
-			# endif
-			#endif
-			@interface Foo
-			{
-				void *foo;
-			}
-			@end
+				#ifdef __has_attribute
+				# if __has_attribute(objc_root_class)
+				__attribute__((__objc_root_class__))
+				# endif
+				#endif
+				@interface Foo
+				{
+					void *foo;
+				}
+				@end
 
-			@interface Bar: Foo
-			- (void)assert;
-			@end
+				@interface Bar: Foo
+				- (void)assert;
+				@end
 
-			@implementation Bar
-			- (void)assert
-			{
-				/*
-				 * Some versions of glibc break with -pedantic
-				 * when using assert.
-				 */
-				assert(1);
-			}
-			@end
-		], [], [
+				@implementation Bar
+				- (void)assert
+				{
+					/*
+					 * Some versions of glibc break with
+					 * -pedantic when using assert.
+					 */
+					assert(1);
+				}
+				@end
+			])
+		], [
 			AC_MSG_RESULT(no)
 		], [
 			AC_MSG_RESULT(yes)
@@ -1903,11 +2070,13 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
-		AC_TRY_COMPILE([
-			#include <complex.h>
-		], [
-			complex float f = 0.5 + 0.5 * I;
-			(void)f;
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <complex.h>
+			], [
+				complex float f = 0.5 + 0.5 * I;
+				(void)f;
+			])
 		], [
 			AC_MSG_RESULT(no)
 		], [
@@ -1921,16 +2090,15 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "${host_alias}-")
 
 	case "$host" in
-		i?86-*-mingw*)
-			AC_CHECK_PROG(WINE, wine, wine)
-			;;
-		x86_64-*-mingw*)
-			AC_CHECK_PROG(WINE, wine64, wine64)
-			;;
+	i?86-*-mingw*)
+		AC_CHECK_PROG(WINE, wine, wine)
+		;;
+	x86_64-*-mingw*)
+		AC_CHECK_PROG(WINE, wine64, wine64)
+		;;
 	esac
 
 	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(RUN_TESTS, "run")
 		AC_SUBST(WRAPPER, "$WINE")
 	])
 
@@ -1944,13 +2112,15 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-], [
-	AC_SUBST(RUN_TESTS, "run")
 ])
 
 AC_ARG_WITH(fish_completions,
 	AS_HELP_STRING([--with-fish-completions],
 		[install completions for the fish shell]))
+AS_IF([test x"$with_fish_completions" = x""], [
+	AC_CHECK_PROG(FISH, fish, fish)
+	AS_IF([test x"$FISH" != x""], [with_fish_completions="yes"])
+])
 AS_IF([test x"$with_fish_completions" = x"yes"], [
 	AC_SUBST(FISH_COMPLETIONS, fish)
 ])

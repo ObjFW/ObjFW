@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_INFLATE_STREAM_BUFFER_SIZE 4096
+#define OFInflateStreamBufferSize 4096
 
 /**
  * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
@@ -35,7 +33,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFInflateStream: OFStream <OFReadyForReadingObserving>
 {
 	OFStream *_stream;
-	unsigned char _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
+	unsigned char _buffer[OFInflateStreamBufferSize];
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
 	uint8_t _bitIndex, _savedBitsLength;
@@ -52,19 +50,19 @@ OF_SUBCLASSING_RESTRICTED
 			uint16_t position, length;
 		} uncompressed;
 		struct {
-			struct of_huffman_tree *_Nullable litLenTree;
-			struct of_huffman_tree *_Nullable distTree;
-			struct of_huffman_tree *_Nullable codeLenTree;
-			struct of_huffman_tree *_Nullable treeIter;
+			struct _OFHuffmanTree *_Nullable litLenTree;
+			struct _OFHuffmanTree *_Nullable distTree;
+			struct _OFHuffmanTree *_Nullable codeLenTree;
+			struct _OFHuffmanTree *_Nullable treeIter;
 			uint8_t *_Nullable lengths;
 			uint16_t receivedCount;
 			uint8_t value, litLenCodesCount, distCodesCount;
 			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
-			struct of_huffman_tree *_Nullable litLenTree;
-			struct of_huffman_tree *_Nullable distTree;
-			struct of_huffman_tree *_Nullable treeIter;
+			struct _OFHuffmanTree *_Nullable litLenTree;
+			struct _OFHuffmanTree *_Nullable distTree;
+			struct _OFHuffmanTree *_Nullable treeIter;
 			int state;
 			uint16_t value, length, distance, extraBits;
 		} huffman;

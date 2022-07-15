@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +13,7 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFCryptographicHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -26,15 +24,15 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A base class for SHA-224 and SHA-256.
  */
-@interface OFSHA224Or256Hash: OFObject <OFCryptoHash>
+@interface OFSHA224Or256Hash: OFObject <OFCryptographicHash>
 {
 @private
 	OFSecureData *_iVarsData;
 @protected
-	struct of_sha224_or_256_hash_ivars {
+	struct {
 		uint32_t state[8];
 		uint64_t bits;
-		union of_sha224_or_256_hash_buffer {
+		union {
 			unsigned char bytes[64];
 			uint32_t words[64];
 		} buffer;

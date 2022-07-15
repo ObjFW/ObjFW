@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -70,46 +68,18 @@
 # include <proto/dos.h>
 #endif
 
+#ifdef OF_MINT
+# include <bits/local_lim.h>
+#endif
+
 @interface OFDefaultFileManager: OFFileManager
 @end
-
-const of_file_attribute_key_t of_file_attribute_key_size =
-    @"of_file_attribute_key_size";
-const of_file_attribute_key_t of_file_attribute_key_type =
-    @"of_file_attribute_key_type";
-const of_file_attribute_key_t of_file_attribute_key_posix_permissions =
-    @"of_file_attribute_key_posix_permissions";
-const of_file_attribute_key_t of_file_attribute_key_posix_uid =
-    @"of_file_attribute_key_posix_uid";
-const of_file_attribute_key_t of_file_attribute_key_posix_gid =
-    @"of_file_attribute_key_posix_gid";
-const of_file_attribute_key_t of_file_attribute_key_owner =
-    @"of_file_attribute_key_owner";
-const of_file_attribute_key_t of_file_attribute_key_group =
-    @"of_file_attribute_key_group";
-const of_file_attribute_key_t of_file_attribute_key_last_access_date =
-    @"of_file_attribute_key_last_access_date";
-const of_file_attribute_key_t of_file_attribute_key_modification_date =
-    @"of_file_attribute_key_modification_date";
-const of_file_attribute_key_t of_file_attribute_key_status_change_date =
-    @"of_file_attribute_key_status_change_date";
-const of_file_attribute_key_t of_file_attribute_key_creation_date =
-    @"of_file_attribute_key_creation_date";
-const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
-    @"of_file_attribute_key_symbolic_link_destination";
-
-const of_file_type_t of_file_type_regular = @"of_file_type_regular";
-const of_file_type_t of_file_type_directory = @"of_file_type_directory";
-const of_file_type_t of_file_type_symbolic_link = @"of_file_type_symbolic_link";
-const of_file_type_t of_file_type_fifo = @"of_file_type_fifo";
-const of_file_type_t of_file_type_character_special =
-    @"of_file_type_character_special";
-const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
-const of_file_type_t of_file_type_socket = @"of_file_type_socket";
 
 #ifdef OF_AMIGAOS4
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
+
+#include "OFFileManagerConstants.inc"
 
 static OFFileManager *defaultManager;
 
@@ -125,8 +95,7 @@ OF_DESTRUCTOR()
 #endif
 
 static id
-attributeForKeyOrException(of_file_attributes_t attributes,
-    of_file_attribute_key_t key)
+attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	id object = [attributes objectForKey: key];
 
@@ -233,7 +202,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -247,10 +216,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 
 #ifdef OF_HAVE_FILES
-- (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path
+- (OFFileAttributes)attributesOfItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_file_attributes_t ret;
+	OFFileAttributes ret;
 
 	ret = [self attributesOfItemAtURL: [OFURL fileURLWithPath: path]];
 
@@ -262,8 +231,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (void)setAttributes: (of_file_attributes_t)attributes
-	  ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -273,19 +241,16 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	[URLHandler setAttributes: attributes
-		      ofItemAtURL: URL];
+	[URLHandler setAttributes: attributes ofItemAtURL: URL];
 }
 
 #ifdef OF_HAVE_FILES
-- (void)setAttributes: (of_file_attributes_t)attributes
+- (void)setAttributes: (OFFileAttributes)attributes
 	 ofItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self setAttributes: attributes
 		ofItemAtURL: [OFURL fileURLWithPath: path]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -461,7 +426,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
 {
 	OFURLHandler *URLHandler;
 
@@ -478,10 +443,46 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *ret;
+	OFArray OF_GENERIC(OFURL *) *URLs;
+	OFMutableArray OF_GENERIC(OFString *) *ret;
 
-	ret = [self contentsOfDirectoryAtURL: [OFURL fileURLWithPath: path]];
+	URLs = [self contentsOfDirectoryAtURL: [OFURL fileURLWithPath: path]];
+	ret = [OFMutableArray arrayWithCapacity: URLs.count];
 
+	for (OFURL *URL in URLs)
+		[ret addObject: URL.lastPathComponent];
+
+	[ret makeImmutable];
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithObject: path];
+
+	for (OFString *subpath in [self contentsOfDirectoryAtPath: path]) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFString *fullSubpath =
+		    [path stringByAppendingPathComponent: subpath];
+		OFFileAttributes attributes =
+		    [self attributesOfItemAtPath: fullSubpath];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[ret addObjectsFromArray:
+			    [self subpathsOfDirectoryAtPath: fullSubpath]];
+		else
+			[ret addObject: fullSubpath];
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	[ret makeImmutable];
 	[ret retain];
 
 	objc_autoreleasePoolPop(pool);
@@ -554,8 +555,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)copyItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -566,13 +566,12 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 #endif
 
-- (void)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 	OFURLHandler *URLHandler;
-	of_file_attributes_t attributes;
-	of_file_type_t type;
+	OFFileAttributes attributes;
+	OFFileAttributeType type;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -583,8 +582,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithURL: source];
 
-	if ([URLHandler copyItemAtURL: source
-				toURL: destination])
+	if ([URLHandler copyItemAtURL: source toURL: destination])
 		return;
 
 	if ([self fileExistsAtURL: destination])
@@ -604,18 +602,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	type = attributes.fileType;
 
-	if ([type isEqual: of_file_type_directory]) {
-		OFArray *contents;
+	if ([type isEqual: OFFileTypeDirectory]) {
+		OFArray OF_GENERIC(OFURL *) *contents;
 
 		@try {
 			[self createDirectoryAtURL: destination];
 
 			@try {
-				of_file_attribute_key_t key =
-				    of_file_attribute_key_posix_permissions;
+				OFFileAttributeKey key = OFFilePOSIXPermissions;
 				OFNumber *permissions =
 				    [attributes objectForKey: key];
-				of_file_attributes_t destinationAttributes;
+				OFFileAttributes destinationAttributes;
 
 				if (permissions != nil) {
 					destinationAttributes = [OFDictionary
@@ -645,27 +642,23 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			@throw e;
 		}
 
-		for (OFString *item in contents) {
+		for (OFURL *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFURL *sourceURL, *destinationURL;
+			OFURL *destinationURL = [destination
+			    URLByAppendingPathComponent:
+			    item.lastPathComponent];
 
-			sourceURL =
-			    [source URLByAppendingPathComponent: item];
-			destinationURL =
-			    [destination URLByAppendingPathComponent: item];
-
-			[self copyItemAtURL: sourceURL
-				      toURL: destinationURL];
+			[self copyItemAtURL: item toURL: destinationURL];
 
 			objc_autoreleasePoolPop(pool2);
 		}
-	} else if ([type isEqual: of_file_type_regular]) {
+	} else if ([type isEqual: OFFileTypeRegular]) {
 		size_t pageSize = [OFSystemInfo pageSize];
 		OFStream *sourceStream = nil;
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		buffer = of_malloc(1, pageSize);
+		buffer = OFAllocMemory(1, pageSize);
 		@try {
 			sourceStream = [[OFURLHandler handlerForURL: source]
 			    openItemAtURL: source
@@ -685,11 +678,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			}
 
 			@try {
-				of_file_attribute_key_t key =
-				    of_file_attribute_key_posix_permissions;
+				OFFileAttributeKey key = OFFilePOSIXPermissions;
 				OFNumber *permissions = [attributes
 				    objectForKey: key];
-				of_file_attributes_t destinationAttributes;
+				OFFileAttributes destinationAttributes;
 
 				if (permissions != nil) {
 					destinationAttributes = [OFDictionary
@@ -718,9 +710,9 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		} @finally {
 			[sourceStream close];
 			[destinationStream close];
-			of_free(buffer);
+			OFFreeMemory(buffer);
 		}
-	} else if ([type isEqual: of_file_type_symbolic_link]) {
+	} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 		@try {
 			OFString *linkDestination =
 			    attributes.fileSymbolicLinkDestination;
@@ -752,20 +744,16 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 }
 
 #ifdef OF_HAVE_FILES
-- (void)moveItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self moveItemAtURL: [OFURL fileURLWithPath: source]
 		      toURL: [OFURL fileURLWithPath: destination]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)moveItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool;
 	OFURLHandler *URLHandler;
@@ -780,8 +768,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		    exceptionWithURL: source];
 
 	@try {
-		if ([URLHandler moveItemAtURL: source
-					toURL: destination])
+		if ([URLHandler moveItemAtURL: source toURL: destination])
 			return;
 	} @catch (OFMoveItemFailedException *e) {
 		if (e.errNo != EXDEV)
@@ -795,8 +782,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 				     errNo: EEXIST];
 
 	@try {
-		[self copyItemAtURL: source
-			      toURL: destination];
+		[self copyItemAtURL: source toURL: destination];
 	} @catch (OFCopyItemFailedException *e) {
 		[self removeItemAtURL: destination];
 
@@ -835,15 +821,12 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (void)removeItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self removeItemAtURL: [OFURL fileURLWithPath: path]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)linkItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
+- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURLHandler *URLHandler;
@@ -860,21 +843,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithURL: source];
 
-	[URLHandler linkItemAtURL: source
-			    toURL: destination];
+	[URLHandler linkItemAtURL: source toURL: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-- (void)linkItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
+- (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self linkItemAtURL: [OFURL fileURLWithPath: source]
 		      toURL: [OFURL fileURLWithPath: destination]];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -893,8 +872,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if (URLHandler == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	[URLHandler createSymbolicLinkAtURL: URL
-			withDestinationPath: target];
+	[URLHandler createSymbolicLinkAtURL: URL withDestinationPath: target];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -904,10 +882,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	     withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-
 	[self createSymbolicLinkAtURL: [OFURL fileURLWithPath: path]
 		  withDestinationPath: target];
-
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -930,77 +906,72 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 @end
 
 @implementation OFDictionary (FileAttributes)
 - (unsigned long long)fileSize
 {
-	return [attributeForKeyOrException(self, of_file_attribute_key_size)
+	return [attributeForKeyOrException(self, OFFileSize)
 	    unsignedLongLongValue];
 }
 
-- (of_file_type_t)fileType
+- (OFFileAttributeType)fileType
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_type);
+	return attributeForKeyOrException(self, OFFileType);
 }
 
 - (unsigned long)filePOSIXPermissions
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_permissions) unsignedLongValue];
+	    OFFilePOSIXPermissions) unsignedLongValue];
 }
 
-- (unsigned long)filePOSIXUID
+- (unsigned long)fileOwnerAccountID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_uid) unsignedLongValue];
+	    OFFileOwnerAccountID) unsignedLongValue];
 }
 
-- (unsigned long)filePOSIXGID
+- (unsigned long)fileGroupOwnerAccountID
 {
 	return [attributeForKeyOrException(self,
-	    of_file_attribute_key_posix_gid) unsignedLongValue];
+	    OFFileGroupOwnerAccountID) unsignedLongValue];
 }
 
-- (OFString *)fileOwner
+- (OFString *)fileOwnerAccountName
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_owner);
+	return attributeForKeyOrException(self, OFFileOwnerAccountName);
 }
 
-- (OFString *)fileGroup
+- (OFString *)fileGroupOwnerAccountName
 {
-	return attributeForKeyOrException(self, of_file_attribute_key_group);
+	return attributeForKeyOrException(self, OFFileGroupOwnerAccountName);
 }
 
 - (OFDate *)fileLastAccessDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_last_access_date);
+	return attributeForKeyOrException(self, OFFileLastAccessDate);
 }
 
 - (OFDate *)fileModificationDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_modification_date);
+	return attributeForKeyOrException(self, OFFileModificationDate);
 }
 
 - (OFDate *)fileStatusChangeDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_status_change_date);
+	return attributeForKeyOrException(self, OFFileStatusChangeDate);
 }
 
 - (OFDate *)fileCreationDate
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_creation_date);
+	return attributeForKeyOrException(self, OFFileCreationDate);
 }
 
 - (OFString *)fileSymbolicLinkDestination
 {
-	return attributeForKeyOrException(self,
-	    of_file_attribute_key_symbolic_link_destination);
+	return attributeForKeyOrException(self, OFFileSymbolicLinkDestination);
 }
 @end

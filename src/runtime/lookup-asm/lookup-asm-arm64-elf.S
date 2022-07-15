@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,12 +23,12 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
-	cbz	x0, ret_nil
+	cbz	x0, returnNilMethod
 
 	tst	x0, #1
-	b.ne	.Ltagged_pointer_\name
+	b.ne	.LtaggedPointer_\name
 
 	ldr	x2, [x0]
 	ldr	x2, [x2, #64]
@@ -45,21 +43,21 @@
 	ldrb	w3, [x1]
 	ldr	x2, [x2, x3, lsl #3]
 
-	cbz	x2, \not_found
+	cbz	x2, \notFound
 
 	mov	x0, x2
 	ret
 
-.Ltagged_pointer_\name:
-	adrp	x2, :got:objc_tagged_pointer_secret
-	ldr	x2, [x2, #:got_lo12:objc_tagged_pointer_secret]
+.LtaggedPointer_\name:
+	adrp	x2, :got:objc_taggedPointerSecret
+	ldr	x2, [x2, #:got_lo12:objc_taggedPointerSecret]
 	ldr	x2, [x2]
 	eor	x0, x0, x2
 	and	x0, x0, #0xE
 	lsl	x0, x0, #2
 
-	adrp	x2, :got:objc_tagged_pointer_classes
-	ldr	x2, [x2, #:got_lo12:objc_tagged_pointer_classes]
+	adrp	x2, :got:objc_taggedPointerClasses
+	ldr	x2, [x2, #:got_lo12:objc_taggedPointerClasses]
 	ldr	x2, [x2, x0]
 	ldr	x2, [x2, #64]
 
@@ -68,11 +66,11 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	mov	x2, x0
 	ldr	x0, [x0]
-	cbz	x0, ret_nil
+	cbz	x0, returnNilMethod
 
 	ldr	x2, [x2, #8]
 	ldr	x2, [x2, #64]
@@ -82,16 +80,16 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	adr	x0, nil_method
+returnNilMethod:
+	adr	x0, nilMethod
 	ret
 
-nil_method:
+nilMethod:
 	mov	x0, #0
 	ret
 

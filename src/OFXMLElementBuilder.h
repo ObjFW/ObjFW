@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,12 +73,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which did not expect the close tag
  * @param name The name of the close tag
  * @param prefix The prefix of the close tag
- * @param namespace_ The namespace of the close tag
+ * @param nameSpace The namespace of the close tag
  */
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
   didNotExpectCloseTag: (OFString *)name
 		prefix: (nullable OFString *)prefix
-	     namespace: (nullable OFString *)namespace_;
+	     namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief This callback is called when the XML parser for the element builder
@@ -122,7 +120,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new, autoreleased OFXMLElementBuilder
  */
-+ (instancetype)elementBuilder;
++ (instancetype)builder;
 @end
 
 OF_ASSUME_NONNULL_END

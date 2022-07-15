@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,11 +18,11 @@
 
 #ifndef OF_AMIGAOS
 # define OF_FILE_HANDLE_IS_FD
-# define OF_INVALID_FILE_HANDLE (-1)
-typedef int of_file_handle_t;
+typedef int OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-# define OF_INVALID_FILE_HANDLE NULL
-typedef struct of_file_handle *of_file_handle_t;
+typedef struct _OFFileHandle *OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -42,7 +40,7 @@ OF_SUBCLASSING_RESTRICTED
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
 #endif
 {
-	of_file_handle_t _handle;
+	OFFileHandle _handle;
 	bool _atEndOfStream;
 }
 
@@ -65,29 +63,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithPath: (OFString *)path
-			mode: (OFString *)mode;
-
-/**
- * @brief Creates a new OFFile with the specified URL and mode.
- *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | Read-only
- *	       `r+`           | Read-write
- *	       `w`            | Write-only, create or truncate
- *	       `wx`           | Write-only, create or fail, exclusive
- *	       `w+`           | Read-write, create or truncate
- *	       `w+x`          | Read-write, create or fail, exclusive
- *	       `a`            | Write-only, create or append
- *	       `a+`           | Read-write, create or append
- * @return A new autoreleased OFFile
- */
-+ (instancetype)fileWithURL: (OFURL *)URL
-		       mode: (OFString *)mode;
++ (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode;
 
 /**
  * @brief Creates a new OFFile with the specified native file handle.
@@ -97,9 +73,7 @@ OF_SUBCLASSING_RESTRICTED
  *		 object is deallocated!
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithHandle: (of_file_handle_t)handle;
-
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)fileWithHandle: (OFFileHandle)handle;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -123,33 +97,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode;
-
-/**
- * @brief Initializes an already allocated OFFile.
- *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | read-only
- *	       `rb`           | read-only, binary
- *	       `r+`           | read-write
- *	       `rb+` or `r+b` | read-write, binary
- *	       `w`            | write-only, create, truncate
- *	       `wb`           | write-only, create, truncate, binary
- *	       `w`            | read-write, create, truncate
- *	       `wb+` or `w+b` | read-write, create, truncate, binary
- *	       `a`            | write-only, create, append
- *	       `ab`           | write-only, create, append, binary
- *	       `a+`           | read-write, create, append
- *	       `ab+` or `a+b` | read-write, create, append, binary
- * @return An initialized OFFile
- */
-- (instancetype)initWithURL: (OFURL *)URL
-		       mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -159,8 +107,9 @@ OF_SUBCLASSING_RESTRICTED
  *		 object is deallocated!
  * @return An initialized OFFile
  */
-- (instancetype)initWithHandle: (of_file_handle_t)handle
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHandle: (OFFileHandle)handle OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

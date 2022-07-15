@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,7 +25,7 @@ static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-objc_init_static_instances(struct objc_symtab *symtab)
+objc_initStaticInstances(struct objc_symtab *symtab)
 {
 	struct objc_static_instances **staticInstances;
 
@@ -97,7 +95,7 @@ objc_init_static_instances(struct objc_symtab *symtab)
 }
 
 void
-objc_forget_pending_static_instances()
+objc_forgetPendingStaticInstances()
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;

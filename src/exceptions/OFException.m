@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,16 +27,15 @@
 #import "OFException.h"
 #import "OFArray.h"
 #import "OFLocale.h"
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
-
-#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-# import "mutex.h"
-#endif
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # include <winerror.h>
@@ -52,9 +49,9 @@ struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
 	_URC_END_OF_STACK = 5
-}_Unwind_Reason_Code;
+} _Unwind_Reason_Code;
 
-struct backtrace_ctx {
+struct BacktraceCtx {
 	void **backtrace;
 	uint8_t i;
 };
@@ -71,17 +68,21 @@ extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
 #endif
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-static of_mutex_t mutex;
+static OFPlainMutex mutex;
 
 OF_CONSTRUCTOR()
 {
-	if (!of_mutex_new(&mutex))
-		@throw [OFInitializationFailedException exception];
+	OFEnsure(OFPlainMutexNew(&mutex) == 0);
+}
+
+OF_DESTRUCTOR()
+{
+	OFPlainMutexFree(&mutex);
 }
 #endif
 
 OFString *
-of_strerror(int errNo)
+OFStrError(int errNo)
 {
 	OFString *ret;
 #ifdef HAVE_STRERROR_R
@@ -189,7 +190,7 @@ of_strerror(int errNo)
 				 encoding: [OFLocale encoding]];
 #else
 # ifdef OF_HAVE_THREADS
-	if (!of_mutex_lock(&mutex))
+	if (OFPlainMutexLock(&mutex) != 0)
 		@throw [OFLockFailedException exception];
 
 	@try {
@@ -199,7 +200,7 @@ of_strerror(int errNo)
 			     encoding: [OFLocale encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (!of_mutex_unlock(&mutex))
+		if (OFPlainMutexUnlock(&mutex) != 0)
 			@throw [OFUnlockFailedException exception];
 	}
 # endif
@@ -210,7 +211,7 @@ of_strerror(int errNo)
 
 #ifdef OF_WINDOWS
 OFString *
-of_windows_status_to_string(LSTATUS status)
+OFWindowsStatusToString(LSTATUS status)
 {
 	OFString *string = nil;
 	void *buffer;
@@ -253,11 +254,11 @@ of_windows_status_to_string(LSTATUS status)
 
 #ifdef HAVE__UNWIND_BACKTRACE
 static _Unwind_Reason_Code
-backtrace_callback(struct _Unwind_Context *ctx, void *data)
+backtraceCallback(struct _Unwind_Context *ctx, void *data)
 {
-	struct backtrace_ctx *bt = data;
+	struct BacktraceCtx *bt = data;
 
-	if (bt->i < OF_BACKTRACE_SIZE) {
+	if (bt->i < OFBacktraceSize) {
 # ifndef HAVE_ARM_EHABI_EXCEPTIONS
 		bt->backtrace[bt->i++] = (void *)_Unwind_GetIP(ctx);
 # else
@@ -282,13 +283,13 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 #ifdef HAVE__UNWIND_BACKTRACE
 - (instancetype)init
 {
-	struct backtrace_ctx ctx;
+	struct BacktraceCtx ctx;
 
 	self = [super init];
 
 	ctx.backtrace = _backtrace;
 	ctx.i = 0;
-	_Unwind_Backtrace(backtrace_callback, &ctx);
+	_Unwind_Backtrace(backtraceCallback, &ctx);
 
 	return self;
 }
@@ -307,8 +308,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (uint8_t i = 0;
-	    i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
+	for (uint8_t i = 0; i < OFBacktraceSize && _backtrace[i] != NULL; i++) {
 # ifdef HAVE_DLADDR
 		Dl_info info;
 

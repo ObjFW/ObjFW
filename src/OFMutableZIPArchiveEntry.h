@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -54,18 +52,20 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
- * See @ref of_zip_archive_entry_attribute_compatibility.
+ * See @ref OFZIPArchiveEntryAttributeCompatibility.
  */
-@property (readwrite, nonatomic) uint16_t versionMadeBy;
+@property (readwrite, nonatomic)
+    OFZIPArchiveEntryAttributeCompatibility versionMadeBy;
 
 /**
  * @brief The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
- * See @ref of_zip_archive_entry_attribute_compatibility.
+ * See @ref OFZIPArchiveEntryAttributeCompatibility.
  */
-@property (readwrite, nonatomic) uint16_t minVersionNeeded;
+@property (readwrite, nonatomic)
+    OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
 
 /**
  * @brief The last modification date of the entry's file.
@@ -78,15 +78,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The compression method of the entry.
  *
  * Supported values are:
- * Value                                             | Description
- * --------------------------------------------------|---------------
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE      | No compression
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE   | Deflate
- * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 | Deflate64
+ * Value                                       | Description
+ * --------------------------------------------|---------------
+ * OFZIPArchiveEntryCompressionMethodNone      | No compression
+ * OFZIPArchiveEntryCompressionMethodDeflate   | Deflate
+ * OFZIPArchiveEntryCompressionMethodDeflate64 | Deflate64
  *
  * Other values may be returned, but the file cannot be extracted then.
  */
-@property (readwrite, nonatomic) uint16_t compressionMethod;
+@property (readwrite, nonatomic)
+    OFZIPArchiveEntryCompressionMethod compressionMethod;
 
 /**
  * @brief The compressed size of the entry's file.

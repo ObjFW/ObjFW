@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *namespace;
 #else
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, getter=namespace)
-    OFString *namespace_;
+    OFString *nameSpace;
 #endif
 
 /**
@@ -65,12 +63,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString *)name
-			namespace: (nullable OFString *)namespace_
+			namespace: (nullable OFString *)nameSpace
 		      stringValue: (OFString *)stringValue;
 
 /**
@@ -87,12 +85,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
+		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (OFString *)stringValue;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;

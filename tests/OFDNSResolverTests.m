@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,7 +24,7 @@
 	OFDNSResolver *resolver = [OFDNSResolver resolver];
 	OFMutableString *staticHosts = [OFMutableString string];
 
-	[of_stdout setForegroundColor: [OFColor lime]];
+	[OFStdOut setForegroundColor: [OFColor lime]];
 
 	for (OFString *host in resolver.staticHosts) {
 		OFString *IPs;
@@ -39,32 +37,32 @@
 
 		[staticHosts appendFormat: @"%@=(%@)", host, IPs];
 	}
-	[of_stdout writeFormat: @"[OFDNSResolver] Static hosts: %@\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Static hosts: %@\n",
 	    staticHosts];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Name servers: %@\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Name servers: %@\n",
 	    [resolver.nameServers componentsJoinedByString: @", "]];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Local domain: %@\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Local domain: %@\n",
 	    resolver.localDomain];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Search domains: %@\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Search domains: %@\n",
 	    [resolver.searchDomains componentsJoinedByString: @", "]];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Timeout: %lf\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Timeout: %lf\n",
 	    resolver.timeout];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Max attempts: %u\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Max attempts: %u\n",
 	    resolver.maxAttempts];
 
-	[of_stdout writeFormat:
+	[OFStdOut writeFormat:
 	    @"[OFDNSResolver] Min number of dots in absolute name: %u\n",
 	    resolver.minNumberOfDotsInAbsoluteName];
 
-	[of_stdout writeFormat: @"[OFDNSResolver] Uses TCP: %u\n",
+	[OFStdOut writeFormat: @"[OFDNSResolver] Uses TCP: %u\n",
 	    resolver.usesTCP];
 
-	[of_stdout writeFormat:
+	[OFStdOut writeFormat:
 	    @"[OFDNSResolver] Config reload interval: %lf\n",
 	    resolver.configReloadInterval];
 

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,31 +20,32 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-#import "mutex.h"
-#import "once.h"
 
-static of_rmutex_t globalMutex;
+#import "OFOnce.h"
+#import "OFPlainMutex.h"
+
+static OFPlainRecursiveMutex globalMutex;
 
 static void
 init(void)
 {
-	if (!of_rmutex_new(&globalMutex))
+	if (OFPlainRecursiveMutexNew(&globalMutex) != 0)
 		OBJC_ERROR("Failed to create global mutex!");
 }
 
 void
-objc_global_mutex_lock(void)
+objc_globalMutex_lock(void)
 {
-	static of_once_t once_control = OF_ONCE_INIT;
-	of_once(&once_control, init);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, init);
 
-	if (!of_rmutex_lock(&globalMutex))
+	if (OFPlainRecursiveMutexLock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to lock global mutex!");
 }
 
 void
-objc_global_mutex_unlock(void)
+objc_globalMutex_unlock(void)
 {
-	if (!of_rmutex_unlock(&globalMutex))
+	if (OFPlainRecursiveMutexUnlock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to unlock global mutex!");
 }

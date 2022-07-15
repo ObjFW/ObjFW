@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,7 +37,7 @@
 {
 	self = [super init];
 
-	if (!of_rmutex_new(&_rmutex)) {
+	if (OFPlainRecursiveMutexNew(&_rmutex) != 0) {
 		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
@@ -53,8 +51,10 @@
 - (void)dealloc
 {
 	if (_initialized) {
-		if (!of_rmutex_free(&_rmutex)) {
-			OF_ENSURE(errno == EBUSY);
+		int error = OFPlainRecursiveMutexFree(&_rmutex);
+
+		if (error != 0) {
+			OFEnsure(error == EBUSY);
 
 			@throw [OFStillLockedException exceptionWithLock: self];
 		}
@@ -67,19 +67,23 @@
 
 - (void)lock
 {
-	if (!of_rmutex_lock(&_rmutex))
+	int error = OFPlainRecursiveMutexLock(&_rmutex);
+
+	if (error != 0)
 		@throw [OFLockFailedException exceptionWithLock: self
-							  errNo: errno];
+							  errNo: error];
 }
 
 - (bool)tryLock
 {
-	if (!of_rmutex_trylock(&_rmutex)) {
-		if (errno == EBUSY)
+	int error = OFPlainRecursiveMutexTryLock(&_rmutex);
+
+	if (error != 0) {
+		if (error == EBUSY)
 			return false;
 		else
 			@throw [OFLockFailedException exceptionWithLock: self
-								  errNo: errno];
+								  errNo: error];
 	}
 
 	return true;
@@ -87,9 +91,11 @@
 
 - (void)unlock
 {
-	if (!of_rmutex_unlock(&_rmutex))
+	int error = OFPlainRecursiveMutexUnlock(&_rmutex);
+
+	if (error != 0)
 		@throw [OFUnlockFailedException exceptionWithLock: self
-							    errNo: errno];
+							    errNo: error];
 }
 
 - (OFString *)description

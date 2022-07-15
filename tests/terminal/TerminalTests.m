@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -40,81 +38,81 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	size_t i;
 	OFEnumerator OF_GENERIC(OFColor *) *reverseEnumerator;
 
-	[of_stdout writeFormat: @"%dx%d\n", of_stdout.columns, of_stdout.rows];
+	[OFStdOut writeFormat: @"%dx%d\n", OFStdOut.columns, OFStdOut.rows];
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[of_stdout setForegroundColor: color];
-		[of_stdout writeFormat: @"%zx", i++];
+		[OFStdOut setForegroundColor: color];
+		[OFStdOut writeFormat: @"%zx", i++];
 	}
-	[of_stdout reset];
-	[of_stdout writeLine: @"R"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"R"];
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[of_stdout setBackgroundColor: color];
-		[of_stdout writeFormat: @"%zx", i++];
+		[OFStdOut setBackgroundColor: color];
+		[OFStdOut writeFormat: @"%zx", i++];
 	}
-	[of_stdout reset];
-	[of_stdout writeLine: @"R"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"R"];
 
 	i = 0;
 	reverseEnumerator = [colors.reversedArray objectEnumerator];
 	for (OFColor *color in colors) {
-		[of_stdout setForegroundColor: color];
-		[of_stdout setBackgroundColor: [reverseEnumerator nextObject]];
-		[of_stdout writeFormat: @"%zx", i++];
+		[OFStdOut setForegroundColor: color];
+		[OFStdOut setBackgroundColor: [reverseEnumerator nextObject]];
+		[OFStdOut writeFormat: @"%zx", i++];
 	}
-	[of_stdout reset];
-	[of_stdout writeLine: @"R"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"R"];
 
 	for (i = 0; i < colors.count * 2; i++) {
 		if (i % 2)
-			[of_stdout setBackgroundColor: [colors objectAtIndex:
+			[OFStdOut setBackgroundColor: [colors objectAtIndex:
 			    ((i / 2) + 2) % colors.count]];
 		else
-			[of_stdout setForegroundColor:
+			[OFStdOut setForegroundColor:
 			    [colors objectAtIndex: i / 2]];
 
-		[of_stdout writeFormat: @"%zx", i / 2];
+		[OFStdOut writeFormat: @"%zx", i / 2];
 	}
-	[of_stdout reset];
-	[of_stdout writeLine: @"R"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"R"];
 
-	[of_stdout writeLine: @"Press return"];
-	[of_stdin readLine];
+	[OFStdOut writeLine: @"Press return"];
+	[OFStdIn readLine];
 
-	[of_stdout setBackgroundColor: [OFColor green]];
-	[of_stdout writeString: @"Hello!"];
+	[OFStdOut setBackgroundColor: [OFColor green]];
+	[OFStdOut writeString: @"Hello!"];
 	[OFThread sleepForTimeInterval: 2];
-	[of_stdout eraseLine];
-	[of_stdout writeString: @"World!"];
-	[OFThread sleepForTimeInterval: 2];
-
-	[of_stdout clear];
+	[OFStdOut eraseLine];
+	[OFStdOut writeString: @"World!"];
 	[OFThread sleepForTimeInterval: 2];
 
-	[of_stdout setCursorPosition: of_point(5, 3)];
-	[of_stdout writeString: @"Text at (5, 3)"];
+	[OFStdOut clear];
 	[OFThread sleepForTimeInterval: 2];
 
-	[of_stdout setRelativeCursorPosition: of_point(-2, 0)];
-	[OFThread sleepForTimeInterval: 2];
-	[of_stdout setRelativeCursorPosition: of_point(2, 0)];
-	[OFThread sleepForTimeInterval: 2];
-	[of_stdout setRelativeCursorPosition: of_point(0, -2)];
-	[OFThread sleepForTimeInterval: 2];
-	[of_stdout setRelativeCursorPosition: of_point(0, 2)];
-	[OFThread sleepForTimeInterval: 2];
-	[of_stdout setRelativeCursorPosition: of_point(1, 1)];
-	[OFThread sleepForTimeInterval: 2];
-	[of_stdout setRelativeCursorPosition: of_point(-1, -1)];
+	[OFStdOut setCursorPosition: OFPointMake(5, 3)];
+	[OFStdOut writeString: @"Text at (5, 3)"];
 	[OFThread sleepForTimeInterval: 2];
 
-	[of_stdout setCursorColumn: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(-2, 0)];
+	[OFThread sleepForTimeInterval: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(2, 0)];
+	[OFThread sleepForTimeInterval: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(0, -2)];
+	[OFThread sleepForTimeInterval: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(0, 2)];
+	[OFThread sleepForTimeInterval: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(1, 1)];
+	[OFThread sleepForTimeInterval: 2];
+	[OFStdOut setRelativeCursorPosition: OFPointMake(-1, -1)];
 	[OFThread sleepForTimeInterval: 2];
 
-	[of_stdout reset];
+	[OFStdOut setCursorColumn: 2];
+	[OFThread sleepForTimeInterval: 2];
+
+	[OFStdOut reset];
 
 	[OFApplication terminate];
 }

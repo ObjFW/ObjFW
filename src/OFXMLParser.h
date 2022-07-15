@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,14 +34,16 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFXMLParserDelegate <OFObject>
 @optional
 /**
- * @brief This callback is called when the XML parser found processing
- *	  instructions.
+ * @brief This callback is called when the XML parser found a processing
+ *	  instruction.
  *
- * @param parser The parser which found processing instructions
- * @param processingInstructions The processing instructions
+ * @param parser The parser which found a processing instruction
+ * @param target The target of the processing instruction
+ * @param data The data of the processing instruction
  */
--		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)processingInstructions;
+-			  (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructionWithTarget: (OFString *)target
+				  data: (OFString *)data;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new
@@ -84,8 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param characters The characters the XML parser found
  */
--    (void)parser: (OFXMLParser *)parser
-  foundCharacters: (OFString *)characters;
+- (void)parser: (OFXMLParser *)parser foundCharacters: (OFString *)characters;
 
 /**
  * @brief This callback is called when the XML parser found CDATA.
@@ -93,8 +92,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param CDATA The CDATA the XML parser found
  */
-- (void)parser: (OFXMLParser *)parser
-    foundCDATA: (OFString *)CDATA;
+- (void)parser: (OFXMLParser *)parser foundCDATA: (OFString *)CDATA;
 
 /**
  * @brief This callback is called when the XML parser found a comment.
@@ -102,8 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a comment
  * @param comment The comment the XML parser found
  */
-- (void)parser: (OFXMLParser *)parser
-  foundComment: (OFString *)comment;
+- (void)parser: (OFXMLParser *)parser foundComment: (OFString *)comment;
 
 /**
  * @brief This callback is called when the XML parser found an entity it
@@ -133,28 +130,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFXMLParser: OFObject
 {
 	id <OFXMLParserDelegate> _Nullable _delegate;
-	enum of_xml_parser_state {
-		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
-		OF_XMLPARSER_OUTSIDE_TAG,
-		OF_XMLPARSER_TAG_OPENED,
-		OF_XMLPARSER_IN_PROCESSING_INSTRUCTIONS,
-		OF_XMLPARSER_IN_TAG_NAME,
-		OF_XMLPARSER_IN_CLOSE_TAG_NAME,
-		OF_XMLPARSER_IN_TAG,
-		OF_XMLPARSER_IN_ATTRIBUTE_NAME,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_EQUAL_SIGN,
-		OF_XMLPARSER_EXPECT_ATTRIBUTE_DELIMITER,
-		OF_XMLPARSER_IN_ATTRIBUTE_VALUE,
-		OF_XMLPARSER_EXPECT_TAG_CLOSE,
-		OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE,
-		OF_XMLPARSER_IN_EXCLAMATION_MARK,
-		OF_XMLPARSER_IN_CDATA_OPENING,
-		OF_XMLPARSER_IN_CDATA,
-		OF_XMLPARSER_IN_COMMENT_OPENING,
-		OF_XMLPARSER_IN_COMMENT_1,
-		OF_XMLPARSER_IN_COMMENT_2,
-		OF_XMLPARSER_IN_DOCTYPE
-	} _state;
+	uint_least8_t _state;
 	size_t _i, _last;
 	const char *_Nullable _data;
 	OFMutableData *_buffer;
@@ -170,7 +146,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _acceptProlog;
 	size_t _lineNumber;
 	bool _lastCarriageReturn, _finishedParsing;
-	of_string_encoding_t _encoding;
+	OFStringEncoding _encoding;
 	size_t _depthLimit;
 }
 
@@ -188,7 +164,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Whether the XML parser has finished parsing.
  */
-@property (readonly, nonatomic) bool hasFinishedParsing;
+@property (readonly, nonatomic, getter=hasFinishedParsing) bool finishedParsing;
 
 /**
  * @brief The depth limit for the XML parser.
@@ -212,8 +188,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param buffer The buffer to parse
  * @param length The length of the buffer
  */
-- (void)parseBuffer: (const char *)buffer
-	     length: (size_t)length;
+- (void)parseBuffer: (const char *)buffer length: (size_t)length;
 
 /**
  * @brief Parses the specified string.
@@ -228,15 +203,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param stream The stream to parse
  */
 - (void)parseStream: (OFStream *)stream;
-
-#ifdef OF_HAVE_FILES
-/**
- * @brief Parses the specified file.
- *
- * @param path The path to the file to parse
-*/
-- (void)parseFile: (OFString *)path;
-#endif
 @end
 
 OF_ASSUME_NONNULL_END

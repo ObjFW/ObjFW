@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSPXStreamSocket";
+static OFString *const module = @"OFSPXStreamSocket";
 
 @interface SPXStreamSocketDelegate: OFObject <OFSPXStreamSocketDelegate>
 {
@@ -41,7 +39,7 @@ static OFString *module = @"OFSPXStreamSocket";
   didAcceptSocket: (OFStreamSocket *)accepted
 	exception: (id)exception
 {
-	OF_ENSURE(!_accepted);
+	OFEnsure(!_accepted);
 
 	_accepted = (sock == _expectedServerSocket && accepted != nil &&
 	    exception == nil);
@@ -58,7 +56,7 @@ static OFString *module = @"OFSPXStreamSocket";
 	      port: (uint16_t)port
 	 exception: (id)exception
 {
-	OF_ENSURE(!_connected);
+	OFEnsure(!_connected);
 
 	_connected = (sock == _expectedClientSocket &&
 	    memcmp(node, _expectedNode, IPX_NODE_LEN) == 0 &&
@@ -74,9 +72,9 @@ static OFString *module = @"OFSPXStreamSocket";
 - (void)SPXStreamSocketTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSPXStreamSocket *sockClient, *sockServer, *sockAccepted;;
-	of_socket_address_t address1;
-	const of_socket_address_t *address2;
+	OFSPXStreamSocket *sockClient, *sockServer = nil, *sockAccepted;
+	OFSocketAddress address1;
+	const OFSocketAddress *address2;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 	uint32_t network;
 	uint16_t port;
@@ -92,21 +90,21 @@ static OFString *module = @"OFSPXStreamSocket";
 	} @catch (OFBindFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[bindToPort:]: "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
 			    @"IPX not configured, skipping tests"];
 			break;
 		default:
@@ -117,37 +115,32 @@ static OFString *module = @"OFSPXStreamSocket";
 		return;
 	}
 
-	of_socket_address_get_ipx_node(&address1, node);
-	network = of_socket_address_get_ipx_network(&address1);
-	port = of_socket_address_get_port(&address1);
+	OFSocketAddressIPXNode(&address1, node);
+	network = OFSocketAddressIPXNetwork(&address1);
+	port = OFSocketAddressPort(&address1);
 
 	TEST(@"-[listen]", R([sockServer listen]))
 
 	TEST(@"-[connectToNode:network:port:]",
-	    R([sockClient connectToNode: node
-				network: network
-				   port: port]))
+	    R([sockClient connectToNode: node network: network port: port]))
 
 	TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
 
 	/* Test reassembly (this would not work with OFSPXSocket) */
 	TEST(@"-[writeBuffer:length:]",
-	    R([sockAccepted writeBuffer: "Hello"
-				 length: 5]))
+	    R([sockAccepted writeBuffer: "Hello" length: 5]))
 
 	TEST(@"-[readIntoBuffer:length:]",
-	    [sockClient readIntoBuffer: buffer
-				length: 2] == 2 &&
+	    [sockClient readIntoBuffer: buffer length: 2] == 2 &&
 	    memcmp(buffer, "He", 2) == 0 &&
-	    [sockClient readIntoBuffer: buffer
-				length: 3] == 3 &&
+	    [sockClient readIntoBuffer: buffer length: 3] == 3 &&
 	    memcmp(buffer, "llo", 3) == 0)
 
 	TEST(@"-[remoteAddress]",
 	    (address2 = sockAccepted.remoteAddress) &&
-	    R(of_socket_address_get_ipx_node(address2, node2)) &&
+	    R(OFSocketAddressIPXNode(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0 &&
-	    of_socket_address_get_ipx_network(address2) == network)
+	    OFSocketAddressIPXNetwork(address2) == network)
 
 	delegate = [[[SPXStreamSocketDelegate alloc] init] autorelease];
 
@@ -163,11 +156,11 @@ static OFString *module = @"OFSPXStreamSocket";
 	[sockServer listen];
 	[sockServer asyncAccept];
 
-	of_socket_address_get_ipx_node(&address1, node);
+	OFSocketAddressIPXNode(&address1, node);
 	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
 	delegate->_expectedNetwork = network =
-	    of_socket_address_get_ipx_network(&address1);
-	delegate->_expectedPort = port = of_socket_address_get_port(&address1);
+	    OFSocketAddressIPXNetwork(&address1);
+	delegate->_expectedPort = port = OFSocketAddressPort(&address1);
 
 	@try {
 		[sockClient asyncConnectToNode: node
@@ -182,9 +175,9 @@ static OFString *module = @"OFSPXStreamSocket";
 	} @catch (OFObserveFailedException *e) {
 		switch (e.errNo) {
 		case ENOTSOCK:
-			[of_stdout setForegroundColor: [OFColor lime]];
-			[of_stdout writeLine:
-			    @"[OFSPXStreamSocket] -[asyncAccept] & "
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeLine:
+			    @"\r[OFSPXStreamSocket] -[asyncAccept] & "
 			    @"-[asyncConnectToNode:network:port:]: select() "
 			    @"not supported for SPX, skipping test"];
 			break;

@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,10 +21,11 @@
 #import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
-#define DIGEST_SIZE 20
-#define BLOCK_SIZE 64
+static const size_t digestSize = 20;
+static const size_t blockSize = 64;
 
 OF_DIRECT_MEMBERS
 @interface OFRIPEMD160Hash ()
@@ -73,7 +72,7 @@ byteSwapVectorIfBE(uint32_t *vector, uint_fast8_t length)
 {
 #ifdef OF_BIG_ENDIAN
 	for (uint_fast8_t i = 0; i < length; i++)
-		vector[i] = OF_BSWAP32(vector[i]);
+		vector[i] = OFByteSwap32(vector[i]);
 #endif
 }
 
@@ -91,29 +90,29 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 	byteSwapVectorIfBE(buffer, 16);
 
-#define LOOP_BODY(f, g, k, k2)					\
-	{							\
-		uint32_t tmp;					\
-								\
-		tmp = new[0] + f(new[1], new[2], new[3]) +	\
-		    buffer[wordOrder[i]] + k;			\
-		tmp = OF_ROL(tmp, rotateBits[i]) + new[4];	\
-								\
-		new[0] = new[4];				\
-		new[4] = new[3];				\
-		new[3] = OF_ROL(new[2], 10);			\
-		new[2] = new[1];				\
-		new[1] = tmp;					\
-								\
-		tmp = new2[0] + g(new2[1], new2[2], new2[3]) +	\
-		    buffer[wordOrder2[i]] + k2;			\
-		tmp = OF_ROL(tmp, rotateBits2[i]) + new2[4];	\
-								\
-		new2[0] = new2[4];				\
-		new2[4] = new2[3];				\
-		new2[3] = OF_ROL(new2[2], 10);			\
-		new2[2] = new2[1];				\
-		new2[1] = tmp;					\
+#define LOOP_BODY(f, g, k, k2)						\
+	{								\
+		uint32_t tmp;						\
+									\
+		tmp = new[0] + f(new[1], new[2], new[3]) +		\
+		    buffer[wordOrder[i]] + k;				\
+		tmp = OFRotateLeft(tmp, rotateBits[i]) + new[4];	\
+									\
+		new[0] = new[4];					\
+		new[4] = new[3];					\
+		new[3] = OFRotateLeft(new[2], 10);			\
+		new[2] = new[1];					\
+		new[1] = tmp;						\
+									\
+		tmp = new2[0] + g(new2[1], new2[2], new2[3]) +		\
+		    buffer[wordOrder2[i]] + k2;				\
+		tmp = OFRotateLeft(tmp, rotateBits2[i]) + new2[4];	\
+									\
+		new2[0] = new2[4];					\
+		new2[4] = new2[3];					\
+		new2[3] = OFRotateLeft(new2[2], 10);			\
+		new2[2] = new2[1];					\
+		new2[1] = tmp;						\
 	}
 
 	for (; i < 16; i++)
@@ -143,15 +142,15 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 + (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 + (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
-+ (instancetype)cryptoHashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
++ (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithAllowsSwappableMemory:
 	    allowsSwappableMemory] autorelease];
@@ -196,12 +195,12 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (size_t)digestSize
 {
-	return DIGEST_SIZE;
+	return digestSize;
 }
 
 - (size_t)blockSize
 {
-	return BLOCK_SIZE;
+	return blockSize;
 }
 
 - (id)copy
@@ -225,8 +224,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_iVars->state[4] = 0xC3D2E1F0;
 }
 
-- (void)updateWithBuffer: (const void *)buffer_
-		  length: (size_t)length
+- (void)updateWithBuffer: (const void *)buffer_ length: (size_t)length
 {
 	const unsigned char *buffer = buffer_;
 
@@ -261,36 +259,43 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (const unsigned char *)digest
 {
+	if (!_calculated)
+		@throw [OFHashNotCalculatedException exceptionWithObject: self];
+
+	return (const unsigned char *)_iVars->state;
+}
+
+- (void)calculate
+{
 	if (_calculated)
-		return (const unsigned char *)_iVars->state;
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithObject: self];
 
 	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
-	of_explicit_memset(_iVars->buffer.bytes + _iVars->bufferLength + 1, 0,
+	OFZeroMemory(_iVars->buffer.bytes + _iVars->bufferLength + 1,
 	    64 - _iVars->bufferLength - 1);
 
 	if (_iVars->bufferLength >= 56) {
 		processBlock(_iVars->state, _iVars->buffer.words);
-		of_explicit_memset(_iVars->buffer.bytes, 0, 64);
+		OFZeroMemory(_iVars->buffer.bytes, 64);
 	}
 
 	_iVars->buffer.words[14] =
-	    OF_BSWAP32_IF_BE((uint32_t)(_iVars->bits & 0xFFFFFFFF));
+	    OFToLittleEndian32((uint32_t)(_iVars->bits & 0xFFFFFFFF));
 	_iVars->buffer.words[15] =
-	    OF_BSWAP32_IF_BE((uint32_t)(_iVars->bits >> 32));
+	    OFToLittleEndian32((uint32_t)(_iVars->bits >> 32));
 
 	processBlock(_iVars->state, _iVars->buffer.words);
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	byteSwapVectorIfBE(_iVars->state, 5);
 	_calculated = true;
-
-	return (const unsigned char *)_iVars->state;
 }
 
 - (void)reset
 {
 	[self of_resetState];
 	_iVars->bits = 0;
-	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
 	_iVars->bufferLength = 0;
 	_calculated = false;
 }

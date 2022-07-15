@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,9 +18,8 @@
 #import "OFCharacterSet.h"
 #import "OFBitSetCharacterSet.h"
 #import "OFInvertedCharacterSet.h"
+#import "OFOnce.h"
 #import "OFRangeCharacterSet.h"
-
-#import "once.h"
 
 @interface OFPlaceholderCharacterSet: OFCharacterSet
 @end
@@ -54,7 +51,7 @@ initWhitespaceCharacterSet(void)
 	    initWithCharactersInString: characters];
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	return (id)[[OFRangeCharacterSet alloc] initWithRange: range];
 }
@@ -102,15 +99,15 @@ initWhitespaceCharacterSet(void)
 	    autorelease];
 }
 
-+ (instancetype)characterSetWithRange: (of_range_t)range
++ (instancetype)characterSetWithRange: (OFRange)range
 {
 	return [[[self alloc] initWithRange: range] autorelease];
 }
 
 + (OFCharacterSet *)whitespaceCharacterSet
 {
-	static of_once_t onceControl = OF_ONCE_INIT;
-	of_once(&onceControl, initWhitespaceCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initWhitespaceCharacterSet);
 
 	return whitespaceCharacterSet;
 }
@@ -136,12 +133,12 @@ initWhitespaceCharacterSet(void)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRange: (of_range_t)range
+- (instancetype)initWithRange: (OFRange)range
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -170,10 +167,10 @@ initWhitespaceCharacterSet(void)
 
 - (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (bool)characterIsMember: (OFUnichar)character
 {
 	switch (character) {
 	case 0x0009:

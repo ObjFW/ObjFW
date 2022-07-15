@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +14,8 @@
  */
 
 #include "config.h"
+
+#include <errno.h>
 
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
@@ -63,19 +63,15 @@ OF_DIRECT_MEMBERS
 @implementation OFTarArchive: OFObject
 @synthesize encoding = _encoding;
 
-+ (instancetype)archiveWithStream: (OFStream *)stream
-			     mode: (OFString *)mode
++ (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode] autorelease];
+	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path
-			   mode: (OFString *)mode
++ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
+	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 #endif
 
@@ -84,8 +80,7 @@ OF_DIRECT_MEMBERS
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			  mode: (OFString *)mode
+- (instancetype)initWithStream: (OFStream *)stream mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -93,15 +88,15 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OF_TAR_ARCHIVE_MODE_READ;
+			_mode = OFTarArchiveModeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OF_TAR_ARCHIVE_MODE_WRITE;
+			_mode = OFTarArchiveModeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OF_TAR_ARCHIVE_MODE_APPEND;
+			_mode = OFTarArchiveModeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OF_TAR_ARCHIVE_MODE_APPEND) {
+		if (_mode == OFTarArchiveModeAppend) {
 			uint32_t buffer[1024 / sizeof(uint32_t)];
 			bool empty = true;
 
@@ -110,8 +105,7 @@ OF_DIRECT_MEMBERS
 
 			[(OFSeekableStream *)_stream seekToOffset: -1024
 							   whence: SEEK_END];
-			[_stream readIntoBuffer: buffer
-				    exactLength: 1024];
+			[_stream readIntoBuffer: buffer exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
 				if (buffer[i] != 0)
@@ -124,7 +118,7 @@ OF_DIRECT_MEMBERS
 							  whence: SEEK_END];
 		}
 
-		_encoding = OF_STRING_ENCODING_UTF_8;
+		_encoding = OFStringEncodingUTF8;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -134,21 +128,17 @@ OF_DIRECT_MEMBERS
 }
 
 #ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path
-			mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
 {
 	OFFile *file;
 
 	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"r+"];
+		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
 	else
-		file = [[OFFile alloc] initWithPath: path
-					       mode: mode];
+		file = [[OFFile alloc] initWithPath: path mode: mode];
 
 	@try {
-		self = [self initWithStream: file
-				       mode: mode];
+		self = [self initWithStream: file mode: mode];
 	} @finally {
 		[file release];
 	}
@@ -170,7 +160,7 @@ OF_DIRECT_MEMBERS
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
-	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
+	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -185,16 +175,14 @@ OF_DIRECT_MEMBERS
 	if (_stream.atEndOfStream)
 		return nil;
 
-	[_stream readIntoBuffer: buffer
-		    exactLength: 512];
+	[_stream readIntoBuffer: buffer exactLength: 512];
 
 	for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
 		if (buffer[i] != 0)
 			empty = false;
 
 	if (empty) {
-		[_stream readIntoBuffer: buffer
-			    exactLength: 512];
+		[_stream readIntoBuffer: buffer exactLength: 512];
 
 		for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
 			if (buffer[i] != 0)
@@ -216,7 +204,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
+	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_lastReturnedStream == nil)
@@ -230,8 +218,7 @@ OF_DIRECT_MEMBERS
 {
 	void *pool;
 
-	if (_mode != OF_TAR_ARCHIVE_MODE_WRITE &&
-	    _mode != OF_TAR_ARCHIVE_MODE_APPEND)
+	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -244,8 +231,7 @@ OF_DIRECT_MEMBERS
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	[entry of_writeToStream: _stream
-		       encoding: _encoding];
+	[entry of_writeToStream: _stream encoding: _encoding];
 
 	_lastReturnedStream = [[OFTarArchiveFileWriteStream alloc]
 	    of_initWithStream: _stream
@@ -270,12 +256,10 @@ OF_DIRECT_MEMBERS
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	if (_mode == OF_TAR_ARCHIVE_MODE_WRITE ||
-	    _mode == OF_TAR_ARCHIVE_MODE_APPEND) {
+	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
 		char buffer[1024];
 		memset(buffer, '\0', 1024);
-		[_stream writeBuffer: buffer
-			      length: 1024];
+		[_stream writeBuffer: buffer length: 1024];
 	}
 
 	[_stream release];
@@ -330,9 +314,7 @@ OF_DIRECT_MEMBERS
 	if ((uint64_t)length > _toRead)
 		length = (size_t)_toRead;
 
-	ret = [_stream readIntoBuffer: buffer
-			       length: length];
-
+	ret = [_stream readIntoBuffer: buffer length: length];
 	if (ret == 0)
 		_atEndOfStream = true;
 
@@ -379,10 +361,10 @@ OF_DIRECT_MEMBERS
 		return;
 
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
-	    _toRead <= INT64_MAX && (of_offset_t)_toRead == (int64_t)_toRead) {
+	    _toRead <= INT64_MAX && (OFFileOffset)_toRead == (int64_t)_toRead) {
 		uint64_t size;
 
-		[(OFSeekableStream *)_stream seekToOffset: (of_offset_t)_toRead
+		[(OFSeekableStream *)_stream seekToOffset: (OFFileOffset)_toRead
 						   whence: SEEK_CUR];
 
 		_toRead = 0;
@@ -398,8 +380,7 @@ OF_DIRECT_MEMBERS
 		uint64_t size;
 
 		while (_toRead >= 512) {
-			[_stream readIntoBuffer: buffer
-				    exactLength: 512];
+			[_stream readIntoBuffer: buffer exactLength: 512];
 			_toRead -= 512;
 		}
 
@@ -448,11 +429,8 @@ OF_DIRECT_MEMBERS
 	[super dealloc];
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	size_t bytesWritten;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -460,16 +438,21 @@ OF_DIRECT_MEMBERS
 		@throw [OFOutOfRangeException exception];
 
 	@try {
-		bytesWritten = [_stream writeBuffer: buffer
-					     length: length];
+		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten <= length);
+
 		_toWrite -= e.bytesWritten;
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return e.bytesWritten;
+
 		@throw e;
 	}
 
-	_toWrite -= bytesWritten;
+	_toWrite -= length;
 
-	return bytesWritten;
+	return length;
 }
 
 - (bool)lowlevelIsAtEndOfStream

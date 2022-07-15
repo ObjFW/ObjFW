@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFINIFile";
+static OFString *module;
 
 @implementation TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests
@@ -52,9 +50,11 @@ static OFString *module = @"OFINIFile";
 	OFString *writePath;
 #endif
 
+	module = @"OFINIFile";
+
 	TEST(@"+[fileWithPath:encoding:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"
-				   encoding: OF_STRING_ENCODING_CODEPAGE_437]))
+				   encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
 	foobar = [file categoryForName: @"foobar"];
@@ -69,50 +69,42 @@ static OFString *module = @"OFINIFile";
 	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
 
 	TEST(@"-[setString:forKey:]",
-	    R([tests setString: @"baz"
-			forKey: @"foo"]) &&
-	    R([tests setString: @"new"
-			forKey: @"new"]) &&
-	    R([foobar setString: @"a\fb"
-			 forKey: @"qux3"]))
+	    R([tests setString: @"baz" forKey: @"foo"]) &&
+	    R([tests setString: @"new" forKey: @"new"]) &&
+	    R([foobar setString: @"a\fb" forKey: @"qux3"]))
 
-	TEST(@"-[integerForKey:defaultValue:]",
-	    [types integerForKey: @"integer"
-		    defaultValue: 2] == 0x20)
+	TEST(@"-[longLongForKey:defaultValue:]",
+	    [types longLongForKey: @"integer" defaultValue: 2] == 0x20)
 
-	TEST(@"-[setInteger:forKey:]", R([types setInteger: 0x10
-						    forKey: @"integer"]))
+	TEST(@"-[setLongLong:forKey:]",
+	    R([types setLongLong: 0x10 forKey: @"integer"]))
 
 	TEST(@"-[boolForKey:defaultValue:]",
-	    [types boolForKey: @"bool"
-		 defaultValue: false] == true)
+	    [types boolForKey: @"bool" defaultValue: false] == true)
 
-	TEST(@"-[setBool:forKey:]", R([types setBool: false
-					      forKey: @"bool"]))
+	TEST(@"-[setBool:forKey:]", R([types setBool: false forKey: @"bool"]))
 
 	TEST(@"-[floatForKey:defaultValue:]",
-	    [types floatForKey: @"float"
-		  defaultValue: 1] == 0.5f)
+	    [types floatForKey: @"float" defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]", R([types setFloat: 0.25f
-						forKey: @"float"]))
+	TEST(@"-[setFloat:forKey:]",
+	    R([types setFloat: 0.25f forKey: @"float"]))
 
 	TEST(@"-[doubleForKey:defaultValue:]",
-	    [types doubleForKey: @"double"
-		   defaultValue: 3] == 0.25)
+	    [types doubleForKey: @"double" defaultValue: 3] == 0.25)
 
-	TEST(@"-[setDouble:forKey:]", R([types setDouble: 0.75
-						  forKey: @"double"]))
+	TEST(@"-[setDouble:forKey:]",
+	    R([types setDouble: 0.75 forKey: @"double"]))
 
 	array = [OFArray arrayWithObjects: @"1", @"2", nil];
-	TEST(@"-[arrayForKey:]",
-	    [[types arrayForKey: @"array1"] isEqual: array] &&
-	    [[types arrayForKey: @"array2"] isEqual: array] &&
-	    [[types arrayForKey: @"array3"] isEqual: [OFArray array]])
+	TEST(@"-[stringArrayForKey:]",
+	    [[types stringArrayForKey: @"array1"] isEqual: array] &&
+	    [[types stringArrayForKey: @"array2"] isEqual: array] &&
+	    [[types stringArrayForKey: @"array3"] isEqual: [OFArray array]])
 
 	array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
-	TEST(@"-[setArray:forKey:]", R([types setArray: array
-						forKey: @"array1"]))
+	TEST(@"-[setStringArray:forKey:]",
+	    R([types setStringArray: array forKey: @"array1"]))
 
 	TEST(@"-[removeValueForKey:]",
 	    R([foobar removeValueForKey: @"quxqux "]) &&
@@ -122,19 +114,13 @@ static OFString *module = @"OFINIFile";
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
-# ifndef OF_IOS
-	writePath = @"tmpfile.ini";
-# else
-	writePath = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    [[OFApplication environment] objectForKey: @"HOME"],
-	    @"tmp", @"tmpfile.ini", nil]];
-# endif
+	writePath = [[OFSystemInfo temporaryDirectoryPath]
+	    stringByAppendingPathComponent: @"objfw-tests.ini"];
 	TEST(@"-[writeToFile:encoding:]",
 	    R([file writeToFile: writePath
-		       encoding: OF_STRING_ENCODING_CODEPAGE_437]) &&
-	    [[OFString
-		stringWithContentsOfFile: writePath
-				encoding: OF_STRING_ENCODING_CODEPAGE_437]
+		       encoding: OFStringEncodingCodepage437]) &&
+	    [[OFString stringWithContentsOfFile: writePath
+				       encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
 	[[OFFileManager defaultManager] removeItemAtPath: writePath];
 #else

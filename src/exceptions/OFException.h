@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFString;
 
-#define OF_BACKTRACE_SIZE 16
+#define OFBacktraceSize 16
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # ifndef EADDRINUSE
@@ -137,6 +135,10 @@ OF_ASSUME_NONNULL_BEGIN
 # endif
 #endif
 
+#ifndef EWOULDBLOCK
+# define EWOULDBLOCK EAGAIN
+#endif
+
 /**
  * @class OFException OFException.h ObjFW/OFException.h
  *
@@ -147,7 +149,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFException: OFObject
 {
-	void *_backtrace[OF_BACKTRACE_SIZE];
+	void *_backtrace[OFBacktraceSize];
 }
 
 /**
@@ -176,9 +178,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *of_strerror(int errNo);
+extern OFString *OFStrError(int errNo);
 #ifdef OF_WINDOWS
-extern OFString *of_windows_status_to_string(LSTATUS status);
+extern OFString *OFWindowsStatusToString(LSTATUS status);
 #endif
 #ifdef __cplusplus
 }

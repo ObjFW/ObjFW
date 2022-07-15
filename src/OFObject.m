@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "unistd_wrapper.h"
 
 #include <assert.h>
 
@@ -33,9 +32,16 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 #import "OFLocale.h"
 #import "OFMethodSignature.h"
 #import "OFRunLoop.h"
+#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
+# import "OFPlainMutex.h"	/* For OFSpinlock */
+#endif
+#import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
 
@@ -43,7 +49,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -62,54 +67,36 @@
 # include <proto/exec.h>
 #endif
 
-#import "OFString.h"
-
-#if defined(OF_HAVE_ATOMIC_OPS)
-# import "atomic.h"
-#elif defined(OF_HAVE_THREADS)
-# import "mutex.h"
-#endif
-
 #ifdef OF_APPLE_RUNTIME
 extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
-extern id of_forward(id, SEL, ...);
-extern struct stret of_forward_stret(id, SEL, ...);
+extern id OFForward(id, SEL, ...);
+extern struct Stret OFForward_stret(id, SEL, ...);
 #else
-# define of_forward of_method_not_found
-# define of_forward_stret of_method_not_found_stret
+# define OFForward OFMethodNotFound
+# define OFForward_stret OFMethodNotFound_stret
 #endif
 
-struct pre_ivar {
+struct PreIvars {
 	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	of_spinlock_t retainCountSpinlock;
+	OFSpinlock retainCountSpinlock;
 #endif
-	struct pre_mem *firstMem, *lastMem;
 };
 
-struct pre_mem {
-	struct pre_mem *prev, *next;
-	id owner;
-};
-
-#define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
+#define PRE_IVARS_ALIGN ((sizeof(struct PreIvars) + \
     (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_IVARS ((struct pre_ivar *)(void *)((char *)self - PRE_IVARS_ALIGN))
-
-#define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
-    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_MEM(mem) ((struct pre_mem *)(void *)((char *)mem - PRE_MEM_ALIGN))
+#define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
 	Class isa;
 } allocFailedException;
 
-uint32_t of_hash_seed;
+unsigned long OFHashSeed;
 
 void *
-of_malloc(size_t count, size_t size)
+OFAllocMemory(size_t count, size_t size)
 {
 	void *pointer;
 
@@ -127,7 +114,7 @@ of_malloc(size_t count, size_t size)
 }
 
 void *
-of_calloc(size_t count, size_t size)
+OFAllocZeroedMemory(size_t count, size_t size)
 {
 	void *pointer;
 
@@ -146,10 +133,12 @@ of_calloc(size_t count, size_t size)
 }
 
 void *
-of_realloc(void *pointer, size_t count, size_t size)
+OFResizeMemory(void *pointer, size_t count, size_t size)
 {
-	if OF_UNLIKELY (count == 0 || size == 0)
+	if OF_UNLIKELY (count == 0 || size == 0) {
+		free(pointer);
 		return NULL;
+	}
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
@@ -162,7 +151,7 @@ of_realloc(void *pointer, size_t count, size_t size)
 }
 
 void
-of_free(void *pointer)
+OFFreeMemory(void *pointer)
 {
 	free(pointer);
 }
@@ -184,20 +173,19 @@ initRandom(void)
 #endif
 
 uint16_t
-of_random16(void)
+OFRandom16(void)
 {
 #if defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint16_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
-	static of_once_t onceControl = OF_ONCE_INIT;
-
-	of_once(&onceControl, initRandom);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initRandom);
 # ifdef HAVE_RANDOM
 	return random() & 0xFFFF;
 # else
@@ -207,23 +195,23 @@ of_random16(void)
 }
 
 uint32_t
-of_random32(void)
+OFRandom32(void)
 {
 #if defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint32_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
-	return ((uint32_t)of_random16() << 16) | of_random16();
+	return ((uint32_t)OFRandom16() << 16) | OFRandom16();
 #endif
 }
 
 uint64_t
-of_random64(void)
+OFRandom64(void)
 {
 #if defined(HAVE_ARC4RANDOM_BUF)
 	uint64_t buffer;
@@ -234,12 +222,18 @@ of_random64(void)
 #elif defined(HAVE_GETRANDOM)
 	uint64_t buffer;
 
-	OF_ENSURE(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
+	OFEnsure(getrandom(&buffer, sizeof(buffer), 0) == sizeof(buffer));
 
 	return buffer;
 #else
-	return ((uint64_t)of_random32() << 32) | of_random32();
+	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
+}
+
+void
+OFHashInit(unsigned long *hash)
+{
+	*hash = OFHashSeed;
 }
 
 static const char *
@@ -259,7 +253,7 @@ uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
 	OFArray *backtrace = nil;
-	of_string_encoding_t encoding = [OFLocale encoding];
+	OFStringEncoding encoding = [OFLocale encoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [description cStringWithEncoding: encoding]);
@@ -284,7 +278,7 @@ enumerationMutationHandler(id object)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found(id object, SEL selector)
+OFMethodNotFound(id object, SEL selector)
 {
 	[object doesNotRecognizeSelector: selector];
 
@@ -298,13 +292,13 @@ of_method_not_found(id object, SEL selector)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found_stret(void *stret, id object, SEL selector)
+OFMethodNotFound_stret(void *stret, id object, SEL selector)
 {
-	of_method_not_found(object, selector);
+	OFMethodNotFound(object, selector);
 }
 
 id
-of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
+OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
     void **extra)
 {
 	OFObject *instance;
@@ -324,11 +318,11 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 		@throw (id)&allocFailedException;
 	}
 
-	((struct pre_ivar *)instance)->retainCount = 1;
+	((struct PreIvars *)instance)->retainCount = 1;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	if OF_UNLIKELY (!of_spinlock_new(
-	    &((struct pre_ivar *)instance)->retainCountSpinlock)) {
+	if OF_UNLIKELY (OFSpinlockNew(
+	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
 		free(instance);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -381,21 +375,21 @@ _references_to_categories_of_OFObject(void)
 	 * already been set, so this is the best we can do.
 	 */
 	if (dlsym(RTLD_DEFAULT, "NSFoundationVersionNumber") == NULL)
-		objc_setForwardHandler((void *)&of_forward,
-		    (void *)&of_forward_stret);
+		objc_setForwardHandler((void *)&OFForward,
+		    (void *)&OFForward_stret);
 #else
-	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
+	objc_setForwardHandler((IMP)&OFForward, (IMP)&OFForward_stret);
 #endif
 
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 
 	do {
-		of_hash_seed = of_random32();
-	} while (of_hash_seed == 0);
+		OFHashSeed = OFRandom32();
+	} while (OFHashSeed == 0);
 
 #ifdef OF_OBJFW_RUNTIME
 	objc_setTaggedPointerSecret(sizeof(uintptr_t) == 4
-	    ? (uintptr_t)of_random32() : (uintptr_t)of_random64());
+	    ? (uintptr_t)OFRandom32() : (uintptr_t)OFRandom64());
 #endif
 }
 
@@ -409,7 +403,7 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return of_alloc_object(self, 0, 0, NULL);
+	return OFAllocObject(self, 0, 0, NULL);
 }
 
 + (instancetype)new
@@ -425,7 +419,7 @@ _references_to_categories_of_OFObject(void)
 + (OFString *)className
 {
 	return [OFString stringWithCString: class_getName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
 }
 
 + (bool)isSubclassOfClass: (Class)class
@@ -478,8 +472,7 @@ _references_to_categories_of_OFObject(void)
 	return [self className];
 }
 
-+ (IMP)replaceClassMethod: (SEL)selector
-      withMethodFromClass: (Class)class
++ (IMP)replaceClassMethod: (SEL)selector withMethodFromClass: (Class)class
 {
 	IMP method = [class methodForSelector: selector];
 
@@ -490,8 +483,7 @@ _references_to_categories_of_OFObject(void)
 	    typeEncodingForSelector(object_getClass(class), selector));
 }
 
-+ (IMP)replaceInstanceMethod: (SEL)selector
-	 withMethodFromClass: (Class)class
++ (IMP)replaceInstanceMethod: (SEL)selector withMethodFromClass: (Class)class
 {
 	IMP method = [class instanceMethodForSelector: selector];
 
@@ -582,7 +574,7 @@ _references_to_categories_of_OFObject(void)
 - (OFString *)className
 {
 	return [OFString stringWithCString: object_getClassName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+				  encoding: OFStringEncodingASCII];
 }
 
 - (bool)isKindOfClass: (Class)class
@@ -626,8 +618,7 @@ _references_to_categories_of_OFObject(void)
 	return imp(self, selector);
 }
 
-- (id)performSelector: (SEL)selector
-	   withObject: (id)object
+- (id)performSelector: (SEL)selector withObject: (id)object
 {
 #if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id) =
@@ -686,8 +677,7 @@ _references_to_categories_of_OFObject(void)
 	return imp(self, selector, object1, object2, object3, object4);
 }
 
-- (void)performSelector: (SEL)selector
-	     afterDelay: (of_time_interval_t)delay
+- (void)performSelector: (SEL)selector afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -701,7 +691,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -717,7 +707,7 @@ _references_to_categories_of_OFObject(void)
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -735,7 +725,7 @@ _references_to_categories_of_OFObject(void)
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     withObject: (id)object3
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -755,7 +745,7 @@ _references_to_categories_of_OFObject(void)
 	     withObject: (id)object2
 	     withObject: (id)object3
 	     withObject: (id)object4
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -979,7 +969,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -994,7 +984,7 @@ _references_to_categories_of_OFObject(void)
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
 	     withObject: (id)object
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -1011,7 +1001,7 @@ _references_to_categories_of_OFObject(void)
 	       onThread: (OFThread *)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -1030,7 +1020,7 @@ _references_to_categories_of_OFObject(void)
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     withObject: (id)object3
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -1051,7 +1041,7 @@ _references_to_categories_of_OFObject(void)
 	     withObject: (id)object2
 	     withObject: (id)object3
 	     withObject: (id)object4
-	     afterDelay: (of_time_interval_t)delay
+	     afterDelay: (OFTimeInterval)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -1087,16 +1077,16 @@ _references_to_categories_of_OFObject(void)
 - (unsigned long)hash
 {
 	uintptr_t ptr = (uintptr_t)self;
-	uint32_t hash;
+	unsigned long hash;
 
-	OF_HASH_INIT(hash);
+	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(ptr); i++) {
-		OF_HASH_ADD(hash, ptr & 0xFF);
+		OFHashAdd(&hash, ptr & 0xFF);
 		ptr >>= 8;
 	}
 
-	OF_HASH_FINALIZE(hash);
+	OFHashFinalize(&hash);
 
 	return hash;
 }
@@ -1106,171 +1096,6 @@ _references_to_categories_of_OFObject(void)
 	/* Classes containing data should reimplement this! */
 
 	return [OFString stringWithFormat: @"<%@>", self.className];
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-{
-	void *pointer;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (size == 0)
-		return NULL;
-
-	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
-		@throw [OFOutOfRangeException exception];
-
-	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	preMem = pointer;
-	preMem->owner = self;
-	preMem->prev = PRE_IVARS->lastMem;
-	preMem->next = NULL;
-
-	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
-		PRE_IVARS->lastMem->next = preMem;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
-		PRE_IVARS->firstMem = preMem;
-
-	PRE_IVARS->lastMem = preMem;
-
-	return (char *)pointer + PRE_MEM_ALIGN;
-}
-
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count
-{
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self allocMemoryWithSize: size * count];
-}
-
-- (void *)allocZeroedMemoryWithSize: (size_t)size
-{
-	void *pointer;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (size == 0)
-		return NULL;
-
-	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
-		@throw [OFOutOfRangeException exception];
-
-	if OF_UNLIKELY ((pointer = calloc(1, PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-
-	preMem = pointer;
-	preMem->owner = self;
-	preMem->prev = PRE_IVARS->lastMem;
-
-	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
-		PRE_IVARS->lastMem->next = preMem;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
-		PRE_IVARS->firstMem = preMem;
-
-	PRE_IVARS->lastMem = preMem;
-
-	return (char *)pointer + PRE_MEM_ALIGN;
-}
-
-- (void *)allocZeroedMemoryWithSize: (size_t)size
-			      count: (size_t)count
-{
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self allocZeroedMemoryWithSize: size * count];
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	void *new;
-	struct pre_mem *preMem;
-
-	if OF_UNLIKELY (pointer == NULL)
-		return [self allocMemoryWithSize: size];
-
-	if OF_UNLIKELY (size == 0) {
-		[self freeMemory: pointer];
-		return NULL;
-	}
-
-	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
-		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithPointer: pointer
-				  object: self];
-
-	if OF_UNLIKELY ((new = realloc(PRE_MEM(pointer),
-	    PRE_MEM_ALIGN + size)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
-	preMem = new;
-
-	if OF_UNLIKELY (preMem != PRE_MEM(pointer)) {
-		if OF_LIKELY (preMem->prev != NULL)
-			preMem->prev->next = preMem;
-		if OF_LIKELY (preMem->next != NULL)
-			preMem->next->prev = preMem;
-
-		if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
-			PRE_IVARS->firstMem = preMem;
-		if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
-			PRE_IVARS->lastMem = preMem;
-	}
-
-	return (char *)new + PRE_MEM_ALIGN;
-}
-
-- (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	if OF_UNLIKELY (pointer == NULL)
-		return [self allocMemoryWithSize: size
-					   count: count];
-
-	if OF_UNLIKELY (size == 0 || count == 0) {
-		[self freeMemory: pointer];
-		return NULL;
-	}
-
-	if OF_UNLIKELY (count > SIZE_MAX / size)
-		@throw [OFOutOfRangeException exception];
-
-	return [self resizeMemory: pointer
-			     size: size * count];
-}
-
-- (void)freeMemory: (void *)pointer
-{
-	if OF_UNLIKELY (pointer == NULL)
-		return;
-
-	if OF_UNLIKELY (PRE_MEM(pointer)->owner != self)
-		@throw [OFMemoryNotPartOfObjectException
-		    exceptionWithPointer: pointer
-				  object: self];
-
-	if OF_LIKELY (PRE_MEM(pointer)->prev != NULL)
-		PRE_MEM(pointer)->prev->next = PRE_MEM(pointer)->next;
-	if OF_LIKELY (PRE_MEM(pointer)->next != NULL)
-		PRE_MEM(pointer)->next->prev = PRE_MEM(pointer)->prev;
-
-	if OF_UNLIKELY (PRE_IVARS->firstMem == PRE_MEM(pointer))
-		PRE_IVARS->firstMem = PRE_MEM(pointer)->next;
-	if OF_UNLIKELY (PRE_IVARS->lastMem == PRE_MEM(pointer))
-		PRE_IVARS->lastMem = PRE_MEM(pointer)->prev;
-
-	/* To detect double-free */
-	PRE_MEM(pointer)->owner = nil;
-
-	free(PRE_MEM(pointer));
 }
 
 - (id)forwardingTargetForSelector: (SEL)selector
@@ -1287,7 +1112,7 @@ _references_to_categories_of_OFObject(void)
 - (instancetype)retain
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	of_atomic_int_inc(&PRE_IVARS->retainCount);
+	OFAtomicIntIncrease(&PRE_IVARS->retainCount);
 #elif defined(OF_AMIGAOS)
 	/*
 	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
@@ -1302,9 +1127,9 @@ _references_to_categories_of_OFObject(void)
 	Permit();
 # endif
 #else
-	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
+	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	PRE_IVARS->retainCount++;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
+	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 #endif
 
 	return self;
@@ -1319,10 +1144,10 @@ _references_to_categories_of_OFObject(void)
 - (void)release
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	of_memory_barrier_release();
+	OFReleaseMemoryBarrier();
 
-	if (of_atomic_int_dec(&PRE_IVARS->retainCount) <= 0) {
-		of_memory_barrier_acquire();
+	if (OFAtomicIntDecrease(&PRE_IVARS->retainCount) <= 0) {
+		OFAcquireMemoryBarrier();
 
 		[self dealloc];
 	}
@@ -1338,9 +1163,9 @@ _references_to_categories_of_OFObject(void)
 #else
 	int retainCount;
 
-	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
+	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
 	retainCount = --PRE_IVARS->retainCount;
-	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
+	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
 
 	if (retainCount == 0)
 		[self dealloc];
@@ -1376,24 +1201,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)dealloc
 {
-	struct pre_mem *iter;
-
 	objc_destructInstance(self);
-
-	iter = PRE_IVARS->firstMem;
-	while (iter != NULL) {
-		struct pre_mem *next = iter->next;
-
-		/*
-		 * We can use owner as a sentinel to prevent exploitation in
-		 * case there is a buffer underflow somewhere.
-		 */
-		OF_ENSURE(iter->owner == self);
-
-		free(iter);
-
-		iter = next;
-	}
 
 	free((char *)self - PRE_IVARS_ALIGN);
 }
@@ -1420,37 +1228,10 @@ _references_to_categories_of_OFObject(void)
 }
 
 /*
- * Those are needed as the root class is the superclass of the root class's
- * metaclass and thus instance methods can be sent to class objects as well.
+ * The following are needed as the root class is the superclass of the root
+ * class's metaclass and thus instance methods can be sent to class objects as
+ * well.
  */
-+ (void *)allocMemoryWithSize: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void *)resizeMemory: (void *)pointer
-		  size: (size_t)size
-		 count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (void)freeMemory: (void *)pointer
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
 
 + (id)retain
 {
@@ -1464,7 +1245,7 @@ _references_to_categories_of_OFObject(void)
 
 + (unsigned int)retainCount
 {
-	return OF_RETAIN_COUNT_MAX;
+	return OFMaxRetainCount;
 }
 
 + (void)release

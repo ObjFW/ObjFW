@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,7 +50,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
+		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
 		_CDATA = [element.stringValue copy];
@@ -124,7 +122,7 @@
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+				 level: (unsigned int)level
 {
 	return self.XMLString;
 }
@@ -138,7 +136,7 @@
 {
 	OFXMLElement *element =
 	    [OFXMLElement elementWithName: self.className
-				namespace: OF_SERIALIZATION_NS];
+				namespace: OFSerializationNS];
 	[element addChild: self];
 
 	return element;

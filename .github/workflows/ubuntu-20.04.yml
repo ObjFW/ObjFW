@@ -1,0 +1,39 @@
+name: ubuntu-20.04
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --enable-seluid24
+          - --disable-compiler-tls
+          - --disable-threads
+          - --disable-threads --disable-sockets
+          - --disable-threads --disable-files
+          - --disable-threads --disable-sockets --disable-files
+          - --disable-sockets
+          - --disable-sockets --disable-files
+          - --disable-files
+          - --disable-shared
+          - --disable-shared --enable-seluid24
+          - --disable-compiler-tls --disable-threads
+          - --with-tls=gnutls
+          - --with-tls=gnutls --disable-shared
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libssl-dev gnutls-dev
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: ./configure ${{ matrix.configure_flags }}
+    - name: make
+      run: make -j$(nproc)
+    - name: make check
+      run: make check
+    - name: make install
+      run: sudo make install

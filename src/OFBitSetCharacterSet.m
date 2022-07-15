@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,29 +32,29 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const of_unichar_t *characters = string.characters;
+		const OFUnichar *characters = string.characters;
 		size_t length = string.length;
 
 		for (size_t i = 0; i < length; i++) {
-			of_unichar_t c = characters[i];
+			OFUnichar c = characters[i];
 
-			if (c / 8 >= _size) {
+			if (c / CHAR_BIT >= _size) {
 				size_t newSize;
 
 				if (UINT32_MAX - c < 1)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OF_ROUND_UP_POW2(8, c + 1) / 8;
+				newSize = OFRoundUpToPowerOf2(CHAR_BIT, c + 1) /
+				    CHAR_BIT;
 
-				_bitset = [self resizeMemory: _bitset
-							size: newSize];
+				_bitset = OFResizeMemory(_bitset, newSize, 1);
 				memset(_bitset + _size, '\0', newSize - _size);
 
 				_size = newSize;
 			}
 
-			of_bitset_set(_bitset, c);
+			OFBitsetSet(_bitset, c);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -68,11 +66,18 @@
 	return self;
 }
 
-- (bool)characterIsMember: (of_unichar_t)character
+- (void)dealloc
 {
-	if (character / 8 >= _size)
+	OFFreeMemory(_bitset);
+
+	[super dealloc];
+}
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if (character / CHAR_BIT >= _size)
 		return false;
 
-	return of_bitset_isset(_bitset, character);
+	return OFBitsetIsSet(_bitset, character);
 }
 @end

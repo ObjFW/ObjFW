@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,15 +24,17 @@
 @implementation OFThreadStartFailedException
 @synthesize thread = _thread, errNo = _errNo;
 
-+ (instancetype)exceptionWithThread: (OFThread *)thread
-			      errNo: (int)errNo
++ (instancetype)exceptionWithThread: (OFThread *)thread errNo: (int)errNo
 {
-	return [[[self alloc] initWithThread: thread
-				       errNo: errNo] autorelease];
+	return [[[self alloc] initWithThread: thread errNo: errNo] autorelease];
 }
 
-- (instancetype)initWithThread: (OFThread *)thread
-			 errNo: (int)errNo
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (instancetype)initWithThread: (OFThread *)thread errNo: (int)errNo
 {
 	self = [super init];
 

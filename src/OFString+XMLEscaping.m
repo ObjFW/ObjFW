@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,11 +40,7 @@ int _OFString_XMLEscaping_reference;
 
 	j = 0;
 	retLength = length;
-
-	/*
-	 * We can't use allocMemoryWithSize: here as it might be a @"" literal
-	 */
-	retCString = of_malloc(1, retLength);
+	retCString = OFAllocMemory(retLength, 1);
 
 	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {
@@ -81,10 +75,10 @@ int _OFString_XMLEscaping_reference;
 
 		if (append != NULL) {
 			@try {
-				retCString = of_realloc(retCString, 1,
+				retCString = OFResizeMemory(retCString, 1,
 				    retLength + appendLen);
 			} @catch (id e) {
-				of_free(retCString);
+				OFFreeMemory(retCString);
 				@throw e;
 			}
 			retLength += appendLen - 1;
@@ -102,7 +96,7 @@ int _OFString_XMLEscaping_reference;
 		ret = [OFString stringWithUTF8String: retCString
 					      length: retLength];
 	} @finally {
-		of_free(retCString);
+		OFFreeMemory(retCString);
 	}
 	return ret;
 }

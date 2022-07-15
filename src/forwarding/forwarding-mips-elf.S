@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,8 +17,8 @@
 
 #include "platform.h"
 
-.globl of_forward
-.globl of_forward_stret
+.globl OFForward
+.globl OFForward_stret
 
 #ifdef OF_PIC
 .macro j_pic symbol
@@ -41,7 +39,7 @@
 #endif
 
 .section .text
-of_forward:
+OFForward:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -162,10 +160,10 @@ of_forward:
 	addiu	$sp, $sp, 96
 
 	j_pic	of_method_not_found
-.type of_forward, %function
-.size of_forward, .-of_forward
+.type OFForward, %function
+.size OFForward, .-OFForward
 
-of_forward_stret:
+OFForward_stret:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -288,8 +286,8 @@ of_forward_stret:
 	addiu	$sp, $sp, 96
 
 	j_pic	of_method_not_found_stret
-.type of_forward_stret, %function
-.size of_forward_stret, .-of_forward_stret
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
 
 init:
 #ifdef OF_PIC

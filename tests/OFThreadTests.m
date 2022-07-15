@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFThread";
+static OFString *const module = @"OFThread";
 
 @interface TestThread: OFThread
 @end
@@ -27,8 +25,9 @@ static OFString *module = @"OFThread";
 @implementation TestThread
 - (id)main
 {
-	[[OFThread threadDictionary] setObject: @"bar"
-					forKey: @"foo"];
+	[[OFThread threadDictionary] setObject: @"bar" forKey: @"foo"];
+	OFEnsure([[[OFThread threadDictionary]
+	    objectForKey: @"foo"] isEqual: @"bar"]);
 
 	return @"success";
 }
@@ -38,17 +37,16 @@ static OFString *module = @"OFThread";
 - (void)threadTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	TestThread *t;
-	OFMutableDictionary *d;
+	TestThread *thread;
 
-	TEST(@"+[thread]", (t = [TestThread thread]))
+	TEST(@"+[thread]", (thread = [TestThread thread]))
 
-	TEST(@"-[start]", R([t start]))
+	TEST(@"-[start]", R([thread start]))
 
-	TEST(@"-[join]", [[t join] isEqual: @"success"])
+	TEST(@"-[join]", [[thread join] isEqual: @"success"])
 
-	TEST(@"-[threadDictionary]", (d = [OFThread threadDictionary]) &&
-	    [d objectForKey: @"foo"] == nil)
+	TEST(@"-[threadDictionary]",
+	    [[OFThread threadDictionary] objectForKey: @"foo"] == nil)
 
 	objc_autoreleasePoolPop(pool);
 }

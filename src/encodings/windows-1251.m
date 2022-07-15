@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019, 2020
- *   Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +19,7 @@
 
 #import "common.h"
 
-const of_char16_t of_windows_1251_table[] = {
+const OFChar16 OFWindows1251Table[] = {
 	0x0402, 0x0403, 0x201A, 0x0453, 0x201E, 0x2026, 0x2020, 0x2021,
 	0x20AC, 0x2030, 0x0409, 0x2039, 0x040A, 0x040C, 0x040B, 0x040F,
 	0x0452, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
@@ -39,8 +37,8 @@ const of_char16_t of_windows_1251_table[] = {
 	0x0440, 0x0441, 0x0442, 0x0443, 0x0444, 0x0445, 0x0446, 0x0447,
 	0x0448, 0x0449, 0x044A, 0x044B, 0x044C, 0x044D, 0x044E, 0x044F
 };
-const size_t of_windows_1251_table_offset =
-    256 - (sizeof(of_windows_1251_table) / sizeof(*of_windows_1251_table));
+const size_t OFWindows1251TableOffset =
+    256 - (sizeof(OFWindows1251Table) / sizeof(*OFWindows1251Table));
 
 static const unsigned char page0[] = {
 	0xA0, 0x00, 0x00, 0x00, 0xA4, 0x00, 0xA6, 0xA7,
@@ -104,11 +102,11 @@ static const unsigned char page21[] = {
 static const uint8_t page21Start = 0x16;
 
 bool
-of_unicode_to_windows_1251(const of_unichar_t *input, unsigned char *output,
+OFUnicodeToWindows1251(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {
-		of_unichar_t c = input[i];
+		OFUnichar c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;
