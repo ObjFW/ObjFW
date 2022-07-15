@@ -208,6 +208,9 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
 
+${PROG_NOINST}.rpx: ${PROG_NOINST}
+	elf2rpl $< $@
+
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
