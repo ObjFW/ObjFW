@@ -192,7 +192,7 @@ static SSL_CTX *clientContext;
 
 - (bool)hasDataInReadBuffer
 {
-	if (SSL_has_pending(_SSL) || BIO_ctrl_pending(_readBIO) > 0)
+	if (SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0)
 		return true;
 
 	return super.hasDataInReadBuffer;
