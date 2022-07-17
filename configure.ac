@@ -262,6 +262,7 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
+	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_SWITCH, 1,
 		[Whether we are compiling for Nintendo Switch])
