@@ -7,7 +7,8 @@ SUBDIRS = ${TESTPLUGIN}	\
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
 	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds
+	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.rpx
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
