@@ -245,6 +245,28 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
+AC_ARG_WITH(nintendo-switch,
+	AS_HELP_STRING([--with-nintendo-switch], [build for Nintendo Switch]))
+AS_IF([test x"$with_nintendo_switch" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	flags="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+	CPPFLAGS="$CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
+	ASFLAGS="$ASFLAGS $flags"
+	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
+	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_NINTENDO_SWITCH, 1,
+		[Whether we are compiling for Nintendo Switch])
+])
+
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
 flags="-fexceptions -fobjc-exceptions -funwind-tables"
