@@ -67,6 +67,10 @@
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
 #endif
 
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 255
+#endif
+
 #ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
@@ -102,9 +106,9 @@ domainFromHostname(OFString *hostname)
 static OFString *
 obtainHostname(void)
 {
-	char hostname[256];
+	char hostname[HOST_NAME_MAX + 1];
 
-	if (gethostname(hostname, 256) != 0)
+	if (gethostname(hostname, HOST_NAME_MAX + 1) != 0)
 		return nil;
 
 	return [OFString stringWithCString: hostname
