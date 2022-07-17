@@ -160,6 +160,10 @@ main(int argc, char *argv[])
 	consoleInit(NULL);
 	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 	updateConsole(true);
+
+# ifdef OF_HAVE_FILES
+	[[OFFileManager defaultManager] changeCurrentDirectoryPath: @"romfs:/"];
+# endif
 #endif
 
 #if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
