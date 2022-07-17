@@ -7,7 +7,8 @@ SUBDIRS = ${TESTPLUGIN}	\
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
 	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds
+	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.nro
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -195,6 +196,9 @@ boot.dol: ${PROG_NOINST}
 
 ${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
 
+${PROG_NOINST}.3dsx: ${PROG_NOINST}
+	3dsxtool $< $@
+
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
@@ -205,8 +209,8 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
 	ndstool -c $@ -9 $< -d nds-data
 	rm -fr nds-data
 
-${PROG_NOINST}.3dsx: ${PROG_NOINST}
-	3dsxtool $< $@
+${PROG_NOINST}.nro: ${PROG_NOINST}
+	elf2nro $< $@
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
