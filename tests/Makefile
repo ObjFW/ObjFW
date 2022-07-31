@@ -8,6 +8,7 @@ CLEAN = EBOOT.PBP		\
 	boot.dol		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx
 DISTCLEAN = Info.plist
 
@@ -196,18 +197,29 @@ boot.dol: ${PROG_NOINST}
 
 ${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
 
+${PROG_NOINST}.3dsx: ${PROG_NOINST}
+	3dsxtool $< $@
+
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
-${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.bin testfile.txt testfile.ini
+${PROG_NOINST}.nds: serialization.xml
 	rm -fr nds-data
 	mkdir -p nds-data
 	cp testfile.bin testfile.txt testfile.ini serialization.xml nds-data
-	ndstool -c $@ -9 $< -d nds-data
+	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
-${PROG_NOINST}.3dsx: ${PROG_NOINST}
-	3dsxtool $< $@
+${PROG_NOINST}.nro: ${PROG_NOINST} testfile.bin testfile.txt testfile.ini
+${PROG_NOINST}.nro: serialization.xml
+	rm -fr romfs
+	mkdir -p romfs
+	cp testfile.bin testfile.txt testfile.ini serialization.xml romfs
+	nacptool --create "ObjFW tests" "Jonathan Schleifer" \
+		"${PACKAGE_VERSION}" tests.nacp
+	elf2nro ${PROG_NOINST} $@ --nacp=tests.nacp --romfsdir=romfs
+	rm -fr romfs tests.nacp
 
 ${PROG_NOINST}.rpx: ${PROG_NOINST}
 	elf2rpl $< $@

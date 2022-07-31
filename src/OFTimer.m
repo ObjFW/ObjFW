@@ -681,18 +681,43 @@
 		    @">",
 		    self.class, _fireDate, _interval, (_repeats ? "yes" : "no"),
 		    _block, (_valid ? "yes" : "no")];
-	else
+	else {
 #endif
-		return [OFString stringWithFormat:
+		void *pool = objc_autoreleasePoolPush();
+		OFString *objects = @"", *ret;
+
+		if (_arguments >= 1)
+			objects = [objects stringByAppendingFormat:
+			    @"\tObject: %@\n", _object1];
+		if (_arguments >= 2)
+			objects = [objects stringByAppendingFormat:
+			    @"\tObject: %@\n", _object2];
+		if (_arguments >= 3)
+			objects = [objects stringByAppendingFormat:
+			    @"\tObject: %@\n", _object3];
+		if (_arguments >= 4)
+			objects = [objects stringByAppendingFormat:
+			    @"\tObject: %@\n", _object4];
+
+		ret = [[OFString alloc] initWithFormat:
 		    @"<%@:\n"
 		    @"\tFire date: %@\n"
 		    @"\tInterval: %lf\n"
 		    @"\tRepeats: %s\n"
 		    @"\tTarget: %@\n"
 		    @"\tSelector: %s\n"
+		    @"%@"
 		    @"\tValid: %s\n"
 		    @">",
 		    self.class, _fireDate, _interval, (_repeats ? "yes" : "no"),
-		    _target, sel_getName(_selector), (_valid ? "yes" : "no")];
+		    _target, sel_getName(_selector), objects,
+		    (_valid ? "yes" : "no")];
+
+		objc_autoreleasePoolPop(pool);
+
+		return [ret autorelease];
+#ifdef OF_HAVE_BLOCKS
+	}
+#endif
 }
 @end

@@ -41,6 +41,12 @@
 # include <exec/system.h>
 #endif
 
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# import <switch.h>
+# undef nx_id
+#endif
+
 #import "OFSystemInfo.h"
 #import "OFApplication.h"
 #import "OFArray.h"
@@ -235,6 +241,17 @@ initOperatingSystemVersion(void)
 		   encoding: [OFLocale encoding]];
 #endif
 }
+
+#ifdef OF_NINTENDO_SWITCH
+static OFString *tmpFSPath = nil;
+
+static void
+mountTmpFS(void)
+{
+	if (R_SUCCEEDED(fsdevMountTemporaryStorage("tmpfs")))
+		tmpFSPath = @"tmpfs:/";
+}
+#endif
 
 #if defined(OF_X86_64) || defined(OF_X86)
 static OF_INLINE struct X86Regs OF_CONST_FUNC
@@ -568,6 +585,11 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [[OFApplication environment] objectForKey: @"TEMP"];
 # elif defined(OF_MINT)
 	return @"u:\\tmp";
+# elif defined(OF_NINTENDO_SWITCH)
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, mountTmpFS);
+
+	return tmpFSPath;
 # else
 	OFString *path =
 	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];

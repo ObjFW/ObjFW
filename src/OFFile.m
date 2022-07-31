@@ -49,6 +49,11 @@
 # include <windows.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+# include <proto/dos.h>
+#endif
+
 #ifdef OF_WII
 # include <fat.h>
 #endif
@@ -58,9 +63,10 @@
 # include <filesystem.h>
 #endif
 
-#ifdef OF_AMIGAOS
-# include <proto/exec.h>
-# include <proto/dos.h>
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
 #endif
 
 #ifndef O_BINARY
@@ -183,6 +189,15 @@ parseMode(const char *mode, bool *append)
 	if (!nitroFSInit(NULL))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
+#endif
+
+#ifdef OF_NINTENDO_SWITCH
+	if (R_SUCCEEDED(romfsInit()))
+		/*
+		 * Errors are intentionally ignored, as it's possible we just
+		 * have no romfs.
+		 */
+		atexit((void (*)(void))romfsExit);
 #endif
 }
 
