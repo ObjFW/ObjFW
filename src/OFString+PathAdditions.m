@@ -21,7 +21,8 @@
 # import "platform/Windows/OFString+PathAdditions.m"
 #elif defined(OF_AMIGAOS)
 # import "platform/AmigaOS/OFString+PathAdditions.m"
-#elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+#elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 # import "platform/libfat/OFString+PathAdditions.m"
 #else
 # import "platform/POSIX/OFString+PathAdditions.m"

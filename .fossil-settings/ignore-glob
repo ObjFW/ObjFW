@@ -49,6 +49,7 @@ tests/tests
 tests/tests.3dsx
 tests/tests.arm9
 tests/tests.nds
+tests/tests.nro
 utils/objfw-config
 utils/ofarc/ofarc
 utils/ofdns/ofdns
