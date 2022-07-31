@@ -256,6 +256,7 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
 	ASFLAGS="$ASFLAGS $flags"
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
 	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
