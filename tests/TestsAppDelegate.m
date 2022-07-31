@@ -38,12 +38,6 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef asm
 #endif
 
-#ifdef OF_WII_U
-# define BOOL WUT_BOOL
-# include <coreinit/debug.h>
-# undef BOOL
-#endif
-
 #ifdef OF_NINTENDO_DS
 # define asm __asm__
 # include <nds.h>
@@ -172,8 +166,9 @@ main(int argc, char *argv[])
 # endif
 #endif
 
-#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
-    defined(OF_NINTENDO_3DS) || defined(OF_NINTENDO_SWITCH)
+#if defined(OF_WII) || defined(OF_WII_U) || defined(OF_PSP) || \
+    defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 	@try {
 		return OFApplicationMain(&argc, &argv,
 		    [[TestsAppDelegate alloc] init]);
@@ -234,18 +229,6 @@ main(int argc, char *argv[])
 		abort();
 # endif
 	}
-#elif defined(OF_WII_U)
-	@try {
-		return OFApplicationMain(&argc, &argv,
-		    [[TestsAppDelegate alloc] init]);
-	} @catch (id e) {
-		OSReport("\nRuntime error: Unhandled exception:\n%s\n",
-		    [[e description] UTF8String]);
-		OSReport("\nBacktrace:\n  %s\n\n",
-		    [[e backtrace] componentsJoinedByString: @"\n  "]
-		    .UTF8String);
-		abort();
-	}
 #else
 	return OFApplicationMain(&argc, &argv, [[TestsAppDelegate alloc] init]);
 #endif
@@ -254,15 +237,11 @@ main(int argc, char *argv[])
 @implementation TestsAppDelegate
 - (void)outputTesting: (OFString *)test inModule: (OFString *)module
 {
-#ifndef OF_WII_U
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor yellow]];
 		[OFStdOut writeFormat: @"[%@] %@: testing...", module, test];
 	} else
 		[OFStdOut writeFormat: @"[%@] %@: ", module, test];
-#else
-	OSReport("[%s] %s: ", module.UTF8String, test.UTF8String);
-#endif
 
 #ifdef OF_NINTENDO_SWITCH
 	updateConsole(false);
@@ -271,16 +250,12 @@ main(int argc, char *argv[])
 
 - (void)outputSuccess: (OFString *)test inModule: (OFString *)module
 {
-#ifndef OF_WII_U
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor lime]];
 		[OFStdOut eraseLine];
 		[OFStdOut writeFormat: @"\r[%@] %@: ok\n", module, test];
 	} else
 		[OFStdOut writeLine: @"ok"];
-#else
-	OSReport("ok\n");
-#endif
 
 #ifdef OF_NINTENDO_SWITCH
 	updateConsole(false);
@@ -289,7 +264,6 @@ main(int argc, char *argv[])
 
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module
 {
-#ifndef OF_WII_U
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut setForegroundColor: [OFColor red]];
 		[OFStdOut eraseLine];
@@ -297,7 +271,7 @@ main(int argc, char *argv[])
 	} else
 		[OFStdOut writeLine: @"failed"];
 
-# ifdef OF_WII
+#ifdef OF_WII
 	[OFStdOut reset];
 	[OFStdOut writeLine: @"Press A to continue!"];
 
@@ -309,8 +283,8 @@ main(int argc, char *argv[])
 
 		VIDEO_WaitVSync();
 	}
-# endif
-# ifdef OF_PSP
+#endif
+#ifdef OF_PSP
 	[OFStdOut reset];
 	[OFStdOut writeLine: @"Press X to continue!"];
 
@@ -326,8 +300,8 @@ main(int argc, char *argv[])
 			}
 		}
 	}
-# endif
-# ifdef OF_NINTENDO_DS
+#endif
+#ifdef OF_NINTENDO_DS
 	[OFStdOut reset];
 	[OFStdOut writeString: @"Press A to continue!"];
 
@@ -337,8 +311,8 @@ main(int argc, char *argv[])
 		if (keysDown() & KEY_A)
 			break;
 	}
-# endif
-# ifdef OF_NINTENDO_3DS
+#endif
+#ifdef OF_NINTENDO_3DS
 	[OFStdOut reset];
 	[OFStdOut writeString: @"Press A to continue!"];
 
@@ -350,8 +324,8 @@ main(int argc, char *argv[])
 
 		gspWaitForVBlank();
 	}
-# endif
-# ifdef OF_NINTENDO_SWITCH
+#endif
+#ifdef OF_NINTENDO_SWITCH
 	[OFStdOut reset];
 	[OFStdOut writeString: @"Press A to continue!"];
 
@@ -364,16 +338,13 @@ main(int argc, char *argv[])
 		if (padGetButtonsDown(&pad) & HidNpadButton_A)
 			break;
 	}
-# endif
+#endif
 
 	if (OFStdOut.hasTerminal) {
 		[OFStdOut writeString: @"\r"];
 		[OFStdOut reset];
 		[OFStdOut eraseLine];
 	}
-#else
-	OSReport("failed\n");
-#endif
 }
 
 - (void)applicationDidFinishLaunching
