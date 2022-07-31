@@ -57,6 +57,12 @@
 # include <3ds/services/soc.h>
 #endif
 
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
+#endif
+
 #if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 static OFMutex *mutex;
 
@@ -130,16 +136,16 @@ init(void)
 		return;
 
 	atexit((void (*)(void))socExit);
+# elif defined(OF_NINTENDO_SWITCH)
+	if (R_FAILED(socketInitializeDefault()))
+		return;
+
+	atexit(socketExit);
 # endif
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	mutex = [[OFMutex alloc] init];
 	atexit(releaseMutex);
-
-#  ifdef OF_WII
-	if (OFSpinlockNew(&spinlock) != 0)
-		return;
-#  endif
 # endif
 
 	initSuccessful = true;

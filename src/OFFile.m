@@ -173,16 +173,6 @@ parseMode(const char *mode, bool *append)
 }
 #endif
 
-#ifdef OF_NINTENDO_SWITCH
-static bool initialized = false;
-
-OF_DESTRUCTOR()
-{
-	if (initialized)
-		romfsExit();
-}
-#endif
-
 @implementation OFFile
 + (void)initialize
 {
@@ -207,7 +197,7 @@ OF_DESTRUCTOR()
 		 * Errors are intentionally ignored, as it's possible we just
 		 * have no romfs.
 		 */
-		initialized = true;
+		atexit((void (*)(void))romfsExit);
 #endif
 }
 
