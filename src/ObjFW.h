@@ -54,6 +54,8 @@
 #import "OFNotificationCenter.h"
 
 #import "OFStream.h"
+#import "OFSeekableStream.h"
+#import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"

@@ -25,6 +25,7 @@ SRCS = ForwardingTests.m		\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMethodSignatureTests.m		\
+       OFMemoryStreamTests.m		\
        OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\

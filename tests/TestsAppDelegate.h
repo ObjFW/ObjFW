@@ -119,6 +119,10 @@
 - (void)JSONTests;
 @end
 
+@interface TestsAppDelegate (OFHMACTests)
+- (void)HMACTests;
+@end
+
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end
@@ -133,6 +137,10 @@
 
 @interface TestsAppDelegate (OFMD5HashTests)
 - (void)MD5HashTests;
+@end
+
+@interface TestsAppDelegate  (OFMemoryStreamTests)
+- (void)memoryStreamTests;
 @end
 
 @interface TestsAppDelegate (OFMethodSignatureTests)
@@ -217,10 +225,6 @@
 
 @interface TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests;
-@end
-
-@interface TestsAppDelegate (OFHMACTests)
-- (void)HMACTests;
 @end
 
 @interface TestsAppDelegate (OFSocketTests)

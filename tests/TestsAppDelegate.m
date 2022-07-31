@@ -389,6 +389,7 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self numberTests];
 	[self streamTests];
+	[self memoryStreamTests];
 	[self notificationCenterTests];
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
