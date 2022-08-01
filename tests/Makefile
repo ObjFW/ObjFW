@@ -8,7 +8,9 @@ CLEAN = EBOOT.PBP		\
 	boot.dol		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
-	${PROG_NOINST}.nro
+	${PROG_NOINST}.nro	\
+	serialization_xml.m	\
+	testfile_bin.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -48,7 +50,9 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
-       ${USE_SRCS_WINDOWS}
+       ${USE_SRCS_WINDOWS}		\
+       serialization_xml.m		\
+       testfile_bin.m
 SRCS_FILES = OFHMACTests.m		\
 	     OFINIFileTests.m		\
 	     OFMD5HashTests.m		\
@@ -82,6 +86,11 @@ IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
+
+serialization_xml.m: serialization.xml
+	${SHELL} ../utils/objfw-embed $< /$< $@
+testfile_bin.m: testfile.bin
+	${SHELL} ../utils/objfw-embed $< /$< $@
 
 .PHONY: run run-on-ios run-on-android
 run:

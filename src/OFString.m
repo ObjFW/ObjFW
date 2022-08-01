@@ -1085,6 +1085,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@throw e;
 	}
 
+	/* FIXME: Detect encoding where we can. */
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
+
 	self = [self initWithCString: data.items
 			    encoding: encoding
 			      length: data.count * data.itemSize];

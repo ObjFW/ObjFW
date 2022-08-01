@@ -22,6 +22,7 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
+       OFEmbeddedFileURLHandler.m	\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\

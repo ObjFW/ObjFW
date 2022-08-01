@@ -557,11 +557,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 			_port = [[OFNumber alloc] initWithUnsignedShort:
 			    portString.unsignedLongLongValue];
-		} else
+		} else {
 			_URLEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-		if (!isIPv6Host)
+			if (_URLEncodedHost.length == 0) {
+				[_URLEncodedHost release];
+				_URLEncodedHost = nil;
+			}
+		}
+
+		if (_URLEncodedHost != nil && !isIPv6Host)
 			OFURLVerifyIsEscaped(_URLEncodedHost,
 			    [OFCharacterSet URLHostAllowedCharacterSet]);
 

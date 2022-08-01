@@ -61,7 +61,8 @@ static OFString *const module = @"OFSerialization";
 
 	TEST(@"-[stringBySerializing]",
 	    (string = dict.stringBySerializing) && [string isEqual:
-	    [OFString stringWithContentsOfFile: @"serialization.xml"]])
+	    [OFString stringWithContentsOfURL: [OFURL URLWithString:
+	    @"objfw-embedded:///serialization.xml"]]])
 
 	TEST(@"-[objectByDeserializing]",
 	    [string.objectByDeserializing isEqual: dict])

@@ -30,7 +30,9 @@ const uint8_t testFileSHA224[28] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA224Hash *SHA224, *SHA224Copy;
-	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
+	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
+	OFStream *file = [[OFURLHandler handlerForURL: URL]
+	    openItemAtURL: URL mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (SHA224 = [OFSHA224Hash hashWithAllowsSwappableMemory: true]))
