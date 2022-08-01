@@ -22,18 +22,27 @@ SRCS = ForwardingTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
+       OFHMACTests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
-       OFMethodSignatureTests.m		\
+       OFMD5HashTests.m			\
        OFMemoryStreamTests.m		\
+       OFMethodSignatureTests.m		\
        OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
        OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
+       OFRIPEMD160HashTests.m		\
+       OFSHA1HashTests.m		\
+       OFSHA224HashTests.m		\
+       OFSHA256HashTests.m		\
+       OFSHA384HashTests.m		\
+       OFSHA512HashTests.m		\
        OFScryptTests.m			\
+       OFSerializationTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -53,16 +62,7 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_WINDOWS}		\
        serialization_xml.m		\
        testfile_bin.m
-SRCS_FILES = OFHMACTests.m		\
-	     OFINIFileTests.m		\
-	     OFMD5HashTests.m		\
-	     OFRIPEMD160HashTests.m	\
-	     OFSerializationTests.m	\
-	     OFSHA1HashTests.m		\
-	     OFSHA224HashTests.m	\
-	     OFSHA256HashTests.m	\
-	     OFSHA384HashTests.m	\
-	     OFSHA512HashTests.m
+SRCS_FILES = OFINIFileTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
