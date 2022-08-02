@@ -9,6 +9,7 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
+	${PROG_NOINST}.rpx
 	serialization_xml.m	\
 	testfile_bin.m
 DISTCLEAN = Info.plist
@@ -229,6 +230,9 @@ ${PROG_NOINST}.nro: serialization.xml
 		"${PACKAGE_VERSION}" tests.nacp
 	elf2nro ${PROG_NOINST} $@ --nacp=tests.nacp --romfsdir=romfs
 	rm -fr romfs tests.nacp
+
+${PROG_NOINST}.rpx: ${PROG_NOINST}
+	elf2rpl $< $@
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions

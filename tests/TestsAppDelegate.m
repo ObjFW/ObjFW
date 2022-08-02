@@ -166,8 +166,9 @@ main(int argc, char *argv[])
 # endif
 #endif
 
-#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
-    defined(OF_NINTENDO_3DS) || defined(OF_NINTENDO_SWITCH)
+#if defined(OF_WII) || defined(OF_WII_U) || defined(OF_PSP) || \
+    defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 	@try {
 		return OFApplicationMain(&argc, &argv,
 		    [[TestsAppDelegate alloc] init]);

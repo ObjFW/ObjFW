@@ -213,6 +213,17 @@ Wii
   * Limitations: No threads
 
 
+Wii U
+-----
+
+  * OS Versions: Cemu 12.26.2f
+  * Architectures: PowerPC
+  * Compilers: gcc version 12.1.0 (devkitPPC release 41)
+  * Runtimes: ObjFW
+  * Limitations: No files, no threads, no sockets, no shared libraries, not
+                 tested on real hardware
+
+
 Windows
 -------
 

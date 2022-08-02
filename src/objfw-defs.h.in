@@ -48,3 +48,4 @@
 #undef OF_OBJFW_RUNTIME
 #undef OF_UNIVERSAL
 #undef OF_WII
+#undef OF_WII_U

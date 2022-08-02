@@ -182,6 +182,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
@@ -190,7 +191,30 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+])
+
+AC_ARG_WITH(wii-u,
+	AS_HELP_STRING([--with-wii-u], [build for Wii U]))
+AS_IF([test x"$with_wii_u" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	flags="-mcpu=750 -meabi -mhard-float"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+	CPPFLAGS="-isystem $DEVKITPRO/wut/include -D__WIIU__ -D__WUT__"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -isystem \$DEVKITPRO/wut/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__WIIU__ -D__WUT__"
+	LDFLAGS="-specs=$DEVKITPRO/wut/share/wut.specs"
+	LIBS="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	enable_files="no"	# TODO
+	enable_shared="no"	# TODO
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_WII_U, 1, [Whether we are compiling for Wii U])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -205,6 +229,7 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM9 -I$DEVKITPRO/libnds/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	ASFLAGS="$ASFLAGS -march=armv5te"
 	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
 	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
@@ -214,7 +239,6 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_DS, 1, [Whether we are compiling for Nintendo DS])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -230,6 +254,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	ASFLAGS="$ASFLAGS -march=armv6k"
 	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
 	LDFLAGS="$LDFLAGS -mfloat-abi=hard -mtp=soft -mword-relocations"
@@ -241,7 +266,6 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
 		[Whether we are compiling for Nintendo 3DS])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
