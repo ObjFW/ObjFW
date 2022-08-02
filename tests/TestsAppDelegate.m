@@ -392,7 +392,6 @@ main(int argc, char *argv[])
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
-#ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self RIPEMD160HashTests];
 	[self SHA1HashTests];
@@ -401,7 +400,6 @@ main(int argc, char *argv[])
 	[self SHA384HashTests];
 	[self SHA512HashTests];
 	[self HMACTests];
-#endif
 	[self PBKDF2Tests];
 	[self scryptTests];
 #if defined(OF_HAVE_FILES) && defined(HAVE_CODEPAGE_437)
@@ -436,9 +434,7 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-#ifdef OF_HAVE_FILES
 	[self serializationTests];
-#endif
 	[self JSONTests];
 	[self propertyListTests];
 #if defined(OF_HAVE_PLUGINS)
