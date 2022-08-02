@@ -9,7 +9,7 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx
+	${PROG_NOINST}.rpx	\
 	serialization_xml.m	\
 	testfile_bin.m
 DISTCLEAN = Info.plist
