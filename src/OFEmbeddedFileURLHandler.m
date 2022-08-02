@@ -85,12 +85,14 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 	    URL.password != nil || URL.query != nil || URL.fragment != nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((path = URL.path.UTF8String) == NULL)
+	if ((path = URL.path.UTF8String) == NULL) {
 		@throw [OFInvalidArgumentException exception];
+	}
 
 #ifdef OF_HAVE_THREADS
 	OFEnsure(OFPlainMutexLock(&mutex) == 0);
 	@try {
+#endif
 		for (size_t i = 0; i < numEmbeddedFiles; i++) {
 			if (strcmp(embeddedFiles[i].name, path) != 0)
 				continue;
@@ -101,7 +103,6 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 					       size: embeddedFiles[i].size
 					   writable: false];
 		}
-#endif
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		OFEnsure(OFPlainMutexUnlock(&mutex) == 0);
