@@ -209,7 +209,8 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__WIIU__ -D__WUT__"
 	LDFLAGS="-specs=$DEVKITPRO/wut/share/wut.specs"
 	LIBS="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
-	enable_shared="no"
+	enable_files="no"	# TODO
+	enable_shared="no"	# TODO
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
 
