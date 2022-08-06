@@ -143,7 +143,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(
+	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
 		*errNo = OFSocketErrNo();
 		return false;
@@ -164,7 +165,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	/* Cast needed for AmigaOS, where the argument is declared non-const */
-	if (connect(_socket, (struct sockaddr *)&address->sockaddr.sockaddr,
+	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
 		*errNo = OFSocketErrNo();
 		return false;
@@ -318,7 +319,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetPort(&address, port);
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(
+	    ((struct sockaddr *)&address.sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: host
@@ -339,7 +341,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (port != 0) {
 #endif
-		if (bind(_socket, &address.sockaddr.sockaddr,
+		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 		    address.length) != 0) {
 			int errNo = OFSocketErrNo();
 
@@ -362,7 +364,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 			OFSocketAddressSetPort(&address, rnd);
 
-			if ((ret = bind(_socket, &address.sockaddr.sockaddr,
+			if ((ret = bind(_socket, &address.sockaddr,
 			    address.length)) == 0) {
 				port = rnd;
 				break;
@@ -393,7 +395,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
@@ -406,13 +408,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 							  errNo: errNo];
 	}
 
-	if (address.sockaddr.sockaddr.sa_family == AF_INET)
+	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
+	case AF_INET:
 		return OFFromBigEndian16(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	else if (address.sockaddr.sockaddr.sa_family == AF_INET6)
+	case AF_INET6:
 		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
 # endif
-	else {
+	default:
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 

@@ -43,7 +43,7 @@
 
 	address = OFSocketAddressMakeUNIX(path);
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFConnectionFailedException
 		    exceptionWithPath: path
@@ -57,7 +57,8 @@
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (connect(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+	if (connect(_socket, (struct sockaddr *)&address.sockaddr,
+	    address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
@@ -81,7 +82,7 @@
 
 	address = OFSocketAddressMakeUNIX(path);
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPath: path
@@ -95,7 +96,8 @@
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+	    address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);

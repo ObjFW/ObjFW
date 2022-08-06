@@ -208,7 +208,7 @@ inform_delegate:
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (connect(_socket, &address->sockaddr.sockaddr,
+	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
 		*errNo = OFSocketErrNo();
 		return false;
@@ -326,7 +326,7 @@ inform_delegate:
 
 	address = OFSocketAddressMakeIPX(0, zeroNode, port);
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
 	    OFInvalidSocketHandle)
 		@throw [OFBindFailedException
@@ -342,7 +342,8 @@ inform_delegate:
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+	    address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
@@ -358,7 +359,7 @@ inform_delegate:
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
@@ -371,7 +372,7 @@ inform_delegate:
 							  errNo: errNo];
 	}
 
-	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
+	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 

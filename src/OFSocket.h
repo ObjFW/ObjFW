@@ -150,16 +150,12 @@ struct sockaddr_ipx {
  * @brief A struct which represents a host / port pair for a socket.
  */
 typedef struct OF_BOXABLE {
-	/*
-	 * Even though struct sockaddr contains the family, we need to use our
-	 * own family, as we need to support storing an IPv6 address on systems
-	 * that don't support IPv6. These may not have AF_INET6 defined and we
-	 * can't just define it, as the value is system-dependent and might
-	 * clash with an existing value.
-	 */
 	OFSocketAddressFamily family;
+	/*
+	 * We can't use struct sockaddr as it can contain variable length
+	 * arrays.
+	 */
 	union {
-		struct sockaddr sockaddr;
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
 		struct sockaddr_un un;
