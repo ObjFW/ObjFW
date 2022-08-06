@@ -19,7 +19,7 @@
 #import "OFString.h"
 
 @implementation OFConnectionFailedException
-@synthesize host = _host, port = _port, network = _network, path = _path;
+@synthesize host = _host, port = _port, path = _path, network = _network;
 @synthesize socket = _socket, errNo = _errNo;
 
 + (instancetype)exceptionWithHost: (OFString *)host
@@ -38,19 +38,6 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithNode: (unsigned char [IPX_NODE_LEN])node
-			  network: (uint32_t)network
-			     port: (uint16_t)port
-			   socket: (id)sock
-			    errNo: (int)errNo
-{
-	return [[[self alloc] initWithNode: node
-				   network: network
-				      port: port
-				    socket: sock
-				     errNo: errNo] autorelease];
-}
-
 + (instancetype)exceptionWithPath: (OFString *)path
 			   socket: (id)sock
 			    errNo: (int)errNo
@@ -58,6 +45,19 @@
 	return [[[self alloc] initWithPath: path
 				    socket: sock
 				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithNetwork: (uint32_t)network
+				node: (unsigned char [IPX_NODE_LEN])node
+				port: (uint16_t)port
+			      socket: (id)sock
+			       errNo: (int)errNo
+{
+	return [[[self alloc] initWithNetwork: network
+					 node: node
+					 port: port
+				       socket: sock
+					errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithHost: (OFString *)host
@@ -80,18 +80,14 @@
 	return self;
 }
 
-- (instancetype)initWithNode: (unsigned char [IPX_NODE_LEN])node
-		     network: (uint32_t)network
-			port: (uint16_t)port
+- (instancetype)initWithPath: (OFString *)path
 		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		memcpy(_node, node, IPX_NODE_LEN);
-		_network = network;
-		_port = port;
+		_path = [path copy];
 		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -102,14 +98,18 @@
 	return self;
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      socket: (id)sock
-		       errNo: (int)errNo
+- (instancetype)initWithNetwork: (uint32_t)network
+			   node: (unsigned char [IPX_NODE_LEN])node
+			   port: (uint16_t)port
+			 socket: (id)sock
+			  errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_path = [path copy];
+		_network = network;
+		memcpy(_node, node, IPX_NODE_LEN);
+		_port = port;
 		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {

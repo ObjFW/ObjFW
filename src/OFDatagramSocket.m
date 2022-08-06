@@ -203,14 +203,14 @@
 		sender->family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
-#ifdef OF_HAVE_IPX
-	case AF_IPX:
-		sender->family = OFSocketAddressFamilyIPX;
-		break;
-#endif
 #ifdef OF_HAVE_UNIX_SOCKETS
 	case AF_UNIX:
 		sender->family = OFSocketAddressFamilyUNIX;
+		break;
+#endif
+#ifdef OF_HAVE_IPX
+	case AF_IPX:
+		sender->family = OFSocketAddressFamilyIPX;
 		break;
 #endif
 	default:

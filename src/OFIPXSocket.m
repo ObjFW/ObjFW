@@ -43,7 +43,7 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(0, zeroNode, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;
