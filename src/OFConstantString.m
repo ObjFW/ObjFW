@@ -350,6 +350,12 @@ struct {
 	return [self stringByAppendingPathComponent: component];
 }
 
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
+{
+	[self finishInitialization];
+	return [self stringByAppendingPathExtension: extension];
+}
+
 - (OFString *)stringByPrependingString: (OFString *)string
 {
 	[self finishInitialization];
