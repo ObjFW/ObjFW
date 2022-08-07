@@ -515,7 +515,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [OFURL fileURLWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return @"PROGDIR:";
+	return [OFURL fileURLWithPath: @"PROGDIR:" isDirectory: true];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
