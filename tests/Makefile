@@ -11,7 +11,8 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx	\
 	serialization_xml.m	\
-	testfile_bin.m
+	testfile_bin.m		\
+	testfile_ini.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -62,7 +63,8 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
        serialization_xml.m		\
-       testfile_bin.m
+       testfile_bin.m			\
+       testfile_ini.m
 SRCS_FILES = OFINIFileTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
@@ -92,6 +94,8 @@ serialization_xml.m: serialization.xml
 	${SHELL} ../utils/objfw-embed serialization.xml /serialization.xml $@
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin /testfile.bin $@
+testfile_ini.m: testfile.ini
+	${SHELL} ../utils/objfw-embed testfile.ini /testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -166,8 +170,7 @@ run-on-ios: all
 	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	scp -q ../src/libobjfw.dylib \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.txt testfile.ini \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
+	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.bundle \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
@@ -186,7 +189,6 @@ run-on-android: all
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
-	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
 	if test -f plugin/TestPlugin.so; then \
 		adb push plugin/TestPlugin.so \
 		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
@@ -211,17 +213,17 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
-${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt testfile.ini
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt
 	rm -fr nds-data
 	mkdir -p nds-data
-	cp testfile.txt testfile.ini nds-data
+	cp testfile.txt nds-data
 	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
-${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt testfile.ini
+${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
 	rm -fr romfs
 	mkdir -p romfs
-	cp testfile.txt testfile.ini romfs
+	cp testfile.txt romfs
 	nacptool --create "ObjFW tests" "Jonathan Schleifer" \
 		"${PACKAGE_VERSION}" tests.nacp
 	elf2nro ${PROG_NOINST} $@ --nacp=tests.nacp --romfsdir=romfs

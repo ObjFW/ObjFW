@@ -53,7 +53,7 @@ static OFString *module;
 
 	module = @"OFINIFile";
 
-	URL = [OFURL fileURLWithPath: @"testfile.ini"];
+	URL = [OFURL URLWithString: @"objfw-embedded:///testfile.ini"];
 	TEST(@"+[fileWithURL:encoding:]",
 	    (file = [OFINIFile fileWithURL: URL
 				  encoding: OFStringEncodingCodepage437]))
