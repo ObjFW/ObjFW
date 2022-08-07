@@ -166,7 +166,7 @@ run-on-ios: all
 	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	scp -q ../src/libobjfw.dylib \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.bin testfile.txt testfile.ini serialization.xml \
+	scp -q tests testfile.txt testfile.ini \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.bundle \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
@@ -185,10 +185,8 @@ run-on-android: all
 		    /data/local/tmp/objfw/libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
 	fi
 	adb push tests /data/local/tmp/objfw/tests
-	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
 	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
-	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
 	if test -f plugin/TestPlugin.so; then \
 		adb push plugin/TestPlugin.so \
 		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
@@ -213,19 +211,17 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
-${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.bin testfile.txt testfile.ini
-${PROG_NOINST}.nds: serialization.xml
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt testfile.ini
 	rm -fr nds-data
 	mkdir -p nds-data
-	cp testfile.bin testfile.txt testfile.ini serialization.xml nds-data
+	cp testfile.txt testfile.ini nds-data
 	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
-${PROG_NOINST}.nro: ${PROG_NOINST} testfile.bin testfile.txt testfile.ini
-${PROG_NOINST}.nro: serialization.xml
+${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt testfile.ini
 	rm -fr romfs
 	mkdir -p romfs
-	cp testfile.bin testfile.txt testfile.ini serialization.xml romfs
+	cp testfile.txt testfile.ini romfs
 	nacptool --create "ObjFW tests" "Jonathan Schleifer" \
 		"${PACKAGE_VERSION}" tests.nacp
 	elf2nro ${PROG_NOINST} $@ --nacp=tests.nacp --romfsdir=romfs
