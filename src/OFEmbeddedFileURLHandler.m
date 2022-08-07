@@ -76,14 +76,15 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 {
 	const char *path;
 
+	if (![URL.scheme isEqual: @"objfw-embedded"] || URL.host != nil ||
+	    URL.port != nil || URL.user != nil || URL.password != nil ||
+	    URL.query != nil || URL.fragment != nil)
+		@throw [OFInvalidArgumentException exception];
+
 	if (![mode isEqual: @"r"])
 		@throw [OFOpenItemFailedException exceptionWithURL: URL
 							      mode: mode
 							     errNo: EROFS];
-
-	if (URL.host != nil || URL.port != nil || URL.user != nil ||
-	    URL.password != nil || URL.query != nil || URL.fragment != nil)
-		@throw [OFInvalidArgumentException exception];
 
 	if ((path = URL.path.UTF8String) == NULL) {
 		@throw [OFInvalidArgumentException exception];
