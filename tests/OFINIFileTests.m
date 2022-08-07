@@ -114,8 +114,10 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
-	writePath = [[OFSystemInfo temporaryDirectoryPath]
-	    stringByAppendingPathComponent: @"objfw-tests.ini"];
+	writePath = [[OFSystemInfo temporaryDirectoryURL]
+	    URLByAppendingPathComponent: @"objfw-tests.ini"
+			    isDirectory: false]
+	    .fileSystemRepresentation;
 	TEST(@"-[writeToFile:encoding:]",
 	    R([file writeToFile: writePath
 		       encoding: OFStringEncodingCodepage437]) &&

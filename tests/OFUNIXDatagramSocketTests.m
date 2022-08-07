@@ -31,14 +31,15 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	char buffer[5];
 
 #if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryPath]
-	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
+	path = [[OFSystemInfo temporaryDirectoryURL]
+	    URLByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectoryPath is
+	 * We also use this code path for iOS, as the temporaryDirectoryURL is
 	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",

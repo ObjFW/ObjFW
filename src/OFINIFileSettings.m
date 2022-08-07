@@ -16,10 +16,11 @@
 #include "config.h"
 
 #import "OFINIFileSettings.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFINIFile.h"
+#import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFURL.h"
 
 @implementation OFINIFileSettings
 - (instancetype)initWithApplicationName: (OFString *)applicationName
@@ -31,7 +32,8 @@
 		OFString *fileName;
 
 		fileName = [applicationName stringByAppendingString: @".ini"];
-		_filePath = [[[OFSystemInfo userConfigPath]
+		_filePath = [[[OFSystemInfo
+		    userConfigURL].fileSystemRepresentation
 		    stringByAppendingPathComponent: fileName] copy];
 		_INIFile = [[OFINIFile alloc] initWithPath: _filePath];
 
