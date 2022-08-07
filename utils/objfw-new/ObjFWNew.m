@@ -26,7 +26,7 @@
 @end
 
 extern void newApp(OFString *);
-extern void newClass(OFString *, OFString *);
+extern void newClass(OFString *, OFString *, OFMutableArray *);
 
 OF_APPLICATION_DELEGATE(ObjFWNew)
 
@@ -44,31 +44,48 @@ showUsage(void)
 {
 	bool app, class;
 	OFString *superclass = nil;
+	OFMutableArray OF_GENERIC(OFString *) *properties = nil;
 	const OFOptionsParserOption options[] = {
 		{ '\0', @"app", 0, &app, NULL },
 		{ '\0', @"class", 0, &class, NULL },
 		{ '\0', @"superclass", 1, NULL, &superclass },
+		{ '\0', @"property", 1, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
 	OFUnichar option;
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
-	while ((option = [optionsParser nextOption]) != '\0')
-		if (option == '?' || option == ':' || option == '=')
+	while ((option = [optionsParser nextOption]) != '\0') {
+		switch (option) {
+		case '-':;
+			if ([optionsParser.lastLongOption
+			    isEqual: @"property"]) {
+				if (properties == nil)
+					properties = [OFMutableArray array];
+
+				[properties addObject: optionsParser.argument];
+			}
+			break;
+		case '?':
+		case ':':
+		case '=':
 			showUsage();
+			break;
+		}
+	}
 
 	if ((app ^ class) != 1 || optionsParser.remainingArguments.count != 1)
 		showUsage();
 
-	if (superclass && !class)
+	if ((superclass && !class)  || (properties != nil && !class))
 		showUsage();
 
 	if (app)
 		newApp(optionsParser.remainingArguments.firstObject);
 	else if (class)
 		newClass(optionsParser.remainingArguments.firstObject,
-		    superclass);
+		    superclass, properties);
 	else
 		showUsage();
 

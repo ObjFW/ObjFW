@@ -17,7 +17,10 @@
 
 #include <errno.h>
 
+#import "Property.h"
+
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFFile.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -25,7 +28,7 @@
 #import "OFOpenItemFailedException.h"
 
 void
-newClass(OFString *name, OFString *superclass)
+newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 {
 	OFString *headerPath = [name stringByAppendingPathExtension: @"h"];
 	OFString *implPath = [name stringByAppendingPathExtension: @"m"];
@@ -45,17 +48,48 @@ newClass(OFString *name, OFString *superclass)
 	if (superclass == nil)
 		superclass = @"OFObject";
 
+	for (size_t i = 0; i < properties.count; i++) {
+		Property *property = [Property propertyWithString:
+		    [properties objectAtIndex: i]];
+		[properties replaceObjectAtIndex: i
+				      withObject: property];
+	}
+
 	[headerFile writeFormat: @"#import <ObjFW/ObjFW.h>\n"
 				 @"\n"
-				 @"@interface %@: %@\n"
-				 @"@end\n",
+				 @"OF_ASSUME_NONNULL_BEGIN\n"
+				 @"\n"
+				 @"@interface %@: %@\n",
 				 name, superclass];
+
+	if (properties.count > 0)
+		[headerFile writeString: @"{\n"];
+
+	for (Property *property in properties)
+		[headerFile writeFormat: @"\t%@_%@;\n",
+					 property.type, property.name];
+
+	if (properties.count > 0)
+		[headerFile writeString: @"}\n\n"];
+
+	for (Property *property in properties)
+		[headerFile writeFormat: @"@property %@%@;\n",
+					 property.type, property.name];
+
+	[headerFile writeString: @"@end\n"
+				 @"\n"
+				 @"OF_ASSUME_NONNULL_END\n"];
 
 	[implFile writeFormat: @"#import \"%@\"\n"
 			       @"\n"
-			       @"@implementation %@\n"
-			       @"@end\n",
+			       @"@implementation %@\n",
 			       headerPath, name];
+
+	for (Property *property in properties)
+		[implFile writeFormat: @"@synthesize %@ = _%@;\n",
+				       property.name, property.name];
+
+	[implFile writeString: @"@end\n"];
 
 	[headerFile close];
 	[implFile close];
