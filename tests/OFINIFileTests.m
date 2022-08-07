@@ -43,18 +43,20 @@ static OFString *module;
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
+	OFURL *URL;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
 #ifndef OF_NINTENDO_DS
-	OFString *writePath;
+	OFURL *writeURL;
 #endif
 
 	module = @"OFINIFile";
 
-	TEST(@"+[fileWithPath:encoding:]",
-	    (file = [OFINIFile fileWithPath: @"testfile.ini"
-				   encoding: OFStringEncodingCodepage437]))
+	URL = [OFURL fileURLWithPath: @"testfile.ini"];
+	TEST(@"+[fileWithURL:encoding:]",
+	    (file = [OFINIFile fileWithURL: URL
+				  encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
 	foobar = [file categoryForName: @"foobar"];
@@ -114,17 +116,16 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
-	writePath = [[OFSystemInfo temporaryDirectoryURL]
+	writeURL = [[OFSystemInfo temporaryDirectoryURL]
 	    URLByAppendingPathComponent: @"objfw-tests.ini"
-			    isDirectory: false]
-	    .fileSystemRepresentation;
+			    isDirectory: false];
 	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToFile: writePath
-		       encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString stringWithContentsOfFile: writePath
-				       encoding: OFStringEncodingCodepage437]
+	    R([file writeToURL: writeURL
+		      encoding: OFStringEncodingCodepage437]) &&
+	    [[OFString stringWithContentsOfURL: writeURL
+				      encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtPath: writePath];
+	[[OFFileManager defaultManager] removeItemAtURL: writeURL];
 #else
 	(void)output;
 #endif

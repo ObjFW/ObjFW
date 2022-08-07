@@ -32,10 +32,9 @@
 		OFString *fileName;
 
 		fileName = [applicationName stringByAppendingString: @".ini"];
-		_filePath = [[[OFSystemInfo
-		    userConfigURL].fileSystemRepresentation
-		    stringByAppendingPathComponent: fileName] copy];
-		_INIFile = [[OFINIFile alloc] initWithPath: _filePath];
+		_fileURL = [[[OFSystemInfo userConfigURL]
+		    URLByAppendingPathComponent: fileName] copy];
+		_INIFile = [[OFINIFile alloc] initWithURL: _fileURL];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -48,7 +47,7 @@
 
 - (void)dealloc
 {
-	[_filePath release];
+	[_fileURL release];
 	[_INIFile release];
 
 	[super dealloc];
@@ -244,6 +243,6 @@
 
 - (void)save
 {
-	[_INIFile writeToFile: _filePath];
+	[_INIFile writeToURL: _fileURL];
 }
 @end

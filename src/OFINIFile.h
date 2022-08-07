@@ -20,6 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
+@class OFURL;
 
 /**
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -40,23 +41,22 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URL The URL to the file whose contents the OFINIFile should contain
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  */
-+ (instancetype)fileWithPath: (OFString *)path;
++ (instancetype)fileWithURL: (OFURL *)URL;
 
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file in
  *	  the specified encoding.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URL The URL to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  */
-+ (instancetype)fileWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding;
++ (instancetype)fileWithURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -64,23 +64,23 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URL The URL to the file whose contents the OFINIFile should contain
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- (instancetype)initWithPath: (OFString *)path;
+- (instancetype)initWithURL: (OFURL *)URL;
 
 /**
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file in the specified encoding.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URL The URL to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- (instancetype)initWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithURL: (OFURL *)URL
+		   encoding: (OFStringEncoding)encoding
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -97,18 +97,18 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Writes the contents of the OFINIFile to a file.
  *
- * @param path The path of the file to write to
+ * @param URL The URL of the file to write to
  */
-- (void)writeToFile: (OFString *)path;
+- (void)writeToURL: (OFURL *)URL;
 
 /**
  * @brief Writes the contents of the OFINIFile to a file in the specified
  *	  encoding.
  *
- * @param path The path of the file to write to
+ * @param URL The URL of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END
