@@ -773,7 +773,7 @@ uninstall: uninstall-extra
 
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
-		if test -f ${DESTDIR}${libdir}/$$i; then \
+		if test -f ${DESTDIR}${libdir}/$$i -o -f ${DESTDIR}${bindir}/$$i; then \
 			if : @UNINSTALL_LIB@; then \
 				${DELETE_OK}; \
 			else \
