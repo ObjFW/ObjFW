@@ -18,6 +18,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFObject.h"
+#import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
 
@@ -32,7 +33,7 @@ OF_APPLICATION_DELEGATE(ObjFWNew)
 static void
 showUsage(void)
 {
-	[OFStdErr writeFormat: @"Usage: %@ app|class name [properties]\n",
+	[OFStdErr writeFormat: @"Usage: %@ --app|--class name\n",
 			       [OFApplication programName]];
 
 	[OFApplication terminateWithStatus: 1];
@@ -41,19 +42,27 @@ showUsage(void)
 @implementation ObjFWNew
 - (void)applicationDidFinishLaunching
 {
-	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
-	OFString *type, *name;
+	bool app, class;
+	const OFOptionsParserOption options[] = {
+		{ '\0', @"app", 0, &app, NULL },
+		{ '\0', @"class", 0, &class, NULL },
+		{ '\0', nil, 0, NULL, NULL }
+	};
+	OFOptionsParser *optionsParser;
+	OFUnichar option;
 
-	if (arguments.count != 2)
+	optionsParser = [OFOptionsParser parserWithOptions: options];
+	while ((option = [optionsParser nextOption]) != '\0')
+		if (option == '?')
+			showUsage();
+
+	if ((app ^ class) != 1 || optionsParser.remainingArguments.count != 1)
 		showUsage();
 
-	type = [arguments objectAtIndex: 0];
-	name = [arguments objectAtIndex: 1];
-
-	if ([type isEqual: @"app"])
-		newApp(name);
-	else if ([type isEqual: @"class"])
-		newClass(name);
+	if (app)
+		newApp(optionsParser.remainingArguments.firstObject);
+	else if (class)
+		newClass(optionsParser.remainingArguments.firstObject);
 	else
 		showUsage();
 
