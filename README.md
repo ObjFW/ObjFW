@@ -311,7 +311,7 @@ other place, you are most likely using a mirror.
 
   To create your first, empty application, you can use `objfw-new`:
 
-    $ objfw-new app MyFirstApp
+    $ objfw-new --app MyFirstApp
 
   This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
   method is called as soon as ObjFW finished all initialization. Use this as
