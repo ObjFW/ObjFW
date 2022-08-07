@@ -402,7 +402,7 @@ main(int argc, char *argv[])
 	[self HMACTests];
 	[self PBKDF2Tests];
 	[self scryptTests];
-#if defined(OF_HAVE_FILES) && defined(HAVE_CODEPAGE_437)
+#ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS

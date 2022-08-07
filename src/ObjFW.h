@@ -69,9 +69,9 @@
 #import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
-# import "OFINIFile.h"
-# import "OFSettings.h"
 #endif
+#import "OFINIFile.h"
+#import "OFSettings.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 # import "OFDatagramSocket.h"

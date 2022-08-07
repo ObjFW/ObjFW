@@ -27,6 +27,8 @@ SRCS = OFApplication.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
+       OFINICategory.m			\
+       OFINIFile.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -87,6 +89,7 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
+       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -115,9 +118,6 @@ SRCS = OFApplication.m			\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
-	     OFINICategory.m		\
-	     OFINIFile.m		\
-	     OFSettings.m		\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSQuery.m			\

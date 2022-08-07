@@ -25,6 +25,7 @@ SRCS = ForwardingTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFHMACTests.m			\
+       OFINIFileTests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
@@ -65,7 +66,6 @@ SRCS = ForwardingTests.m		\
        serialization_xml.m		\
        testfile_bin.m			\
        testfile_ini.m
-SRCS_FILES = OFINIFileTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
