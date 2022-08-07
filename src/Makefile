@@ -29,6 +29,7 @@ SRCS = OFApplication.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFINIFileSettings.m		\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -207,8 +208,7 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
        ${UNICODE_M}
-SRCS_FILES += OFFileURLHandler.m	\
-	      OFINIFileSettings.m
+SRCS_FILES += OFFileURLHandler.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURLHandler.m			\

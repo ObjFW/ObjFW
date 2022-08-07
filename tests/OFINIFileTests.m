@@ -47,7 +47,7 @@ static OFString *module;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
-#ifndef OF_NINTENDO_DS
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
 	OFURL *writeURL;
 #endif
 
@@ -115,7 +115,7 @@ static OFString *module;
 	module = @"OFINIFile";
 
 	/* FIXME: Find a way to write files on Nintendo DS */
-#ifndef OF_NINTENDO_DS
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
 	writeURL = [[OFSystemInfo temporaryDirectoryURL]
 	    URLByAppendingPathComponent: @"objfw-tests.ini"
 			    isDirectory: false];

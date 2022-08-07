@@ -47,6 +47,7 @@ tests/plugin/Info.plist
 tests/serialization_xml.m
 tests/terminal/terminal_tests
 tests/testfile_bin.m
+tests/testfile_ini.m
 tests/tests
 tests/tests.3dsx
 tests/tests.arm9
