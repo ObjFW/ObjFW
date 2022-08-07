@@ -25,7 +25,7 @@
 #import "OFOpenItemFailedException.h"
 
 void
-newClass(OFString *name)
+newClass(OFString *name, OFString *superclass)
 {
 	OFString *headerPath = [name stringByAppendingPathExtension: @"h"];
 	OFString *implPath = [name stringByAppendingPathExtension: @"m"];
@@ -42,11 +42,14 @@ newClass(OFString *name)
 		[OFApplication terminateWithStatus: 1];
 	}
 
+	if (superclass == nil)
+		superclass = @"OFObject";
+
 	[headerFile writeFormat: @"#import <ObjFW/ObjFW.h>\n"
 				 @"\n"
-				 @"@interface %@: OFObject\n"
+				 @"@interface %@: %@\n"
 				 @"@end\n",
-				 name];
+				 name, superclass];
 
 	[implFile writeFormat: @"#import \"%@\"\n"
 			       @"\n"

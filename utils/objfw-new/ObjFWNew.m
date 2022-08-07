@@ -26,7 +26,7 @@
 @end
 
 extern void newApp(OFString *);
-extern void newClass(OFString *);
+extern void newClass(OFString *, OFString *);
 
 OF_APPLICATION_DELEGATE(ObjFWNew)
 
@@ -43,9 +43,11 @@ showUsage(void)
 - (void)applicationDidFinishLaunching
 {
 	bool app, class;
+	OFString *superclass = nil;
 	const OFOptionsParserOption options[] = {
 		{ '\0', @"app", 0, &app, NULL },
 		{ '\0', @"class", 0, &class, NULL },
+		{ '\0', @"superclass", 1, NULL, &superclass },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -53,16 +55,20 @@ showUsage(void)
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0')
-		if (option == '?')
+		if (option == '?' || option == ':' || option == '=')
 			showUsage();
 
 	if ((app ^ class) != 1 || optionsParser.remainingArguments.count != 1)
 		showUsage();
 
+	if (superclass && !class)
+		showUsage();
+
 	if (app)
 		newApp(optionsParser.remainingArguments.firstObject);
 	else if (class)
-		newClass(optionsParser.remainingArguments.firstObject);
+		newClass(optionsParser.remainingArguments.firstObject,
+		    superclass);
 	else
 		showUsage();
 
