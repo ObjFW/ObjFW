@@ -77,6 +77,14 @@ extern int _OFString_PathAdditions_reference;
  */
 - (OFString *)stringByAppendingPathComponent: (OFString *)component;
 
+/**
+ * @brief Creates a new string by appending a path extension.
+ *
+ * @param extension The extension to append
+ * @return A new, autoreleased OFString with the path extension appended
+ */
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension;
+
 - (bool)of_isDirectoryPath;
 - (OFString *)of_pathToURLPathWithURLEncodedHost:
     (OFString *__autoreleasing _Nullable *_Nonnull)URLEncodedHost;

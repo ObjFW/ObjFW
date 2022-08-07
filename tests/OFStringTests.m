@@ -595,6 +595,24 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: mutableString2] &&
 	    [[string stringByAppendingPathComponent: @"baz"]
 	    isEqual: mutableString2])
+
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"c:\\tmp\\foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp\\foo.bar"] &&
+	    [[C(@"c:\\tmp\\/\\") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp.bar"])
+# else
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"foo/bar") stringByAppendingPathExtension: @"baz"]
+	    isEqual: @"foo/bar.baz"] &&
+	    [[C(@"foo///") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"])
+# endif
 #endif
 
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
