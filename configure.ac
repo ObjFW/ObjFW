@@ -285,7 +285,7 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
 	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
 	enable_shared="no"
-	enable_threads="no"	# TODO
+	enable_threads="yes"
 	enable_sockets="no"	# TODO
 	check_pedantic="no"
 

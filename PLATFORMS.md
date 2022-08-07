@@ -162,8 +162,7 @@ Nintendo Switch
   * Architectures: AArch64
   * Compilers: GCC 12.1.0 (devkitA64 release 19) 
   * Runtimes: ObjFW
-  * Limitations: No threads, no sockets, no shared libraries, not tested on
-                 real hardware
+  * Limitations: No sockets, no shared libraries, not tested on real hardware
 
 
 OpenBSD
