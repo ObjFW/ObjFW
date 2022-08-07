@@ -29,7 +29,7 @@ newClass(OFString *name, OFString *superclass)
 {
 	OFString *headerPath = [name stringByAppendingPathExtension: @"h"];
 	OFString *implPath = [name stringByAppendingPathExtension: @"m"];
-	OFFile *headerFile, *implFile;
+	OFFile *headerFile = nil, *implFile = nil;
 	@try {
 		headerFile = [OFFile fileWithPath: headerPath mode: @"wx"];
 		implFile = [OFFile fileWithPath: implPath mode: @"wx"];

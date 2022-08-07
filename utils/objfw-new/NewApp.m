@@ -28,7 +28,7 @@ void
 newApp(OFString *name)
 {
 	OFString *path = [name stringByAppendingPathExtension: @"m"];
-	OFFile *file;
+	OFFile *file = nil;
 	@try {
 		file = [OFFile fileWithPath: path mode: @"wx"];
 	} @catch (OFOpenItemFailedException *e) {
