@@ -72,9 +72,35 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 	if (properties.count > 0)
 		[headerFile writeString: @"}\n\n"];
 
-	for (Property *property in properties)
-		[headerFile writeFormat: @"@property %@%@;\n",
+	for (Property *property in properties) {
+		[headerFile writeString: @"@property "];
+
+		if (property.attributes.count > 0) {
+			bool first = true;
+
+			if ([property.attributes containsObject: @"nullable"])
+				[headerFile writeString:
+				    @"OF_NULLABLE_PROPERTY "];
+
+			[headerFile writeString: @"("];
+
+			for (OFString *attribute in property.attributes) {
+				if ([attribute isEqual: @"nullable"])
+					continue;
+
+				if (!first)
+					[headerFile writeString: @", "];
+
+				[headerFile writeString: attribute];
+				first = false;
+			}
+
+			[headerFile writeString: @") "];
+		}
+
+		[headerFile writeFormat: @"%@_%@;\n",
 					 property.type, property.name];
+	}
 
 	[headerFile writeString: @"@end\n"
 				 @"\n"

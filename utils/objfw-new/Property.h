@@ -21,6 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface Property: OFObject
 {
 	OFString *_name, *_type;
+	OFArray OF_GENERIC(OFString *) *_attributes;
 }
 
 + (instancetype)propertyWithString: (OFString *)string;
@@ -28,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @property (readonly, nonatomic) OFString *name;
 @property (readonly, nonatomic) OFString *type;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *attributes;
 @end
 
 OF_ASSUME_NONNULL_END
