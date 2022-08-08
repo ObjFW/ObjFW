@@ -33,6 +33,7 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 	OFString *headerPath = [name stringByAppendingPathExtension: @"h"];
 	OFString *implPath = [name stringByAppendingPathExtension: @"m"];
 	OFFile *headerFile = nil, *implFile = nil;
+	bool needsDealloc = false;
 	@try {
 		headerFile = [OFFile fileWithPath: headerPath mode: @"wx"];
 		implFile = [OFFile fileWithPath: implPath mode: @"wx"];
@@ -88,6 +89,10 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 				if ([attribute isEqual: @"nullable"])
 					continue;
 
+				if ([attribute isEqual: @"retain"] ||
+				    [attribute isEqual: @"copy"])
+					needsDealloc = true;
+
 				if (!first)
 					[headerFile writeString: @", "];
 
@@ -114,6 +119,22 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 	for (Property *property in properties)
 		[implFile writeFormat: @"@synthesize %@ = _%@;\n",
 				       property.name, property.name];
+
+	if (needsDealloc) {
+		[implFile writeString: @"\n"
+				       @"- (void)dealloc\n"
+				       @"{\n"];
+
+		for (Property *property in properties)
+			if ([property.attributes containsObject: @"retain"] ||
+			    [property.attributes containsObject: @"copy"])
+				[implFile writeFormat: @"\t[_%@ release];\n",
+						       property.name];
+
+		[implFile writeString: @"\n"
+				       @"\t[super dealloc];\n"
+				       @"}\n"];
+	}
 
 	[implFile writeString: @"@end\n"];
 
