@@ -46,10 +46,10 @@ showUsage(void)
 	OFString *superclass = nil;
 	OFMutableArray OF_GENERIC(OFString *) *properties = nil;
 	const OFOptionsParserOption options[] = {
-		{ '\0', @"app", 0, &app, NULL },
-		{ '\0', @"class", 0, &class, NULL },
-		{ '\0', @"superclass", 1, NULL, &superclass },
-		{ '\0', @"property", 1, NULL, NULL },
+		{ 'a', @"app", 0, &app, NULL },
+		{ 'c', @"class", 0, &class, NULL },
+		{ 's', @"superclass", 1, NULL, &superclass },
+		{ 'p', @"property", 1, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -58,14 +58,11 @@ showUsage(void)
 	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
-		case '-':;
-			if ([optionsParser.lastLongOption
-			    isEqual: @"property"]) {
-				if (properties == nil)
-					properties = [OFMutableArray array];
+		case 'p':
+			if (properties == nil)
+				properties = [OFMutableArray array];
 
-				[properties addObject: optionsParser.argument];
-			}
+			[properties addObject: optionsParser.argument];
 			break;
 		case '?':
 		case ':':

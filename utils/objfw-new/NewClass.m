@@ -103,7 +103,7 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 			[headerFile writeString: @") "];
 		}
 
-		[headerFile writeFormat: @"%@_%@;\n",
+		[headerFile writeFormat: @"%@%@;\n",
 					 property.type, property.name];
 	}
 
