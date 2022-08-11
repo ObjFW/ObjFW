@@ -32,6 +32,8 @@
 # import "OFHTTPURLHandler.h"
 #endif
 
+#import "OFUnsupportedProtocolException.h"
+
 static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
@@ -108,6 +110,9 @@ releaseMutex(void)
 		[mutex unlock];
 	}
 #endif
+
+	if (handler == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	return handler;
 }

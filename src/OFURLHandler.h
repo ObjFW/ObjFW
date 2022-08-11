@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The handler for the specified URL.
  */
-+ (nullable OF_KINDOF(OFURLHandler *))handlerForURL: (OFURL *)URL;
++ (OF_KINDOF(OFURLHandler *))handlerForURL: (OFURL *)URL;
 
 - (instancetype)init OF_UNAVAILABLE;
 
