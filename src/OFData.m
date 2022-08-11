@@ -221,16 +221,9 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFURLHandler *URLHandler;
-		OFStream *stream;
+		OFStream *stream = [OFURLHandler openItemAtURL: URL mode: @"r"];
 		size_t pageSize;
 		unsigned char *buffer;
-
-		if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-			@throw [OFUnsupportedProtocolException
-			    exceptionWithURL: URL];
-
-		stream = [URLHandler openItemAtURL: URL mode: @"r"];
 
 		_count = 0;
 		_itemSize = 1;
@@ -601,12 +594,8 @@ _references_to_categories_of_OFData(void)
 - (void)writeToURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	[[URLHandler openItemAtURL: URL mode: @"w"] writeData: self];
+	[[OFURLHandler openItemAtURL: URL mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
 }

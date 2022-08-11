@@ -660,12 +660,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 		buffer = OFAllocMemory(1, pageSize);
 		@try {
-			sourceStream = [[OFURLHandler handlerForURL: source]
-			    openItemAtURL: source
-				     mode: @"r"];
-			destinationStream = [[OFURLHandler handlerForURL:
-			    destination] openItemAtURL: destination
-						  mode: @"w"];
+			sourceStream = [OFURLHandler openItemAtURL: source
+							      mode: @"r"];
+			destinationStream = [OFURLHandler
+			    openItemAtURL: destination
+				     mode: @"w"];
 
 			while (!sourceStream.atEndOfStream) {
 				size_t length;

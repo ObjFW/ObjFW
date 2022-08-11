@@ -96,7 +96,7 @@ releaseMutex(void)
 	return true;
 }
 
-+ (OF_KINDOF(OFURLHandler *))handlerForURL: (OFURL *)URL
++ (OFURLHandler *)handlerForURL: (OFURL *)URL
 {
 	OF_KINDOF(OFURLHandler *) handler;
 
@@ -115,6 +115,11 @@ releaseMutex(void)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	return handler;
+}
+
++ (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
+{
+	return [[self handlerForURL: URL] openItemAtURL: URL mode: mode];
 }
 
 - (instancetype)init

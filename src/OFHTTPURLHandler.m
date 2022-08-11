@@ -21,8 +21,7 @@
 #import "OFHTTPResponse.h"
 
 @implementation OFHTTPURLHandler
-- (OFStream *)openItemAtURL: (OFURL *)URL
-		       mode: (OFString *)mode
+- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPClient *client = [OFHTTPClient client];

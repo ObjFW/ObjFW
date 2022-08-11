@@ -30,8 +30,7 @@ const uint8_t testFileMD5[16] =
 	void *pool = objc_autoreleasePoolPush();
 	OFMD5Hash *MD5, *MD5Copy;
 	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
-	OFStream *file = [[OFURLHandler handlerForURL: URL]
-	    openItemAtURL: URL mode: @"r"];
+	OFStream *file = [OFURLHandler openItemAtURL: URL mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (MD5 = [OFMD5Hash hashWithAllowsSwappableMemory: true]))

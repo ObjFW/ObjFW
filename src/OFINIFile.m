@@ -118,8 +118,7 @@ isWhitespaceLine(OFString *line)
 	OFString *line;
 
 	@try {
-		file = [[OFURLHandler handlerForURL: URL] openItemAtURL: URL
-								   mode: @"r"];
+		file = [OFURLHandler openItemAtURL: URL mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -162,9 +161,7 @@ isWhitespaceLine(OFString *line)
 - (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFStream *file = [[OFURLHandler handlerForURL: URL]
-	    openItemAtURL: URL
-		     mode: @"w"];
+	OFStream *file = [OFURLHandler openItemAtURL: URL mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)

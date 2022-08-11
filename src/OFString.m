@@ -2758,13 +2758,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
 	OFStream *stream;
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	stream = [URLHandler openItemAtURL: URL mode: @"w"];
+	stream = [OFURLHandler openItemAtURL: URL mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);
