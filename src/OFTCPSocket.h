@@ -89,7 +89,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #ifndef OF_WII
 /**
- * @brief Whether sending segments can be delayed. Setting this to NO sets
+ * @brief Whether sending segments can be delayed. Setting this to `false` sets
  *        TCP_NODELAY on the socket.
  *
  * @warning This is not available on the Wii!
