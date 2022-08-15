@@ -23,9 +23,7 @@
 #import "OFDate.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
-#ifdef OF_HAVE_FILES
-# import "OFFile.h"
-#endif
+#import "OFURLHandler.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -68,12 +66,10 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-#ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
++ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path mode: mode] autorelease];
+	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
 }
-#endif
 
 - (instancetype)init
 {
@@ -127,25 +123,27 @@ OF_DIRECT_MEMBERS
 	return self;
 }
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
+- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
 {
-	OFFile *file;
-
-	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
-	else
-		file = [[OFFile alloc] initWithPath: path mode: mode];
+	void *pool = objc_autoreleasePoolPush();
+	OFStream *stream;
 
 	@try {
-		self = [self initWithStream: file mode: mode];
-	} @finally {
-		[file release];
+		if ([mode isEqual: @"a"])
+			stream = [OFURLHandler openItemAtURL: URL mode: @"r+"];
+		else
+			stream = [OFURLHandler openItemAtURL: URL mode: mode];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
+
+	self = [self initWithStream: stream mode: mode];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
-#endif
 
 - (void)dealloc
 {

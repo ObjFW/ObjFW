@@ -74,18 +74,16 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param path The path to the ZIP file
+ * @param URL The URL to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
++ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -103,19 +101,17 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param path The path to the ZIP file
+ * @param URL The URL to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
+- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.
