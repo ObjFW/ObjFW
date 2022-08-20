@@ -54,9 +54,9 @@
     ],
     "no_tls_support": [
         "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
-        "  Um via HTTPS runterzuladen, müssen Sie entweder ObjFW mit TLS-",
+        "  Um via HTTPS runterzuladen müssen Sie entweder ObjFW mit TLS-",
         "Unterstützung\n",
-        "  kompilieren oder eine Bibliothek mittels „preoad” laden, welche ",
+        "  kompilieren oder eine Bibliothek mittels „preload” laden, welche ",
         "TLS-Support\n",
         "  zu ObjFW hinzufügt!"
     ],
