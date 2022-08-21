@@ -28,7 +28,7 @@ release: docs
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.cirrus*,.fossil*,.git*' | ofarc -ttgz -xq -
+		--exclude '.fossil*,.git*' | ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
