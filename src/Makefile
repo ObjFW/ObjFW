@@ -22,14 +22,12 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
-       OFEmbeddedFileURLHandler.m	\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
-       OFINIFileSettings.m		\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -184,7 +182,9 @@ SRCS += OFASPrintF.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
+	OFEmbeddedFileURLHandler.m	\
 	OFHuffmanTree.m			\
+	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
