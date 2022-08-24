@@ -30,6 +30,32 @@
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
 @dynamic of_localFileHeaderOffset;
 
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (fileName.UTF8StringLength > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		_fileName = [fileName copy];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (id)copy
 {
 	OFMutableZIPArchiveEntry *copy = [self mutableCopy];

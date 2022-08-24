@@ -74,14 +74,19 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 @implementation OFTarArchiveEntry
-+ (instancetype)entryWithFileName: (OFString *)fileName
-{
-	return [[[self alloc] initWithFileName: fileName] autorelease];
-}
-
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	self = [super init];
+
+	_type = OFTarArchiveEntryTypeFile;
+	_mode = 0644;
+
+	return self;
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
@@ -139,22 +144,6 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		}
 
 		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithFileName: (OFString *)fileName
-{
-	self = [super init];
-
-	@try {
-		_fileName = [fileName copy];
-		_type = OFTarArchiveEntryTypeFile;
-		_mode = 0644;
 	} @catch (id e) {
 		[self release];
 		@throw e;

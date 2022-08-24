@@ -120,6 +120,23 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint16_t generalPurposeBitFlag;
 
 /**
+ * @brief Creates a new OFMutableZIPArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return A new, autoreleased OFZIPArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
+/**
+ * @brief Initializes an already allocated OFMutableZIPArchiveEntry with the
+ *	  specified file name.
+ *
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return An initialized OFZIPArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
+
+/**
  * @brief Converts the OFMutableZIPArchiveEntry to an immutable
  *	  OFZIPArchiveEntry.
  */

@@ -303,22 +303,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	*directoryNameLength = pos;
 }
 
-+ (instancetype)entryWithFileName: (OFString *)fileName
-{
-	return [[[self alloc] initWithFileName: fileName] autorelease];
-}
-
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithFileName: (OFString *)fileName
+- (instancetype)of_init
 {
 	self = [super init];
 
 	@try {
-		_fileName = [fileName copy];
 		_compressionMethod = @"-lh0-";
 		_date = [[OFDate alloc] initWithTimeIntervalSince1970: 0];
 	} @catch (id e) {

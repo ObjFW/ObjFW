@@ -92,6 +92,23 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) unsigned long deviceMinor;
 
 /**
+ * @brief Creates a new OFMutableTarArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFTarArchiveEntry
+ * @return A new, autoreleased OFTarArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
+/**
+ * @brief Initializes an already allocated OFMutableTarArchiveEntry with the
+ *	  specified file name.
+ *
+ * @param fileName The file name for the OFTarArchiveEntry
+ * @return An initialized OFTarArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
+
+/**
  * @brief Converts the OFMutableTarArchiveEntry to an immutable
  *	  OFTarArchiveEntry.
  */

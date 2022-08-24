@@ -172,35 +172,14 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 }
 
 @implementation OFZIPArchiveEntry
-+ (instancetype)entryWithFileName: (OFString *)fileName
-{
-	return [[[self alloc] initWithFileName: fileName] autorelease];
-}
-
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithFileName: (OFString *)fileName
+- (instancetype)of_init
 {
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (fileName.UTF8StringLength > UINT16_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		_fileName = [fileName copy];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [super init];
 }
 
 - (instancetype)of_initWithStream: (OFStream *)stream

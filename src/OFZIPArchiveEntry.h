@@ -209,24 +209,7 @@ typedef enum {
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
-/**
- * @brief Creates a new OFZIPArchiveEntry with the specified file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return A new, autoreleased OFZIPArchiveEntry
- */
-+ (instancetype)entryWithFileName: (OFString *)fileName;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
- *	  file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return An initialized OFZIPArchiveEntry
- */
-- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 #ifdef __cplusplus

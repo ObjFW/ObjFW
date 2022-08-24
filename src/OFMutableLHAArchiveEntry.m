@@ -16,6 +16,7 @@
 #include "config.h"
 
 #import "OFMutableLHAArchiveEntry.h"
+#import "OFLHAArchiveEntry+Private.h"
 
 #import "OFArray.h"
 #import "OFData.h"
@@ -27,6 +28,25 @@
 @dynamic fileName, compressionMethod, compressedSize, uncompressedSize, date;
 @dynamic headerLevel, CRC16, operatingSystemIdentifier, fileComment, mode, UID;
 @dynamic GID, owner, group, modificationDate, extensions;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {

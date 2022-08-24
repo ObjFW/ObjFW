@@ -16,12 +16,32 @@
 #include "config.h"
 
 #import "OFMutableTarArchiveEntry.h"
+#import "OFTarArchiveEntry+Private.h"
 #import "OFString.h"
 #import "OFDate.h"
 
 @implementation OFMutableTarArchiveEntry
 @dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
 @dynamic owner, group, deviceMajor, deviceMinor;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {

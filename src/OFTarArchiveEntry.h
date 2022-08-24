@@ -125,24 +125,7 @@ typedef enum {
  */
 @property (readonly, nonatomic) unsigned long deviceMinor;
 
-/**
- * @brief Creates a new OFTarArchiveEntry with the specified file name.
- *
- * @param fileName The file name for the OFTarArchiveEntry
- * @return A new, autoreleased OFTarArchiveEntry
- */
-+ (instancetype)entryWithFileName: (OFString *)fileName;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated OFTarArchiveEntry with the specified
- *	  file name.
- *
- * @param fileName The file name for the OFTarArchiveEntry
- * @return An initialized OFTarArchiveEntry
- */
-- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 OF_ASSUME_NONNULL_END

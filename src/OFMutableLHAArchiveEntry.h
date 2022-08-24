@@ -111,6 +111,23 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
 
 /**
+ * @brief Creates a new OFMutableLHAArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return A new, autoreleased OFLHAArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
+/**
+ * @brief Initializes an already allocated OFMutableLHAArchiveEntry with the
+ *	  specified file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return An initialized OFLHAArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
+
+/**
  * @brief Converts the OFMutableLHAArchiveEntry to an immutable
  *	  OFLHAArchiveEntry.
  */

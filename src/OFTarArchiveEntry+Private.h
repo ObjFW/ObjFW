@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveEntry ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
 - (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
 			 encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init);
