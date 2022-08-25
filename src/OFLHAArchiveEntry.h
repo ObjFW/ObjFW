@@ -33,14 +33,13 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
 	uint32_t _compressedSize, _uncompressedSize;
-	OFDate *_date;
+	OFDate *_modificationDate;
 	uint8_t _headerLevel;
 	uint16_t _CRC16;
 	uint8_t _operatingSystemIdentifier;
 	OFString *_Nullable _fileComment;
 	OFNumber *_Nullable _mode, *_Nullable _UID, *_Nullable _GID;
 	OFString *_Nullable _owner, *_Nullable _group;
-	OFDate *_Nullable _modificationDate;
 	OFMutableArray OF_GENERIC(OFData *) *_extensions;
 	OF_RESERVE_IVARS(OFLHAArchiveEntry, 4)
 }
@@ -66,9 +65,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) uint32_t uncompressedSize;
 
 /**
- * @brief The date of the file.
+ * @brief The modification date of the file.
  */
-@property (readonly, retain, nonatomic) OFDate *date;
+@property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The LHA level of the file.
@@ -115,12 +114,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The group of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
-    OFDate *modificationDate;
 
 /**
  * @brief The LHA extensions of the file.

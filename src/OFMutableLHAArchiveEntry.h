@@ -49,9 +49,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint32_t uncompressedSize;
 
 /**
- * @brief The date of the file.
+ * @brief The modification date of the file.
  */
-@property (readwrite, retain, nonatomic) OFDate *date;
+@property (readwrite, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The LHA level of the file.
@@ -98,12 +98,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The group of the file.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *group;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
-    OFDate *modificationDate;
 
 /**
  * @brief The LHA extensions of the file.

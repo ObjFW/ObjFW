@@ -314,7 +314,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	@try {
 		_compressionMethod = @"-lh0-";
-		_date = [[OFDate alloc] initWithTimeIntervalSince1970: 0];
+		_modificationDate = [[OFDate alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -356,7 +356,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			uint8_t fileNameLength;
 			OFString *tmp;
 
-			_date = [parseMSDOSDate(date) retain];
+			_modificationDate = [parseMSDOSDate(date) retain];
 
 			fileNameLength = [stream readInt8];
 			tmp = [stream readStringWithLength: fileNameLength
@@ -376,7 +376,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			objc_autoreleasePoolPop(pool);
 			break;
 		case 2:
-			_date = [[OFDate alloc]
+			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];
 
 			_CRC16 = [stream readLittleEndianInt16];
@@ -410,7 +410,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[_compressionMethod release];
 	[_fileName release];
 	[_directoryName release];
-	[_date release];
+	[_modificationDate release];
 	[_fileComment release];
 	[_mode release];
 	[_UID release];
@@ -436,14 +436,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		[copy->_compressionMethod release];
 		copy->_compressionMethod = nil;
 
-		[copy->_date release];
-		copy->_date = nil;
+		[copy->_modificationDate release];
+		copy->_modificationDate = nil;
 
 		copy->_directoryName = [_directoryName copy];
 		copy->_compressionMethod = [_compressionMethod copy];
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
-		copy->_date = [_date copy];
+		copy->_modificationDate = [_modificationDate copy];
 		copy->_headerLevel = _headerLevel;
 		copy->_CRC16 = _CRC16;
 		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
@@ -453,7 +453,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		copy->_GID = [_GID retain];
 		copy->_owner = [_owner copy];
 		copy->_group = [_group copy];
-		copy->_modificationDate = [_modificationDate retain];
 		copy->_extensions = [_extensions copy];
 	} @catch (id e) {
 		[copy release];
@@ -486,9 +485,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _uncompressedSize;
 }
 
-- (OFDate *)date
+- (OFDate *)modificationDate
 {
-	return _date;
+	return _modificationDate;
 }
 
 - (uint8_t)headerLevel
@@ -536,11 +535,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _group;
 }
 
-- (OFDate *)modificationDate
-{
-	return _modificationDate;
-}
-
 - (OFArray OF_GENERIC(OFData *) *)extensions
 {
 	return _extensions;
@@ -581,7 +575,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	tmp32 = OFToLittleEndian32(_uncompressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OFToLittleEndian32((uint32_t)_date.timeIntervalSince1970);
+	tmp32 = OFToLittleEndian32(
+	    (uint32_t)_modificationDate.timeIntervalSince1970);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	/* Reserved */
@@ -681,16 +676,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			 count: ownerLength];
 	}
 
-	if (_modificationDate != nil) {
-		tmp16 = OFToLittleEndian16(7);
-		[data addItems: &tmp16 count: sizeof(tmp16)];
-		[data addItem: "\x54"];
-
-		tmp32 = OFToLittleEndian32(
-		    (uint32_t)_modificationDate.timeIntervalSince1970);
-		[data addItems: &tmp32 count: sizeof(tmp32)];
-	}
-
 	for (OFData *extension in _extensions) {
 		size_t extensionLength = extension.count;
 
@@ -740,7 +725,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tCompression method = %@\n"
 	    @"\tCompressed size = %" @PRIu32 "\n"
 	    @"\tUncompressed size = %" @PRIu32 "\n"
-	    @"\tDate = %@\n"
+	    @"\tModification date = %@\n"
 	    @"\tHeader level = %u\n"
 	    @"\tCRC16 = %04" @PRIX16 @"\n"
 	    @"\tOperating system identifier = %c\n"
@@ -750,13 +735,12 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tGID = %@\n"
 	    @"\tOwner = %@\n"
 	    @"\tGroup = %@\n"
-	    @"\tModification date = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
 	    self.class, self.fileName, _compressionMethod, _compressedSize,
-	    _uncompressedSize, _date, _headerLevel, _CRC16,
+	    _uncompressedSize, _modificationDate, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
-	    _group, _modificationDate, extensions];
+	    _group, extensions];
 
 	[ret retain];
 

@@ -107,7 +107,6 @@
         ]
     ],
     "list_compression_method": "Kompressionsmethode: %[method]",
-    "list_date": "Datum: %[date]",
     "list_osid": "Betriebssystem-Identifikator: %[osid]",
     "list_extensions": "Erweiterungen: %[extensions]",
     "list_version_made_by": "Erstellt mit Version: %[version]",

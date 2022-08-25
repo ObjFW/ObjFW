@@ -60,22 +60,8 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 static void
 setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
-	OFDate *modificationDate = entry.modificationDate;
-	OFFileAttributes attributes;
-
-	if (modificationDate == nil) {
-		/*
-		 * Fall back to the original date if we have no modification
-		 * date, as the modification date is a UNIX extension.
-		 */
-		modificationDate = entry.date;
-
-		if (modificationDate == nil)
-			return;
-	}
-
-	attributes = [OFDictionary
-	    dictionaryWithObject: modificationDate
+	OFFileAttributes attributes = [OFDictionary
+	    dictionaryWithObject: entry.modificationDate
 			  forKey: OFFileModificationDate];
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
@@ -134,7 +120,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
-			OFString *date = [entry.date
+			OFString *modificationDate = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *compressedSize = [OFString stringWithFormat:
 			    @"%" PRIu32, entry.compressedSize];
@@ -175,9 +161,10 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			    @"CRC16: %[crc16]",
 			    @"crc16", CRC16)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_date",
-			    @"Date: %[date]",
-			    @"date", date)];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_modification_date",
+			    @"Modification date: %[date]",
+			    @"date", modificationDate)];
 
 			if (entry.mode != nil) {
 				OFString *modeString = [OFString
@@ -238,17 +225,6 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					    @"Operating system identifier: "
 					    "%[osid]",
 					    @"osid", OSID)];
-				}
-
-				if (entry.modificationDate != nil) {
-					OFString *modificationDate =
-					    entry.modificationDate.description;
-
-					[OFStdOut writeString: @"\t"];
-					[OFStdOut writeLine: OF_LOCALIZED(
-					    @"list_modification_date",
-					    @"Modification date: %[date]",
-					    @"date", modificationDate)];
 				}
 			}
 
@@ -471,7 +447,7 @@ outer_loop_end:
 		entry.mode = [OFNumber numberWithUnsignedLong:
 		    attributes.filePOSIXPermissions];
 #endif
-		entry.date = attributes.fileModificationDate;
+		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 		entry.UID = [OFNumber numberWithUnsignedLong:

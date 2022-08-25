@@ -25,9 +25,9 @@
 #import "OFString.h"
 
 @implementation OFMutableLHAArchiveEntry
-@dynamic fileName, compressionMethod, compressedSize, uncompressedSize, date;
-@dynamic headerLevel, CRC16, operatingSystemIdentifier, fileComment, mode, UID;
-@dynamic GID, owner, group, modificationDate, extensions;
+@dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
+@dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
+@dynamic fileComment, mode, UID, GID, owner, group, extensions;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -84,10 +84,10 @@
 	_uncompressedSize = uncompressedSize;
 }
 
-- (void)setDate: (OFDate *)date
+- (void)setModificationDate: (OFDate *)modificationDate
 {
-	OFDate *old = _date;
-	_date = [date retain];
+	OFDate *old = _modificationDate;
+	_modificationDate = [modificationDate retain];
 	[old release];
 }
 
@@ -145,13 +145,6 @@
 {
 	OFString *old = _group;
 	_group = [group copy];
-	[old release];
-}
-
-- (void)setModificationDate: (OFDate *)modificationDate
-{
-	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
 	[old release];
 }
 
