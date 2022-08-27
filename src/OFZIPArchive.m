@@ -894,7 +894,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	} @catch (OFWriteFailedException *e) {
 		OFEnsure(e.bytesWritten <= length);
 
-		_bytesWritten += e.bytesWritten;
+		_bytesWritten += (unsigned long long)e.bytesWritten;
 		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
@@ -903,7 +903,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw e;
 	}
 
-	_bytesWritten += length;
+	_bytesWritten += (unsigned long long)length;
 	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
 	return length;
