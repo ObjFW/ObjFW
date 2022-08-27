@@ -32,17 +32,17 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The mode of the entry.
  */
-@property (readwrite, nonatomic) unsigned long mode;
+@property (readwrite, retain, nonatomic) OFNumber *mode;
 
 /**
  * @brief The UID of the owner.
  */
-@property (readwrite, nonatomic) unsigned long UID;
+@property (readwrite, retain, nonatomic) OFNumber *UID;
 
 /**
  * @brief The GID of the group.
  */
-@property (readwrite, nonatomic) unsigned long GID;
+@property (readwrite, retain, nonatomic) OFNumber *GID;
 
 /**
  * @brief The date of the last modification of the file.

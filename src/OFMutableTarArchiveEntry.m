@@ -17,8 +17,9 @@
 
 #import "OFMutableTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
-#import "OFString.h"
 #import "OFDate.h"
+#import "OFNumber.h"
+#import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
 @dynamic fileName, mode, UID, GID, compressedSize, uncompressedSize;
@@ -60,19 +61,25 @@
 	[old release];
 }
 
-- (void)setMode: (unsigned long)mode
+- (void)setMode: (OFNumber *)mode
 {
-	_mode = mode;
+	OFNumber *old = _mode;
+	_mode = [mode retain];
+	[old release];
 }
 
-- (void)setUID: (unsigned long)UID
+- (void)setUID: (OFNumber *)UID
 {
-	_UID = UID;
+	OFNumber *old = _UID;
+	_UID = [UID retain];
+	[old release];
 }
 
-- (void)setGID: (unsigned long)GID
+- (void)setGID: (OFNumber *)GID
 {
-	_GID = GID;
+	OFNumber *old = _GID;
+	_GID = [GID retain];
+	[old release];
 }
 
 - (void)setCompressedSize: (unsigned long long)compressedSize

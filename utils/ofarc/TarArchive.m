@@ -33,7 +33,8 @@ static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
+	OFNumber *mode = [OFNumber numberWithUnsignedLongLong:
+	    entry.mode.longLongValue & 0777];
 	OFFileAttributes attributes = [OFDictionary
 	    dictionaryWithObject: mode
 			  forKey: OFFilePOSIXPermissions];
@@ -117,11 +118,9 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			OFString *size = [OFString stringWithFormat:
 			    @"%llu", entry.uncompressedSize];
 			OFString *mode = [OFString stringWithFormat:
-			    @"%06o", entry.mode];
-			OFString *UID = [OFString stringWithFormat:
-			    @"%u", entry.UID];
-			OFString *GID = [OFString stringWithFormat:
-			    @"%u", entry.GID];
+			    @"%06llo", entry.mode.unsignedLongLongValue];
+			OFString *UID = entry.UID.description;
+			OFString *GID = entry.GID.description;
 
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(@"list_size",
@@ -479,14 +478,15 @@ outer_loop_end:
 		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		entry.mode = attributes.filePOSIXPermissions;
+		entry.mode = [attributes objectForKey: OFFilePOSIXPermissions];
 #endif
 		entry.uncompressedSize = attributes.fileSize;
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = attributes.fileOwnerAccountID;
-		entry.GID = attributes.fileGroupOwnerAccountID;
+		entry.UID = [attributes objectForKey: OFFileOwnerAccountID];
+		entry.GID =
+		    [attributes objectForKey: OFFileGroupOwnerAccountID];
 		entry.owner = attributes.fileOwnerAccountName;
 		entry.group = attributes.fileGroupOwnerAccountName;
 #endif

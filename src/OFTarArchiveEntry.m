@@ -18,6 +18,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -83,8 +84,13 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 {
 	self = [super init];
 
-	_type = OFTarArchiveEntryTypeFile;
-	_mode = 0644;
+	@try {
+		_type = OFTarArchiveEntryTypeFile;
+		_mode = [[OFNumber alloc] initWithUnsignedShort: 0644];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -99,12 +105,12 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
-		_mode = (unsigned long)octalValueFromBuffer(
-		    header + 100, 8, ULONG_MAX);
-		_UID = (unsigned long)octalValueFromBuffer(
-		    header + 108, 8, ULONG_MAX);
-		_GID = (unsigned long)octalValueFromBuffer(
-		    header + 116, 8, ULONG_MAX);
+		_mode = [[OFNumber alloc] initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 100, 8, ULONG_MAX)];
+		_UID = [[OFNumber alloc] initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 108, 8, ULONG_MAX)];
+		_GID = [[OFNumber alloc] initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 116, 8, ULONG_MAX)];
 		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
 		_compressedSize =
@@ -157,6 +163,9 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (void)dealloc
 {
 	[_fileName release];
+	[_mode release];
+	[_UID release];
+	[_GID release];
 	[_modificationDate release];
 	[_targetFileName release];
 	[_owner release];
@@ -199,17 +208,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _fileName;
 }
 
-- (unsigned long)mode
+- (OFNumber *)mode
 {
 	return _mode;
 }
 
-- (unsigned long)UID
+- (OFNumber *)UID
 {
 	return _UID;
 }
 
-- (unsigned long)GID
+- (OFNumber *)GID
 {
 	return _GID;
 }

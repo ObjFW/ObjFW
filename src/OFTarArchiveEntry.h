@@ -21,6 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 @class OFDate;
+@class OFNumber;
 
 /**
  * @brief The type of the archive entry.
@@ -53,9 +54,8 @@ typedef enum {
     OFMutableCopying>
 {
 	OFString *_fileName;
-	unsigned long _mode;
+	OFNumber *_mode, *_UID, *_GID;
 	unsigned long long _compressedSize, _uncompressedSize;
-	unsigned long _UID, _GID;
 	OFDate *_modificationDate;
 	OFTarArchiveEntryType _type;
 	OFString *_Nullable _targetFileName;
@@ -67,17 +67,17 @@ typedef enum {
 /**
  * @brief The mode of the entry.
  */
-@property (readonly, nonatomic) unsigned long mode;
+@property (readonly, retain, nonatomic) OFNumber *mode;
 
 /**
  * @brief The UID of the owner.
  */
-@property (readonly, nonatomic) unsigned long UID;
+@property (readonly, retain, nonatomic) OFNumber *UID;
 
 /**
  * @brief The GID of the group.
  */
-@property (readonly, nonatomic) unsigned long GID;
+@property (readonly, retain, nonatomic) OFNumber *GID;
 
 /**
  * @brief The date of the last modification of the file.
