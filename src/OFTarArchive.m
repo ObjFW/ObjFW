@@ -37,7 +37,7 @@ OF_DIRECT_MEMBERS
 {
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
-	uint64_t _toRead;
+	unsigned long long _toRead;
 	bool _atEndOfStream, _skipped;
 }
 
@@ -51,7 +51,7 @@ OF_DIRECT_MEMBERS
 {
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
-	uint64_t _toWrite;
+	unsigned long long _toWrite;
 }
 
 - (instancetype)of_initWithStream: (OFStream *)stream
@@ -304,12 +304,12 @@ OF_DIRECT_MEMBERS
 	if (_atEndOfStream)
 		return 0;
 
-#if SIZE_MAX >= UINT64_MAX
-	if (length > UINT64_MAX)
+#if SIZE_MAX >= ULLONG_MAX
+	if (length > ULLONG_MAX)
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if ((uint64_t)length > _toRead)
+	if ((unsigned long long)length > _toRead)
 		length = (size_t)_toRead;
 
 	ret = [_stream readIntoBuffer: buffer length: length];
@@ -359,9 +359,9 @@ OF_DIRECT_MEMBERS
 		return;
 
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
-	    _toRead <= INT64_MAX &&
-	    (OFStreamOffset)_toRead == (int64_t)_toRead) {
-		uint64_t size;
+	    _toRead <= LLONG_MAX &&
+	    (OFStreamOffset)_toRead == (long long)_toRead) {
+		unsigned long long size;
 
 		[(OFSeekableStream *)_stream
 		    seekToOffset: (OFStreamOffset)_toRead
@@ -377,7 +377,7 @@ OF_DIRECT_MEMBERS
 				  whence: SEEK_CUR];
 	} else {
 		char buffer[512];
-		uint64_t size;
+		unsigned long long size;
 
 		while (_toRead >= 512) {
 			[_stream readIntoBuffer: buffer exactLength: 512];
@@ -434,7 +434,7 @@ OF_DIRECT_MEMBERS
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((uint64_t)length > _toWrite)
+	if (length > _toWrite)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
@@ -471,7 +471,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	uint64_t remainder;
+	unsigned long long remainder;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
