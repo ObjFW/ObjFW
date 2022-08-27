@@ -13,7 +13,7 @@
  * file.
  */
 
-#import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -39,6 +39,48 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The uncompressed size of the entry's file.
  */
 @property (readwrite, nonatomic) unsigned long long uncompressedSize;
+
+@optional
+/**
+ * @brief The modification date of the file.
+ */
+@property (readwrite, retain, nonatomic) OFDate *modificationDate;
+
+/**
+ * @brief The comment of the entry's file.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFString *fileComment;
+
+/**
+ * @brief The POSIX permissions of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFNumber *POSIXPermissions;
+
+/**
+ * @brief The file owner's account ID.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFNumber *ownerAccountID;
+
+/**
+ * @brief The file owner's group account ID.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFNumber *groupOwnerAccountID;
+
+/**
+ * @brief The file owner's account name.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFString *ownerAccountName;
+
+/**
+ * @brief The file owner's group account name.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFString *groupOwnerAccountName;
 @end
 
 OF_ASSUME_NONNULL_END

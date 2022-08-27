@@ -54,35 +54,16 @@ typedef enum {
     OFMutableCopying>
 {
 	OFString *_fileName;
-	OFNumber *_mode, *_UID, *_GID;
+	OFNumber *_POSIXPermissions, *_ownerAccountID, *_groupOwnerAccountID;
 	unsigned long long _compressedSize, _uncompressedSize;
 	OFDate *_modificationDate;
 	OFTarArchiveEntryType _type;
 	OFString *_Nullable _targetFileName;
-	OFString *_Nullable _owner, *_Nullable _group;
+	OFString *_Nullable _ownerAccountName;
+	OFString *_Nullable _groupOwnerAccountName;
 	unsigned long _deviceMajor, _deviceMinor;
 	OF_RESERVE_IVARS(OFTarArchiveEntry, 4)
 }
-
-/**
- * @brief The mode of the entry.
- */
-@property (readonly, retain, nonatomic) OFNumber *mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property (readonly, retain, nonatomic) OFNumber *UID;
-
-/**
- * @brief The GID of the group.
- */
-@property (readonly, retain, nonatomic) OFNumber *GID;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The type of the archive entry.
@@ -96,16 +77,6 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *targetFileName;
-
-/**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
 
 /**
  * @brief The device major (if the file is a device).

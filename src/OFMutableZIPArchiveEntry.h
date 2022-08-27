@@ -31,12 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The comment of the entry's file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *fileComment;
-
-/**
  * @brief The extra field of the entry.
  *
  * The item size *must* be 1!
@@ -62,13 +56,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic)
     OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
-
-/**
- * @brief The last modification date of the entry's file.
- *
- * @note Due to limitations of the ZIP format, this has only 2 second precision.
- */
-@property (readwrite, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The compression method of the entry.

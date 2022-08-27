@@ -35,11 +35,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy, nonatomic) OFString *compressionMethod;
 
 /**
- * @brief The modification date of the file.
- */
-@property (readwrite, retain, nonatomic) OFDate *modificationDate;
-
-/**
  * @brief The LHA level of the file.
  */
 @property (readwrite, nonatomic) uint8_t headerLevel;
@@ -53,37 +48,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The operating system identifier of the file.
  */
 @property (readwrite, nonatomic) uint8_t operatingSystemIdentifier;
-
-/**
- * @brief The comment of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *fileComment;
-
-/**
- * @brief The mode of the entry.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *UID;
-
-/**
- * @brief The GID of the group.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *GID;
-
-/**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *group;
 
 /**
  * @brief The LHA extensions of the file.

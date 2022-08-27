@@ -113,53 +113,56 @@ static void
 parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	uint16_t mode;
+	uint16_t POSIXPermissions;
 
 	if (extension.count != 3)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&mode, (char *)extension.items + 1, 2);
-	mode = OFFromLittleEndian16(mode);
+	memcpy(&POSIXPermissions, (char *)extension.items + 1, 2);
+	POSIXPermissions = OFFromLittleEndian16(POSIXPermissions);
 
-	[entry->_mode release];
-	entry->_mode = nil;
+	[entry->_POSIXPermissions release];
+	entry->_POSIXPermissions = nil;
 
-	entry->_mode = [[OFNumber alloc] initWithUnsignedShort: mode];
+	entry->_POSIXPermissions =
+	    [[OFNumber alloc] initWithUnsignedShort: POSIXPermissions];
 }
 
 static void
 parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	uint16_t UID, GID;
+	uint16_t ownerAccountID, groupOwnerAccountID;
 
 	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&GID, (char *)extension.items + 1, 2);
-	GID = OFFromLittleEndian16(GID);
+	memcpy(&groupOwnerAccountID, (char *)extension.items + 1, 2);
+	groupOwnerAccountID = OFFromLittleEndian16(groupOwnerAccountID);
 
-	memcpy(&UID, (char *)extension.items + 3, 2);
-	UID = OFFromLittleEndian16(UID);
+	memcpy(&ownerAccountID, (char *)extension.items + 3, 2);
+	ownerAccountID = OFFromLittleEndian16(ownerAccountID);
 
-	[entry->_GID release];
-	entry->_GID = nil;
+	[entry->_groupOwnerAccountID release];
+	entry->_groupOwnerAccountID = nil;
 
-	[entry->_UID release];
-	entry->_UID = nil;
+	[entry->_ownerAccountID release];
+	entry->_ownerAccountID = nil;
 
-	entry->_GID = [[OFNumber alloc] initWithUnsignedShort: GID];
-	entry->_UID = [[OFNumber alloc] initWithUnsignedShort: UID];
+	entry->_groupOwnerAccountID =
+	    [[OFNumber alloc] initWithUnsignedShort: groupOwnerAccountID];
+	entry->_ownerAccountID =
+	    [[OFNumber alloc] initWithUnsignedShort: ownerAccountID];
 }
 
 static void
 parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_group release];
-	entry->_group = nil;
+	[entry->_groupOwnerAccountName release];
+	entry->_groupOwnerAccountName = nil;
 
-	entry->_group = [[OFString alloc]
+	entry->_groupOwnerAccountName = [[OFString alloc]
 	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
 		     length: extension.count - 1];
@@ -169,10 +172,10 @@ static void
 parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_owner release];
-	entry->_owner = nil;
+	[entry->_ownerAccountName release];
+	entry->_ownerAccountName = nil;
 
-	entry->_owner = [[OFString alloc]
+	entry->_ownerAccountName = [[OFString alloc]
 	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
 		     length: extension.count - 1];
@@ -418,11 +421,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[_directoryName release];
 	[_modificationDate release];
 	[_fileComment release];
-	[_mode release];
-	[_UID release];
-	[_GID release];
-	[_owner release];
-	[_group release];
+	[_POSIXPermissions release];
+	[_ownerAccountID release];
+	[_groupOwnerAccountID release];
+	[_ownerAccountName release];
+	[_groupOwnerAccountName release];
 	[_extensions release];
 
 	[super dealloc];
@@ -454,11 +457,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		copy->_CRC16 = _CRC16;
 		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
 		copy->_fileComment = [_fileComment copy];
-		copy->_mode = [_mode retain];
-		copy->_UID = [_UID retain];
-		copy->_GID = [_GID retain];
-		copy->_owner = [_owner copy];
-		copy->_group = [_group copy];
+		copy->_POSIXPermissions = [_POSIXPermissions retain];
+		copy->_ownerAccountID = [_ownerAccountID retain];
+		copy->_groupOwnerAccountID = [_groupOwnerAccountID retain];
+		copy->_ownerAccountName = [_ownerAccountName copy];
+		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
 		copy->_extensions = [_extensions copy];
 	} @catch (id e) {
 		[copy release];
@@ -516,29 +519,29 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _fileComment;
 }
 
-- (OFNumber *)mode
+- (OFNumber *)POSIXPermissions
 {
-	return _mode;
+	return _POSIXPermissions;
 }
 
-- (OFNumber *)UID
+- (OFNumber *)ownerAccountID
 {
-	return _UID;
+	return _ownerAccountID;
 }
 
-- (OFNumber *)GID
+- (OFNumber *)groupOwnerAccountID
 {
-	return _GID;
+	return _groupOwnerAccountID;
 }
 
-- (OFString *)owner
+- (OFString *)ownerAccountName
 {
-	return _owner;
+	return _ownerAccountName;
 }
 
-- (OFString *)group
+- (OFString *)groupOwnerAccountName
 {
-	return _group;
+	return _groupOwnerAccountName;
 }
 
 - (OFArray OF_GENERIC(OFData *) *)extensions
@@ -631,56 +634,60 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			 count: fileCommentLength];
 	}
 
-	if (_mode != nil) {
+	if (_POSIXPermissions != nil) {
 		tmp16 = OFToLittleEndian16(5);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x50"];
 
-		tmp16 = OFToLittleEndian16(_mode.unsignedShortValue);
+		tmp16 =
+		    OFToLittleEndian16(_POSIXPermissions.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
-	if (_UID != nil || _GID != nil) {
-		if (_UID == nil || _GID == nil)
+	if (_ownerAccountID != nil || _groupOwnerAccountID != nil) {
+		if (_ownerAccountID == nil || _groupOwnerAccountID == nil)
 			@throw [OFInvalidArgumentException exception];
 
 		tmp16 = OFToLittleEndian16(7);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x51"];
 
-		tmp16 = OFToLittleEndian16(_GID.unsignedShortValue);
+		tmp16 = OFToLittleEndian16(
+		    _groupOwnerAccountID.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 
-		tmp16 = OFToLittleEndian16(_UID.unsignedShortValue);
+		tmp16 = OFToLittleEndian16(_ownerAccountID.unsignedShortValue);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 	}
 
-	if (_group != nil) {
-		size_t groupLength =
-		    [_group cStringLengthWithEncoding: encoding];
+	if (_groupOwnerAccountName != nil) {
+		size_t length = [_groupOwnerAccountName
+		    cStringLengthWithEncoding: encoding];
 
-		if (groupLength > UINT16_MAX - 3)
+		if (length > UINT16_MAX - 3)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OFToLittleEndian16((uint16_t)groupLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)length + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x52"];
-		[data addItems: [_group cStringWithEncoding: encoding]
-			 count: groupLength];
+		[data addItems: [_groupOwnerAccountName
+				    cStringWithEncoding: encoding]
+			 count: length];
 	}
 
-	if (_owner != nil) {
-		size_t ownerLength =
-		    [_owner cStringLengthWithEncoding: encoding];
+	if (_ownerAccountName != nil) {
+		size_t length =
+		    [_ownerAccountName cStringLengthWithEncoding: encoding];
 
-		if (ownerLength > UINT16_MAX - 3)
+		if (length > UINT16_MAX - 3)
 			@throw [OFOutOfRangeException exception];
 
-		tmp16 = OFToLittleEndian16((uint16_t)ownerLength + 3);
+		tmp16 = OFToLittleEndian16((uint16_t)length + 3);
 		[data addItems: &tmp16 count: sizeof(tmp16)];
 		[data addItem: "\x53"];
-		[data addItems: [_owner cStringWithEncoding: encoding]
-			 count: ownerLength];
+		[data addItems: [_ownerAccountName
+				    cStringWithEncoding: encoding]
+			 count: length];
 	}
 
 	for (OFData *extension in _extensions) {
@@ -721,12 +728,17 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *mode = (_mode == nil ? nil
-	    : [OFString stringWithFormat: @"%ho", _mode.unsignedShortValue]);
+	OFString *POSIXPermissions = nil;
 	OFString *extensions = [_extensions.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	OFString *ret = [OFString stringWithFormat:
+	OFString *ret;
+
+	if (_POSIXPermissions != nil)
+		POSIXPermissions = [OFString stringWithFormat: @"%ho",
+		    _POSIXPermissions.unsignedShortValue];
+
+	ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
 	    @"\tCompression method = %@\n"
@@ -737,17 +749,18 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tCRC16 = %04" @PRIX16 @"\n"
 	    @"\tOperating system identifier = %c\n"
 	    @"\tComment = %@\n"
-	    @"\tMode = %@\n"
-	    @"\tUID = %@\n"
-	    @"\tGID = %@\n"
-	    @"\tOwner = %@\n"
-	    @"\tGroup = %@\n"
+	    @"\tPOSIX permissions = %@\n"
+	    @"\tOwner account ID = %@\n"
+	    @"\tGroup owner account ID = %@\n"
+	    @"\tOwner account name = %@\n"
+	    @"\tGroup owner accounut name = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
 	    self.class, self.fileName, _compressionMethod, _compressedSize,
 	    _uncompressedSize, _modificationDate, _headerLevel, _CRC16,
-	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
-	    _group, extensions];
+	    _operatingSystemIdentifier, _fileComment, POSIXPermissions,
+	    _ownerAccountID, _groupOwnerAccountID, _ownerAccountName,
+	    _groupOwnerAccountName, extensions];
 
 	[ret retain];
 

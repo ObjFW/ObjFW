@@ -40,8 +40,10 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _CRC16;
 	uint8_t _operatingSystemIdentifier;
 	OFString *_Nullable _fileComment;
-	OFNumber *_Nullable _mode, *_Nullable _UID, *_Nullable _GID;
-	OFString *_Nullable _owner, *_Nullable _group;
+	OFNumber *_Nullable _POSIXPermissions, *_Nullable _ownerAccountID;
+	OFNumber *_Nullable _groupOwnerAccountID;
+	OFString *_Nullable _ownerAccountName;
+	OFString *_Nullable _groupOwnerAccountName;
 	OFMutableArray OF_GENERIC(OFData *) *_extensions;
 	OF_RESERVE_IVARS(OFLHAArchiveEntry, 4)
 }
@@ -50,11 +52,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The compression method of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *compressionMethod;
-
-/**
- * @brief The modification date of the file.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The LHA level of the file.
@@ -70,37 +67,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The operating system identifier of the file.
  */
 @property (readonly, nonatomic) uint8_t operatingSystemIdentifier;
-
-/**
- * @brief The comment of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *fileComment;
-
-/**
- * @brief The mode of the entry.
- */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *UID;
-
-/**
- * @brief The GID of the group.
- */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *GID;
-
-/**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
 
 /**
  * @brief The LHA extensions of the file.

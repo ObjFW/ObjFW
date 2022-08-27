@@ -33,10 +33,10 @@ static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	OFNumber *mode = [OFNumber numberWithUnsignedLongLong:
-	    entry.mode.longLongValue & 0777];
+	OFNumber *POSIXPermissions = [OFNumber numberWithUnsignedLongLong:
+	    entry.POSIXPermissions.longLongValue & 0777];
 	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: mode
+	    dictionaryWithObject: POSIXPermissions
 			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -117,10 +117,10 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *size = [OFString stringWithFormat:
 			    @"%llu", entry.uncompressedSize];
-			OFString *mode = [OFString stringWithFormat:
-			    @"%06llo", entry.mode.unsignedLongLongValue];
-			OFString *UID = entry.UID.description;
-			OFString *GID = entry.GID.description;
+			OFString *permissionsString = [OFString
+			    stringWithFormat:
+			    @"%llo", entry.POSIXPermissions
+			    .unsignedLongLongValue];
 
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(@"list_size",
@@ -133,31 +133,34 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"]".objectByParsingJSON,
 			    @"size", size)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_mode",
-			    @"Mode: %[mode]",
-			    @"mode", mode)];
+			[OFStdOut writeLine:
+			    OF_LOCALIZED(@"list_posix_permissions",
+			    @"POSIX permissions: %[perm]",
+			    @"perm", permissionsString)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_uid",
-			    @"UID: %[uid]",
-			    @"uid", UID)];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_owner_account_id",
+			    @"Owner account ID: %[id]",
+			    @"id", entry.ownerAccountID)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_gid",
-			    @"GID: %[gid]",
-			    @"gid", GID)];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_group_owner_account_id",
+			    @"Group owner account ID: %[id]",
+			    @"id", entry.groupOwnerAccountID)];
 
-			if (entry.owner != nil) {
+			if (entry.ownerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_owner",
-				    @"Owner: %[owner]",
-				    @"owner", entry.owner)];
+				    @"list_owner_account_name",
+				    @"Owner account name: %[name]",
+				    @"name", entry.ownerAccountName)];
 			}
-			if (entry.group != nil) {
+			if (entry.groupOwnerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_group",
-				    @"Group: %[group]",
-				    @"group", entry.group)];
+				    @"list_group_owner_account_name",
+				    @"Group owner account name: %[name]",
+				    @"name", entry.groupOwnerAccountName)];
 			}
 
 			[OFStdOut writeString: @"\t"];
@@ -478,17 +481,20 @@ outer_loop_end:
 		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		entry.mode = [attributes objectForKey: OFFilePOSIXPermissions];
+		entry.POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
 #endif
 		entry.uncompressedSize = attributes.fileSize;
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = [attributes objectForKey: OFFileOwnerAccountID];
-		entry.GID =
+		entry.ownerAccountID =
+		    [attributes objectForKey: OFFileOwnerAccountID];
+		entry.groupOwnerAccountID =
 		    [attributes objectForKey: OFFileGroupOwnerAccountID];
-		entry.owner = attributes.fileOwnerAccountName;
-		entry.group = attributes.fileGroupOwnerAccountName;
+		entry.ownerAccountName = attributes.fileOwnerAccountName;
+		entry.groupOwnerAccountName =
+		    attributes.fileGroupOwnerAccountName;
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])

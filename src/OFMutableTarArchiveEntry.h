@@ -30,26 +30,6 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The mode of the entry.
- */
-@property (readwrite, retain, nonatomic) OFNumber *mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property (readwrite, retain, nonatomic) OFNumber *UID;
-
-/**
- * @brief The GID of the group.
- */
-@property (readwrite, retain, nonatomic) OFNumber *GID;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property (readwrite, retain, nonatomic) OFDate *modificationDate;
-
-/**
  * @brief The type of the archive entry.
  *
  * See @ref OFTarArchiveEntryType.
@@ -61,16 +41,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *targetFileName;
-
-/**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *group;
 
 /**
  * @brief The device major (if the file is a device).

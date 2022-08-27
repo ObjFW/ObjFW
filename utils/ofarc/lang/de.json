@@ -75,9 +75,11 @@
             {"": "%[size] Bytes"}
         ]
     ],
-    "list_mode": "Modus: %[mode]",
-    "list_owner": "Besitzer: %[owner]",
-    "list_group": "Gruppe: %[group]",
+    "list_posix_permissions": "POSIX-Berechtigungen: %[perm]",
+    "list_owner_account_id": "Besitzerkontennummer: %[id]",
+    "list_group_owner_account_id": "Gruppenbesitzerkontennummer: %[id]",
+    "list_owner_account_name": "Besitzerkontenname: %[name]",
+    "list_group_owner_account_name": "Gruppebesitzerkontenname: %[name]",
     "list_header_level": "Header-Level: %[level]",
     "list_modification_date": "Änderungsdatum: %[date]",
     "list_type_normal": "Typ: Normale Datei",

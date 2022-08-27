@@ -22,8 +22,9 @@
 #import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, mode, UID, GID, compressedSize, uncompressedSize;
-@dynamic modificationDate, type, targetFileName, owner, group, deviceMajor;
+@dynamic fileName, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic compressedSize, uncompressedSize, modificationDate, type;
+@dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
 @dynamic deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
@@ -61,24 +62,24 @@
 	[old release];
 }
 
-- (void)setMode: (OFNumber *)mode
+- (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
-	OFNumber *old = _mode;
-	_mode = [mode retain];
+	OFNumber *old = _POSIXPermissions;
+	_POSIXPermissions = [POSIXPermissions retain];
 	[old release];
 }
 
-- (void)setUID: (OFNumber *)UID
+- (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
-	OFNumber *old = _UID;
-	_UID = [UID retain];
+	OFNumber *old = _ownerAccountID;
+	_ownerAccountID = [ownerAccountID retain];
 	[old release];
 }
 
-- (void)setGID: (OFNumber *)GID
+- (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
-	OFNumber *old = _GID;
-	_GID = [GID retain];
+	OFNumber *old = _groupOwnerAccountID;
+	_groupOwnerAccountID = [groupOwnerAccountID retain];
 	[old release];
 }
 
@@ -111,17 +112,17 @@
 	[old release];
 }
 
-- (void)setOwner: (OFString *)owner
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
-	OFString *old = _owner;
-	_owner = [owner copy];
+	OFString *old = _ownerAccountName;
+	_ownerAccountName = [ownerAccountName copy];
 	[old release];
 }
 
-- (void)setGroup: (OFString *)group
+- (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
-	OFString *old = _group;
-	_group = [group copy];
+	OFString *old = _groupOwnerAccountName;
+	_groupOwnerAccountName = [groupOwnerAccountName copy];
 	[old release];
 }
 

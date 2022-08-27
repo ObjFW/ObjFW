@@ -122,12 +122,6 @@ typedef enum {
 }
 
 /**
- * @brief The comment of the entry's file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *fileComment;
-
-/**
  * @brief The extra field of the entry.
  *
  * The item size *must* be 1!
@@ -153,13 +147,6 @@ typedef enum {
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
-
-/**
- * @brief The last modification date of the entry's file.
- *
- * @note Due to limitations of the ZIP format, this has only 2 second precision.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The compression method of the entry.

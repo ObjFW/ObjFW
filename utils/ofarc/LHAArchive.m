@@ -40,16 +40,16 @@ static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	OFNumber *mode = entry.mode;
+	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
-	if (mode == nil)
+	if (POSIXPermissions == nil)
 		return;
 
-	mode = [OFNumber numberWithUnsignedShort:
-	    mode.unsignedShortValue & 0777];
+	POSIXPermissions = [OFNumber numberWithUnsignedShort:
+	    POSIXPermissions.unsignedShortValue & 0777];
 
 	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: mode
+	    dictionaryWithObject: POSIXPermissions
 			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -166,41 +166,44 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			    @"Modification date: %[date]",
 			    @"date", modificationDate)];
 
-			if (entry.mode != nil) {
-				OFString *modeString = [OFString
-				    stringWithFormat:
-				    @"%ho", entry.mode.unsignedShortValue];
+			if (entry.POSIXPermissions != nil) {
+				OFString *permissionsString = [OFString
+				    stringWithFormat: @"%llo",
+				    entry.POSIXPermissions
+				    .unsignedLongLongValue];
 
 				[OFStdOut writeString: @"\t"];
-				[OFStdOut writeLine: OF_LOCALIZED(@"list_mode",
-				    @"Mode: %[mode]",
-				    @"mode", modeString)];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_posix_permissions",
+				    @"POSIX permissions: %[perm]",
+				    @"perm", permissionsString)];
 			}
-			if (entry.UID != nil) {
+			if (entry.ownerAccountID != nil) {
 				[OFStdOut writeString: @"\t"];
-				[OFStdOut writeLine: OF_LOCALIZED(@"list_uid",
-				    @"UID: %[uid]",
-				    @"uid", entry.UID)];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_owner_account_id",
+				    @"Owner account ID: %[id]",
+				    @"id", entry.ownerAccountID)];
 			}
-			if (entry.GID != nil) {
+			if (entry.groupOwnerAccountID != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(@"list_gid",
-				    @"GID: %[gid]",
-				    @"gid", entry.GID)];
+				    @"Group owner account ID: %[id]",
+				    @"id", entry.groupOwnerAccountID)];
 			}
-			if (entry.owner != nil) {
+			if (entry.ownerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_owner",
-				    @"Owner: %[owner]",
-				    @"owner", entry.owner)];
+				    @"list_owner_account_name",
+				    @"Owner account name: %[name]",
+				    @"name", entry.ownerAccountName)];
 			}
-			if (entry.group != nil) {
+			if (entry.groupOwnerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_group",
-				    @"Group: %[group]",
-				    @"group", entry.group)];
+				    @"list_group_owner_account_name",
+				    @"Group: %[name]",
+				    @"name", entry.groupOwnerAccountName)];
 			}
 
 			if (app->_outputLevel >= 2) {
@@ -444,18 +447,20 @@ outer_loop_end:
 		entry = [OFMutableLHAArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		entry.mode = [OFNumber numberWithUnsignedLong:
-		    attributes.filePOSIXPermissions];
+		entry.POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
 #endif
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = [OFNumber numberWithUnsignedLong:
-		    attributes.fileOwnerAccountID];
-		entry.GID = [OFNumber numberWithUnsignedLong:
-		    attributes.fileGroupOwnerAccountID];
-		entry.owner = attributes.fileOwnerAccountName;
-		entry.group = attributes.fileGroupOwnerAccountName;
+		entry.ownerAccountID =
+		    [attributes objectForKey: OFFileOwnerAccountID];
+		entry.groupOwnerAccountID =
+		    [attributes objectForKey: OFFileGroupOwnerAccountID];
+		entry.ownerAccountName =
+		    [attributes objectForKey: OFFileOwnerAccountName];
+		entry.groupOwnerAccountName =
+		    [attributes objectForKey: OFFileGroupOwnerAccountName];
 #endif
 
 		if ([type isEqual: OFFileTypeDirectory]) {
