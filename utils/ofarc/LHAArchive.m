@@ -123,9 +123,9 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			OFString *modificationDate = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *compressedSize = [OFString stringWithFormat:
-			    @"%" PRIu32, entry.compressedSize];
+			    @"%llu", entry.compressedSize];
 			OFString *uncompressedSize = [OFString stringWithFormat:
-			    @"%" PRIu32, entry.uncompressedSize];
+			    @"%llu", entry.uncompressedSize];
 			OFString *CRC16 = [OFString stringWithFormat:
 			    @"%04" PRIX16, entry.CRC16];
 
@@ -258,7 +258,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
-		uint64_t written = 0, size = entry.uncompressedSize;
+		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])

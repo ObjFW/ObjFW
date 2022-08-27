@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFLHAArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
 	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
-	uint32_t _compressedSize, _uncompressedSize;
+	unsigned long long _compressedSize, _uncompressedSize;
 	OFDate *_modificationDate;
 	uint8_t _headerLevel;
 	uint16_t _CRC16;
@@ -57,12 +57,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The compressed size of the entry's file.
  */
-@property (readonly, nonatomic) uint32_t compressedSize;
+@property (readonly, nonatomic) unsigned long long compressedSize;
 
 /**
  * @brief The uncompressed size of the entry's file.
  */
-@property (readonly, nonatomic) uint32_t uncompressedSize;
+@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The modification date of the file.

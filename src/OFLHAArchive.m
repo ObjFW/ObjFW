@@ -46,7 +46,7 @@ OF_DIRECT_MEMBERS
 {
 	OFStream *_stream, *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
-	uint32_t _toRead, _bytesConsumed;
+	unsigned long long _toRead;
 	uint16_t _CRC16;
 	bool _atEndOfStream, _skipped;
 }
@@ -333,7 +333,7 @@ OF_DIRECT_MEMBERS
 		@throw [OFTruncatedDataException exception];
 
 	if (length > _toRead)
-		length = _toRead;
+		length = (size_t)_toRead;
 
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
@@ -373,7 +373,7 @@ OF_DIRECT_MEMBERS
 - (void)of_skip
 {
 	OFStream *stream;
-	uint32_t toRead;
+	unsigned long long toRead;
 
 	if (_stream == nil || _skipped)
 		return;
@@ -398,18 +398,19 @@ OF_DIRECT_MEMBERS
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(OFFileOffset) > 4 || toRead < INT32_MAX))
+	    (sizeof(OFFileOffset) > 4 || toRead != (OFFileOffset)toRead))
 		[(OFSeekableStream *)stream seekToOffset: (OFFileOffset)toRead
 						  whence: SEEK_CUR];
 	else {
 		while (toRead > 0) {
 			char buffer[512];
-			size_t min = toRead;
+			unsigned long long min = toRead;
 
 			if (min > 512)
 				min = 512;
 
-			toRead -= [stream readIntoBuffer: buffer length: min];
+			toRead -= [stream readIntoBuffer: buffer
+						  length: (size_t)min];
 		}
 	}
 

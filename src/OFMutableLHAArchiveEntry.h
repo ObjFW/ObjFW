@@ -41,12 +41,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The compressed size of the entry's file.
  */
-@property (readwrite, nonatomic) uint32_t compressedSize;
+@property (readwrite, nonatomic) unsigned long long compressedSize;
 
 /**
  * @brief The uncompressed size of the entry's file.
  */
-@property (readwrite, nonatomic) uint32_t uncompressedSize;
+@property (readwrite, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The modification date of the file.

@@ -74,12 +74,12 @@
 	[old release];
 }
 
-- (void)setCompressedSize: (uint32_t)compressedSize
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
 	_compressedSize = compressedSize;
 }
 
-- (void)setUncompressedSize: (uint32_t)uncompressedSize
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
 {
 	_uncompressedSize = uncompressedSize;
 }

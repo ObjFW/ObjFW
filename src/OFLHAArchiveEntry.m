@@ -337,11 +337,17 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			   encoding: OFStringEncodingASCII
 			     length: 5];
 
+		if (_compressedSize > UINT32_MAX ||
+		    _uncompressedSize > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
 		memcpy(&_compressedSize, header + 7, 4);
-		_compressedSize = OFFromLittleEndian32(_compressedSize);
+		_compressedSize =
+		    OFFromLittleEndian32((uint32_t)_compressedSize);
 
 		memcpy(&_uncompressedSize, header + 11, 4);
-		_uncompressedSize = OFFromLittleEndian32(_uncompressedSize);
+		_uncompressedSize =
+		    OFFromLittleEndian32((uint32_t)_uncompressedSize);
 
 		memcpy(&date, header + 15, 4);
 		date = OFFromLittleEndian32(date);
@@ -475,12 +481,12 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _compressionMethod;
 }
 
-- (uint32_t)compressedSize
+- (unsigned long long)compressedSize
 {
 	return _compressedSize;
 }
 
-- (uint32_t)uncompressedSize
+- (unsigned long long)uncompressedSize
 {
 	return _uncompressedSize;
 }
@@ -559,7 +565,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    &directoryName, &directoryNameLength);
 
 	if (fileNameLength > UINT16_MAX - 3 ||
-	    directoryNameLength > UINT16_MAX - 3)
+	    directoryNameLength > UINT16_MAX - 3 ||
+	    _compressedSize > UINT32_MAX || _uncompressedSize > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
@@ -569,10 +576,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			    cStringWithEncoding: OFStringEncodingASCII]
 		 count: 5];
 
-	tmp32 = OFToLittleEndian32(_compressedSize);
+	tmp32 = OFToLittleEndian32((uint32_t)_compressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OFToLittleEndian32(_uncompressedSize);
+	tmp32 = OFToLittleEndian32((uint32_t)_uncompressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	tmp32 = OFToLittleEndian32(
@@ -723,8 +730,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
 	    @"\tCompression method = %@\n"
-	    @"\tCompressed size = %" @PRIu32 "\n"
-	    @"\tUncompressed size = %" @PRIu32 "\n"
+	    @"\tCompressed size = %llu\n"
+	    @"\tUncompressed size = %llu\n"
 	    @"\tModification date = %@\n"
 	    @"\tHeader level = %u\n"
 	    @"\tCRC16 = %04" @PRIX16 @"\n"
