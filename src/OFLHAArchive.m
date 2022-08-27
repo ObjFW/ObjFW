@@ -398,7 +398,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(OFStreamOffset) > 4 || toRead != (OFStreamOffset)toRead))
+	    toRead < LLONG_MAX && (long long)toRead == (OFStreamOffset)toRead)
 		[(OFSeekableStream *)stream seekToOffset: (OFStreamOffset)toRead
 						  whence: OFSeekCurrent];
 	else {
