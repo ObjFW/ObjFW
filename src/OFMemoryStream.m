@@ -46,7 +46,7 @@
 	self = [super init];
 
 	@try {
-		if (size > SSIZE_MAX || (ssize_t)size != (OFFileOffset)size)
+		if (size > SSIZE_MAX || (ssize_t)size != (OFStreamOffset)size)
 			@throw [OFOutOfRangeException exception];
 
 		_address = address;
@@ -101,25 +101,26 @@
 	return (_position == _size);
 }
 
-- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence
+- (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
+				whence: (int)whence
 {
-	OFFileOffset new;
+	OFStreamOffset new;
 
 	switch (whence) {
 	case SEEK_SET:
 		new = offset;
 		break;
 	case SEEK_CUR:
-		new = (OFFileOffset)_position + offset;
+		new = (OFStreamOffset)_position + offset;
 		break;
 	case SEEK_END:
-		new = (OFFileOffset)_size + offset;
+		new = (OFStreamOffset)_size + offset;
 		break;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	if (new < 0 || new > (OFFileOffset)_size)
+	if (new < 0 || new > (OFStreamOffset)_size)
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
 							   whence: whence

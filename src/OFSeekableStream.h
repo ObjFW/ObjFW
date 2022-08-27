@@ -31,15 +31,15 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_WINDOWS)
-typedef __int64 OFFileOffset;
+typedef __int64 OFStreamOffset;
 #elif defined(OF_ANDROID)
-typedef long long OFFileOffset;
+typedef long long OFStreamOffset;
 #elif defined(OF_MORPHOS)
-typedef signed long long OFFileOffset;
+typedef signed long long OFStreamOffset;
 #elif defined(OF_HAVE_OFF64_T)
-typedef off64_t OFFileOffset;
+typedef off64_t OFStreamOffset;
 #else
-typedef off_t OFFileOffset;
+typedef off_t OFStreamOffset;
 #endif
 
 /**
@@ -59,7 +59,7 @@ typedef off_t OFFileOffset;
 }
 
 /**
- * @brief Seeks to the specified absolute offset.
+ * @brief Seeks to the specified offset.
  *
  * @param offset The offset in bytes
  * @param whence From where to seek.@n
@@ -71,7 +71,7 @@ typedef off_t OFFileOffset;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset form the start of the file
  */
-- (OFFileOffset)seekToOffset: (OFFileOffset)offset whence: (int)whence;
+- (OFStreamOffset)seekToOffset: (OFStreamOffset)offset whence: (int)whence;
 
 /**
  * @brief Seek the stream on the lowlevel.
@@ -91,7 +91,8 @@ typedef off_t OFFileOffset;
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset from the start of the file
  */
-- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence;
+- (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
+				whence: (int)whence;
 @end
 
 OF_ASSUME_NONNULL_END

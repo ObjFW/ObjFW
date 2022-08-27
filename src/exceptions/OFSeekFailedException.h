@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSeekFailedException: OFException
 {
 	OFSeekableStream *_stream;
-	OFFileOffset _offset;
+	OFStreamOffset _offset;
 	int _whence, _errNo;
 }
 
@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The offset to which seeking failed.
  */
-@property (readonly, nonatomic) OFFileOffset offset;
+@property (readonly, nonatomic) OFStreamOffset offset;
 
 /**
  * @brief To what the offset is relative.
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased seek failed exception
  */
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
-			     offset: (OFFileOffset)offset
+			     offset: (OFStreamOffset)offset
 			     whence: (int)whence
 			      errNo: (int)errNo;
 
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized seek failed exception
  */
 - (instancetype)initWithStream: (OFSeekableStream *)stream
-			offset: (OFFileOffset)offset
+			offset: (OFStreamOffset)offset
 			whence: (int)whence
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 

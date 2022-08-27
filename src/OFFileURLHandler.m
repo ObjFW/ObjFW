@@ -87,7 +87,7 @@
 
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 typedef struct {
-	OFFileOffset st_size;
+	OFStreamOffset st_size;
 	unsigned int st_mode;
 	OFTimeInterval st_atime, st_mtime, st_ctime;
 # ifdef OF_WINDOWS

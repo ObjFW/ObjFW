@@ -62,7 +62,7 @@ OF_DIRECT_MEMBERS
 	OFMutableLHAArchiveEntry *_entry;
 	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
-	OFFileOffset _headerOffset;
+	OFStreamOffset _headerOffset;
 	uint32_t _bytesWritten;
 	uint16_t _CRC16;
 }
@@ -398,8 +398,8 @@ OF_DIRECT_MEMBERS
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(OFFileOffset) > 4 || toRead != (OFFileOffset)toRead))
-		[(OFSeekableStream *)stream seekToOffset: (OFFileOffset)toRead
+	    (sizeof(OFStreamOffset) > 4 || toRead != (OFStreamOffset)toRead))
+		[(OFSeekableStream *)stream seekToOffset: (OFStreamOffset)toRead
 						  whence: SEEK_CUR];
 	else {
 		while (toRead > 0) {
@@ -516,7 +516,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	OFFileOffset offset;
+	OFStreamOffset offset;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
