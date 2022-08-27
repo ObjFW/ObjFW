@@ -274,7 +274,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toRead = entry.size;
+		_toRead = entry.uncompressedSize;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -369,7 +369,7 @@ OF_DIRECT_MEMBERS
 
 		_toRead = 0;
 
-		size = _entry.size;
+		size = _entry.uncompressedSize;
 
 		if (size % 512 != 0)
 			[(OFSeekableStream *)_stream
@@ -390,7 +390,7 @@ OF_DIRECT_MEMBERS
 			_toRead = 0;
 		}
 
-		size = _entry.size;
+		size = _entry.uncompressedSize;
 
 		if (size % 512 != 0)
 			[_stream readIntoBuffer: buffer
@@ -410,7 +410,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toWrite = entry.size;
+		_toWrite = entry.uncompressedSize;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -479,7 +479,7 @@ OF_DIRECT_MEMBERS
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
-	remainder = 512 - _entry.size % 512;
+	remainder = 512 - _entry.uncompressedSize % 512;
 
 	if (remainder != 512) {
 		bool didBufferWrites = _stream.buffersWrites;

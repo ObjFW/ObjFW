@@ -21,8 +21,9 @@
 #import "OFDate.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
-@dynamic owner, group, deviceMajor, deviceMinor;
+@dynamic fileName, mode, UID, GID, compressedSize, uncompressedSize;
+@dynamic modificationDate, type, targetFileName, owner, group, deviceMajor;
+@dynamic deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -74,9 +75,14 @@
 	_GID = GID;
 }
 
-- (void)setSize: (unsigned long long)size
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
-	_size = size;
+	_compressedSize = compressedSize;
+}
+
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
+{
+	_uncompressedSize = uncompressedSize;
 }
 
 - (void)setModificationDate: (OFDate *)modificationDate

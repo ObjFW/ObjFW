@@ -115,7 +115,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			OFString *date = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *size = [OFString stringWithFormat:
-			    @"%" PRIu64, entry.size];
+			    @"%llu", entry.uncompressedSize];
 			OFString *mode = [OFString stringWithFormat:
 			    @"%06o", entry.mode];
 			OFString *UID = [OFString stringWithFormat:
@@ -281,7 +281,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
-		uint64_t written = 0, size = entry.size;
+		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])
@@ -481,7 +481,7 @@ outer_loop_end:
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 		entry.mode = attributes.filePOSIXPermissions;
 #endif
-		entry.size = attributes.fileSize;
+		entry.uncompressedSize = attributes.fileSize;
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
@@ -495,12 +495,12 @@ outer_loop_end:
 			entry.type = OFTarArchiveEntryTypeFile;
 		else if ([type isEqual: OFFileTypeDirectory]) {
 			entry.type = OFTarArchiveEntryTypeDirectory;
-			entry.size = 0;
+			entry.uncompressedSize = 0;
 		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 			entry.type = OFTarArchiveEntryTypeSymlink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
-			entry.size = 0;
+			entry.uncompressedSize = 0;
 		}
 
 		[entry makeImmutable];
@@ -508,7 +508,8 @@ outer_loop_end:
 		output = [_archive streamForWritingEntry: entry];
 
 		if (entry.type == OFTarArchiveEntryTypeFile) {
-			uint64_t written = 0, size = entry.size;
+			unsigned long long written = 0;
+			unsigned long long size = entry.uncompressedSize;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

@@ -52,7 +52,7 @@ typedef enum {
 {
 	OFString *_fileName;
 	unsigned long _mode;
-	unsigned long long _size;
+	unsigned long long _compressedSize, _uncompressedSize;
 	unsigned long _UID, _GID;
 	OFDate *_modificationDate;
 	OFTarArchiveEntryType _type;
@@ -83,9 +83,14 @@ typedef enum {
 @property (readonly, nonatomic) unsigned long GID;
 
 /**
- * @brief The size of the file.
+ * @brief The compressed size of the file.
  */
-@property (readonly, nonatomic) unsigned long long size;
+@property (readonly, nonatomic) unsigned long long compressedSize;
+
+/**
+ * @brief The uncompressed size of the file.
+ */
+@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The date of the last modification of the file.

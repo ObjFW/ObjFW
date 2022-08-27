@@ -49,9 +49,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) unsigned long GID;
 
 /**
- * @brief The size of the file.
+ * @brief The compressed size of the file.
  */
-@property (readwrite, nonatomic) unsigned long long size;
+@property (readwrite, nonatomic) unsigned long long compressedSize;
+
+/**
+ * @brief The uncompressed size of the file.
+ */
+@property (readwrite, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The date of the last modification of the file.

@@ -105,8 +105,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    header + 108, 8, ULONG_MAX);
 		_GID = (unsigned long)octalValueFromBuffer(
 		    header + 116, 8, ULONG_MAX);
-		_size = (unsigned long long)octalValueFromBuffer(
+		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
+		_compressedSize =
+		    _uncompressedSize + (512 - _uncompressedSize % 512);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
@@ -175,7 +177,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 	@try {
 		copy->_mode = _mode;
-		copy->_size = _size;
+		copy->_compressedSize = _compressedSize;
+		copy->_uncompressedSize = _uncompressedSize;
 		copy->_modificationDate = [_modificationDate copy];
 		copy->_type = _type;
 		copy->_targetFileName = [_targetFileName copy];
@@ -211,9 +214,14 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _GID;
 }
 
-- (unsigned long long)size
+- (unsigned long long)compressedSize
 {
-	return _size;
+	return _compressedSize;
+}
+
+- (unsigned long long)uncompressedSize
+{
+	return _uncompressedSize;
 }
 
 - (OFDate *)modificationDate
@@ -259,7 +267,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	     @"\tMode = %06o\n"
 	     @"\tUID = %u\n"
 	     @"\tGID = %u\n"
-	     @"\tSize = %" PRIu64 @"\n"
+	     @"\tCompressed size = %llu\n"
+	     @"\tUncompressed size = %llu\n"
 	     @"\tModification date = %@\n"
 	     @"\tType = %u\n"
 	     @"\tTarget file name = %@\n"
@@ -268,8 +277,9 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
 	     @">",
-	    self.class, _fileName, _mode, _UID, _GID, _size, _modificationDate,
-	    _type, _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
+	    self.class, _fileName, _mode, _UID, _GID, _compressedSize,
+	    _uncompressedSize, _modificationDate, _type, _targetFileName,
+	    _owner, _group, _deviceMajor, _deviceMinor];
 
 	[ret retain];
 
@@ -296,7 +306,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8,
 	    OFStringEncodingASCII);
 	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12,
+	    [OFString stringWithFormat: @"%011llo ", _uncompressedSize], 12,
 	    OFStringEncodingASCII);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
