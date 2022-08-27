@@ -108,7 +108,7 @@ typedef enum {
 	OFZIPArchiveEntryCompressionMethod _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
-	uint64_t _compressedSize, _uncompressedSize;
+	unsigned long long _compressedSize, _uncompressedSize;
 	OFString *_fileName;
 	OFData *_Nullable _extraField;
 	OFString *_Nullable _fileComment;
@@ -182,12 +182,12 @@ typedef enum {
 /**
  * @brief The compressed size of the entry's file.
  */
-@property (readonly, nonatomic) uint64_t compressedSize;
+@property (readonly, nonatomic) unsigned long long compressedSize;
 
 /**
  * @brief The uncompressed size of the entry's file.
  */
-@property (readonly, nonatomic) uint64_t uncompressedSize;
+@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.

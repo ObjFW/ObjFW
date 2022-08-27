@@ -366,12 +366,12 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _compressionMethod;
 }
 
-- (uint64_t)compressedSize
+- (unsigned long long)compressedSize
 {
 	return _compressedSize;
 }
 
-- (uint64_t)uncompressedSize
+- (unsigned long long)uncompressedSize
 {
 	return _uncompressedSize;
 }

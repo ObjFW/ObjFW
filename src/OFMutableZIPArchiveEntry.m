@@ -142,12 +142,12 @@
 	_compressionMethod = compressionMethod;
 }
 
-- (void)setCompressedSize: (uint64_t)compressedSize
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
 	_compressedSize = compressedSize;
 }
 
-- (void)setUncompressedSize: (uint64_t)uncompressedSize
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
 {
 	_uncompressedSize = uncompressedSize;
 }

@@ -83,7 +83,7 @@ OF_DIRECT_MEMBERS
 {
 	OFStream *_stream, *_decompressedStream;
 	OFZIPArchiveEntry *_entry;
-	uint64_t _toRead;
+	unsigned long long _toRead;
 	uint32_t _CRC32;
 	bool _atEndOfStream;
 }
@@ -98,7 +98,7 @@ OF_DIRECT_MEMBERS
 	OFStream *_stream;
 	uint32_t _CRC32;
 @public
-	int64_t _bytesWritten;
+	unsigned long long _bytesWritten;
 	OFMutableZIPArchiveEntry *_entry;
 }
 
@@ -410,7 +410,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		OFZIPArchiveFileWriteStream *stream =
 		    (OFZIPArchiveFileWriteStream *)_lastReturnedStream;
 
-		if (INT64_MAX - _offset < stream->_bytesWritten)
+		if (ULLONG_MAX - _offset < stream->_bytesWritten)
 			@throw [OFOutOfRangeException exception];
 
 		_offset += stream->_bytesWritten;
@@ -803,7 +803,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if ((uint64_t)length > _toRead)
+	if (length > _toRead)
 		length = (size_t)_toRead;
 
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
@@ -886,7 +886,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (INT64_MAX - _bytesWritten < (int64_t)length)
+	if (ULLONG_MAX - _bytesWritten < length)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
@@ -894,7 +894,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	} @catch (OFWriteFailedException *e) {
 		OFEnsure(e.bytesWritten <= length);
 
-		_bytesWritten += (int64_t)e.bytesWritten;
+		_bytesWritten += e.bytesWritten;
 		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
@@ -903,7 +903,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw e;
 	}
 
-	_bytesWritten += (int64_t)length;
+	_bytesWritten += length;
 	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
 	return length;
@@ -914,10 +914,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	if (_bytesWritten > UINT64_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	[_stream writeLittleEndianInt32: 0x08074B50];
 	[_stream writeLittleEndianInt32: _CRC32];
-	[_stream writeLittleEndianInt64: _bytesWritten];
-	[_stream writeLittleEndianInt64: _bytesWritten];
+	[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+	[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
 
 	[_stream release];
 	_stream = nil;
