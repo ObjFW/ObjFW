@@ -100,7 +100,7 @@ OF_DIRECT_MEMBERS
 				@throw [OFInvalidArgumentException exception];
 
 			[(OFSeekableStream *)_stream seekToOffset: -1024
-							   whence: SEEK_END];
+							   whence: OFSeekEnd];
 			[_stream readIntoBuffer: buffer exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
@@ -111,7 +111,7 @@ OF_DIRECT_MEMBERS
 				@throw [OFInvalidFormatException exception];
 
 			[(OFSeekableStream *)stream seekToOffset: -1024
-							  whence: SEEK_END];
+							  whence: OFSeekEnd];
 		}
 
 		_encoding = OFStringEncodingUTF8;
@@ -365,7 +365,7 @@ OF_DIRECT_MEMBERS
 
 		[(OFSeekableStream *)_stream
 		    seekToOffset: (OFStreamOffset)_toRead
-			  whence: SEEK_CUR];
+			  whence: OFSeekCurrent];
 
 		_toRead = 0;
 
@@ -374,7 +374,7 @@ OF_DIRECT_MEMBERS
 		if (size % 512 != 0)
 			[(OFSeekableStream *)_stream
 			    seekToOffset: 512 - (size % 512)
-				  whence: SEEK_CUR];
+				  whence: OFSeekCurrent];
 	} else {
 		char buffer[512];
 		unsigned long long size;

@@ -451,7 +451,7 @@ parseMode(const char *mode, bool *append)
 }
 
 - (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
-				whence: (int)whence
+				whence: (OFSeekWhence)whence
 {
 	OFStreamOffset ret;
 
@@ -459,12 +459,30 @@ parseMode(const char *mode, bool *append)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_AMIGAOS
+	int translatedWhence;
+
+	switch (whence) {
+	case OFSeekSet:
+		translatedWhence = SEEK_SET;
+		break;
+	case OFSeekCurrent:
+		translatedWhence = SEEK_CUR;
+		break;
+	case OFSeekEnd:
+		translatedWhence = SEEK_END;
+		break;
+	default:
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence
+							    errNo: EINVAL];
+	}
 # if defined(OF_WINDOWS)
-	ret = _lseeki64(_handle, offset, whence);
+	ret = _lseeki64(_handle, offset, translatedWhence);
 # elif defined(HAVE_LSEEK64)
-	ret = lseek64(_handle, offset, whence);
+	ret = lseek64(_handle, offset, translatedWhence);
 # else
-	ret = lseek(_handle, offset, whence);
+	ret = lseek(_handle, offset, translatedWhence);
 # endif
 
 	if (ret == -1)
@@ -476,13 +494,13 @@ parseMode(const char *mode, bool *append)
 	LONG translatedWhence;
 
 	switch (whence) {
-	case SEEK_SET:
+	case OFSeekSet:
 		translatedWhence = OFFSET_BEGINNING;
 		break;
-	case SEEK_CUR:
+	case OFSeekCurrent:
 		translatedWhence = OFFSET_CURRENT;
 		break;
-	case SEEK_END:
+	case OFSeekEnd:
 		translatedWhence = OFFSET_END;
 		break;
 	default:

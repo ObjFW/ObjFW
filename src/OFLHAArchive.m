@@ -112,7 +112,7 @@ OF_DIRECT_MEMBERS
 
 		if (_mode == modeAppend)
 			[(OFSeekableStream *)_stream seekToOffset: 0
-							   whence: SEEK_END];
+							   whence: OFSeekEnd];
 
 		_encoding = OFStringEncodingISO8859_1;
 	} @catch (id e) {
@@ -400,7 +400,7 @@ OF_DIRECT_MEMBERS
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
 	    (sizeof(OFStreamOffset) > 4 || toRead != (OFStreamOffset)toRead))
 		[(OFSeekableStream *)stream seekToOffset: (OFStreamOffset)toRead
-						  whence: SEEK_CUR];
+						  whence: OFSeekCurrent];
 	else {
 		while (toRead > 0) {
 			char buffer[512];
@@ -446,7 +446,7 @@ OF_DIRECT_MEMBERS
 		_entry = [entry mutableCopy];
 		_encoding = encoding;
 
-		_headerOffset = [stream seekToOffset: 0 whence: SEEK_CUR];
+		_headerOffset = [stream seekToOffset: 0 whence: OFSeekCurrent];
 		[_entry of_writeToStream: stream encoding: _encoding];
 
 		/*
@@ -525,10 +525,10 @@ OF_DIRECT_MEMBERS
 	_entry.compressedSize = _bytesWritten;
 	_entry.CRC16 = _CRC16;
 
-	offset = [_stream seekToOffset: 0 whence: SEEK_CUR];
-	[_stream seekToOffset: _headerOffset whence: SEEK_SET];
+	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
+	[_stream seekToOffset: _headerOffset whence: OFSeekSet];
 	[_entry of_writeToStream: _stream encoding: _encoding];
-	[_stream seekToOffset: offset whence: SEEK_SET];
+	[_stream seekToOffset: offset whence: OFSeekSet];
 
 	[_stream release];
 	_stream = nil;

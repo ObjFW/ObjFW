@@ -28,7 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFSeekableStream *_stream;
 	OFStreamOffset _offset;
-	int _whence, _errNo;
+	OFSeekWhence _whence;
+	int _errNo;
 }
 
 /**
@@ -44,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief To what the offset is relative.
  */
-@property (readonly, nonatomic) int whence;
+@property (readonly, nonatomic) OFSeekWhence whence;
 
 /**
  * @brief The errno of the error that occurred.
@@ -62,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (OFStreamOffset)offset
-			     whence: (int)whence
+			     whence: (OFSeekWhence)whence
 			      errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
@@ -78,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithStream: (OFSeekableStream *)stream
 			offset: (OFStreamOffset)offset
-			whence: (int)whence
+			whence: (OFSeekWhence)whence
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

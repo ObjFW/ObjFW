@@ -102,18 +102,18 @@
 }
 
 - (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
-				whence: (int)whence
+				whence: (OFSeekWhence)whence
 {
 	OFStreamOffset new;
 
 	switch (whence) {
-	case SEEK_SET:
+	case OFSeekSet:
 		new = offset;
 		break;
-	case SEEK_CUR:
+	case OFSeekCurrent:
 		new = (OFStreamOffset)_position + offset;
 		break;
-	case SEEK_END:
+	case OFSeekEnd:
 		new = (OFStreamOffset)_size + offset;
 		break;
 	default:

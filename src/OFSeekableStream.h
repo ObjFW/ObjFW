@@ -30,6 +30,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 #if defined(OF_WINDOWS)
 typedef __int64 OFStreamOffset;
 #elif defined(OF_ANDROID)
@@ -41,6 +43,18 @@ typedef off64_t OFStreamOffset;
 #else
 typedef off_t OFStreamOffset;
 #endif
+
+/**
+ * @brief From where to seek.
+ */
+typedef enum {
+	/** Seek to the end of the stream + offset. */
+	OFSeekSet,
+	/** Seek to the current location + offset. */
+	OFSeekCurrent,
+	/** Seek to the specified byte. */
+	OFSeekEnd
+} OFSeekWhence;
 
 /**
  * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
@@ -62,16 +76,11 @@ typedef off_t OFStreamOffset;
  * @brief Seeks to the specified offset.
  *
  * @param offset The offset in bytes
- * @param whence From where to seek.@n
- *		 Possible values are:
- *		 Value      | Description
- *		 -----------|---------------------------------------
- *		 `SEEK_SET` | Seek to the specified byte
- *		 `SEEK_CUR` | Seek to the current location + offset
- *		 `SEEK_END` | Seek to the end of the stream + offset
+ * @param whence From where to seek.
  * @return The new offset form the start of the file
  */
-- (OFStreamOffset)seekToOffset: (OFStreamOffset)offset whence: (int)whence;
+- (OFStreamOffset)seekToOffset: (OFStreamOffset)offset
+			whence: (OFSeekWhence)whence;
 
 /**
  * @brief Seek the stream on the lowlevel.
@@ -82,17 +91,11 @@ typedef off_t OFStreamOffset;
  *	 subclassing!
  *
  * @param offset The offset to seek to
- * @param whence From where to seek.@n
- *		 Possible values are:
- *		 Value      | Description
- *		 -----------|---------------------------------------
- *		 `SEEK_SET` | Seek to the specified byte
- *		 `SEEK_CUR` | Seek to the current location + offset
- *		 `SEEK_END` | Seek to the end of the stream + offset
+ * @param whence From where to seek.
  * @return The new offset from the start of the file
  */
 - (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
-				whence: (int)whence;
+				whence: (OFSeekWhence)whence;
 @end
 
 OF_ASSUME_NONNULL_END

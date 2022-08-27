@@ -30,7 +30,7 @@
 
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (OFStreamOffset)offset
-			     whence: (int)whence
+			     whence: (OFSeekWhence)whence
 			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithStream: stream
@@ -46,7 +46,7 @@
 
 - (instancetype)initWithStream: (OFSeekableStream *)stream
 			offset: (OFStreamOffset)offset
-			whence: (int)whence
+			whence: (OFSeekWhence)whence
 			 errNo: (int)errNo
 {
 	self = [super init];
