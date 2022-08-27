@@ -160,6 +160,7 @@ INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/macOS/OFAtomic.h	\
 		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
+	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
@@ -167,6 +168,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
+	    OFMutableArchiveEntry.h		\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\

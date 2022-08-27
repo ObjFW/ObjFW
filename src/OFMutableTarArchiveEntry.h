@@ -14,6 +14,7 @@
  */
 
 #import "OFTarArchiveEntry.h"
+#import "OFMutableArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,15 +24,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which represents a mutable entry of a tar archive.
  */
-@interface OFMutableTarArchiveEntry: OFTarArchiveEntry
+@interface OFMutableTarArchiveEntry: OFTarArchiveEntry <OFMutableArchiveEntry>
 {
 	OF_RESERVE_IVARS(OFMutableTarArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readwrite, copy, nonatomic) OFString *fileName;
 
 /**
  * @brief The mode of the entry.
@@ -47,16 +43,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The GID of the group.
  */
 @property (readwrite, nonatomic) unsigned long GID;
-
-/**
- * @brief The compressed size of the file.
- */
-@property (readwrite, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the file.
- */
-@property (readwrite, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The date of the last modification of the file.

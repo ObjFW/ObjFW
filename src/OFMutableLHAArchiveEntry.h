@@ -14,6 +14,7 @@
  */
 
 #import "OFLHAArchiveEntry.h"
+#import "OFMutableArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,30 +24,15 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which represents a mutable entry in an LHA archive.
  */
-@interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry
+@interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry <OFMutableArchiveEntry>
 {
 	OF_RESERVE_IVARS(OFMutableLHAArchiveEntry, 4)
 }
 
 /**
- * @brief The file name of the entry.
- */
-@property (readwrite, copy, nonatomic) OFString *fileName;
-
-/**
  * @brief The compression method of the entry.
  */
 @property (readwrite, copy, nonatomic) OFString *compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readwrite, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readwrite, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The modification date of the file.

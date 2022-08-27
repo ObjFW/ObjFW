@@ -14,6 +14,7 @@
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -100,7 +101,8 @@ typedef enum {
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */
-@interface OFZIPArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFZIPArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFZIPArchiveEntryAttributeCompatibility _versionMadeBy;
 	OFZIPArchiveEntryAttributeCompatibility _minVersionNeeded;
@@ -118,11 +120,6 @@ typedef enum {
 	int64_t _localFileHeaderOffset;
 	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
 
 /**
  * @brief The comment of the entry's file.
@@ -178,16 +175,6 @@ typedef enum {
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readonly, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.

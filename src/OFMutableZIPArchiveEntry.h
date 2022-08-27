@@ -14,6 +14,7 @@
  */
 
 #import "OFZIPArchiveEntry.h"
+#import "OFMutableArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -24,15 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which represents a mutable entry in the central directory of
  *	  a ZIP archive.
  */
-@interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry
+@interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry <OFMutableArchiveEntry>
 {
 	OF_RESERVE_IVARS(OFMutableZIPArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readwrite, copy, nonatomic) OFString *fileName;
 
 /**
  * @brief The comment of the entry's file.
@@ -88,16 +84,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readwrite, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readwrite, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.

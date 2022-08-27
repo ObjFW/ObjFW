@@ -14,6 +14,7 @@
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which represents an entry in an LHA archive.
  */
-@interface OFLHAArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFLHAArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
 	unsigned long long _compressedSize, _uncompressedSize;
@@ -45,24 +47,9 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
-
-/**
  * @brief The compression method of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readonly, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The modification date of the file.

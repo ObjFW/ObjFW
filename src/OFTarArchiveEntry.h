@@ -14,6 +14,7 @@
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +49,8 @@ typedef enum {
  *
  * @brief A class which represents an entry of a tar archive.
  */
-@interface OFTarArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFTarArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFString *_fileName;
 	unsigned long _mode;
@@ -61,11 +63,6 @@ typedef enum {
 	unsigned long _deviceMajor, _deviceMinor;
 	OF_RESERVE_IVARS(OFTarArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
 
 /**
  * @brief The mode of the entry.
@@ -81,16 +78,6 @@ typedef enum {
  * @brief The GID of the group.
  */
 @property (readonly, nonatomic) unsigned long GID;
-
-/**
- * @brief The compressed size of the file.
- */
-@property (readonly, nonatomic) unsigned long long compressedSize;
-
-/**
- * @brief The uncompressed size of the file.
- */
-@property (readonly, nonatomic) unsigned long long uncompressedSize;
 
 /**
  * @brief The date of the last modification of the file.
