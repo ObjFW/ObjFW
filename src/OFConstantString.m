@@ -483,7 +483,7 @@ struct {
 	return self.longLongValue;
 }
 
-- (long long)longLongValueWithBase: (int)base
+- (long long)longLongValueWithBase: (unsigned char)base
 {
 	[self finishInitialization];
 	return [self longLongValueWithBase: base];
@@ -495,7 +495,7 @@ struct {
 	return self.unsignedLongLongValue;
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
 	[self finishInitialization];
 	return [self unsignedLongLongValueWithBase: base];

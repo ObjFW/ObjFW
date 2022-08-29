@@ -2292,7 +2292,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [self longLongValueWithBase: 10];
 }
 
-- (long long)longLongValueWithBase: (int)base
+- (long long)longLongValueWithBase: (unsigned char)base
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
@@ -2368,7 +2368,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [self unsignedLongLongValueWithBase: 10];
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;

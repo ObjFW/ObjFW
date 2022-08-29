@@ -1046,7 +1046,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * 	       assumed.
  * @return The value of the string in the specified base
  */
-- (long long)longLongValueWithBase: (int)base;
+- (long long)longLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as an
@@ -1066,7 +1066,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * 	       assumed.
  * @return The value of the string in the specified base
  */
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief Creates a new string by appending another string.

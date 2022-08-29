@@ -99,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as a `long long` value in the specified
  *	   base
  */
-- (long long)longLongValueWithBase: (int)base;
+- (long long)longLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value in the
@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as an `unsigned long long` value in the
  * 	   specified base
  */
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
 @end
 
 OF_ASSUME_NONNULL_END
