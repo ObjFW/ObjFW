@@ -103,11 +103,6 @@ _references_to_categories_of_OFXMLElement(void)
 			       stringValue: stringValue] autorelease];
 }
 
-+ (instancetype)elementWithElement: (OFXMLElement *)element
-{
-	return [[[self alloc] initWithElement: element] autorelease];
-}
-
 + (instancetype)elementWithXMLString: (OFString *)string
 {
 	return [[[self alloc] initWithXMLString: string] autorelease];
@@ -139,13 +134,6 @@ _references_to_categories_of_OFXMLElement(void)
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (OFString *)namespace
 {
-	return [self initWithName: name namespace: namespace stringValue: nil];
-}
-
-- (instancetype)initWithName: (OFString *)name
-		   namespace: (OFString *)namespace
-		 stringValue: (OFString *)stringValue
-{
 	self = [super of_init];
 
 	@try {
@@ -159,9 +147,6 @@ _references_to_categories_of_OFXMLElement(void)
 		    initWithKeysAndObjects:
 		    @"http://www.w3.org/XML/1998/namespace", @"xml",
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
-
-		if (stringValue != nil)
-			self.stringValue = stringValue;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -170,21 +155,15 @@ _references_to_categories_of_OFXMLElement(void)
 	return self;
 }
 
-- (instancetype)initWithElement: (OFXMLElement *)element
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (OFString *)namespace
+		 stringValue: (OFString *)stringValue
 {
-	self = [super of_init];
+	self = [self initWithName: name namespace: namespace];
 
 	@try {
-		if (element == nil ||
-		    ![element isKindOfClass: [OFXMLElement class]])
-			@throw [OFInvalidArgumentException exception];
-
-		_name = [element->_name copy];
-		_namespace = [element->_namespace copy];
-		_defaultNamespace = [element->_defaultNamespace copy];
-		_attributes = [element->_attributes mutableCopy];
-		_namespaces = [element->_namespaces mutableCopy];
-		_children = [element->_children mutableCopy];
+		if (stringValue != nil)
+			self.stringValue = stringValue;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -196,33 +175,56 @@ _references_to_categories_of_OFXMLElement(void)
 - (instancetype)initWithXMLString: (OFString *)string
 {
 	void *pool;
-	OFXMLParser *parser;
-	OFXMLElementBuilder *builder;
-	OFXMLElementElementBuilderDelegate *delegate;
+	OFXMLElement *element;
 
-	[self release];
+	@try {
+		OFXMLParser *parser;
+		OFXMLElementBuilder *builder;
+		OFXMLElementElementBuilderDelegate *delegate;
 
-	if (string == nil)
-		@throw [OFInvalidArgumentException exception];
+		if (string == nil)
+			@throw [OFInvalidArgumentException exception];
 
-	pool = objc_autoreleasePoolPush();
+		pool = objc_autoreleasePoolPush();
 
-	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder builder];
-	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
-	    autorelease];
+		parser = [OFXMLParser parser];
+		builder = [OFXMLElementBuilder builder];
+		delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
+		    autorelease];
 
-	parser.delegate = builder;
-	builder.delegate = delegate;
+		parser.delegate = builder;
+		builder.delegate = delegate;
 
-	[parser parseString: string];
+		[parser parseString: string];
 
-	if (!parser.hasFinishedParsing)
-		@throw [OFMalformedXMLException exceptionWithParser: parser];
+		if (!parser.hasFinishedParsing)
+			@throw [OFMalformedXMLException
+			    exceptionWithParser: parser];
 
-	self = [delegate->_element retain];
+		element = delegate->_element;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-	objc_autoreleasePoolPop(pool);
+	self = [self initWithName: element->_name
+			namespace: element->_namespace];
+
+	@try {
+		[_defaultNamespace release];
+		_defaultNamespace = [element->_defaultNamespace retain];
+		[_attributes release];
+		_attributes = [element->_attributes retain];
+		[_namespaces release];
+		_namespaces = [element->_namespaces retain];
+		[_children release];
+		_children = [element->_children retain];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -230,72 +232,115 @@ _references_to_categories_of_OFXMLElement(void)
 - (instancetype)initWithStream: (OFStream *)stream
 {
 	void *pool;
-	OFXMLParser *parser;
-	OFXMLElementBuilder *builder;
-	OFXMLElementElementBuilderDelegate *delegate;
+	OFXMLElement *element;
 
-	[self release];
+	@try {
+		OFXMLParser *parser;
+		OFXMLElementBuilder *builder;
+		OFXMLElementElementBuilderDelegate *delegate;
 
-	pool = objc_autoreleasePoolPush();
+		pool = objc_autoreleasePoolPush();
 
-	parser = [OFXMLParser parser];
-	builder = [OFXMLElementBuilder builder];
-	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
-	    autorelease];
+		parser = [OFXMLParser parser];
+		builder = [OFXMLElementBuilder builder];
+		delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
+		    autorelease];
 
-	parser.delegate = builder;
-	builder.delegate = delegate;
+		parser.delegate = builder;
+		builder.delegate = delegate;
 
-	[parser parseStream: stream];
+		[parser parseStream: stream];
 
-	if (!parser.hasFinishedParsing)
-		@throw [OFMalformedXMLException exceptionWithParser: parser];
+		if (!parser.hasFinishedParsing)
+			@throw [OFMalformedXMLException
+			    exceptionWithParser: parser];
 
-	self = [delegate->_element retain];
+		element = delegate->_element;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-	objc_autoreleasePoolPop(pool);
+	self = [self initWithName: element->_name
+			namespace: element->_namespace];
+
+	@try {
+		[_defaultNamespace release];
+		_defaultNamespace = [element->_defaultNamespace retain];
+		[_attributes release];
+		_attributes = [element->_attributes retain];
+		[_namespaces release];
+		_namespaces = [element->_namespaces retain];
+		[_children release];
+		_children = [element->_children retain];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	self = [super of_init];
+	void *pool;
+	OFString *name, *namespace;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFXMLElement *attributesElement, *namespacesElement;
-		OFXMLElement *childrenElement;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFString *key, *object;
+		pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
 		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
-		_name = [[element attributeForName: @"name"].stringValue copy];
-		_namespace = [[element attributeForName: @"namespace"]
-		    .stringValue copy];
+		name = [element attributeForName: @"name"].stringValue;
+		namespace =
+		    [element attributeForName: @"namespace"].stringValue;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithName: name namespace: namespace];
+
+	@try {
+		OFXMLElement *attributesElement, *namespacesElement;
+		OFXMLElement *childrenElement;
+		OFEnumerator *keyEnumerator, *objectEnumerator;
+		OFString *key, *object;
+
+		[_defaultNamespace release];
+		_defaultNamespace = nil;
 		_defaultNamespace = [[element attributeForName:
 		    @"defaultNamespace"].stringValue copy];
 
 		attributesElement = [[element
 		    elementForName: @"attributes"
-			 namespace: OFSerializationNS] elementsForNamespace:
-		    OFSerializationNS].firstObject;
+			 namespace: OFSerializationNS]
+		    elementsForNamespace: OFSerializationNS].firstObject;
 		namespacesElement = [[element
 		    elementForName: @"namespaces"
-			 namespace: OFSerializationNS] elementsForNamespace:
-		    OFSerializationNS].firstObject;
+			 namespace: OFSerializationNS]
+		    elementsForNamespace: OFSerializationNS].firstObject;
 		childrenElement = [[element
 		    elementForName: @"children"
-			 namespace: OFSerializationNS] elementsForNamespace:
-		    OFSerializationNS].firstObject;
+			 namespace: OFSerializationNS]
+		    elementsForNamespace: OFSerializationNS].firstObject;
 
+		[_attributes release];
+		_attributes = nil;
 		_attributes = [attributesElement.objectByDeserializing
 		    mutableCopy];
+
+		[_namespaces release];
+		_namespaces = nil;
 		_namespaces = [namespacesElement.objectByDeserializing
 		    mutableCopy];
+
+		[_children release];
+		_children = nil;
 		_children = [childrenElement.objectByDeserializing
 		    mutableCopy];
 
@@ -331,9 +376,6 @@ _references_to_categories_of_OFXMLElement(void)
 		       forKey: @"http://www.w3.org/XML/1998/namespace"];
 		[_namespaces setObject: @"xmlns"
 				forKey: @"http://www.w3.org/2000/xmlns/"];
-
-		if (_name == nil)
-			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -1032,6 +1074,19 @@ _references_to_categories_of_OFXMLElement(void)
 
 - (id)copy
 {
-	return [[[self class] alloc] initWithElement: self];
+	OFXMLElement *copy = [[OFXMLElement alloc] of_init];
+	@try {
+		copy->_name = [_name copy];
+		copy->_namespace = [_namespace copy];
+		copy->_defaultNamespace = [_defaultNamespace copy];
+		copy->_attributes = [_attributes mutableCopy];
+		copy->_namespaces = [_namespaces mutableCopy];
+		copy->_children = [_children mutableCopy];
+	} @catch (id e) {
+		[copy release];
+		@throw e;
+	}
+
+	return copy;
 }
 @end

@@ -123,15 +123,6 @@ OF_ASSUME_NONNULL_BEGIN
 		    stringValue: (nullable OFString *)stringValue;
 
 /**
- * @brief Creates a new element with the specified element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-+ (instancetype)elementWithElement: (OFXMLElement *)element;
-
-/**
  * @brief Parses the string and returns an OFXMLElement for it.
  *
  * @param string The string to parse
@@ -180,7 +171,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	   namespace
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)nameSpace;
+		   namespace: (nullable OFString *)nameSpace
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFXMLElement with the specified name,
@@ -195,16 +187,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (nullable OFString *)stringValue;
-
-/**
- * @brief Initializes an already allocated OFXMLElement with the specified
- *	  element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-- (instancetype)initWithElement: (OFXMLElement *)element;
 
 /**
  * @brief Parses the string and initializes an already allocated OFXMLElement
@@ -223,8 +205,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the contents of the specified stream
  */
 - (instancetype)initWithStream: (OFStream *)stream;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 
 /**
  * @brief Sets a prefix for a namespace.
