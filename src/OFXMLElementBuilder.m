@@ -58,11 +58,11 @@
 
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data
+				  text: (OFString *)text
 {
 	OFXMLProcessingInstruction *node = [OFXMLProcessingInstruction
 	    processingInstructionWithTarget: target
-				       data: data];
+				       text: text];
 	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)

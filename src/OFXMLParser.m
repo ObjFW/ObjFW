@@ -499,7 +499,7 @@ inProcessingInstructionState(OFXMLParser *self)
 		self->_level = 1;
 	else if (self->_level == 1 && self->_data[self->_i] == '>') {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *PI, *target, *data = nil;
+		OFString *PI, *target, *text = nil;
 		OFCharacterSet *whitespaceCS;
 		size_t pos;
 
@@ -512,24 +512,24 @@ inProcessingInstructionState(OFXMLParser *self)
 		pos = [PI indexOfCharacterFromSet: whitespaceCS];
 		if (pos != OFNotFound) {
 			target = [PI substringToIndex: pos];
-			data = [[PI substringFromIndex: pos + 1]
+			text = [[PI substringFromIndex: pos + 1]
 			    stringByDeletingEnclosingWhitespaces];
 
-			if (data.length == 0)
-				data = nil;
+			if (text.length == 0)
+				text = nil;
 		} else
 			target = PI;
 
 		if ([target caseInsensitiveCompare: @"xml"] == OFOrderedSame)
-			if (!parseXMLProcessingInstruction(self, data))
+			if (!parseXMLProcessingInstruction(self, text))
 				@throw [OFMalformedXMLException
 				    exceptionWithParser: self];
 
 		if ([self->_delegate respondsToSelector: @selector(
-		    parser:foundProcessingInstructionWithTarget:data:)])
+		    parser:foundProcessingInstructionWithTarget:text:)])
 			[self->_delegate parser: self
 			    foundProcessingInstructionWithTarget: target
-							    data: data];
+							    text: text];
 
 		objc_autoreleasePoolPop(pool);
 

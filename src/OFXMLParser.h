@@ -39,11 +39,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param parser The parser which found a processing instruction
  * @param target The target of the processing instruction
- * @param data The data of the processing instruction
+ * @param text The text of the processing instruction
  */
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data;
+				  text: (OFString *)text;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new

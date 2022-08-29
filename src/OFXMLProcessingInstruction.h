@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLProcessingInstruction: OFXMLNode
 {
-	OFString *_target, *_data;
+	OFString *_target, *_Nullable _text;
 	OF_RESERVE_IVARS(OFXMLProcessingInstruction, 4)
 }
 
@@ -35,31 +35,31 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *target;
 
 /**
- * @brief The data of the processing instruction.
+ * @brief The text of the processing instruction.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *data;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *text;
 
 /**
  * @brief Creates a new OFXMLProcessingInstruction with the specified target
- *	  and data.
+ *	  and text.
  *
  * @param target The target for the processing instruction
- * @param data The data for the processing instruction
+ * @param text The text for the processing instruction
  * @return A new OFXMLProcessingInstruction
  */
 + (instancetype)processingInstructionWithTarget: (OFString *)target
-					   data: (OFString *)data;
+					   text: (OFString *)text;
 
 /**
  * @brief Initializes an already allocated OFXMLProcessingInstruction with the
- *	  specified target and data.
+ *	  specified target and text.
  *
  * @param target The target for the processing instruction
- * @param data The data for the processing instruction
+ * @param text The text for the processing instruction
  * @return An initialized OFXMLProcessingInstruction
  */
 - (instancetype)initWithTarget: (OFString *)target
-			  data: (OFString *)data OF_DESIGNATED_INITIALIZER;
+			  text: (OFString *)text OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
