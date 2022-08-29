@@ -54,8 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which built the OFXMLNode without parent
  * @param node The OFXMLNode the OFXMLElementBuilder built
  */
--   (void)elementBuilder: (OFXMLElementBuilder *)builder
-  didBuildParentlessNode: (OFXMLNode *)node;
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+    didBuildOrphanNode: (OFXMLNode *)node;
 
 /**
  * @brief This callback is called when the OFXMLElementBuilder gets a close tag
