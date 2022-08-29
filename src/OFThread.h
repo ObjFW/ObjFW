@@ -74,7 +74,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 	void *_pool;
 # endif
 # ifdef OF_HAVE_BLOCKS
-	OFThreadBlock _Nullable _threadBlock;
+	OFThreadBlock _Nullable _block;
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
@@ -118,7 +118,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief The block to execute in the thread.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock threadBlock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock block;
 # endif
 
 /**
@@ -164,10 +164,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Creates a new thread with the specified block.
  *
- * @param threadBlock A block which is executed by the thread
+ * @param block A block which is executed by the thread
  * @return A new, autoreleased thread
  */
-+ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock;
++ (instancetype)threadWithBlock: (OFThreadBlock)block;
 # endif
 
 /**
@@ -204,9 +204,12 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Returns the DNS resolver for the current thread.
  *
+ * Constructs the DNS resolver is there is none yet, unless @ref currentThread
+ * is `nil`, in which case it returns `nil`.
+ *
  * @return The DNS resolver for the current thread
  */
-+ (OFDNSResolver *)DNSResolver;
++ (nullable OFDNSResolver *)DNSResolver;
 #endif
 
 /**
@@ -264,10 +267,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Initializes an already allocated thread with the specified block.
  *
- * @param threadBlock A block which is executed by the thread
+ * @param block A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock;
+- (instancetype)initWithBlock: (OFThreadBlock)block;
 # endif
 
 /**
