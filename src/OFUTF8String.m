@@ -932,9 +932,9 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		    _s->cStringLength - i, &c)) <= 0)
 			@throw [OFInvalidEncodingException exception];
 
-		OFHashAdd(&hash, (c & 0xFF0000) >> 16);
-		OFHashAdd(&hash, (c & 0x00FF00) >> 8);
-		OFHashAdd(&hash, c & 0x0000FF);
+		OFHashAddByte(&hash, (c & 0xFF0000) >> 16);
+		OFHashAddByte(&hash, (c & 0x00FF00) >> 8);
+		OFHashAddByte(&hash, c & 0x0000FF);
 
 		i += length - 1;
 	}
@@ -1006,10 +1006,10 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	}
 
 	if (cStringLength == 0)
-		return OFRangeMake(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (cStringLength > rangeLength)
-		return OFRangeMake(OFNotFound, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	if (options & OFStringSearchBackwards) {
 		for (size_t i = rangeLength - cStringLength;; i--) {
@@ -1024,7 +1024,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 			/* Did not match and we're at the last char */
 			if (i == 0)
-				return OFRangeMake(OFNotFound, 0);
+				return OFMakeRange(OFNotFound, 0);
 		}
 	} else {
 		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
@@ -1039,7 +1039,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		}
 	}
 
-	return OFRangeMake(OFNotFound, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 - (bool)containsString: (OFString *)string

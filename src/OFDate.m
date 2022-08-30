@@ -552,7 +552,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	tmp = OFToLittleEndianDouble(self.timeIntervalSince1970);
 
 	for (size_t i = 0; i < sizeof(double); i++)
-		OFHashAdd(&hash, ((char *)&tmp)[i]);
+		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
 	OFHashFinalize(&hash);
 

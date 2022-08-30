@@ -76,7 +76,7 @@ static OFString *const module = @"OFData";
 	    memcmp(mutableData.items, "abcde", 5) == 0)
 
 	TEST(@"-[removeItemsInRange:]",
-	    R([mutableData removeItemsInRange: OFRangeMake(1, 2)]) &&
+	    R([mutableData removeItemsInRange: OFMakeRange(1, 2)]) &&
 	    mutableData.count == 3 && memcmp(mutableData.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
@@ -90,7 +90,7 @@ static OFString *const module = @"OFData";
 						   count: 1
 						itemSize: 2]
 			  options: 0
-			    range: OFRangeMake(0, 7)];
+			    range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #1",
 	    range.location == 0 && range.length == 1)
 
@@ -98,7 +98,7 @@ static OFString *const module = @"OFData";
 						   count: 1
 						itemSize: 2]
 			  options: OFDataSearchBackwards
-			    range: OFRangeMake(0, 7)];
+			    range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #2",
 	    range.location == 5 && range.length == 1)
 
@@ -106,7 +106,7 @@ static OFString *const module = @"OFData";
 						   count: 1
 						itemSize: 2]
 			  options: 0
-			    range: OFRangeMake(0, 7)];
+			    range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #3",
 	    range.location == 2 && range.length == 1)
 
@@ -114,7 +114,7 @@ static OFString *const module = @"OFData";
 						   count: 2
 						itemSize: 2]
 			  options: 0
-			    range: OFRangeMake(0, 7)];
+			    range: OFMakeRange(0, 7)];
 	TEST(@"-[rangeOfData:options:range:] #4",
 	    range.location == 5 && range.length == 2)
 
@@ -123,14 +123,14 @@ static OFString *const module = @"OFData";
 							 count: 1
 						      itemSize: 2]
 				options: 0
-				  range: OFRangeMake(1, 6)]) &&
+				  range: OFMakeRange(1, 6)]) &&
 	    range.location == 5 && range.length == 1)
 
 	range = [data rangeOfData: [OFData dataWithItems: "aa"
 						   count: 1
 						itemSize: 2]
 			  options: OFDataSearchBackwards
-			    range: OFRangeMake(0, 5)];
+			    range: OFMakeRange(0, 5)];
 	TEST(@"-[rangeOfData:options:range:] #6",
 	    range.location == 0 && range.length == 1)
 
@@ -141,28 +141,28 @@ static OFString *const module = @"OFData";
 					       count: 1
 					    itemSize: 3]
 		      options: 0
-			range: OFRangeMake(0, 1)])
+			range: OFMakeRange(0, 1)])
 
 	EXPECT_EXCEPTION(
 	    @"-[rangeOfData:options:range:] failing on out of range",
 	    OFOutOfRangeException,
 	    [data rangeOfData: [OFData dataWithItems: "" count: 0 itemSize: 2]
 		      options: 0
-			range: OFRangeMake(8, 1)])
+			range: OFMakeRange(8, 1)])
 
 	TEST(@"-[subdataWithRange:]",
-	    [[data subdataWithRange: OFRangeMake(2, 4)]
+	    [[data subdataWithRange: OFMakeRange(2, 4)]
 	    isEqual: [OFData dataWithItems: "accdacaa" count: 4 itemSize: 2]] &&
-	    [[mutableData subdataWithRange: OFRangeMake(2, 3)]
+	    [[mutableData subdataWithRange: OFMakeRange(2, 3)]
 	    isEqual: [OFData dataWithItems: "cde" count: 3]])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #1",
 	    OFOutOfRangeException,
-	    [data subdataWithRange: OFRangeMake(7, 1)])
+	    [data subdataWithRange: OFMakeRange(7, 1)])
 
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
 	    OFOutOfRangeException,
-	    [mutableData subdataWithRange: OFRangeMake(6, 1)])
+	    [mutableData subdataWithRange: OFMakeRange(6, 1)])
 
 	TEST(@"-[stringByMD5Hashing]",
 	    [mutableData.stringByMD5Hashing
@@ -218,7 +218,7 @@ static OFString *const module = @"OFData";
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
-	    [mutableData removeItemsInRange: OFRangeMake(mutableData.count, 1)])
+	    [mutableData removeItemsInRange: OFMakeRange(mutableData.count, 1)])
 
 	OFFreeMemory(raw[0]);
 	OFFreeMemory(raw[1]);

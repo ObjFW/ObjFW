@@ -359,7 +359,7 @@ normalizedKey(OFString *key)
 
 	@try {
 		OFString *version = [line
-		    substringWithRange: OFRangeMake(line.length - 9, 9)];
+		    substringWithRange: OFMakeRange(line.length - 9, 9)];
 		OFUnichar tmp;
 
 		if (![version hasPrefix: @" HTTP/1."])
@@ -386,7 +386,7 @@ normalizedKey(OFString *key)
 	}
 
 	@try {
-		OFRange range = OFRangeMake(pos + 1, line.length - pos - 10);
+		OFRange range = OFMakeRange(pos + 1, line.length - pos - 10);
 
 		path = [[[line substringWithRange:
 		    range] mutableCopy] autorelease];

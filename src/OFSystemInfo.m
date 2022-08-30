@@ -400,7 +400,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 		if ((home = [env objectForKey: @"HOME"]) == nil)
 			return nil;
 
-		[path deleteCharactersInRange: OFRangeMake(0, 1)];
+		[path deleteCharactersInRange: OFMakeRange(0, 1)];
 		[path prependString: home];
 	}
 
@@ -489,7 +489,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 		if ((home = [env objectForKey: @"HOME"]) == nil)
 			return nil;
 
-		[path deleteCharactersInRange: OFRangeMake(0, 1)];
+		[path deleteCharactersInRange: OFMakeRange(0, 1)];
 		[path prependString: home];
 	}
 

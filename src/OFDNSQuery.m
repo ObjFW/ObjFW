@@ -97,8 +97,8 @@
 
 	OFHashInit(&hash);
 	OFHashAddHash(&hash, _domainName.hash);
-	OFHashAdd(&hash, _DNSClass);
-	OFHashAdd(&hash, _recordType);
+	OFHashAddByte(&hash, _DNSClass);
+	OFHashAddByte(&hash, _recordType);
 	OFHashFinalize(&hash);
 
 	return hash;

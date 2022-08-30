@@ -337,7 +337,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -394,7 +394,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 		archive = [self
 		    openArchiveWithPath: remainingArguments.firstObject
@@ -409,7 +409,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])

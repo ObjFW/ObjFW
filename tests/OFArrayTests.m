@@ -186,7 +186,7 @@ static OFString *const cArray[] = {
 	    [array2 indexOfObjectIdenticalTo: cArray[1]] == 1)
 
 	TEST(@"-[objectsInRange:]",
-	    [[array1 objectsInRange: OFRangeMake(1, 2)] isEqual:
+	    [[array1 objectsInRange: OFMakeRange(1, 2)] isEqual:
 	    [arrayClass arrayWithObjects: cArray[1], cArray[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
@@ -226,7 +226,7 @@ static OFString *const cArray[] = {
 
 	mutableArray2 = [[array1 mutableCopy] autorelease];
 	TEST(@"-[removeObjectsInRange:]",
-	    R([mutableArray2 removeObjectsInRange: OFRangeMake(0, 2)]) &&
+	    R([mutableArray2 removeObjectsInRange: OFMakeRange(0, 2)]) &&
 	    mutableArray2.count == 1 &&
 	    [[mutableArray2 objectAtIndex: 0] isEqual: cArray[2]])
 
@@ -262,7 +262,7 @@ static OFString *const cArray[] = {
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
 	    OFOutOfRangeException, [mutableArray1 removeObjectsInRange:
-		OFRangeMake(0, mutableArray1.count + 1)])
+		OFMakeRange(0, mutableArray1.count + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
 	    (array2 = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",

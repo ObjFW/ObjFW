@@ -477,7 +477,7 @@ _references_to_categories_of_OFData(void)
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		OFHashAdd(&hash, ((uint8_t *)_items)[i]);
+		OFHashAddByte(&hash, ((uint8_t *)_items)[i]);
 
 	OFHashFinalize(&hash);
 
@@ -551,10 +551,10 @@ _references_to_categories_of_OFData(void)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((searchLength = data.count) == 0)
-		return OFRangeMake(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return OFRangeMake(OFNotFound, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	search = data.items;
 
@@ -562,7 +562,7 @@ _references_to_categories_of_OFData(void)
 		for (size_t i = range.length - searchLength;; i--) {
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return OFRangeMake(i, searchLength);
+				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
 			if (i == 0)
@@ -573,10 +573,10 @@ _references_to_categories_of_OFData(void)
 		    i <= range.length - searchLength; i++)
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return OFRangeMake(i, searchLength);
+				return OFMakeRange(i, searchLength);
 	}
 
-	return OFRangeMake(OFNotFound, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 #ifdef OF_HAVE_FILES

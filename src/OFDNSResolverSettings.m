@@ -182,7 +182,7 @@ parseNetStackArray(OFString *string)
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
 		return nil;
 
-	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
+	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
 	return [string componentsSeparatedByString: @"|"];
 }
@@ -286,7 +286,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -389,7 +389,7 @@ parseNetStackArray(OFString *string)
 
 		option = components.firstObject;
 		arguments = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
 			if (arguments.count != 1) {
@@ -488,7 +488,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =

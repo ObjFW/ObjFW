@@ -88,7 +88,7 @@
 	if ([URLEncodedHost hasPrefix: @"["] &&
 	    [URLEncodedHost hasSuffix: @"]"]) {
 		if (!OFURLIsIPv6Host([URLEncodedHost substringWithRange:
-		    OFRangeMake(1, URLEncodedHost.length - 2)]))
+		    OFMakeRange(1, URLEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (URLEncodedHost != nil)
 		OFURLVerifyIsEscaped(URLEncodedHost,
@@ -402,7 +402,7 @@
 			if ([current isEqual: @".."] && parent != nil &&
 			    ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    OFRangeMake(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;

@@ -180,9 +180,9 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	OFHashInit(&hash);
 
-	OFHashAdd(&hash, _method);
-	OFHashAdd(&hash, _protocolVersion.major);
-	OFHashAdd(&hash, _protocolVersion.minor);
+	OFHashAddByte(&hash, _method);
+	OFHashAddByte(&hash, _protocolVersion.major);
+	OFHashAddByte(&hash, _protocolVersion.minor);
 	OFHashAddHash(&hash, _URL.hash);
 	OFHashAddHash(&hash, _headers.hash);
 	if (_hasRemoteAddress)

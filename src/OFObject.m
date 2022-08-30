@@ -1082,7 +1082,7 @@ _references_to_categories_of_OFObject(void)
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(ptr); i++) {
-		OFHashAdd(&hash, ptr & 0xFF);
+		OFHashAddByte(&hash, ptr & 0xFF);
 		ptr >>= 8;
 	}
 

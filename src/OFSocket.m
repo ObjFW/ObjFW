@@ -669,7 +669,7 @@ OFSocketAddressHash(const OFSocketAddress *address)
 	unsigned long hash;
 
 	OFHashInit(&hash);
-	OFHashAdd(&hash, address->family);
+	OFHashAddByte(&hash, address->family);
 
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
@@ -681,24 +681,26 @@ OFSocketAddressHash(const OFSocketAddress *address)
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		OFHashAdd(&hash, address->sockaddr.in.sin_port >> 8);
-		OFHashAdd(&hash, address->sockaddr.in.sin_port);
-		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 24);
-		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 16);
-		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr >> 8);
-		OFHashAdd(&hash, address->sockaddr.in.sin_addr.s_addr);
+		OFHashAddByte(&hash, address->sockaddr.in.sin_port >> 8);
+		OFHashAddByte(&hash, address->sockaddr.in.sin_port);
+		OFHashAddByte(&hash,
+		    address->sockaddr.in.sin_addr.s_addr >> 24);
+		OFHashAddByte(&hash,
+		    address->sockaddr.in.sin_addr.s_addr >> 16);
+		OFHashAddByte(&hash, address->sockaddr.in.sin_addr.s_addr >> 8);
+		OFHashAddByte(&hash, address->sockaddr.in.sin_addr.s_addr);
 
 		break;
 	case OFSocketAddressFamilyIPv6:
 		if (address->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		OFHashAdd(&hash, address->sockaddr.in6.sin6_port >> 8);
-		OFHashAdd(&hash, address->sockaddr.in6.sin6_port);
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_port >> 8);
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_port);
 
 		for (size_t i = 0;
 		    i < sizeof(address->sockaddr.in6.sin6_addr.s6_addr); i++)
-			OFHashAdd(&hash,
+			OFHashAddByte(&hash,
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
 
 		break;
@@ -718,17 +720,18 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		if (address->length < (socklen_t)sizeof(struct sockaddr_ipx))
 			@throw [OFInvalidArgumentException exception];
 
-		OFHashAdd(&hash, address->sockaddr.ipx.sipx_port >> 8);
-		OFHashAdd(&hash, address->sockaddr.ipx.sipx_port);
+		OFHashAddByte(&hash, address->sockaddr.ipx.sipx_port >> 8);
+		OFHashAddByte(&hash, address->sockaddr.ipx.sipx_port);
 
 		memcpy(network, &address->sockaddr.ipx.sipx_network,
 		    sizeof(network));
 
 		for (size_t i = 0; i < sizeof(network); i++)
-			OFHashAdd(&hash, network[i]);
+			OFHashAddByte(&hash, network[i]);
 
 		for (size_t i = 0; i < IPX_NODE_LEN; i++)
-			OFHashAdd(&hash, address->sockaddr.ipx.sipx_node[i]);
+			OFHashAddByte(&hash,
+			    address->sockaddr.ipx.sipx_node[i]);
 
 		break;
 	default:

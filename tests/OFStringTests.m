@@ -509,7 +509,7 @@ static const OFChar16 swappedChar16String[] = {
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFRangeMake(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFMakeRange(3, 1)])
 
 	characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
@@ -520,29 +520,29 @@ static const OFChar16 swappedChar16String[] = {
 			    options: OFStringSearchBackwards] == 7 &&
 	    [C(@"abcđabcđë") indexOfCharacterFromSet: characterSet
 					     options: 0
-					       range: OFRangeMake(4, 4)] == 6 &&
+					       range: OFMakeRange(4, 4)] == 6 &&
 	    [C(@"abcđabcđëf")
 	    indexOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFRangeMake(8, 2)] == OFNotFound)
+			      range: OFMakeRange(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
 	    OFOutOfRangeException,
 	    [C(@"𝄞öö") indexOfCharacterFromSet: characterSet
 				       options: 0
-					 range: OFRangeMake(3, 1)])
+					 range: OFMakeRange(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
-	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(1, 1)] isEqual: @"ö"] &&
-	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(3, 0)] isEqual: @""])
+	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(1, 1)] isEqual: @"ö"] &&
+	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(3, 0)] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFRangeMake(2, 2)])
+	    [C(@"𝄞öö") substringWithRange: OFMakeRange(2, 2)])
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFRangeMake(4, 0)])
+	    [C(@"𝄞öö") substringWithRange: OFMakeRange(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
@@ -1313,21 +1313,21 @@ static const OFChar16 swappedChar16String[] = {
 	TEST(@"-[deleteCharactersInRange:]",
 	    (mutableString1 = [mutableStringClass
 	    stringWithString: @"𝄞öööbä€"]) &&
-	    R([mutableString1 deleteCharactersInRange: OFRangeMake(1, 3)]) &&
+	    R([mutableString1 deleteCharactersInRange: OFMakeRange(1, 3)]) &&
 	    [mutableString1 isEqual: @"𝄞bä€"] &&
-	    R([mutableString1 deleteCharactersInRange: OFRangeMake(0, 4)]) &&
+	    R([mutableString1 deleteCharactersInRange: OFMakeRange(0, 4)]) &&
 	    [mutableString1 isEqual: @""])
 
 	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (mutableString1 = [mutableStringClass
 	    stringWithString: @"𝄞öööbä€"]) &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(1, 3)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(1, 3)
 					    withString: @"äöüß"]) &&
 	    [mutableString1 isEqual: @"𝄞äöüßbä€"] &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(4, 2)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(4, 2)
 					    withString: @"b"]) &&
 	    [mutableString1 isEqual: @"𝄞äöübä€"] &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(0, 7)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(0, 7)
 					    withString: @""]) &&
 	    [mutableString1 isEqual: @""])
 
@@ -1335,23 +1335,23 @@ static const OFChar16 swappedChar16String[] = {
 	    OFOutOfRangeException,
 	    {
 		mutableString1 = [mutableStringClass stringWithString: @"𝄞öö"];
-		[mutableString1 deleteCharactersInRange: OFRangeMake(2, 2)];
+		[mutableString1 deleteCharactersInRange: OFMakeRange(2, 2)];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [mutableString1 deleteCharactersInRange: OFRangeMake(4, 0)])
+	    [mutableString1 deleteCharactersInRange: OFMakeRange(4, 0)])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [mutableString1 replaceCharactersInRange: OFRangeMake(2, 2)
+	    [mutableString1 replaceCharactersInRange: OFMakeRange(2, 2)
 					  withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [mutableString1 replaceCharactersInRange: OFRangeMake(4, 0)
+	    [mutableString1 replaceCharactersInRange: OFMakeRange(4, 0)
 					  withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
@@ -1371,7 +1371,7 @@ static const OFChar16 swappedChar16String[] = {
 	    replaceOccurrencesOfString: @"oo"
 			    withString: @"óò"
 			       options: 0
-				 range: OFRangeMake(2, 15)]) &&
+				 range: OFMakeRange(2, 15)]) &&
 	    [mutableString1 isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",

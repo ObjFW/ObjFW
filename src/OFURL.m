@@ -891,7 +891,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	if ([_URLEncodedHost hasPrefix: @"["] &&
 	    [_URLEncodedHost hasSuffix: @"]"]) {
 		OFString *host = [_URLEncodedHost substringWithRange:
-		    OFRangeMake(1, _URLEncodedHost.length - 2)];
+		    OFMakeRange(1, _URLEncodedHost.length - 2)];
 
 		if (!OFURLIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
