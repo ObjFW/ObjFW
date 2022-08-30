@@ -230,7 +230,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
     id <OFStreamDelegate> delegate;
 
 /**
- * @brief Reads *at most* size bytes from the stream into a buffer.
+ * @brief Reads *at most* `length` bytes from the stream into a buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -248,7 +248,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (size_t)readIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
- * @brief Reads exactly the specified length bytes from the stream into a
+ * @brief Reads exactly the specified `length` bytes from the stream into a
  *	  buffer.
  *
  * Unlike @ref readIntoBuffer:length:, this method does not return when less
@@ -266,7 +266,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @brief Asynchronously reads *at most* size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -288,7 +288,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
- * @brief Asynchronously reads *at most* size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -313,7 +313,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
@@ -331,7 +331,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncReadIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
@@ -353,8 +353,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 # ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously reads *at most* ref size bytes from the stream into a
- *	  buffer.
+ * @brief Asynchronously reads *at most* ref `length` bytes from the stream
+ *	  into a buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -382,7 +382,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads *at most* ref size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -413,7 +413,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
@@ -438,7 +438,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
