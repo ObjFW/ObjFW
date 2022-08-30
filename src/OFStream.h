@@ -777,7 +777,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)readTillDelimiter: (OFString *)delimiter;
+- (nullable OFString *)readUntilDelimiter: (OFString *)delimiter;
 
 /**
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -788,23 +788,23 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)readTillDelimiter: (OFString *)delimiter
-				encoding: (OFStringEncoding)encoding;
+- (nullable OFString *)readUntilDelimiter: (OFString *)delimiter
+				 encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to reads until the specified string or `\0` is found or the end
- *	  of stream (see @ref readTillDelimiter:) and returns `nil` if not
+ *	  of stream (see @ref readUntilDelimiter:) and returns `nil` if not
  *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter;
+- (nullable OFString *)tryReadUntilDelimiter: (OFString *)delimiter;
 
 /**
  * @brief Tries to read until the specified string or `\0` is found or the end
- *	  of stream occurs (see @ref readTillDelimiter:encoding:) and returns
+ *	  of stream occurs (see @ref readUntilDelimiter:encoding:) and returns
  *	  `nil` if not enough data has been received yet.
  *
  * @param delimiter The delimiter
@@ -812,8 +812,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter
-				   encoding: (OFStringEncoding)encoding;
+- (nullable OFString *)tryReadUntilDelimiter: (OFString *)delimiter
+				    encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes everything in the write buffer to the stream.
