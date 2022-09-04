@@ -356,12 +356,6 @@ struct {
 	return [self stringByAppendingPathExtension: extension];
 }
 
-- (OFString *)stringByPrependingString: (OFString *)string
-{
-	[self finishInitialization];
-	return [self stringByPrependingString: string];
-}
-
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 {

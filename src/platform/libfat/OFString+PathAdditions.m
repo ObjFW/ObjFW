@@ -344,7 +344,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
 {
-	return [self stringByPrependingString: @"/"];
+	return [@"/" stringByApppendingString: self];
 }
 
 - (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost

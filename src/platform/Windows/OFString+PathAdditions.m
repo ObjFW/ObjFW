@@ -365,7 +365,7 @@ int _OFString_PathAdditions_reference;
 
 	path = [path stringByReplacingOccurrencesOfString: @"\\"
 					       withString: @"/"];
-	path = [path stringByPrependingString: @"/"];
+	path = [@"/" stringByApppendingString: path];
 
 	return path;
 }

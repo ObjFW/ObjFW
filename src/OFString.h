@@ -99,7 +99,7 @@ typedef enum {
 	/** KOI8-U */
 	OFStringEncodingKOI8U,
 	/** Try to automatically detect the encoding */
-	OFStringEncodingAutodetect = 0xFF
+	OFStringEncodingAutodetect = -1
 } OFStringEncoding;
 
 /**
@@ -231,6 +231,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is *not* null-terminated.
  */
 @property (readonly, nonatomic) const OFUnichar *characters
     OF_RETURNS_INNER_POINTER;
@@ -241,6 +243,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  */
 @property (readonly, nonatomic) const OFChar16 *UTF16String
     OF_RETURNS_INNER_POINTER;
@@ -256,6 +260,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  */
 @property (readonly, nonatomic) const OFChar32 *UTF32String
     OF_RETURNS_INNER_POINTER;
@@ -413,7 +419,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Creates a new OFString from a UTF-16 encoded string.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string;
@@ -422,7 +428,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-16 encoded string with the
  *	  specified length.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @return A new autoreleased OFString
  */
@@ -433,7 +439,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-16 encoded string, assuming the
  *	  specified byte order if no byte order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
@@ -445,7 +451,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  specified length, assuming the specified byte order if no byte order
  *	  mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
@@ -457,7 +463,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Creates a new OFString from a UTF-32 encoded string.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string;
@@ -466,7 +472,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-32 encoded string with the
  *	  specified length.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @return A new autoreleased OFString
  */
@@ -477,7 +483,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-32 encoded string, assuming the
  *	  specified byte order if no byte order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
@@ -489,7 +495,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  specified length, assuming the specified byte order if no byte order
  *	  mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
@@ -671,7 +677,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Initializes an already allocated OFString with a UTF-16 string.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF16String: (const OFChar16 *)string;
@@ -680,7 +686,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-16 string with
  *	  the specified length.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @return An initialized OFString
  */
@@ -691,7 +697,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-16 string,
  *	  assuming the specified byte order if no byte order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
@@ -703,7 +709,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  the specified length, assuming the specified byte order if no byte
  *	  order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
@@ -715,7 +721,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Initializes an already allocated OFString with a UTF-32 string.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF32String: (const OFChar32 *)string;
@@ -724,7 +730,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-32 string with
  *	  the specified length
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @return An initialized OFString
  */
@@ -735,7 +741,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-32 string,
  *	  assuming the specified byte order if no byte order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
@@ -747,7 +753,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  the specified length, assuming the specified byte order if no byte
  *	  order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
@@ -1095,14 +1101,6 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 			    arguments: (va_list)arguments;
 
 /**
- * @brief Creates a new string by prepending another string.
- *
- * @param string The string to prepend
- * @return A new autoreleased OFString with the specified string prepended
- */
-- (OFString *)stringByPrependingString: (OFString *)string;
-
-/**
  * @brief Creates a new string by replacing the occurrences of the specified
  *	  string with the specified replacement.
  *
@@ -1121,7 +1119,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param replacement The string with which it should be replaced
  * @param options Options modifying search behaviour.
  *		  Possible values are:
- *		    * None yet
+ *		    * None yet, pass 0
  * @param range The range in which to replace the string
  * @return A new string with the occurrences of the specified string replaced
  */
@@ -1197,6 +1195,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  *
+ * The returned string is null-terminated.
+ *
  * @param byteOrder The byte order for the UTF-16 encoding
  * @return The string in UTF-16 encoding with the specified byte order
  */
@@ -1209,6 +1209,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  *
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order

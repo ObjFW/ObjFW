@@ -2040,14 +2040,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return new;
 }
 
-- (OFString *)stringByPrependingString: (OFString *)string
-{
-	OFMutableString *new = [[string mutableCopy] autorelease];
-	[new appendString: self];
-	[new makeImmutable];
-	return new;
-}
-
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 {
