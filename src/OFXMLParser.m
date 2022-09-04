@@ -114,7 +114,7 @@ static OF_INLINE void
 appendToBuffer(OFMutableData *buffer, const char *string,
     OFStringEncoding encoding, size_t length)
 {
-	if OF_LIKELY(encoding == OFStringEncodingUTF8)
+	if OF_LIKELY (encoding == OFStringEncodingUTF8)
 		[buffer addItems: string count: length];
 	else {
 		void *pool = objc_autoreleasePoolPush();

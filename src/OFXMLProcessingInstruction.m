@@ -134,37 +134,6 @@
 		return [OFString stringWithFormat: @"<?%@?>", _target];
 }
 
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return self.XMLString;
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	if (indentation > 0 && level > 0) {
-		OFString *ret;
-		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
-		memset(whitespaces, ' ', level * indentation);
-		whitespaces[level * indentation] = 0;
-
-		@try {
-			if (_text.length > 0)
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@ %@?>", whitespaces,
-				    _target, _text];
-			else
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@?>", whitespaces, _target];
-		} @finally {
-			OFFreeMemory(whitespaces);
-		}
-
-		return ret;
-	} else
-		return self.XMLString;
-}
-
 - (OFString *)description
 {
 	return self.XMLString;

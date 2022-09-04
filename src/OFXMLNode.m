@@ -76,23 +76,12 @@
 
 - (OFString *)XMLString
 {
-	return [self XMLStringWithIndentation: 0 level: 0];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return [self XMLStringWithIndentation: 0 level: 0];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFString *)description
 {
-	return [self XMLStringWithIndentation: 2 level: 0];
+	return self.XMLString;
 }
 
 - (OFXMLElement *)XMLElementBySerializing

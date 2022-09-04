@@ -67,28 +67,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /**
- * @brief Returns an OFString representing the OFXMLNode as an XML string with
- *	  indentation.
- *
- * @param indentation The indentation for the XML string
- * @return An OFString representing the OFXMLNode as an XML string with
- *	   indentation
- */
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
-
-/**
- * @brief Returns an OFString representing the OFXMLNode as an XML string with
- *	  indentation for the specified level.
- *
- * @param indentation The indentation for the XML string
- * @param level The level of indentation
- * @return An OFString representing the OFXMLNode as an XML string with
- *	   indentation
- */
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level;
-
-/**
  * @brief The contents of the receiver as a `long long` value in the specified
  *	  base.
  *

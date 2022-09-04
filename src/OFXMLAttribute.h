@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (nullable OFString *)nameSpace
-		 stringValue: (OFString *)stringValue;
+		 stringValue: (OFString *)stringValue OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end

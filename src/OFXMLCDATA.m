@@ -116,17 +116,6 @@
 	return [ret autorelease];
 }
 
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return self.XMLString;
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	return self.XMLString;
-}
-
 - (OFString *)description
 {
 	return self.XMLString;

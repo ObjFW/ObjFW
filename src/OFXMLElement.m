@@ -73,7 +73,6 @@ _references_to_categories_of_OFXMLElement(void)
 
 @implementation OFXMLElement
 @synthesize name = _name, namespace = _namespace;
-@synthesize defaultNamespace = _defaultNamespace;
 
 + (instancetype)elementWithName: (OFString *)name
 {
@@ -211,8 +210,6 @@ _references_to_categories_of_OFXMLElement(void)
 			namespace: element->_namespace];
 
 	@try {
-		[_defaultNamespace release];
-		_defaultNamespace = [element->_defaultNamespace retain];
 		[_attributes release];
 		_attributes = [element->_attributes retain];
 		[_namespaces release];
@@ -265,8 +262,6 @@ _references_to_categories_of_OFXMLElement(void)
 			namespace: element->_namespace];
 
 	@try {
-		[_defaultNamespace release];
-		_defaultNamespace = [element->_defaultNamespace retain];
 		[_attributes release];
 		_attributes = [element->_attributes retain];
 		[_namespaces release];
@@ -310,11 +305,6 @@ _references_to_categories_of_OFXMLElement(void)
 		OFXMLElement *childrenElement;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
 		OFString *key, *object;
-
-		[_defaultNamespace release];
-		_defaultNamespace = nil;
-		_defaultNamespace = [[element attributeForName:
-		    @"defaultNamespace"].stringValue copy];
 
 		attributesElement = [[element
 		    elementForName: @"attributes"
@@ -390,7 +380,6 @@ _references_to_categories_of_OFXMLElement(void)
 {
 	[_name release];
 	[_namespace release];
-	[_defaultNamespace release];
 	[_attributes release];
 	[_namespaces release];
 	[_children release];
@@ -447,23 +436,17 @@ _references_to_categories_of_OFXMLElement(void)
 	return ret;
 }
 
-- (OFString *)of_XMLStringWithParent: (OFXMLElement *)parent
-			  namespaces: (OFDictionary *)allNS
-			 indentation: (unsigned int)indentation
-			       level: (unsigned int)level OF_DIRECT
+- (OFString *)of_XMLStringWithDefaultNS: (OFString *)defaultNS
+			     namespaces: (OFDictionary *)allNS
+			    indentation: (unsigned int)indentation
+				  level: (unsigned int)level OF_DIRECT
 {
 	void *pool;
 	char *cString;
 	size_t length, i;
-	OFString *prefix, *parentPrefix;
-	OFString *ret;
-	OFString *defaultNS;
+	OFString *prefix, *ret;
 
 	pool = objc_autoreleasePoolPush();
-
-	parentPrefix = [allNS objectForKey:
-	    (parent != nil && parent->_namespace != nil
-	    ? parent->_namespace : (OFString *)@"")];
 
 	/* Add the namespaces of the current element */
 	if (allNS != nil) {
@@ -485,13 +468,6 @@ _references_to_categories_of_OFXMLElement(void)
 	prefix = [allNS objectForKey:
 	    (_namespace != nil ? _namespace : (OFString *)@"")];
 
-	if (parent != nil && parent->_namespace != nil && parentPrefix == nil)
-		defaultNS = parent->_namespace;
-	else if (parent != nil && parent->_defaultNamespace != nil)
-		defaultNS = parent->_defaultNamespace;
-	else
-		defaultNS = _defaultNamespace;
-
 	i = 0;
 	length = _name.UTF8StringLength + 3 + (level * indentation);
 	cString = OFAllocMemory(length, 1);
@@ -503,7 +479,7 @@ _references_to_categories_of_OFXMLElement(void)
 		/* Start of tag */
 		cString[i++] = '<';
 
-		if (prefix != nil && ![_namespace isEqual: defaultNS]) {
+		if (prefix.length > 0) {
 			length += prefix.UTF8StringLength + 1;
 			cString = OFResizeMemory(cString, length, 1);
 
@@ -517,9 +493,8 @@ _references_to_categories_of_OFXMLElement(void)
 		i += _name.UTF8StringLength;
 
 		/* xmlns if necessary */
-		if (prefix == nil && ((_namespace != nil &&
-		    ![_namespace isEqual: defaultNS]) ||
-		    (_namespace == nil && defaultNS != nil))) {
+		if (prefix.length == 0 && defaultNS != _namespace &&
+		    ![defaultNS isEqual: _namespace]) {
 			length += _namespace.UTF8StringLength + 9;
 			cString = OFResizeMemory(cString, length, 1);
 
@@ -529,6 +504,8 @@ _references_to_categories_of_OFXMLElement(void)
 			    _namespace.UTF8StringLength);
 			i += _namespace.UTF8StringLength;
 			cString[i++] = '\'';
+
+			defaultNS = _namespace;
 		}
 
 		/* Attributes */
@@ -545,8 +522,8 @@ _references_to_categories_of_OFXMLElement(void)
 			    ? '"' : '\'');
 
 			if (attribute->_namespace != nil &&
-			    (attributePrefix = [allNS objectForKey:
-			    attribute->_namespace]) == nil)
+			    [(attributePrefix = [allNS objectForKey:
+			    attribute->_namespace]) length] == 0)
 				@throw [OFUnboundNamespaceException
 				    exceptionWithNamespace: attribute.namespace
 						   element: self];
@@ -605,15 +582,17 @@ _references_to_categories_of_OFXMLElement(void)
 
 				if ([child isKindOfClass: [OFXMLElement class]])
 					childString = [(OFXMLElement *)child
-					    of_XMLStringWithParent: self
-							namespaces: allNS
-						       indentation: ind
-							     level: level + 1];
-				else
-					childString = [child
-					    XMLStringWithIndentation: ind
-							       level: level +
-								      1];
+					    of_XMLStringWithDefaultNS: defaultNS
+							   namespaces: allNS
+							  indentation: ind
+								level: level +
+									   1];
+				else {
+					childString = child.XMLString;
+					for (unsigned int j = 0;
+					    j < ind * (level + 1); j++)
+						[tmp addItem: " "];
+				}
 
 				[tmp addItems: childString.UTF8String
 					count: childString.UTF8StringLength];
@@ -638,7 +617,7 @@ _references_to_categories_of_OFXMLElement(void)
 
 			cString[i++] = '<';
 			cString[i++] = '/';
-			if (prefix != nil) {
+			if (prefix.length > 0) {
 				length += prefix.UTF8StringLength + 1;
 				cString = OFResizeMemory(cString, length, 1);
 
@@ -668,27 +647,27 @@ _references_to_categories_of_OFXMLElement(void)
 
 - (OFString *)XMLString
 {
-	return [self of_XMLStringWithParent: nil
-				 namespaces: nil
-				indentation: 0
-				      level: 0];
+	return [self of_XMLStringWithDefaultNS: nil
+				    namespaces: nil
+				   indentation: 0
+					 level: 0];
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [self of_XMLStringWithParent: nil
-				 namespaces: nil
-				indentation: indentation
-				      level: 0];
+	return [self of_XMLStringWithDefaultNS: nil
+				    namespaces: nil
+				   indentation: indentation
+					 level: 0];
 }
 
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
+- (OFString *)XMLStringWithDefaultNamespace: (OFString *)defaultNS
+				indentation: (unsigned int)indentation
 {
-	return [self of_XMLStringWithParent: nil
-				 namespaces: nil
-				indentation: indentation
-				      level: level];
+	return [self of_XMLStringWithDefaultNS: defaultNS
+				    namespaces: nil
+				   indentation: indentation
+					 level: 0];
 }
 
 - (OFXMLElement *)XMLElementBySerializing
@@ -705,10 +684,6 @@ _references_to_categories_of_OFXMLElement(void)
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
 				  stringValue: _namespace];
-
-	if (_defaultNamespace != nil)
-		[element addAttributeWithName: @"defaultNamespace"
-				  stringValue: _defaultNamespace];
 
 	if (_attributes != nil) {
 		OFXMLElement *attributesElement;
@@ -858,8 +833,6 @@ _references_to_categories_of_OFXMLElement(void)
 {
 	if (prefix.length == 0)
 		@throw [OFInvalidArgumentException exception];
-	if (namespace == nil)
-		namespace = @"";
 
 	[_namespaces setObject: prefix forKey: namespace];
 }
@@ -1038,9 +1011,6 @@ _references_to_categories_of_OFXMLElement(void)
 	if (element->_namespace != _namespace &&
 	    ![element->_namespace isEqual: _namespace])
 		return false;
-	if (element->_defaultNamespace != _defaultNamespace &&
-	    ![element->_defaultNamespace isEqual: _defaultNamespace])
-		return false;
 	if (element->_attributes != _attributes &&
 	    ![element->_attributes isEqual: _attributes])
 		return false;
@@ -1062,7 +1032,6 @@ _references_to_categories_of_OFXMLElement(void)
 
 	OFHashAddHash(&hash, _name.hash);
 	OFHashAddHash(&hash, _namespace.hash);
-	OFHashAddHash(&hash, _defaultNamespace.hash);
 	OFHashAddHash(&hash, _attributes.hash);
 	OFHashAddHash(&hash, _namespaces.hash);
 	OFHashAddHash(&hash, _children.hash);
@@ -1078,7 +1047,6 @@ _references_to_categories_of_OFXMLElement(void)
 	@try {
 		copy->_name = [_name copy];
 		copy->_namespace = [_namespace copy];
-		copy->_defaultNamespace = [_defaultNamespace copy];
 		copy->_attributes = [_attributes mutableCopy];
 		copy->_namespaces = [_namespaces mutableCopy];
 		copy->_children = [_children mutableCopy];

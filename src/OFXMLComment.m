@@ -105,36 +105,9 @@
 	return [OFString stringWithFormat: @"<!--%@-->", _text];
 }
 
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return [OFString stringWithFormat: @"<!--%@-->", _text];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	OFString *ret;
-
-	if (indentation > 0 && level > 0) {
-		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
-		memset(whitespaces, ' ', level * indentation);
-		whitespaces[level * indentation] = 0;
-
-		@try {
-			ret = [OFString stringWithFormat: @"%s<!--%@-->",
-							  whitespaces, _text];
-		} @finally {
-			OFFreeMemory(whitespaces);
-		}
-	} else
-		ret = [OFString stringWithFormat: @"<!--%@-->", _text];
-
-	return ret;
-}
-
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<!--%@-->", _text];
+	return self.XMLString;
 }
 
 - (OFXMLElement *)XMLElementBySerializing

@@ -70,21 +70,31 @@
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	self = [super of_init];
+	void *pool;
+	OFString *name, *namespace, *stringValue;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
+		pool = objc_autoreleasePoolPush();
 
 		if (![element.name isEqual: self.className] ||
 		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
-		_name = [[element attributeForName: @"name"].stringValue copy];
-		_namespace = [[element attributeForName: @"namespace"]
-		    .stringValue copy];
-		_stringValue = [[element attributeForName: @"stringValue"]
-		    .stringValue copy];
+		name = [element attributeForName: @"name"].stringValue;
+		namespace = [element attributeForName: @"namespace"]
+		    .stringValue;
+		stringValue = [element attributeForName: @"stringValue"]
+		    .stringValue;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
+	self = [self initWithName: name
+			namespace: namespace
+		      stringValue: stringValue];
+
+	@try {
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
@@ -178,8 +188,9 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFXMLAttribute: name=%@, "
-					   @"namespace=%@, stringValue=%@>",
-					   _name, _namespace, _stringValue];
+	return [OFString stringWithFormat: @"<%@: name=%@, namespace=%@, "
+					   @"stringValue=%@>",
+					   self.class, _name, _namespace,
+					   _stringValue];
 }
 @end

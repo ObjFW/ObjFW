@@ -14,25 +14,6 @@
       <OFString>B&quot;la</OFString>
     </object>
     <key>
-      <OFData>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFData>
-    </key>
-    <object>
-      <OFString>data</OFString>
-    </object>
-    <key>
-      <OFArray>
-        <OFString>Qu&quot;xbar
-test</OFString>
-        <OFNumber type='signed'>1234</OFNumber>
-        <OFNumber type='float'>40934a456d5cfaad</OFNumber>
-        <OFMutableString>asd</OFMutableString>
-        <OFDate>40934a456d5cfaad</OFDate>
-      </OFArray>
-    </key>
-    <object>
-      <OFString>Hello</OFString>
-    </object>
-    <key>
       <OFList>
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
@@ -62,6 +43,25 @@ How are you?</OFString>
     </key>
     <object>
       <OFString>list</OFString>
+    </object>
+    <key>
+      <OFData>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFData>
+    </key>
+    <object>
+      <OFString>data</OFString>
+    </object>
+    <key>
+      <OFArray>
+        <OFString>Qu&quot;xbar
+test</OFString>
+        <OFNumber type='signed'>1234</OFNumber>
+        <OFNumber type='float'>40934a456d5cfaad</OFNumber>
+        <OFMutableString>asd</OFMutableString>
+        <OFDate>40934a456d5cfaad</OFDate>
+      </OFArray>
+    </key>
+    <object>
+      <OFString>Hello</OFString>
     </object>
   </OFMutableDictionary>
 </serialization>
