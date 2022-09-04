@@ -535,7 +535,7 @@ static struct {
 	ret = [[self componentsJoinedByString: @",\n"] mutableCopy];
 
 	@try {
-		[ret prependString: @"(\n"];
+		[ret insertString: @"(\n" atIndex: 0];
 		[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 		[ret appendString: @"\n)"];
 	} @catch (id e) {

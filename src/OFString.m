@@ -1756,17 +1756,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			if ((!OFASCIIIsAlpha(cString[0]) &&
 			    cString[0] != '_' && cString[0] != '$') ||
 			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
-				[JSON prependString: @"\""];
+				[JSON insertString: @"\"" atIndex: 0];
 				[JSON appendString: @"\""];
 			}
 		} else {
-			[JSON prependString: @"\""];
+			[JSON insertString: @"\"" atIndex: 0];
 			[JSON appendString: @"\""];
 		}
 	} else {
 		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\n"];
 
-		[JSON prependString: @"\""];
+		[JSON insertString: @"\"" atIndex: 0];
 		[JSON appendString: @"\""];
 	}
 

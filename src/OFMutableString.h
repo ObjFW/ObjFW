@@ -112,18 +112,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
 /**
- * @brief Prepends another OFString to the OFMutableString.
- *
- * @param string An OFString to prepend
- */
-- (void)prependString: (OFString *)string;
-
-/**
- * @brief Reverses the string.
- */
-- (void)reverse;
-
-/**
  * @brief Converts the string to uppercase.
  */
 - (void)uppercase;

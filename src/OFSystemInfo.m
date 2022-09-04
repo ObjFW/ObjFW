@@ -401,7 +401,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			return nil;
 
 		[path deleteCharactersInRange: OFMakeRange(0, 1)];
-		[path prependString: home];
+		[path insertString: home atIndex: 0];
 	}
 
 	[path makeImmutable];
@@ -490,7 +490,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			return nil;
 
 		[path deleteCharactersInRange: OFMakeRange(0, 1)];
-		[path prependString: home];
+		[path insertString: home atIndex: 0];
 	}
 
 	[path appendString: @"/Preferences"];

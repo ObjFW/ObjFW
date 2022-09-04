@@ -294,25 +294,22 @@ static const OFChar16 swappedChar16String[] = {
 	EXPECT_EXCEPTION(@"Detect out of range in -[characterAtIndex:]",
 	    OFOutOfRangeException, [mutableString1 characterAtIndex: 7])
 
-	TEST(@"-[reverse]",
-	    R([mutableString1 reverse]) && [mutableString1 isEqual: @"3𝄞1€sät"])
-
 	mutableString2 = [mutableStringClass stringWithString: @"abc"];
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[uppercase]", R([mutableString1 uppercase]) &&
-	    [mutableString1 isEqual: @"3𝄞1€SÄT"] &&
+	    [mutableString1 isEqual: @"TÄS€1𝄞3"] &&
 	    R([mutableString2 uppercase]) && [mutableString2 isEqual: @"ABC"])
 
 	TEST(@"-[lowercase]", R([mutableString1 lowercase]) &&
-	    [mutableString1 isEqual: @"3𝄞1€sät"] &&
+	    [mutableString1 isEqual: @"täs€1𝄞3"] &&
 	    R([mutableString2 lowercase]) && [mutableString2 isEqual: @"abc"])
 
 	TEST(@"-[uppercaseString]",
-	    [[mutableString1 uppercaseString] isEqual: @"3𝄞1€SÄT"])
+	    [[mutableString1 uppercaseString] isEqual: @"TÄS€1𝄞3"])
 
 	TEST(@"-[lowercaseString]", R([mutableString1 uppercase]) &&
-	    [[mutableString1 lowercaseString] isEqual: @"3𝄞1€sät"])
+	    [[mutableString1 lowercaseString] isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǅbla Tǆst Tǆst"])
@@ -546,9 +543,6 @@ static const OFChar16 swappedChar16String[] = {
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
-
-	TEST(@"-[stringByPrependingString:]",
-	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)

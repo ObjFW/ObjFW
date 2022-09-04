@@ -58,7 +58,7 @@ escapeString(OFString *string)
 	[mutableString replaceOccurrencesOfString: @"\n" withString: @"\\n"];
 	[mutableString replaceOccurrencesOfString: @"\"" withString: @"\\\""];
 
-	[mutableString prependString: @"\""];
+	[mutableString insertString: @"\"" atIndex: 0];
 	[mutableString appendString: @"\""];
 
 	[mutableString makeImmutable];

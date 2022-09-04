@@ -372,22 +372,6 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	}
 }
 
-- (void)prependString: (OFString *)string
-{
-	[self insertString: string atIndex: 0];
-}
-
-- (void)reverse
-{
-	size_t i, j, length = self.length;
-
-	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
-		OFUnichar tmp = [self characterAtIndex: j];
-		[self setCharacter: [self characterAtIndex: i] atIndex: j];
-		[self setCharacter: tmp atIndex: i];
-	}
-}
-
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
