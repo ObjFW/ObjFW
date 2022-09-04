@@ -64,7 +64,7 @@ OF_SUBCLASSING_RESTRICTED
 + (void)preallocateUnswappableMemoryWithSize: (size_t)size;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of item
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of item
  *	  size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -76,7 +76,7 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of the
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of the
  *	  specified item size, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -109,7 +109,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of
+ * @brief Initializes an already allocated OFSecureData with `count` items of
  *	  item size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -121,8 +121,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of the
- *	  specified item size, all set to zero.
+ * @brief Initializes an already allocated OFSecureData with `count` items of
+ *	  the specified item size, all set to zero.
  *
  * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
