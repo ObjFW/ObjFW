@@ -150,8 +150,7 @@ SRCS_THREADS = OFCondition.m		\
 	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
 	       OFTLSKey.m
-SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
-	       OFWindowsRegistryKey.m
+SRCS_WINDOWS = OFWindowsRegistryKey.m
 
 INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/GCC4/OFAtomic.h	\
@@ -221,6 +220,7 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_WINDOWS += OFWin32ConsoleStdIOStream.m
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
