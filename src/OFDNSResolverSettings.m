@@ -623,7 +623,8 @@ parseNetStackArray(OFString *string)
 	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
 		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 				     @"Tcpip\\Parameters"
-	    securityAndAccessRights: KEY_QUERY_VALUE];
+		       accessRights: KEY_QUERY_VALUE
+			    options: 0];
 	path = [[[key stringForValueNamed: @"DataBasePath"]
 	    stringByAppendingPathComponent: @"hosts"]
 	    stringByExpandingWindowsEnvironmentStrings];

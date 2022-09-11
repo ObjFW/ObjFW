@@ -31,7 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFWindowsRegistryKey *_registryKey;
 	OFString *_Nullable _valueName;
-	DWORD _flags;
 	LSTATUS _status;
 }
 
