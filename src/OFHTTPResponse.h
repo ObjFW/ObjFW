@@ -26,12 +26,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing an HTTP request response as a stream.
  */
+#if !defined(OF_HTTP_CLIENT_M) && !defined(OF_HTTP_SERVER_M)
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFHTTPResponse: OFStream
 {
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
 /**

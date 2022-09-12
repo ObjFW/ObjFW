@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_HTTP_SERVER_M
+
 #include "config.h"
 
 #include <errno.h>

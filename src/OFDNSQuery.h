@@ -25,12 +25,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class representing a DNS query.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFDNSQuery: OFObject <OFCopying>
 {
 	OFString *_domainName;
 	OFDNSClass _DNSClass;
 	OFDNSRecordType _recordType;
-	OF_RESERVE_IVARS(OFDNSQuery, 4)
 }
 
 /**

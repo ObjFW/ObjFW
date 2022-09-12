@@ -26,12 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing and accessing invocations, and invoking them.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFInvocation: OFObject
 {
 	OFMethodSignature *_methodSignature;
 	OFMutableArray OF_GENERIC(OFMutableData *) *_arguments;
 	OFMutableData *_returnValue;
-	OF_RESERVE_IVARS(OFInvocation, 4)
 }
 
 /**

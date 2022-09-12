@@ -23,10 +23,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing an XML processing instruction.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLProcessingInstruction: OFXMLNode
 {
 	OFString *_target, *_Nullable _text;
-	OF_RESERVE_IVARS(OFXMLProcessingInstruction, 4)
 }
 
 /**

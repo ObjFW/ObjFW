@@ -24,11 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for parsing type encodings and accessing them.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMethodSignature: OFObject
 {
 	char *_types;
 	OFMutableData *_typesPointers, *_offsets;
-	OF_RESERVE_IVARS(OFMethodSignature, 4)
 }
 
 /**

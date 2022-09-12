@@ -144,7 +144,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPClient: OFObject
 {
-#ifdef OF_HTTPCLIENT_M
+#ifdef OF_HTTP_CLIENT_M
 @public
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;

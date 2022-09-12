@@ -29,13 +29,13 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing and manipulating HTTP cookies.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPCookie: OFObject <OFCopying>
 {
 	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_Nullable _expires;
 	bool _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
-	OF_RESERVE_IVARS(OFHTTPCookie, 4)
 }
 
 /**

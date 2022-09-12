@@ -65,6 +65,7 @@ typedef struct OF_BOXABLE {
  *
  * @brief A class for storing HTTP requests.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
 	OFURL *_URL;
@@ -73,7 +74,6 @@ typedef struct OF_BOXABLE {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
-	OF_RESERVE_IVARS(OFHTTPRequest, 4)
 }
 
 /**

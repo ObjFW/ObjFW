@@ -22,10 +22,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing XML comments.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLComment: OFXMLNode
 {
 	OFString *_text;
-	OF_RESERVE_IVARS(OFXMLComment, 4)
 }
 
 /**

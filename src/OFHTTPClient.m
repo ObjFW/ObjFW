@@ -13,7 +13,7 @@
  * file.
  */
 
-#define OF_HTTPCLIENT_M
+#define OF_HTTP_CLIENT_M
 
 #include "config.h"
 
