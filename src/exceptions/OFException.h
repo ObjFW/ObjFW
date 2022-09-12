@@ -150,6 +150,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFException: OFObject
 {
 	void *_backtrace[OFBacktraceSize];
+	OF_RESERVE_IVARS(OFException, 4)
 }
 
 /**

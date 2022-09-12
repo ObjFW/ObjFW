@@ -30,6 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnsupportedProtocolException: OFException
 {
 	OFURL *_Nullable _URL;
+	OF_RESERVE_IVARS(OFUnsupportedProtocolException, 4)
 }
 
 /**

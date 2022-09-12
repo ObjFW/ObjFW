@@ -30,6 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFStreamOffset _offset;
 	OFSeekWhence _whence;
 	int _errNo;
+	OF_RESERVE_IVARS(OFSeekFailedException, 4)
 }
 
 /**

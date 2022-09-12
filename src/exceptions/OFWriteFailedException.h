@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFWriteFailedException: OFReadOrWriteFailedException
 {
 	size_t _bytesWritten;
+	OF_RESERVE_IVARS(OFWriteFailedException, 4)
 }
 
 /**

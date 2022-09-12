@@ -40,6 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _path;
 	id _socket;
 	int _errNo;
+	OF_RESERVE_IVARS(OFBindFailedException, 4)
 }
 
 /**

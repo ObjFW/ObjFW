@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFCondition *_condition;
 	int _errNo;
+	OF_RESERVE_IVARS(OFConditionWaitFailedException, 4)
 }
 
 /**

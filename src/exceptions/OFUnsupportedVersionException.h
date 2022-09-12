@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnsupportedVersionException: OFException
 {
 	OFString *_version;
+	OF_RESERVE_IVARS(OFUnsupportedVersionException, 4)
 }
 
 /**

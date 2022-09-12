@@ -35,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFHTTPRequest *_request;
 	OFHTTPResponse *_response;
+	OF_RESERVE_IVARS(OFHTTPRequestFailedException, 4)
 }
 
 /**

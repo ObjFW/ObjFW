@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_path;
 	int _errNo;
+	OF_RESERVE_IVARS(OFChangeCurrentDirectoryPathFailedException, 4)
 }
 
 /**

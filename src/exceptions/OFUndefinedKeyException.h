@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 	OFString *_Nullable _key;
 	id _Nullable _value;
+	OF_RESERVE_IVARS(OFUndefinedKeyException, 4)
 }
 
 /**

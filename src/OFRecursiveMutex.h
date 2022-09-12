@@ -31,6 +31,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFPlainRecursiveMutex _rmutex;
 	bool _initialized;
 	OFString *_Nullable _name;
+	OF_RESERVE_IVARS(OFRecursiveMutex, 4)
 }
 
 /**

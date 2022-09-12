@@ -69,8 +69,11 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFSPXStreamSocket: OFStreamSocket
+{
+	OF_RESERVE_IVARS(OFSPXStreamSocket, 4)
+}
+
 /**
  * @brief The delegate for asynchronous operations on the socket.
  *

@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	SEL _selector;
 	id _Nullable _object;
+	OF_RESERVE_IVARS(OFNotImplementedException, 4)
 }
 
 /**

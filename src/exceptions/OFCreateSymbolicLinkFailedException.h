@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFURL *_URL;
 	OFString *_target;
 	int _errNo;
+	OF_RESERVE_IVARS(OFCreateSymbolicLinkFailedException, 4)
 }
 
 /**

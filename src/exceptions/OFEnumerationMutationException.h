@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFEnumerationMutationException: OFException
 {
 	id _object;
+	OF_RESERVE_IVARS(OFEnumerationMutationException, 4)
 }
 
 /**

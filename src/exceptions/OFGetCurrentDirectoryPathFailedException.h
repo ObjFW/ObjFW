@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFGetCurrentDirectoryPathFailedException: OFException
 {
 	int _errNo;
+	OF_RESERVE_IVARS(OFGetCurrentDirectoryPathFailedException, 4)
 }
 
 /**

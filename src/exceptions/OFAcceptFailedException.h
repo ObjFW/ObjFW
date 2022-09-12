@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id _socket;
 	int _errNo;
+	OF_RESERVE_IVARS(OFAcceptFailedException, 4)
 }
 
 /**

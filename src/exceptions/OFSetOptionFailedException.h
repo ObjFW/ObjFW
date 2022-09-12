@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id _object;
 	int _errNo;
+	OF_RESERVE_IVARS(OFSetOptionFailedException, 4)
 }
 
 /**

@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An exception indicating that the server sent an invalid reply.
  */
 @interface OFInvalidServerReplyException: OFException
+{
+	OF_RESERVE_IVARS(OFInvalidServerReplyException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

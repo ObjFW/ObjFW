@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFKernelEventObserver *_observer;
 	int _errNo;
+	OF_RESERVE_IVARS(OFObserveFailedException, 4)
 }
 
 /**

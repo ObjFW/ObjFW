@@ -35,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 	LPSECURITY_ATTRIBUTES _Nullable _securityAttributes;
 	DWORD _options;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFOpenWindowsRegistryKeyFailedException, 4)
 }
 
 /**

@@ -98,10 +98,6 @@ typedef OFFastEnumerationState NSFastEnumerationState;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(OFEnumerator, 4)
-}
-
 /**
  * @brief Returns the next object or `nil` if there is none left.
  *

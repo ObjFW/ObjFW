@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFOutOfMemoryException: OFException
 {
 	size_t _requestedSize;
+	OF_RESERVE_IVARS(OFOutOfMemoryException, 4)
 }
 
 /**

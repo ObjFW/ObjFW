@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFThread *_Nullable _thread;
 	int _errNo;
+	OF_RESERVE_IVARS(OFThreadJoinFailedException, 4)
 }
 
 /**

@@ -42,6 +42,7 @@ extern int _OFTLSHandshakeFailedException_reference;
 	OFTLSStream *_stream;
 	OFString *_Nullable _host;
 	OFTLSStreamErrorCode _errorCode;
+	OF_RESERVE_IVARS(OFTLSHandshakeFailedException, 4)
 }
 
 /**

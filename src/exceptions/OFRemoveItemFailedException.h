@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFURL *_URL;
 	int _errNo;
+	OF_RESERVE_IVARS(OFRemoveItemFailedException, 4)
 }
 
 /**

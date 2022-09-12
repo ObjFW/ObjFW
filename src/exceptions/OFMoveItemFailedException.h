@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFURL *_sourceURL, *_destinationURL;
 	int _errNo;
+	OF_RESERVE_IVARS(OFMoveItemFailedException, 4)
 }
 
 /**

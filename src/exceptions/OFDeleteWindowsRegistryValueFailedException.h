@@ -32,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFWindowsRegistryKey *_registryKey;
 	OFString *_Nullable _valueName;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFDeleteWindowsRegistryValueFailedException, 4)
 }
 
 /**

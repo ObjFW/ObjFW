@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _path;
 	OFString *_mode;
 	int _errNo;
+	OF_RESERVE_IVARS(OFOpenItemFailedException, 4)
 }
 
 /**

@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFFileAttributes _attributes;
 	OFFileAttributeKey _failedAttribute;
 	int _errNo;
+	OF_RESERVE_IVARS(OFSetItemAttributesFailedException, 4)
 }
 
 /**

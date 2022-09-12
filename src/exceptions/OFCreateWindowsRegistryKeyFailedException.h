@@ -35,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 	REGSAM _accessRights;
 	LPSECURITY_ATTRIBUTES _Nullable _securityAttributes;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFCreateWindowsRegistryKeyFailedException, 4)
 }
 
 /**
