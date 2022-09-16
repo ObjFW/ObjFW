@@ -117,6 +117,9 @@ isWhitespaceLine(OFString *line)
 	OFINICategory *category = nil;
 	OFString *line;
 
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
+
 	@try {
 		file = [OFURLHandler openItemAtURL: URL mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
