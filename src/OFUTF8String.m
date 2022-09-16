@@ -346,7 +346,7 @@ OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 #endif
 #undef CASE
 		default:
-			@throw [OFInvalidEncodingException exception];
+			@throw [OFInvalidArgumentException exception];
 		}
 
 		j = 0;

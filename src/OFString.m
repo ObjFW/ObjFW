@@ -1353,8 +1353,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 	default:
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		@throw [OFInvalidArgumentException exception];
 	}
 }
 
@@ -1435,7 +1434,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		break;
 	default:
-		@throw [OFInvalidEncodingException exception];
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	@try {
@@ -1506,7 +1505,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	case OFStringEncodingKOI8U:
 		return self.length;
 	default:
-		@throw [OFInvalidEncodingException exception];
+		@throw [OFInvalidArgumentException exception];
 	}
 }
 
