@@ -650,10 +650,12 @@ OF_ROOT_CLASS
  * @brief Allocates memory for an instance of the class and sets up the memory
  *	  pool for the object.
  *
- * This method will never return `nil`, instead, it will throw an
- * @ref OFAllocFailedException.
+ * This method will never return `nil`.
  *
  * @return The allocated object
+ * @throw OFAllocFailedException There was not enough memory to allocate the
+ *				 object
+ * @throw OFInitializationFailedException The instance could not be constructed
  */
 + (instancetype)alloc;
 
@@ -748,6 +750,7 @@ OF_ROOT_CLASS
  * @param selector The selector of the class method to replace
  * @param class_ The class from which the new class method should be taken
  * @return The old implementation
+ * @throw OFInvalidArgumentException A specified argument is invalid
  */
 + (nullable IMP)replaceClassMethod: (SEL)selector
 	       withMethodFromClass: (Class)class_;
@@ -759,6 +762,7 @@ OF_ROOT_CLASS
  * @param selector The selector of the instance method to replace
  * @param class_ The class from which the new instance method should be taken
  * @return The old implementation
+ * @throw OFInvalidArgumentException A specified argument is invalid
  */
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		  withMethodFromClass: (Class)class_;
@@ -1222,6 +1226,7 @@ OF_ROOT_CLASS
  *	    returns!
  *
  * @param selector The selector not understood by the receiver
+ * @throw OFNotImplementedException
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
@@ -1292,13 +1297,12 @@ extern "C" {
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param count The number of items to allocate
  * @param size The size of each item to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested size exceeds the address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1309,13 +1313,12 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param size The size of each item to allocate
  * @param count The number of items to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested size exceeds the address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1328,13 +1331,13 @@ extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param pointer A pointer to the already allocated memory
  * @param size The size of each item to resize to
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
+ * @throw OFOutOfMemoryException The reallocation failed due to not enough
+ *				 memory
+ * @throw OFOutOfRangeException The requested size exceeds the address space
  */
 extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;
