@@ -332,6 +332,10 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
 
 	if (!objc_constructInstance(class, instance)) {
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+		OFSpinlockFree(&((struct PreIvars *)(void *)
+		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
+#endif
 		free((char *)instance - PRE_IVARS_ALIGN);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -1202,6 +1206,10 @@ _references_to_categories_of_OFObject(void)
 - (void)dealloc
 {
 	objc_destructInstance(self);
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
+#endif
 
 	free((char *)self - PRE_IVARS_ALIGN);
 }
