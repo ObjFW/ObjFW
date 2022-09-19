@@ -43,7 +43,7 @@
 
 /* This always needs to be the first thing in the file. */
 int
-_start()
+_start(void)
 {
 	return -1;
 }

@@ -234,7 +234,7 @@ OFSocketDeinit(void)
 #endif
 
 int
-OFSocketErrNo()
+OFSocketErrNo(void)
 {
 #if defined(OF_WINDOWS)
 	switch (WSAGetLastError()) {
