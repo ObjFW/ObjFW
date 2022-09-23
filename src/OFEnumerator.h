@@ -82,6 +82,7 @@ typedef OFFastEnumerationState NSFastEnumerationState;
  * @param count The number of objects that can be stored at objects
  * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
+ * @throw OFOutOfRangeException The object is too big for fast enumeration
  */
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
