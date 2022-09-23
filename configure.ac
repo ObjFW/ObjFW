@@ -479,6 +479,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
+	CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64 $CPPFLAGS"
 	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
 	gnu_source="yes"
 ], [
