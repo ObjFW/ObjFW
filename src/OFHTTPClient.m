@@ -38,7 +38,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFInvalidServerResponseException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
@@ -457,7 +457,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	if (![line hasPrefix: @"HTTP/"] || line.length < 9 ||
 	    [line characterAtIndex: 8] != ' ')
-		@throw [OFInvalidServerReplyException exception];
+		@throw [OFInvalidServerResponseException exception];
 
 	_version = [[line substringWithRange: OFMakeRange(5, 3)] copy];
 	if (![_version isEqual: @"1.0"] && ![_version isEqual: @"1.1"])
@@ -467,7 +467,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	status = [line substringWithRange: OFMakeRange(9, 3)].longLongValue;
 
 	if (status < 0 || status > 599)
-		@throw [OFInvalidServerReplyException exception];
+		@throw [OFInvalidServerResponseException exception];
 
 	_status = (short)status;
 
@@ -481,7 +481,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	char *keyC;
 
 	if (line == nil)
-		@throw [OFInvalidServerReplyException exception];
+		@throw [OFInvalidServerResponseException exception];
 
 	if (line.length == 0) {
 		[_serverHeaders makeImmutable];
@@ -505,7 +505,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	lineC = line.UTF8String;
 
 	if ((tmp = strchr(lineC, ':')) == NULL)
-		@throw [OFInvalidServerReplyException exception];
+		@throw [OFInvalidServerResponseException exception];
 
 	keyC = OFAllocMemory(tmp - lineC + 1, 1);
 	memcpy(keyC, lineC, tmp - lineC);
@@ -544,7 +544,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (exception != nil) {
 		if ([exception isKindOfClass:
 		    [OFInvalidEncodingException class]])
-			exception = [OFInvalidServerReplyException exception];
+			exception =
+			    [OFInvalidServerResponseException exception];
 
 		[self raiseException: exception];
 		return false;
@@ -901,7 +902,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
 		if (_chunked || contentLength.length == 0)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		_hasContentLength = true;
 
@@ -914,7 +915,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 			_toRead = (long long)toRead;
 		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 		}
 	}
 }
@@ -960,12 +961,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		case 2:
 			_toRead++;
 			if (tmp[1] != '\n')
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 		case 1:
 			_toRead++;
 			if (tmp[0] != '\r')
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 		}
 
@@ -979,7 +980,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		if ([_stream readIntoBuffer: &tmp length: 1] == 1) {
 			_toRead++;
 			if (tmp != '\n')
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 		}
 
@@ -1006,7 +1007,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@try {
 			line = [_stream tryReadLine];
 		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 		}
 
 		if (line == nil)
@@ -1024,7 +1025,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			if (_stream.atEndOfStream && pos == OFNotFound)
 				@throw [OFTruncatedDataException exception];
 			else
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 		}
 
@@ -1037,7 +1038,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 			_toRead = (long long)toRead;
 		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 		}
 
 		if (_toRead == 0) {

@@ -44,7 +44,7 @@
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFInvalidServerResponseException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -834,14 +834,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"url", request.URL.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
-		    [OFInvalidServerReplyException class]]) {
+		    [OFInvalidServerResponseException class]]) {
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_invalid_server_reply",
+			    @"download_failed_invalid_server_response",
 			    @"%[prog]: Failed to download <%[url]>!\n"
-			    @"  Invalid server reply!",
+			    @"  Invalid server response!",
 			    @"prog", [OFApplication programName],
 			    @"url", request.URL.string)];
 		} else if ([exception isKindOfClass:

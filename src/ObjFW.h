@@ -192,7 +192,7 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidJSONException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFInvalidServerResponseException.h"
 #import "OFLinkFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFListenFailedException.h"

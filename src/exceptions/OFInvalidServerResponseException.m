@@ -13,20 +13,14 @@
  * file.
  */
 
-#import "OFException.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFInvalidServerResponseException.h"
+#import "OFString.h"
 
-/**
- * @class OFInvalidServerReplyException \
- *	  OFInvalidServerReplyException.h ObjFW/OFInvalidServerReplyException.h
- *
- * @brief An exception indicating that the server sent an invalid reply.
- */
-@interface OFInvalidServerReplyException: OFException
+@implementation OFInvalidServerResponseException
+- (OFString *)description
 {
-	OF_RESERVE_IVARS(OFInvalidServerReplyException, 4)
+	return @"Got an invalid response from the server!";
 }
 @end
-
-OF_ASSUME_NONNULL_END

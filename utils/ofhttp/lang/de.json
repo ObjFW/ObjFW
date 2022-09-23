@@ -48,7 +48,7 @@
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  Verbindung fehlgeschlagen: %[exception]"
     ],
-    "download_failed_invalid_server_reply": [
+    "download_failed_invalid_server_response": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  Ungültige Antwort vom Server!"
     ],
