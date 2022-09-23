@@ -96,6 +96,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 			    @"IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
+		case EPROTONOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
