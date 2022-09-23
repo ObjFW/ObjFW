@@ -56,6 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param blue The blue value of the color, between 0.0 and 1.0
  * @param alpha The alpha value of the color, between 0.0 and 1.0
  * @return A new color with the specified red, green, blue and alpha value
+ * @throw OFInvalidArgumentException One of the specified arguments is invalid
  */
 + (instancetype)colorWithRed: (float)red
 		       green: (float)green
@@ -216,6 +217,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param alpha The alpha value of the color, between 0.0 and 1.0
  * @return A color initialized with the specified red, green, blue and alpha
  *	   value
+ * @throw OFInvalidArgumentException One of the specified arguments is invalid
  */
 - (instancetype)initWithRed: (float)red
 		      green: (float)green

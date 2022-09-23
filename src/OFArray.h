@@ -341,7 +341,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param separator The string with which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator is `nil`
+ * @throw OFInvalidArgumentException The provided separator was `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator;
 
@@ -351,7 +351,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param separator The string with which the objects should be joined
  * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator is `nil`
+ * @throw OFInvalidArgumentException The provided separator was `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			       options: (OFArrayJoinOptions)options;
@@ -363,7 +363,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param separator The string with which the objects should be joined
  * @param selector The selector to perform on the objects
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator is `nil` or calling
+ * @throw OFInvalidArgumentException The provided separator was `nil` or calling
  *				     the provided selector returned `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
@@ -377,7 +377,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param selector The selector to perform on the objects
  * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator is `nil` or calling
+ * @throw OFInvalidArgumentException The provided separator was `nil` or calling
  *				     the provided selector returned `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator

@@ -159,6 +159,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param value The buffer to copy the value into
  * @param size The size of the value
+ * @throw OFOutOfRangeException The specified size does not match the value
  */
 - (void)getValue: (void *)value size: (size_t)size;
 @end

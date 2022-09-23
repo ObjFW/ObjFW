@@ -58,6 +58,7 @@ typedef void (^OFCountedSetEnumerationBlock)(id object, size_t count,
  * @brief Executes a block for each object in the set.
  *
  * @param block The block to execute for each object in the set
+ * @throw OFEnumerationMutationException The set was mutated during enumeration
  */
 - (void)enumerateObjectsAndCountUsingBlock: (OFCountedSetEnumerationBlock)block;
 #endif

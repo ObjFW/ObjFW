@@ -45,6 +45,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @note Waiting might have been interrupted by a signal. It is thus recommended
  *	 to check the condition again after @ref wait returned!
+ *
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (void)wait;
 
@@ -57,6 +59,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param signalMask A pointer to a signal mask of Exec Signals to receive.
  *		     This is modified and set to the mask of signals received.
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (void)waitForConditionOrExecSignal: (ULONG *)signalMask;
 #endif
@@ -70,6 +73,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param timeInterval The time interval until the timeout is reached
  * @return Whether the condition has been signaled
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval;
 
@@ -84,6 +88,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param signalMask A pointer to a signal mask of Exec Signals to receive.
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask;
@@ -98,6 +103,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param date The date at which the timeout is reached
  * @return Whether the condition has been signaled
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (bool)waitUntilDate: (OFDate *)date;
 
@@ -112,17 +118,22 @@ OF_SUBCLASSING_RESTRICTED
  * @param signalMask A pointer to a signal mask of Exec Signals to receive.
  *		     This is modified and set to the mask of signals received.
  * @return Whether the condition has been signaled or a signal received
+ * @throw OFConditionWaitFailedException Waiting for the condition failed
  */
 - (bool)waitUntilDate: (OFDate *)date orExecSignal: (ULONG *)signalMask;
 #endif
 
 /**
  * @brief Signals the next waiting thread to continue.
+ *
+ * @throw OFConditionSignalFailedException Signaling the condition failed
  */
 - (void)signal;
 
 /**
  * @brief Signals all threads to continue.
+ *
+ * @throw OFConditionBroadcastFailedException Broadcasting the condition failed
  */
 - (void)broadcast;
 @end
