@@ -209,7 +209,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX=''
 		LIB_SUFFIX='${LIB_MAJOR}.dll'
-		LINK_LIB='&& ${LN_S} $$out lib$${out%${LIB_SUFFIX}}.dll.a'
+		LINK_LIB='&& rm -f lib$${out%${LIB_SUFFIX}}.dll.a && ${LN_S} $$out lib$${out%${LIB_SUFFIX}}.dll.a'
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared -Wl,--export-all-symbols'
 		PLUGIN_SUFFIX='.dll'
