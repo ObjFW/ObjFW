@@ -180,6 +180,8 @@ typedef enum {
  *
  * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithStringRepresentation: (OFString *)string;
 
@@ -189,6 +191,8 @@ typedef enum {
  *
  * @param string The string with the Base64-encoded data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
@@ -290,6 +294,8 @@ typedef enum {
  *
  * @param string The string with the Base64-encoded data
  * @return An initialized OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 

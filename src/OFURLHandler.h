@@ -81,6 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       The handler is allowed to not implement all modes and is also
  *	       allowed to implement additional, scheme-specific modes.
  * @return The opened stream if it was successfully opened
+ * @throw OFOpenItemFailedException Opening the item failed
  */
 + (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
 
@@ -115,6 +116,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       The handler is allowed to not implement all modes and is also
  *	       allowed to implement additional, scheme-specific modes.
  * @return The opened stream if it was successfully opened
+ * @throw OFOpenItemFailedException Opening the item failed
  */
 - (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
 

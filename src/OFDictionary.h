@@ -247,11 +247,11 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 /**
  * @brief Sets a value for a key.
  *
- * This is equivalent to OFMutableDictionary#setObject:forKey:. If the
- * dictionary is immutable, an @ref OFUndefinedKeyException is thrown.
+ * This is equivalent to OFMutableDictionary#setObject:forKey:.
  *
  * @param key The key to set
  * @param value The value to set the key to
+ * @throw OFUndefinedKeyException The dictionary is immutable
  */
 - (void)setValue: (nullable id)value forKey: (OFString *)key;
 
