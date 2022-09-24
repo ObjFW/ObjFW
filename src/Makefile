@@ -220,7 +220,7 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
-SRCS_WINDOWS += OFWin32ConsoleStdIOStream.m
+SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
