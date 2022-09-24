@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFString.h"
 #import "OFKernelEventObserver.h"
 
-@implementation OFObserveFailedException
+@implementation OFObserveKernelEventsFailedException
 @synthesize observer = _observer, errNo = _errNo;
 
 + (instancetype)exception

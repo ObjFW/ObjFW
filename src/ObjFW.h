@@ -206,7 +206,7 @@
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFObserveFailedException.h"
+# import "OFObserveKernelEventsFailedException.h"
 #endif
 #import "OFOpenItemFailedException.h"
 #ifdef OF_WINDOWS

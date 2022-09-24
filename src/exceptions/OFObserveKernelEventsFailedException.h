@@ -20,16 +20,17 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFKernelEventObserver;
 
 /**
- * @class OFObserveFailedException \
- *	  OFObserveFailedException.h ObjFW/OFObserveFailedException.h
+ * @class OFObserveKernelEventsFailedException \
+ *	  OFObserveKernelEventsFailedException.h \
+ *	  ObjFW/OFObserveKernelEventsFailedException.h
  *
  * @brief An exception indicating that observing failed.
  */
-@interface OFObserveFailedException: OFException
+@interface OFObserveKernelEventsFailedException: OFException
 {
 	OFKernelEventObserver *_observer;
 	int _errNo;
-	OF_RESERVE_IVARS(OFObserveFailedException, 4)
+	OF_RESERVE_IVARS(OFObserveKernelEventsFailedException, 4)
 }
 
 /**

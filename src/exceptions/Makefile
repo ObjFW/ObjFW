@@ -60,7 +60,7 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
-	       OFObserveFailedException.m		\
+	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
 	       OFTLSHandshakeFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
