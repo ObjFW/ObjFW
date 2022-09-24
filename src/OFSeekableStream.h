@@ -78,6 +78,8 @@ typedef enum {
  * @param offset The offset in bytes
  * @param whence From where to seek.
  * @return The new offset form the start of the file
+ * @throw OFSeekFailedException Seeking failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFStreamOffset)seekToOffset: (OFStreamOffset)offset
 			whence: (OFSeekWhence)whence;
@@ -93,6 +95,8 @@ typedef enum {
  * @param offset The offset to seek to
  * @param whence From where to seek.
  * @return The new offset from the start of the file
+ * @throw OFSeekFailedException Seeking failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
 				whence: (OFSeekWhence)whence;

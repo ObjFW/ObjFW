@@ -62,6 +62,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a`            | Write-only, create or append
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
+ * @throw OFOpenItemFailedException Opening the file failed
  */
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode;
 
@@ -96,6 +97,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a+`           | read-write, create, append
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
+ * @throw OFOpenItemFailedException Opening the file failed
  */
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
 
