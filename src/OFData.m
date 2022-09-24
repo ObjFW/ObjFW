@@ -35,6 +35,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -605,7 +606,8 @@ _references_to_categories_of_OFData(void)
 	OFXMLElement *element;
 
 	if (_itemSize != 1)
-		@throw [OFInvalidArgumentException exception];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement
@@ -625,7 +627,8 @@ _references_to_categories_of_OFData(void)
 	OFMutableData *data;
 
 	if (_itemSize != 1)
-		@throw [OFInvalidArgumentException exception];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	if (_count <= UINT8_MAX) {
 		uint8_t type = 0xC4;

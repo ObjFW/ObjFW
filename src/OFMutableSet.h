@@ -51,7 +51,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Adds the specified object to the set.
  *
  * @param object The object to add to the set
- * @throw OFInvalidArgumentException The specified object was `nil`
  */
 - (void)addObject: (ObjectType)object;
 
@@ -59,7 +58,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Removes the specified object from the set.
  *
  * @param object The object to remove from the set
- * @throw OFInvalidArgumentException The specified object was `nil`
  */
 - (void)removeObject: (ObjectType)object;
 

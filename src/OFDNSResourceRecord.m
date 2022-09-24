@@ -19,7 +19,6 @@
 #import "OFArray.h"
 #import "OFData.h"
 
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 OFString *
@@ -79,12 +78,8 @@ OFDNSClassParseName(OFString *string)
 	if ([string isEqual: @"IN"])
 		DNSClass = OFDNSClassIN;
 	else {
-		@try {
-			DNSClass = (OFDNSClass)
-			    [string unsignedLongLongValueWithBase: 0];
-		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidArgumentException exception];
-		}
+		DNSClass =
+		    (OFDNSClass)[string unsignedLongLongValueWithBase: 0];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -125,12 +120,8 @@ OFDNSRecordTypeParseName(OFString *string)
 	else if ([string isEqual: @"ALL"])
 		recordType = OFDNSRecordTypeAll;
 	else {
-		@try {
-			recordType = (OFDNSRecordType)
-			    [string unsignedLongLongValueWithBase: 0];
-		} @catch (OFInvalidFormatException *e) {
-			@throw [OFInvalidArgumentException exception];
-		}
+		recordType =
+		    (OFDNSRecordType)[string unsignedLongLongValueWithBase: 0];
 	}
 
 	objc_autoreleasePoolPop(pool);

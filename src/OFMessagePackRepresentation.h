@@ -29,9 +29,6 @@ OF_ASSUME_NONNULL_BEGIN
 @protocol OFMessagePackRepresentation
 /**
  * @brief The MessagePack representation of the object as OFData.
- *
- * @throw OFOutOfRangeException The object is too big for a MessagePack
- *				representation
  */
 @property (readonly, nonatomic) OFData *messagePackRepresentation;
 @end

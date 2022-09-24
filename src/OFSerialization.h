@@ -36,12 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param element An OFXMLElement with the serialized object
  * @return An initialized object
- * @throw OFInvalidArgumentException The specified element is not valid
- *				     serialization
  * @throw OFInvalidFormatException The specified element is not of the correct
  *				   serialization format
- * @throw OFOutOfRangeException The specified element is too big for
- *				deserialization
  */
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end

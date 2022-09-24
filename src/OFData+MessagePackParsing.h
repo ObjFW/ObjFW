@@ -34,7 +34,6 @@ extern int _OFData_MessagePackParsing_reference;
  *				   the data contained an invalid format
  * @throw OFTruncatedDataException The MessagePack representation contained in
  *				   the data is truncated
- * @throw OFInvalidArgumentException The @ref itemSize of the data is not 1
  * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingMessagePack;
@@ -49,7 +48,6 @@ extern int _OFData_MessagePackParsing_reference;
  *				   the data contained an invalid format
  * @throw OFTruncatedDataException The MessagePack representation contained in
  *				   the data is truncated
- * @throw OFInvalidArgumentException The @ref itemSize of the data is not 1
  * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit;

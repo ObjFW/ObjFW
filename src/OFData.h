@@ -279,6 +279,8 @@ typedef enum {
  *
  * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithStringRepresentation: (OFString *)string;
 

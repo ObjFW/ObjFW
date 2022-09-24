@@ -155,7 +155,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param object An object
  * @return A new autoreleased OFArray
- * @throw OFInvalidArgumentException The provided object was `nil`
  */
 + (instancetype)arrayWithObject: (ObjectType)object;
 
@@ -191,7 +190,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param object An object
  * @return An initialized OFArray
- * @throw OFInvalidArgumentException The provided object was `nil`
  */
 - (instancetype)initWithObject: (ObjectType)object;
 
@@ -283,7 +281,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param buffer The buffer to copy the objects to
  * @param range The range to copy
- * @throw OFOutOfRangeException The provided range is out of bounds
  */
 - (void)getObjects: (ObjectType __unsafe_unretained _Nonnull *_Nonnull)buffer
 	   inRange: (OFRange)range;
@@ -332,7 +329,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param range The range for the subarray
  * @return The subarray as a new autoreleased OFArray
- * @throw OFOutOfRangeException The provided range is out of bounds
  */
 - (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (OFRange)range;
 
@@ -341,7 +337,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param separator The string with which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator was `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator;
 
@@ -351,7 +346,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param separator The string with which the objects should be joined
  * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator was `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			       options: (OFArrayJoinOptions)options;
@@ -363,8 +357,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param separator The string with which the objects should be joined
  * @param selector The selector to perform on the objects
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator was `nil` or calling
- *				     the provided selector returned `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector;
@@ -377,8 +369,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param selector The selector to perform on the objects
  * @param options Options according to which the objects should be joined
  * @return A string containing all objects joined by the separator
- * @throw OFInvalidArgumentException The provided separator was `nil` or calling
- *				     the provided selector returned `nil`
  */
 - (OFString *)componentsJoinedByString: (OFString *)separator
 			 usingSelector: (SEL)selector
@@ -434,7 +424,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param object The object to add
  * @return A new array with the specified object added
- * @throw OFInvalidArgumentException The specified object was `nil`
  */
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObject: (ObjectType)object;
 
@@ -443,7 +432,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @param array The array with objects to add
  * @return A new array with the objects from the specified array added
- * @throw OFInvalidArgumentException The specified array was `nil`
  */
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObjectsFromArray:
     (OFArray OF_GENERIC(ObjectType) *)array;

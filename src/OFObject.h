@@ -750,7 +750,6 @@ OF_ROOT_CLASS
  * @param selector The selector of the class method to replace
  * @param class_ The class from which the new class method should be taken
  * @return The old implementation
- * @throw OFInvalidArgumentException A specified argument is invalid
  */
 + (nullable IMP)replaceClassMethod: (SEL)selector
 	       withMethodFromClass: (Class)class_;
@@ -762,7 +761,6 @@ OF_ROOT_CLASS
  * @param selector The selector of the instance method to replace
  * @param class_ The class from which the new instance method should be taken
  * @return The old implementation
- * @throw OFInvalidArgumentException A specified argument is invalid
  */
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		  withMethodFromClass: (Class)class_;
@@ -1302,7 +1300,8 @@ extern "C" {
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  * @throw OFOutOfMemoryException The allocation failed due to not enough memory
- * @throw OFOutOfRangeException The requested size exceeds the address space
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1318,7 +1317,8 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  * @throw OFOutOfMemoryException The allocation failed due to not enough memory
- * @throw OFOutOfRangeException The requested size exceeds the address space
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1337,7 +1337,8 @@ extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
  * @return A pointer to the resized memory chunk
  * @throw OFOutOfMemoryException The reallocation failed due to not enough
  *				 memory
- * @throw OFOutOfRangeException The requested size exceeds the address space
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;

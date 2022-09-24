@@ -35,42 +35,42 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The value as a pointer to void.
  *
- * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not pointer-sized
  */
 @property (readonly, nonatomic) void *pointerValue;
 
 /**
  * @brief The value as a non-retained object.
  *
- * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not pointer-sized
  */
 @property (readonly, nonatomic) id nonretainedObjectValue;
 
 /**
  * @brief The value as an OFRange.
  *
- * If the value is not OFRange-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFRange-sized
  */
 @property (readonly, nonatomic) OFRange rangeValue;
 
 /**
  * @brief The value as an OFPoint.
  *
- * If the value is not OFPoint-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFPoint-sized
  */
 @property (readonly, nonatomic) OFPoint pointValue;
 
 /**
  * @brief The value as an OFSize.
  *
- * If the value is not OFSize-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFSize-sized
  */
 @property (readonly, nonatomic) OFSize sizeValue;
 
 /**
  * @brief The value as a OFRect.
  *
- * If the value is not OFRect-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFRect-sized
  */
 @property (readonly, nonatomic) OFRect rectValue;
 
@@ -153,9 +153,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Gets the value.
- *
- * If the specified size does not match, this raises an
- * @ref OFOutOfRangeException.
  *
  * @param value The buffer to copy the value into
  * @param size The size of the value
