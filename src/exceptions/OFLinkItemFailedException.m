@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#import "OFLinkFailedException.h"
+#import "OFLinkItemFailedException.h"
 #import "OFString.h"
 #import "OFURL.h"
 
-@implementation OFLinkFailedException
+@implementation OFLinkItemFailedException
 @synthesize sourceURL = _sourceURL, destinationURL = _destinationURL;
 @synthesize errNo = _errNo;
 

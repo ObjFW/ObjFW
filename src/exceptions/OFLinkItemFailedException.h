@@ -20,16 +20,16 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFURL;
 
 /**
- * @class OFLinkFailedException \
- *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
+ * @class OFLinkItemFailedException \
+ *	  OFLinkItemFailedException.h ObjFW/OFLinkItemFailedException.h
  *
  * @brief An exception indicating that creating a link failed.
  */
-@interface OFLinkFailedException: OFException
+@interface OFLinkItemFailedException: OFException
 {
 	OFURL *_sourceURL, *_destinationURL;
 	int _errNo;
-	OF_RESERVE_IVARS(OFLinkFailedException, 4)
+	OF_RESERVE_IVARS(OFLinkItemFailedException, 4)
 }
 
 /**

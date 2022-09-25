@@ -20,7 +20,7 @@ SRCS = OFAllocFailedException.m				\
        OFInvalidFormatException.m			\
        OFInvalidJSONException.m				\
        OFInvalidServerResponseException.m		\
-       OFLinkFailedException.m				\
+       OFLinkItemFailedException.m			\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
        OFMoveItemFailedException.m			\

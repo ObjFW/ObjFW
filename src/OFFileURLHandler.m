@@ -59,7 +59,7 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFLinkFailedException.h"
+#import "OFLinkItemFailedException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
@@ -1354,7 +1354,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (link([sourcePath cStringWithEncoding: encoding],
 	    [destinationPath cStringWithEncoding: encoding]) != 0)
-		@throw [OFLinkFailedException
+		@throw [OFLinkItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
 				     errNo: errno];
@@ -1365,7 +1365,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (!createHardLinkWFuncPtr(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
-		@throw [OFLinkFailedException
+		@throw [OFLinkItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
 				     errNo: retrieveError()];
