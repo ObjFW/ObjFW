@@ -259,11 +259,15 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 /**
  * @brief The path of the current working directory.
+ *
+ * @throw OFGetCurrentDirectoryFailedException Couldn't get current directory
  */
 @property (readonly, nonatomic) OFString *currentDirectoryPath;
 
 /**
  * @brief The URL of the current working directory.
+ *
+ * @throw OFGetCurrentDirectoryFailedException Couldn't get current directory
  */
 @property (readonly, nonatomic) OFURL *currentDirectoryURL;
 #endif
@@ -280,6 +284,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path to return the attributes for
  * @return A dictionary of attributes for the specified path, with the keys of
  *	   type @ref OFFileAttributeKey
+ * @throw OFGetItemAttributesFailedException Failed to get the attributes of
+ *					     the item
  */
 - (OFFileAttributes)attributesOfItemAtPath: (OFString *)path;
 #endif
@@ -290,6 +296,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param URL The URL to return the attributes for
  * @return A dictionary of attributes for the specified URL, with the keys of
  *	   type @ref OFFileAttributeKey
+ * @throw OFGetItemAttributesFailedException Failed to get the attributes of
+ *					     the item
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL;
 
@@ -301,6 +311,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param attributes The attributes to set for the specified path
  * @param path The path of the item to set the attributes for
+ * @throw OFSetItemAttributesFailedException Failed to set the attributes of
+ *					     the item
+ * @throw OFNotImplementedException Setting one or more of the specified
+ *				    attributes is not implemented for the
+ *				    specified item
  */
 - (void)setAttributes: (OFFileAttributes)attributes
 	 ofItemAtPath: (OFString *)path;
@@ -313,6 +328,13 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param attributes The attributes to set for the specified URL
  * @param URL The URL of the item to set the attributes for
+ * @throw OFSetItemAttributesFailedException Failed to set the attributes of
+ *					     the item
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
+ * @throw OFNotImplementedException Setting one or more of the specified
+ *				    attributes is not implemented for the
+ *				    specified item
  */
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL;
 
@@ -331,6 +353,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to check
  * @return A boolean whether there is a file at the specified URL
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (bool)fileExistsAtURL: (OFURL *)URL;
 
@@ -349,6 +373,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to check
  * @return A boolean whether there is a directory at the specified URL
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (bool)directoryExistsAtURL: (OFURL *)URL;
 
@@ -357,6 +383,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a directory at the specified path.
  *
  * @param path The path of the directory to create
+ * @throw OFCreateDirectoryFailedException Creating the directory failed
  */
 - (void)createDirectoryAtPath: (OFString *)path;
 
@@ -365,6 +392,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path of the directory to create
  * @param createParents Whether to create the parents of the directory
+ * @throw OFCreateDirectoryFailedException Creating the directory or one of its
+ *					   parents failed
  */
 - (void)createDirectoryAtPath: (OFString *)path
 		createParents: (bool)createParents;
@@ -374,6 +403,9 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a directory at the specified URL.
  *
  * @param URL The URL of the directory to create
+ * @throw OFCreateDirectoryFailedException Creating the directory failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (void)createDirectoryAtURL: (OFURL *)URL;
 
@@ -382,6 +414,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL of the directory to create
  * @param createParents Whether to create the parents of the directory
+ * @throw OFCreateDirectoryFailedException Creating the directory or one of its
+ *					   parents failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (void)createDirectoryAtURL: (OFURL *)URL createParents: (bool)createParents;
 
@@ -393,6 +429,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to the directory whose items should be returned
  * @return An array of OFString with the items in the specified directory
+ * @throw OFOpenItemFailedException Opening the directory failed
+ * @throw OFReadFailedException Reading from the directory failed
  */
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path;
 #endif
@@ -405,6 +443,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to the directory whose items should be returned
  * @return An array with the URLs of the items in the specified directory
+ * @throw OFOpenItemFailedException Opening the directory failed
+ * @throw OFReadFailedException Reading from the directory failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
 
@@ -424,6 +466,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Changes the current working directory.
  *
  * @param path The new directory to change to
+ * @throw OFChangeCurrentDirectoryFailedException Changing the current working
+ *						  directory failed
  */
 - (void)changeCurrentDirectoryPath: (OFString *)path;
 
@@ -431,6 +475,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Changes the current working directory.
  *
  * @param URL The new directory to change to
+ * @throw OFChangeCurrentDirectoryFailedException Changing the current working
+ *						  directory failed
  */
 - (void)changeCurrentDirectoryURL: (OFURL *)URL;
 
@@ -446,6 +492,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
+ * @throw OFCopyItemFailedException Copying failed
+ * @throw OFCreateDirectoryFailedException Creating a destination directory
+ *					   failed
  */
 - (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -462,6 +511,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination URL
+ * @throw OFCopyItemFailedException Copying failed
+ * @throw OFCreateDirectoryFailedException Creating a destination directory
+ *					   failed
+ * @throw OFUnsupportedProtocolException No handler is registered for either of
+ *					 the URL's scheme
  */
 - (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
@@ -478,6 +532,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The item to rename
  * @param destination The new name for the item
+ * @throw OFMoveItemFailedException Moving failed
+ * @throw OFCopyItemFailedException Copying (to move between different devices)
+ *				    failed
+ * @throw OFRemoveItemFailedException Removing the source after copying to the
+ *				      destination (to move between different
+ *				      devices) failed
+ * @throw OFCreateDirectoryFailedException Creating a destination directory
+ *					   failed
  */
 - (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -494,6 +556,16 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The item to rename
  * @param destination The new name for the item
+ * @throw OFMoveItemFailedException Moving failed
+ * @throw OFCopyItemFailedException Copying (to move between different devices)
+ *				    failed
+ * @throw OFRemoveItemFailedException Removing the source after copying to the
+ *				      destination (to move between different
+ *				      devices) failed
+ * @throw OFCreateDirectoryFailedException Creating a destination directory
+ *					   failed
+ * @throw OFUnsupportedProtocolException No handler is registered for either of
+ *					 the URL's scheme
  */
 - (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
@@ -504,6 +576,7 @@ OF_SUBCLASSING_RESTRICTED
  * If the item at the specified path is a directory, it is removed recursively.
  *
  * @param path The path to the item which should be removed
+ * @throw OFRemoveItemFailedException Removing the item failed
  */
 - (void)removeItemAtPath: (OFString *)path;
 #endif
@@ -514,6 +587,9 @@ OF_SUBCLASSING_RESTRICTED
  * If the item at the specified URL is a directory, it is removed recursively.
  *
  * @param URL The URL to the item which should be removed
+ * @throw OFRemoveItemFailedException Removing the item failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (void)removeItemAtURL: (OFURL *)URL;
 
@@ -528,6 +604,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The path to the item for which a link should be created
  * @param destination The path to the item which should link to the source
+ * @throw OFLinkItemFailedException Linking the item failed
+ * @throw OFNotImplementedException Hardlinks are not implemented for the
+ *				    specified URL
  */
 - (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -542,6 +621,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
+ * @throw OFLinkItemFailedException Linking the item failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
+ * @throw OFNotImplementedException Hardlinks are not implemented for the
+ *				    specified URL
  */
 - (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
 
@@ -559,6 +643,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to the item which should symbolically link to the target
  * @param target The target of the symbolic link
+ * @throw OFCreateSymbolicLinkFailedException Creating the symbolic link failed
+ * @throw OFNotImplementedException Symbolic links are not implemented for the
+ *				    specified URL
  */
 - (void)createSymbolicLinkAtPath: (OFString *)path
 	     withDestinationPath: (OFString *)target;
@@ -577,6 +664,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to the item which should symbolically link to the target
  * @param target The target of the symbolic link
+ * @throw OFUnsupportedProtocolException No handler is registered for the URL's
+ *					 scheme
  */
 - (void)createSymbolicLinkAtURL: (OFURL *)URL
 	    withDestinationPath: (OFString *)target;
@@ -586,84 +675,84 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The @ref OFFileSize key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) unsigned long long fileSize;
 
 /**
  * @brief The @ref OFFileType key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFFileAttributeType fileType;
 
 /**
  * @brief The @ref OFFilePOSIXPermissions key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) unsigned long filePOSIXPermissions;
 
 /**
  * @brief The @ref OFFileOwnerAccountID key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) unsigned long fileOwnerAccountID;
 
 /**
  * @brief The @ref OFFileGroupOwnerAccountID key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) unsigned long fileGroupOwnerAccountID;
 
 /**
  * @brief The @ref OFFileOwnerAccountName key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileOwnerAccountName;
 
 /**
  * @brief The @ref OFFileGroupOwnerAccountName key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileGroupOwnerAccountName;
 
 /**
  * @brief The @ref OFFileLastAccessDate key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFDate *fileLastAccessDate;
 
 /**
  * @brief The @ref OFFileModificationDate key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFDate *fileModificationDate;
 
 /**
  * @brief The @ref OFFileStatusChangeDate key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFDate *fileStatusChangeDate;
 
 /**
  * @brief The @ref OFFileCreationDate key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFDate *fileCreationDate;
 
 /**
  * @brief The @ref OFFileSymbolicLinkDestination key from the dictionary.
  *
- * Raises an @ref OFUndefinedKeyException if the key is missing.
+ * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileSymbolicLinkDestination;
 @end
