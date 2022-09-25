@@ -1274,7 +1274,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	if (_inProgress)
-		/* TODO: Find a better exception */
 		@throw [OFAlreadyConnectedException exception];
 
 	_inProgress = true;
