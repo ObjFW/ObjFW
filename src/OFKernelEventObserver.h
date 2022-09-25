@@ -212,7 +212,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Observes all objects and blocks until an event happens on an object.
  *
- * @throw OFObserveKernelEventsFailedException Observing for kernel events failed
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observe;
 
@@ -221,7 +222,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
- * @throw OFObserveKernelEventsFailedException Observing for kernel events failed
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval;
 
@@ -230,7 +232,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified date is reached.
  *
  * @param date The until which to observe
- * @throw OFObserveKernelEventsFailedException Observing for kernel events failed
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observeUntilDate: (OFDate *)date;
 

@@ -86,6 +86,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param headerFields The response header fields to parse
  * @param URL The URL for the response header fields to parse
  * @return An array of cookies
+ * @throw OFInvalidFormatException The specified response header has an invalid
+ *				   format
  */
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields

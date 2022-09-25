@@ -28,6 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param ID The ID of the localized string to retrieve
  * @return The localized string with the specified arguments replaced
+ * @throw OFInvalidFormatException The string (either the fallback or the
+ *				   localized one) contains an invalid format
  */
 #define OF_LOCALIZED(ID, ...)						 \
 	[[OFLocale currentLocale] localizedStringForID: ID		 \
@@ -209,6 +211,8 @@ OF_SUBCLASSING_RESTRICTED
  *		    names and values to replace in the localized string,
  *		    terminated with `nil`
  * @return The localized string
+ * @throw OFInvalidFormatException The string (either the fallback or the
+ *				   localized one) contains an invalid format
  */
 - (OFString *)localizedStringForID: (OFConstantString *)ID
 			  fallback: (id)fallback

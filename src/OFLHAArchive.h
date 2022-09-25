@@ -117,6 +117,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The next entry from the LHA archive or `nil` if all entries have
  *	   been read
+ * @throw OFInvalidFormatException The archive's format is invalid
+ * @throw OFUnsupportedVersionException The archive's format is of an
+ *					unsupported version
+ * @throw OFTruncatedDataException The archive was truncated
  */
 - (nullable OFLHAArchiveEntry *)nextEntry;
 

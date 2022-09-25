@@ -38,11 +38,19 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The protocol version of the HTTP request response.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
  */
 @property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
  * @brief The protocol version of the HTTP request response as a string.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
+ * @throw OFInvalidFormatException The specified version cannot be set because
+ *				   it is not in a valid format
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 

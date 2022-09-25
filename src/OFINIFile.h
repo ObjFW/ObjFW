@@ -44,6 +44,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param URL The URL to the file whose contents the OFINIFile should contain
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
 + (instancetype)fileWithURL: (OFURL *)URL;
 
@@ -53,8 +57,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
- *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
 + (instancetype)fileWithURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
 
@@ -67,6 +74,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param URL The URL to the file whose contents the OFINIFile should contain
  *
  * @return An initialized OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
 - (instancetype)initWithURL: (OFURL *)URL;
 
@@ -76,8 +87,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param URL The URL to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
- *
  * @return An initialized OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
 - (instancetype)initWithURL: (OFURL *)URL
 		   encoding: (OFStringEncoding)encoding

@@ -83,11 +83,19 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The protocol version of the HTTP request.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
  */
 @property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
  * @brief The protocol version of the HTTP request as a string.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
+ * @throw OFInvalidFormatException The specified version cannot be set because
+ *				   it is not in a valid format
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 
@@ -145,6 +153,8 @@ extern const char *_Nullable OFHTTPRequestMethodName(
  *
  * @param string The string for which the request method should be returned
  * @return The request method for the specified string
+ * @throw OFInvalidFormatException The specified string is not a valid HTTP
+ *				   request method
  */
 extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string);
 #ifdef __cplusplus

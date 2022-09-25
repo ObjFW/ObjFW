@@ -74,7 +74,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 	if ([string isEqual: @"CONNECT"])
 		return OFHTTPRequestMethodConnect;
 
-	@throw [OFInvalidArgumentException exception];
+	@throw [OFInvalidFormatException exception];
 }
 
 @implementation OFHTTPRequest
