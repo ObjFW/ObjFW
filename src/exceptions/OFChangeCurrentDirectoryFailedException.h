@@ -18,18 +18,18 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFChangeCurrentDirectoryPathFailedException \
- *	  OFChangeCurrentDirectoryPathFailedException.h \
- *	  ObjFW/OFChangeCurrentDirectoryPathFailedException.h
+ * @class OFChangeCurrentDirectoryFailedException \
+ *	  OFChangeCurrentDirectoryFailedException.h \
+ *	  ObjFW/OFChangeCurrentDirectoryFailedException.h
  *
  * @brief An exception indicating that changing the current directory path
  *	  failed.
  */
-@interface OFChangeCurrentDirectoryPathFailedException: OFException
+@interface OFChangeCurrentDirectoryFailedException: OFException
 {
 	OFString *_path;
 	int _errNo;
-	OF_RESERVE_IVARS(OFChangeCurrentDirectoryPathFailedException, 4)
+	OF_RESERVE_IVARS(OFChangeCurrentDirectoryFailedException, 4)
 }
 
 /**

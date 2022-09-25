@@ -4,7 +4,6 @@ STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
 SRCS = OFAllocFailedException.m				\
-       OFChangeCurrentDirectoryPathFailedException.m	\
        OFChecksumMismatchException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
@@ -51,7 +50,8 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
-SRCS_FILES = OFGetCurrentDirectoryFailedException.m
+SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
+	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\

@@ -150,7 +150,7 @@
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
 #endif
-#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"

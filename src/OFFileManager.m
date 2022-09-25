@@ -42,7 +42,7 @@
 #import "OFURL.h"
 #import "OFURLHandler.h"
 
-#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFGetCurrentDirectoryFailedException.h"
@@ -515,7 +515,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			break;
 		}
 
-		@throw [OFChangeCurrentDirectoryPathFailedException
+		@throw [OFChangeCurrentDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errNo];
 	}
@@ -540,7 +540,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		    [path cStringWithEncoding: [OFLocale encoding]]);
 
 	if (status != 0)
-		@throw [OFChangeCurrentDirectoryPathFailedException
+		@throw [OFChangeCurrentDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errno];
 # endif

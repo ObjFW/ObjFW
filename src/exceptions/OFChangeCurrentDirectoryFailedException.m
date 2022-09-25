@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFString.h"
 
-@implementation OFChangeCurrentDirectoryPathFailedException
+@implementation OFChangeCurrentDirectoryFailedException
 @synthesize path = _path, errNo = _errNo;
 
 + (instancetype)exceptionWithPath: (OFString *)path errNo: (int)errNo
@@ -61,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change the current directory path to %@: %@",
+	    @"Failed to change the current directory to %@: %@",
 	    _path, OFStrError(_errNo)];
 }
 @end
