@@ -11,6 +11,7 @@ SRCS = OFAllocFailedException.m				\
        OFCreateSymbolicLinkFailedException.m		\
        OFEnumerationMutationException.m			\
        OFException.m					\
+       OFGetItemAttributesFailedException.m		\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
        OFHashNotCalculatedException.m			\
@@ -32,7 +33,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
-       OFRetrieveItemAttributesFailedException.m	\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\

@@ -41,6 +41,7 @@
 #endif
 
 #import "OFConnectionFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -49,7 +50,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFResolveHostFailedException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -355,7 +355,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    [OFString stringWithFormat: @"%ju", fileSize];
 			[_clientHeaders setObject: contentLength
 					   forKey: @"Content-Length"];
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		} @catch (OFGetItemAttributesFailedException *e) {
 		}
 	}
 
@@ -1082,7 +1082,7 @@ next:
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];
 			[clientHeaders setObject: range forKey: @"Range"];
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		} @catch (OFGetItemAttributesFailedException *e) {
 		}
 	}
 

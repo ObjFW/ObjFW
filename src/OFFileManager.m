@@ -53,7 +53,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFUndefinedKeyException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -593,7 +593,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	@try {
 		attributes = [self attributesOfItemAtURL: source];
-	} @catch (OFRetrieveItemAttributesFailedException *e) {
+	} @catch (OFGetItemAttributesFailedException *e) {
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourceURL: source
 			    destinationURL: destination

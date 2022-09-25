@@ -178,6 +178,7 @@
 #ifdef OF_HAVE_FILES
 # import "OFGetCurrentDirectoryFailedException.h"
 #endif
+#import "OFGetItemAttributesFailedException.h"
 #import "OFGetOptionFailedException.h"
 #ifdef OF_WINDOWS
 # import "OFGetWindowsRegistryValueFailedException.h"
@@ -220,7 +221,6 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFResolveHostFailedException.h"
 #endif
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"

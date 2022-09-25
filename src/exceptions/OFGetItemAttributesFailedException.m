@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#import "OFRetrieveItemAttributesFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFString.h"
 #import "OFURL.h"
 
-@implementation OFRetrieveItemAttributesFailedException
+@implementation OFGetItemAttributesFailedException
 @synthesize URL = _URL, errNo = _errNo;
 
 + (instancetype)exception
@@ -62,7 +62,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to retrieve attributes for item %@: %@",
+	    @"Failed to get attributes for item %@: %@",
 	    _URL, OFStrError(_errNo)];
 }
 @end

@@ -48,6 +48,7 @@
 #import "OFUTF8String+Private.h"
 #import "OFXMLElement.h"
 
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -56,7 +57,6 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -1004,7 +1004,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@try {
 			fileSize = [[OFFileManager defaultManager]
 			    attributesOfItemAtPath: path].fileSize;
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		} @catch (OFGetItemAttributesFailedException *e) {
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: @"r"

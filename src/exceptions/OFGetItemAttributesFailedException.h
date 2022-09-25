@@ -20,17 +20,17 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFURL;
 
 /**
- * @class OFRetrieveItemAttributesFailedException \
- *	  OFRetrieveItemAttributesFailedException.h \
- *	  ObjFW/OFRetrieveItemAttributesFailedException.h
+ * @class OFGetItemAttributesFailedException \
+ *	  OFGetItemAttributesFailedException.h \
+ *	  ObjFW/OFGetItemAttributesFailedException.h
  *
  * @brief An exception indicating an item's attributes could not be retrieved.
  */
-@interface OFRetrieveItemAttributesFailedException: OFException
+@interface OFGetItemAttributesFailedException: OFException
 {
 	OFURL *_URL;
 	int _errNo;
-	OF_RESERVE_IVARS(OFRetrieveItemAttributesFailedException, 4)
+	OF_RESERVE_IVARS(OFGetItemAttributesFailedException, 4)
 }
 
 /**
