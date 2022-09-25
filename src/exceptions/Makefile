@@ -51,7 +51,7 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
-SRCS_FILES = OFGetCurrentDirectoryPathFailedException.m
+SRCS_FILES = OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\

@@ -18,17 +18,17 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFGetCurrentDirectoryPathFailedException \
- *	  OFGetCurrentDirectoryPathFailedException.h \
- *	  ObjFW/OFGetCurrentDirectoryPathFailedException.h
+ * @class OFGetCurrentDirectoryFailedException \
+ *	  OFGetCurrentDirectoryFailedException.h \
+ *	  ObjFW/OFGetCurrentDirectoryFailedException.h
  *
  * @brief An exception indicating that getting the current directory path
  *	  failed.
  */
-@interface OFGetCurrentDirectoryPathFailedException: OFException
+@interface OFGetCurrentDirectoryFailedException: OFException
 {
 	int _errNo;
-	OF_RESERVE_IVARS(OFGetCurrentDirectoryPathFailedException, 4)
+	OF_RESERVE_IVARS(OFGetCurrentDirectoryFailedException, 4)
 }
 
 /**

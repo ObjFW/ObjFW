@@ -45,7 +45,7 @@
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
-#import "OFGetCurrentDirectoryPathFailedException.h"
+#import "OFGetCurrentDirectoryFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
@@ -171,7 +171,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	char buffer[PATH_MAX];
 
 	if ((getcwd(buffer, PATH_MAX)) == NULL)
-		@throw [OFGetCurrentDirectoryPathFailedException
+		@throw [OFGetCurrentDirectoryFailedException
 		    exceptionWithErrNo: errno];
 
 #  ifdef OF_DJGPP

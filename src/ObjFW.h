@@ -176,7 +176,7 @@
 #endif
 #import "OFEnumerationMutationException.h"
 #ifdef OF_HAVE_FILES
-# import "OFGetCurrentDirectoryPathFailedException.h"
+# import "OFGetCurrentDirectoryFailedException.h"
 #endif
 #import "OFGetOptionFailedException.h"
 #ifdef OF_WINDOWS

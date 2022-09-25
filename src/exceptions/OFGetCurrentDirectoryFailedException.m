@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFGetCurrentDirectoryPathFailedException.h"
+#import "OFGetCurrentDirectoryFailedException.h"
 #import "OFString.h"
 
-@implementation OFGetCurrentDirectoryPathFailedException
+@implementation OFGetCurrentDirectoryFailedException
 @synthesize errNo = _errNo;
 
 + (instancetype)exceptionWithErrNo: (int)errNo
