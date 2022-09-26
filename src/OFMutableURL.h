@@ -37,6 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The scheme being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedScheme;
@@ -51,6 +54,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The host being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedHost;
@@ -70,6 +76,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The user being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedUser;
@@ -84,6 +93,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The password being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedPassword;
@@ -98,6 +110,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The path being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedPath;
@@ -106,6 +121,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The path of the URL split into components.
  *
  * The first component must always be empty to designate the root.
+ *
+ * @throw OFInvalidFormatException The path components being set are not in the
+ *				   correct format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFArray OF_GENERIC(OFString *) *pathComponents;
@@ -120,6 +138,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The query being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedQuery;
@@ -134,6 +155,8 @@ OF_ASSUME_NONNULL_BEGIN
  *         @"key1": @"value1",
  *         @"key2": @"value2"
  *     }
+ *
+ * @throw OFInvalidFormatException The query is not in the correct format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
@@ -148,6 +171,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
+ *
+ * @throw OFInvalidFormatException The fragment being set is not in the correct
+ *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *URLEncodedFragment;

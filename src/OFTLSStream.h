@@ -145,6 +145,7 @@ typedef enum {
  * @brief Performs the TLS client handshake for the specified host.
  *
  * @param host The host to perform the handshake with
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
 @end

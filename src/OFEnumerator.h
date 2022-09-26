@@ -113,8 +113,6 @@ typedef OFFastEnumerationState NSFastEnumerationState;
  * @brief Returns an array of all remaining objects in the collection.
  *
  * @return An array of all remaining objects in the collection.
- * @throw OFEnumerationMutationException The object was mutated during
- *					 enumeration
  */
 - (OFArray OF_GENERIC(ObjectType) *)allObjects;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)

@@ -136,6 +136,8 @@ OF_ASSUME_NONNULL_BEGIN
  *         @"key1": @"value1",
  *         @"key2": @"value2"
  *     }
+ *
+ * @throw OFInvalidFormatException The query is not in the correct format
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
@@ -178,6 +180,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string A string describing a URL
  * @return A new, autoreleased OFURL
+ * @throw OFInvalidFormatException The specified string is not a valid URL
+ *				   string
  */
 + (instancetype)URLWithString: (OFString *)string;
 
@@ -188,6 +192,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing a URL
  * @param URL An URL to which the string is relative
  * @return A new, autoreleased OFURL
+ * @throw OFInvalidFormatException The specified string is not a valid URL
+ *				   string
  */
 + (instancetype)URLWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
@@ -209,7 +215,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The local file path
  * @param isDirectory Whether the path is a directory, in which case a slash is
  *		      appened if there is no slash yet
- * @return An Initialized OFURL
+ * @return An initialized OFURL
  */
 + (instancetype)fileURLWithPath: (OFString *)path
 		    isDirectory: (bool)isDirectory;
@@ -220,6 +226,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string A string describing a URL
  * @return An initialized OFURL
+ * @throw OFInvalidFormatException The specified string is not a valid URL
+ *				   string
  */
 - (instancetype)initWithString: (OFString *)string;
 
@@ -230,6 +238,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing a URL
  * @param URL A URL to which the string is relative
  * @return An initialized OFURL
+ * @throw OFInvalidFormatException The specified string is not a valid URL
+ *				   string
  */
 - (instancetype)initWithString: (OFString *)string relativeToURL: (OFURL *)URL;
 
@@ -253,7 +263,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The local file path
  * @param isDirectory Whether the path is a directory, in which case a slash is
  *		      appened if there is no slash yet
- * @return An Initialized OFURL
+ * @return An initialized OFURL
  */
 - (instancetype)initFileURLWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory;

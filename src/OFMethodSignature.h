@@ -53,6 +53,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param types The ObjC types of the method
  * @return A new, autoreleased OFMethodSignature
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 + (instancetype)signatureWithObjCTypes: (const char *)types;
 
@@ -62,6 +63,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param types The ObjC types of the method
  * @return An Initialized OFMethodSignature
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 - (instancetype)initWithObjCTypes: (const char *)types;
 
@@ -93,6 +95,7 @@ extern "C" {
  *
  * @param type The type encoding to return the size for
  * @return The size for the specified type encoding
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 extern size_t OFSizeOfTypeEncoding(const char *type);
 
@@ -101,6 +104,7 @@ extern size_t OFSizeOfTypeEncoding(const char *type);
  *
  * @param type The type encoding to return the alignment for
  * @return The alignment for the specified type encoding
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 extern size_t OFAlignmentOfTypeEncoding(const char *type);
 #ifdef __cplusplus
