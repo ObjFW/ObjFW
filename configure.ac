@@ -99,7 +99,7 @@ powerpc-*-amigaos*)
 	enable_sockets="no"
 	;;
 *-*-mingw*)
-	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition -static-libgcc"
 	LIBS="$LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
@@ -1050,6 +1050,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		;;
 	m68k-*-amigaos* | powerpc-*-amigaos*)
 		dnl Compiler TLS is broken on AmigaOS
+		enable_compiler_tls="no"
+		;;
+	*-*-mingw*)
+		dnl Causes emutls to be pulled in, which pulls in winpthread.
 		enable_compiler_tls="no"
 		;;
 	*-*-morphos*)
