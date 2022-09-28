@@ -15,26 +15,26 @@
 
 #include "config.h"
 
-#import "OFURLHandler.h"
+#import "OFURIHandler.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
 
-#import "OFEmbeddedFileURLHandler.h"
+#import "OFEmbeddedURIHandler.h"
 #ifdef OF_HAVE_FILES
-# import "OFFileURLHandler.h"
+# import "OFFileURIHandler.h"
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-# import "OFHTTPURLHandler.h"
+# import "OFHTTPURIHandler.h"
 #endif
 
 #import "OFUnsupportedProtocolException.h"
 
-static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
+static OFMutableDictionary OF_GENERIC(OFString *, OFURIHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
 
@@ -45,12 +45,12 @@ releaseMutex(void)
 }
 #endif
 
-@implementation OFURLHandler
+@implementation OFURIHandler
 @synthesize scheme = _scheme;
 
 + (void)initialize
 {
-	if (self != [OFURLHandler class])
+	if (self != [OFURIHandler class])
 		return;
 
 	handlers = [[OFMutableDictionary alloc] init];
@@ -59,14 +59,14 @@ releaseMutex(void)
 	atexit(releaseMutex);
 #endif
 
-	[self registerClass: [OFEmbeddedFileURLHandler class]
+	[self registerClass: [OFEmbeddedURIHandler class]
 		  forScheme: @"objfw-embedded"];
 #ifdef OF_HAVE_FILES
-	[self registerClass: [OFFileURLHandler class] forScheme: @"file"];
+	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-	[self registerClass: [OFHTTPURLHandler class] forScheme: @"http"];
-	[self registerClass: [OFHTTPURLHandler class] forScheme: @"https"];
+	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
+	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];
 #endif
 }
 
@@ -76,7 +76,7 @@ releaseMutex(void)
 	[mutex lock];
 	@try {
 #endif
-		OFURLHandler *handler;
+		OFURIHandler *handler;
 
 		if ([handlers objectForKey: scheme] != nil)
 			return false;
@@ -96,15 +96,15 @@ releaseMutex(void)
 	return true;
 }
 
-+ (OFURLHandler *)handlerForURL: (OFURL *)URL
++ (OFURIHandler *)handlerForURI: (OFURI *)URI
 {
-	OF_KINDOF(OFURLHandler *) handler;
+	OF_KINDOF(OFURIHandler *) handler;
 
 #ifdef OF_HAVE_THREADS
 	[mutex lock];
 	@try {
 #endif
-		handler = [handlers objectForKey: URL.scheme];
+		handler = [handlers objectForKey: URI.scheme];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
@@ -112,14 +112,14 @@ releaseMutex(void)
 #endif
 
 	if (handler == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
 	return handler;
 }
 
-+ (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
++ (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
-	return [[self handlerForURL: URL] openItemAtURL: URL mode: mode];
+	return [[self handlerForURI: URI] openItemAtURI: URI mode: mode];
 }
 
 - (instancetype)init
@@ -148,63 +148,63 @@ releaseMutex(void)
 	[super dealloc];
 }
 
-- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
+- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)fileExistsAtURL: (OFURL *)URL
+- (bool)fileExistsAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)directoryExistsAtURL: (OFURL *)URL
+- (bool)directoryExistsAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)createDirectoryAtURL: (OFURL *)URL
+- (void)createDirectoryAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)removeItemAtURL: (OFURL *)URL
+- (void)removeItemAtURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)createSymbolicLinkAtURL: (OFURL *)destination
+- (void)createSymbolicLinkAtURI: (OFURI *)destination
 	    withDestinationPath: (OFString *)source
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (bool)copyItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	return false;
 }
 
-- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (bool)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	return false;
 }

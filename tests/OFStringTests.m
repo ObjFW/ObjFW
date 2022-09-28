@@ -357,8 +357,8 @@ static const OFChar16 swappedChar16String[] = {
 			    encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURL:encoding]", (string = [stringClass
-	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
+	TEST(@"+[stringWithContentsOfURI:encoding]", (string = [stringClass
+	    stringWithContentsOfURI: [OFURI fileURIWithPath: @"testfile.txt"]
 			   encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 #endif
@@ -1271,12 +1271,13 @@ static const OFChar16 swappedChar16String[] = {
 
 	characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
-	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
-	    [[C(@"foo\"ba'_~$]🍏🍌") stringByURLEncodingWithAllowedCharacters:
-	    characterSet] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
+	TEST(@"-[stringByAddingPercentEncodingWithAllowedCharacters:]",
+	    [[C(@"foo\"ba'_~$]🍏🍌")
+	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet]
+	    isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
 
-	TEST(@"-[stringByURLDecoding]",
-	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByURLDecoding
+	TEST(@"-[stringByRemovingPercentEncoding]",
+	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByRemovingPercentEncoding
 	    isEqual: @"foo bar\"+$🍌"])
 
 	TEST(@"-[insertString:atIndex:]",
@@ -1285,12 +1286,14 @@ static const OFChar16 swappedChar16String[] = {
 	    R([mutableString1 insertString: @"äöü" atIndex: 3]) &&
 	    [mutableString1 isEqual: @"𝄞ööäöüöbä€"])
 
-	EXPECT_EXCEPTION(@"Detect invalid format in -[stringByURLDecoding] "
-	    @"#1", OFInvalidFormatException,
-	    [C(@"foo%xbar") stringByURLDecoding])
-	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
-	    @"#2", OFInvalidEncodingException,
-	    [C(@"foo%FFbar") stringByURLDecoding])
+	EXPECT_EXCEPTION(@"Detect invalid format in "
+	    @"-[stringByRemovingPercentEncoding] #1",
+	    OFInvalidFormatException,
+	    [C(@"foo%xbar") stringByRemovingPercentEncoding])
+	EXPECT_EXCEPTION(@"Detect invalid encoding in "
+	    @"-[stringByRemovingPercentEncoding] #2",
+	    OFInvalidEncodingException,
+	    [C(@"foo%FFbar") stringByRemovingPercentEncoding])
 
 	TEST(@"-[setCharacter:atIndex:]",
 	    (mutableString1 = [mutableStringClass

@@ -13,112 +13,112 @@
  * file.
  */
 
-#import "OFURL.h"
+#import "OFURI.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableURL OFMutableURL.h ObjFW/OFMutableURL.h
+ * @class OFMutableURI OFMutableURI.h ObjFW/OFMutableURI.h
  *
- * @brief A class for parsing URLs and accessing parts of it.
+ * @brief A class for parsing URIs and accessing parts of it.
  */
-@interface OFMutableURL: OFURL
+@interface OFMutableURI: OFURI
 {
-	OF_RESERVE_IVARS(OFMutableURL, 4)
+	OF_RESERVE_IVARS(OFMutableURI, 4)
 }
 
 /**
- * @brief The scheme part of the URL.
+ * @brief The scheme part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
 
 /**
- * @brief The scheme part of the URL in URL-encoded form.
+ * @brief The scheme part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The scheme being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedScheme;
+    OFString *percentEncodedScheme;
 
 /**
- * @brief The host part of the URL.
+ * @brief The host part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *host;
 
 /**
- * @brief The host part of the URL in URL-encoded form.
+ * @brief The host part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The host being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedHost;
+    OFString *percentEncodedHost;
 
 /**
- * @brief The port part of the URL.
+ * @brief The port part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 
 /**
- * @brief The user part of the URL.
+ * @brief The user part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *user;
 
 /**
- * @brief The user part of the URL in URL-encoded form.
+ * @brief The user part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The user being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedUser;
+    OFString *percentEncodedUser;
 
 /**
- * @brief The password part of the URL.
+ * @brief The password part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *password;
 
 /**
- * @brief The password part of the URL in URL-encoded form.
+ * @brief The password part of the URI in URI-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The password being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedPassword;
+    OFString *percentEncodedPassword;
 
 /**
- * @brief The path part of the URL.
+ * @brief The path part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
 
 /**
- * @brief The path part of the URL in URL-encoded form.
+ * @brief The path part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The path being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedPath;
+    OFString *percentEncodedPath;
 
 /**
- * @brief The path of the URL split into components.
+ * @brief The path of the URI split into components.
  *
  * The first component must always be empty to designate the root.
  *
@@ -129,24 +129,24 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /**
- * @brief The query part of the URL.
+ * @brief The query part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;
 
 /**
- * @brief The query part of the URL in URL-encoded form.
+ * @brief The query part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The query being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedQuery;
+    OFString *percentEncodedQuery;
 
 /**
- * @brief The query part of the URL as a dictionary.
+ * @brief The query part of the URI as a dictionary.
  *
  * For example, a query like `key1=value1&key2=value2` would correspond to the
  * following dictionary:
@@ -162,28 +162,28 @@ OF_ASSUME_NONNULL_BEGIN
     OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
 
 /**
- * @brief The fragment part of the URL.
+ * @brief The fragment part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;
 
 /**
- * @brief The fragment part of the URL in URL-encoded form.
+ * @brief The fragment part of the URI in percent-encoded form.
  *
- * Setting this retains the original URL-encoding used - if more characters
- * than necessary are URL-encoded, it is kept this way.
+ * Setting this retains the original percent-encoding used - if more characters
+ * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The fragment being set is not in the correct
  *				   format
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *URLEncodedFragment;
+    OFString *percentEncodedFragment;
 
 /**
- * @brief Creates a new mutable URL.
+ * @brief Creates a new mutable URI.
  *
- * @return A new, autoreleased OFMutableURL
+ * @return A new, autoreleased OFMutableURI
  */
-+ (instancetype)URL;
++ (instancetype)URI;
 
 /**
  * @brief Appends the specified path component.
@@ -208,7 +208,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)standardizePath;
 
 /**
- * @brief Converts the mutable URL to an immutable URL.
+ * @brief Converts the mutable URI to an immutable URI.
  */
 - (void)makeImmutable;
 @end

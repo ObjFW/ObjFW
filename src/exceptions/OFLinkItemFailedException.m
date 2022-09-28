@@ -17,10 +17,10 @@
 
 #import "OFLinkItemFailedException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFLinkItemFailedException
-@synthesize sourceURL = _sourceURL, destinationURL = _destinationURL;
+@synthesize sourceURI = _sourceURI, destinationURI = _destinationURI;
 @synthesize errNo = _errNo;
 
 + (instancetype)exception
@@ -28,12 +28,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
-			destinationURL: (OFURL *)destinationURL
++ (instancetype)exceptionWithSourceURI: (OFURI *)sourceURI
+			destinationURI: (OFURI *)destinationURI
 				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithSourceURL: sourceURL
-				 destinationURL: destinationURL
+	return [[[self alloc] initWithSourceURI: sourceURI
+				 destinationURI: destinationURI
 					  errNo: errNo] autorelease];
 }
 
@@ -42,15 +42,15 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSourceURL: (OFURL *)sourceURL
-		   destinationURL: (OFURL *)destinationURL
+- (instancetype)initWithSourceURI: (OFURI *)sourceURI
+		   destinationURI: (OFURI *)destinationURI
 			    errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_sourceURL = [sourceURL copy];
-		_destinationURL = [destinationURL copy];
+		_sourceURI = [sourceURI copy];
+		_destinationURI = [destinationURI copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -62,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_sourceURL release];
-	[_destinationURL release];
+	[_sourceURI release];
+	[_destinationURI release];
 
 	[super dealloc];
 }
@@ -71,6 +71,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"Failed to link file %@ to %@: %@",
-	    _sourceURL, _destinationURL, OFStrError(_errNo)];
+	    _sourceURI, _destinationURI, OFStrError(_errNo)];
 }
 @end

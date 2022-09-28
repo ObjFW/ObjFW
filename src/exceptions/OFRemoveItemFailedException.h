@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFRemoveItemFailedException \
@@ -27,15 +27,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFRemoveItemFailedException: OFException
 {
-	OFURL *_URL;
+	OFURI *_URI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFRemoveItemFailedException, 4)
 }
 
 /**
- * @brief The URL of the item which could not be removed.
+ * @brief The URI of the item which could not be removed.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property (readonly, nonatomic) OFURI *URI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -45,22 +45,22 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased remove failed exception.
  *
- * @param URL The URL of the item which could not be removed
+ * @param URI The URI of the item which could not be removed
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithURL: (OFURL *)URL errNo: (int)errNo;
++ (instancetype)exceptionWithURI: (OFURI *)URI errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated remove failed exception.
  *
- * @param URL The URL of the item which could not be removed
+ * @param URI The URI of the item which could not be removed
  * @param errNo The errno of the error that occurred
  * @return An initialized remove item failed exception
  */
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

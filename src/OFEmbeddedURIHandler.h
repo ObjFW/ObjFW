@@ -13,11 +13,11 @@
  * file.
  */
 
-#import "OFURLHandler.h"
+#import "OFURIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFHTTPURLHandler: OFURLHandler
+@interface OFEmbeddedURIHandler: OFURIHandler
 @end
 
 OF_ASSUME_NONNULL_END

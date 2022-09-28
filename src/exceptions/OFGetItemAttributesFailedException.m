@@ -17,19 +17,19 @@
 
 #import "OFGetItemAttributesFailedException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFGetItemAttributesFailedException
-@synthesize URL = _URL, errNo = _errNo;
+@synthesize URI = _URI, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL errNo: (int)errNo
++ (instancetype)exceptionWithURI: (OFURI *)URI errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL errNo: errNo] autorelease];
+	return [[[self alloc] initWithURI: URI errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -37,12 +37,12 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURL: (OFURL *)URL errNo: (int)errNo
+- (instancetype)initWithURI: (OFURI *)URI errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_URI = [URI copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_URL release];
+	[_URI release];
 
 	[super dealloc];
 }
@@ -63,6 +63,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to get attributes for item %@: %@",
-	    _URL, OFStrError(_errNo)];
+	    _URI, OFStrError(_errNo)];
 }
 @end

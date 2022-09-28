@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURL;
+@class OFURI;
 
 /**
  * @brief Options for searching in data.
@@ -167,12 +167,12 @@ typedef enum {
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the specified URL.
+ *	  the specified URI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param URI The URI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL;
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
@@ -270,12 +270,12 @@ typedef enum {
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the specified URL.
+ *	  containing the data of the specified URI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param URI The URI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
@@ -346,11 +346,11 @@ typedef enum {
 #endif
 
 /**
- * @brief Writes the OFData to the specified URL.
+ * @brief Writes the OFData to the specified URI.
  *
- * @param URL The URL to write to
+ * @param URI The URI to write to
  */
-- (void)writeToURL: (OFURL *)URL;
+- (void)writeToURI: (OFURI *)URI;
 @end
 
 OF_ASSUME_NONNULL_END

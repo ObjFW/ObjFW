@@ -15,17 +15,17 @@
 
 #include "config.h"
 
-#import "OFHTTPURLHandler.h"
+#import "OFHTTPURIHandler.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 
-@implementation OFHTTPURLHandler
-- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
+@implementation OFHTTPURIHandler
+- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPClient *client = [OFHTTPClient client];
-	OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
+	OFHTTPRequest *request = [OFHTTPRequest requestWithURI: URI];
 	OFHTTPResponse *response = [client performRequest: request];
 
 	[response retain];

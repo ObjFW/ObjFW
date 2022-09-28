@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFString+URLEncoding.h"
+#import "OFString+PercentEncoding.h"
 #import "OFCharacterSet.h"
 
 #import "OFInvalidFormatException.h"
@@ -26,10 +26,10 @@
 #import "OFOutOfMemoryException.h"
 
 /* Reference for static linking */
-int _OFString_URLEncoding_reference;
+int _OFString_PercentEncoding_reference;
 
-@implementation OFString (URLEncoding)
-- (OFString *)stringByURLEncodingWithAllowedCharacters:
+@implementation OFString (PercentEncoding)
+- (OFString *)stringByAddingPercentEncodingWithAllowedCharacters:
     (OFCharacterSet *)allowedCharacters
 {
 	OFMutableString *ret = [OFMutableString string];
@@ -75,7 +75,7 @@ int _OFString_URLEncoding_reference;
 	return ret;
 }
 
-- (OFString *)stringByURLDecoding
+- (OFString *)stringByRemovingPercentEncoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *string = self.UTF8String;

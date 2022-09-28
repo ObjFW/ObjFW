@@ -19,9 +19,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFEmbeddedFileURLHandler.h"
+#import "OFEmbeddedURIHandler.h"
 #import "OFMemoryStream.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
@@ -71,22 +71,22 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 #endif
 }
 
-@implementation OFEmbeddedFileURLHandler
-- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
+@implementation OFEmbeddedURIHandler
+- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
 	const char *path;
 
-	if (![URL.scheme isEqual: @"objfw-embedded"] || URL.host != nil ||
-	    URL.port != nil || URL.user != nil || URL.password != nil ||
-	    URL.query != nil || URL.fragment != nil)
+	if (![URI.scheme isEqual: @"objfw-embedded"] || URI.host != nil ||
+	    URI.port != nil || URI.user != nil || URI.password != nil ||
+	    URI.query != nil || URI.fragment != nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![mode isEqual: @"r"])
-		@throw [OFOpenItemFailedException exceptionWithURL: URL
+		@throw [OFOpenItemFailedException exceptionWithURI: URI
 							      mode: mode
 							     errNo: EROFS];
 
-	if ((path = URL.path.UTF8String) == NULL) {
+	if ((path = URI.path.UTF8String) == NULL) {
 		@throw [OFInvalidArgumentException exception];
 	}
 
@@ -110,7 +110,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 	}
 #endif
 
-	@throw [OFOpenItemFailedException exceptionWithURL: URL
+	@throw [OFOpenItemFailedException exceptionWithURI: URI
 						      mode: mode
 						     errNo: ENOENT];
 }

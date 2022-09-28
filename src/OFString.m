@@ -42,8 +42,8 @@
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
 #import "OFXMLElement.h"
@@ -133,9 +133,9 @@ _references_to_categories_of_OFString(void)
 #ifdef OF_HAVE_FILES
 	_OFString_PathAdditions_reference = 1;
 #endif
+	_OFString_PercentEncoding_reference = 1;
 	_OFString_PropertyListParsing_reference = 1;
 	_OFString_Serialization_reference = 1;
-	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
 }
@@ -582,15 +582,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL];
+	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL
+	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI
 						      encoding: encoding];
 }
 
@@ -796,15 +796,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
+	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfURL: URL
+	return [[[self alloc] initWithContentsOfURI: URI
 					   encoding: encoding] autorelease];
 }
 
@@ -1066,20 +1066,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return [self initWithContentsOfURL: URL
+	return [self initWithContentsOfURI: URI
 				  encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	@try {
-		data = [OFData dataWithContentsOfURL: URL];
+		data = [OFData dataWithContentsOfURI: URI];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -2741,17 +2741,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
-	[self writeToURL: URL encoding: OFStringEncodingUTF8];
+	[self writeToURI: URI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
-	stream = [OFURLHandler openItemAtURL: URL mode: @"w"];
+	stream = [OFURIHandler openItemAtURI: URI mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);

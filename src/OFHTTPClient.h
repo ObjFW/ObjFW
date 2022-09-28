@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 @class OFTCPSocket;
 @class OFTLSStream;
-@class OFURL;
+@class OFURI;
 
 /**
  * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
@@ -119,18 +119,18 @@ OF_ASSUME_NONNULL_BEGIN
  * callback will not be called.
  *
  * @param client The OFHTTPClient which wants to follow a redirect
- * @param URL The URL to which it will follow a redirect
+ * @param URI The URI to which it will follow a redirect
  * @param statusCode The status code for the redirection
  * @param request The request for which the OFHTTPClient wants to redirect.
  *		  You are allowed to change the request's headers from this
  *		  callback and they will be used when following the redirect
- *		  (e.g. to set the cookies for the new URL), however, keep in
+ *		  (e.g. to set the cookies for the new URI), however, keep in
  *		  mind that this will change the request you originally passed.
  * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
 -	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURL *)URL
+  shouldFollowRedirect: (OFURI *)URI
 	    statusCode: (short)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response;
@@ -150,7 +150,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
 	bool _allowsInsecureRedirects, _inProgress;
 	OFStream *_Nullable _stream;
-	OFURL *_Nullable _lastURL;
+	OFURI *_Nullable _lastURI;
 	bool _lastWasHEAD;
 	OFHTTPResponse *_Nullable _lastResponse;
 }

@@ -19,7 +19,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -62,12 +62,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
-    forURL: (OFURL *)URL
+    forURI: (OFURI *)URI
 {
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
-	OFString *domain = URL.host;
+	OFString *domain = URI.host;
 	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {

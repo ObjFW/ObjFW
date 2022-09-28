@@ -251,10 +251,10 @@ static OFString *values[] = {
 
 	[mutableDict removeObjectForKey: @""];
 
-	TEST(@"-[stringByURLEncoding]",
+	TEST(@"-[URIQueryString]",
 	    [[[OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
 							  @"q&x", @"q=x", nil]
-	    stringByURLEncoding] isEqual: @"q%26x=q%3Dx&foo=bar"])
+	    URIQueryString] isEqual: @"q%26x=q%3Dx&foo=bar"])
 
 #ifdef OF_HAVE_BLOCKS
 	{

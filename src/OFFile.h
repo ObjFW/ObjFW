@@ -27,7 +27,7 @@ static const OFFileHandle OFInvalidFileHandle = NULL;
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFFile OFFile.h ObjFW/OFFile.h

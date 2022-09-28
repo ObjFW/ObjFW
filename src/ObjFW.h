@@ -46,8 +46,8 @@
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFUUID.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFColor.h"
 
 #import "OFNotification.h"

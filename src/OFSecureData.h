@@ -104,7 +104,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
@@ -150,7 +150,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (instancetype)initWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
 - (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
@@ -187,7 +187,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (void)writeToURL: (OFURL *)URL OF_UNAVAILABLE;
+- (void)writeToURI: (OFURI *)URI OF_UNAVAILABLE;
 - (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
 @end

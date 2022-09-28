@@ -22,27 +22,27 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_URLEncoding_reference;
+extern int _OFString_PercentEncoding_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (URLEncoding)
+@interface OFString (PercentEncoding)
 /**
- * @brief The string as an URL decoded string.
+ * @brief The string with percent-encoding removed.
  */
-@property (readonly, nonatomic) OFString *stringByURLDecoding;
+@property (readonly, nonatomic) OFString *stringByRemovingPercentEncoding;
 
 /**
- * @brief Encodes a string for use in a URL, but does not escape the specified
- *	  allowed characters.
+ * @brief Percent-encodes a string for use in a URI, but does not escape the
+ *	  specified allowed characters.
  *
  * @param allowedCharacters A character set of characters that should not be
  *			    escaped
  *
  * @return A new autoreleased string
  */
-- (OFString *)stringByURLEncodingWithAllowedCharacters:
+- (OFString *)stringByAddingPercentEncodingWithAllowedCharacters:
     (OFCharacterSet *)allowedCharacters;
 @end
 

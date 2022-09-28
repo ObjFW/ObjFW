@@ -22,21 +22,21 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 @class OFStream;
-@class OFURL;
+@class OFURI;
 
 /**
- * @class OFURLHandler OFURLHandler.h ObjFW/OFURLHandler.h
+ * @class OFURIHandler OFURIHandler.h ObjFW/OFURIHandler.h
  *
- * @brief A handler for a URL scheme.
+ * @brief A handler for a URI scheme.
  */
-@interface OFURLHandler: OFObject
+@interface OFURIHandler: OFObject
 {
 	OFString *_scheme;
-	OF_RESERVE_IVARS(OFURLHandler, 4)
+	OF_RESERVE_IVARS(OFURIHandler, 4)
 }
 
 /**
- * @brief The scheme this OFURLHandler handles.
+ * @brief The scheme this OFURIHandler handles.
  */
 @property (readonly, nonatomic) OFString *scheme;
 
@@ -54,16 +54,16 @@ OF_ASSUME_NONNULL_BEGIN
 + (bool)registerClass: (Class)class_ forScheme: (OFString *)scheme;
 
 /**
- * @brief Returns the handler for the specified URL.
+ * @brief Returns the handler for the specified URI.
  *
- * @return The handler for the specified URL.
+ * @return The handler for the specified URI.
  */
-+ (OFURLHandler *)handlerForURL: (OFURL *)URL;
++ (OFURIHandler *)handlerForURI: (OFURI *)URI;
 
 /**
- * @brief Opens the item at the specified URL.
+ * @brief Opens the item at the specified URI.
  *
- * @param URL The URL of the item which should be opened
+ * @param URI The URI of the item which should be opened
  * @param mode The mode in which the file should be opened.@n
  *	       Possible modes are:
  *	       @n
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The opened stream if it was successfully opened
  * @throw OFOpenItemFailedException Opening the item failed
  */
-+ (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
++ (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -91,14 +91,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes the handler for the specified scheme.
  *
  * @param scheme The scheme to initialize for
- * @return An initialized URL handler
+ * @return An initialized URI handler
  */
 - (instancetype)initWithScheme: (OFString *)scheme OF_DESIGNATED_INITIALIZER;
 
 /**
- * @brief Opens the item at the specified URL.
+ * @brief Opens the item at the specified URI.
  *
- * @param URL The URL of the item which should be opened
+ * @param URI The URI of the item which should be opened
  * @param mode The mode in which the file should be opened.@n
  *	       Possible modes are:
  *	       @n
@@ -118,105 +118,105 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The opened stream if it was successfully opened
  * @throw OFOpenItemFailedException Opening the item failed
  */
-- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode;
+- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
- * @brief Returns the attributes for the item at the specified URL.
+ * @brief Returns the attributes for the item at the specified URI.
  *
- * @param URL The URL to return the attributes for
- * @return A dictionary of attributes for the specified URL, with the keys of
+ * @param URI The URI to return the attributes for
+ * @return A dictionary of attributes for the specified URI, with the keys of
  *	   type @ref OFFileAttributeKey
  */
-- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL;
+- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI;
 
 /**
- * @brief Sets the attributes for the item at the specified URL.
+ * @brief Sets the attributes for the item at the specified URI.
  *
  * All attributes not part of the dictionary are left unchanged.
  *
- * @param attributes The attributes to set for the specified URL
- * @param URL The URL of the item to set the attributes for
+ * @param attributes The attributes to set for the specified URI
+ * @param URI The URI of the item to set the attributes for
  */
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL;
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI;
 
 /**
- * @brief Checks whether a file exists at the specified URL.
+ * @brief Checks whether a file exists at the specified URI.
  *
- * @param URL The URL to check
- * @return A boolean whether there is a file at the specified URL
+ * @param URI The URI to check
+ * @return A boolean whether there is a file at the specified URI
  */
-- (bool)fileExistsAtURL: (OFURL *)URL;
+- (bool)fileExistsAtURI: (OFURI *)URI;
 
 /**
- * @brief Checks whether a directory exists at the specified URL.
+ * @brief Checks whether a directory exists at the specified URI.
  *
- * @param URL The URL to check
- * @return A boolean whether there is a directory at the specified URL
+ * @param URI The URI to check
+ * @return A boolean whether there is a directory at the specified URI
  */
-- (bool)directoryExistsAtURL: (OFURL *)URL;
+- (bool)directoryExistsAtURI: (OFURI *)URI;
 
 /**
- * @brief Creates a directory at the specified URL.
+ * @brief Creates a directory at the specified URI.
  *
- * @param URL The URL of the directory to create
+ * @param URI The URI of the directory to create
  */
-- (void)createDirectoryAtURL: (OFURL *)URL;
+- (void)createDirectoryAtURI: (OFURI *)URI;
 
 /**
- * @brief Returns an array with the URLs of the items in the specified
+ * @brief Returns an array with the URIs of the items in the specified
  *	  directory.
  *
  * @note `.` and `..` are not part of the returned array.
  *
- * @param URL The URL to the directory whose items should be returned
- * @return An array with the URLs of the items in the specified directory
+ * @param URI The URI to the directory whose items should be returned
+ * @return An array with the URIs of the items in the specified directory
  */
-- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
+- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI;
 
 /**
- * @brief Removes the item at the specified URL.
+ * @brief Removes the item at the specified URI.
  *
- * If the item at the specified URL is a directory, it is removed recursively.
+ * If the item at the specified URI is a directory, it is removed recursively.
  *
- * @param URL The URL to the item which should be removed
+ * @param URI The URI to the item which should be removed
  */
-- (void)removeItemAtURL: (OFURL *)URL;
+- (void)removeItemAtURI: (OFURI *)URI;
 
 /**
  * @brief Creates a hard link for the specified item.
  *
- * The destination URL must have a full path, which means it must include the
+ * The destination URI must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available for all URLs.
+ * This method is not available for all URIs.
  *
- * @param source The URL to the item for which a link should be created
- * @param destination The URL to the item which should link to the source
+ * @param source The URI to the item for which a link should be created
+ * @param destination The URI to the item which should link to the source
  */
-- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
+- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
 
 /**
  * @brief Creates a symbolic link for an item.
  *
- * The destination uRL must have a full path, which means it must include the
+ * The destination URI must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available for all URLs.
+ * This method is not available for all URIs.
  *
  * @note On Windows, this requires at least Windows Vista and administrator
  *	 privileges!
  *
- * @param URL The URL to the item which should symbolically link to the target
+ * @param URI The URI to the item which should symbolically link to the target
  * @param target The target of the symbolic link
  */
-- (void)createSymbolicLinkAtURL: (OFURL *)URL
+- (void)createSymbolicLinkAtURI: (OFURI *)URI
 	    withDestinationPath: (OFString *)target;
 
 /**
  * @brief Tries to efficiently copy an item. If a copy would only be possible
  *	  by reading the entire item and then writing it, it returns false.
  *
- * The destination URL must have a full path, which means it must include the
+ * The destination URI must have a full path, which means it must include the
  * name of the item.
  *
  * If an item already exists, the copy operation fails. This is also the case
@@ -224,18 +224,18 @@ OF_ASSUME_NONNULL_BEGIN
  * directory.
  *
  * @param source The file, directory or symbolic link to copy
- * @param destination The destination URL
+ * @param destination The destination URI
  * @return True if an efficient copy was performed, false if an efficient copy
  *	   was not possible. Note that errors while performing a copy are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
+- (bool)copyItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
 
 /**
  * @brief Tries to efficiently move an item. If a move would only be possible
  *	  by copying the source and deleting it, it returns false.
  *
- * The destination URL must have a full path, which means it must include the
+ * The destination URI must have a full path, which means it must include the
  * name of the item.
  *
  * If the destination is on a different logical device or uses a different
@@ -247,7 +247,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   was not possible. Note that errors while performing a move are
  *	   reported via exceptions and not by returning false!
  */
-- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination;
+- (bool)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
 @end
 
 OF_ASSUME_NONNULL_END

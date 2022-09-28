@@ -41,7 +41,7 @@
 # include <grp.h>
 #endif
 
-#import "OFFileURLHandler.h"
+#import "OFFileURIHandler.h"
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFFile.h"
@@ -49,7 +49,7 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
@@ -457,9 +457,9 @@ setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 static void
 setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
-    OFURL *URL)
+    OFURI *URI)
 {
-	OFString *path = URL.fileSystemRepresentation;
+	OFString *path = URI.fileSystemRepresentation;
 # ifndef OF_WINDOWS
 	OFStringEncoding encoding = [OFLocale encoding];
 	char destinationC[PATH_MAX];
@@ -471,7 +471,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (length < 0)
 		@throw [OFGetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: errno];
 
 	destination = [OFString stringWithCString: destinationC
@@ -491,7 +491,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	    FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
 	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
 		@throw [OFGetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: lastError()];
 
 	@try {
@@ -506,12 +506,12 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
 		    NULL))
 			@throw [OFGetItemAttributesFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 				       errNo: lastError()];
 
 		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
 			@throw [OFGetItemAttributesFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 				       errNo: lastError()];
 
 #  define slrb buffer.data.SymbolicLinkReparseBuffer
@@ -535,14 +535,14 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 #endif
 
-@implementation OFFileURLHandler
+@implementation OFFileURIHandler
 + (void)initialize
 {
 #ifdef OF_WINDOWS
 	HMODULE module;
 #endif
 
-	if (self != [OFFileURLHandler class])
+	if (self != [OFFileURIHandler class])
 		return;
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
@@ -587,11 +587,11 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	return S_ISDIR(s.st_mode);
 }
 
-- (OFStream *)openItemAtURL: (OFURL *)URL mode: (OFString *)mode
+- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [[OFFile alloc]
-	    initWithPath: URL.fileSystemRepresentation
+	    initWithPath: URI.fileSystemRepresentation
 		    mode: mode];
 
 	objc_autoreleasePoolPop(pool);
@@ -599,7 +599,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	return [file autorelease];
 }
 
-- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI
 {
 	OFMutableFileAttributes ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
@@ -607,17 +607,17 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	int error;
 	Stat s;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![[URL scheme] isEqual: _scheme])
+	if (![[URI scheme] isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	path = URL.fileSystemRepresentation;
+	path = URI.fileSystemRepresentation;
 
 	if ((error = lstatWrapper(path, &s)) != 0)
 		@throw [OFGetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: error];
 
 	if (s.st_size < 0)
@@ -636,7 +636,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	if (S_ISLNK(s.st_mode))
-		setSymbolicLinkDestinationAttribute(ret, URL);
+		setSymbolicLinkDestinationAttribute(ret, URI);
 #endif
 
 	objc_autoreleasePoolPop(pool);
@@ -646,10 +646,10 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 - (void)of_setLastAccessDate: (OFDate *)lastAccessDate
 	 andModificationDate: (OFDate *)modificationDate
-		 ofItemAtURL: (OFURL *)URL
+		 ofItemAtURI: (OFURI *)URI
 		  attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-	OFString *path = URL.fileSystemRepresentation;
+	OFString *path = URI.fileSystemRepresentation;
 	OFFileAttributeKey attributeKey = (modificationDate != nil
 	    ? OFFileModificationDate : OFFileLastAccessDate);
 
@@ -669,7 +669,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 		if (_wutime64FuncPtr([path UTF16String], &times) != 0)
 			@throw [OFSetItemAttributesFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 				  attributes: attributes
 			     failedAttribute: attributeKey
 				       errNo: errno];
@@ -690,7 +690,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 		if (status != 0)
 			@throw [OFSetItemAttributesFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 				  attributes: attributes
 			     failedAttribute: attributeKey
 				       errNo: errno];
@@ -728,7 +728,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	    &date) != 0)
 # endif
 		@throw [OFSetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			  attributes: attributes
 		     failedAttribute: attributeKey
 			       errNo: lastError()];
@@ -751,7 +751,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
 		@throw [OFSetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			  attributes: attributes
 		     failedAttribute: attributeKey
 			       errNo: errno];
@@ -759,12 +759,12 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 
 - (void)of_setPOSIXPermissions: (OFNumber *)permissions
-		   ofItemAtURL: (OFURL *)URL
+		   ofItemAtURI: (OFURI *)URI
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
-	OFString *path = URL.fileSystemRepresentation;
+	OFString *path = URI.fileSystemRepresentation;
 	int status;
 
 # ifdef OF_WINDOWS
@@ -777,7 +777,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (status != 0)
 		@throw [OFSetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			  attributes: attributes
 		     failedAttribute: OFFilePOSIXPermissions
 			       errNo: errno];
@@ -788,12 +788,12 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 - (void)of_setOwnerAccountName: (OFString *)owner
       andGroupOwnerAccountName: (OFString *)group
-		   ofItemAtURL: (OFURL *)URL
+		   ofItemAtURI: (OFURI *)URI
 		  attributeKey: (OFFileAttributeKey)attributeKey
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-	OFString *path = URL.fileSystemRepresentation;
+	OFString *path = URI.fileSystemRepresentation;
 	uid_t uid = -1;
 	gid_t gid = -1;
 	OFStringEncoding encoding;
@@ -813,7 +813,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			if ((passwd = getpwnam([owner
 			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFSetItemAttributesFailedException
-				    exceptionWithURL: URL
+				    exceptionWithURI: URI
 					  attributes: attributes
 				     failedAttribute: attributeKey
 					       errNo: errno];
@@ -827,7 +827,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			if ((group_ = getgrnam([group
 			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFSetItemAttributesFailedException
-				    exceptionWithURL: URL
+				    exceptionWithURI: URI
 					  attributes: attributes
 				     failedAttribute: attributeKey
 					       errNo: errno];
@@ -842,7 +842,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
 		@throw [OFSetItemAttributesFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			  attributes: attributes
 		     failedAttribute: attributeKey
 			       errNo: errno];
@@ -851,7 +851,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 #endif
 }
 
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator OF_GENERIC(OFFileAttributeKey) *keyEnumerator;
@@ -860,10 +860,10 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	id object;
 	OFDate *lastAccessDate, *modificationDate;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
 	keyEnumerator = [attributes keyEnumerator];
@@ -876,18 +876,18 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			continue;
 		else if ([key isEqual: OFFilePOSIXPermissions])
 			[self of_setPOSIXPermissions: object
-					 ofItemAtURL: URL
+					 ofItemAtURI: URI
 					  attributes: attributes];
 		else if ([key isEqual: OFFileOwnerAccountName])
 			[self of_setOwnerAccountName: object
 			    andGroupOwnerAccountName: nil
-					 ofItemAtURL: URL
+					 ofItemAtURI: URI
 					attributeKey: key
 					  attributes: attributes];
 		else if ([key isEqual: OFFileGroupOwnerAccountName])
 			[self of_setOwnerAccountName: nil
 			    andGroupOwnerAccountName: object
-					 ofItemAtURL: URL
+					 ofItemAtURI: URI
 					attributeKey: key
 					  attributes: attributes];
 		else
@@ -902,25 +902,25 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (lastAccessDate != nil || modificationDate != nil)
 		[self of_setLastAccessDate: lastAccessDate
 		       andModificationDate: modificationDate
-			       ofItemAtURL: URL
+			       ofItemAtURI: URI
 				attributes: attributes];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (bool)fileExistsAtURL: (OFURL *)URL
+- (bool)fileExistsAtURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 	Stat s;
 	bool ret;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (statWrapper(URL.fileSystemRepresentation, &s) != 0) {
+	if (statWrapper(URI.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -932,19 +932,19 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	return ret;
 }
 
-- (bool)directoryExistsAtURL: (OFURL *)URL
+- (bool)directoryExistsAtURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 	Stat s;
 	bool ret;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (statWrapper(URL.fileSystemRepresentation, &s) != 0) {
+	if (statWrapper(URI.fileSystemRepresentation, &s) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -956,18 +956,18 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	return ret;
 }
 
-- (void)createDirectoryAtURL: (OFURL *)URL
+- (void)createDirectoryAtURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	path = URL.fileSystemRepresentation;
+	path = URI.fileSystemRepresentation;
 
 #if defined(OF_WINDOWS)
 	int status;
@@ -980,7 +980,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (status != 0)
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: errno];
 #elif defined(OF_AMIGAOS)
 	BPTR lock;
@@ -988,33 +988,33 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if ((lock = CreateDir(
 	    [path cStringWithEncoding: [OFLocale encoding]])) == 0)
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: lastError()];
 
 	UnLock(lock);
 #else
 	if (mkdir([path cStringWithEncoding: [OFLocale encoding]], 0777) != 0)
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: errno];
 #endif
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI
 {
-	OFMutableArray *URLs = [OFMutableArray array];
+	OFMutableArray *URIs = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	path = URL.fileSystemRepresentation;
+	path = URI.fileSystemRepresentation;
 
 #if defined(OF_WINDOWS)
 	HANDLE handle;
@@ -1027,7 +1027,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		if ((handle = FindFirstFileW(path.UTF16String,
 		    &fd)) == INVALID_HANDLE_VALUE)
 			@throw [OFOpenItemFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 					mode: nil
 				       errNo: lastError()];
 
@@ -1042,8 +1042,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 				file = [[OFString alloc]
 				    initWithUTF16String: fd.cFileName];
 				@try {
-					[URLs addObject: [URL
-					    URLByAppendingPathComponent: file]];
+					[URIs addObject: [URI
+					    URIByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1065,7 +1065,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		    [path cStringWithEncoding: encoding], &fd)) ==
 		    INVALID_HANDLE_VALUE)
 			@throw [OFOpenItemFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 					mode: nil
 				       errNo: lastError()];
 
@@ -1081,8 +1081,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 				    initWithCString: fd.cFileName
 					   encoding: encoding];
 				@try {
-					[URLs addObject: [URL
-					    URLByAppendingPathComponent: file]];
+					[URIs addObject: [URI
+					    URIByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1104,7 +1104,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if ((lock = Lock([path cStringWithEncoding: encoding],
 	    SHARED_LOCK)) == 0)
 		@throw [OFOpenItemFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 				mode: nil
 			       errNo: lastError()];
 
@@ -1117,7 +1117,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		    EX_DoCurrentDir, TRUE, EX_DataFields, EXF_NAME,
 		    TAG_END)) == NULL)
 			@throw [OFOpenItemFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 					mode: nil
 				       errNo: lastError()];
 
@@ -1128,8 +1128,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 					   encoding: encoding];
 
 				@try {
-					[URLs addObject: [URL
-					    URLByAppendingPathComponent: file]];
+					[URIs addObject: [URI
+					    URIByAppendingPathComponent: file]];
 				} @finally {
 					[file release];
 				}
@@ -1142,7 +1142,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 		if (!Examine(lock, &fib))
 			@throw [OFOpenItemFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 					mode: nil
 				       errNo: lastError()];
 
@@ -1151,8 +1151,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			    initWithCString: fib.fib_FileName
 				   encoding: encoding];
 			@try {
-				[URLs addObject:
-				    [URL URLByAppendingPathComponent: file]];
+				[URIs addObject:
+				    [URI URIByAppendingPathComponent: file]];
 			} @finally {
 				[file release];
 			}
@@ -1171,7 +1171,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	OFStringEncoding encoding = [OFLocale encoding];
 	DIR *dir;
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
-		@throw [OFOpenItemFailedException exceptionWithURL: URL
+		@throw [OFOpenItemFailedException exceptionWithURI: URI
 							      mode: nil
 							     errNo: errno];
 
@@ -1221,8 +1221,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			file = [[OFString alloc] initWithCString: dirent->d_name
 							encoding: encoding];
 			@try {
-				[URLs addObject:
-				    [URL URLByAppendingPathComponent: file]];
+				[URIs addObject:
+				    [URI URIByAppendingPathComponent: file]];
 			} @finally {
 				[file release];
 			}
@@ -1235,37 +1235,37 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	}
 #endif
 
-	[URLs makeImmutable];
+	[URIs makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 
-	return URLs;
+	return URIs;
 }
 
-- (void)removeItemAtURL: (OFURL *)URL
+- (void)removeItemAtURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 	int error;
 	Stat s;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	path = URL.fileSystemRepresentation;
+	path = URI.fileSystemRepresentation;
 
 	if ((error = lstatWrapper(path, &s)) != 0)
-		@throw [OFRemoveItemFailedException exceptionWithURL: URL
+		@throw [OFRemoveItemFailedException exceptionWithURI: URI
 							       errNo: error];
 
 	if (S_ISDIR(s.st_mode)) {
-		OFArray OF_GENERIC(OFURL *) *contents;
+		OFArray OF_GENERIC(OFURI *) *contents;
 
 		@try {
-			contents = [self contentsOfDirectoryAtURL: URL];
+			contents = [self contentsOfDirectoryAtURI: URI];
 		} @catch (id e) {
 			/*
 			 * Only convert exceptions to
@@ -1276,16 +1276,16 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFRemoveItemFailedException
-				    exceptionWithURL: URL
+				    exceptionWithURI: URI
 					       errNo: [e errNo]];
 
 			@throw e;
 		}
 
-		for (OFURL *item in contents) {
+		for (OFURI *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[self removeItemAtURL: item];
+			[self removeItemAtURI: item];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -1303,7 +1303,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 		if (status != 0)
 			@throw [OFRemoveItemFailedException
-				exceptionWithURL: URL
+				exceptionWithURI: URI
 					   errNo: errno];
 	} else {
 		int status;
@@ -1318,7 +1318,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 		if (status != 0)
 			@throw [OFRemoveItemFailedException
-			    exceptionWithURL: URL
+			    exceptionWithURI: URI
 				       errNo: errno];
 #endif
 	}
@@ -1326,7 +1326,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 #ifdef OF_AMIGAOS
 	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]]))
 		@throw [OFRemoveItemFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			       errNo: lastError()];
 #endif
 
@@ -1334,7 +1334,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
-- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *sourcePath, *destinationPath;
@@ -1355,8 +1355,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (link([sourcePath cStringWithEncoding: encoding],
 	    [destinationPath cStringWithEncoding: encoding]) != 0)
 		@throw [OFLinkItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: errno];
 # else
 	if (createHardLinkWFuncPtr == NULL)
@@ -1366,8 +1366,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (!createHardLinkWFuncPtr(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
 		@throw [OFLinkItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: lastError()];
 # endif
 
@@ -1376,19 +1376,19 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 #endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
-- (void)createSymbolicLinkAtURL: (OFURL *)URL
+- (void)createSymbolicLinkAtURI: (OFURI *)URI
 	    withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (URL == nil || target == nil)
+	if (URI == nil || target == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![URL.scheme isEqual: _scheme])
+	if (![URI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	path = URL.fileSystemRepresentation;
+	path = URI.fileSystemRepresentation;
 
 # ifndef OF_WINDOWS
 	OFStringEncoding encoding = [OFLocale encoding];
@@ -1396,7 +1396,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (symlink([target cStringWithEncoding: encoding],
 	    [path cStringWithEncoding: encoding]) != 0)
 		@throw [OFCreateSymbolicLinkFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			      target: target
 			       errNo: errno];
 # else
@@ -1407,7 +1407,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	if (!createSymbolicLinkWFuncPtr(path.UTF16String, target.UTF16String,
 	    0))
 		@throw [OFCreateSymbolicLinkFailedException
-		    exceptionWithURL: URL
+		    exceptionWithURI: URI
 			      target: target
 			       errNo: lastError()];
 # endif
@@ -1416,7 +1416,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 #endif
 
-- (bool)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (bool)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	void *pool;
 
@@ -1424,10 +1424,10 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	    ![destination.scheme isEqual: _scheme])
 		return false;
 
-	if ([self fileExistsAtURL: destination])
+	if ([self fileExistsAtURI: destination])
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: EEXIST];
 
 	pool = objc_autoreleasePoolPush();
@@ -1440,8 +1440,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	    [destination.fileSystemRepresentation
 	    cStringWithEncoding: encoding]))
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: lastError()];
 #else
 	int status;
@@ -1464,8 +1464,8 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	if (status != 0)
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: errno];
 #endif
 

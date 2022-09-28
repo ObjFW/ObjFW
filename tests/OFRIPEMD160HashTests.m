@@ -30,8 +30,8 @@ const uint8_t testFileRIPEMD160[20] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRIPEMD160Hash *RIPEMD160, *RIPEMD160Copy;
-	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
-	OFStream *file = [OFURLHandler openItemAtURL: URL mode: @"r"];
+	OFURI *URI = [OFURI URIWithString: @"objfw-embedded:///testfile.bin"];
+	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (RIPEMD160 = [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true]))

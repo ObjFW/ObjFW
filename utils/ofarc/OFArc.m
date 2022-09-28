@@ -25,7 +25,7 @@
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
@@ -461,7 +461,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", e.URL.fileSystemRepresentation,
+			    @"dir", e.URI.fileSystemRepresentation,
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {

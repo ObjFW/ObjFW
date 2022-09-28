@@ -33,7 +33,7 @@
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
@@ -514,7 +514,7 @@ normalizedKey(OFString *key)
 - (void)createResponse
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURL *URL;
+	OFMutableURI *URI;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
 	size_t pos;
@@ -534,11 +534,11 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URL = [OFMutableURL URL];
-	URL.scheme = @"http";
-	URL.host = _host;
+	URI = [OFMutableURI URI];
+	URI.scheme = @"http";
+	URI.host = _host;
 	if (_port != 80)
-		URL.port = [OFNumber numberWithUnsignedShort: _port];
+		URI.port = [OFNumber numberWithUnsignedShort: _port];
 
 	@try {
 		if ((pos = [_path rangeOfString: @"?"].location) !=
@@ -548,19 +548,19 @@ normalizedKey(OFString *key)
 			path = [_path substringToIndex: pos];
 			query = [_path substringFromIndex: pos + 1];
 
-			URL.URLEncodedPath = path;
-			URL.URLEncodedQuery = query;
+			URI.percentEncodedPath = path;
+			URI.percentEncodedQuery = query;
 		} else
-			URL.URLEncodedPath = _path;
+			URI.percentEncodedPath = _path;
 	} @catch (OFInvalidFormatException *e) {
 		objc_autoreleasePoolPop(pool);
 		[self sendErrorAndClose: 400];
 		return;
 	}
 
-	[URL makeImmutable];
+	[URI makeImmutable];
 
-	request = [OFHTTPRequest requestWithURL: URL];
+	request = [OFHTTPRequest requestWithURI: URI];
 	request.method = _method;
 	request.protocolVersion =
 	    (OFHTTPRequestProtocolVersion){ 1, _HTTPMinorVersion };

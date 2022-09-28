@@ -77,13 +77,13 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param URL The URL to the ZIP file
+ * @param URI The URI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode;
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -105,13 +105,13 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param URL The URL to the ZIP file
+ * @param URI The URI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.

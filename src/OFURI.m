@@ -18,12 +18,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFURL.h"
+#import "OFURI.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
-# import "OFFileURLHandler.h"
+# import "OFFileURIHandler.h"
 #endif
 #import "OFNumber.h"
 #import "OFOnce.h"
@@ -34,66 +34,66 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
-@interface OFURLAllowedCharacterSetBase: OFCharacterSet
+@interface OFURIAllowedCharacterSetBase: OFCharacterSet
 @end
 
-@interface OFURLAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@interface OFURIAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURLSchemeAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@interface OFURISchemeAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURLPathAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@interface OFURIPathAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURLQueryOrFragmentAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@interface OFURIQueryOrFragmentAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURLQueryKeyValueAllowedCharacterSet: OFURLAllowedCharacterSetBase
+@interface OFURIQueryKeyValueAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-static OFCharacterSet *URLAllowedCharacterSet = nil;
-static OFCharacterSet *URLSchemeAllowedCharacterSet = nil;
-static OFCharacterSet *URLPathAllowedCharacterSet = nil;
-static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
-static OFCharacterSet *URLQueryKeyValueAllowedCharacterSet = nil;
+static OFCharacterSet *URIAllowedCharacterSet = nil;
+static OFCharacterSet *URISchemeAllowedCharacterSet = nil;
+static OFCharacterSet *URIPathAllowedCharacterSet = nil;
+static OFCharacterSet *URIQueryOrFragmentAllowedCharacterSet = nil;
+static OFCharacterSet *URIQueryKeyValueAllowedCharacterSet = nil;
 
-static OFOnceControl URLAllowedCharacterSetOnce = OFOnceControlInitValue;
-static OFOnceControl URLQueryOrFragmentAllowedCharacterSetOnce =
+static OFOnceControl URIAllowedCharacterSetOnce = OFOnceControlInitValue;
+static OFOnceControl URIQueryOrFragmentAllowedCharacterSetOnce =
     OFOnceControlInitValue;
 
 static void
-initURLAllowedCharacterSet(void)
+initURIAllowedCharacterSet(void)
 {
-	URLAllowedCharacterSet = [[OFURLAllowedCharacterSet alloc] init];
+	URIAllowedCharacterSet = [[OFURIAllowedCharacterSet alloc] init];
 }
 
 static void
-initURLSchemeAllowedCharacterSet(void)
+initURISchemeAllowedCharacterSet(void)
 {
-	URLSchemeAllowedCharacterSet =
-	    [[OFURLSchemeAllowedCharacterSet alloc] init];
+	URISchemeAllowedCharacterSet =
+	    [[OFURISchemeAllowedCharacterSet alloc] init];
 }
 
 static void
-initURLPathAllowedCharacterSet(void)
+initURIPathAllowedCharacterSet(void)
 {
-	URLPathAllowedCharacterSet =
-	    [[OFURLPathAllowedCharacterSet alloc] init];
+	URIPathAllowedCharacterSet =
+	    [[OFURIPathAllowedCharacterSet alloc] init];
 }
 
 static void
-initURLQueryOrFragmentAllowedCharacterSet(void)
+initURIQueryOrFragmentAllowedCharacterSet(void)
 {
-	URLQueryOrFragmentAllowedCharacterSet =
-	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] init];
+	URIQueryOrFragmentAllowedCharacterSet =
+	    [[OFURIQueryOrFragmentAllowedCharacterSet alloc] init];
 }
 
 static void
-initURLQueryKeyValueAllowedCharacterSet(void)
+initURIQueryKeyValueAllowedCharacterSet(void)
 {
-	URLQueryKeyValueAllowedCharacterSet =
-	    [[OFURLQueryKeyValueAllowedCharacterSet alloc] init];
+	URIQueryKeyValueAllowedCharacterSet =
+	    [[OFURIQueryKeyValueAllowedCharacterSet alloc] init];
 }
 
 OF_DIRECT_MEMBERS
@@ -107,7 +107,7 @@ OF_DIRECT_MEMBERS
 @end
 
 bool
-OFURLIsIPv6Host(OFString *host)
+OFURIIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
@@ -127,7 +127,7 @@ OFURLIsIPv6Host(OFString *host)
 	return hasColon;
 }
 
-@implementation OFURLAllowedCharacterSetBase
+@implementation OFURIAllowedCharacterSetBase
 - (instancetype)autorelease
 {
 	return self;
@@ -148,7 +148,7 @@ OFURLIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURLAllowedCharacterSet
+@implementation OFURIAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -177,7 +177,7 @@ OFURLIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURLSchemeAllowedCharacterSet
+@implementation OFURISchemeAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -194,7 +194,7 @@ OFURLIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURLPathAllowedCharacterSet
+@implementation OFURIPathAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -226,7 +226,7 @@ OFURLIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURLQueryOrFragmentAllowedCharacterSet
+@implementation OFURIQueryOrFragmentAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -259,7 +259,7 @@ OFURLIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURLQueryKeyValueAllowedCharacterSet
+@implementation OFURIQueryKeyValueAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -323,7 +323,7 @@ OFURLIsIPv6Host(OFString *host)
 @end
 
 void
-OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
+OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -336,97 +336,97 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	objc_autoreleasePoolPop(pool);
 }
 
-@implementation OFCharacterSet (URLCharacterSets)
-+ (OFCharacterSet *)URLSchemeAllowedCharacterSet
+@implementation OFCharacterSet (URICharacterSets)
++ (OFCharacterSet *)URISchemeAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURLSchemeAllowedCharacterSet);
+	OFOnce(&onceControl, initURISchemeAllowedCharacterSet);
 
-	return URLSchemeAllowedCharacterSet;
+	return URISchemeAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URLHostAllowedCharacterSet
++ (OFCharacterSet *)URIHostAllowedCharacterSet
 {
-	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
 
-	return URLAllowedCharacterSet;
+	return URIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URLUserAllowedCharacterSet
++ (OFCharacterSet *)URIUserAllowedCharacterSet
 {
-	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
 
-	return URLAllowedCharacterSet;
+	return URIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URLPasswordAllowedCharacterSet
++ (OFCharacterSet *)URIPasswordAllowedCharacterSet
 {
-	OFOnce(&URLAllowedCharacterSetOnce, initURLAllowedCharacterSet);
+	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
 
-	return URLAllowedCharacterSet;
+	return URIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URLPathAllowedCharacterSet
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURLPathAllowedCharacterSet);
-
-	return URLPathAllowedCharacterSet;
-}
-
-+ (OFCharacterSet *)URLQueryAllowedCharacterSet
-{
-	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
-	    initURLQueryOrFragmentAllowedCharacterSet);
-
-	return URLQueryOrFragmentAllowedCharacterSet;
-}
-
-+ (OFCharacterSet *)URLQueryKeyValueAllowedCharacterSet
++ (OFCharacterSet *)URIPathAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURLQueryKeyValueAllowedCharacterSet);
+	OFOnce(&onceControl, initURIPathAllowedCharacterSet);
 
-	return URLQueryKeyValueAllowedCharacterSet;
+	return URIPathAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URLFragmentAllowedCharacterSet
++ (OFCharacterSet *)URIQueryAllowedCharacterSet
 {
-	OFOnce(&URLQueryOrFragmentAllowedCharacterSetOnce,
-	    initURLQueryOrFragmentAllowedCharacterSet);
+	OFOnce(&URIQueryOrFragmentAllowedCharacterSetOnce,
+	    initURIQueryOrFragmentAllowedCharacterSet);
 
-	return URLQueryOrFragmentAllowedCharacterSet;
+	return URIQueryOrFragmentAllowedCharacterSet;
+}
+
++ (OFCharacterSet *)URIQueryKeyValueAllowedCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURIQueryKeyValueAllowedCharacterSet);
+
+	return URIQueryKeyValueAllowedCharacterSet;
+}
+
++ (OFCharacterSet *)URIFragmentAllowedCharacterSet
+{
+	OFOnce(&URIQueryOrFragmentAllowedCharacterSetOnce,
+	    initURIQueryOrFragmentAllowedCharacterSet);
+
+	return URIQueryOrFragmentAllowedCharacterSet;
 }
 @end
 
-@implementation OFURL
-+ (instancetype)URL
+@implementation OFURI
++ (instancetype)URI
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)URLWithString: (OFString *)string
++ (instancetype)URIWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ (instancetype)URLWithString: (OFString *)string
-		relativeToURL: (OFURL *)URL
++ (instancetype)URIWithString: (OFString *)string
+		relativeToURI: (OFURI *)URI
 {
 	return [[[self alloc] initWithString: string
-			       relativeToURL: URL] autorelease];
+			       relativeToURI: URI] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)fileURLWithPath: (OFString *)path
++ (instancetype)fileURIWithPath: (OFString *)path
 {
-	return [[[self alloc] initFileURLWithPath: path] autorelease];
+	return [[[self alloc] initFileURIWithPath: path] autorelease];
 }
 
-+ (instancetype)fileURLWithPath: (OFString *)path
++ (instancetype)fileURIWithPath: (OFString *)path
 		    isDirectory: (bool)isDirectory
 {
-	return [[[self alloc] initFileURLWithPath: path
+	return [[[self alloc] initFileURIWithPath: path
 				      isDirectory: isDirectory] autorelease];
 }
 #endif
@@ -453,12 +453,12 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
 			*tmp2 = OFASCIIToLower(*tmp2);
 
-		_URLEncodedScheme = [[OFString alloc]
+		_percentEncodedScheme = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: tmp - UTF8String];
 
-		OFURLVerifyIsEscaped(_URLEncodedScheme,
-		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
+		OFURIVerifyIsEscaped(_percentEncodedScheme,
+		    [OFCharacterSet URISchemeAllowedCharacterSet]);
 
 		UTF8String = tmp + 3;
 
@@ -477,20 +477,20 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 				*tmp3 = '\0';
 				tmp3++;
 
-				_URLEncodedUser = [[OFString alloc]
+				_percentEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
-				_URLEncodedPassword = [[OFString alloc]
+				_percentEncodedPassword = [[OFString alloc]
 				    initWithUTF8String: tmp3];
 
-				OFURLVerifyIsEscaped(_URLEncodedPassword,
+				OFURIVerifyIsEscaped(_percentEncodedPassword,
 				    [OFCharacterSet
-				    URLPasswordAllowedCharacterSet]);
+				    URIPasswordAllowedCharacterSet]);
 			} else
-				_URLEncodedUser = [[OFString alloc]
+				_percentEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
 
-			OFURLVerifyIsEscaped(_URLEncodedUser,
-			    [OFCharacterSet URLUserAllowedCharacterSet]);
+			OFURIVerifyIsEscaped(_percentEncodedUser,
+			    [OFCharacterSet URIUserAllowedCharacterSet]);
 
 			UTF8String = tmp2;
 		}
@@ -509,7 +509,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 			UTF8String++;
 
-			_URLEncodedHost = [[OFString alloc]
+			_percentEncodedHost = [[OFString alloc]
 			    initWithUTF8String: tmp2
 					length: UTF8String - tmp2];
 
@@ -547,7 +547,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			*tmp2 = '\0';
 			tmp2++;
 
-			_URLEncodedHost = [[OFString alloc]
+			_percentEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
 			portString = [OFString stringWithUTF8String: tmp2];
@@ -558,40 +558,40 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			_port = [[OFNumber alloc] initWithUnsignedShort:
 			    portString.unsignedLongLongValue];
 		} else {
-			_URLEncodedHost = [[OFString alloc]
+			_percentEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			if (_URLEncodedHost.length == 0) {
-				[_URLEncodedHost release];
-				_URLEncodedHost = nil;
+			if (_percentEncodedHost.length == 0) {
+				[_percentEncodedHost release];
+				_percentEncodedHost = nil;
 			}
 		}
 
-		if (_URLEncodedHost != nil && !isIPv6Host)
-			OFURLVerifyIsEscaped(_URLEncodedHost,
-			    [OFCharacterSet URLHostAllowedCharacterSet]);
+		if (_percentEncodedHost != nil && !isIPv6Host)
+			OFURIVerifyIsEscaped(_percentEncodedHost,
+			    [OFCharacterSet URIHostAllowedCharacterSet]);
 
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				_URLEncodedFragment = [[OFString alloc]
+				_percentEncodedFragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				OFURLVerifyIsEscaped(_URLEncodedFragment,
+				OFURIVerifyIsEscaped(_percentEncodedFragment,
 				    [OFCharacterSet
-				    URLFragmentAllowedCharacterSet]);
+				    URIFragmentAllowedCharacterSet]);
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				_URLEncodedQuery = [[OFString alloc]
+				_percentEncodedQuery = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
 
-				OFURLVerifyIsEscaped(_URLEncodedQuery,
+				OFURIVerifyIsEscaped(_percentEncodedQuery,
 				    [OFCharacterSet
-				    URLQueryAllowedCharacterSet]);
+				    URIQueryAllowedCharacterSet]);
 			}
 
 			/*
@@ -614,11 +614,11 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 # pragma GCC diagnostic pop
 #endif
 
-			_URLEncodedPath = [[OFString alloc]
+			_percentEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			OFURLVerifyIsEscaped(_URLEncodedPath,
-			    [OFCharacterSet URLPathAllowedCharacterSet]);
+			OFURIVerifyIsEscaped(_percentEncodedPath,
+			    [OFCharacterSet URIPathAllowedCharacterSet]);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -632,7 +632,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	return self;
 }
 
-- (instancetype)initWithString: (OFString *)string relativeToURL: (OFURL *)URL
+- (instancetype)initWithString: (OFString *)string relativeToURI: (OFURI *)URI
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -645,48 +645,48 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		void *pool = objc_autoreleasePoolPush();
 		char *tmp;
 
-		_URLEncodedScheme = [URL->_URLEncodedScheme copy];
-		_URLEncodedHost = [URL->_URLEncodedHost copy];
-		_port = [URL->_port copy];
-		_URLEncodedUser = [URL->_URLEncodedUser copy];
-		_URLEncodedPassword = [URL->_URLEncodedPassword copy];
+		_percentEncodedScheme = [URI->_percentEncodedScheme copy];
+		_percentEncodedHost = [URI->_percentEncodedHost copy];
+		_port = [URI->_port copy];
+		_percentEncodedUser = [URI->_percentEncodedUser copy];
+		_percentEncodedPassword = [URI->_percentEncodedPassword copy];
 
 		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			_URLEncodedFragment = [[OFString alloc]
+			_percentEncodedFragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			OFURLVerifyIsEscaped(_URLEncodedFragment,
-			    [OFCharacterSet URLFragmentAllowedCharacterSet]);
+			OFURIVerifyIsEscaped(_percentEncodedFragment,
+			    [OFCharacterSet URIFragmentAllowedCharacterSet]);
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			_URLEncodedQuery = [[OFString alloc]
+			_percentEncodedQuery = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
 
-			OFURLVerifyIsEscaped(_URLEncodedQuery,
-			    [OFCharacterSet URLQueryAllowedCharacterSet]);
+			OFURIVerifyIsEscaped(_percentEncodedQuery,
+			    [OFCharacterSet URIQueryAllowedCharacterSet]);
 		}
 
 		if (*UTF8String == '/')
-			_URLEncodedPath = [[OFString alloc]
+			_percentEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 		else {
 			OFString *relativePath =
 			    [OFString stringWithUTF8String: UTF8String];
 
-			if ([URL->_URLEncodedPath hasSuffix: @"/"])
-				_URLEncodedPath = [[URL->_URLEncodedPath
+			if ([URI->_percentEncodedPath hasSuffix: @"/"])
+				_percentEncodedPath = [[URI->_percentEncodedPath
 				    stringByAppendingString: relativePath]
 				    copy];
 			else {
 				OFMutableString *path = [OFMutableString
 				    stringWithString:
-				    (URL->_URLEncodedPath != nil
-				    ? URL->_URLEncodedPath
+				    (URI->_percentEncodedPath != nil
+				    ? URI->_percentEncodedPath
 				    : @"/")];
 				OFRange range = [path
 				    rangeOfString: @"/"
@@ -703,12 +703,12 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 						    withString: relativePath];
 				[path makeImmutable];
 
-				_URLEncodedPath = [path copy];
+				_percentEncodedPath = [path copy];
 			}
 		}
 
-		OFURLVerifyIsEscaped(_URLEncodedPath,
-		    [OFCharacterSet URLPathAllowedCharacterSet]);
+		OFURIVerifyIsEscaped(_percentEncodedPath,
+		    [OFCharacterSet URIPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -722,7 +722,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 }
 
 #ifdef OF_HAVE_FILES
-- (instancetype)initFileURLWithPath: (OFString *)path
+- (instancetype)initFileURIWithPath: (OFString *)path
 {
 	bool isDirectory;
 
@@ -735,19 +735,19 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		@throw e;
 	}
 
-	self = [self initFileURLWithPath: path isDirectory: isDirectory];
+	self = [self initFileURIWithPath: path isDirectory: isDirectory];
 
 	return self;
 }
 
-- (instancetype)initFileURLWithPath: (OFString *)path
+- (instancetype)initFileURIWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *URLEncodedHost = nil;
+		OFString *percentEncodedHost = nil;
 
 		if (!path.absolutePath) {
 			OFString *currentDirectoryPath = [OFFileManager
@@ -758,17 +758,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			path = path.stringByStandardizingPath;
 		}
 
-		path = [path
-		    of_pathToURLPathWithURLEncodedHost: &URLEncodedHost];
-		_URLEncodedHost = [URLEncodedHost copy];
+		path = [path of_pathToURIPathWithPercentEncodedHost:
+		    &percentEncodedHost];
+		_percentEncodedHost = [percentEncodedHost copy];
 
 		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
 
-		_URLEncodedScheme = @"file";
-		_URLEncodedPath = [[path
-		    stringByURLEncodingWithAllowedCharacters:
-		    [OFCharacterSet URLPathAllowedCharacterSet]] copy];
+		_percentEncodedScheme = @"file";
+		_percentEncodedPath = [[path
+		    stringByAddingPercentEncodingWithAllowedCharacters:
+		    [OFCharacterSet URIPathAllowedCharacterSet]] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -805,52 +805,52 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (void)dealloc
 {
-	[_URLEncodedScheme release];
-	[_URLEncodedHost release];
+	[_percentEncodedScheme release];
+	[_percentEncodedHost release];
 	[_port release];
-	[_URLEncodedUser release];
-	[_URLEncodedPassword release];
-	[_URLEncodedPath release];
-	[_URLEncodedQuery release];
-	[_URLEncodedFragment release];
+	[_percentEncodedUser release];
+	[_percentEncodedPassword release];
+	[_percentEncodedPath release];
+	[_percentEncodedQuery release];
+	[_percentEncodedFragment release];
 
 	[super dealloc];
 }
 
 - (bool)isEqual: (id)object
 {
-	OFURL *URL;
+	OFURI *URI;
 
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFURL class]])
+	if (![object isKindOfClass: [OFURI class]])
 		return false;
 
-	URL = object;
+	URI = object;
 
-	if (URL->_URLEncodedScheme != _URLEncodedScheme &&
-	    ![URL->_URLEncodedScheme isEqual: _URLEncodedScheme])
+	if (URI->_percentEncodedScheme != _percentEncodedScheme &&
+	    ![URI->_percentEncodedScheme isEqual: _percentEncodedScheme])
 		return false;
-	if (URL->_URLEncodedHost != _URLEncodedHost &&
-	    ![URL->_URLEncodedHost isEqual: _URLEncodedHost])
+	if (URI->_percentEncodedHost != _percentEncodedHost &&
+	    ![URI->_percentEncodedHost isEqual: _percentEncodedHost])
 		return false;
-	if (URL->_port != _port && ![URL->_port isEqual: _port])
+	if (URI->_port != _port && ![URI->_port isEqual: _port])
 		return false;
-	if (URL->_URLEncodedUser != _URLEncodedUser &&
-	    ![URL->_URLEncodedUser isEqual: _URLEncodedUser])
+	if (URI->_percentEncodedUser != _percentEncodedUser &&
+	    ![URI->_percentEncodedUser isEqual: _percentEncodedUser])
 		return false;
-	if (URL->_URLEncodedPassword != _URLEncodedPassword &&
-	    ![URL->_URLEncodedPassword isEqual: _URLEncodedPassword])
+	if (URI->_percentEncodedPassword != _percentEncodedPassword &&
+	    ![URI->_percentEncodedPassword isEqual: _percentEncodedPassword])
 		return false;
-	if (URL->_URLEncodedPath != _URLEncodedPath &&
-	    ![URL->_URLEncodedPath isEqual: _URLEncodedPath])
+	if (URI->_percentEncodedPath != _percentEncodedPath &&
+	    ![URI->_percentEncodedPath isEqual: _percentEncodedPath])
 		return false;
-	if (URL->_URLEncodedQuery != _URLEncodedQuery &&
-	    ![URL->_URLEncodedQuery isEqual: _URLEncodedQuery])
+	if (URI->_percentEncodedQuery != _percentEncodedQuery &&
+	    ![URI->_percentEncodedQuery isEqual: _percentEncodedQuery])
 		return false;
-	if (URL->_URLEncodedFragment != _URLEncodedFragment &&
-	    ![URL->_URLEncodedFragment isEqual: _URLEncodedFragment])
+	if (URI->_percentEncodedFragment != _percentEncodedFragment &&
+	    ![URI->_percentEncodedFragment isEqual: _percentEncodedFragment])
 		return false;
 
 	return true;
@@ -862,14 +862,14 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 	OFHashInit(&hash);
 
-	OFHashAddHash(&hash, _URLEncodedScheme.hash);
-	OFHashAddHash(&hash, _URLEncodedHost.hash);
+	OFHashAddHash(&hash, _percentEncodedScheme.hash);
+	OFHashAddHash(&hash, _percentEncodedHost.hash);
 	OFHashAddHash(&hash, _port.hash);
-	OFHashAddHash(&hash, _URLEncodedUser.hash);
-	OFHashAddHash(&hash, _URLEncodedPassword.hash);
-	OFHashAddHash(&hash, _URLEncodedPath.hash);
-	OFHashAddHash(&hash, _URLEncodedQuery.hash);
-	OFHashAddHash(&hash, _URLEncodedFragment.hash);
+	OFHashAddHash(&hash, _percentEncodedUser.hash);
+	OFHashAddHash(&hash, _percentEncodedPassword.hash);
+	OFHashAddHash(&hash, _percentEncodedPath.hash);
+	OFHashAddHash(&hash, _percentEncodedQuery.hash);
+	OFHashAddHash(&hash, _percentEncodedFragment.hash);
 
 	OFHashFinalize(&hash);
 
@@ -878,33 +878,33 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFString *)scheme
 {
-	return _URLEncodedScheme.stringByURLDecoding;
+	return _percentEncodedScheme.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedScheme
+- (OFString *)percentEncodedScheme
 {
-	return _URLEncodedScheme;
+	return _percentEncodedScheme;
 }
 
 - (OFString *)host
 {
-	if ([_URLEncodedHost hasPrefix: @"["] &&
-	    [_URLEncodedHost hasSuffix: @"]"]) {
-		OFString *host = [_URLEncodedHost substringWithRange:
-		    OFMakeRange(1, _URLEncodedHost.length - 2)];
+	if ([_percentEncodedHost hasPrefix: @"["] &&
+	    [_percentEncodedHost hasSuffix: @"]"]) {
+		OFString *host = [_percentEncodedHost substringWithRange:
+		    OFMakeRange(1, _percentEncodedHost.length - 2)];
 
-		if (!OFURLIsIPv6Host(host))
+		if (!OFURIIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;
 	}
 
-	return _URLEncodedHost.stringByURLDecoding;
+	return _percentEncodedHost.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedHost
+- (OFString *)percentEncodedHost
 {
-	return _URLEncodedHost;
+	return _percentEncodedHost;
 }
 
 - (OFNumber *)port
@@ -914,54 +914,54 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFString *)user
 {
-	return _URLEncodedUser.stringByURLDecoding;
+	return _percentEncodedUser.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedUser
+- (OFString *)percentEncodedUser
 {
-	return _URLEncodedUser;
+	return _percentEncodedUser;
 }
 
 - (OFString *)password
 {
-	return _URLEncodedPassword.stringByURLDecoding;
+	return _percentEncodedPassword.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedPassword
+- (OFString *)percentEncodedPassword
 {
-	return _URLEncodedPassword;
+	return _percentEncodedPassword;
 }
 
 - (OFString *)path
 {
-	return _URLEncodedPath.stringByURLDecoding;
+	return _percentEncodedPath.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedPath
+- (OFString *)percentEncodedPath
 {
-	return _URLEncodedPath;
+	return _percentEncodedPath;
 }
 
 - (OFArray *)pathComponents
 {
 	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_HAVE_FILES
-	bool isFile = [_URLEncodedScheme isEqual: @"file"];
+	bool isFile = [_percentEncodedScheme isEqual: @"file"];
 #endif
 	OFMutableArray *ret;
 	size_t count;
 
 #ifdef OF_HAVE_FILES
 	if (isFile) {
-		OFString *path = [_URLEncodedPath
-		    of_URLPathToPathWithURLEncodedHost: nil];
+		OFString *path = [_percentEncodedPath
+		    of_URIPathToPathWithPercentEncodedHost: nil];
 		ret = [[path.pathComponents mutableCopy] autorelease];
 
 		if (![ret.firstObject isEqual: @"/"])
 			[ret insertObject: @"/" atIndex: 0];
 	} else
 #endif
-		ret = [[[_URLEncodedPath componentsSeparatedByString: @"/"]
+		ret = [[[_percentEncodedPath componentsSeparatedByString: @"/"]
 		    mutableCopy] autorelease];
 
 	count = ret.count;
@@ -975,11 +975,11 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 #ifdef OF_HAVE_FILES
 		if (isFile)
 			component =
-			    [component of_pathComponentToURLPathComponent];
+			    [component of_pathComponentToURIPathComponent];
 #endif
 
-		[ret replaceObjectAtIndex: i
-			       withObject: component.stringByURLDecoding];
+		component = component.stringByRemovingPercentEncoding;
+		[ret replaceObjectAtIndex: i withObject: component];
 	}
 
 	[ret makeImmutable];
@@ -993,7 +993,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 - (OFString *)lastPathComponent
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *path = _URLEncodedPath;
+	OFString *path = _percentEncodedPath;
 	const char *UTF8String, *lastComponent;
 	size_t length;
 	OFString *ret;
@@ -1024,7 +1024,7 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	ret = [OFString
 	    stringWithUTF8String: lastComponent
 			  length: length - (lastComponent - UTF8String)];
-	ret = [ret.stringByURLDecoding retain];
+	ret = [ret.stringByRemovingPercentEncoding retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1033,12 +1033,12 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFString *)query
 {
-	return _URLEncodedQuery.stringByURLDecoding;
+	return _percentEncodedQuery.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedQuery
+- (OFString *)percentEncodedQuery
 {
-	return _URLEncodedQuery;
+	return _percentEncodedQuery;
 }
 
 - (OFDictionary OF_GENERIC(OFString *, OFString *) *)queryDictionary
@@ -1047,21 +1047,26 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	OFArray OF_GENERIC(OFString *) *pairs;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *ret;
 
-	if (_URLEncodedQuery == nil)
+	if (_percentEncodedQuery == nil)
 		return nil;
 
 	pool = objc_autoreleasePoolPush();
-	pairs = [_URLEncodedQuery componentsSeparatedByString: @"&"];
+	pairs = [_percentEncodedQuery componentsSeparatedByString: @"&"];
 	ret = [OFMutableDictionary dictionaryWithCapacity: pairs.count];
 
 	for (OFString *pair in pairs) {
 		OFArray *parts = [pair componentsSeparatedByString: @"="];
+		OFString *name, *value;
 
 		if (parts.count != 2)
 			@throw [OFInvalidFormatException exception];
 
-		[ret setObject: [[parts objectAtIndex: 1] stringByURLDecoding]
-			forKey: [[parts objectAtIndex: 0] stringByURLDecoding]];
+		name = [[parts objectAtIndex: 0]
+		    stringByRemovingPercentEncoding];
+		value = [[parts objectAtIndex: 1]
+		    stringByRemovingPercentEncoding];
+
+		[ret setObject: value forKey: name];
 	}
 
 	[ret makeImmutable];
@@ -1074,12 +1079,12 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFString *)fragment
 {
-	return _URLEncodedFragment.stringByURLDecoding;
+	return _percentEncodedFragment.stringByRemovingPercentEncoding;
 }
 
-- (OFString *)URLEncodedFragment
+- (OFString *)percentEncodedFragment
 {
-	return _URLEncodedFragment;
+	return _percentEncodedFragment;
 }
 
 - (id)copy
@@ -1089,17 +1094,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 - (id)mutableCopy
 {
-	OFURL *copy = [[OFMutableURL alloc] init];
+	OFURI *copy = [[OFMutableURI alloc] init];
 
 	@try {
-		copy->_URLEncodedScheme = [_URLEncodedScheme copy];
-		copy->_URLEncodedHost = [_URLEncodedHost copy];
+		copy->_percentEncodedScheme = [_percentEncodedScheme copy];
+		copy->_percentEncodedHost = [_percentEncodedHost copy];
 		copy->_port = [_port copy];
-		copy->_URLEncodedUser = [_URLEncodedUser copy];
-		copy->_URLEncodedPassword = [_URLEncodedPassword copy];
-		copy->_URLEncodedPath = [_URLEncodedPath copy];
-		copy->_URLEncodedQuery = [_URLEncodedQuery copy];
-		copy->_URLEncodedFragment = [_URLEncodedFragment copy];
+		copy->_percentEncodedUser = [_percentEncodedUser copy];
+		copy->_percentEncodedPassword = [_percentEncodedPassword copy];
+		copy->_percentEncodedPath = [_percentEncodedPath copy];
+		copy->_percentEncodedQuery = [_percentEncodedQuery copy];
+		copy->_percentEncodedFragment = [_percentEncodedFragment copy];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -1112,31 +1117,32 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	OFMutableString *ret = [OFMutableString string];
 
-	[ret appendFormat: @"%@://", _URLEncodedScheme];
+	[ret appendFormat: @"%@://", _percentEncodedScheme];
 
-	if (_URLEncodedUser != nil && _URLEncodedPassword != nil)
+	if (_percentEncodedUser != nil && _percentEncodedPassword != nil)
 		[ret appendFormat: @"%@:%@@",
-				   _URLEncodedUser, _URLEncodedPassword];
-	else if (_URLEncodedUser != nil)
-		[ret appendFormat: @"%@@", _URLEncodedUser];
+				   _percentEncodedUser,
+				   _percentEncodedPassword];
+	else if (_percentEncodedUser != nil)
+		[ret appendFormat: @"%@@", _percentEncodedUser];
 
-	if (_URLEncodedHost != nil)
-		[ret appendString: _URLEncodedHost];
+	if (_percentEncodedHost != nil)
+		[ret appendString: _percentEncodedHost];
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
-	if (_URLEncodedPath != nil) {
-		if (![_URLEncodedPath hasPrefix: @"/"])
+	if (_percentEncodedPath != nil) {
+		if (![_percentEncodedPath hasPrefix: @"/"])
 			@throw [OFInvalidFormatException exception];
 
-		[ret appendString: _URLEncodedPath];
+		[ret appendString: _percentEncodedPath];
 	}
 
-	if (_URLEncodedQuery != nil)
-		[ret appendFormat: @"?%@", _URLEncodedQuery];
+	if (_percentEncodedQuery != nil)
+		[ret appendFormat: @"?%@", _percentEncodedQuery];
 
-	if (_URLEncodedFragment != nil)
-		[ret appendFormat: @"#%@", _URLEncodedFragment];
+	if (_percentEncodedFragment != nil)
+		[ret appendFormat: @"#%@", _percentEncodedFragment];
 
 	[ret makeImmutable];
 
@@ -1149,13 +1155,14 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (![_URLEncodedScheme isEqual: @"file"])
+	if (![_percentEncodedScheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
 
-	if (![_URLEncodedPath hasPrefix: @"/"])
+	if (![_percentEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
 
-	path = [self.path of_URLPathToPathWithURLEncodedHost: _URLEncodedHost];
+	path = [self.path
+	    of_URIPathToPathWithPercentEncodedHost: _percentEncodedHost];
 
 	[path retain];
 
@@ -1165,29 +1172,29 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 }
 #endif
 
-- (OFURL *)URLByAppendingPathComponent: (OFString *)component
+- (OFURI *)URIByAppendingPathComponent: (OFString *)component
 {
-	OFMutableURL *URL = [[self mutableCopy] autorelease];
-	[URL appendPathComponent: component];
-	[URL makeImmutable];
-	return URL;
+	OFMutableURI *URI = [[self mutableCopy] autorelease];
+	[URI appendPathComponent: component];
+	[URI makeImmutable];
+	return URI;
 }
 
-- (OFURL *)URLByAppendingPathComponent: (OFString *)component
+- (OFURI *)URIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableURL *URL = [[self mutableCopy] autorelease];
-	[URL appendPathComponent: component isDirectory: isDirectory];
-	[URL makeImmutable];
-	return URL;
+	OFMutableURI *URI = [[self mutableCopy] autorelease];
+	[URI appendPathComponent: component isDirectory: isDirectory];
+	[URI makeImmutable];
+	return URI;
 }
 
-- (OFURL *)URLByStandardizingPath
+- (OFURI *)URIByStandardizingPath
 {
-	OFMutableURL *URL = [[self mutableCopy] autorelease];
-	[URL standardizePath];
-	[URL makeImmutable];
-	return URL;
+	OFMutableURI *URI = [[self mutableCopy] autorelease];
+	[URI standardizePath];
+	[URI makeImmutable];
+	return URI;
 }
 
 - (OFString *)description

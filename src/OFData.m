@@ -29,8 +29,8 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
@@ -93,9 +93,9 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
+	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
 }
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
@@ -215,13 +215,13 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFStream *stream = [OFURLHandler openItemAtURL: URL mode: @"r"];
+		OFStream *stream = [OFURIHandler openItemAtURI: URI mode: @"r"];
 		size_t pageSize;
 		unsigned char *buffer;
 
@@ -591,11 +591,11 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[OFURLHandler openItemAtURL: URL mode: @"w"] writeData: self];
+	[[OFURIHandler openItemAtURI: URI mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
 }

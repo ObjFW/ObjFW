@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFCreateDirectoryFailedException \
@@ -28,15 +28,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCreateDirectoryFailedException: OFException
 {
-	OFURL *_URL;
+	OFURI *_URI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFCreateDirectoryFailedException, 4)
 }
 
 /**
- * @brief The URL of the directory which couldn't be created.
+ * @brief The URI of the directory which couldn't be created.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property (readonly, nonatomic) OFURI *URI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -46,22 +46,22 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased create directory failed exception.
  *
- * @param URL The URL of the directory which could not be created
+ * @param URI The URI of the directory which could not be created
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create directory failed exception
  */
-+ (instancetype)exceptionWithURL: (OFURL *)URL errNo: (int)errNo;
++ (instancetype)exceptionWithURI: (OFURI *)URI errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated create directory failed exception.
  *
- * @param URL The URL of the directory which could not be created
+ * @param URI The URI of the directory which could not be created
  * @param errNo The errno of the error that occurred
  * @return An initialized create directory failed exception
  */
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

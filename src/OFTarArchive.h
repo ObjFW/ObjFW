@@ -21,7 +21,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
@@ -71,13 +71,13 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFTarArchive object with the specified file.
  *
- * @param URL The URL to the tar archive
+ * @param URI The URI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode;
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -99,13 +99,13 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified file.
  *
- * @param URL The URL to the tar archive
+ * @param URI The URI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
  * @brief Returns the next entry from the tar archive or `nil` if all entries

@@ -13,11 +13,12 @@
  * file.
  */
 
-#import "OFURLHandler.h"
+#import "OFURIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFEmbeddedFileURLHandler: OFURLHandler
+@interface OFFileURIHandler: OFURIHandler
++ (bool)of_directoryExistsAtPath: (OFString *)path OF_DIRECT;
 @end
 
 OF_ASSUME_NONNULL_END

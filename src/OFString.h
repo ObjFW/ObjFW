@@ -136,7 +136,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #ifdef __OBJC__
 @class OFArray OF_GENERIC(ObjectType);
 @class OFCharacterSet;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFString OFString.h ObjFW/OFString.h
@@ -539,28 +539,28 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 # endif
 
 /**
- * @brief Creates a new OFString with the contents of the specified URL.
+ * @brief Creates a new OFString with the contents of the specified URI.
  *
- * If the URL's scheme is file, it tries UTF-8 encoding.
+ * If the URI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL;
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI;
 
 /**
- * @brief Creates a new OFString with the contents of the specified URL in the
+ * @brief Creates a new OFString with the contents of the specified URI in the
  *	  specified encoding.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @param encoding The encoding to assume
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 			       encoding: (OFStringEncoding)encoding;
 
 /**
@@ -812,28 +812,28 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URL.
+ *	  specified URI.
  *
- * If the URL's scheme is file, it tries UTF-8 encoding.
+ * If the URI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @return An initialized OFString
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URL in the specified encoding.
+ *	  specified URI in the specified encoding.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @param encoding The encoding to assume
  * @return An initialized OFString
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding;
 
 /**
@@ -1245,19 +1245,19 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 # endif
 
 /**
- * @brief Writes the string to the specified URL using UTF-8 encoding.
+ * @brief Writes the string to the specified URI using UTF-8 encoding.
  *
- * @param URL The URL to write to
+ * @param URI The URI to write to
  */
-- (void)writeToURL: (OFURL *)URL;
+- (void)writeToURI: (OFURI *)URI;
 
 /**
- * @brief Writes the string to the specified URL using the specified encoding.
+ * @brief Writes the string to the specified URI using the specified encoding.
  *
- * @param URL The URL to write to
- * @param encoding The encoding to use to write the string to the URL
+ * @param URI The URI to write to
+ * @param encoding The encoding to use to write the string to the URI
  */
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -1312,9 +1312,9 @@ OF_ASSUME_NONNULL_END
 # ifdef OF_HAVE_FILES
 #  import "OFString+PathAdditions.h"
 # endif
+# import "OFString+PercentEncoding.h"
 # import "OFString+PropertyListParsing.h"
 # import "OFString+Serialization.h"
-# import "OFString+URLEncoding.h"
 # import "OFString+XMLEscaping.h"
 # import "OFString+XMLUnescaping.h"
 #endif

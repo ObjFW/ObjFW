@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFData;
 @class OFString;
@@ -68,7 +68,7 @@ typedef struct OF_BOXABLE {
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
-	OFURL *_URL;
+	OFURI *_URI;
 	OFHTTPRequestMethod _method;
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
@@ -77,9 +77,9 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief The URL of the HTTP request.
+ * @brief The URI of the HTTP request.
  */
-@property (copy, nonatomic) OFURL *URL;
+@property (copy, nonatomic) OFURI *URI;
 
 /**
  * @brief The protocol version of the HTTP request.
@@ -118,20 +118,20 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
- * @brief Creates a new OFHTTPRequest with the specified URL.
+ * @brief Creates a new OFHTTPRequest with the specified URI.
  *
- * @param URL The URL for the request
+ * @param URI The URI for the request
  * @return A new, autoreleased OFHTTPRequest
  */
-+ (instancetype)requestWithURL: (OFURL *)URL;
++ (instancetype)requestWithURI: (OFURI *)URI;
 
 /**
- * @brief Initializes an already allocated OFHTTPRequest with the specified URL.
+ * @brief Initializes an already allocated OFHTTPRequest with the specified URI.
  *
- * @param URL The URL for the request
+ * @param URI The URI for the request
  * @return An initialized OFHTTPRequest
  */
-- (instancetype)initWithURL: (OFURL *)URL;
+- (instancetype)initWithURI: (OFURI *)URI;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

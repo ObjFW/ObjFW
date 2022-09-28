@@ -431,16 +431,16 @@ static OFString *const cArray[] = {
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
 
 	mutableArray1 = [mutableArrayClass arrayWithObjects:
-	    [OFMutableURL URLWithString: @"http://foo.bar/"],
-	    [OFMutableURL URLWithString: @"http://bar.qux/"],
-	    [OFMutableURL URLWithString: @"http://qux.quxqux/"], nil];
+	    [OFMutableURI URIWithString: @"http://foo.bar/"],
+	    [OFMutableURI URIWithString: @"http://bar.qux/"],
+	    [OFMutableURI URIWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
 	    R([mutableArray1 setValue: [OFNumber numberWithShort: 1234]
 			       forKey: @"port"]) &&
 	    [mutableArray1 isEqual: [arrayClass arrayWithObjects:
-	    [OFURL URLWithString: @"http://foo.bar:1234/"],
-	    [OFURL URLWithString: @"http://bar.qux:1234/"],
-	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
+	    [OFURI URIWithString: @"http://foo.bar:1234/"],
+	    [OFURI URIWithString: @"http://bar.qux:1234/"],
+	    [OFURI URIWithString: @"http://qux.quxqux:1234/"], nil]])
 
 	objc_autoreleasePoolPop(pool);
 }

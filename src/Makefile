@@ -49,7 +49,7 @@ SRCS = OFApplication.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURL.m			\
+       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -82,9 +82,9 @@ SRCS = OFApplication.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
+       OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
-       OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
@@ -95,8 +95,8 @@ SRCS = OFApplication.m			\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURL.m				\
-       OFURLHandler.m			\
+       OFURI.m				\
+       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -183,7 +183,7 @@ SRCS += OFASPrintF.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
-	OFEmbeddedFileURLHandler.m	\
+	OFEmbeddedURIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
@@ -209,10 +209,10 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
        ${UNICODE_M}
-SRCS_FILES += OFFileURLHandler.m
+SRCS_FILES += OFFileURIHandler.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURLHandler.m			\
+		OFHTTPURIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\

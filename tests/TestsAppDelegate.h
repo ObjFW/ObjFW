@@ -259,8 +259,8 @@
 - (void)UNIXStreamSocketTests;
 @end
 
-@interface TestsAppDelegate (OFURLTests)
-- (void)URLTests;
+@interface TestsAppDelegate (OFURITests)
+- (void)URITests;
 @end
 
 @interface TestsAppDelegate (OFValueTests)

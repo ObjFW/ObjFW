@@ -585,16 +585,16 @@ struct {
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
 	[self finishInitialization];
-	[self writeToURL: URL];
+	[self writeToURI: URI];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
-	[self writeToURL: URL encoding: encoding];
+	[self writeToURI: URI encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

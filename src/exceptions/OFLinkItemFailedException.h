@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFLinkItemFailedException \
@@ -27,20 +27,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFLinkItemFailedException: OFException
 {
-	OFURL *_sourceURL, *_destinationURL;
+	OFURI *_sourceURI, *_destinationURI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFLinkItemFailedException, 4)
 }
 
 /**
- * @brief A URL with the source for the link.
+ * @brief A URI with the source for the link.
  */
-@property (readonly, nonatomic) OFURL *sourceURL;
+@property (readonly, nonatomic) OFURI *sourceURI;
 
 /**
- * @brief A URL with the destination for the link.
+ * @brief A URI with the destination for the link.
  */
-@property (readonly, nonatomic) OFURL *destinationURL;
+@property (readonly, nonatomic) OFURI *destinationURI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -50,13 +50,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased link failed exception.
  *
- * @param sourceURL The source for the link
- * @param destinationURL The destination for the link
+ * @param sourceURI The source for the link
+ * @param destinationURI The destination for the link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased link failed exception
  */
-+ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
-			destinationURL: (OFURL *)destinationURL
++ (instancetype)exceptionWithSourceURI: (OFURI *)sourceURI
+			destinationURI: (OFURI *)destinationURI
 				 errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
@@ -64,13 +64,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an already allocated link failed exception.
  *
- * @param sourceURL The source for the link
- * @param destinationURL The destination for the link
+ * @param sourceURI The source for the link
+ * @param destinationURI The destination for the link
  * @param errNo The errno of the error that occurred
  * @return An initialized link failed exception
  */
-- (instancetype)initWithSourceURL: (OFURL*)sourceURL
-		   destinationURL: (OFURL *)destinationURL
+- (instancetype)initWithSourceURI: (OFURI*)sourceURI
+		   destinationURI: (OFURI *)destinationURI
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

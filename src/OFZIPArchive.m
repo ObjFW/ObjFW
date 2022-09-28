@@ -28,7 +28,7 @@
 #import "OFInflateStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
-#import "OFURLHandler.h"
+#import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -162,9 +162,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-+ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
+	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
 }
 
 - (instancetype)init
@@ -219,16 +219,16 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
 	@try {
 		if ([mode isEqual: @"a"])
-			stream = [OFURLHandler openItemAtURL: URL mode: @"r+"];
+			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
 		else
-			stream = [OFURLHandler openItemAtURL: URL mode: mode];
+			stream = [OFURIHandler openItemAtURI: URI mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;

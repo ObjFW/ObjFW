@@ -21,7 +21,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
@@ -67,13 +67,13 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFLHAArchive object with the specified file.
  *
- * @param URL The URL to the LHA file
+ * @param URI The URI to the LHA file
  * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFLHAArchive
  */
-+ (instancetype)archiveWithURL: (OFURL *)URL mode: (OFString *)mode;
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -95,13 +95,13 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified file.
  *
- * @param URL The URL to the LHA file
+ * @param URI The URI to the LHA file
  * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFLHAArchive
  */
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
  * @brief Returns the next entry from the LHA archive or `nil` if all entries

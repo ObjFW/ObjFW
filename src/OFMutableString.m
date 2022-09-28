@@ -174,16 +174,16 @@ static struct {
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURL: URL];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURI: URI];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
-	    initWithContentsOfURL: URL
+	    initWithContentsOfURI: URI
 			 encoding: encoding];
 }
 

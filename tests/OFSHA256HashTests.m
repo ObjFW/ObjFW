@@ -30,8 +30,8 @@ const uint8_t testFileSHA256[32] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA256Hash *SHA256, *SHA256Copy;
-	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
-	OFStream *file = [OFURLHandler openItemAtURL: URL mode: @"r"];
+	OFURI *URI = [OFURI URIWithString: @"objfw-embedded:///testfile.bin"];
+	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (SHA256 = [OFSHA256Hash hashWithAllowsSwappableMemory: true]))
