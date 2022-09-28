@@ -234,7 +234,8 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	EXPECT_EXCEPTION(
 	    @"-[setPercentEncodedHost:] with invalid characters fails #3",
-	    OFInvalidFormatException, mutableURI.percentEncodedHost = @"[a::g]")
+	    OFInvalidFormatException,
+	    mutableURI.percentEncodedHost = @"[a::g]")
 
 	TEST(@"-[setUser:]",
 	    (mutableURI.user = @"us:er") &&

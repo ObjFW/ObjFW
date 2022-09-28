@@ -639,40 +639,6 @@ OF_DIRECT_MEMBERS
 	return ret;
 }
 
-- (OFString *)URIQueryString
-{
-	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *keyEnumerator = [self keyEnumerator];
-	OFEnumerator *objectEnumerator = [self objectEnumerator];
-	OFCharacterSet *allowed = [OFURIQueryPartAllowedCharacterSet
-	    URIQueryPartAllowedCharacterSet];
-	bool first = true;
-	OFObject *key, *object;
-
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		if OF_UNLIKELY (first)
-			first = false;
-		else
-			[ret appendString: @"&"];
-
-		[ret appendString: [key.description
-		    stringByAddingPercentEncodingWithAllowedCharacters:
-		    allowed]];
-		[ret appendString: @"="];
-		[ret appendString: [object.description
-		    stringByAddingPercentEncodingWithAllowedCharacters:
-		    allowed]];
-	}
-
-	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
 - (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();

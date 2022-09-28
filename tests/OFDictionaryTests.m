@@ -251,11 +251,6 @@ static OFString *values[] = {
 
 	[mutableDict removeObjectForKey: @""];
 
-	TEST(@"-[URIQueryString]",
-	    [[[OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
-							  @"q&x", @"q=x", nil]
-	    URIQueryString] isEqual: @"q%26x=q%3Dx&foo=bar"])
-
 #ifdef OF_HAVE_BLOCKS
 	{
 		__block size_t j = 0;

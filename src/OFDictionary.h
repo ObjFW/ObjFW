@@ -94,11 +94,6 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
 
 /**
- * @brief The dictionary as a URI query string.
- */
-@property (readonly, nonatomic) OFString *URIQueryString;
-
-/**
  * @brief Creates a new OFDictionary.
  *
  * @return A new autoreleased OFDictionary
