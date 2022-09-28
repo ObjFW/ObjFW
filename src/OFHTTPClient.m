@@ -359,10 +359,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		    OFOrderedSame)
 			follow = false;
 
-		if (follow && [_client->_delegate respondsToSelector: @selector(
-		    client:shouldFollowRedirect:statusCode:request:response:)])
+		if (follow && [_client->_delegate respondsToSelector:
+		    @selector(client:shouldFollowRedirectToURI:statusCode:
+		    request:response:)])
 			follow = [_client->_delegate client: _client
-				       shouldFollowRedirect: newURI
+				  shouldFollowRedirectToURI: newURI
 						 statusCode: _status
 						    request: _request
 						   response: response];
@@ -1201,19 +1202,19 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			      request: request];
 }
 
--	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURI *)URI
-	    statusCode: (short)statusCode
-	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response
+-	       (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirectToURI: (OFURI *)URI
+		 statusCode: (short)statusCode
+		    request: (OFHTTPRequest *)request
+		   response: (OFHTTPResponse *)response
 {
-	if ([_delegate respondsToSelector: @selector(client:
-	    shouldFollowRedirect:statusCode:request:response:)])
-		return [_delegate client: client
-		    shouldFollowRedirect: URI
-			      statusCode: statusCode
-				 request: request
-				response: response];
+	if ([_delegate respondsToSelector: @selector(
+	    client:shouldFollowRedirectToURI:statusCode:request:response:)])
+		return [_delegate      client: client
+		    shouldFollowRedirectToURI: URI
+				   statusCode: statusCode
+				      request: request
+				     response: response];
 	else
 		return defaultShouldFollow(request.method, statusCode);
 }

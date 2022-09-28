@@ -608,11 +608,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 }
 
--	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURI *)URI
-	    statusCode: (short)statusCode
-	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response
+-	       (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirectToURI: (OFURI *)URI
+		 statusCode: (short)statusCode
+		    request: (OFHTTPRequest *)request
+		   response: (OFHTTPResponse *)response
 {
 	if (_verbose) {
 		void *pool = objc_autoreleasePoolPush();
