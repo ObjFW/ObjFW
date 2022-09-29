@@ -451,9 +451,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
 #else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhttp/lang"];
+	[OFLocale addLocalizationDirectory:
+	    @"PROGDIR:/share/ofhttp/localization"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

@@ -2450,10 +2450,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtof_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocale decimalPoint];
+	OFString *decimalSeparator = [OFLocale decimalSeparator];
 	const char *UTF8String = [self
 	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalPoint].UTF8String;
+				      withString: decimalSeparator].UTF8String;
 #endif
 	char *endPtr = NULL;
 	float value;
@@ -2503,10 +2503,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtod_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocale decimalPoint];
+	OFString *decimalSeparator = [OFLocale decimalSeparator];
 	const char *UTF8String = [self
 	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalPoint].UTF8String;
+				      withString: decimalSeparator].UTF8String;
 #endif
 	char *endPtr = NULL;
 	double value;
