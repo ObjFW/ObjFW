@@ -273,7 +273,7 @@ uncaughtExceptionHandler(id exception)
 		if (stackTraceSymbols.count != count)
 			stackTraceSymbols = nil;
 
-		fputs("\nBacktrace:\n", stderr);
+		fputs("\nStack trace:\n", stderr);
 
 		if (stackTraceSymbols != nil) {
 			for (size_t i = 0; i < count; i++) {

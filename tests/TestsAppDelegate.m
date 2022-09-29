@@ -175,13 +175,15 @@ main(int argc, char *argv[])
 	} @catch (id e) {
 		OFString *string = [OFString stringWithFormat:
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
-		OFString *backtrace = [OFString stringWithFormat:
-		    @"\nBacktrace:\n  %@\n\n",
-		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
 		[OFStdOut setForegroundColor: [OFColor red]];
 		[OFStdOut writeString: string];
-		[OFStdOut writeString: backtrace];
+
+		if ([e stackTraceAddresses] != nil)
+			[OFStdOut writeString: @"\nStack trace:\n"];
+
+		for (OFValue *address in [e stackTraceAddresses])
+			[OFStdOut writeFormat: @"  %p\n", address.pointerValue];
 
 # if defined(OF_WII)
 		[OFStdOut reset];
