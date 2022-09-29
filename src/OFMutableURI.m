@@ -22,6 +22,7 @@
 # import "OFFileManager.h"
 #endif
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
@@ -30,7 +31,7 @@
 @dynamic scheme, percentEncodedScheme, host, percentEncodedHost, port, user;
 @dynamic percentEncodedUser, password, percentEncodedPassword, path;
 @dynamic percentEncodedPath, pathComponents, query, percentEncodedQuery;
-@dynamic queryDictionary, fragment, percentEncodedFragment;
+@dynamic queryItems, fragment, percentEncodedFragment;
 
 + (instancetype)URI
 {
@@ -235,16 +236,16 @@
 	[old release];
 }
 
-- (void)setQueryDictionary:
-    (OFDictionary OF_GENERIC(OFString *, OFString *) *)dictionary
+- (void)setQueryItems:
+    (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *) *)
+    queryItems
 {
 	void *pool;
 	OFMutableString *percentEncodedQuery;
-	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFCharacterSet *characterSet;
-	OFString *key, *object, *old;
+	OFString *old;
 
-	if (dictionary == nil) {
+	if (queryItems == nil) {
 		[_percentEncodedQuery release];
 		_percentEncodedQuery = nil;
 		return;
@@ -252,22 +253,20 @@
 
 	pool = objc_autoreleasePoolPush();
 	percentEncodedQuery = [OFMutableString string];
-	keyEnumerator = [dictionary keyEnumerator];
-	objectEnumerator = [dictionary objectEnumerator];
 	characterSet = [OFCharacterSet URIQueryKeyValueAllowedCharacterSet];
 
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		key = [key stringByAddingPercentEncodingWithAllowedCharacters:
+	for (OFPair OF_GENERIC(OFString *, OFString *) *item in queryItems) {
+		OFString *key = [item.firstObject
+		    stringByAddingPercentEncodingWithAllowedCharacters:
 		    characterSet];
-		object = [object
+		OFString *value = [item.secondObject
 		    stringByAddingPercentEncodingWithAllowedCharacters:
 		    characterSet];
 
 		if (percentEncodedQuery.length > 0)
 			[percentEncodedQuery appendString: @"&"];
 
-		[percentEncodedQuery appendFormat: @"%@=%@", key, object];
+		[percentEncodedQuery appendFormat: @"%@=%@", key, value];
 	}
 
 	old = _percentEncodedQuery;

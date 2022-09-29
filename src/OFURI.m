@@ -27,6 +27,7 @@
 #endif
 #import "OFNumber.h"
 #import "OFOnce.h"
+#import "OFPair.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 
@@ -1041,18 +1042,19 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	return _percentEncodedQuery;
 }
 
-- (OFDictionary OF_GENERIC(OFString *, OFString *) *)queryDictionary
+- (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *) *)queryItems
 {
 	void *pool;
 	OFArray OF_GENERIC(OFString *) *pairs;
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *ret;
+	OFMutableArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *)
+	    *ret;
 
 	if (_percentEncodedQuery == nil)
 		return nil;
 
 	pool = objc_autoreleasePoolPush();
 	pairs = [_percentEncodedQuery componentsSeparatedByString: @"&"];
-	ret = [OFMutableDictionary dictionaryWithCapacity: pairs.count];
+	ret = [OFMutableArray arrayWithCapacity: pairs.count];
 
 	for (OFString *pair in pairs) {
 		OFArray *parts = [pair componentsSeparatedByString: @"="];
@@ -1066,7 +1068,8 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 		value = [[parts objectAtIndex: 1]
 		    stringByRemovingPercentEncoding];
 
-		[ret setObject: value forKey: name];
+		[ret addObject: [OFPair pairWithFirstObject: name
+					       secondObject: value]];
 	}
 
 	[ret makeImmutable];

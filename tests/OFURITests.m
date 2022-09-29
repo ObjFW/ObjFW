@@ -173,10 +173,10 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
 	    [URI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URI4.query == nil)
-	TEST(@"-[queryDictionary]",
-	    [URI1.queryDictionary isEqual:
-	    [OFDictionary dictionaryWithKeysAndObjects:
-	    @"que#ry", @"1", @"f&oo", @"b=ar", nil]]);
+	TEST(@"-[queryItems]",
+	    [URI1.queryItems isEqual: [OFArray arrayWithObjects:
+	    [OFPair pairWithFirstObject: @"que#ry" secondObject: @"1"],
+	    [OFPair pairWithFirstObject: @"f&oo" secondObject: @"b=ar"], nil]]);
 	TEST(@"-[fragment]",
 	    [URI1.fragment isEqual: @"frag#ment"] && URI4.fragment == nil)
 
@@ -289,11 +289,11 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    OFInvalidFormatException,
 	    mutableURI.percentEncodedQuery = @"`")
 
-	TEST(@"-[setQueryDictionary:]",
-	    (mutableURI.queryDictionary =
-	    [OFDictionary dictionaryWithKeysAndObjects:
-	    @"foo&bar", @"baz=qux", @"f=oobar", @"b&azqux", nil]) &&
-	    [mutableURI.percentEncodedQuery isEqual:
+	TEST(@"-[setQueryItems:]",
+	    (mutableURI.queryItems = [OFArray arrayWithObjects:
+	    [OFPair pairWithFirstObject: @"foo&bar" secondObject: @"baz=qux"],
+	    [OFPair pairWithFirstObject: @"f=oobar" secondObject: @"b&azqux"],
+	    nil]) && [mutableURI.percentEncodedQuery isEqual:
 	    @"foo%26bar=baz%3Dqux&f%3Doobar=b%26azqux"])
 
 	TEST(@"-[setFragment:]",

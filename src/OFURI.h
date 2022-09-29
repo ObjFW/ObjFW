@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
+@class OFPair OF_GENERIC(FirstType, SecondType);
 @class OFString;
 
 /**
@@ -130,20 +131,20 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedQuery;
 
 /**
- * @brief The query part of the URI as a dictionary.
+ * @brief The query part of the URI as an array.
  *
  * For example, a query like `key1=value1&key2=value2` would correspond to the
- * following dictionary:
+ * following array:
  *
- *     @{
- *         @"key1": @"value1",
- *         @"key2": @"value2"
- *     }
+ *     @[
+ *         [OFPair pairWithFirstObject: @"key1" secondObject: @"value1"],
+ *         [OFPair pairWithFirstObject: @"key2" secondObject: @"value2"],
+ *     ]
  *
  * @throw OFInvalidFormatException The query is not in the correct format
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, OFString *) *queryDictionary;
+    OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *) *queryItems;
 
 /**
  * @brief The fragment part of the URI.
