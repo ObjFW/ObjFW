@@ -44,6 +44,7 @@
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
+#import "OFValue.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -252,19 +253,48 @@ static void
 uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
-	OFArray *backtrace = nil;
+	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
+	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [description cStringWithEncoding: encoding]);
 
-	if ([exception respondsToSelector: @selector(backtrace)])
-		backtrace = [exception backtrace];
+	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
+		stackTraceAddresses = [exception stackTraceAddresses];
 
-	if (backtrace != nil) {
-		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
-		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		    [s cStringWithEncoding: encoding]);
+	if (stackTraceAddresses != nil) {
+		size_t count = stackTraceAddresses.count;
+
+		if ([exception respondsToSelector:
+		    @selector(stackTraceSymbols)])
+			stackTraceSymbols = [exception stackTraceSymbols];
+
+		if (stackTraceSymbols.count != count)
+			stackTraceSymbols = nil;
+
+		fputs("\nBacktrace:\n", stderr);
+
+		if (stackTraceSymbols != nil) {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+				const char *symbol = [[stackTraceSymbols
+				    objectAtIndex: i]
+				    cStringWithEncoding: encoding];
+
+				fprintf(stderr, "  %p  %s\n", address, symbol);
+			}
+		} else {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+
+				fprintf(stderr, "  %p\n", address);
+			}
+		}
+
+		fputs("\n", stderr);
 	}
 
 	abort();

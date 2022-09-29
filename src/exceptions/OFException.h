@@ -22,10 +22,10 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
-@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFString;
+@class OFValue;
 
-#define OFBacktraceSize 16
+#define OFStackTraceSize 16
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # ifndef EADDRINUSE
@@ -149,7 +149,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFException: OFObject
 {
-	void *_backtrace[OFBacktraceSize];
+	void *_stackTrace[OFStackTraceSize];
 	OF_RESERVE_IVARS(OFException, 4)
 }
 
@@ -168,12 +168,21 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFString *)description;
 
 /**
- * @brief Returns a backtrace of when the exception was created or nil if no
- *	  backtrace is available.
+ * @brief Returns a stack trace of when the exception was created or `nil` if
+ *	  no stack trace is available. The returned array contains OFValues
+ *	  with @ref OFValue#pointerValue set to the address.
  *
- * @return A backtrace of when the exception was created
+ * @return The stack trace as array of addresses
  */
-- (nullable OFArray OF_GENERIC(OFString *) *)backtrace;
+- (nullable OFArray OF_GENERIC(OFValue *) *)stackTraceAddresses;
+
+/**
+ * @brief Returns a stack trace of when the exception was created or `nil` if
+ *	  no stack trace symbols are available.
+ *
+ * @return The stack trace as array of symbols
+ */
+- (nullable OFArray OF_GENERIC(OFString *) *)stackTraceSymbols;
 @end
 
 #ifdef __cplusplus
