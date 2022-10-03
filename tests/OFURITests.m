@@ -121,17 +121,18 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	OFURI *tmp;
 	TEST(@"+[fileURIWithPath:] for c:\\",
 	    (tmp = [OFURI fileURIWithPath: @"c:\\"]) &&
-	    [tmp.string isEqual: @"file:///c:/"] &&
+	    [tmp.string isEqual: @"file:/c:/"] &&
 	    [tmp.fileSystemRepresentation isEqual: @"c:\\"])
 # endif
 
 # ifdef OF_WINDOWS
 	TEST(@"+[fileURIWithPath:] with UNC",
-	    (tmp = [OFURI fileURIWithPath: @"\\\\foo\\bar"]) &&
+	    (tmp = [OFURI fileURIWithPath: @"\\\\foo\\bar"
+			      isDirectory: false]) &&
 	    [tmp.host isEqual: @"foo"] && [tmp.path isEqual: @"/bar"] &&
 	    [tmp.string isEqual: @"file://foo/bar"] &&
 	    [tmp.fileSystemRepresentation isEqual: @"\\\\foo\\bar"] &&
-	    (tmp = [OFURI fileURIWithPath: @"\\\\test"]) &&
+	    (tmp = [OFURI fileURIWithPath: @"\\\\test" isDirectory: true]) &&
 	    [tmp.host isEqual: @"test"] && [tmp.path isEqual: @"/"] &&
 	    [tmp.string isEqual: @"file://test/"] &&
 	    [tmp.fileSystemRepresentation isEqual: @"\\\\test"])
