@@ -76,7 +76,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 {
 	const char *path;
 
-	if (![URI.scheme isEqual: @"objfw-embedded"] || URI.host != nil ||
+	if (![URI.scheme isEqual: @"objfw-embedded"] || URI.host.length > 0 ||
 	    URI.port != nil || URI.user != nil || URI.password != nil ||
 	    URI.query != nil || URI.fragment != nil)
 		@throw [OFInvalidArgumentException exception];

@@ -25,7 +25,8 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 - (void)URITests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURI *URI1, *URI2, *URI3, *URI4, *URI5, *URI6, *URI7;
+	OFURI *URI1, *URI2, *URI3, *URI4, *URI5, *URI6, *URI7, *URI8, *URI9;
+	OFURI *URI10;
 	OFMutableURI *mutableURI;
 
 	TEST(@"+[URIWithString:]",
@@ -35,7 +36,10 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R(URI4 = [OFURI URIWithString: @"file:///etc/passwd"]) &&
 	    R(URI5 = [OFURI URIWithString: @"http://foo/bar/qux/foo%2fbar"]) &&
 	    R(URI6 = [OFURI URIWithString: @"https://[12:34::56:abcd]/"]) &&
-	    R(URI7 = [OFURI URIWithString: @"https://[12:34::56:abcd]:234/"]))
+	    R(URI7 = [OFURI URIWithString: @"https://[12:34::56:abcd]:234/"]) &&
+	    R(URI8 = [OFURI URIWithString: @"urn:qux:foo"]) &&
+	    R(URI9 = [OFURI URIWithString: @"file:/foo?query#frag"]) &&
+	    R(URI10 = [OFURI URIWithString: @"file:foo@bar/qux"]))
 
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -68,6 +72,14 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #8",
 	    OFInvalidFormatException,
 	    [OFURI URIWithString: @"https://[f]:f/"])
+
+	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #9",
+	    OFInvalidFormatException,
+	    [OFURI URIWithString: @"foo:bar?qux"])
+
+	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #10",
+	    OFInvalidFormatException,
+	    [OFURI URIWithString: @"foo:bar#qux"])
 
 	TEST(@"+[URIWithString:relativeToURI:]",
 	    [[[OFURI URIWithString: @"/foo" relativeToURI: URI1] string]
@@ -138,22 +150,36 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI1.string isEqual: URIString] &&
 	    [URI2.string isEqual: @"http://foo:80"] &&
 	    [URI3.string isEqual: @"http://bar/"] &&
-	    [URI4.string isEqual: @"file:///etc/passwd"])
+	    [URI4.string isEqual: @"file:///etc/passwd"] &&
+	    [URI5.string isEqual: @"http://foo/bar/qux/foo%2fbar"] &&
+	    [URI6.string isEqual: @"https://[12:34::56:abcd]/"] &&
+	    [URI7.string isEqual: @"https://[12:34::56:abcd]:234/"] &&
+	    [URI8.string isEqual: @"urn:qux:foo"] &&
+	    [URI9.string isEqual: @"file:/foo?query#frag"] &&
+	    [URI10.string isEqual: @"file:foo@bar/qux"])
 
 	TEST(@"-[scheme]",
-	    [URI1.scheme isEqual: @"ht:tp"] && [URI4.scheme isEqual: @"file"])
+	    [URI1.scheme isEqual: @"ht:tp"] && [URI4.scheme isEqual: @"file"] &&
+	    [URI9.scheme isEqual: @"file"] && [URI10.scheme isEqual: @"file"])
 
-	TEST(@"-[user]", [URI1.user isEqual: @"us:er"] && URI4.user == nil)
+	TEST(@"-[user]", [URI1.user isEqual: @"us:er"] && URI4.user == nil &&
+	    URI10.user == nil)
 	TEST(@"-[password]",
-	    [URI1.password isEqual: @"p@w"] && URI4.password == nil)
+	    [URI1.password isEqual: @"p@w"] && URI4.password == nil &&
+	    URI10.password == nil)
 	TEST(@"-[host]", [URI1.host isEqual: @"ho:st"] &&
 	    [URI6.host isEqual: @"12:34::56:abcd"] &&
-	    [URI7.host isEqual: @"12:34::56:abcd"])
+	    [URI7.host isEqual: @"12:34::56:abcd"] &&
+	    URI8.host == nil && URI9.host == nil && URI10.host == nil)
 	TEST(@"-[port]", URI1.port.unsignedShortValue == 1234 &&
-	    [URI4 port] == nil && URI7.port.unsignedShortValue == 234)
+	    [URI4 port] == nil && URI7.port.unsignedShortValue == 234 &&
+	    URI8.port == nil && URI9.port == nil && URI10.port == nil)
 	TEST(@"-[path]",
 	    [URI1.path isEqual: @"/pa?th"] &&
-	    [URI4.path isEqual: @"/etc/passwd"])
+	    [URI4.path isEqual: @"/etc/passwd"] &&
+	    [URI8.path isEqual: @"qux:foo"] &&
+	    [URI9.path isEqual: @"/foo"] &&
+	    [URI10.path isEqual: @"foo@bar/qux"])
 	TEST(@"-[pathComponents]",
 	    [URI1.pathComponents isEqual:
 	    [OFArray arrayWithObjects: @"/", @"pa?th", nil]] &&
@@ -172,13 +198,15 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    lastPathComponent] isEqual: @"/"] &&
 	    [URI5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
-	    [URI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URI4.query == nil)
+	    [URI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URI4.query == nil &&
+	    [URI9.query isEqual: @"query"])
 	TEST(@"-[queryItems]",
 	    [URI1.queryItems isEqual: [OFArray arrayWithObjects:
 	    [OFPair pairWithFirstObject: @"que#ry" secondObject: @"1"],
 	    [OFPair pairWithFirstObject: @"f&oo" secondObject: @"b=ar"], nil]]);
 	TEST(@"-[fragment]",
-	    [URI1.fragment isEqual: @"frag#ment"] && URI4.fragment == nil)
+	    [URI1.fragment isEqual: @"frag#ment"] && URI4.fragment == nil &&
+	    [URI9.fragment isEqual: @"frag"] && URI10.fragment == nil)
 
 	TEST(@"-[copy]", R(URI4 = [[URI1 copy] autorelease]))
 

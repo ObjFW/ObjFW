@@ -432,191 +432,203 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 }
 #endif
 
+static void
+parseUserInfo(OFURI *self, const char *UTF8String, size_t length)
+{
+	const char *colon;
+
+	if ((colon = memchr(UTF8String, ':', length)) != NULL) {
+		self->_percentEncodedUser = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: colon - UTF8String];
+		self->_percentEncodedPassword = [[OFString alloc]
+		    initWithUTF8String: colon + 1
+				length: length - (colon - UTF8String) - 1];
+
+		OFURIVerifyIsEscaped(self->_percentEncodedPassword,
+		    [OFCharacterSet URIPasswordAllowedCharacterSet]);
+	} else
+		self->_percentEncodedUser = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: length];
+
+	OFURIVerifyIsEscaped(self->_percentEncodedUser,
+	    [OFCharacterSet URIUserAllowedCharacterSet]);
+}
+
+static void
+parseHostPort(OFURI *self, const char *UTF8String, size_t length)
+{
+	OFString *portString;
+
+	if (*UTF8String == '[') {
+		const char *end = memchr(UTF8String, ']', length);
+
+		if (end == NULL)
+			@throw [OFInvalidFormatException exception];
+
+		for (const char *iter = UTF8String + 1; iter < end; iter++)
+			if (!OFASCIIIsDigit(*iter) && *iter != ':' &&
+			    (*iter < 'a' || *iter > 'f') &&
+			    (*iter < 'A' || *iter > 'F'))
+				@throw [OFInvalidFormatException exception];
+
+		self->_percentEncodedHost = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: end - UTF8String + 1];
+
+		length -= (end - UTF8String) + 1;
+		UTF8String = end + 1;
+	} else {
+		const char *colon = memchr(UTF8String, ':', length);
+
+		if (colon != NULL) {
+			self->_percentEncodedHost = [[OFString alloc]
+			    initWithUTF8String: UTF8String
+					length: colon - UTF8String];
+
+			length -= colon - UTF8String;
+			UTF8String = colon;
+		} else {
+			self->_percentEncodedHost = [[OFString alloc]
+			    initWithUTF8String: UTF8String
+					length: length];
+
+			UTF8String += length;
+			length = 0;
+		}
+
+		OFURIVerifyIsEscaped(self->_percentEncodedHost,
+		    [OFCharacterSet URIHostAllowedCharacterSet]);
+	}
+
+	if (length == 0)
+		return;
+
+	if (length <= 1 || *UTF8String != ':')
+		@throw [OFInvalidFormatException exception];
+
+	UTF8String++;
+	length--;
+
+	for (size_t i = 0; i < length; i++)
+		if (!OFASCIIIsDigit(UTF8String[i]))
+			@throw [OFInvalidFormatException exception];
+
+	portString = [OFString stringWithUTF8String: UTF8String length: length];
+
+	if (portString.unsignedLongLongValue > 65535)
+		@throw [OFInvalidFormatException exception];
+
+	self->_port = [[OFNumber alloc] initWithUnsignedShort:
+	    (unsigned short)portString.unsignedLongLongValue];
+}
+
+static size_t
+parseAuthority(OFURI *self, const char *UTF8String, size_t length)
+{
+	size_t ret;
+	const char *slash, *at;
+
+	if ((slash = memchr(UTF8String, '/', length)) != NULL)
+		length = slash - UTF8String;
+
+	ret = length;
+
+	if ((at = memchr(UTF8String, '@', length)) != NULL) {
+		parseUserInfo(self, UTF8String, at - UTF8String);
+
+		length -= at - UTF8String + 1;
+		UTF8String = at + 1;
+	}
+
+	parseHostPort(self, UTF8String, length);
+
+	return ret;
+}
+
+static void
+parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
+{
+	const char *fragment, *query;
+
+	if ((fragment = memchr(UTF8String, '#', length)) != NULL) {
+		self->_percentEncodedFragment = [[OFString alloc]
+		    initWithUTF8String: fragment + 1
+				length: length - (fragment - UTF8String) - 1];
+
+		OFURIVerifyIsEscaped(self->_percentEncodedFragment,
+		    [OFCharacterSet URIQueryAllowedCharacterSet]);
+
+		length = fragment - UTF8String;
+	}
+
+	if ((query = memchr(UTF8String, '?', length)) != NULL) {
+		self->_percentEncodedQuery = [[OFString alloc]
+		    initWithUTF8String: query + 1
+				length: length - (query - UTF8String) - 1];
+
+		OFURIVerifyIsEscaped(self->_percentEncodedQuery,
+		    [OFCharacterSet URIFragmentAllowedCharacterSet]);
+
+		length = query - UTF8String;
+	}
+
+	self->_percentEncodedPath = [[OFString alloc]
+	    initWithUTF8String: UTF8String
+			length: length];
+
+	OFURIVerifyIsEscaped(self->_percentEncodedPath,
+	    [OFCharacterSet URIQueryAllowedCharacterSet]);
+}
+
 - (instancetype)initWithString: (OFString *)string
 {
-	char *UTF8String, *UTF8String2 = NULL;
-
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		char *tmp, *tmp2;
-		bool isIPv6Host = false;
+		const char *UTF8String = string.UTF8String;
+		size_t length = string.UTF8StringLength;
+		const char *colon;
 
-		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
-
-		if ((tmp = strchr(UTF8String, ':')) == NULL)
+		if ((colon = strchr(UTF8String, ':')) == NULL)
 			@throw [OFInvalidFormatException exception];
 
-		if (strncmp(tmp, "://", 3) != 0)
-			@throw [OFInvalidFormatException exception];
-
-		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
-			*tmp2 = OFASCIIToLower(*tmp2);
-
-		_percentEncodedScheme = [[OFString alloc]
-		    initWithUTF8String: UTF8String
-				length: tmp - UTF8String];
+		_percentEncodedScheme = [[[OFString
+		    stringWithUTF8String: UTF8String
+				  length: colon - UTF8String] lowercaseString]
+		    copy];
 
 		OFURIVerifyIsEscaped(_percentEncodedScheme,
 		    [OFCharacterSet URISchemeAllowedCharacterSet]);
 
-		UTF8String = tmp + 3;
+		length -= colon - UTF8String + 1;
+		UTF8String = colon + 1;
 
-		if ((tmp = strchr(UTF8String, '/')) != NULL) {
-			*tmp = '\0';
-			tmp++;
+		if (length >= 2 && UTF8String[0] == '/' &&
+		    UTF8String[1] == '/') {
+			size_t authorityLength;
+
+			UTF8String += 2;
+			length -= 2;
+
+			authorityLength = parseAuthority(self,
+			    UTF8String, length);
+
+			UTF8String += authorityLength;
+			length -= authorityLength;
+
+			if (length > 0)
+				OFEnsure(UTF8String[0] == '/');
 		}
 
-		if ((tmp2 = strchr(UTF8String, '@')) != NULL) {
-			char *tmp3;
-
-			*tmp2 = '\0';
-			tmp2++;
-
-			if ((tmp3 = strchr(UTF8String, ':')) != NULL) {
-				*tmp3 = '\0';
-				tmp3++;
-
-				_percentEncodedUser = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
-				_percentEncodedPassword = [[OFString alloc]
-				    initWithUTF8String: tmp3];
-
-				OFURIVerifyIsEscaped(_percentEncodedPassword,
-				    [OFCharacterSet
-				    URIPasswordAllowedCharacterSet]);
-			} else
-				_percentEncodedUser = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
-
-			OFURIVerifyIsEscaped(_percentEncodedUser,
-			    [OFCharacterSet URIUserAllowedCharacterSet]);
-
-			UTF8String = tmp2;
-		}
-
-		if (UTF8String[0] == '[') {
-			tmp2 = UTF8String++;
-
-			while (OFASCIIIsDigit(*UTF8String) ||
-			    *UTF8String == ':' ||
-			    (*UTF8String >= 'a' && *UTF8String <= 'f') ||
-			    (*UTF8String >= 'A' && *UTF8String <= 'F'))
-				UTF8String++;
-
-			if (*UTF8String != ']')
-				@throw [OFInvalidFormatException exception];
-
-			UTF8String++;
-
-			_percentEncodedHost = [[OFString alloc]
-			    initWithUTF8String: tmp2
-					length: UTF8String - tmp2];
-
-			if (*UTF8String == ':') {
-				OFString *portString;
-
-				tmp2 = ++UTF8String;
-
-				while (*UTF8String != '\0') {
-					if (!OFASCIIIsDigit(*UTF8String))
-						@throw [OFInvalidFormatException
-						    exception];
-
-					UTF8String++;
-				}
-
-				portString = [OFString
-				    stringWithUTF8String: tmp2
-						  length: UTF8String - tmp2];
-
-				if (portString.length == 0 ||
-				    portString.unsignedLongLongValue > 65535)
-					@throw [OFInvalidFormatException
-					    exception];
-
-				_port = [[OFNumber alloc] initWithUnsignedShort:
-				    portString.unsignedLongLongValue];
-			} else if (*UTF8String != '\0')
-				@throw [OFInvalidFormatException exception];
-
-			isIPv6Host = true;
-		} else if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
-			OFString *portString;
-
-			*tmp2 = '\0';
-			tmp2++;
-
-			_percentEncodedHost = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
-
-			portString = [OFString stringWithUTF8String: tmp2];
-
-			if (portString.unsignedLongLongValue > 65535)
-				@throw [OFInvalidFormatException exception];
-
-			_port = [[OFNumber alloc] initWithUnsignedShort:
-			    portString.unsignedLongLongValue];
-		} else {
-			_percentEncodedHost = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
-
-			if (_percentEncodedHost.length == 0) {
-				[_percentEncodedHost release];
-				_percentEncodedHost = nil;
-			}
-		}
-
-		if (_percentEncodedHost != nil && !isIPv6Host)
-			OFURIVerifyIsEscaped(_percentEncodedHost,
-			    [OFCharacterSet URIHostAllowedCharacterSet]);
-
-		if ((UTF8String = tmp) != NULL) {
-			if ((tmp = strchr(UTF8String, '#')) != NULL) {
-				*tmp = '\0';
-
-				_percentEncodedFragment = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
-
-				OFURIVerifyIsEscaped(_percentEncodedFragment,
-				    [OFCharacterSet
-				    URIFragmentAllowedCharacterSet]);
-			}
-
-			if ((tmp = strchr(UTF8String, '?')) != NULL) {
-				*tmp = '\0';
-
-				_percentEncodedQuery = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
-
-				OFURIVerifyIsEscaped(_percentEncodedQuery,
-				    [OFCharacterSet
-				    URIQueryAllowedCharacterSet]);
-			}
-
-			/*
-			 * Some versions of GCC issue a false-positive warning
-			 * (turned error) about a string overflow. This is a
-			 * false positive because UTF8String is set to tmp
-			 * above and tmp is either NULL or points *after* the
-			 * slash for the path. So all we do here is go back to
-			 * that slash and restore it.
-			 */
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wpragmas"
-# pragma GCC diagnostic ignored "-Wunknown-warning-option"
-# pragma GCC diagnostic ignored "-Wstringop-overflow"
-#endif
-			UTF8String--;
-			*UTF8String = '/';
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic pop
-#endif
-
+		if (length > 0 && UTF8String[0] == '/')
+			parsePathQueryFragment(self, UTF8String, length);
+		else {
 			_percentEncodedPath = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			    initWithUTF8String: UTF8String
+					length: length];
 
 			OFURIVerifyIsEscaped(_percentEncodedPath,
 			    [OFCharacterSet URIPathAllowedCharacterSet]);
@@ -626,8 +638,6 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	} @catch (id e) {
 		[self release];
 		@throw e;
-	} @finally {
-		OFFreeMemory(UTF8String2);
 	}
 
 	return self;
@@ -686,7 +696,7 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			else {
 				OFMutableString *path = [OFMutableString
 				    stringWithString:
-				    (URI->_percentEncodedPath != nil
+				    (URI->_percentEncodedPath.length > 0
 				    ? URI->_percentEncodedPath
 				    : @"/")];
 				OFRange range = [path
@@ -1120,7 +1130,11 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 {
 	OFMutableString *ret = [OFMutableString string];
 
-	[ret appendFormat: @"%@://", _percentEncodedScheme];
+	[ret appendFormat: @"%@:", _percentEncodedScheme];
+
+	if (_percentEncodedHost != nil || _port != nil ||
+	    _percentEncodedUser != nil || _percentEncodedPassword != nil)
+		[ret appendString: @"//"];
 
 	if (_percentEncodedUser != nil && _percentEncodedPassword != nil)
 		[ret appendFormat: @"%@:%@@",
@@ -1134,12 +1148,8 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
-	if (_percentEncodedPath != nil) {
-		if (![_percentEncodedPath hasPrefix: @"/"])
-			@throw [OFInvalidFormatException exception];
-
+	if (_percentEncodedPath != nil)
 		[ret appendString: _percentEncodedPath];
-	}
 
 	if (_percentEncodedQuery != nil)
 		[ret appendFormat: @"?%@", _percentEncodedQuery];
