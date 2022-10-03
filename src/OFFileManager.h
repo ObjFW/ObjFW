@@ -654,7 +654,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a symbolic link for an item.
  *
- * The destination uRL must have a full path, which means it must include the
+ * The destination URI must have a full path, which means it must include the
  * name of the item.
  *
  * This method is not available for all URIs.

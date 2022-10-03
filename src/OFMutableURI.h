@@ -20,7 +20,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFMutableURI OFMutableURI.h ObjFW/OFMutableURI.h
  *
- * @brief A class for parsing URIs and accessing parts of it.
+ * @brief A class for parsing URIs as per RFC 3986 and accessing and modifying
+ *	  parts of it.
  */
 @interface OFMutableURI: OFURI
 {

@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFURI OFURI.h ObjFW/OFURI.h
  *
- * @brief A class for parsing URIs and accessing parts of it.
+ * @brief A class for parsing URIs as per RFC 3986 and accessing parts of it.
  */
 @interface OFURI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
