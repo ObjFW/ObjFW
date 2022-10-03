@@ -43,7 +43,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedScheme;
 
-	_percentEncodedScheme = [[scheme
+	_percentEncodedScheme = [[scheme.lowercaseString
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet URISchemeAllowedCharacterSet]] copy];
 
@@ -54,15 +54,18 @@
 
 - (void)setPercentEncodedScheme: (OFString *)percentEncodedScheme
 {
-	OFString *old;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old = _percentEncodedScheme;
 
 	if (percentEncodedScheme != nil)
 		OFURIVerifyIsEscaped(percentEncodedScheme,
 		    [OFCharacterSet URISchemeAllowedCharacterSet]);
 
-	old = _percentEncodedScheme;
-	_percentEncodedScheme = [percentEncodedScheme copy];
+	_percentEncodedScheme = [percentEncodedScheme.lowercaseString copy];
+
 	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setHost: (OFString *)host
