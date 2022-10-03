@@ -39,7 +39,7 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R(URI7 = [OFURI URIWithString: @"https://[12:34::56:abcd]:234/"]) &&
 	    R(URI8 = [OFURI URIWithString: @"urn:qux:foo"]) &&
 	    R(URI9 = [OFURI URIWithString: @"file:/foo?query#frag"]) &&
-	    R(URI10 = [OFURI URIWithString: @"file:foo@bar/qux"]))
+	    R(URI10 = [OFURI URIWithString: @"file:foo@bar/qux?query#frag"]))
 
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -72,14 +72,6 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #8",
 	    OFInvalidFormatException,
 	    [OFURI URIWithString: @"https://[f]:f/"])
-
-	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #9",
-	    OFInvalidFormatException,
-	    [OFURI URIWithString: @"foo:bar?qux"])
-
-	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #10",
-	    OFInvalidFormatException,
-	    [OFURI URIWithString: @"foo:bar#qux"])
 
 	TEST(@"+[URIWithString:relativeToURI:]",
 	    [[[OFURI URIWithString: @"/foo" relativeToURI: URI1] string]
@@ -156,7 +148,7 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI7.string isEqual: @"https://[12:34::56:abcd]:234/"] &&
 	    [URI8.string isEqual: @"urn:qux:foo"] &&
 	    [URI9.string isEqual: @"file:/foo?query#frag"] &&
-	    [URI10.string isEqual: @"file:foo@bar/qux"])
+	    [URI10.string isEqual: @"file:foo@bar/qux?query#frag"])
 
 	TEST(@"-[scheme]",
 	    [URI1.scheme isEqual: @"ht:tp"] && [URI4.scheme isEqual: @"file"] &&
@@ -199,14 +191,15 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
 	    [URI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URI4.query == nil &&
-	    [URI9.query isEqual: @"query"])
+	    [URI9.query isEqual: @"query"] && [URI10.query isEqual: @"query"])
 	TEST(@"-[queryItems]",
 	    [URI1.queryItems isEqual: [OFArray arrayWithObjects:
 	    [OFPair pairWithFirstObject: @"que#ry" secondObject: @"1"],
 	    [OFPair pairWithFirstObject: @"f&oo" secondObject: @"b=ar"], nil]]);
 	TEST(@"-[fragment]",
 	    [URI1.fragment isEqual: @"frag#ment"] && URI4.fragment == nil &&
-	    [URI9.fragment isEqual: @"frag"] && URI10.fragment == nil)
+	    [URI9.fragment isEqual: @"frag"] &&
+	    [URI10.fragment isEqual: @"frag"])
 
 	TEST(@"-[copy]", R(URI4 = [[URI1 copy] autorelease]))
 

@@ -623,16 +623,7 @@ parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
 				OFEnsure(UTF8String[0] == '/');
 		}
 
-		if (length > 0 && UTF8String[0] == '/')
-			parsePathQueryFragment(self, UTF8String, length);
-		else {
-			_percentEncodedPath = [[OFString alloc]
-			    initWithUTF8String: UTF8String
-					length: length];
-
-			OFURIVerifyIsEscaped(_percentEncodedPath,
-			    [OFCharacterSet URIPathAllowedCharacterSet]);
-		}
+		parsePathQueryFragment(self, UTF8String, length);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
