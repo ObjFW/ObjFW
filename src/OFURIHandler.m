@@ -60,7 +60,7 @@ releaseMutex(void)
 #endif
 
 	[self registerClass: [OFEmbeddedURIHandler class]
-		  forScheme: @"objfw-embedded"];
+		  forScheme: @"of-embedded"];
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
 #endif

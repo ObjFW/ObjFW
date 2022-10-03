@@ -91,11 +91,11 @@ IOS_TMP ?= /tmp/objfw-test
 include ../buildsys.mk
 
 serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml /serialization.xml $@
+	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
 testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin /testfile.bin $@
+	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini /testfile.ini $@
+	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:
