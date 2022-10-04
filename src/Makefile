@@ -204,6 +204,7 @@ SRCS += OFASPrintF.m			\
 	OFSizeValue.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
+	OFTarURIHandler.m		\
 	OFUTF8String.m			\
 	OFZIPURIHandler.m		\
 	${LIBBASES_M}			\

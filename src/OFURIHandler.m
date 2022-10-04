@@ -31,6 +31,7 @@
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 # import "OFHTTPURIHandler.h"
 #endif
+#import "OFTarURIHandler.h"
 #import "OFZIPURIHandler.h"
 
 #import "OFUnsupportedProtocolException.h"
@@ -69,6 +70,7 @@ releaseMutex(void)
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];
 #endif
+	[self registerClass: [OFTarURIHandler class] forScheme: @"of-tar"];
 	[self registerClass: [OFZIPURIHandler class] forScheme: @"of-zip"];
 }
 
