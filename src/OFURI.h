@@ -375,8 +375,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The characters allowed in the fragment part of a URI.
  */
 + (OFCharacterSet *)URIFragmentAllowedCharacterSet;
-
-+ (OFCharacterSet *)of_URIPathAllowedCharacterSetWithoutExclamationMark;
 @end
 
 #ifdef __cplusplus
@@ -384,6 +382,7 @@ extern "C" {
 #endif
 extern bool OFURIIsIPv6Host(OFString *host);
 extern void OFURIVerifyIsEscaped(OFString *, OFCharacterSet *);
+extern OFURI *OFURIForFileInArchive(OFString *, OFString *, OFURI *);
 #ifdef __cplusplus
 }
 #endif

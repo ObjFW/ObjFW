@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #import "OFTarURIHandler.h"
+#import "OFStream.h"
 #import "OFTarArchive.h"
 #import "OFURI.h"
 

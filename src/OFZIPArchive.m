@@ -170,26 +170,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	OFMutableURI *URI = [OFMutableURI URI];
-	void *pool = objc_autoreleasePoolPush();
-	OFCharacterSet *characterSet = [OFCharacterSet
-	    of_URIPathAllowedCharacterSetWithoutExclamationMark];
-	OFString *archiveURI;
-
-	path = [path
-	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
-	archiveURI = [archive.string
-	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
-
-	URI.scheme = @"of-zip";
-	URI.percentEncodedPath = [OFString stringWithFormat: @"%@!%@",
-							     archiveURI, path];
-
-	[URI makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return URI;
+	return OFURIForFileInArchive(@"of-zip", path, archive);
 }
 
 - (instancetype)init

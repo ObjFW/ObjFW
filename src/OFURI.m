@@ -144,6 +144,34 @@ OFURIIsIPv6Host(OFString *host)
 	return hasColon;
 }
 
+OFURI *
+OFURIForFileInArchive(OFString *scheme, OFString *path, OFURI *archive)
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFMutableURI *URI = [OFMutableURI URI];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *archiveURI;
+
+	OFOnce(&onceControl,
+	    initURIPathAllowedCharacterSetWithoutExclamationMark);
+
+	path = [path stringByAddingPercentEncodingWithAllowedCharacters:
+	    URIPathAllowedCharacterSetWithoutExclamationMark];
+	archiveURI = [archive.string
+	    stringByAddingPercentEncodingWithAllowedCharacters:
+	    URIPathAllowedCharacterSetWithoutExclamationMark];
+
+	URI.scheme = scheme;
+	URI.percentEncodedPath = [OFString stringWithFormat: @"%@!%@",
+							     archiveURI, path];
+
+	[URI makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return URI;
+}
+
 @implementation OFURIAllowedCharacterSetBase
 - (instancetype)autorelease
 {
@@ -446,15 +474,6 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	    initURIQueryOrFragmentAllowedCharacterSet);
 
 	return URIQueryOrFragmentAllowedCharacterSet;
-}
-
-+ (OFCharacterSet *)of_URIPathAllowedCharacterSetWithoutExclamationMark
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl,
-	    initURIPathAllowedCharacterSetWithoutExclamationMark);
-
-	return URIPathAllowedCharacterSetWithoutExclamationMark;
 }
 @end
 

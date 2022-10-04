@@ -74,26 +74,7 @@ OF_DIRECT_MEMBERS
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	OFMutableURI *URI = [OFMutableURI URI];
-	void *pool = objc_autoreleasePoolPush();
-	OFCharacterSet *characterSet = [OFCharacterSet
-	    of_URIPathAllowedCharacterSetWithoutExclamationMark];
-	OFString *archiveURI;
-
-	path = [path
-	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
-	archiveURI = [archive.string
-	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
-
-	URI.scheme = @"of-tar";
-	URI.percentEncodedPath = [OFString stringWithFormat: @"%@!%@",
-							     archiveURI, path];
-
-	[URI makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return URI;
+	return OFURIForFileInArchive(@"of-tar", path, archive);
 }
 
 - (instancetype)init
