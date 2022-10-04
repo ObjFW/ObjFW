@@ -16,8 +16,9 @@
 #include "config.h"
 
 #import "OFGZIPURIHandler.h"
-#import "OFURI.h"
 #import "OFGZIPStream.h"
+#import "OFStream.h"
+#import "OFURI.h"
 
 #import "OFInvalidArgumentException.h"
 

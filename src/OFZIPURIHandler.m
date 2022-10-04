@@ -16,6 +16,7 @@
 #include "config.h"
 
 #import "OFZIPURIHandler.h"
+#import "OFStream.h"
 #import "OFURI.h"
 #import "OFZIPArchive.h"
 
