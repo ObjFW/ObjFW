@@ -205,6 +205,7 @@ SRCS += OFASPrintF.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
+	OFZIPURIHandler.m		\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
