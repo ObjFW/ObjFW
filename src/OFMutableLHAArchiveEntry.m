@@ -135,7 +135,7 @@
 	[old release];
 }
 
-- (void)setOwnerAccounutName: (OFString *)ownerAccountName
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
 	OFString *old = _ownerAccountName;
 	_ownerAccountName = [ownerAccountName copy];
