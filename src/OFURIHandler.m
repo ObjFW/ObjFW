@@ -28,6 +28,7 @@
 #ifdef OF_HAVE_FILES
 # import "OFFileURIHandler.h"
 #endif
+#import "OFGZIPURIHandler.h"
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 # import "OFHTTPURIHandler.h"
 #endif
@@ -66,6 +67,7 @@ releaseMutex(void)
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
 #endif
+	[self registerClass: [OFGZIPURIHandler class] forScheme: @"of-gzip"];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];

@@ -184,6 +184,7 @@ SRCS += OFASPrintF.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
 	OFEmbeddedURIHandler.m		\
+	OFGZIPURIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\

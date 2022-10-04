@@ -15,50 +15,29 @@
 
 #include "config.h"
 
-#import "OFZIPURIHandler.h"
+#import "OFGZIPURIHandler.h"
 #import "OFURI.h"
-#import "OFZIPArchive.h"
+#import "OFGZIPStream.h"
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OFZIPURIHandler
+@implementation OFGZIPURIHandler
 - (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *percentEncodedPath, *archiveURI, *path;
-	size_t pos;
-	OFZIPArchive *archive;
 	OFStream *stream;
 
-	if (![URI.scheme isEqual: @"of-zip"] || URI.host != nil ||
+	if (![URI.scheme isEqual: @"of-gzip"] || URI.host != nil ||
 	    URI.port != nil || URI.user != nil || URI.password != nil ||
 	    URI.query != nil || URI.fragment != nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![mode isEqual: @"r"])
-		/*
-		 * Writing has some implications that are not decided yet: Will
-		 * it always append to an archive? What happens if the file
-		 * already exists?
-		 */
 		@throw [OFInvalidArgumentException exception];
 
-	percentEncodedPath = URI.percentEncodedPath;
-	pos = [percentEncodedPath rangeOfString: @"!"].location;
-
-	if (pos == OFNotFound)
-		@throw [OFInvalidArgumentException exception];
-
-	archiveURI = [percentEncodedPath substringWithRange:
-	    OFMakeRange(0, pos)].stringByRemovingPercentEncoding;
-	path = [percentEncodedPath substringWithRange:
-	    OFMakeRange(pos + 1, percentEncodedPath.length - pos - 1)]
-	    .stringByRemovingPercentEncoding;
-
-	archive = [OFZIPArchive
-	    archiveWithURI: [OFURI URIWithString: archiveURI]
-		      mode: @"r"];
-	stream = [archive streamForReadingFile: path];
+	stream = [OFURIHandler openItemAtURI: [OFURI URIWithString: URI.path]
+					mode: @"r"];
+	stream = [OFGZIPStream streamWithStream: stream mode: @"r"];
 
 	[stream retain];
 

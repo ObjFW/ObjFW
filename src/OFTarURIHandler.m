@@ -27,6 +27,7 @@
 @implementation OFTarURIHandler
 - (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
+	void *pool = objc_autoreleasePoolPush();
 	OFString *percentEncodedPath, *archiveURI, *path;
 	size_t pos;
 	OFTarArchive *archive;
@@ -61,9 +62,16 @@
 	    archiveWithURI: [OFURI URIWithString: archiveURI]
 		      mode: @"r"];
 
-	while ((entry = [archive nextEntry]) != nil)
-		if ([entry.fileName isEqual: path])
-			return [archive streamForReadingCurrentEntry];
+	while ((entry = [archive nextEntry]) != nil) {
+		if ([entry.fileName isEqual: path]) {
+			OFStream *stream =
+			    [[archive streamForReadingCurrentEntry] retain];
+
+			objc_autoreleasePoolPop(pool);
+
+			return [stream autorelease];
+		}
+	}
 
 	@throw [OFOpenItemFailedException exceptionWithURI: URI
 						      mode: mode
