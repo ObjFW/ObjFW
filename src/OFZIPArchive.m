@@ -28,6 +28,7 @@
 #import "OFInflateStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
+#import "OFURI.h"
 #import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
@@ -165,6 +166,30 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 + (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
 {
 	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+}
+
++ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
+{
+	OFMutableURI *URI = [OFMutableURI URI];
+	void *pool = objc_autoreleasePoolPush();
+	OFCharacterSet *characterSet = [OFCharacterSet
+	    of_URIPathAllowedCharacterSetWithoutExclamationMark];
+	OFString *archiveURI;
+
+	path = [path
+	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
+	archiveURI = [archive.string
+	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet];
+
+	URI.scheme = @"of-zip";
+	URI.percentEncodedPath = [OFString stringWithFormat: @"%@!%@",
+							     archiveURI, path];
+
+	[URI makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return URI;
 }
 
 - (instancetype)init

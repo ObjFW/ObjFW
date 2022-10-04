@@ -375,6 +375,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The characters allowed in the fragment part of a URI.
  */
 + (OFCharacterSet *)URIFragmentAllowedCharacterSet;
+
++ (OFCharacterSet *)of_URIPathAllowedCharacterSetWithoutExclamationMark;
 @end
 
 #ifdef __cplusplus

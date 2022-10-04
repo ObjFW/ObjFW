@@ -53,11 +53,30 @@
 @interface OFURIQueryKeyValueAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
+@interface OFURIPathAllowedCharacterSetWithoutExclamationMark:
+    OFURIPathAllowedCharacterSet
+{
+	OFCharacterSet *_characterSet;
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
+}
+@end
+
+OF_DIRECT_MEMBERS
+@interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
+{
+	OFCharacterSet *_characterSet;
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
+}
+
+- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
+@end
+
 static OFCharacterSet *URIAllowedCharacterSet = nil;
 static OFCharacterSet *URISchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URIPathAllowedCharacterSet = nil;
 static OFCharacterSet *URIQueryOrFragmentAllowedCharacterSet = nil;
 static OFCharacterSet *URIQueryKeyValueAllowedCharacterSet = nil;
+static OFCharacterSet *URIPathAllowedCharacterSetWithoutExclamationMark = nil;
 
 static OFOnceControl URIAllowedCharacterSetOnce = OFOnceControlInitValue;
 static OFOnceControl URIQueryOrFragmentAllowedCharacterSetOnce =
@@ -97,15 +116,12 @@ initURIQueryKeyValueAllowedCharacterSet(void)
 	    [[OFURIQueryKeyValueAllowedCharacterSet alloc] init];
 }
 
-OF_DIRECT_MEMBERS
-@interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
+static void
+initURIPathAllowedCharacterSetWithoutExclamationMark(void)
 {
-	OFCharacterSet *_characterSet;
-	bool (*_characterIsMember)(id, SEL, OFUnichar);
+	URIPathAllowedCharacterSetWithoutExclamationMark =
+	    [[OFURIPathAllowedCharacterSetWithoutExclamationMark alloc] init];
 }
-
-- (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
-@end
 
 bool
 OFURIIsIPv6Host(OFString *host)
@@ -291,6 +307,39 @@ OFURIIsIPv6Host(OFString *host)
 }
 @end
 
+@implementation OFURIPathAllowedCharacterSetWithoutExclamationMark
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_characterSet = [[OFCharacterSet URIPathAllowedCharacterSet]
+		    retain];
+		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
+		    [_characterSet methodForSelector:
+		    @selector(characterIsMember:)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_characterSet release];
+
+	[super dealloc];
+}
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	return (character != '!' && _characterIsMember(_characterSet,
+	    @selector(characterIsMember:), character));
+}
+@end
+
 @implementation OFInvertedCharacterSetWithoutPercent
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet
 {
@@ -397,6 +446,15 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 	    initURIQueryOrFragmentAllowedCharacterSet);
 
 	return URIQueryOrFragmentAllowedCharacterSet;
+}
+
++ (OFCharacterSet *)of_URIPathAllowedCharacterSetWithoutExclamationMark
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl,
+	    initURIPathAllowedCharacterSetWithoutExclamationMark);
+
+	return URIPathAllowedCharacterSetWithoutExclamationMark;
 }
 @end
 
