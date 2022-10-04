@@ -25,6 +25,7 @@
 #import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFURI.h"
 #import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
@@ -83,6 +84,11 @@ OF_DIRECT_MEMBERS
 + (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
 {
 	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+}
+
++ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
+{
+	return OFURIForFileInArchive(@"of-lha", path, archive);
 }
 
 - (instancetype)init

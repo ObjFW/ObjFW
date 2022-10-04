@@ -189,6 +189,7 @@ SRCS += OFASPrintF.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
+	OFLHAURIHandler.m		\
 	OFMapTableDictionary.m		\
 	OFMapTableSet.m			\
 	OFMutableAdjacentArray.m	\

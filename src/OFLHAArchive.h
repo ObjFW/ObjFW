@@ -75,6 +75,17 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
+/**
+ * @brief Creates a URI for accessing a the specified file within the specified
+ *	  LHA archive.
+ *
+ * @param path The path of the file within the archive
+ * @param archive The URI of the archive
+ * @return A URI for accessing the specified file within the specified LHA
+ *	   archive
+ */
++ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
