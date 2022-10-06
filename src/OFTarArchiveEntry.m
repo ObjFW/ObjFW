@@ -312,6 +312,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (void)of_writeToStream: (OFStream *)stream
 		encoding: (OFStringEncoding)encoding
 {
+	void *pool = objc_autoreleasePoolPush();
 	unsigned char buffer[512];
 	unsigned long long modificationDate;
 	uint16_t checksum = 0;
@@ -363,5 +364,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    OFStringEncodingASCII);
 
 	[stream writeBuffer: buffer length: sizeof(buffer)];
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

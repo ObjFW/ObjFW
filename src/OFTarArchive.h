@@ -38,6 +38,10 @@ OF_SUBCLASSING_RESTRICTED
 		OFTarArchiveModeAppend
 	} _mode;
 	OFStringEncoding _encoding;
+	OFTarArchiveEntry *_Nullable _currentEntry;
+#ifdef OF_TAR_ARCHIVE_M
+@public
+#endif
 	OFStream *_Nullable _lastReturnedStream;
 }
 

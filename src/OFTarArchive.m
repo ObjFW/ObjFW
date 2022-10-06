@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_TAR_ARCHIVE_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -36,27 +38,31 @@
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
+	OFTarArchive *_archive;
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
 	unsigned long long _toRead;
 	bool _atEndOfStream, _skipped;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
+	OFTarArchive *_archive;
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
 	unsigned long long _toWrite;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry;
 @end
 
 @implementation OFTarArchive: OFObject
@@ -155,17 +161,21 @@ OF_DIRECT_MEMBERS
 {
 	[self close];
 
+	[_currentEntry release];
+
 	[super dealloc];
 }
 
 - (OFTarArchiveEntry *)nextEntry
 {
-	OFTarArchiveEntry *entry;
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
 	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
+
+	[_currentEntry release];
+	_currentEntry = nil;
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
 	@try {
@@ -173,7 +183,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	if (_stream.atEndOfStream)
@@ -195,15 +204,11 @@ OF_DIRECT_MEMBERS
 		return nil;
 	}
 
-	entry = [[[OFTarArchiveEntry alloc]
+	_currentEntry = [[OFTarArchiveEntry alloc]
 	    of_initWithHeader: (unsigned char *)buffer
-		     encoding: _encoding] autorelease];
+		     encoding: _encoding];
 
-	_lastReturnedStream = [[OFTarArchiveFileReadStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
-
-	return entry;
+	return _currentEntry;
 }
 
 - (OFStream *)streamForReadingCurrentEntry
@@ -211,40 +216,39 @@ OF_DIRECT_MEMBERS
 	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_lastReturnedStream == nil)
+	if (_currentEntry == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFTarArchiveFileReadStream *)_lastReturnedStream
-	    retain] autorelease];
+	_lastReturnedStream = [[[OFTarArchiveFileReadStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: _currentEntry] autorelease];
+	[_currentEntry release];
+	_currentEntry = nil;
+
+	return _lastReturnedStream;
 }
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
-	void *pool;
-
 	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
-
-	pool = objc_autoreleasePoolPush();
 
 	@try {
 		[_lastReturnedStream close];
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	[entry of_writeToStream: _stream encoding: _encoding];
 
-	_lastReturnedStream = [[OFTarArchiveFileWriteStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
+	_lastReturnedStream = [[[OFTarArchiveFileWriteStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: entry] autorelease];
 
-	objc_autoreleasePoolPop(pool);
-
-	return [[(OFTarArchiveFileWriteStream *)_lastReturnedStream
-	    retain] autorelease];
+	return _lastReturnedStream;
 }
 
 - (void)close
@@ -257,7 +261,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
@@ -272,12 +275,14 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFTarArchiveFileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_entry = [entry copy];
 		_stream = [stream retain];
 		_toRead = entry.uncompressedSize;
@@ -296,11 +301,13 @@ OF_DIRECT_MEMBERS
 
 	[_entry release];
 
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	size_t ret;
 
@@ -408,12 +415,14 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFTarArchiveFileWriteStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_entry = [entry copy];
 		_stream = [stream retain];
 		_toWrite = entry.uncompressedSize;
@@ -431,6 +440,9 @@ OF_DIRECT_MEMBERS
 		[self close];
 
 	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
 
 	[super dealloc];
 }
