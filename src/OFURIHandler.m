@@ -24,17 +24,14 @@
 # import "OFMutex.h"
 #endif
 
+#import "OFArchiveURIHandler.h"
 #import "OFEmbeddedURIHandler.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileURIHandler.h"
 #endif
-#import "OFGZIPURIHandler.h"
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 # import "OFHTTPURIHandler.h"
 #endif
-#import "OFLHAURIHandler.h"
-#import "OFTarURIHandler.h"
-#import "OFZIPURIHandler.h"
 
 #import "OFUnsupportedProtocolException.h"
 
@@ -68,14 +65,14 @@ releaseMutex(void)
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
 #endif
-	[self registerClass: [OFGZIPURIHandler class] forScheme: @"of-gzip"];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];
 #endif
-	[self registerClass: [OFLHAURIHandler class] forScheme: @"of-lha"];
-	[self registerClass: [OFTarURIHandler class] forScheme: @"of-tar"];
-	[self registerClass: [OFZIPURIHandler class] forScheme: @"of-zip"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-gzip"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-lha"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-tar"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-zip"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme

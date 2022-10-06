@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFZIPURIHandler: OFURIHandler
+@interface OFArchiveURIHandler: OFURIHandler
 @end
 
 OF_ASSUME_NONNULL_END

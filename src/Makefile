@@ -177,6 +177,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 SRCS += OFASPrintF.m			\
 	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFArchiveURIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
@@ -184,12 +185,10 @@ SRCS += OFASPrintF.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
 	OFEmbeddedURIHandler.m		\
-	OFGZIPURIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
-	OFLHAURIHandler.m		\
 	OFMapTableDictionary.m		\
 	OFMapTableSet.m			\
 	OFMutableAdjacentArray.m	\
@@ -206,9 +205,7 @@ SRCS += OFASPrintF.m			\
 	OFSizeValue.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
-	OFTarURIHandler.m		\
 	OFUTF8String.m			\
-	OFZIPURIHandler.m		\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
