@@ -34,6 +34,10 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_stream;
 	uint_least8_t _mode;
 	OFStringEncoding _encoding;
+	OFLHAArchiveEntry *_Nullable _currentEntry;
+#ifdef OF_LHA_ARCHIVE_M
+@public
+#endif
 	OFStream *_Nullable _lastReturnedStream;
 }
 

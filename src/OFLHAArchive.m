@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_LHA_ARCHIVE_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -45,6 +47,7 @@ enum {
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
+	OFLHAArchive *_archive;
 	OFStream *_stream, *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
 	unsigned long long _toRead;
@@ -52,14 +55,16 @@ OF_DIRECT_MEMBERS
 	bool _atEndOfStream, _skipped;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
+	OFLHAArchive *_archive;
 	OFMutableLHAArchiveEntry *_entry;
 	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
@@ -68,9 +73,10 @@ OF_DIRECT_MEMBERS
 	uint16_t _CRC16;
 }
 
-- (instancetype)of_initWithStream: (OFSeekableStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (OFStringEncoding)encoding;
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry
+			  encoding: (OFStringEncoding)encoding;
 @end
 
 @implementation OFLHAArchive
@@ -156,17 +162,21 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil)
 		[self close];
 
+	[_currentEntry release];
+
 	[super dealloc];
 }
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	OFLHAArchiveEntry *entry;
 	char header[21];
 	size_t headerLen;
 
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
+
+	[_currentEntry release];
+	_currentEntry = nil;
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
 	@try {
@@ -174,7 +184,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	for (headerLen = 0; headerLen < 21;) {
@@ -192,16 +201,12 @@ OF_DIRECT_MEMBERS
 					      length: 21 - headerLen];
 	}
 
-	entry = [[[OFLHAArchiveEntry alloc]
+	_currentEntry= [[OFLHAArchiveEntry alloc]
 	    of_initWithHeader: header
 		       stream: _stream
-		     encoding: _encoding] autorelease];
+		     encoding: _encoding];
 
-	_lastReturnedStream = [[OFLHAArchiveFileReadStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
-
-	return entry;
+	return _currentEntry;
 }
 
 - (OFStream *)streamForReadingCurrentEntry
@@ -209,11 +214,17 @@ OF_DIRECT_MEMBERS
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_lastReturnedStream == nil)
+	if (_currentEntry == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFLHAArchiveFileReadStream *)_lastReturnedStream
-	    retain] autorelease];
+	_lastReturnedStream = [[[OFLHAArchiveFileReadStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: _currentEntry] autorelease];
+	[_currentEntry release];
+	_currentEntry = nil;
+
+	return _lastReturnedStream;
 }
 
 - (OFStream *)streamForWritingEntry: (OFLHAArchiveEntry *)entry
@@ -235,16 +246,15 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	_lastReturnedStream = [[OFLHAArchiveFileWriteStream alloc]
-	    of_initWithStream: (OFSeekableStream *)_stream
-			entry: entry
-		     encoding: _encoding];
+	_lastReturnedStream = [[[OFLHAArchiveFileWriteStream alloc]
+	    of_initWithArchive: self
+			stream: (OFSeekableStream *)_stream
+			 entry: entry
+		      encoding: _encoding] autorelease];
 
-	return [[(OFLHAArchiveFileWriteStream *)_lastReturnedStream
-	    retain] autorelease];
+	return _lastReturnedStream;
 }
 
 - (void)close
@@ -257,7 +267,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	[_stream release];
@@ -266,14 +275,16 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFLHAArchiveFileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
 		OFString *compressionMethod;
 
+		_archive = [archive retain];
 		_stream = [stream retain];
 
 		compressionMethod = entry.compressionMethod;
@@ -313,6 +324,11 @@ OF_DIRECT_MEMBERS
 		[self close];
 
 	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }
@@ -442,13 +458,15 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFLHAArchiveFileWriteStream
-- (instancetype)of_initWithStream: (OFSeekableStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (OFStringEncoding)encoding
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry
+			  encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_entry = [entry mutableCopy];
 		_encoding = encoding;
 
@@ -474,6 +492,11 @@ OF_DIRECT_MEMBERS
 		[self close];
 
 	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }
