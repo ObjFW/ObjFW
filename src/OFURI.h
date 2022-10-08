@@ -382,7 +382,6 @@ extern "C" {
 #endif
 extern bool OFURIIsIPv6Host(OFString *host);
 extern void OFURIVerifyIsEscaped(OFString *, OFCharacterSet *);
-extern OFURI *OFURIForFileInArchive(OFString *, OFString *, OFURI *);
 #ifdef __cplusplus
 }
 #endif

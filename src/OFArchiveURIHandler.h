@@ -20,4 +20,13 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFArchiveURIHandler: OFURIHandler
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFURI *OFArchiveURIHandlerURIForFileInArchive(OFString *, OFString *,
+    OFURI *);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

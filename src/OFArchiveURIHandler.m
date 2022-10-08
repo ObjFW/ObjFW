@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #import "OFArchiveURIHandler.h"
+#import "OFCharacterSet.h"
 #import "OFGZIPStream.h"
 #import "OFLHAArchive.h"
 #import "OFStream.h"
@@ -27,6 +28,22 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
+
+@interface OFArchiveURIHandlerPathAllowedCharacterSet: OFCharacterSet
+{
+	OFCharacterSet *_characterSet;
+	bool (*_characterIsMember)(id, SEL, OFUnichar);
+}
+@end
+
+static OFCharacterSet *pathAllowedCharacters;
+
+static void
+initPathAllowedCharacters(void)
+{
+	pathAllowedCharacters =
+	    [[OFArchiveURIHandlerPathAllowedCharacterSet alloc] init];
+}
 
 @implementation OFArchiveURIHandler
 - (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
@@ -121,3 +138,64 @@ end:
 	return [stream autorelease];
 }
 @end
+
+@implementation OFArchiveURIHandlerPathAllowedCharacterSet
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_characterSet =
+		    [[OFCharacterSet URIPathAllowedCharacterSet] retain];
+		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
+		    [_characterSet methodForSelector:
+		    @selector(characterIsMember:)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_characterSet release];
+
+	[super dealloc];
+}
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	return (character != '!' && _characterIsMember(_characterSet,
+	    @selector(characterIsMember:), character));
+}
+@end
+
+OFURI *
+OFArchiveURIHandlerURIForFileInArchive(OFString *scheme,
+    OFString *pathInArchive, OFURI *archiveURI)
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFMutableURI *ret = [OFMutableURI URI];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *archiveURIString;
+
+	OFOnce(&onceControl, initPathAllowedCharacters);
+
+	pathInArchive = [pathInArchive
+	    stringByAddingPercentEncodingWithAllowedCharacters:
+	    pathAllowedCharacters];
+	archiveURIString = [archiveURI.string
+	    stringByAddingPercentEncodingWithAllowedCharacters:
+	    pathAllowedCharacters];
+
+	ret.scheme = scheme;
+	ret.percentEncodedPath = [OFString
+	    stringWithFormat: @"%@!%@", archiveURIString, pathInArchive];
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}

@@ -22,6 +22,7 @@
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
+#import "OFArchiveURIHandler.h"
 #import "OFCRC16.h"
 #import "OFLHADecompressingStream.h"
 #import "OFSeekableStream.h"
@@ -94,7 +95,7 @@ OF_DIRECT_MEMBERS
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFURIForFileInArchive(@"of-lha", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"of-lha", path, archive);
 }
 
 - (instancetype)init

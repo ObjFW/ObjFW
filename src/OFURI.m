@@ -53,14 +53,6 @@
 @interface OFURIQueryKeyValueAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURIPathAllowedCharacterSetWithoutExclamationMark:
-    OFURIPathAllowedCharacterSet
-{
-	OFCharacterSet *_characterSet;
-	bool (*_characterIsMember)(id, SEL, OFUnichar);
-}
-@end
-
 OF_DIRECT_MEMBERS
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
@@ -76,7 +68,6 @@ static OFCharacterSet *URISchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URIPathAllowedCharacterSet = nil;
 static OFCharacterSet *URIQueryOrFragmentAllowedCharacterSet = nil;
 static OFCharacterSet *URIQueryKeyValueAllowedCharacterSet = nil;
-static OFCharacterSet *URIPathAllowedCharacterSetWithoutExclamationMark = nil;
 
 static OFOnceControl URIAllowedCharacterSetOnce = OFOnceControlInitValue;
 static OFOnceControl URIQueryOrFragmentAllowedCharacterSetOnce =
@@ -116,13 +107,6 @@ initURIQueryKeyValueAllowedCharacterSet(void)
 	    [[OFURIQueryKeyValueAllowedCharacterSet alloc] init];
 }
 
-static void
-initURIPathAllowedCharacterSetWithoutExclamationMark(void)
-{
-	URIPathAllowedCharacterSetWithoutExclamationMark =
-	    [[OFURIPathAllowedCharacterSetWithoutExclamationMark alloc] init];
-}
-
 bool
 OFURIIsIPv6Host(OFString *host)
 {
@@ -142,34 +126,6 @@ OFURIIsIPv6Host(OFString *host)
 	}
 
 	return hasColon;
-}
-
-OFURI *
-OFURIForFileInArchive(OFString *scheme, OFString *path, OFURI *archive)
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFMutableURI *URI = [OFMutableURI URI];
-	void *pool = objc_autoreleasePoolPush();
-	OFString *archiveURI;
-
-	OFOnce(&onceControl,
-	    initURIPathAllowedCharacterSetWithoutExclamationMark);
-
-	path = [path stringByAddingPercentEncodingWithAllowedCharacters:
-	    URIPathAllowedCharacterSetWithoutExclamationMark];
-	archiveURI = [archive.string
-	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    URIPathAllowedCharacterSetWithoutExclamationMark];
-
-	URI.scheme = scheme;
-	URI.percentEncodedPath = [OFString stringWithFormat: @"%@!%@",
-							     archiveURI, path];
-
-	[URI makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return URI;
 }
 
 @implementation OFURIAllowedCharacterSetBase
@@ -332,39 +288,6 @@ OFURIForFileInArchive(OFString *scheme, OFString *path, OFURI *archive)
 	default:
 		return false;
 	}
-}
-@end
-
-@implementation OFURIPathAllowedCharacterSetWithoutExclamationMark
-- (instancetype)init
-{
-	self = [super init];
-
-	@try {
-		_characterSet = [[OFCharacterSet URIPathAllowedCharacterSet]
-		    retain];
-		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
-		    [_characterSet methodForSelector:
-		    @selector(characterIsMember:)];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[_characterSet release];
-
-	[super dealloc];
-}
-
-- (bool)characterIsMember: (OFUnichar)character
-{
-	return (character != '!' && _characterIsMember(_characterSet,
-	    @selector(characterIsMember:), character));
 }
 @end
 

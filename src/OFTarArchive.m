@@ -22,6 +22,7 @@
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
+#import "OFArchiveURIHandler.h"
 #import "OFDate.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
@@ -80,7 +81,7 @@ OF_DIRECT_MEMBERS
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFURIForFileInArchive(@"of-tar", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"of-tar", path, archive);
 }
 
 - (instancetype)init

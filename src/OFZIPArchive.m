@@ -20,6 +20,7 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
+#import "OFArchiveURIHandler.h"
 #import "OFArray.h"
 #import "OFCRC32.h"
 #import "OFData.h"
@@ -170,7 +171,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFURIForFileInArchive(@"of-zip", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"of-zip", path, archive);
 }
 
 - (instancetype)init
