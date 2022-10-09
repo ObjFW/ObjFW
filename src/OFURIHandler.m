@@ -61,7 +61,7 @@ releaseMutex(void)
 #endif
 
 	[self registerClass: [OFEmbeddedURIHandler class]
-		  forScheme: @"of-embedded"];
+		  forScheme: @"embedded"];
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
 #endif
@@ -69,10 +69,10 @@ releaseMutex(void)
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];
 #endif
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-gzip"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-lha"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-tar"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"of-zip"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"gzip"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"lha"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"tar"];
+	[self registerClass: [OFArchiveURIHandler class] forScheme: @"zip"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme

@@ -95,7 +95,7 @@ OF_DIRECT_MEMBERS
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"of-lha", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"lha", path, archive);
 }
 
 - (instancetype)init

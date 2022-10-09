@@ -81,7 +81,7 @@ OF_DIRECT_MEMBERS
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"of-tar", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"tar", path, archive);
 }
 
 - (instancetype)init

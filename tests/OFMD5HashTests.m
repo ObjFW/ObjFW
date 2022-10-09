@@ -29,7 +29,7 @@ const uint8_t testFileMD5[16] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMD5Hash *MD5, *MD5Copy;
-	OFURI *URI = [OFURI URIWithString: @"of-embedded:testfile.bin"];
+	OFURI *URI = [OFURI URIWithString: @"embedded:testfile.bin"];
 	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",

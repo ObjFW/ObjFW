@@ -30,7 +30,7 @@ const uint8_t testFileSHA1[20] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA1Hash *SHA1, *SHA1Copy;
-	OFURI *URI = [OFURI URIWithString: @"of-embedded:testfile.bin"];
+	OFURI *URI = [OFURI URIWithString: @"embedded:testfile.bin"];
 	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",

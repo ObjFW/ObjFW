@@ -176,7 +176,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 + (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"of-zip", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"zip", path, archive);
 }
 
 - (instancetype)init

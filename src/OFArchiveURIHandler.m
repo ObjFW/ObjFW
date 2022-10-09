@@ -71,7 +71,7 @@ initPathAllowedCharacters(void)
 	 * GZIP only compresses one file and thus has no path inside an
 	 * archive.
 	 */
-	if ([scheme isEqual: @"of-gzip"]) {
+	if ([scheme isEqual: @"gzip"]) {
 		stream = [OFURIHandler openItemAtURI: [OFURI URIWithString:
 							  URI.path]
 						mode: @"r"];
@@ -92,7 +92,7 @@ initPathAllowedCharacters(void)
 	    OFMakeRange(pos + 1, percentEncodedPath.length - pos - 1)]
 	    .stringByRemovingPercentEncoding;
 
-	if ([scheme isEqual: @"of-lha"]) {
+	if ([scheme isEqual: @"lha"]) {
 		OFLHAArchive *archive = [OFLHAArchive archiveWithURI: archiveURI
 								mode: @"r"];
 		OFLHAArchiveEntry *entry;
@@ -107,7 +107,7 @@ initPathAllowedCharacters(void)
 		@throw [OFOpenItemFailedException exceptionWithURI: URI
 							      mode: mode
 							     errNo: ENOENT];
-	} else if ([scheme isEqual: @"of-tar"]) {
+	} else if ([scheme isEqual: @"tar"]) {
 		OFTarArchive *archive = [OFTarArchive archiveWithURI: archiveURI
 								mode: @"r"];
 		OFTarArchiveEntry *entry;
@@ -122,7 +122,7 @@ initPathAllowedCharacters(void)
 		@throw [OFOpenItemFailedException exceptionWithURI: URI
 							      mode: mode
 							     errNo: ENOENT];
-	} else if ([scheme isEqual: @"of-zip"]) {
+	} else if ([scheme isEqual: @"zip"]) {
 		OFZIPArchive *archive = [OFZIPArchive archiveWithURI: archiveURI
 								mode: @"r"];
 
