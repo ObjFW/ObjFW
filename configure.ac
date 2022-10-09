@@ -402,6 +402,12 @@ AC_COMPILE_IFELSE([
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 
+case "$host_os" in
+mingw*)
+	AC_CHECK_TOOL(RC, windres)
+	;;
+esac
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [

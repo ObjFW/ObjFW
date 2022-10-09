@@ -209,7 +209,7 @@ SRCS += OFASPrintF.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
-       ${UNICODE_M}
+	${UNICODE_M}
 SRCS_FILES += OFFileURIHandler.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
@@ -221,7 +221,8 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
-SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m
+SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
+		versioninfo.rc
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
@@ -239,3 +240,7 @@ FRAMEWORK_LIBS := -Fruntime				\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
 LIBS := -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
+RCFLAGS = -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				 \
+	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				 \
+	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MANJOR}.${OBJFW_LIB_MINOR}\" \
+	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
