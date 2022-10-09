@@ -81,7 +81,7 @@ MSGFMT = @MSGFMT@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAR = @JAR@
-WINDRES = @WINDRES@
+RC = @RC@
 BUILD_AND_HOST_ARE_DARWIN = @BUILD_AND_HOST_ARE_DARWIN@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -579,7 +579,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${WINDRES} ${CPPFLAGS} -J rc -O coff -o $@ $<; then \
+	if ${RC} ${RCFLAGS} ${CPPFLAGS} -J rc -O coff -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
