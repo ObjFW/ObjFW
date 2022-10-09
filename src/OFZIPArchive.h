@@ -33,13 +33,20 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
 	OFStream *_stream;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
 	int64_t _offset;
+@protected
 	uint_least8_t _mode;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
 	OFString *_Nullable _archiveComment;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
 	OFMutableArray OF_GENERIC(OFZIPArchiveEntry *) *_entries;
 	OFMutableDictionary OF_GENERIC(OFString *, OFZIPArchiveEntry *)
 	    *_pathToEntryMap;

@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_ZIP_ARCHIVE_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -60,7 +62,6 @@ OF_DIRECT_MEMBERS
 @interface OFZIPArchive ()
 - (void)of_readZIPInfo;
 - (void)of_readEntries;
-- (void)of_closeLastReturnedStream;
 - (void)of_writeCentralDirectory;
 @end
 
@@ -83,6 +84,7 @@ OF_DIRECT_MEMBERS
 OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileReadStream: OFStream
 {
+	OFZIPArchive *_archive;
 	OFStream *_stream, *_decompressedStream;
 	OFZIPArchiveEntry *_entry;
 	unsigned long long _toRead;
@@ -90,13 +92,15 @@ OF_DIRECT_MEMBERS
 	bool _atEndOfStream;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFZIPArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFZIPArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFZIPArchiveEntry *)entry;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileWriteStream: OFStream
 {
+	OFZIPArchive *_archive;
 	OFStream *_stream;
 	uint32_t _CRC32;
 @public
@@ -104,8 +108,9 @@ OF_DIRECT_MEMBERS
 	OFMutableZIPArchiveEntry *_entry;
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFMutableZIPArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFZIPArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFMutableZIPArchiveEntry *)entry;
 @end
 
 uint32_t
@@ -257,7 +262,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_archiveComment release];
 	[_entries release];
 	[_pathToEntryMap release];
-	[_lastReturnedStream release];
 
 	[super dealloc];
 }
@@ -403,36 +407,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)of_closeLastReturnedStream
-{
-	@try {
-		[_lastReturnedStream close];
-	} @catch (OFNotOpenException *e) {
-		/* Might have already been closed by the user - that's fine. */
-	}
-
-	if ((_mode == modeWrite || _mode == modeAppend) &&
-	    [_lastReturnedStream isKindOfClass:
-	    [OFZIPArchiveFileWriteStream class]]) {
-		OFZIPArchiveFileWriteStream *stream =
-		    (OFZIPArchiveFileWriteStream *)_lastReturnedStream;
-
-		if (ULLONG_MAX - _offset < stream->_bytesWritten)
-			@throw [OFOutOfRangeException exception];
-
-		_offset += stream->_bytesWritten;
-
-		if (stream->_entry != nil) {
-			[_entries addObject: stream->_entry];
-			[_pathToEntryMap setObject: stream->_entry
-					    forKey: [stream->_entry fileName]];
-		}
-	}
-
-	[_lastReturnedStream release];
-	_lastReturnedStream = nil;
-}
-
 - (OFStream *)streamForReadingFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -451,7 +425,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 							       mode: @"r"
 							      errNo: ENOENT];
 
-	[self of_closeLastReturnedStream];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
+	_lastReturnedStream = nil;
 
 	offset64 = entry.of_localFileHeaderOffset;
 	if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
@@ -474,13 +453,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		    exceptionWithVersion: version];
 	}
 
-	_lastReturnedStream = [[OFZIPArchiveFileReadStream alloc]
-	     of_initWithStream: _stream
-			 entry: entry];
-
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	_lastReturnedStream = [[[OFZIPArchiveFileReadStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: entry] autorelease];
+
+	return _lastReturnedStream;
 }
 
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
@@ -512,7 +492,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	[self of_closeLastReturnedStream];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
+	_lastReturnedStream = nil;
 
 	fileName = entry.fileName;
 	fileNameLength = fileName.UTF8StringLength;
@@ -565,12 +550,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_offset += offsetAdd;
 
 	_lastReturnedStream = [[OFZIPArchiveFileWriteStream alloc]
-	     initWithStream: _stream
-		      entry: entry];
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [_lastReturnedStream autorelease];
 }
 
 - (void)of_writeCentralDirectory
@@ -627,7 +613,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self of_closeLastReturnedStream];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
+	_lastReturnedStream = nil;
 
 	if (_mode == modeWrite || _mode == modeAppend)
 		[self of_writeCentralDirectory];
@@ -737,12 +728,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchiveFileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFZIPArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFZIPArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFZIPArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_stream = [stream retain];
 
 		switch (entry.compressionMethod) {
@@ -780,6 +773,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		[self close];
 
 	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }
@@ -864,11 +862,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchiveFileWriteStream
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFMutableZIPArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFZIPArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFMutableZIPArchiveEntry *)entry
 {
 	self = [super init];
 
+	_archive = [archive retain];
 	_stream = [stream retain];
 	_entry = [entry retain];
 	_CRC32 = ~0;
@@ -882,6 +882,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		[self close];
 
 	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }
@@ -938,6 +943,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_entry makeImmutable];
 
 	_bytesWritten += (2 * 4 + 2 * 8);
+
+	[_archive->_entries addObject: _entry];
+	[_archive->_pathToEntryMap setObject: _entry forKey: _entry.fileName];
+
+	if (ULLONG_MAX - _archive->_offset < _bytesWritten)
+		@throw [OFOutOfRangeException exception];
+
+	_archive->_offset += _bytesWritten;
 
 	[super close];
 }
