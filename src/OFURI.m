@@ -548,37 +548,37 @@ parseAuthority(OFURI *self, const char *UTF8String, size_t length)
 }
 
 static void
-parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
+parsePathQueryFragment(const char *UTF8String, size_t length,
+    OFString **pathString, OFString **queryString, OFString **fragmentString)
 {
 	const char *fragment, *query;
 
 	if ((fragment = memchr(UTF8String, '#', length)) != NULL) {
-		self->_percentEncodedFragment = [[OFString alloc]
-		    initWithUTF8String: fragment + 1
-				length: length - (fragment - UTF8String) - 1];
+		*fragmentString = [OFString
+		    stringWithUTF8String: fragment + 1
+				  length: length - (fragment - UTF8String) - 1];
 
-		OFURIVerifyIsEscaped(self->_percentEncodedFragment,
+		OFURIVerifyIsEscaped(*fragmentString,
 		    [OFCharacterSet URIQueryAllowedCharacterSet]);
 
 		length = fragment - UTF8String;
 	}
 
 	if ((query = memchr(UTF8String, '?', length)) != NULL) {
-		self->_percentEncodedQuery = [[OFString alloc]
-		    initWithUTF8String: query + 1
-				length: length - (query - UTF8String) - 1];
+		*queryString = [OFString
+		    stringWithUTF8String: query + 1
+				  length: length - (query - UTF8String) - 1];
 
-		OFURIVerifyIsEscaped(self->_percentEncodedQuery,
+		OFURIVerifyIsEscaped(*queryString,
 		    [OFCharacterSet URIFragmentAllowedCharacterSet]);
 
 		length = query - UTF8String;
 	}
 
-	self->_percentEncodedPath = [[OFString alloc]
-	    initWithUTF8String: UTF8String
-			length: length];
+	*pathString = [OFString stringWithUTF8String: UTF8String
+					      length: length];
 
-	OFURIVerifyIsEscaped(self->_percentEncodedPath,
+	OFURIVerifyIsEscaped(*pathString,
 	    [OFCharacterSet URIQueryAllowedCharacterSet]);
 }
 
@@ -591,6 +591,7 @@ parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
 		const char *UTF8String = string.UTF8String;
 		size_t length = string.UTF8StringLength;
 		const char *colon;
+		OFString *path, *query = nil, *fragment = nil;
 
 		if ((colon = strchr(UTF8String, ':')) == NULL ||
 		    colon - UTF8String < 1 || !OFASCIIIsAlpha(UTF8String[0]))
@@ -624,7 +625,11 @@ parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
 				OFEnsure(UTF8String[0] == '/');
 		}
 
-		parsePathQueryFragment(self, UTF8String, length);
+		parsePathQueryFragment(UTF8String, length,
+		    &path, &query, &fragment);
+		_percentEncodedPath = [path copy];
+		_percentEncodedQuery = [query copy];
+		_percentEncodedFragment = [fragment copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -635,90 +640,137 @@ parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
 	return self;
 }
 
+static bool
+isAbsolute(OFString *string)
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	@try {
+		const char *UTF8String = string.UTF8String;
+		size_t length = string.UTF8StringLength;
+
+		if (length < 1)
+			return false;
+
+		if (!OFASCIIIsAlpha(UTF8String[0]))
+			return false;
+
+		for (size_t i = 1; i < length; i++) {
+			if (UTF8String[i] == ':')
+				return true;
+
+			if (!OFASCIIIsAlnum(UTF8String[i]) &&
+			    UTF8String[i] != '+' && UTF8String[i] != '-' &&
+			    UTF8String[i] != '.')
+				return false;
+		}
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
+
+	return false;
+}
+
+static OFString *
+merge(OFString *base, OFString *path)
+{
+	OFMutableArray *components;
+
+	if (base.length == 0)
+		base = @"/";
+
+	components = [[[base componentsSeparatedByString: @"/"]
+	    mutableCopy] autorelease];
+
+	if (components.count == 1)
+		[components addObject: path];
+	else
+		[components replaceObjectAtIndex: components.count - 1
+				      withObject: path];
+
+	return [components componentsJoinedByString: @"/"];
+}
+
 - (instancetype)initWithString: (OFString *)string relativeToURI: (OFURI *)URI
 {
-	char *UTF8String, *UTF8String2 = NULL;
+	bool absolute;
 
-	if ([string containsString: @"://"])
+	@try {
+		absolute = isAbsolute(string);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	if (absolute)
 		return [self initWithString: string];
 
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		char *tmp;
+		const char *UTF8String = string.UTF8String;
+		size_t length = string.UTF8StringLength;
+		bool hasAuthority = false;
+		OFString *path, *query = nil, *fragment = nil;
 
 		_percentEncodedScheme = [URI->_percentEncodedScheme copy];
-		_percentEncodedHost = [URI->_percentEncodedHost copy];
-		_port = [URI->_port copy];
-		_percentEncodedUser = [URI->_percentEncodedUser copy];
-		_percentEncodedPassword = [URI->_percentEncodedPassword copy];
 
-		UTF8String = UTF8String2 = OFStrDup(string.UTF8String);
+		if (length >= 2 && UTF8String[0] == '/' &&
+		    UTF8String[1] == '/') {
+			size_t authorityLength;
 
-		if ((tmp = strchr(UTF8String, '#')) != NULL) {
-			*tmp = '\0';
-			_percentEncodedFragment = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			hasAuthority = true;
 
-			OFURIVerifyIsEscaped(_percentEncodedFragment,
-			    [OFCharacterSet URIFragmentAllowedCharacterSet]);
+			UTF8String += 2;
+			length -= 2;
+
+			authorityLength = parseAuthority(self,
+			    UTF8String, length);
+
+			UTF8String += authorityLength;
+			length -= authorityLength;
+
+			if (length > 0)
+				OFEnsure(UTF8String[0] == '/');
+		} else {
+			_percentEncodedHost = [URI->_percentEncodedHost copy];
+			_port = [URI->_port copy];
+			_percentEncodedUser = [URI->_percentEncodedUser copy];
+			_percentEncodedPassword =
+			    [URI->_percentEncodedPassword copy];
 		}
 
-		if ((tmp = strchr(UTF8String, '?')) != NULL) {
-			*tmp = '\0';
-			_percentEncodedQuery = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+		parsePathQueryFragment(UTF8String, length,
+		    &path, &query, &fragment);
+		_percentEncodedFragment = [fragment copy];
 
-			OFURIVerifyIsEscaped(_percentEncodedQuery,
-			    [OFCharacterSet URIQueryAllowedCharacterSet]);
-		}
+		if (hasAuthority) {
+			_percentEncodedPath = [path copy];
+			_percentEncodedQuery = [query copy];
+		} else {
+			if (path.length == 0) {
+				_percentEncodedPath =
+				    [URI->_percentEncodedPath copy];
+				_percentEncodedQuery = (query != nil
+				    ? [query copy]
+				    : [URI->_percentEncodedQuery copy]);
+			} else {
+				if ([path hasPrefix: @"/"])
+					_percentEncodedPath = [path copy];
+				else
+					_percentEncodedPath = [merge(
+					    URI->_percentEncodedPath, path)
+					    copy];
 
-		if (*UTF8String == '/')
-			_percentEncodedPath = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
-		else {
-			OFString *relativePath =
-			    [OFString stringWithUTF8String: UTF8String];
-
-			if ([URI->_percentEncodedPath hasSuffix: @"/"])
-				_percentEncodedPath = [[URI->_percentEncodedPath
-				    stringByAppendingString: relativePath]
-				    copy];
-			else {
-				OFMutableString *path = [OFMutableString
-				    stringWithString:
-				    (URI->_percentEncodedPath.length > 0
-				    ? URI->_percentEncodedPath
-				    : @"/")];
-				OFRange range = [path
-				    rangeOfString: @"/"
-					  options: OFStringSearchBackwards];
-
-				if (range.location == OFNotFound)
-					@throw [OFInvalidFormatException
-					    exception];
-
-				range.location++;
-				range.length = path.length - range.location;
-
-				[path replaceCharactersInRange: range
-						    withString: relativePath];
-				[path makeImmutable];
-
-				_percentEncodedPath = [path copy];
+				_percentEncodedQuery = [query copy];
 			}
 		}
-
-		OFURIVerifyIsEscaped(_percentEncodedPath,
-		    [OFCharacterSet URIPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
-	} @finally {
-		OFFreeMemory(UTF8String2);
 	}
 
 	return self;
