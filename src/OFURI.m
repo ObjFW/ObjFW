@@ -592,7 +592,8 @@ parsePathQueryFragment(OFURI *self, const char *UTF8String, size_t length)
 		size_t length = string.UTF8StringLength;
 		const char *colon;
 
-		if ((colon = strchr(UTF8String, ':')) == NULL)
+		if ((colon = strchr(UTF8String, ':')) == NULL ||
+		    colon - UTF8String < 1 || !OFASCIIIsAlpha(UTF8String[0]))
 			@throw [OFInvalidFormatException exception];
 
 		_percentEncodedScheme = [[[OFString

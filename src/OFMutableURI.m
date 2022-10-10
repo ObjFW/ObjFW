@@ -43,6 +43,9 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedScheme;
 
+	if (scheme.length < 1 || !OFASCIIIsAlpha(*scheme.UTF8String))
+		@throw [OFInvalidFormatException exception];
+
 	_percentEncodedScheme = [[scheme.lowercaseString
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet URISchemeAllowedCharacterSet]] copy];
@@ -56,6 +59,10 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedScheme;
+
+	if (percentEncodedScheme.length < 1 ||
+	    !OFASCIIIsAlpha(*percentEncodedScheme.UTF8String))
+		@throw [OFInvalidFormatException exception];
 
 	if (percentEncodedScheme != nil)
 		OFURIVerifyIsEscaped(percentEncodedScheme,
