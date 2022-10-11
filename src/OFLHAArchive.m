@@ -93,9 +93,9 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"lha", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"lha", path, URI);
 }
 
 - (instancetype)init

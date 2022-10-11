@@ -97,11 +97,11 @@ OF_SUBCLASSING_RESTRICTED
  *	  ZIP archive.
  *
  * @param path The path of the file within the archive
- * @param archive The URI of the archive
+ * @param URI The URI of the archive
  * @return A URI for accessing the specified file within the specified ZIP
  *	   archive
  */
-+ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive;
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
 
 - (instancetype)init OF_UNAVAILABLE;
 

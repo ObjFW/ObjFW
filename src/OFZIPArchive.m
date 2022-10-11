@@ -174,9 +174,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFile: (OFString *)path inArchive: (OFURI *)archive
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"zip", path, archive);
+	return OFArchiveURIHandlerURIForFileInArchive(@"zip", path, URI);
 }
 
 - (instancetype)init
