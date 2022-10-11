@@ -16,6 +16,7 @@
 #include "config.h"
 
 #import "OFMutableURI.h"
+#import "OFURI+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
@@ -34,9 +35,24 @@
 @dynamic pathComponents, query, percentEncodedQuery, queryItems, fragment;
 @dynamic percentEncodedFragment;
 
-+ (instancetype)URI
++ (instancetype)URIWithScheme: (OFString *)scheme
 {
-	return [[[self alloc] init] autorelease];
+	return [[[self alloc] initWithScheme: scheme] autorelease];
+}
+
+- (instancetype)initWithScheme: (OFString *)scheme
+{
+	self = [super of_init];
+
+	@try {
+		self.scheme = scheme;
+		_percentEncodedPath = @"";
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (void)setScheme: (OFString *)scheme
@@ -176,9 +192,8 @@
 {
 	OFString *old;
 
-	if (percentEncodedPath != nil)
-		OFURIVerifyIsEscaped(percentEncodedPath,
-		    [OFCharacterSet URIPathAllowedCharacterSet], true);
+	OFURIVerifyIsEscaped(percentEncodedPath,
+	    [OFCharacterSet URIPathAllowedCharacterSet], true);
 
 	old = _percentEncodedPath;
 	_percentEncodedPath = [percentEncodedPath copy];
@@ -189,16 +204,15 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (components == nil) {
-		self.path = nil;
-		return;
-	}
-
 	if (components.count == 0)
 		@throw [OFInvalidFormatException exception];
 
-	if ([components.firstObject length] != 0)
-		@throw [OFInvalidFormatException exception];
+	if ([components.firstObject isEqual: @"/"]) {
+		OFMutableArray *mutComponents =
+		    [[components mutableCopy] autorelease];
+		[mutComponents replaceObjectAtIndex: 0 withObject: @""];
+		components = mutComponents;
+	}
 
 	self.path = [components componentsJoinedByString: @"/"];
 
@@ -365,23 +379,16 @@
 
 - (void)standardizePath
 {
-	void *pool;
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray OF_GENERIC(OFString *) *array;
-	bool done = false, endsWithEmpty;
+	bool done = false, startsWithEmpty, endsWithEmpty;
 	OFString *path;
-
-	if (_percentEncodedPath == nil)
-		return;
-
-	pool = objc_autoreleasePoolPush();
 
 	array = [[[_percentEncodedPath
 	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
 
-	if ([array.firstObject length] != 0)
-		@throw [OFInvalidFormatException exception];
-
 	endsWithEmpty = ([array.lastObject length] == 0);
+	startsWithEmpty = ([array.firstObject length] == 0);
 
 	while (!done) {
 		size_t length = array.count;
@@ -411,15 +418,16 @@
 		}
 	}
 
-	[array insertObject: @"" atIndex: 0];
+	if (startsWithEmpty)
+		[array insertObject: @"" atIndex: 0];
 	if (endsWithEmpty)
 		[array addObject: @""];
 
 	path = [array componentsJoinedByString: @"/"];
-	if (path.length == 0)
+	if (startsWithEmpty && path.length == 0)
 		path = @"/";
 
-	[self setPercentEncodedPath: path];
+	self.percentEncodedPath = path;
 
 	objc_autoreleasePoolPop(pool);
 }

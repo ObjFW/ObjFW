@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFInvalidFormatException The scheme being set is not in the correct
  *				   format
  */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
+@property (readwrite, copy, nonatomic) OFString *scheme;
 
 /**
  * @brief The host part of the URI.
@@ -98,7 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The path part of the URI.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
+@property (readwrite, copy, nonatomic) OFString *path;
 
 /**
  * @brief The path part of the URI in percent-encoded form.
@@ -109,8 +109,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFInvalidFormatException The path being set is not in the correct
  *				   format
  */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *percentEncodedPath;
+@property (readwrite, copy, nonatomic) OFString *percentEncodedPath;
 
 /**
  * @brief The path of the URI split into components.
@@ -120,7 +119,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFInvalidFormatException The path components being set are not in the
  *				   correct format
  */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+@property (readwrite, copy, nonatomic)
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /**
@@ -174,11 +173,21 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedFragment;
 
 /**
- * @brief Creates a new mutable URI.
+ * @brief Creates a new mutable URI with the specified schemed.
  *
+ * @param scheme The scheme for the URI
  * @return A new, autoreleased OFMutableURI
  */
-+ (instancetype)URI;
++ (instancetype)URIWithScheme: (OFString *)scheme;
+
+/**
+ * @brief Initializes an already allocated mutable URI with the specified
+ *	  schemed.
+ *
+ * @param scheme The scheme for the URI
+ * @return An initialized OFMutableURI
+ */
+- (instancetype)initWithScheme: (OFString *)scheme;
 
 /**
  * @brief Appends the specified path component.

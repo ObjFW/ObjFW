@@ -212,7 +212,7 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"Detection of invalid format",
 	    OFInvalidFormatException, [OFURI URIWithString: @"http"])
 
-	mutableURI = [OFMutableURI URI];
+	mutableURI = [OFMutableURI URIWithScheme: @"dummy"];
 
 	EXPECT_EXCEPTION(
 	    @"-[setPercentEncodedScheme:] with invalid characters fails",

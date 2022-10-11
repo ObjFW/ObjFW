@@ -838,6 +838,16 @@ merge(OFString *base, OFString *path)
 }
 #endif
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	return [super init];
+}
+
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -887,7 +897,7 @@ merge(OFString *base, OFString *path)
 
 	URI = object;
 
-	if (URI->_scheme != _scheme && ![URI->_scheme isEqual: _scheme])
+	if (![URI->_scheme isEqual: _scheme])
 		return false;
 	if (URI->_percentEncodedHost != _percentEncodedHost &&
 	    ![URI->_percentEncodedHost isEqual: _percentEncodedHost])
@@ -900,8 +910,7 @@ merge(OFString *base, OFString *path)
 	if (URI->_percentEncodedPassword != _percentEncodedPassword &&
 	    ![URI->_percentEncodedPassword isEqual: _percentEncodedPassword])
 		return false;
-	if (URI->_percentEncodedPath != _percentEncodedPath &&
-	    ![URI->_percentEncodedPath isEqual: _percentEncodedPath])
+	if (![URI->_percentEncodedPath isEqual: _percentEncodedPath])
 		return false;
 	if (URI->_percentEncodedQuery != _percentEncodedQuery &&
 	    ![URI->_percentEncodedQuery isEqual: _percentEncodedQuery])
@@ -1050,11 +1059,6 @@ merge(OFString *base, OFString *path)
 	size_t length;
 	OFString *ret;
 
-	if (path == nil) {
-		objc_autoreleasePoolPop(pool);
-		return nil;
-	}
-
 	if ([path isEqual: @"/"]) {
 		objc_autoreleasePoolPop(pool);
 		return @"/";
@@ -1148,10 +1152,9 @@ merge(OFString *base, OFString *path)
 
 - (id)mutableCopy
 {
-	OFURI *copy = [[OFMutableURI alloc] init];
+	OFURI *copy = [[OFMutableURI alloc] initWithScheme: _scheme];
 
 	@try {
-		copy->_scheme = [_scheme copy];
 		copy->_percentEncodedHost = [_percentEncodedHost copy];
 		copy->_port = [_port copy];
 		copy->_percentEncodedUser = [_percentEncodedUser copy];
@@ -1189,8 +1192,7 @@ merge(OFString *base, OFString *path)
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
-	if (_percentEncodedPath != nil)
-		[ret appendString: _percentEncodedPath];
+	[ret appendString: _percentEncodedPath];
 
 	if (_percentEncodedQuery != nil)
 		[ret appendFormat: @"?%@", _percentEncodedQuery];

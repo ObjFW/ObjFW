@@ -534,8 +534,7 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URI = [OFMutableURI URI];
-	URI.scheme = @"http";
+	URI = [OFMutableURI URIWithScheme: @"http"];
 	URI.host = _host;
 	if (_port != 80)
 		URI.port = [OFNumber numberWithUnsignedShort: _port];

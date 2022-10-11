@@ -177,7 +177,7 @@ OFArchiveURIHandlerURIForFileInArchive(OFString *scheme,
     OFString *pathInArchive, OFURI *archiveURI)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFMutableURI *ret = [OFMutableURI URI];
+	OFMutableURI *ret = [OFMutableURI URIWithScheme: scheme];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *archiveURIString;
 
@@ -190,7 +190,6 @@ OFArchiveURIHandlerURIForFileInArchive(OFString *scheme,
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    pathAllowedCharacters];
 
-	ret.scheme = scheme;
 	ret.percentEncodedPath = [OFString
 	    stringWithFormat: @"%@!%@", archiveURIString, pathInArchive];
 	[ret makeImmutable];

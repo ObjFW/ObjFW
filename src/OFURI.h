@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFURI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
-	OFString *_Nullable _scheme;
+	OFString *_scheme;
 	OFString *_Nullable _percentEncodedHost;
 	OFNumber *_Nullable _port;
 	OFString *_Nullable _percentEncodedUser;
 	OFString *_Nullable _percentEncodedPassword;
-	OFString *_Nullable _percentEncodedPath;
+	OFString *_percentEncodedPath;
 	OFString *_Nullable _percentEncodedQuery;
 	OFString *_Nullable _percentEncodedFragment;
 	OF_RESERVE_IVARS(OFURI, 4)
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The scheme part of the URI.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
+@property (readonly, copy, nonatomic) OFString *scheme;
 
 /**
  * @brief The host part of the URI.
@@ -89,20 +89,19 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The path part of the URI.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
+@property (readonly, copy, nonatomic) OFString *path;
 
 /**
  * @brief The path part of the URI in percent-encoded form.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *percentEncodedPath;
+@property (readonly, copy, nonatomic) OFString *percentEncodedPath;
 
 /**
  * @brief The path of the URI split into components.
  *
  * The first component must always be `/` to designate the root.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+@property (readonly, copy, nonatomic)
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /**
@@ -110,8 +109,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Returns the empty string if the path is the root.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *lastPathComponent;
+@property (readonly, copy, nonatomic) OFString *lastPathComponent;
 
 /**
  * @brief The query part of the URI.
@@ -265,6 +263,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initFileURIWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory;
 #endif
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Returns a new URI with the specified path component appended.
