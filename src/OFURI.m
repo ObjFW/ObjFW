@@ -324,12 +324,16 @@ OFURIIsIPv6Host(OFString *host)
 @end
 
 void
-OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
+OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
+    bool allowPercent)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
-	    initWithCharacterSet: characterSet] autorelease];
+	if (allowPercent)
+		characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
+		    initWithCharacterSet: characterSet] autorelease];
+	else
+		characterSet = characterSet.invertedSet;
 
 	if ([string indexOfCharacterFromSet: characterSet] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
@@ -446,14 +450,14 @@ parseUserInfo(OFURI *self, const char *UTF8String, size_t length)
 				length: length - (colon - UTF8String) - 1];
 
 		OFURIVerifyIsEscaped(self->_percentEncodedPassword,
-		    [OFCharacterSet URIPasswordAllowedCharacterSet]);
+		    [OFCharacterSet URIPasswordAllowedCharacterSet], true);
 	} else
 		self->_percentEncodedUser = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: length];
 
 	OFURIVerifyIsEscaped(self->_percentEncodedUser,
-	    [OFCharacterSet URIUserAllowedCharacterSet]);
+	    [OFCharacterSet URIUserAllowedCharacterSet], true);
 }
 
 static void
@@ -499,7 +503,7 @@ parseHostPort(OFURI *self, const char *UTF8String, size_t length)
 		}
 
 		OFURIVerifyIsEscaped(self->_percentEncodedHost,
-		    [OFCharacterSet URIHostAllowedCharacterSet]);
+		    [OFCharacterSet URIHostAllowedCharacterSet], true);
 	}
 
 	if (length == 0)
@@ -559,7 +563,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (fragment - UTF8String) - 1];
 
 		OFURIVerifyIsEscaped(*fragmentString,
-		    [OFCharacterSet URIQueryAllowedCharacterSet]);
+		    [OFCharacterSet URIQueryAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
 	}
@@ -570,7 +574,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (query - UTF8String) - 1];
 
 		OFURIVerifyIsEscaped(*queryString,
-		    [OFCharacterSet URIFragmentAllowedCharacterSet]);
+		    [OFCharacterSet URIFragmentAllowedCharacterSet], true);
 
 		length = query - UTF8String;
 	}
@@ -579,7 +583,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 					      length: length];
 
 	OFURIVerifyIsEscaped(*pathString,
-	    [OFCharacterSet URIQueryAllowedCharacterSet]);
+	    [OFCharacterSet URIQueryAllowedCharacterSet], true);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -597,13 +601,12 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    colon - UTF8String < 1 || !OFASCIIIsAlpha(UTF8String[0]))
 			@throw [OFInvalidFormatException exception];
 
-		_percentEncodedScheme = [[[OFString
-		    stringWithUTF8String: UTF8String
-				  length: colon - UTF8String] lowercaseString]
-		    copy];
+		_scheme = [[[OFString stringWithUTF8String: UTF8String
+						    length: colon - UTF8String]
+		    lowercaseString] copy];
 
-		OFURIVerifyIsEscaped(_percentEncodedScheme,
-		    [OFCharacterSet URISchemeAllowedCharacterSet]);
+		OFURIVerifyIsEscaped(_scheme,
+		    [OFCharacterSet URISchemeAllowedCharacterSet], false);
 
 		length -= colon - UTF8String + 1;
 		UTF8String = colon + 1;
@@ -714,7 +717,7 @@ merge(OFString *base, OFString *path)
 		bool hasAuthority = false;
 		OFString *path, *query = nil, *fragment = nil;
 
-		_percentEncodedScheme = [URI->_percentEncodedScheme copy];
+		_scheme = [URI->_scheme copy];
 
 		if (length >= 2 && UTF8String[0] == '/' &&
 		    UTF8String[1] == '/') {
@@ -820,7 +823,7 @@ merge(OFString *base, OFString *path)
 		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
 
-		_percentEncodedScheme = @"file";
+		_scheme = @"file";
 		_percentEncodedPath = [[path
 		    stringByAddingPercentEncodingWithAllowedCharacters:
 		    [OFCharacterSet URIPathAllowedCharacterSet]] copy];
@@ -860,7 +863,7 @@ merge(OFString *base, OFString *path)
 
 - (void)dealloc
 {
-	[_percentEncodedScheme release];
+	[_scheme release];
 	[_percentEncodedHost release];
 	[_port release];
 	[_percentEncodedUser release];
@@ -884,8 +887,7 @@ merge(OFString *base, OFString *path)
 
 	URI = object;
 
-	if (URI->_percentEncodedScheme != _percentEncodedScheme &&
-	    ![URI->_percentEncodedScheme isEqual: _percentEncodedScheme])
+	if (URI->_scheme != _scheme && ![URI->_scheme isEqual: _scheme])
 		return false;
 	if (URI->_percentEncodedHost != _percentEncodedHost &&
 	    ![URI->_percentEncodedHost isEqual: _percentEncodedHost])
@@ -917,7 +919,7 @@ merge(OFString *base, OFString *path)
 
 	OFHashInit(&hash);
 
-	OFHashAddHash(&hash, _percentEncodedScheme.hash);
+	OFHashAddHash(&hash, _scheme.hash);
 	OFHashAddHash(&hash, _percentEncodedHost.hash);
 	OFHashAddHash(&hash, _port.hash);
 	OFHashAddHash(&hash, _percentEncodedUser.hash);
@@ -933,12 +935,7 @@ merge(OFString *base, OFString *path)
 
 - (OFString *)scheme
 {
-	return _percentEncodedScheme.stringByRemovingPercentEncoding;
-}
-
-- (OFString *)percentEncodedScheme
-{
-	return _percentEncodedScheme;
+	return _scheme;
 }
 
 - (OFString *)host
@@ -1001,7 +998,7 @@ merge(OFString *base, OFString *path)
 {
 	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_HAVE_FILES
-	bool isFile = [_percentEncodedScheme isEqual: @"file"];
+	bool isFile = [_scheme isEqual: @"file"];
 #endif
 	OFMutableArray *ret;
 	size_t count;
@@ -1154,7 +1151,7 @@ merge(OFString *base, OFString *path)
 	OFURI *copy = [[OFMutableURI alloc] init];
 
 	@try {
-		copy->_percentEncodedScheme = [_percentEncodedScheme copy];
+		copy->_scheme = [_scheme copy];
 		copy->_percentEncodedHost = [_percentEncodedHost copy];
 		copy->_port = [_port copy];
 		copy->_percentEncodedUser = [_percentEncodedUser copy];
@@ -1174,7 +1171,7 @@ merge(OFString *base, OFString *path)
 {
 	OFMutableString *ret = [OFMutableString string];
 
-	[ret appendFormat: @"%@:", _percentEncodedScheme];
+	[ret appendFormat: @"%@:", _scheme];
 
 	if (_percentEncodedHost != nil || _port != nil ||
 	    _percentEncodedUser != nil || _percentEncodedPassword != nil)
@@ -1212,7 +1209,7 @@ merge(OFString *base, OFString *path)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (![_percentEncodedScheme isEqual: @"file"])
+	if (![_scheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
 
 	if (![_percentEncodedPath hasPrefix: @"/"])

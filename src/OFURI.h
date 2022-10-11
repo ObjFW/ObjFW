@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFURI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
-	OFString *_Nullable _percentEncodedScheme;
+	OFString *_Nullable _scheme;
 	OFString *_Nullable _percentEncodedHost;
 	OFNumber *_Nullable _port;
 	OFString *_Nullable _percentEncodedUser;
@@ -47,12 +47,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The scheme part of the URI.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
-
-/**
- * @brief The scheme part of the URI in percent-encoded form.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *percentEncodedScheme;
 
 /**
  * @brief The host part of the URI.
@@ -381,7 +375,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern bool OFURIIsIPv6Host(OFString *host);
-extern void OFURIVerifyIsEscaped(OFString *, OFCharacterSet *);
+extern void OFURIVerifyIsEscaped(OFString *, OFCharacterSet *, bool);
 #ifdef __cplusplus
 }
 #endif

@@ -30,20 +30,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The scheme part of the URI.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
-
-/**
- * @brief The scheme part of the URI in percent-encoded form.
- *
- * Setting this retains the original percent-encoding used - if more characters
- * than necessary are percent-encoded, it is kept this way.
  *
  * @throw OFInvalidFormatException The scheme being set is not in the correct
  *				   format
  */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *percentEncodedScheme;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
 
 /**
  * @brief The host part of the URI.
@@ -64,6 +55,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The port part of the URI.
+ *
+ * @throw OFInvalidArgumentException The port is not valid (e.g. negative or
+ *				     too big)
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 

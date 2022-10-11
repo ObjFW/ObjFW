@@ -18,7 +18,7 @@
 #import "TestsAppDelegate.h"
 
 static OFString *const module = @"OFURI";
-static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
+static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
     @"pa%3Fth?que%23ry=1&f%26oo=b%3dar#frag%23ment";
 
 @implementation TestsAppDelegate (OFURITests)
@@ -75,7 +75,7 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	TEST(@"+[URIWithString:relativeToURI:]",
 	    [[[OFURI URIWithString: @"/foo" relativeToURI: URI1] string]
-	    isEqual: @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
+	    isEqual: @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
 	    [[[OFURI URIWithString: @"foo/bar?q"
 		     relativeToURI: [OFURI URIWithString: @"http://h/qux/quux"]]
 	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
@@ -152,7 +152,7 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI10.string isEqual: @"file:foo@bar/qux?query#frag"])
 
 	TEST(@"-[scheme]",
-	    [URI1.scheme isEqual: @"ht:tp"] && [URI4.scheme isEqual: @"file"] &&
+	    [URI1.scheme isEqual: @"ht+tp"] && [URI4.scheme isEqual: @"file"] &&
 	    [URI9.scheme isEqual: @"file"] && [URI10.scheme isEqual: @"file"])
 
 	TEST(@"-[user]", [URI1.user isEqual: @"us:er"] && URI4.user == nil &&
@@ -214,17 +214,9 @@ static OFString *URIString = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	mutableURI = [OFMutableURI URI];
 
-	TEST(@"-[setScheme:]",
-	    (mutableURI.scheme = @"ht:tp") &&
-	    [mutableURI.percentEncodedScheme isEqual: @"ht%3Atp"])
-
-	TEST(@"-[setPercentEncodedScheme:]",
-	    (mutableURI.percentEncodedScheme = @"ht%3Atp") &&
-	    [mutableURI.scheme isEqual: @"ht:tp"])
-
 	EXPECT_EXCEPTION(
 	    @"-[setPercentEncodedScheme:] with invalid characters fails",
-	    OFInvalidFormatException, mutableURI.percentEncodedScheme = @"~")
+	    OFInvalidFormatException, mutableURI.scheme = @"%20")
 
 	TEST(@"-[setHost:]",
 	    (mutableURI.host = @"ho:st") &&

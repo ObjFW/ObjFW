@@ -25,13 +25,14 @@
 #import "OFPair.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFMutableURI
-@dynamic scheme, percentEncodedScheme, host, percentEncodedHost, port, user;
-@dynamic percentEncodedUser, password, percentEncodedPassword, path;
-@dynamic percentEncodedPath, pathComponents, query, percentEncodedQuery;
-@dynamic queryItems, fragment, percentEncodedFragment;
+@dynamic scheme, host, percentEncodedHost, port, user, percentEncodedUser;
+@dynamic password, percentEncodedPassword, path, percentEncodedPath;
+@dynamic pathComponents, query, percentEncodedQuery, queryItems, fragment;
+@dynamic percentEncodedFragment;
 
 + (instancetype)URI
 {
@@ -41,34 +42,15 @@
 - (void)setScheme: (OFString *)scheme
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *old = _percentEncodedScheme;
+	OFString *old = _scheme;
 
 	if (scheme.length < 1 || !OFASCIIIsAlpha(*scheme.UTF8String))
 		@throw [OFInvalidFormatException exception];
 
-	_percentEncodedScheme = [[scheme.lowercaseString
-	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URISchemeAllowedCharacterSet]] copy];
+	OFURIVerifyIsEscaped(scheme,
+	    [OFCharacterSet URISchemeAllowedCharacterSet], false);
 
-	[old release];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setPercentEncodedScheme: (OFString *)percentEncodedScheme
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *old = _percentEncodedScheme;
-
-	if (percentEncodedScheme.length < 1 ||
-	    !OFASCIIIsAlpha(*percentEncodedScheme.UTF8String))
-		@throw [OFInvalidFormatException exception];
-
-	if (percentEncodedScheme != nil)
-		OFURIVerifyIsEscaped(percentEncodedScheme,
-		    [OFCharacterSet URISchemeAllowedCharacterSet]);
-
-	_percentEncodedScheme = [percentEncodedScheme.lowercaseString copy];
+	_scheme = [scheme.lowercaseString copy];
 
 	[old release];
 
@@ -104,7 +86,7 @@
 			@throw [OFInvalidFormatException exception];
 	} else if (percentEncodedHost != nil)
 		OFURIVerifyIsEscaped(percentEncodedHost,
-		    [OFCharacterSet URIHostAllowedCharacterSet]);
+		    [OFCharacterSet URIHostAllowedCharacterSet], true);
 
 	old = _percentEncodedHost;
 	_percentEncodedHost = [percentEncodedHost copy];
@@ -114,6 +96,10 @@
 - (void)setPort: (OFNumber *)port
 {
 	OFNumber *old = _port;
+
+	if (port.longLongValue < 0 || port.longLongValue > 65535)
+		@throw [OFInvalidArgumentException exception];
+
 	_port = [port copy];
 	[old release];
 }
@@ -138,7 +124,7 @@
 
 	if (percentEncodedUser != nil)
 		OFURIVerifyIsEscaped(percentEncodedUser,
-		    [OFCharacterSet URIUserAllowedCharacterSet]);
+		    [OFCharacterSet URIUserAllowedCharacterSet], true);
 
 	old = _percentEncodedUser;
 	_percentEncodedUser = [percentEncodedUser copy];
@@ -165,7 +151,7 @@
 
 	if (percentEncodedPassword != nil)
 		OFURIVerifyIsEscaped(percentEncodedPassword,
-		    [OFCharacterSet URIPasswordAllowedCharacterSet]);
+		    [OFCharacterSet URIPasswordAllowedCharacterSet], true);
 
 	old = _percentEncodedPassword;
 	_percentEncodedPassword = [percentEncodedPassword copy];
@@ -192,7 +178,7 @@
 
 	if (percentEncodedPath != nil)
 		OFURIVerifyIsEscaped(percentEncodedPath,
-		    [OFCharacterSet URIPathAllowedCharacterSet]);
+		    [OFCharacterSet URIPathAllowedCharacterSet], true);
 
 	old = _percentEncodedPath;
 	_percentEncodedPath = [percentEncodedPath copy];
@@ -239,7 +225,7 @@
 
 	if (percentEncodedQuery != nil)
 		OFURIVerifyIsEscaped(percentEncodedQuery,
-		    [OFCharacterSet URIQueryAllowedCharacterSet]);
+		    [OFCharacterSet URIQueryAllowedCharacterSet], true);
 
 	old = _percentEncodedQuery;
 	_percentEncodedQuery = [percentEncodedQuery copy];
@@ -306,7 +292,7 @@
 
 	if (percentEncodedFragment != nil)
 		OFURIVerifyIsEscaped(percentEncodedFragment,
-		    [OFCharacterSet URIFragmentAllowedCharacterSet]);
+		    [OFCharacterSet URIFragmentAllowedCharacterSet], true);
 
 	old = _percentEncodedFragment;
 	_percentEncodedFragment = [percentEncodedFragment copy];
@@ -327,7 +313,7 @@
 	[self appendPathComponent: component isDirectory: false];
 
 #ifdef OF_HAVE_FILES
-	if ([_percentEncodedScheme isEqual: @"file"] &&
+	if ([_scheme isEqual: @"file"] &&
 	    ![_percentEncodedPath hasSuffix: @"/"] &&
 	    [[OFFileManager defaultManager] directoryExistsAtURI: self]) {
 		void *pool = objc_autoreleasePoolPush();
@@ -358,7 +344,7 @@
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	if ([_percentEncodedPath hasSuffix: @"/"] ||
-	    ([_percentEncodedScheme isEqual: @"file"] &&
+	    ([_scheme isEqual: @"file"] &&
 	    [_percentEncodedPath hasSuffix: @":"]))
 #else
 	if ([_percentEncodedPath hasSuffix: @"/"])
