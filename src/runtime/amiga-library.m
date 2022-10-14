@@ -294,9 +294,9 @@ lib_close(void)
 
 #ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
-			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				libc.__deregister_frame_info(
-				    (&_EH_FRAME_BEGINS__)[i]);
+			for (void *const *frame = _EH_FRAME_BEGINS__;
+			    *frame != NULL;)
+				libc.__deregister_frame_info(*frame++);
 #endif
 
 		parent = base->parent;
@@ -342,12 +342,9 @@ objc_init(unsigned int version, struct objc_libc *libc_)
 	memcpy(&libc, libc_, sizeof(libc));
 
 #ifdef OF_AMIGAOS_M68K
-	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
-		return false;
-
-	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
-		    (&_EH_FRAME_OBJECTS__)[i]);
+	for (void *const *frame = _EH_FRAME_OBJECTS__,
+	    **object = _EH_FRAME_OBJECTS__; *frame != NULL;)
+		libc.__register_frame_info(*frame++, *object++);
 
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
