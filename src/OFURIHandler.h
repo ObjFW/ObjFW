@@ -57,6 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the handler for the specified URI.
  *
  * @return The handler for the specified URI.
+ * @throw OFUnsupportedProtocolException The specified URI is not supported
  */
 + (OFURIHandler *)handlerForURI: (OFURI *)URI;
 
@@ -82,6 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       allowed to implement additional, scheme-specific modes.
  * @return The opened stream if it was successfully opened
  * @throw OFOpenItemFailedException Opening the item failed
+ * @throw OFUnsupportedProtocolException The specified URI is not supported
  */
 + (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode;
 
@@ -117,6 +119,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       allowed to implement additional, scheme-specific modes.
  * @return The opened stream if it was successfully opened
  * @throw OFOpenItemFailedException Opening the item failed
+ * @throw OFUnsupportedProtocolException The specified URI is not supported by
+ *					 the handler
  */
 - (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode;
 
