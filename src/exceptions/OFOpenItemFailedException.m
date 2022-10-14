@@ -106,7 +106,7 @@
 
 	if (_mode != nil)
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@ with mode %@: %@",
+		    @"Failed to open file %@ with mode %@: %@",
 		    item, _mode, OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:
