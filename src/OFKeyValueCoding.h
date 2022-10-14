@@ -33,6 +33,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param key The key of the value to return
  * @return The value for the specified key
+ * @throw OFUndefinedKeyException The specified key does not exist and
+ *				  @ref valueForUndefinedKey: was not overridden
  */
 - (nullable id)valueForKey: (OFString *)key;
 
@@ -41,6 +43,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param keyPath The key path of the value to return
  * @return The value for the specified key path
+ * @throw OFUndefinedKeyException The specified key does not exist and
+ *				  @ref valueForUndefinedKey: was not overridden
  */
 - (nullable id)valueForKeyPath: (OFString *)keyPath;
 
@@ -52,6 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param key The undefined key of the value to return
  * @return The value for the specified undefined key
+ * @throw OFUndefinedKeyException The specified key does not exist
  */
 - (nullable id)valueForUndefinedKey: (OFString *)key;
 
@@ -60,6 +65,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param value The value for the specified key
  * @param key The key of the value to set
+ * @throw OFUndefinedKeyException The specified key does not exist and
+ *				  @ref setValue:forUndefinedKey: was not
+ *				  overridden
  */
 - (void)setValue: (nullable id)value forKey: (OFString *)key;
 
@@ -68,6 +76,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param value The value for the specified key path
  * @param keyPath The key path of the value to set
+ * @throw OFUndefinedKeyException The specified key does not exist and
+ *				  @ref setValue:forUndefinedKey: was not
+ *				  overridden
  */
 - (void)setValue: (nullable id)value forKeyPath: (OFString *)keyPath;
 
@@ -79,6 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param value The value for the specified undefined key
  * @param key The undefined key of the value to set
+ * @throw OFUndefinedKeyException The specified key does not exist
  */
 -  (void)setValue: (nullable id)value forUndefinedKey: (OFString *)key;
 
