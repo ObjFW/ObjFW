@@ -598,6 +598,12 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: @"c:\\tmp\\foo.bar"] &&
 	    [[C(@"c:\\tmp\\/\\") stringByAppendingPathExtension: @"bar"]
 	    isEqual: @"c:\\tmp.bar"])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"foo/bar") stringByAppendingPathExtension: @"baz"]
+	    isEqual: @"foo/bar.baz"])
 # else
 	TEST(@"-[stringByAppendingPathExtension:]",
 	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
