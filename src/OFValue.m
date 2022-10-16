@@ -13,6 +13,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFValue.h"
 #import "OFBytesValue.h"
 #import "OFMethodSignature.h"
