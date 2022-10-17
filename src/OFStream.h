@@ -217,6 +217,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
+ *
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
 
@@ -264,6 +266,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading the specified amount
  * @throw OFNotOpenException The stream is not open
  */
  - (void)readIntoBuffer: (void *)buffer exactLength: (size_t)length;
@@ -478,6 +482,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint8_t from the stream
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint8_t)readInt8;
@@ -490,6 +496,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint16_t from the stream in native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint16_t)readBigEndianInt16;
@@ -502,6 +510,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint32_t from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint32_t)readBigEndianInt32;
@@ -514,6 +524,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint64_t from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint64_t)readBigEndianInt64;
@@ -526,6 +538,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A float from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (float)readBigEndianFloat;
@@ -538,6 +552,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A double from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (double)readBigEndianDouble;
@@ -550,6 +566,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint16_t from the stream in native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint16_t)readLittleEndianInt16;
@@ -562,6 +580,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint32_t from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint32_t)readLittleEndianInt32;
@@ -574,6 +594,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A uint64_t from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (uint64_t)readLittleEndianInt64;
@@ -586,6 +608,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A float from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (float)readLittleEndianFloat;
@@ -598,6 +622,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return A double from the stream in the native endianess
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (double)readLittleEndianDouble;
@@ -612,6 +638,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param count The number of items to read
  * @return OFData with count items.
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataWithCount: (size_t)count;
@@ -627,6 +655,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param count The number of items to read
  * @return OFData with count items.
  * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataWithItemSize: (size_t)itemSize count: (size_t)count;
@@ -657,6 +687,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (OFString *)readStringWithLength: (size_t)length;
@@ -678,6 +710,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
  * @throw OFNotOpenException The stream is not open
  */
 - (OFString *)readStringWithLength: (size_t)length
