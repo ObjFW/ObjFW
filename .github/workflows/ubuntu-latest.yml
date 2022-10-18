@@ -1,8 +1,8 @@
-name: ubuntu-18.04, GCC
+name: ubuntu-latest
 on: [push, pull_request]
 jobs:
   tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         configure_flags:
@@ -25,12 +25,12 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gobjc libssl-dev gnutls-dev
+        sudo apt-get install libssl-dev gnutls-dev
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
-      run: ./configure OBJC="gcc" ${{ matrix.configure_flags }}
+      run: ./configure ${{ matrix.configure_flags }}
     - name: make
       run: make -j$(nproc)
     - name: make check

@@ -1,8 +1,8 @@
-name: ubuntu-18.04, 32 bit
+name: ubuntu-latest, 32 bit
 on: [push, pull_request]
 jobs:
   tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         configure_flags:
