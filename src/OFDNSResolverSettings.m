@@ -67,6 +67,10 @@
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
 #endif
 
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 255
+#endif
+
 #ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
@@ -102,9 +106,9 @@ domainFromHostname(OFString *hostname)
 static OFString *
 obtainHostname(void)
 {
-	char hostname[256];
+	char hostname[HOST_NAME_MAX + 1];
 
-	if (gethostname(hostname, 256) != 0)
+	if (gethostname(hostname, HOST_NAME_MAX + 1) != 0)
 		return nil;
 
 	return [OFString stringWithCString: hostname
@@ -178,7 +182,7 @@ parseNetStackArray(OFString *string)
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
 		return nil;
 
-	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
+	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
 	return [string componentsSeparatedByString: @"|"];
 }
@@ -282,7 +286,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -385,7 +389,7 @@ parseNetStackArray(OFString *string)
 
 		option = components.firstObject;
 		arguments = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
 			if (arguments.count != 1) {
@@ -484,7 +488,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -619,7 +623,8 @@ parseNetStackArray(OFString *string)
 	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
 		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 				     @"Tcpip\\Parameters"
-	    securityAndAccessRights: KEY_QUERY_VALUE];
+		       accessRights: KEY_QUERY_VALUE
+			    options: 0];
 	path = [[[key stringForValueNamed: @"DataBasePath"]
 	    stringByAppendingPathComponent: @"hosts"]
 	    stringByExpandingWindowsEnvironmentStrings];

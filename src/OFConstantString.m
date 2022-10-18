@@ -350,10 +350,10 @@ struct {
 	return [self stringByAppendingPathComponent: component];
 }
 
-- (OFString *)stringByPrependingString: (OFString *)string
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
 {
 	[self finishInitialization];
-	return [self stringByPrependingString: string];
+	return [self stringByAppendingPathExtension: extension];
 }
 
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
@@ -477,7 +477,7 @@ struct {
 	return self.longLongValue;
 }
 
-- (long long)longLongValueWithBase: (int)base
+- (long long)longLongValueWithBase: (unsigned char)base
 {
 	[self finishInitialization];
 	return [self longLongValueWithBase: base];
@@ -489,7 +489,7 @@ struct {
 	return self.unsignedLongLongValue;
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
 	[self finishInitialization];
 	return [self unsignedLongLongValueWithBase: base];
@@ -585,16 +585,16 @@ struct {
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
 	[self finishInitialization];
-	[self writeToURL: URL];
+	[self writeToURI: URI];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
-	[self writeToURL: URL encoding: encoding];
+	[self writeToURI: URI encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

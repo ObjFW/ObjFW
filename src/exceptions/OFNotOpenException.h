@@ -25,14 +25,13 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFNotOpenException: OFException
 {
 	id _object;
+	OF_RESERVE_IVARS(OFNotOpenException, 4)
 }
 
 /**
  * @brief The object which is not open, connected or bound.
  */
 @property (readonly, nonatomic) id object;
-
-+ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased not open exception.
@@ -42,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated not open exception.
@@ -51,6 +50,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized not open exception
  */
 - (instancetype)initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

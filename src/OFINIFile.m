@@ -19,17 +19,19 @@
 
 #import "OFINIFile.h"
 #import "OFArray.h"
-#import "OFString.h"
-#import "OFFile.h"
-#import "OFINICategory.h"
 #import "OFINICategory+Private.h"
+#import "OFINICategory.h"
+#import "OFStream.h"
+#import "OFString.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding;
+- (void)of_parseURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
 @end
 
 static bool
@@ -48,16 +50,14 @@ isWhitespaceLine(OFString *line)
 @implementation OFINIFile
 @synthesize categories = _categories;
 
-+ (instancetype)fileWithPath: (OFString *)path
++ (instancetype)fileWithURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithURI: URI] autorelease];
 }
 
-+ (instancetype)fileWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
++ (instancetype)fileWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				  encoding: encoding] autorelease];
+	return [[[self alloc] initWithURI: URI encoding: encoding] autorelease];
 }
 
 - (instancetype)init
@@ -65,20 +65,19 @@ isWhitespaceLine(OFString *line)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithURI: (OFURI *)URI
 {
-	return [self initWithPath: path encoding: OFStringEncodingUTF8];
+	return [self initWithURI: URI encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self of_parseFile: path encoding: encoding];
+		[self of_parseURI: URI encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -111,15 +110,18 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (void)of_parseURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file;
+	OFStream *file;
 	OFINICategory *category = nil;
 	OFString *line;
 
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
+
 	@try {
-		file = [OFFile fileWithPath: path mode: @"r"];
+		file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -139,7 +141,7 @@ isWhitespaceLine(OFString *line)
 				@throw [OFInvalidFormatException exception];
 
 			categoryName = [line substringWithRange:
-			    OFRangeMake(1, line.length - 2)];
+			    OFMakeRange(1, line.length - 2)];
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];
@@ -154,15 +156,15 @@ isWhitespaceLine(OFString *line)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeToFile: (OFString *)path
+- (void)writeToURI: (OFURI *)URI
 {
-	[self writeToFile: path encoding: OFStringEncodingUTF8];
+	[self writeToURI: URI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
+	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)

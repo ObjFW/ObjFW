@@ -43,7 +43,7 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(0, zeroNode, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;
@@ -51,7 +51,7 @@
 	_packetType = address.sockaddr.ipx.sipx_type = packetType;
 #endif
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithPort: port
@@ -66,7 +66,8 @@
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+	    address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
@@ -82,7 +83,7 @@
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
@@ -95,7 +96,7 @@
 							  errNo: errNo];
 	}
 
-	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
+	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 

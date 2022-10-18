@@ -29,13 +29,17 @@ static OFString *const module = @"OFUNIXStreamSocket";
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
 
-#ifdef OF_HAVE_FILES
-	path = [[OFSystemInfo temporaryDirectoryPath]
-	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	path = [[OFSystemInfo temporaryDirectoryURI]
+	    URIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectoryURI is
+	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",
 					   [[OFUUID UUID] UUIDString]];
@@ -47,7 +51,9 @@ static OFString *const module = @"OFUNIXStreamSocket";
 	@try {
 		TEST(@"-[bindToPath:]", R([sockServer bindToPath: path]))
 	} @catch (OFBindFailedException *e) {
-		if (e.errNo == EAFNOSUPPORT) {
+		switch (e.errNo) {
+		case EAFNOSUPPORT:
+		case EPERM:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFUNIXStreamSocket] -[bindToPath:]: "
@@ -55,8 +61,9 @@ static OFString *const module = @"OFUNIXStreamSocket";
 
 			objc_autoreleasePoolPop(pool);
 			return;
-		} else
+		default:
 			@throw e;
+		}
 	}
 
 	@try {

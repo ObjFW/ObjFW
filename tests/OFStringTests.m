@@ -294,25 +294,22 @@ static const OFChar16 swappedChar16String[] = {
 	EXPECT_EXCEPTION(@"Detect out of range in -[characterAtIndex:]",
 	    OFOutOfRangeException, [mutableString1 characterAtIndex: 7])
 
-	TEST(@"-[reverse]",
-	    R([mutableString1 reverse]) && [mutableString1 isEqual: @"3𝄞1€sät"])
-
 	mutableString2 = [mutableStringClass stringWithString: @"abc"];
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[uppercase]", R([mutableString1 uppercase]) &&
-	    [mutableString1 isEqual: @"3𝄞1€SÄT"] &&
+	    [mutableString1 isEqual: @"TÄS€1𝄞3"] &&
 	    R([mutableString2 uppercase]) && [mutableString2 isEqual: @"ABC"])
 
 	TEST(@"-[lowercase]", R([mutableString1 lowercase]) &&
-	    [mutableString1 isEqual: @"3𝄞1€sät"] &&
+	    [mutableString1 isEqual: @"täs€1𝄞3"] &&
 	    R([mutableString2 lowercase]) && [mutableString2 isEqual: @"abc"])
 
 	TEST(@"-[uppercaseString]",
-	    [[mutableString1 uppercaseString] isEqual: @"3𝄞1€SÄT"])
+	    [[mutableString1 uppercaseString] isEqual: @"TÄS€1𝄞3"])
 
 	TEST(@"-[lowercaseString]", R([mutableString1 uppercase]) &&
-	    [[mutableString1 lowercaseString] isEqual: @"3𝄞1€sät"])
+	    [[mutableString1 lowercaseString] isEqual: @"täs€1𝄞3"])
 
 	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǅbla Tǆst Tǆst"])
@@ -360,8 +357,8 @@ static const OFChar16 swappedChar16String[] = {
 			    encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURL:encoding]", (string = [stringClass
-	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
+	TEST(@"+[stringWithContentsOfURI:encoding]", (string = [stringClass
+	    stringWithContentsOfURI: [OFURI fileURIWithPath: @"testfile.txt"]
 			   encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 #endif
@@ -509,7 +506,7 @@ static const OFChar16 swappedChar16String[] = {
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[rangeOfString:options:range:]",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFRangeMake(3, 1)])
+	    [C(@"𝄞öö") rangeOfString: @"ö" options: 0 range: OFMakeRange(3, 1)])
 
 	characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
@@ -520,35 +517,32 @@ static const OFChar16 swappedChar16String[] = {
 			    options: OFStringSearchBackwards] == 7 &&
 	    [C(@"abcđabcđë") indexOfCharacterFromSet: characterSet
 					     options: 0
-					       range: OFRangeMake(4, 4)] == 6 &&
+					       range: OFMakeRange(4, 4)] == 6 &&
 	    [C(@"abcđabcđëf")
 	    indexOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFRangeMake(8, 2)] == OFNotFound)
+			      range: OFMakeRange(8, 2)] == OFNotFound)
 
 	EXPECT_EXCEPTION(
 	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
 	    OFOutOfRangeException,
 	    [C(@"𝄞öö") indexOfCharacterFromSet: characterSet
 				       options: 0
-					 range: OFRangeMake(3, 1)])
+					 range: OFMakeRange(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
-	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(1, 1)] isEqual: @"ö"] &&
-	    [[C(@"𝄞öö") substringWithRange: OFRangeMake(3, 0)] isEqual: @""])
+	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(1, 1)] isEqual: @"ö"] &&
+	    [[C(@"𝄞öö") substringWithRange: OFMakeRange(3, 0)] isEqual: @""])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #1",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFRangeMake(2, 2)])
+	    [C(@"𝄞öö") substringWithRange: OFMakeRange(2, 2)])
 	EXPECT_EXCEPTION(@"Detect out of range in -[substringWithRange:] #2",
 	    OFOutOfRangeException,
-	    [C(@"𝄞öö") substringWithRange: OFRangeMake(4, 0)])
+	    [C(@"𝄞öö") substringWithRange: OFMakeRange(4, 0)])
 
 	TEST(@"-[stringByAppendingString:]",
 	    [[C(@"foo") stringByAppendingString: @"bar"] isEqual: @"foobar"])
-
-	TEST(@"-[stringByPrependingString:]",
-	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)
@@ -564,7 +558,8 @@ static const OFChar16 swappedChar16String[] = {
 	TEST(@"-[isAbsolutePath]",
 	    C(@"dh0:foo").absolutePath && C(@"dh0:a/b").absolutePath &&
 	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[isAbsolutePath]",
 	    C(@"sdmc:/foo").absolutePath && !C(@"sdmc:foo").absolutePath &&
 	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
@@ -594,6 +589,30 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: mutableString2] &&
 	    [[string stringByAppendingPathComponent: @"baz"]
 	    isEqual: mutableString2])
+
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"c:\\tmp\\foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp\\foo.bar"] &&
+	    [[C(@"c:\\tmp\\/\\") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp.bar"])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"foo/bar") stringByAppendingPathExtension: @"baz"]
+	    isEqual: @"foo/bar.baz"])
+# else
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"foo/bar") stringByAppendingPathExtension: @"baz"]
+	    isEqual: @"foo/bar.baz"] &&
+	    [[C(@"foo///") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"])
+# endif
 #endif
 
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
@@ -730,7 +749,8 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: @"foo//bar/baz//"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo/bar/baz"] &&
@@ -854,7 +874,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[array objectAtIndex: 1] isEqual: @"/"] &&
 	    C(@"").pathComponents.count == 0)
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[pathComponents]",
 	    /* sdmc:/tmp */
 	    (array = C(@"sdmc:/tmp").pathComponents) && array.count == 2 &&
@@ -935,7 +956,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo/bar").lastPathComponent isEqual: @"bar"] &&
 	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[lastPathComponent]",
 	    [C(@"sdmc:/tmp").lastPathComponent isEqual: @"tmp"] &&
 	    [C(@"sdmc:/tmp/").lastPathComponent isEqual: @"tmp"] &&
@@ -1001,7 +1023,8 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: @"dh0:tmp"] &&
 	    [C(@"foo/bar").stringByDeletingLastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @""])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
 	    [C(@"sdmc:/tmp/foo/").stringByDeletingLastPathComponent
@@ -1048,7 +1071,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [C(@".foo\\bar").stringByDeletingPathExtension
 	    isEqual: @".foo\\bar"] &&
 	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[stringByDeletingPathExtension]",
 	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
 	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&
@@ -1253,12 +1277,13 @@ static const OFChar16 swappedChar16String[] = {
 
 	characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
-	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
-	    [[C(@"foo\"ba'_~$]🍏🍌") stringByURLEncodingWithAllowedCharacters:
-	    characterSet] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
+	TEST(@"-[stringByAddingPercentEncodingWithAllowedCharacters:]",
+	    [[C(@"foo\"ba'_~$]🍏🍌")
+	    stringByAddingPercentEncodingWithAllowedCharacters: characterSet]
+	    isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
 
-	TEST(@"-[stringByURLDecoding]",
-	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByURLDecoding
+	TEST(@"-[stringByRemovingPercentEncoding]",
+	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByRemovingPercentEncoding
 	    isEqual: @"foo bar\"+$🍌"])
 
 	TEST(@"-[insertString:atIndex:]",
@@ -1267,12 +1292,14 @@ static const OFChar16 swappedChar16String[] = {
 	    R([mutableString1 insertString: @"äöü" atIndex: 3]) &&
 	    [mutableString1 isEqual: @"𝄞ööäöüöbä€"])
 
-	EXPECT_EXCEPTION(@"Detect invalid format in -[stringByURLDecoding] "
-	    @"#1", OFInvalidFormatException,
-	    [C(@"foo%xbar") stringByURLDecoding])
-	EXPECT_EXCEPTION(@"Detect invalid encoding in -[stringByURLDecoding] "
-	    @"#2", OFInvalidEncodingException,
-	    [C(@"foo%FFbar") stringByURLDecoding])
+	EXPECT_EXCEPTION(@"Detect invalid format in "
+	    @"-[stringByRemovingPercentEncoding] #1",
+	    OFInvalidFormatException,
+	    [C(@"foo%xbar") stringByRemovingPercentEncoding])
+	EXPECT_EXCEPTION(@"Detect invalid encoding in "
+	    @"-[stringByRemovingPercentEncoding] #2",
+	    OFInvalidEncodingException,
+	    [C(@"foo%FFbar") stringByRemovingPercentEncoding])
 
 	TEST(@"-[setCharacter:atIndex:]",
 	    (mutableString1 = [mutableStringClass
@@ -1289,21 +1316,21 @@ static const OFChar16 swappedChar16String[] = {
 	TEST(@"-[deleteCharactersInRange:]",
 	    (mutableString1 = [mutableStringClass
 	    stringWithString: @"𝄞öööbä€"]) &&
-	    R([mutableString1 deleteCharactersInRange: OFRangeMake(1, 3)]) &&
+	    R([mutableString1 deleteCharactersInRange: OFMakeRange(1, 3)]) &&
 	    [mutableString1 isEqual: @"𝄞bä€"] &&
-	    R([mutableString1 deleteCharactersInRange: OFRangeMake(0, 4)]) &&
+	    R([mutableString1 deleteCharactersInRange: OFMakeRange(0, 4)]) &&
 	    [mutableString1 isEqual: @""])
 
 	TEST(@"-[replaceCharactersInRange:withString:]",
 	    (mutableString1 = [mutableStringClass
 	    stringWithString: @"𝄞öööbä€"]) &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(1, 3)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(1, 3)
 					    withString: @"äöüß"]) &&
 	    [mutableString1 isEqual: @"𝄞äöüßbä€"] &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(4, 2)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(4, 2)
 					    withString: @"b"]) &&
 	    [mutableString1 isEqual: @"𝄞äöübä€"] &&
-	    R([mutableString1 replaceCharactersInRange: OFRangeMake(0, 7)
+	    R([mutableString1 replaceCharactersInRange: OFMakeRange(0, 7)
 					    withString: @""]) &&
 	    [mutableString1 isEqual: @""])
 
@@ -1311,23 +1338,23 @@ static const OFChar16 swappedChar16String[] = {
 	    OFOutOfRangeException,
 	    {
 		mutableString1 = [mutableStringClass stringWithString: @"𝄞öö"];
-		[mutableString1 deleteCharactersInRange: OFRangeMake(2, 2)];
+		[mutableString1 deleteCharactersInRange: OFMakeRange(2, 2)];
 	    })
 
 	EXPECT_EXCEPTION(@"Detect OoR in -[deleteCharactersInRange:] #2",
 	    OFOutOfRangeException,
-	    [mutableString1 deleteCharactersInRange: OFRangeMake(4, 0)])
+	    [mutableString1 deleteCharactersInRange: OFMakeRange(4, 0)])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #1",
 	    OFOutOfRangeException,
-	    [mutableString1 replaceCharactersInRange: OFRangeMake(2, 2)
+	    [mutableString1 replaceCharactersInRange: OFMakeRange(2, 2)
 					  withString: @""])
 
 	EXPECT_EXCEPTION(@"Detect OoR in "
 	    @"-[replaceCharactersInRange:withString:] #2",
 	    OFOutOfRangeException,
-	    [mutableString1 replaceCharactersInRange: OFRangeMake(4, 0)
+	    [mutableString1 replaceCharactersInRange: OFMakeRange(4, 0)
 					  withString: @""])
 
 	TEST(@"-[replaceOccurrencesOfString:withString:]",
@@ -1347,7 +1374,7 @@ static const OFChar16 swappedChar16String[] = {
 	    replaceOccurrencesOfString: @"oo"
 			    withString: @"óò"
 			       options: 0
-				 range: OFRangeMake(2, 15)]) &&
+				 range: OFMakeRange(2, 15)]) &&
 	    [mutableString1 isEqual: @"foofóòbarfóòbarfoo"])
 
 	TEST(@"-[deleteLeadingWhitespaces]",

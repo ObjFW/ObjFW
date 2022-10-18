@@ -23,11 +23,6 @@
 @implementation OFHTTPRequestFailedException
 @synthesize request = _request, response = _response;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response
 {
@@ -35,9 +30,9 @@
 				     response: response] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithRequest: (OFHTTPRequest *)request
@@ -49,6 +44,11 @@
 	_response = [response retain];
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -64,7 +64,7 @@
 	const char *method = OFHTTPRequestMethodName(_request.method);
 
 	return [OFString stringWithFormat:
-	    @"An HTTP %s request with URL %@ failed with code %hd!", method,
-	    _request.URL, _response.statusCode];
+	    @"An HTTP %s request with URI %@ failed with code %hd!", method,
+	    _request.URI, _response.statusCode];
 }
 @end

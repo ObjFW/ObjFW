@@ -51,6 +51,24 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef id
 #endif
 
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
+
+static OFDate *lastConsoleUpdate;
+
+static void
+updateConsole(bool force)
+{
+	if (force || lastConsoleUpdate.timeIntervalSinceNow <= -1.0 / 60) {
+		consoleUpdate(NULL);
+		[lastConsoleUpdate release];
+		lastConsoleUpdate = [[OFDate alloc] init];
+	}
+}
+#endif
+
 extern unsigned long OFHashSeed;
 
 #ifdef OF_PSP
@@ -138,21 +156,34 @@ main(int argc, char *argv[])
 	consoleInit(GFX_TOP, NULL);
 #endif
 
-#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
-	defined(OF_NINTENDO_3DS)
+#ifdef OF_NINTENDO_SWITCH
+	consoleInit(NULL);
+	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+	updateConsole(true);
+
+# ifdef OF_HAVE_FILES
+	[[OFFileManager defaultManager] changeCurrentDirectoryPath: @"romfs:/"];
+# endif
+#endif
+
+#if defined(OF_WII) || defined(OF_WII_U) || defined(OF_PSP) || \
+    defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 	@try {
 		return OFApplicationMain(&argc, &argv,
 		    [[TestsAppDelegate alloc] init]);
 	} @catch (id e) {
 		OFString *string = [OFString stringWithFormat:
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
-		OFString *backtrace = [OFString stringWithFormat:
-		    @"\nBacktrace:\n  %@\n\n",
-		    [[e backtrace] componentsJoinedByString: @"\n  "]];
 
 		[OFStdOut setForegroundColor: [OFColor red]];
 		[OFStdOut writeString: string];
-		[OFStdOut writeString: backtrace];
+
+		if ([e stackTraceAddresses] != nil)
+			[OFStdOut writeString: @"\nStack trace:\n"];
+
+		for (OFValue *address in [e stackTraceAddresses])
+			[OFStdOut writeFormat: @"  %p\n", address.pointerValue];
 
 # if defined(OF_WII)
 		[OFStdOut reset];
@@ -190,6 +221,12 @@ main(int argc, char *argv[])
 
 			gspWaitForVBlank();
 		}
+# elif defined(OF_NINTENDO_SWITCH)
+		while (appletMainLoop())
+			updateConsole(true);
+
+		consoleExit(NULL);
+		abort();
 # else
 		abort();
 # endif
@@ -207,6 +244,10 @@ main(int argc, char *argv[])
 		[OFStdOut writeFormat: @"[%@] %@: testing...", module, test];
 	} else
 		[OFStdOut writeFormat: @"[%@] %@: ", module, test];
+
+#ifdef OF_NINTENDO_SWITCH
+	updateConsole(false);
+#endif
 }
 
 - (void)outputSuccess: (OFString *)test inModule: (OFString *)module
@@ -217,6 +258,10 @@ main(int argc, char *argv[])
 		[OFStdOut writeFormat: @"\r[%@] %@: ok\n", module, test];
 	} else
 		[OFStdOut writeLine: @"ok"];
+
+#ifdef OF_NINTENDO_SWITCH
+	updateConsole(false);
+#endif
 }
 
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module
@@ -225,67 +270,83 @@ main(int argc, char *argv[])
 		[OFStdOut setForegroundColor: [OFColor red]];
 		[OFStdOut eraseLine];
 		[OFStdOut writeFormat: @"\r[%@] %@: failed\n", module, test];
+	} else
+		[OFStdOut writeLine: @"failed"];
 
 #ifdef OF_WII
-		[OFStdOut reset];
-		[OFStdOut writeLine: @"Press A to continue!"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"Press A to continue!"];
 
-		for (;;) {
-			WPAD_ScanPads();
+	for (;;) {
+		WPAD_ScanPads();
 
-			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
-				return;
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+			return;
 
-			VIDEO_WaitVSync();
-		}
+		VIDEO_WaitVSync();
+	}
 #endif
 #ifdef OF_PSP
-		[OFStdOut reset];
-		[OFStdOut writeLine: @"Press X to continue!"];
+	[OFStdOut reset];
+	[OFStdOut writeLine: @"Press X to continue!"];
 
-		for (;;) {
-			SceCtrlData pad;
+	for (;;) {
+		SceCtrlData pad;
 
-			sceCtrlReadBufferPositive(&pad, 1);
-			if (pad.Buttons & PSP_CTRL_CROSS) {
-				for (;;) {
-					sceCtrlReadBufferPositive(&pad, 1);
-					if (!(pad.Buttons & PSP_CTRL_CROSS))
-						return;
-				}
+		sceCtrlReadBufferPositive(&pad, 1);
+		if (pad.Buttons & PSP_CTRL_CROSS) {
+			for (;;) {
+				sceCtrlReadBufferPositive(&pad, 1);
+				if (!(pad.Buttons & PSP_CTRL_CROSS))
+					return;
 			}
 		}
+	}
 #endif
 #ifdef OF_NINTENDO_DS
-		[OFStdOut reset];
-		[OFStdOut writeString: @"Press A to continue!"];
+	[OFStdOut reset];
+	[OFStdOut writeString: @"Press A to continue!"];
 
-		for (;;) {
-			swiWaitForVBlank();
-			scanKeys();
-			if (keysDown() & KEY_A)
-				break;
-		}
+	for (;;) {
+		swiWaitForVBlank();
+		scanKeys();
+		if (keysDown() & KEY_A)
+			break;
+	}
 #endif
 #ifdef OF_NINTENDO_3DS
-		[OFStdOut reset];
-		[OFStdOut writeString: @"Press A to continue!"];
+	[OFStdOut reset];
+	[OFStdOut writeString: @"Press A to continue!"];
 
-		for (;;) {
-			hidScanInput();
+	for (;;) {
+		hidScanInput();
 
-			if (hidKeysDown() & KEY_A)
-				break;
+		if (hidKeysDown() & KEY_A)
+			break;
 
-			gspWaitForVBlank();
-		}
+		gspWaitForVBlank();
+	}
+#endif
+#ifdef OF_NINTENDO_SWITCH
+	[OFStdOut reset];
+	[OFStdOut writeString: @"Press A to continue!"];
+
+	while (appletMainLoop()) {
+		PadState pad;
+
+		padUpdate(&pad);
+		updateConsole(true);
+
+		if (padGetButtonsDown(&pad) & HidNpadButton_A)
+			break;
+	}
 #endif
 
+	if (OFStdOut.hasTerminal) {
 		[OFStdOut writeString: @"\r"];
 		[OFStdOut reset];
 		[OFStdOut eraseLine];
-	} else
-		[OFStdOut writeLine: @"failed"];
+	}
 }
 
 - (void)applicationDidFinishLaunching
@@ -331,8 +392,8 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self numberTests];
 	[self streamTests];
+	[self memoryStreamTests];
 	[self notificationCenterTests];
-#ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self RIPEMD160HashTests];
 	[self SHA1HashTests];
@@ -341,10 +402,9 @@ main(int argc, char *argv[])
 	[self SHA384HashTests];
 	[self SHA512HashTests];
 	[self HMACTests];
-#endif
 	[self PBKDF2Tests];
 	[self scryptTests];
-#if defined(OF_HAVE_FILES) && defined(HAVE_CODEPAGE_437)
+#ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS
@@ -365,7 +425,7 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_THREADS
 	[self threadTests];
 #endif
-	[self URLTests];
+	[self URITests];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif
@@ -376,9 +436,7 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-#ifdef OF_HAVE_FILES
 	[self serializationTests];
-#endif
 	[self JSONTests];
 	[self propertyListTests];
 #if defined(OF_HAVE_PLUGINS)
@@ -434,6 +492,13 @@ main(int argc, char *argv[])
 
 		gspWaitForVBlank();
 	}
+#elif defined(OF_NINTENDO_SWITCH)
+	while (appletMainLoop())
+		updateConsole(true);
+
+	consoleExit(NULL);
+
+	[OFApplication terminateWithStatus: _fails];
 #else
 	[OFApplication terminateWithStatus: _fails];
 #endif

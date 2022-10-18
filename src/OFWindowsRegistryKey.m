@@ -31,6 +31,7 @@
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetWindowsRegistryValueFailedException.h"
+#import "OFUndefinedKeyException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
@@ -92,16 +93,8 @@ OF_DIRECT_MEMBERS
 }
 
 - (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
-		   securityAndAccessRights: (REGSAM)securityAndAccessRights
-{
-	return [self openSubkeyAtPath: path
-			      options: 0
-	      securityAndAccessRights: securityAndAccessRights];
-}
-
-- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+			      accessRights: (REGSAM)accessRights
 				   options: (DWORD)options
-		   securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -109,25 +102,19 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		status = RegOpenKeyExW(_hKey, path.UTF16String, options,
-		    securityAndAccessRights, &subKey);
+		    accessRights, &subKey);
 	else
 		status = RegOpenKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], options,
-		    securityAndAccessRights, &subKey);
+		    accessRights, &subKey);
 
-	if (status != ERROR_SUCCESS) {
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
-
+	if (status != ERROR_SUCCESS)
 		@throw [OFOpenWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
+				accessRights: accessRights
 				     options: options
-		     securityAndAccessRights: securityAndAccessRights
 				      status: status];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -136,22 +123,12 @@ OF_DIRECT_MEMBERS
 	    autorelease];
 }
 
-- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights
-{
-	return [self createSubkeyAtPath: path
-				options: 0
-		securityAndAccessRights: securityAndAccessRights
-		     securityAttributes: NULL
-			    disposition: NULL];
-}
-
 - (OFWindowsRegistryKey *)
-	 createSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
-		disposition: (DWORD *)disposition
+    createSubkeyAtPath: (OFString *)path
+	  accessRights: (REGSAM)accessRights
+    securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+	       options: (DWORD)options
+	   disposition: (DWORD *)disposition
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -159,21 +136,20 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
-		    NULL, options, securityAndAccessRights, securityAttributes,
-		    &subKey, NULL);
+		    NULL, options, accessRights, securityAttributes, &subKey,
+		    NULL);
 	else
 		status = RegCreateKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], 0, NULL,
-		    options, securityAndAccessRights, securityAttributes,
-		    &subKey, NULL);
+		    options, accessRights, securityAttributes, &subKey, NULL);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
-				     options: options
-		     securityAndAccessRights: securityAndAccessRights
+				accessRights: accessRights
 			  securityAttributes: securityAttributes
+				     options: options
 				      status: status];
 
 	objc_autoreleasePoolPop(pool);
@@ -362,6 +338,71 @@ OF_DIRECT_MEMBERS
 
 	[self setData: data forValueNamed: name type: type];
 
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint32_t)DWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type, ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_DWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setDWORD: (uint32_t)dword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &dword count: sizeof(dword)];
+	[self setData: data forValueNamed: name type: REG_DWORD];
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint64_t)QWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
+	uint64_t ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_QWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setQWORD: (uint64_t)qword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &qword count: sizeof(qword)];
+	[self setData: data forValueNamed: name type: REG_QWORD];
 	objc_autoreleasePoolPop(pool);
 }
 

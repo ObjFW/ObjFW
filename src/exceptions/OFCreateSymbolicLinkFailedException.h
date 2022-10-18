@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFCreateSymbolicLinkFailedException \
@@ -28,15 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCreateSymbolicLinkFailedException: OFException
 {
-	OFURL *_URL;
+	OFURI *_URI;
 	OFString *_target;
 	int _errNo;
+	OF_RESERVE_IVARS(OFCreateSymbolicLinkFailedException, 4)
 }
 
 /**
- * @brief The URL at which the symlink should have been created.
+ * @brief The URI at which the symlink should have been created.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property (readonly, nonatomic) OFURI *URI;
 
 /**
  * @brief The target for the symlink.
@@ -48,34 +49,34 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
- * @param URL The URL where the symlink should have been created
+ * @param URI The URI where the symlink should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
  */
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 			  target: (OFString *)target
 			   errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated create symbolic link failed
  *	  exception.
  *
- * @param URL The URL where the symlink should have been created
+ * @param URI The URI where the symlink should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return An initialized create symbolic link failed exception
  */
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		     target: (OFString *)target
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

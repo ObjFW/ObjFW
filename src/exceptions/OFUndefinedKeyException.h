@@ -27,8 +27,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUndefinedKeyException: OFException
 {
 	id _object;
-	OFString *_key;
+	OFString *_Nullable _key;
 	id _Nullable _value;
+	OF_RESERVE_IVARS(OFUndefinedKeyException, 4)
 }
 
 /**
@@ -39,14 +40,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The key which is undefined.
  */
-@property (readonly, nonatomic) OFString *key;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *key;
 
 /**
  * @brief The value for the undefined key
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
-
-+ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased undefined key exception.
@@ -68,10 +67,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased undefined key exception
  */
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key
+				key: (nullable OFString *)key
 			      value: (nullable id)value;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated undefined key exception.
@@ -93,8 +92,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized undefined key exception
  */
 - (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
+			   key: (nullable OFString *)key
 			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -35,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFHTTPRequest *_request;
 	OFHTTPResponse *_response;
+	OF_RESERVE_IVARS(OFHTTPRequestFailedException, 4)
 }
 
 /**
@@ -47,8 +48,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFHTTPResponse *response;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased HTTP request failed exception.
  *
@@ -59,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated HTTP request failed exception.
@@ -71,6 +70,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRequest: (OFHTTPRequest *)request
 		       response: (OFHTTPResponse *)response
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

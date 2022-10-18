@@ -38,11 +38,6 @@
 	return self;
 }
 
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (void)dealloc
 {
 	[_lock release];
@@ -52,8 +47,11 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"A lock of type %@ could not be locked: %s",
-	    [_lock class], strerror(_errNo)];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"A lock of type %@ could not be locked: %s",
+		    [_lock class], strerror(_errNo)];
+	else
+		return @"A lock could not be locked!";
 }
 @end

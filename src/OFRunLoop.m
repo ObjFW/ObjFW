@@ -41,7 +41,7 @@
 #import "OFTimer+Private.h"
 #import "OFDate.h"
 
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFWriteFailedException.h"
 
 #include "OFRunLoopConstants.inc"
@@ -590,7 +590,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, _writtenLength, exception);
+		newData = _block(_writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -667,7 +667,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newString = _block(_string, _writtenLength, exception);
+		newString = _block(_writtenLength, exception);
 
 		if (newString == nil)
 			return false;
@@ -861,7 +861,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, &_receiver, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -962,7 +962,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -1651,7 +1651,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 			@try {
 				[state->_kernelEventObserver
 				    observeForTimeInterval: timeout];
-			} @catch (OFObserveFailedException *e) {
+			} @catch (OFObserveKernelEventsFailedException *e) {
 				if (e.errNo != EINTR)
 					@throw e;
 			}
@@ -1679,7 +1679,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 #if defined(OF_HAVE_SOCKETS)
 			@try {
 				[state->_kernelEventObserver observe];
-			} @catch (OFObserveFailedException *e) {
+			} @catch (OFObserveKernelEventsFailedException *e) {
 				if (e.errNo != EINTR)
 					@throw e;
 			}

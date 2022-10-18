@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURL;
+@class OFURI;
 
 /**
  * @brief Options for searching in data.
@@ -45,11 +45,11 @@ typedef enum {
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFMessagePackRepresentation>
 {
-	unsigned char *_items;
+	unsigned char *_Nullable _items;
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
 @private
-	OFData *_parentData;
+	OFData *_Nullable _parentData;
 	OF_RESERVE_IVARS(OFData, 4)
 }
 
@@ -68,7 +68,8 @@ typedef enum {
  *
  * @warning The pointer is only valid until the OFData is changed!
  */
-@property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *items
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The first item of the OFData or `NULL`.
@@ -166,19 +167,21 @@ typedef enum {
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the specified URL.
+ *	  the specified URI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param URI The URI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL;
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the string representation.
+ *	  the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithStringRepresentation: (OFString *)string;
 
@@ -188,11 +191,13 @@ typedef enum {
  *
  * @param string The string with the Base64-encoded data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of size 1.
  *
  * @param items The items to store in the OFData
@@ -202,7 +207,7 @@ typedef enum {
 - (instancetype)initWithItems: (const void *)items count: (size_t)count;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size.
  *
  * @param items The items to store in the OFData
@@ -265,19 +270,21 @@ typedef enum {
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the specified URL.
+ *	  containing the data of the specified URI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param URI The URI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the string representation.
+ *	  containing the data of the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithStringRepresentation: (OFString *)string;
 
@@ -287,6 +294,8 @@ typedef enum {
  *
  * @param string The string with the Base64-encoded data
  * @return An initialized OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
@@ -337,11 +346,11 @@ typedef enum {
 #endif
 
 /**
- * @brief Writes the OFData to the specified URL.
+ * @brief Writes the OFData to the specified URI.
  *
- * @param URL The URL to write to
+ * @param URI The URI to write to
  */
-- (void)writeToURL: (OFURL *)URL;
+- (void)writeToURI: (OFURI *)URI;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -128,19 +128,19 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 	tmp = OFToLittleEndianFloat(_red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OFHashAdd(&hash, ((char *)&tmp)[i]);
+		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
 	tmp = OFToLittleEndianFloat(_green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OFHashAdd(&hash, ((char *)&tmp)[i]);
+		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
 	tmp = OFToLittleEndianFloat(_blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OFHashAdd(&hash, ((char *)&tmp)[i]);
+		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
 	tmp = OFToLittleEndianFloat(_alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
-		OFHashAdd(&hash, ((char *)&tmp)[i]);
+		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
 	OFHashFinalize(&hash);
 

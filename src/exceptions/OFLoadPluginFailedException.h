@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFLoadPluginFailedException: OFException
 {
 	OFString *_path, *_Nullable _error;
+	OF_RESERVE_IVARS(OFLoadPluginFailedException, 4)
 }
 
 /**
@@ -38,8 +39,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *error;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased load plugin failed exception.
  *
@@ -50,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 			    error: (nullable OFString *)error;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated load plugin failed exception.
@@ -62,6 +61,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath: (OFString *)path
 		       error: (nullable OFString *)error
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

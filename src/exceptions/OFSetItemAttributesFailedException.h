@@ -14,11 +14,11 @@
  */
 
 #import "OFException.h"
-#import "OFURLHandler.h"
+#import "OFURIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFSetItemAttributesFailedException \
@@ -29,16 +29,17 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSetItemAttributesFailedException: OFException
 {
-	OFURL *_URL;
+	OFURI *_URI;
 	OFFileAttributes _attributes;
 	OFFileAttributeKey _failedAttribute;
 	int _errNo;
+	OF_RESERVE_IVARS(OFSetItemAttributesFailedException, 4)
 }
 
 /**
- * @brief The URL of the item whose attributes could not be set.
+ * @brief The URI of the item whose attributes could not be set.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property (readonly, nonatomic) OFURI *URI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -55,39 +56,39 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFFileAttributeKey failedAttribute;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased set item attributes failed exception.
  *
- * @param URL The URL of the item whose attributes could not be set
+ * @param URI The URI of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased set item attributes failed exception
  */
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 		      attributes: (OFFileAttributes)attributes
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated set item attributes failed exception.
  *
- * @param URL The URL of the item whose attributes could not be set
+ * @param URI The URI of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return An initialized set item attributes failed exception
  */
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

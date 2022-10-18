@@ -74,64 +74,39 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Opens the subkey at the specified path.
  *
  * @param path The path of the subkey to open
- * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
- */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
-/**
- * @brief Opens the subkey at the specified path.
- *
- * @param path The path of the subkey to open
+ * @param accessRights Please refer to the `RegOpenKeyEx()` documentation for
+ *		       `samDesired`
  * @param options Please refer to the `RegOpenKeyEx()` documentation for
  *		  `ulOptions`. Usually 0.
- * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
- */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
-/**
- * @brief Creates a subkey at the specified path or opens it if it already
- *	  exists.
- *
- * @param path The path of the subkey to create
- * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation for `samDesired`
  * @return The subkey with the specified path
  */
-- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+			      accessRights: (REGSAM)accessRights
+				   options: (DWORD)options;
 /**
  * @brief Creates a subkey at the specified path or opens it if it already
  *	  exists.
  *
  * @param path The path of the subkey to create
- * @param options Please refer to the `RegCreateKeyEx()` documentation.
- *		  Usually 0.
- * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation for `samDesired`
+ * @param accessRights Please refer to the `RegCreateKeyEx()` documentation for
+ *		       `samDesired`
  * @param securityAttributes Please refer to the `RegCreateKeyEx()`
  *			     documentation for `lpSecurityAttributes`. Usually
  *			     NULL.
- * @param disposition Whether the key was created or already existed. Please
+ * @param options Please refer to the `RegCreateKeyEx()` documentation for
+ *		  `dwOptions`. Usually 0.
+ * @param disposition A pointer to a variable that will be set to whether the
+ *		      key was created or already existed, or `NULL`. Please
  *		      refer to the `RegCreateKeyEx()` documentation for
  *		      `lpdwDisposition`.
  * @return The subkey with the specified path
  */
 - (OFWindowsRegistryKey *)
-	 createSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
-		disposition: (nullable DWORD *)disposition;
+    createSubkeyAtPath: (OFString *)path
+	  accessRights: (REGSAM)accessRights
+    securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
+	       options: (DWORD)options
+	   disposition: (nullable DWORD *)disposition;
 
 /**
  * @brief Returns the data for the specified value at the specified path.
@@ -191,6 +166,38 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name
 	     type: (DWORD)type;
+
+/**
+ * @brief Returns the DWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The DWORD for the specified value
+ */
+- (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the DWORD for the specified value.
+ *
+ * @param dword The DWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Returns the QWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The QWORD for the specified value
+ */
+- (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the QWORD for the specified value.
+ *
+ * @param qword The QWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Deletes the specified value.

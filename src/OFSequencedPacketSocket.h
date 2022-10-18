@@ -40,13 +40,12 @@ typedef bool (^OFSequencedPacketSocketAsyncReceiveBlock)(size_t length,
 /**
  * @brief A block which is called when a packet has been sent.
  *
- * @param data The data which was sent
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFSequencedPacketSocketAsyncSendDataBlock)(
-    OFData *_Nonnull data, id _Nullable exception);
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when the socket accepted a connection.
@@ -137,6 +136,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Whether the socket can block.
  *
  * By default, a socket can block.
+ *
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
 
@@ -149,6 +150,9 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief The remote address.
  *
  * @note This only works for accepted sockets!
+ *
+ * @throw OFNotOpenException The socket is not open
+ * @throw OFInvalidArgumentException The socket has no remote address
  */
 @property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
@@ -176,6 +180,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
  * @return The length of the received packet
+ * @throw OFReadFailedException Receiving failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length;
 
@@ -249,6 +255,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param buffer The buffer to send as a packet
  * @param length The length of the buffer
+ * @throw OFWriteFailedException Sending failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)sendBuffer: (const void *)buffer length: (size_t)length;
 
@@ -297,11 +305,16 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Listen on the socket.
  *
  * @param backlog Maximum length for the queue of pending connections.
+ * @throw OFListenFailedException Listening failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)listenWithBacklog: (int)backlog;
 
 /**
  * @brief Listen on the socket.
+ *
+ * @throw OFListenFailedException Listening failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)listen;
 
@@ -309,6 +322,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased sequenced packet socket for the accepted connection.
+ * @throw OFAcceptFailedException Accepting failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;
 
@@ -355,6 +370,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Closes the socket so that it can neither receive nor send any more
  *	  datagrams.
+ *
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)close;
 @end

@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id _object;
 	int _errNo;
+	OF_RESERVE_IVARS(OFGetOptionFailedException, 4)
 }
 
 /**
@@ -39,8 +40,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased get option failed exception.
  *
@@ -50,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated get option failed exception.
@@ -61,6 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithObject: (id)object
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -18,7 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
@@ -39,7 +39,8 @@ OF_ASSUME_NONNULL_BEGIN
  * Modifying the returned array directly is allowed and will change the contents
  * of the data.
  */
-@property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableItems
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The first item of the OFMutableData or `NULL`.
@@ -203,7 +204,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)removeAllItems;
 
 /**
- * @brief Converts the mutable URL to an immutable URL.
+ * @brief Converts the mutable data to an immutable data.
  */
 - (void)makeImmutable;
 @end

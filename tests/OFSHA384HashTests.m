@@ -31,7 +31,8 @@ const uint8_t testFileSHA384[48] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA384Hash *SHA384, *SHA384Copy;
-	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
+	OFURI *URI = [OFURI URIWithString: @"embedded:testfile.bin"];
+	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (SHA384 = [OFSHA384Hash hashWithAllowsSwappableMemory: true]))

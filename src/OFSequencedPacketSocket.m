@@ -318,20 +318,23 @@
 
 - (instancetype)accept
 {
-	OFSequencedPacketSocket *client =
-	    [[[[self class] alloc] init] autorelease];
+	OFSequencedPacketSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
 #if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = paccept(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
+	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
@@ -339,7 +342,7 @@
 				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
+	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
@@ -347,7 +350,7 @@
 				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
-	    &client->_remoteAddress.sockaddr.sockaddr,
+	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
@@ -362,7 +365,8 @@
 	assert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
-	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
+	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)
+	    ->sa_family) {
 	case AF_INET:
 		client->_remoteAddress.family = OFSocketAddressFamilyIPv4;
 		break;

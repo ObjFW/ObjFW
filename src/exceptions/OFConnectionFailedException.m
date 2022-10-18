@@ -19,13 +19,8 @@
 #import "OFString.h"
 
 @implementation OFConnectionFailedException
-@synthesize host = _host, port = _port, network = _network, path = _path;
+@synthesize host = _host, port = _port, path = _path, network = _network;
 @synthesize socket = _socket, errNo = _errNo;
-
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
 
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
@@ -38,17 +33,9 @@
 				     errNo: errNo] autorelease];
 }
 
-+ (instancetype)exceptionWithNode: (unsigned char [IPX_NODE_LEN])node
-			  network: (uint32_t)network
-			     port: (uint16_t)port
-			   socket: (id)sock
-			    errNo: (int)errNo
++ (instancetype)exception
 {
-	return [[[self alloc] initWithNode: node
-				   network: network
-				      port: port
-				    socket: sock
-				     errNo: errNo] autorelease];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
@@ -60,9 +47,17 @@
 				     errNo: errNo] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exceptionWithNetwork: (uint32_t)network
+				node: (unsigned char [IPX_NODE_LEN])node
+				port: (uint16_t)port
+			      socket: (id)sock
+			       errNo: (int)errNo
 {
-	OF_INVALID_INIT_METHOD
+	return [[[self alloc] initWithNetwork: network
+					 node: node
+					 port: port
+				       socket: sock
+					errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithHost: (OFString *)host
@@ -74,28 +69,6 @@
 
 	@try {
 		_host = [host copy];
-		_port = port;
-		_socket = [sock retain];
-		_errNo = errNo;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithNode: (unsigned char [IPX_NODE_LEN])node
-		     network: (uint32_t)network
-			port: (uint16_t)port
-		      socket: (id)sock
-		       errNo: (int)errNo
-{
-	self = [super init];
-
-	@try {
-		memcpy(_node, node, IPX_NODE_LEN);
-		_network = network;
 		_port = port;
 		_socket = [sock retain];
 		_errNo = errNo;
@@ -123,6 +96,33 @@
 	}
 
 	return self;
+}
+
+- (instancetype)initWithNetwork: (uint32_t)network
+			   node: (unsigned char [IPX_NODE_LEN])node
+			   port: (uint16_t)port
+			 socket: (id)sock
+			  errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_network = network;
+		memcpy(_node, node, IPX_NODE_LEN);
+		_port = port;
+		_socket = [sock retain];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

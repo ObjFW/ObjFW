@@ -44,12 +44,12 @@
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
+#import "OFValue.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -253,19 +253,48 @@ static void
 uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
-	OFArray *backtrace = nil;
+	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
+	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [description cStringWithEncoding: encoding]);
 
-	if ([exception respondsToSelector: @selector(backtrace)])
-		backtrace = [exception backtrace];
+	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
+		stackTraceAddresses = [exception stackTraceAddresses];
 
-	if (backtrace != nil) {
-		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
-		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		    [s cStringWithEncoding: encoding]);
+	if (stackTraceAddresses != nil) {
+		size_t count = stackTraceAddresses.count;
+
+		if ([exception respondsToSelector:
+		    @selector(stackTraceSymbols)])
+			stackTraceSymbols = [exception stackTraceSymbols];
+
+		if (stackTraceSymbols.count != count)
+			stackTraceSymbols = nil;
+
+		fputs("\nStack trace:\n", stderr);
+
+		if (stackTraceSymbols != nil) {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+				const char *symbol = [[stackTraceSymbols
+				    objectAtIndex: i]
+				    cStringWithEncoding: encoding];
+
+				fprintf(stderr, "  %p  %s\n", address, symbol);
+			}
+		} else {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+
+				fprintf(stderr, "  %p\n", address);
+			}
+		}
+
+		fputs("\n", stderr);
 	}
 
 	abort();
@@ -333,6 +362,10 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
 
 	if (!objc_constructInstance(class, instance)) {
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+		OFSpinlockFree(&((struct PreIvars *)(void *)
+		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
+#endif
 		free((char *)instance - PRE_IVARS_ALIGN);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -1083,7 +1116,7 @@ _references_to_categories_of_OFObject(void)
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(ptr); i++) {
-		OFHashAdd(&hash, ptr & 0xFF);
+		OFHashAddByte(&hash, ptr & 0xFF);
 		ptr >>= 8;
 	}
 
@@ -1203,6 +1236,10 @@ _references_to_categories_of_OFObject(void)
 - (void)dealloc
 {
 	objc_destructInstance(self);
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
+#endif
 
 	free((char *)self - PRE_IVARS_ALIGN);
 }

@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_namespace;
 	OFXMLElement *_element;
+	OF_RESERVE_IVARS(OFUnboundNamespaceException, 4)
 }
 
 /**
@@ -45,8 +46,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFXMLElement *element;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
@@ -57,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithNamespace: (OFString *)nameSpace
 			       element: (OFXMLElement *)element;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated unbound namespace exception.
@@ -69,6 +68,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithNamespace: (OFString *)nameSpace
 			  element: (OFXMLElement *)element
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

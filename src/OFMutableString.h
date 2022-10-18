@@ -54,6 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Appends a UTF-8 encoded C string to the OFMutableString.
  *
  * @param UTF8String A UTF-8 encoded C string to append
+ * @throw OFInvalidEncodingException The C string is not in not in the correct
+ *				     encoding
  */
 - (void)appendUTF8String: (const char *)UTF8String;
 
@@ -63,6 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param UTF8String A UTF-8 encoded C string to append
  * @param UTF8StringLength The length of the UTF-8 encoded C string
+ * @throw OFInvalidEncodingException The C string is not in not in the correct
+ *				     encoding
  */
 - (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength;
@@ -72,6 +76,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param cString A C string to append
  * @param encoding The encoding of the C string
+ * @throw OFInvalidEncodingException The C string is not in not in the correct
+ *				     encoding
  */
 - (void)appendCString: (const char *)cString
 	     encoding: (OFStringEncoding)encoding;
@@ -83,6 +89,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param cString A C string to append
  * @param encoding The encoding of the C string
  * @param cStringLength The length of the UTF-8 encoded C string
+ * @throw OFInvalidEncodingException The C string is not in not in the correct
+ *				     encoding
  */
 - (void)appendCString: (const char *)cString
 	     encoding: (OFStringEncoding)encoding
@@ -96,6 +104,9 @@ OF_ASSUME_NONNULL_BEGIN
  * `const OFUnichar *`.
  *
  * @param format A format string which generates the string to append
+ * @throw OFInvalidFormatException The specified format is invalid
+ * @throw OFInvalidEncodingException The resulting string is not in not in UTF-8
+ *				     encoding
  */
 - (void)appendFormat: (OFConstantString *)format, ...;
 
@@ -108,20 +119,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments;
-
-/**
- * @brief Prepends another OFString to the OFMutableString.
- *
- * @param string An OFString to prepend
- */
-- (void)prependString: (OFString *)string;
-
-/**
- * @brief Reverses the string.
- */
-- (void)reverse;
 
 /**
  * @brief Converts the string to uppercase.

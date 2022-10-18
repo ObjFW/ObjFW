@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnknownXMLEntityException: OFException
 {
 	OFString *_entityName;
+	OF_RESERVE_IVARS(OFUnknownXMLEntityException, 4)
 }
 
 /**
@@ -42,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithEntityName: (OFString *)entityName;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated unknown XML entity exception.
@@ -52,6 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithEntityName: (OFString *)entityName
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

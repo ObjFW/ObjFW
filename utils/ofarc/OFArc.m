@@ -25,7 +25,7 @@
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
@@ -207,9 +207,10 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
 #else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofarc/lang"];
+	[OFLocale addLocalizationDirectory:
+	    @"PROGDIR:/share/ofarc/localization"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -337,7 +338,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -394,7 +395,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 		archive = [self
 		    openArchiveWithPath: remainingArguments.firstObject
@@ -409,7 +410,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			help(OFStdErr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    OFRangeMake(1, remainingArguments.count - 1)];
+		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
 		if (![remainingArguments.firstObject isEqual: @"-"])
@@ -461,7 +462,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", e.URL.fileSystemRepresentation,
+			    @"dir", e.URI.fileSystemRepresentation,
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {

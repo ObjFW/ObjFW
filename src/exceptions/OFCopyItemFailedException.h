@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFCopyItemFailedException \
@@ -27,52 +27,53 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCopyItemFailedException: OFException
 {
-	OFURL *_sourceURL, *_destinationURL;
+	OFURI *_sourceURI, *_destinationURI;
 	int _errNo;
+	OF_RESERVE_IVARS(OFCopyItemFailedException, 4)
 }
 
 /**
- * @brief The path of the source item.
+ * @brief The URI of the source item.
  */
-@property (readonly, nonatomic) OFURL *sourceURL;
+@property (readonly, nonatomic) OFURI *sourceURI;
 
 /**
- * @brief The destination path.
+ * @brief The destination URI.
  */
-@property (readonly, nonatomic) OFURL *destinationURL;
+@property (readonly, nonatomic) OFURI *destinationURI;
 
 /**
  * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased copy item failed exception.
  *
- * @param sourceURL The original path
- * @param destinationURL The new path
+ * @param sourceURI The URI of the source item
+ * @param destinationURI The destination URI
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased copy item failed exception
  */
-+ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
-			destinationURL: (OFURL *)destinationURL
++ (instancetype)exceptionWithSourceURI: (OFURI *)sourceURI
+			destinationURI: (OFURI *)destinationURI
 				 errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated copy item failed exception.
  *
- * @param sourceURL The original path
- * @param destinationURL The new path
+ * @param sourceURI The URI of the source item
+ * @param destinationURI The destination URI
  * @param errNo The errno of the error that occurred
  * @return An initialized copy item failed exception
  */
-- (instancetype)initWithSourceURL: (OFURL *)sourceURL
-		   destinationURL: (OFURL *)destinationURL
+- (instancetype)initWithSourceURI: (OFURI *)sourceURI
+		   destinationURI: (OFURI *)destinationURI
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

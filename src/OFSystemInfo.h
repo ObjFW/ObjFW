@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURI;
+
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -29,15 +31,14 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
 @property (class, readonly, nonatomic) OFString *ObjFWVersion;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMajor;
-@property (class, readonly, nonatomic) unsigned int ObjFWVersionMinor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMajor;
+@property (class, readonly, nonatomic) unsigned short ObjFWVersionMinor;
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
-# ifdef OF_HAVE_FILES
-@property (class, readonly, nullable, nonatomic) OFString *userDataPath;
-@property (class, readonly, nullable, nonatomic) OFString *userConfigPath;
-# endif
+@property (class, readonly, nullable, nonatomic) OFURI *userDataURI;
+@property (class, readonly, nullable, nonatomic) OFURI *userConfigURI;
+@property (class, readonly, nullable, nonatomic) OFURI *temporaryDirectoryURI;
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
 @property (class, readonly, nullable, nonatomic) OFString *CPUModel;
 # if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
@@ -89,14 +90,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The major version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMajor;
++ (unsigned short)ObjFWVersionMajor;
 
 /**
  * @brief The minor version of ObjFW.
  *
  * @return The minor version of ObjFW
  */
-+ (unsigned int)ObjFWVersionMinor;
++ (unsigned short)ObjFWVersionMinor;
 
 /**
  * @brief Returns the name of the operating system the application is running
@@ -114,7 +115,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)operatingSystemVersion;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Returns the path where user data for the application can be stored.
  *
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user data for the application can be stored
  */
-+ (nullable OFString *)userDataPath;
++ (nullable OFURI *)userDataURI;
 
 /**
  * @brief Returns the path where user configuration for the application can be
@@ -141,7 +141,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user configuration for the application can be stored
  */
-+ (nullable OFString *)userConfigPath;
++ (nullable OFURI *)userConfigURI;
 
 /**
  * @brief Returns a path where temporary files for can be stored.
@@ -159,8 +159,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return A path where temporary files can be stored
  */
-+ (nullable OFString *)temporaryDirectoryPath;
-#endif
++ (nullable OFURI *)temporaryDirectoryURI;
 
 /**
  * @brief Returns the vendor of the CPU.

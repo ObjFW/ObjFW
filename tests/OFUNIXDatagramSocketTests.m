@@ -30,13 +30,17 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	OFSocketAddress address1, address2;
 	char buffer[5];
 
-#ifdef OF_HAVE_FILES
-	path = [[OFSystemInfo temporaryDirectoryPath]
-	    stringByAppendingPathComponent: [[OFUUID UUID] UUIDString]];
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	path = [[OFSystemInfo temporaryDirectoryURI]
+	    URIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectoryURI is
+	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",
 					   [[OFUUID UUID] UUIDString]];
@@ -47,7 +51,9 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	@try {
 		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
 	} @catch (OFBindFailedException *e) {
-		if (e.errNo == EAFNOSUPPORT) {
+		switch (e.errNo) {
+		case EAFNOSUPPORT:
+		case EPERM:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFUNIXDatagramSocket] -[bindToPath:]: "
@@ -56,8 +62,9 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 
 			objc_autoreleasePoolPop(pool);
 			return;
-		} else
+		default:
 			@throw e;
+		}
 	}
 
 	@try {

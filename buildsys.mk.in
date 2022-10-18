@@ -81,7 +81,7 @@ MSGFMT = @MSGFMT@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAR = @JAR@
-WINDRES = @WINDRES@
+RC = @RC@
 BUILD_AND_HOST_ARE_DARWIN = @BUILD_AND_HOST_ARE_DARWIN@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -579,7 +579,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${WINDRES} ${CPPFLAGS} -J rc -O coff -o $@ $<; then \
+	if ${RC} ${RCFLAGS} ${CPPFLAGS} -J rc -O coff -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -773,7 +773,7 @@ uninstall: uninstall-extra
 
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
-		if test -f ${DESTDIR}${libdir}/$$i; then \
+		if test -f ${DESTDIR}${libdir}/$$i -o -f ${DESTDIR}${bindir}/$$i; then \
 			if : @UNINSTALL_LIB@; then \
 				${DELETE_OK}; \
 			else \

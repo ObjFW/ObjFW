@@ -65,7 +65,6 @@ typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
  * @brief A block which is called when data was written asynchronously to a
  *	  stream.
  *
- * @param data The data which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -73,14 +72,13 @@ typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
  *		    success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(OFData *_Nonnull data,
-    size_t bytesWritten, id _Nullable exception);
+typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(size_t bytesWritten,
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when a string was written asynchronously to a
  *	  stream.
  *
- * @param string The string which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
  *		       asynchronous write if no exception was encountered.
@@ -89,7 +87,7 @@ typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(OFData *_Nonnull data,
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
-    OFString *_Nonnull string, size_t bytesWritten, id _Nullable exception);
+    size_t bytesWritten, id _Nullable exception);
 #endif
 
 /**
@@ -219,6 +217,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
+ *
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
 
@@ -232,7 +232,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
     id <OFStreamDelegate> delegate;
 
 /**
- * @brief Reads *at most* size bytes from the stream into a buffer.
+ * @brief Reads *at most* `length` bytes from the stream into a buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -246,11 +246,13 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @return The number of bytes read
+ * @throw OFReadFailedException Reading failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (size_t)readIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
- * @brief Reads exactly the specified length bytes from the stream into a
+ * @brief Reads exactly the specified `length` bytes from the stream into a
  *	  buffer.
  *
  * Unlike @ref readIntoBuffer:length:, this method does not return when less
@@ -263,12 +265,16 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading the specified amount
+ * @throw OFNotOpenException The stream is not open
  */
  - (void)readIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @brief Asynchronously reads *at most* size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -290,7 +296,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncReadIntoBuffer: (void *)buffer length: (size_t)length;
 
 /**
- * @brief Asynchronously reads *at most* size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -315,7 +321,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
@@ -333,7 +339,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncReadIntoBuffer: (void *)buffer exactLength: (size_t)length;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
@@ -355,8 +361,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 # ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously reads *at most* ref size bytes from the stream into a
- *	  buffer.
+ * @brief Asynchronously reads *at most* ref `length` bytes from the stream
+ *	  into a buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -384,7 +390,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads *at most* ref size bytes from the stream into a
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -415,7 +421,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
@@ -440,7 +446,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      block: (OFStreamAsyncReadBlock)block;
 
 /**
- * @brief Asynchronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
@@ -475,6 +481,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint8_t from the stream
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint8_t)readInt8;
 
@@ -485,6 +495,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint16_t from the stream in native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint16_t)readBigEndianInt16;
 
@@ -495,6 +509,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint32_t from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint32_t)readBigEndianInt32;
 
@@ -505,6 +523,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint64_t from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint64_t)readBigEndianInt64;
 
@@ -515,6 +537,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A float from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (float)readBigEndianFloat;
 
@@ -525,6 +551,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A double from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (double)readBigEndianDouble;
 
@@ -535,6 +565,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint16_t from the stream in native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint16_t)readLittleEndianInt16;
 
@@ -545,6 +579,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint32_t from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint32_t)readLittleEndianInt32;
 
@@ -555,6 +593,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A uint64_t from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (uint64_t)readLittleEndianInt64;
 
@@ -565,6 +607,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A float from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (float)readLittleEndianFloat;
 
@@ -575,6 +621,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	    Otherwise you will get an exception!
  *
  * @return A double from the stream in the native endianess
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (double)readLittleEndianDouble;
 
@@ -587,6 +637,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param count The number of items to read
  * @return OFData with count items.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataWithCount: (size_t)count;
 
@@ -600,6 +654,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param itemSize The size of each item
  * @param count The number of items to read
  * @return OFData with count items.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataWithItemSize: (size_t)itemSize count: (size_t)count;
 
@@ -608,6 +666,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return OFData with an item size of 1 with all the data of the stream until
  *	   the end of the stream is reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataUntilEndOfStream;
 
@@ -624,6 +684,12 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param length The length (in bytes) of the string to read from the stream
  * @return A string with the specified length
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFString *)readStringWithLength: (size_t)length;
 
@@ -641,6 +707,12 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param encoding The encoding of the string to read from the stream
  * @param length The length (in bytes) of the string to read from the stream
  * @return A string with the specified length
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFTruncatedDataException The end of the stream was reached before
+ *				   reading enough bytes
+ * @throw OFNotOpenException The stream is not open
  */
 - (OFString *)readStringWithLength: (size_t)length
 			  encoding: (OFStringEncoding)encoding;
@@ -650,6 +722,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
 - (nullable OFString *)readLine;
 
@@ -660,6 +736,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param encoding The encoding used by the stream
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
 - (nullable OFString *)readLineWithEncoding: (OFStringEncoding)encoding;
 
@@ -757,6 +837,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
 - (nullable OFString *)tryReadLine;
 
@@ -768,6 +852,10 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param encoding The encoding used by the stream
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
 - (nullable OFString *)tryReadLineWithEncoding: (OFStringEncoding)encoding;
 
@@ -778,8 +866,12 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param delimiter The delimiter
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
-- (nullable OFString *)readTillDelimiter: (OFString *)delimiter;
+- (nullable OFString *)readUntilDelimiter: (OFString *)delimiter;
 
 /**
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -789,33 +881,45 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param encoding The encoding used by the stream
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
-- (nullable OFString *)readTillDelimiter: (OFString *)delimiter
-				encoding: (OFStringEncoding)encoding;
+- (nullable OFString *)readUntilDelimiter: (OFString *)delimiter
+				 encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to reads until the specified string or `\0` is found or the end
- *	  of stream (see @ref readTillDelimiter:) and returns `nil` if not
+ *	  of stream (see @ref readUntilDelimiter:) and returns `nil` if not
  *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
-- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter;
+- (nullable OFString *)tryReadUntilDelimiter: (OFString *)delimiter;
 
 /**
  * @brief Tries to read until the specified string or `\0` is found or the end
- *	  of stream occurs (see @ref readTillDelimiter:encoding:) and returns
+ *	  of stream occurs (see @ref readUntilDelimiter:encoding:) and returns
  *	  `nil` if not enough data has been received yet.
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
  */
-- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter
-				   encoding: (OFStringEncoding)encoding;
+- (nullable OFString *)tryReadUntilDelimiter: (OFString *)delimiter
+				    encoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Writes everything in the write buffer to the stream.
@@ -838,6 +942,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBuffer: (const void *)buffer length: (size_t)length;
 
@@ -995,6 +1101,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int8 A uint8_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeInt8: (uint8_t)int8;
 
@@ -1004,6 +1112,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int16 A uint16_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBigEndianInt16: (uint16_t)int16;
 
@@ -1013,6 +1123,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int32 A uint32_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBigEndianInt32: (uint32_t)int32;
 
@@ -1022,6 +1134,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int64 A uint64_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBigEndianInt64: (uint64_t)int64;
 
@@ -1031,6 +1145,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param float_ A float
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBigEndianFloat: (float)float_;
 
@@ -1040,6 +1156,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param double_ A double
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeBigEndianDouble: (double)double_;
 
@@ -1049,6 +1167,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int16 A uint16_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLittleEndianInt16: (uint16_t)int16;
 
@@ -1058,6 +1178,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int32 A uint32_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLittleEndianInt32: (uint32_t)int32;
 
@@ -1067,6 +1189,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param int64 A uint64_t
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLittleEndianInt64: (uint64_t)int64;
 
@@ -1076,6 +1200,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param float_ A float
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLittleEndianFloat: (float)float_;
 
@@ -1085,6 +1211,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param double_ A double
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLittleEndianDouble: (double)double_;
 
@@ -1094,6 +1222,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param data The OFData to write into the stream
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeData: (OFData *)data;
 
@@ -1103,6 +1233,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param string The string from which the data is written to the stream
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeString: (OFString *)string;
 
@@ -1114,6 +1246,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding;
 
@@ -1123,6 +1257,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param string The string from which the data is written to the stream
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLine: (OFString *)string;
 
@@ -1134,6 +1270,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param string The string from which the data is written to the stream
  * @param encoding The encoding in which to write the string to the stream
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding;
 
@@ -1147,6 +1285,9 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * In non-blocking mode, the behavior is the same as @ref writeBuffer:length:.
  *
  * @param format A string used as format
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (void)writeFormat: (OFConstantString *)format, ...;
 
@@ -1161,6 +1302,9 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments;
 
@@ -1198,6 +1342,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @brief Closes the stream.
  *
  * @note If you override this, make sure to call `[super close]`!
+ *
+ * @throw OFNotOpenException The stream is not open
  */
 - (void)close;
 
@@ -1212,6 +1358,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param buffer The buffer for the data to read
  * @param length The length of the buffer
  * @return The number of bytes read
+ * @throw OFReadFailedException Reading failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length;
 
@@ -1226,6 +1374,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param buffer The buffer with the data to write
  * @param length The length of the data to write
  * @return The number of bytes written
+ * @throw OFWriteFailedException Writing failed
+ * @throw OFNotOpenException The stream is not open
  */
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length;
 

@@ -17,21 +17,21 @@
 
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFCreateSymbolicLinkFailedException
-@synthesize URL = _URL, target = _target, errNo = _errNo;
+@synthesize URI = _URI, target = _target, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 			  target: (OFString *)target
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
+	return [[[self alloc] initWithURI: URI
 				   target: target
 				    errNo: errNo] autorelease];
 }
@@ -41,14 +41,14 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		     target: (OFString *)target
 		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_URI = [URI copy];
 		_target = [target copy];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -61,7 +61,7 @@
 
 - (void)dealloc
 {
-	[_URL release];
+	[_URI release];
 	[_target release];
 
 	[super dealloc];
@@ -71,6 +71,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to create symbolic link %@ with target %@: %@",
-	    _URL, _target, OFStrError(_errNo)];
+	    _URI, _target, OFStrError(_errNo)];
 }
 @end

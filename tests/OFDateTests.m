@@ -18,6 +18,7 @@
 #include <time.h>
 
 #import "TestsAppDelegate.h"
+#import "OFStrPTime.h"
 
 static OFString *const module = @"OFDate";
 

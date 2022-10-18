@@ -13,6 +13,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFValue.h"
 #import "OFBytesValue.h"
 #import "OFMethodSignature.h"
@@ -132,7 +134,7 @@
 		OFHashInit(&hash);
 
 		for (size_t i = 0; i < size; i++)
-			OFHashAdd(&hash, value[i]);
+			OFHashAddByte(&hash, value[i]);
 
 		OFHashFinalize(&hash);
 	} @finally {

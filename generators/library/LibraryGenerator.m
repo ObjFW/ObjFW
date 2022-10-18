@@ -18,7 +18,7 @@
 #import "OFApplication.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFURL.h"
+#import "OFURI.h"
 #import "OFXMLElement.h"
 
 #import "FuncArrayGenerator.h"
@@ -33,29 +33,33 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 @implementation LibraryGenerator
 - (void)applicationDidFinishLaunching
 {
-	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
-	    URLByAppendingPathComponent: @"../../src"];
-	OFURL *runtimeLibraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-library.xml"];
-	OFURL *runtimeLinkLibURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/linklib/linklib.m"];
-	OFURL *runtimeGlueHeaderURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-glue.h"];
-	OFURL *runtimeGlueURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-glue.m"];
-	OFURL *runtimeFuncArrayURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
+	OFURI *sourcesURI = [[OFFileManager defaultManager].currentDirectoryURI
+	    URIByAppendingPathComponent: @"../../src"];
+	OFURI *runtimeLibraryURI = [sourcesURI
+	    URIByAppendingPathComponent: @"runtime/amiga-library.xml"];
+	OFURI *runtimeLinkLibURI = [sourcesURI
+	    URIByAppendingPathComponent: @"runtime/linklib/linklib.m"];
+	OFURI *runtimeGlueHeaderURI = [sourcesURI
+	    URIByAppendingPathComponent: @"runtime/amiga-glue.h"];
+	OFURI *runtimeGlueURI = [sourcesURI
+	    URIByAppendingPathComponent: @"runtime/amiga-glue.m"];
+	OFURI *runtimeFuncArrayURI = [sourcesURI
+	    URIByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
-	    [OFFile fileWithURL: runtimeLibraryURL
-			   mode: @"r"]];
-	OFFile *runtimeLinkLib = [OFFile fileWithURL: runtimeLinkLibURL
-						mode: @"w"];
-	OFFile *runtimeGlueHeader = [OFFile fileWithURL: runtimeGlueHeaderURL
-						   mode: @"w"];
-	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
-					     mode: @"w"];
-	OFFile *runtimeFuncArray = [OFFile fileWithURL: runtimeFuncArrayURL
-						  mode: @"w"];
+	    [OFFile fileWithPath: runtimeLibraryURI.fileSystemRepresentation
+			    mode: @"r"]];
+	OFFile *runtimeLinkLib =
+	    [OFFile fileWithPath: runtimeLinkLibURI.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlueHeader =
+	    [OFFile fileWithPath: runtimeGlueHeaderURI.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlue =
+	    [OFFile fileWithPath: runtimeGlueURI.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeFuncArray =
+	    [OFFile fileWithPath: runtimeFuncArrayURI.fileSystemRepresentation
+			    mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary
 	     implementation: runtimeLinkLib] autorelease];

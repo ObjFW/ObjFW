@@ -21,9 +21,6 @@
 - (void)systemInfoTests
 {
 	void *pool = objc_autoreleasePoolPush();
-#ifdef OF_HAVE_FILES
-	OFString *userConfigPath, *userDataPath;
-#endif
 
 	[OFStdOut setForegroundColor: [OFColor lime]];
 
@@ -49,23 +46,14 @@
 	    @"[OFSystemInfo] Operating system version: %@\n",
 	    [OFSystemInfo operatingSystemVersion]];
 
-#ifdef OF_HAVE_FILES
-	@try {
-		userConfigPath = [OFSystemInfo userConfigPath];
-	} @catch (OFNotImplementedException *e) {
-		userConfigPath = @"Not implemented";
-	}
-	[OFStdOut writeFormat: @"[OFSystemInfo] User config path: %@\n",
-	    userConfigPath];
+	[OFStdOut writeFormat: @"[OFSystemInfo] User config URI: %@\n",
+	    [OFSystemInfo userConfigURI].string];
 
-	@try {
-		userDataPath = [OFSystemInfo userDataPath];
-	} @catch (OFNotImplementedException *e) {
-		userDataPath = @"Not implemented";
-	}
-	[OFStdOut writeFormat: @"[OFSystemInfo] User data path: %@\n",
-	    userDataPath];
-#endif
+	[OFStdOut writeFormat: @"[OFSystemInfo] User data URI: %@\n",
+	    [OFSystemInfo userDataURI].string];
+
+	[OFStdOut writeFormat: @"[OFSystemInfo] Temporary directory URI: %@\n",
+	    [OFSystemInfo temporaryDirectoryURI].string];
 
 	[OFStdOut writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
 	    [OFSystemInfo CPUVendor]];

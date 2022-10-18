@@ -95,7 +95,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 }
 
 void
-objc_forgetPendingStaticInstances()
+objc_forgetPendingStaticInstances(void)
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;

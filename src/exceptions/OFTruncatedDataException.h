@@ -25,6 +25,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	  have been truncated.
  */
 @interface OFTruncatedDataException: OFException
+{
+	OF_RESERVE_IVARS(OFTruncatedDataException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

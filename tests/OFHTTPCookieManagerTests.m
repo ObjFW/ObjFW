@@ -24,71 +24,71 @@ static OFString *const module = @"OFHTTPCookieManager";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPCookieManager *manager = [OFHTTPCookieManager manager];
-	OFURL *URL1, *URL2, *URL3, *URL4;
+	OFURI *URI1, *URI2, *URI3, *URI4;
 	OFHTTPCookie *cookie1, *cookie2, *cookie3, *cookie4, *cookie5;
 
-	URL1 = [OFURL URLWithString: @"http://nil.im/foo"];
-	URL2 = [OFURL URLWithString: @"https://nil.im/foo/bar"];
-	URL3 = [OFURL URLWithString: @"https://test.nil.im/foo/bar"];
-	URL4 = [OFURL URLWithString: @"http://webkeks.org/foo/bar"];
+	URI1 = [OFURI URIWithString: @"http://nil.im/foo"];
+	URI2 = [OFURI URIWithString: @"https://nil.im/foo/bar"];
+	URI3 = [OFURI URIWithString: @"https://test.nil.im/foo/bar"];
+	URI4 = [OFURI URIWithString: @"http://webkeks.org/foo/bar"];
 
 	cookie1 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"1"
 					domain: @"nil.im"];
-	TEST(@"-[addCookie:forURL:] #1",
-	    R([manager addCookie: cookie1 forURL: URL1]))
+	TEST(@"-[addCookie:forURI:] #1",
+	    R([manager addCookie: cookie1 forURI: URI1]))
 
-	TEST(@"-[cookiesForURL:] #1",
-	    [[manager cookiesForURL: URL1] isEqual:
+	TEST(@"-[cookiesForURI:] #1",
+	    [[manager cookiesForURI: URI1] isEqual:
 	    [OFArray arrayWithObject: cookie1]])
 
 	cookie2 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"2"
 					domain: @"webkeks.org"];
-	TEST(@"-[addCookie:forURL:] #2",
-	    R([manager addCookie: cookie2 forURL: URL1]))
+	TEST(@"-[addCookie:forURI:] #2",
+	    R([manager addCookie: cookie2 forURI: URI1]))
 
-	TEST(@"-[cookiesForURL:] #2",
-	    [[manager cookiesForURL: URL1] isEqual:
+	TEST(@"-[cookiesForURI:] #2",
+	    [[manager cookiesForURI: URI1] isEqual:
 	    [OFArray arrayWithObject: cookie1]] &&
-	    [[manager cookiesForURL: URL4] isEqual: [OFArray array]])
+	    [[manager cookiesForURI: URI4] isEqual: [OFArray array]])
 
 	cookie3 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"3"
 					domain: @"nil.im"];
 	cookie3.secure = true;
-	TEST(@"-[addCookie:forURL:] #3",
-	    R([manager addCookie: cookie3 forURL: URL2]))
+	TEST(@"-[addCookie:forURI:] #3",
+	    R([manager addCookie: cookie3 forURI: URI2]))
 
-	TEST(@"-[cookiesForURL:] #3",
-	    [[manager cookiesForURL: URL2] isEqual:
+	TEST(@"-[cookiesForURI:] #3",
+	    [[manager cookiesForURI: URI2] isEqual:
 	    [OFArray arrayWithObject: cookie3]] &&
-	    [[manager cookiesForURL: URL1] isEqual: [OFArray array]])
+	    [[manager cookiesForURI: URI1] isEqual: [OFArray array]])
 
 	cookie3.expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie4 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"4"
 					domain: @"nil.im"];
 	cookie4.domain = @".nil.im";
-	TEST(@"-[addCookie:forURL:] #4",
-	    R([manager addCookie: cookie4 forURL: URL2]))
+	TEST(@"-[addCookie:forURI:] #4",
+	    R([manager addCookie: cookie4 forURI: URI2]))
 
-	TEST(@"-[cookiesForURL:] #4",
-	    [[manager cookiesForURL: URL2] isEqual:
+	TEST(@"-[cookiesForURI:] #4",
+	    [[manager cookiesForURI: URI2] isEqual:
 	    [OFArray arrayWithObject: cookie4]] &&
-	    [[manager cookiesForURL: URL3] isEqual:
+	    [[manager cookiesForURI: URI3] isEqual:
 	    [OFArray arrayWithObject: cookie4]])
 
 	cookie5 = [OFHTTPCookie cookieWithName: @"bar"
 					 value: @"5"
 					domain: @"test.nil.im"];
-	TEST(@"-[addCookie:forURL:] #5",
-	    R([manager addCookie: cookie5 forURL: URL1]))
+	TEST(@"-[addCookie:forURI:] #5",
+	    R([manager addCookie: cookie5 forURI: URI1]))
 
-	TEST(@"-[cookiesForURL:] #5",
-	    [[manager cookiesForURL: URL1] isEqual:
+	TEST(@"-[cookiesForURI:] #5",
+	    [[manager cookiesForURI: URI1] isEqual:
 	    [OFArray arrayWithObject: cookie4]] &&
-	    [[manager cookiesForURL: URL3] isEqual:
+	    [[manager cookiesForURI: URI3] isEqual:
 	    [OFArray arrayWithObjects: cookie4, cookie5, nil]])
 
 	TEST(@"-[purgeExpiredCookies]",

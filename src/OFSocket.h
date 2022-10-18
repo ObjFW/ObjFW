@@ -99,10 +99,10 @@ typedef enum {
 	OFSocketAddressFamilyIPv4,
 	/** IPv6 */
 	OFSocketAddressFamilyIPv6,
-	/** IPX */
-	OFSocketAddressFamilyIPX,
 	/** UNIX */
 	OFSocketAddressFamilyUNIX,
+	/** IPX */
+	OFSocketAddressFamilyIPX,
 	/** Any address family */
 	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
@@ -116,6 +116,13 @@ struct sockaddr_in6 {
 		uint8_t s6_addr[16];
 	} sin6_addr;
 	uint32_t sin6_scope_id;
+};
+#endif
+
+#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS) && !defined(OF_MINT)
+struct sockaddr_un {
+	sa_family_t sun_family;
+	char sun_path[108];
 };
 #endif
 
@@ -137,33 +144,22 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
-#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS) && !defined(OF_MINT)
-struct sockaddr_un {
-	sa_family_t sun_family;
-	char sun_path[108];
-};
-#endif
-
 /**
  * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
 typedef struct OF_BOXABLE {
-	/*
-	 * Even though struct sockaddr contains the family, we need to use our
-	 * own family, as we need to support storing an IPv6 address on systems
-	 * that don't support IPv6. These may not have AF_INET6 defined and we
-	 * can't just define it, as the value is system-dependent and might
-	 * clash with an existing value.
-	 */
 	OFSocketAddressFamily family;
+	/*
+	 * We can't use struct sockaddr as it can contain variable length
+	 * arrays.
+	 */
 	union {
-		struct sockaddr sockaddr;
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
-		struct sockaddr_ipx ipx;
 		struct sockaddr_un un;
+		struct sockaddr_ipx ipx;
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -178,6 +174,7 @@ extern "C" {
  * @param IP The IP to parse
  * @param port The port to use
  * @return The parsed IP and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IP
  */
 extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
 
@@ -187,6 +184,7 @@ extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
  * @param IP The IPv4 to parse
  * @param port The port to use
  * @return The parsed IPv4 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv4
  */
 extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 
@@ -196,20 +194,9 @@ extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
  * @param IP The IPv6 to parse
  * @param port The port to use
  * @return The parsed IPv6 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv6
  */
 extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
-
-/**
- * @brief Creates an IPX address for the specified node, network and port.
- *
- * @param node The node in the IPX network
- * @param network The IPX network
- * @param port The IPX port (sometimes called socket number) on the node
- * @return An IPX socket address with the specified node, network and port.
- */
-extern OFSocketAddress OFSocketAddressMakeIPX(
-    const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
-    uint16_t port);
 
 /**
  * @brief Creates a UNIX socket address from the specified path.
@@ -218,6 +205,17 @@ extern OFSocketAddress OFSocketAddressMakeIPX(
  * @return A UNIX socket address with the specified path
  */
 extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
+
+/**
+ * @brief Creates an IPX address for the specified node, network and port.
+ *
+ * @param network The IPX network
+ * @param node The node in the IPX network
+ * @param port The IPX port (sometimes called socket number) on the node
+ * @return An IPX socket address with the specified node, network and port.
+ */
+extern OFSocketAddress OFSocketAddressMakeIPX(uint32_t network,
+    const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -267,6 +265,15 @@ extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
 extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
 
 /**
+ * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the UNIX socket path
+ * @return The UNIX socket path
+ */
+extern OFString *_Nullable OFSocketAddressUNIXPath(
+    const OFSocketAddress *_Nonnull address);
+
+/**
  * @brief Sets the IPX network of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the IPX network
@@ -301,15 +308,6 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  */
 extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
-
-/**
- * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
- *
- * @param address The address on which to get the UNIX socket path
- * @return The UNIX socket path
- */
-extern OFString *_Nullable OFSocketAddressUNIXPath(
-    const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)

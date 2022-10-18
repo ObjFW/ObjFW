@@ -16,10 +16,11 @@
 #include "config.h"
 
 #import "OFINIFileSettings.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFINIFile.h"
+#import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFURI.h"
 
 @implementation OFINIFileSettings
 - (instancetype)initWithApplicationName: (OFString *)applicationName
@@ -31,9 +32,9 @@
 		OFString *fileName;
 
 		fileName = [applicationName stringByAppendingString: @".ini"];
-		_filePath = [[[OFSystemInfo userConfigPath]
-		    stringByAppendingPathComponent: fileName] copy];
-		_INIFile = [[OFINIFile alloc] initWithPath: _filePath];
+		_fileURI = [[[OFSystemInfo userConfigURI]
+		    URIByAppendingPathComponent: fileName] copy];
+		_INIFile = [[OFINIFile alloc] initWithURI: _fileURI];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -46,7 +47,7 @@
 
 - (void)dealloc
 {
-	[_filePath release];
+	[_fileURI release];
 	[_INIFile release];
 
 	[super dealloc];
@@ -242,6 +243,6 @@
 
 - (void)save
 {
-	[_INIFile writeToFile: _filePath];
+	[_INIFile writeToURI: _fileURI];
 }
 @end

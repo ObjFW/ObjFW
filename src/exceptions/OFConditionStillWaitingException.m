@@ -27,9 +27,9 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	return [self initWithCondition: nil];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithCondition: (OFCondition *)condition
@@ -41,6 +41,11 @@
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
 	[_condition release];
@@ -50,13 +55,9 @@
 
 - (OFString *)description
 {
-	if (_condition != nil)
-		return [OFString stringWithFormat:
-		    @"Deallocation of a condition of type %@ was tried, even "
-		    "though a thread was still waiting for it!",
-		    _condition.class];
-	else
-		return @"Deallocation of a condition was tried, even though a "
-		    "thread was still waiting for it!";
+	return [OFString stringWithFormat:
+	    @"Deallocation of a condition of type %@ was tried, even though "
+	    "a thread was still waiting for it!",
+	    _condition.class];
 }
 @end

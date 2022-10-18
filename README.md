@@ -33,6 +33,7 @@ other place, you are most likely using a mirror.
  * [Bugs and feature requests](#bugs)
  * [Support and community](#support)
  * [Donating](#donating)
+ * [Thanks](#thanks)
  * [Commercial use](#commercial-use)
 
 
@@ -159,9 +160,14 @@ other place, you are most likely using a mirror.
 <h3 id="building-framework">Building as a framework</h3>
 
   When building for macOS or iOS, everything is built as a `.framework` by
-  default if `--disable-shared` has not been specified to `configure`.
+  default if `--disable-shared` has not been specified to `./configure`. The
+  frameworks will end up in `$PREFIX/Library/Frameworks`.
 
-  To build for iOS, use something like this:
+  To build for macOS, just follow the
+  <a href="#installation">regular instructions</a> above.
+
+  To build for iOS, follow the regular instructions, but instead of
+  `./configure` do something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
     $ export OBJC="$clang -arch armv7 -arch arm64"
@@ -169,7 +175,8 @@ other place, you are most likely using a mirror.
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
     $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
-  To build for the iOS simulator, use something like this:
+  To build for the iOS simulator, follow the regular instructions, but instead
+  of `./configure` use something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
     $ export OBJC="$clang -arch arm64 -arch x86_64"
@@ -222,26 +229,36 @@ other place, you are most likely using a mirror.
 
 <h3 id="setting-up-msys2">Setting up MSYS2</h3>
 
-  MSYS2 currently supports 5 different
+  MSYS2 currently supports 7 different
   [environments](https://www.msys2.org/docs/environments/). All of them except
   for the one called just "MSYS" are supported, but which packages you need to
-  install depends on the environment(s) you want to use.
-
-  For MINGW64, use:
-
-    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
-
-  For UCRT64, use:
-
-    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
+  install depends on the environment(s) you want to use. If you only want to
+  target Windows 10 and newer, the CLANG64 and CLANG32 environments are the
+  recommended ones.
 
   For CLANG64, use:
 
     $ pacman -Syu mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-fossil
 
+  For CLANG32, use:
+
+    $ pacman -Syu mingw-w64-clang-i686-clang mingw-w64-clang-i686-fossil
+
+  For CLANGARM64, use (you need to use Fossil via another environment):
+
+    $ pacman -Syu mingw-w64-clang-aarch64-clang
+
+  For MINGW64, use:
+
+    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
+
   For MINGW32, use:
 
     $ pacman -Syu mingw-w64-i686-clang mingw-w64-i686-fossil
+
+  For UCRT64, use:
+
+    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
 
   When using `pacman` to install the packages, `pacman` might tell you to close
   the window. If it does so, close the window, restart MSYS2 and execute the
@@ -304,7 +321,7 @@ other place, you are most likely using a mirror.
 
   To create your first, empty application, you can use `objfw-new`:
 
-    $ objfw-new app MyFirstApp
+    $ objfw-new --app MyFirstApp
 
   This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
   method is called as soon as ObjFW finished all initialization. Use this as
@@ -369,6 +386,15 @@ other place, you are most likely using a mirror.
 
   If you want to donate to ObjFW, you can read about possible ways to do so
   [here](https://objfw.nil.im/wiki?name=Donating).
+
+
+<h1 id="thanks">Thanks</h1>
+
+  * Thank you to [Jonathan Neuschäfer](https://github.com/neuschaefer) for
+    reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in
+    2017!
+  * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
+    Mini to the project!
 
 
 <h1 id="commercial-use">Commercial use</h1>

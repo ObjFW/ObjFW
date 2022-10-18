@@ -30,6 +30,11 @@ extern int _OFString_PropertyListParsing_reference;
  * @brief The string interpreted as a property list and parsed as an object.
  *
  * @note This only supports XML property lists!
+ *
+ * @throw OFInvalidFormatException The string is not in correct XML property
+ *				   list format
+ * @throw OFUnsupportedVersionException The property list is using a version
+ *					that is not supported
  */
 @property (readonly, nonatomic) id objectByParsingPropertyList;
 @end

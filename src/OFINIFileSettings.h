@@ -17,12 +17,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
 @class OFINIFile;
+@class OFString;
+@class OFURI;
 
 @interface OFINIFileSettings: OFSettings
 {
-	OFString *_filePath;
+	OFURI *_fileURI;
 	OFINIFile *_INIFile;
 }
 @end

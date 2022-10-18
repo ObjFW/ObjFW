@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_prefix;
 	OFXMLParser *_parser;
+	OF_RESERVE_IVARS(OFUnboundPrefixException, 4)
 }
 
 /**
@@ -41,8 +42,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFXMLParser *parser;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased unbound prefix exception.
  *
@@ -53,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPrefix: (OFString *)prefix
 			     parser: (OFXMLParser *)parser;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated unbound prefix exception.
@@ -64,6 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithPrefix: (OFString *)prefix
 			parser: (OFXMLParser *)parser OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -295,12 +295,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 	count = self.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if ([[self objectAtIndex: i] isEqual: oldObject]) {
+	for (size_t i = 0; i < count; i++)
+		if ([[self objectAtIndex: i] isEqual: oldObject])
 			[self replaceObjectAtIndex: i withObject: newObject];
-			return;
-		}
-	}
 }
 
 - (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
@@ -339,7 +336,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		if ([[self objectAtIndex: i] isEqual: object]) {
 			[self removeObjectAtIndex: i];
 
-			return;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -357,7 +356,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		if ([self objectAtIndex: i] == object) {
 			[self removeObjectAtIndex: i];
 
-			return;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -380,7 +381,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)removeAllObjects
 {
-	[self removeObjectsInRange: OFRangeMake(0, self.count)];
+	[self removeObjectsInRange: OFMakeRange(0, self.count)];
 }
 
 #ifdef OF_HAVE_BLOCKS

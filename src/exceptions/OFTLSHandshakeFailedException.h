@@ -42,6 +42,7 @@ extern int _OFTLSHandshakeFailedException_reference;
 	OFTLSStream *_stream;
 	OFString *_Nullable _host;
 	OFTLSStreamErrorCode _errorCode;
+	OF_RESERVE_IVARS(OFTLSHandshakeFailedException, 4)
 }
 
 /**
@@ -59,8 +60,6 @@ extern int _OFTLSHandshakeFailedException_reference;
  */
 @property (readonly, nonatomic) OFTLSStreamErrorCode errorCode;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased TLS handshake failed exception.
  *
@@ -73,7 +72,7 @@ extern int _OFTLSHandshakeFailedException_reference;
 			       host: (nullable OFString *)host
 			  errorCode: (OFTLSStreamErrorCode)errorCode;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated TLS handshake failed exception.
@@ -87,6 +86,8 @@ extern int _OFTLSHandshakeFailedException_reference;
 			  host: (nullable OFString *)host
 		     errorCode: (OFTLSStreamErrorCode)errorCode
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

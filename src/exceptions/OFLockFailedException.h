@@ -26,8 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFLockFailedException: OFException
 {
-	id <OFLocking> _lock;
+	id <OFLocking> _Nullable _lock;
 	int _errNo;
+	OF_RESERVE_IVARS(OFLockFailedException, 4)
 }
 
 /**
@@ -59,8 +60,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithLock: (nullable id <OFLocking>)lock
 		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
-
-- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

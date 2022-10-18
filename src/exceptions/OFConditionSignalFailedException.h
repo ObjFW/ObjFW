@@ -34,12 +34,13 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFCondition *_condition;
 	int _errNo;
+	OF_RESERVE_IVARS(OFConditionSignalFailedException, 4)
 }
 
 /**
  * @brief The condition which could not be signaled.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /**
  * @brief The errno of the error that occurred.
@@ -53,8 +54,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased condition signal failed exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition
++ (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated condition signal failed exception.
@@ -63,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized condition signal failed exception
  */
-- (instancetype)initWithCondition: (nullable OFCondition *)condition
+- (instancetype)initWithCondition: (OFCondition *)condition
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

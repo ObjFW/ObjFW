@@ -27,14 +27,13 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnsupportedVersionException: OFException
 {
 	OFString *_version;
+	OF_RESERVE_IVARS(OFUnsupportedVersionException, 4)
 }
 
 /**
  * @brief The version which is unsupported.
  */
 @property (readonly, nonatomic) OFString *version;
-
-+ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased unsupported version exception.
@@ -44,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithVersion: (OFString *)version;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated unsupported protocol exception.
@@ -53,6 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized unsupported version exception
  */
 - (instancetype)initWithVersion: (OFString *)version OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

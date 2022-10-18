@@ -43,7 +43,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if ([set isKindOfClass: [OFCountedSet class]]) {
-			OFCountedSet *countedSet = (OFCountedSet *)countedSet;
+			OFCountedSet *countedSet = (OFCountedSet *)set;
 
 			for (id object in countedSet) {
 				size_t count =

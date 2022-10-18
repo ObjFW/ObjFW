@@ -44,17 +44,17 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
- * @param node The node the socket connected to
  * @param network The network of the node the socket connected to
+ * @param node The node the socket connected to
  * @param port The port of the node to which the socket connected
  * @param exception An exception that occurred while connecting, or nil on
  *		    success
  */
--     (void)socket: (OFSPXSocket *)socket
-  didConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-	   network: (uint32_t)network
-	      port: (uint16_t)port
-	 exception: (nullable id)exception;
+-	 (void)socket: (OFSPXSocket *)socket
+  didConnectToNetwork: (uint32_t)network
+		 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		 port: (uint16_t)port
+	    exception: (nullable id)exception;
 @end
 
 /**
@@ -85,40 +85,42 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
 /**
  * @brief Connect the OFSPXSocket to the specified destination.
  *
- * @param node The node to connect to
  * @param network The network on which the node to connect to is
+ * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
+ * @throw OFConnectionFailedException Connecting failed
+ * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
-- (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-	      network: (uint32_t)network
-		 port: (uint16_t)port;
+- (void)connectToNetwork: (uint32_t)network
+		    node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		    port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
- * @param node The node to connect to
  * @param network The network on which the node to connect to is
+ * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
  */
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port;
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port;
 
 /**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
  *
- * @param node The node to connect to
  * @param network The network on which the node to connect to is
+ * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
  * @param runLoopMode The run loop mode in which to perform the async connect
  */
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-	       runLoopMode: (OFRunLoopMode)runLoopMode;
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -130,10 +132,10 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  *	       connect to
  * @param block The block to execute once the connection has been established
  */
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-		     block: (OFSPXSocketAsyncConnectBlock)block;
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+			block: (OFSPXSocketAsyncConnectBlock)block;
 
 /**
  * @brief Asynchronously connect the OFSPXSocket to the specified destination.
@@ -145,11 +147,11 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param runLoopMode The run loop mode in which to perform the async connect
  * @param block The block to execute once the connection has been established
  */
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-	       runLoopMode: (OFRunLoopMode)runLoopMode
-		     block: (OFSPXSocketAsyncConnectBlock)block;
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
+			block: (OFSPXSocketAsyncConnectBlock)block;
 #endif
 
 /**
@@ -158,6 +160,8 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param port The port (sometimes called socket number) to bind to. 0 means to
  *	       pick one and return it.
  * @return The address on which this socket can be reached
+ * @throw OFBindFailedException Binding failed
+ * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (OFSocketAddress)bindToPort: (uint16_t)port;
 @end

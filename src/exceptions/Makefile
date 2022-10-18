@@ -4,13 +4,13 @@ STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
 SRCS = OFAllocFailedException.m				\
-       OFChangeCurrentDirectoryPathFailedException.m	\
        OFChecksumMismatchException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
        OFCreateSymbolicLinkFailedException.m		\
        OFEnumerationMutationException.m			\
        OFException.m					\
+       OFGetItemAttributesFailedException.m		\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
        OFHashNotCalculatedException.m			\
@@ -19,11 +19,10 @@ SRCS = OFAllocFailedException.m				\
        OFInvalidEncodingException.m			\
        OFInvalidFormatException.m			\
        OFInvalidJSONException.m				\
-       OFInvalidServerReplyException.m			\
-       OFLinkFailedException.m				\
+       OFInvalidServerResponseException.m		\
+       OFLinkItemFailedException.m			\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
-       OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
        OFNotOpenException.m				\
@@ -33,7 +32,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
-       OFRetrieveItemAttributesFailedException.m	\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
@@ -52,7 +50,8 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
-SRCS_FILES = OFGetCurrentDirectoryPathFailedException.m
+SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
+	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\
@@ -61,7 +60,7 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
-	       OFObserveFailedException.m		\
+	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
 	       OFTLSHandshakeFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\

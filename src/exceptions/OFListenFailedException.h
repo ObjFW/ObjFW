@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id _socket;
 	int _backlog, _errNo;
+	OF_RESERVE_IVARS(OFListenFailedException, 4)
 }
 
 /**
@@ -48,8 +49,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased listen failed exception.
  *
@@ -62,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
 			    backlog: (int)backlog
 			      errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated listen failed exception.
@@ -75,6 +74,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSocket: (id)socket
 		       backlog: (int)backlog
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

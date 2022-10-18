@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_host;
 	OFSocketAddressFamily _addressFamily;
 	OFDNSResolverErrorCode _errorCode;
+	OF_RESERVE_IVARS(OFResolveHostFailedException, 4)
 }
 
 /**
@@ -59,6 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
 		    addressFamily: (OFSocketAddressFamily)addressFamily
 			errorCode: (OFDNSResolverErrorCode)errorCode;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated resolve host failed exception.
  *
@@ -71,6 +74,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
 		   errorCode: (OFDNSResolverErrorCode)errorCode;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

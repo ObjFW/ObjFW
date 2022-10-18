@@ -31,8 +31,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFThreadStartFailedException: OFException
 {
-	OFThread *_thread;
+	OFThread *_Nullable _thread;
 	int _errNo;
+	OF_RESERVE_IVARS(OFThreadStartFailedException, 4)
 }
 
 /**
@@ -54,6 +55,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithThread: (nullable OFThread *)thread
 			      errNo: (int)errNo;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated thread start failed exception.

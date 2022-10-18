@@ -177,7 +177,7 @@
 
 #ifndef OF_WINDOWS
 	if ((ret = recvfrom(_socket, buffer, length, 0,
-	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
+	    (struct sockaddr *)&sender->sockaddr, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -187,14 +187,14 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
-	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
+	    (struct sockaddr *)&sender->sockaddr, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: OFSocketErrNo()];
 #endif
 
-	switch (sender->sockaddr.sockaddr.sa_family) {
+	switch (((struct sockaddr *)&sender->sockaddr)->sa_family) {
 	case AF_INET:
 		sender->family = OFSocketAddressFamilyIPv4;
 		break;
@@ -203,14 +203,14 @@
 		sender->family = OFSocketAddressFamilyIPv6;
 		break;
 #endif
-#ifdef OF_HAVE_IPX
-	case AF_IPX:
-		sender->family = OFSocketAddressFamilyIPX;
-		break;
-#endif
 #ifdef OF_HAVE_UNIX_SOCKETS
 	case AF_UNIX:
 		sender->family = OFSocketAddressFamilyUNIX;
+		break;
+#endif
+#ifdef OF_HAVE_IPX
+	case AF_IPX:
+		sender->family = OFSocketAddressFamilyIPX;
 		break;
 #endif
 	default:
@@ -281,8 +281,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
-	    (struct sockaddr *)&receiver->sockaddr.sockaddr,
-	    receiver->length)) < 0)
+	    (struct sockaddr *)&receiver->sockaddr, receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -295,7 +294,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((bytesWritten = sendto(_socket, buffer, (int)length, 0,
-	    &receiver->sockaddr.sockaddr, receiver->length)) < 0)
+	    (struct sockaddr *)&receiver->sockaddr, receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length

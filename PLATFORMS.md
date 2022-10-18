@@ -155,6 +155,16 @@ Nintendo DS
   * Notes: File support requires an argv-compatible launcher (such as HBMenu)
 
 
+Nintendo Switch
+---------------
+
+  * OS Versions: yuzu 1093
+  * Architectures: AArch64
+  * Compilers: GCC 12.1.0 (devkitA64 release 19) 
+  * Runtimes: ObjFW
+  * Limitations: No sockets, no shared libraries, not tested on real hardware
+
+
 OpenBSD
 -------
 
@@ -202,15 +212,27 @@ Wii
   * Limitations: No threads
 
 
+Wii U
+-----
+
+  * OS Versions: Cemu 12.26.2f
+  * Architectures: PowerPC
+  * Compilers: gcc version 12.1.0 (devkitPPC release 41)
+  * Runtimes: ObjFW
+  * Limitations: No files, no threads, no sockets, no shared libraries, not
+                 tested on real hardware
+
+
 Windows
 -------
 
   * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
                  Wine (x86 & x64)
-  * Architectures: x86, x86_64
+  * Architectures: x86, x86_64, AArch64
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (x86 & x64),
                Clang 3.9.0 from msys2 (x86),
-               Clang 10.0 from msys2 (x86 & x86_64)
+               Clang 10.0 from msys2 (x86 & x86_64),
+               Clang 14.0.4 from msys2 (AArch64)
   * Runtimes: ObjFW
 
 

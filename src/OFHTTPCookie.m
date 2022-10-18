@@ -19,7 +19,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -62,12 +62,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
-    forURL: (OFURL *)URL
+    forURI: (OFURI *)URI
 {
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
-	OFString *domain = URL.host;
+	OFString *domain = URI.host;
 	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {
@@ -95,7 +95,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case stateName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				state = stateExpectValue;
 			}
 			break;
@@ -113,7 +113,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case stateValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
@@ -127,7 +127,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case stateQuotedValue:
 			if (characters[i] == '"') {
 				value = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
 							   value: value
@@ -155,14 +155,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case stateAttrName:
 			if (characters[i] == '=') {
 				name = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				state = stateAttrValue;
 				last = i + 1;
 			} else if (characters[i] == ';' ||
 			    characters[i] == ',') {
 				name = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				handleAttribute(ret.lastObject, name, nil);
 
@@ -174,7 +174,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		case stateAttrValue:
 			if (characters[i] == ';' || characters[i] == ',') {
 				value = [string substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 
 				/*
 				 * Expires often contains a comma, even though
@@ -215,7 +215,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		break;
 	case stateValue:
 		value = [string substringWithRange:
-		    OFRangeMake(last, length - last)];
+		    OFMakeRange(last, length - last)];
 		[ret addObject: [OFHTTPCookie cookieWithName: name
 						       value: value
 						      domain: domain]];
@@ -229,14 +229,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	case stateAttrName:
 		if (last != length) {
 			name = [string substringWithRange:
-			    OFRangeMake(last, length - last)];
+			    OFMakeRange(last, length - last)];
 
 			handleAttribute(ret.lastObject, name, nil);
 		}
 		break;
 	case stateAttrValue:
 		value = [string substringWithRange:
-		    OFRangeMake(last, length - last)];
+		    OFMakeRange(last, length - last)];
 
 		handleAttribute(ret.lastObject, name, value);
 
@@ -371,8 +371,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFHashAddHash(&hash, _domain.hash);
 	OFHashAddHash(&hash, _path.hash);
 	OFHashAddHash(&hash, _expires.hash);
-	OFHashAdd(&hash, _secure);
-	OFHashAdd(&hash, _HTTPOnly);
+	OFHashAddByte(&hash, _secure);
+	OFHashAddByte(&hash, _HTTPOnly);
 	OFHashAddHash(&hash, _extensions.hash);
 	OFHashFinalize(&hash);
 

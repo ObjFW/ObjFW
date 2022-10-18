@@ -17,41 +17,42 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFUnsupportedProtocolException \
  *	  OFUnsupportedProtocolException.h \
  *	  ObjFW/OFUnsupportedProtocolException.h
  *
- * @brief An exception indicating that the protocol specified by the URL is not
+ * @brief An exception indicating that the protocol specified by the URI is not
  *	  supported.
  */
 @interface OFUnsupportedProtocolException: OFException
 {
-	OFURL *_URL;
+	OFURI *_Nullable _URI;
+	OF_RESERVE_IVARS(OFUnsupportedProtocolException, 4)
 }
 
 /**
- * @brief The URL whose protocol is unsupported.
+ * @brief The URI whose protocol is unsupported.
  */
-@property (readonly, nonatomic) OFURL *URL;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFURI *URI;
 
 /**
  * @brief Creates a new, autoreleased unsupported protocol exception.
  *
- * @param URL The URL whose protocol is unsupported
+ * @param URI The URI whose protocol is unsupported
  * @return A new, autoreleased unsupported protocol exception
  */
-+ (instancetype)exceptionWithURL: (OFURL*)URL;
++ (instancetype)exceptionWithURI: (nullable OFURI*)URI;
 
 /**
  * @brief Initializes an already allocated unsupported protocol exception
  *
- * @param URL The URL whose protocol is unsupported
+ * @param URI The URI whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- (instancetype)initWithURL: (OFURL*)URL OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURI: (nullable OFURI*)URI OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

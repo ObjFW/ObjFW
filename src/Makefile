@@ -10,13 +10,9 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASPrintF.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
-       OFBase64.m			\
        OFBlock.m			\
-       OFCRC16.m			\
-       OFCRC32.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\
@@ -30,7 +26,8 @@ SRCS = OFASPrintF.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
-       OFHuffmanTree.m			\
+       OFINICategory.m			\
+       OFINIFile.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -40,6 +37,7 @@ SRCS = OFASPrintF.m			\
        OFLocale.m			\
        OFMD5Hash.m			\
        OFMapTable.m			\
+       OFMemoryStream.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
@@ -51,7 +49,7 @@ SRCS = OFASPrintF.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURL.m			\
+       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -80,25 +78,25 @@ SRCS = OFASPrintF.m			\
        OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
-       OFStrPTime.m			\
        OFStream.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
+       OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
-       OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
+       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURL.m				\
-       OFURLHandler.m			\
+       OFURI.m				\
+       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -119,9 +117,6 @@ SRCS = OFASPrintF.m			\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
-	     OFINICategory.m		\
-	     OFINIFile.m		\
-	     OFSettings.m		\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSQuery.m			\
@@ -154,10 +149,8 @@ SRCS_THREADS = OFCondition.m		\
 	       OFPlainMutex.m		\
 	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFTLSKey.m		\
-	       OFThreadPool.m
-SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
-	       OFWindowsRegistryKey.m
+	       OFTLSKey.m
+SRCS_WINDOWS = OFWindowsRegistryKey.m
 
 INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/GCC4/OFAtomic.h	\
@@ -166,6 +159,7 @@ INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/macOS/OFAtomic.h	\
 		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
+	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
@@ -173,17 +167,26 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
+	    OFMutableArchiveEntry.h		\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
 	    ${USE_INCLUDES_ATOMIC}
 
-SRCS += OFAdjacentArray.m		\
+SRCS += OFASPrintF.m			\
+	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFArchiveURIHandler.m		\
+	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
+	OFCRC16.m			\
+	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
+	OFEmbeddedURIHandler.m		\
+	OFHuffmanTree.m			\
+	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -200,17 +203,17 @@ SRCS += OFAdjacentArray.m		\
 	OFRectValue.m			\
 	OFSandbox.m			\
 	OFSizeValue.m			\
+	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
-       ${UNICODE_M}
-SRCS_FILES += OFFileURLHandler.m	\
-	      OFINIFileSettings.m
+	${UNICODE_M}
+SRCS_FILES += OFFileURIHandler.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURLHandler.m			\
+		OFHTTPURIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
@@ -218,6 +221,8 @@ SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
+		versioninfo.rc
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
@@ -235,3 +240,8 @@ FRAMEWORK_LIBS := -Fruntime				\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
 LIBS := -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
+RCFLAGS = --use-temp-file						\
+	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
+	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
+	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
+	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"

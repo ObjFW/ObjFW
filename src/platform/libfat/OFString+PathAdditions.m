@@ -17,7 +17,7 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
-#import "OFFileURLHandler.h"
+#import "OFFileURIHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -281,7 +281,7 @@ int _OFString_PathAdditions_reference;
 			if ([component isEqual: @".."] &&
 			    parent != nil && ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    OFRangeMake(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;
@@ -315,18 +315,41 @@ int _OFString_PathAdditions_reference;
 	}
 }
 
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
+{
+	if ([self hasSuffix: @"/"]) {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableArray *components;
+		OFString *fileName, *ret;
+
+		components =
+		    [[self.pathComponents mutableCopy] autorelease];
+		fileName = [components.lastObject
+		    stringByAppendingFormat: @".%@", extension];
+		[components replaceObjectAtIndex: components.count - 1
+				      withObject: fileName];
+
+		ret = [[OFString pathWithComponents: components] retain];
+		objc_autoreleasePoolPop(pool);
+		return [ret autorelease];
+	} else
+		return [self stringByAppendingFormat: @".%@", extension];
+}
+
 - (bool)of_isDirectoryPath
 {
 	return ([self hasSuffix: @"/"] ||
-	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+	    [OFFileURIHandler of_directoryExistsAtPath: self]);
 }
 
-- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+    (OFString **)percentEncodedHost
 {
-	return [self stringByPrependingString: @"/"];
+	return [@"/" stringByAppendingString: self];
 }
 
-- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+    (OFString *)percentEncodedHost
 {
 	OFString *path = self;
 
@@ -336,7 +359,7 @@ int _OFString_PathAdditions_reference;
 	return [path substringFromIndex: 1];
 }
 
-- (OFString *)of_pathComponentToURLPathComponent
+- (OFString *)of_pathComponentToURIPathComponent
 {
 	return self;
 }

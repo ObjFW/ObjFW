@@ -18,43 +18,40 @@
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 
 @implementation OFOpenWindowsRegistryKeyFailedException
-@synthesize registryKey = _registryKey, path = _path, options = _options;
-@synthesize securityAndAccessRights = _securityAndAccessRights;
-@synthesize status = _status;
+@synthesize registryKey = _registryKey, path = _path;
+@synthesize accessRights = _accessRights, options = _options, status = _status;
 
-+ (instancetype)
-    exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
-		      status: (LSTATUS)status
++ (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+				    path: (OFString *)path
+			    accessRights: (REGSAM)accessRights
+				 options: (DWORD)options
+				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
 					     path: path
+				     accessRights: accessRights
 					  options: options
-			  securityAndAccessRights: securityAndAccessRights
 					   status: status] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)
-	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-		     status: (LSTATUS)status
+- (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			       path: (OFString *)path
+		       accessRights: (REGSAM)accessRights
+			    options: (DWORD)options
+			     status: (LSTATUS)status
 {
 	self = [super init];
 
 	@try {
 		_registryKey = [registryKey retain];
 		_path = [path copy];
+		_accessRights = accessRights;
 		_options = options;
-		_securityAndAccessRights = securityAndAccessRights;
 		_status = status;
 	} @catch (id e) {
 		[self release];
@@ -62,6 +59,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

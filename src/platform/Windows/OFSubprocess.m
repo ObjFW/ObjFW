@@ -155,7 +155,7 @@
 						 withString: @"\\\""];
 
 		if ([argumentsString containsString: @" "]) {
-			[argumentsString prependString: @"\""];
+			[argumentsString insertString: @"\"" atIndex: 0];
 			[argumentsString appendString: @"\""];
 		}
 

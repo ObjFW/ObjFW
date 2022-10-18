@@ -71,6 +71,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       pick one and return it.
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
+ * @throw OFBindFailedException Binding failed
+ * @throw OFAlreadyConnectedException The socket is already bound
  */
 - (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType;
 @end

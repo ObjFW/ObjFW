@@ -41,14 +41,11 @@ typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
 /**
  * @brief A block which is called when a packet has been sent.
  *
- * @param data The data which was sent
- * @param receiver The receiver for the packet
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
-    OFData *_Nonnull data, const OFSocketAddress *_Nonnull receiver,
     id _Nullable exception);
 #endif
 
@@ -120,11 +117,15 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @brief Whether the socket can block.
  *
  * By default, a socket can block.
+ *
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
 
 /**
  * @brief Whether the socket can send to broadcast addresses.
+ *
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canSendToBroadcastAddresses;
 
@@ -154,6 +155,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @param sender A pointer to an @ref OFSocketAddress, which will be set to the
  *		 address of the sender
  * @return The length of the received datagram
+ * @throw OFReadFailedException Receiving failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
@@ -233,6 +236,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @param length The length of the buffer
  * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
  *		   should be sent
+ * @throw OFWriteFailedException Sending failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
@@ -300,6 +305,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 /**
  * @brief Closes the socket so that it can neither receive nor send any more
  *	  datagrams.
+ *
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)close;
 @end

@@ -186,7 +186,7 @@ static OFString *const cArray[] = {
 	    [array2 indexOfObjectIdenticalTo: cArray[1]] == 1)
 
 	TEST(@"-[objectsInRange:]",
-	    [[array1 objectsInRange: OFRangeMake(1, 2)] isEqual:
+	    [[array1 objectsInRange: OFMakeRange(1, 2)] isEqual:
 	    [arrayClass arrayWithObjects: cArray[1], cArray[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
@@ -210,7 +210,9 @@ static OFString *const cArray[] = {
 
 	TEST(@"-[removeObject:]",
 	    R([mutableArray1 removeObject: cArray[0]]) &&
-	    mutableArray1.count == 2)
+	    mutableArray1.count == 1)
+
+	[mutableArray1 addObject: cArray[0]];
 
 	TEST(@"-[removeObjectIdenticalTo:]",
 	    R([mutableArray1 removeObjectIdenticalTo: cArray[2]]) &&
@@ -224,7 +226,7 @@ static OFString *const cArray[] = {
 
 	mutableArray2 = [[array1 mutableCopy] autorelease];
 	TEST(@"-[removeObjectsInRange:]",
-	    R([mutableArray2 removeObjectsInRange: OFRangeMake(0, 2)]) &&
+	    R([mutableArray2 removeObjectsInRange: OFMakeRange(0, 2)]) &&
 	    mutableArray2.count == 1 &&
 	    [[mutableArray2 objectAtIndex: 0] isEqual: cArray[2]])
 
@@ -260,7 +262,7 @@ static OFString *const cArray[] = {
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
 	    OFOutOfRangeException, [mutableArray1 removeObjectsInRange:
-		OFRangeMake(0, mutableArray1.count + 1)])
+		OFMakeRange(0, mutableArray1.count + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
 	    (array2 = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
@@ -429,16 +431,16 @@ static OFString *const cArray[] = {
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
 
 	mutableArray1 = [mutableArrayClass arrayWithObjects:
-	    [OFMutableURL URLWithString: @"http://foo.bar/"],
-	    [OFMutableURL URLWithString: @"http://bar.qux/"],
-	    [OFMutableURL URLWithString: @"http://qux.quxqux/"], nil];
+	    [OFMutableURI URIWithString: @"http://foo.bar/"],
+	    [OFMutableURI URIWithString: @"http://bar.qux/"],
+	    [OFMutableURI URIWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
 	    R([mutableArray1 setValue: [OFNumber numberWithShort: 1234]
 			       forKey: @"port"]) &&
 	    [mutableArray1 isEqual: [arrayClass arrayWithObjects:
-	    [OFURL URLWithString: @"http://foo.bar:1234/"],
-	    [OFURL URLWithString: @"http://bar.qux:1234/"],
-	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
+	    [OFURI URIWithString: @"http://foo.bar:1234/"],
+	    [OFURI URIWithString: @"http://bar.qux:1234/"],
+	    [OFURI URIWithString: @"http://qux.quxqux:1234/"], nil]])
 
 	objc_autoreleasePoolPop(pool);
 }

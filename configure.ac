@@ -98,7 +98,7 @@ powerpc-*-amigaos*)
 	enable_sockets="no"
 	;;
 *-*-mingw*)
-	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition -static-libgcc"
 	LIBS="$LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
@@ -181,6 +181,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
@@ -189,7 +190,30 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+])
+
+AC_ARG_WITH(wii-u,
+	AS_HELP_STRING([--with-wii-u], [build for Wii U]))
+AS_IF([test x"$with_wii_u" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	flags="-mcpu=750 -meabi -mhard-float"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+	CPPFLAGS="-isystem $DEVKITPRO/wut/include -D__WIIU__ -D__WUT__"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -isystem \$DEVKITPRO/wut/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__WIIU__ -D__WUT__"
+	LDFLAGS="-specs=$DEVKITPRO/wut/share/wut.specs"
+	LIBS="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	enable_files="no"	# TODO
+	enable_shared="no"	# TODO
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_WII_U, 1, [Whether we are compiling for Wii U])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -204,6 +228,7 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM9 -I$DEVKITPRO/libnds/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	ASFLAGS="$ASFLAGS -march=armv5te"
 	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
 	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
@@ -213,7 +238,6 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_DS, 1, [Whether we are compiling for Nintendo DS])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -229,6 +253,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	ASFLAGS="$ASFLAGS -march=armv6k"
 	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
 	LDFLAGS="$LDFLAGS -mfloat-abi=hard -mtp=soft -mword-relocations"
@@ -240,8 +265,31 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
 		[Whether we are compiling for Nintendo 3DS])
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+])
+
+AC_ARG_WITH(nintendo-switch,
+	AS_HELP_STRING([--with-nintendo-switch], [build for Nintendo Switch]))
+AS_IF([test x"$with_nintendo_switch" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	flags="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+	CPPFLAGS="$CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
+	ASFLAGS="$ASFLAGS $flags"
+	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
+	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
+	enable_shared="no"
+	enable_threads="yes"
+	enable_sockets="no"	# TODO
+	check_pedantic="no"
+
+	AC_DEFINE(OF_NINTENDO_SWITCH, 1,
+		[Whether we are compiling for Nintendo Switch])
 ])
 
 CPP="$OBJCPP"
@@ -353,6 +401,12 @@ AC_COMPILE_IFELSE([
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 
+case "$host_os" in
+mingw*)
+	AC_CHECK_TOOL(RC, windres)
+	;;
+esac
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
@@ -430,6 +484,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
+	CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64 $CPPFLAGS"
 	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
 	gnu_source="yes"
 ], [
@@ -998,6 +1053,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		dnl Compiler TLS is broken on AmigaOS
 		enable_compiler_tls="no"
 		;;
+	*-*-mingw*)
+		dnl Causes emutls to be pulled in, which pulls in winpthread.
+		enable_compiler_tls="no"
+		;;
 	*-*-morphos*)
 		dnl Compiler TLS needs helpers that we don't want in the
 		dnl .library
@@ -1174,6 +1233,7 @@ AC_ARG_ENABLE(files,
 AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
+	AC_SUBST(OBJFW_NEW, "objfw-new")
 	AC_SUBST(OFARC, "ofarc")
 	AC_SUBST(OFHASH, "ofhash")
 
@@ -1340,12 +1400,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADER(sys/un.h, [
+		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
+	])
 	AC_CHECK_HEADER(netipx/ipx.h, [
 		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
 			[Whether we have netipx/ipx.h])
-	])
-	AC_CHECK_HEADER(sys/un.h, [
-		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
@@ -1397,6 +1457,40 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		# endif
 		# include <windows.h>
 		# include <ws2tcpip.h>
+		#endif
+	])
+
+	AC_CHECK_HEADERS(afunix.h, [
+		AC_DEFINE(OF_HAVE_AFUNIX_H, 1, [Whether we have afunix.h])
+	], [], [
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
+	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
+		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
+			[Whether we have UNIX sockets])
+		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
+	], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_UN_H
+		# include <sys/un.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+		#ifdef HAVE_AFUNIX_H
+		# include <afunix.h>
+		#endif
+
+		#ifdef __morphos__
+		# error MorphOS has the struct but does not support it
+		#endif
+
+		#ifdef __MINT__
+		# error Gives invalid argument at runtime
 		#endif
 	])
 
@@ -1470,40 +1564,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
 			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
 		])
-	])
-
-	AC_CHECK_HEADERS(afunix.h, [
-		AC_DEFINE(OF_HAVE_AFUNIX_H, 1, [Whether we have afunix.h])
-	], [], [
-		#ifdef _WIN32
-		# include <winsock2.h>
-		#endif
-	])
-	AC_CHECK_MEMBER(struct sockaddr_un.sun_path, [
-		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
-			[Whether we have UNIX sockets])
-		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
-	], [], [
-		#ifdef OF_HAVE_SYS_TYPES_H
-		# include <sys/types.h>
-		#endif
-		#ifdef OF_HAVE_SYS_UN_H
-		# include <sys/un.h>
-		#endif
-		#ifdef _WIN32
-		# include <winsock2.h>
-		#endif
-		#ifdef HAVE_AFUNIX_H
-		# include <afunix.h>
-		#endif
-
-		#ifdef __morphos__
-		# error MorphOS has the struct but does not support it
-		#endif
-
-		#ifdef __MINT__
-		# error Gives invalid argument at runtime
-		#endif
 	])
 
 	AC_CHECK_FUNCS(paccept accept4, break)

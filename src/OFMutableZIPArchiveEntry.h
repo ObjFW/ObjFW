@@ -14,6 +14,7 @@
  */
 
 #import "OFZIPArchiveEntry.h"
+#import "OFMutableArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -24,21 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which represents a mutable entry in the central directory of
  *	  a ZIP archive.
  */
-@interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry
+@interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry <OFMutableArchiveEntry>
 {
 	OF_RESERVE_IVARS(OFMutableZIPArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readwrite, copy, nonatomic) OFString *fileName;
-
-/**
- * @brief The comment of the entry's file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *fileComment;
 
 /**
  * @brief The extra field of the entry.
@@ -68,13 +58,6 @@ OF_ASSUME_NONNULL_BEGIN
     OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
 
 /**
- * @brief The last modification date of the entry's file.
- *
- * @note Due to limitations of the ZIP format, this has only 2 second precision.
- */
-@property (readwrite, retain, nonatomic) OFDate *modificationDate;
-
-/**
  * @brief The compression method of the entry.
  *
  * Supported values are:
@@ -88,16 +71,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readwrite, nonatomic) uint64_t compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readwrite, nonatomic) uint64_t uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.
@@ -118,6 +91,23 @@ OF_ASSUME_NONNULL_BEGIN
  * See the ZIP specification for details.
  */
 @property (readwrite, nonatomic) uint16_t generalPurposeBitFlag;
+
+/**
+ * @brief Creates a new OFMutableZIPArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return A new, autoreleased OFZIPArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
+/**
+ * @brief Initializes an already allocated OFMutableZIPArchiveEntry with the
+ *	  specified file name.
+ *
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return An initialized OFZIPArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
 
 /**
  * @brief Converts the OFMutableZIPArchiveEntry to an immutable

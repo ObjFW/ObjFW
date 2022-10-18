@@ -20,6 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
+@class OFURI;
 
 /**
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -40,23 +41,29 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URI The URI to the file whose contents the OFINIFile should contain
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
-+ (instancetype)fileWithPath: (OFString *)path;
++ (instancetype)fileWithURI: (OFURI *)URI;
 
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file in
  *	  the specified encoding.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URI The URI to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
- *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
-+ (instancetype)fileWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding;
++ (instancetype)fileWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -64,23 +71,30 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URI The URI to the file whose contents the OFINIFile should contain
  *
  * @return An initialized OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
-- (instancetype)initWithPath: (OFString *)path;
+- (instancetype)initWithURI: (OFURI *)URI;
 
 /**
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file in the specified encoding.
  *
- * @param path The path to the file whose contents the OFINIFile should contain
+ * @param URI The URI to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
- *
  * @return An initialized OFINIFile with the contents of the specified file
+ * @throw OFInvalidFormatException The format of the specified INI file is
+ *				   invalid
+ * @throw OFInvalidEncodingException The INI file is not in the specified
+ *				     encoding
  */
-- (instancetype)initWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithURI: (OFURI *)URI
+		   encoding: (OFStringEncoding)encoding
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -97,18 +111,18 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Writes the contents of the OFINIFile to a file.
  *
- * @param path The path of the file to write to
+ * @param URI The URI of the file to write to
  */
-- (void)writeToFile: (OFString *)path;
+- (void)writeToURI: (OFURI *)URI;
 
 /**
  * @brief Writes the contents of the OFINIFile to a file in the specified
  *	  encoding.
  *
- * @param path The path of the file to write to
+ * @param URI The URI of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

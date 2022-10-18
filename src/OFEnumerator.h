@@ -50,8 +50,6 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief State information for fast enumerations.
  */
-#define OFFastEnumerationState NSFastEnumerationState
-#ifndef NSINTEGER_DEFINED
 typedef struct {
 	/** Arbitrary state information for the enumeration */
 	unsigned long state;
@@ -62,6 +60,8 @@ typedef struct {
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } OFFastEnumerationState;
+#ifndef NSINTEGER_DEFINED
+typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 
 /**
@@ -82,6 +82,8 @@ typedef struct {
  * @param count The number of objects that can be stored at objects
  * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
+ * @throw OFEnumerationMutationException The object was mutated during
+ *					 enumeration
  */
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
@@ -98,14 +100,12 @@ typedef struct {
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(OFEnumerator, 4)
-}
-
 /**
  * @brief Returns the next object or `nil` if there is none left.
  *
  * @return The next object or `nil` if there is none left
+ * @throw OFEnumerationMutationException The object was mutated during
+ *					 enumeration
  */
 - (nullable ObjectType)nextObject;
 
