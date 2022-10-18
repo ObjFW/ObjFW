@@ -29,7 +29,9 @@ extern int _OFString_PercentEncoding_reference;
 
 @interface OFString (PercentEncoding)
 /**
- * @brief The string with percent-encoding removed.
+ * @brief The string with percent encoding removed.
+ *
+ * @throw OFInvalidFormatException The string is not in proper percent encoding
  */
 @property (readonly, nonatomic) OFString *stringByRemovingPercentEncoding;
 
