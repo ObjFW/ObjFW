@@ -43,7 +43,7 @@ showUsage(void)
 - (void)applicationDidFinishLaunching
 {
 	bool app, class;
-	OFString *superclass = nil;
+	OFString *superclass = nil, *name;
 	OFMutableArray OF_GENERIC(OFString *) *properties = nil;
 	const OFOptionsParserOption options[] = {
 		{ 'a', @"app", 0, &app, NULL },
@@ -78,11 +78,16 @@ showUsage(void)
 	if ((superclass && !class)  || (properties != nil && !class))
 		showUsage();
 
+	name = optionsParser.remainingArguments.firstObject;
+	if ([name rangeOfString: @"."].location != OFNotFound) {
+		[OFStdErr writeLine: @"Name must not contain dots!"];
+		[OFApplication terminate];
+	}
+
 	if (app)
-		newApp(optionsParser.remainingArguments.firstObject);
+		newApp(name);
 	else if (class)
-		newClass(optionsParser.remainingArguments.firstObject,
-		    superclass, properties);
+		newClass(name, superclass, properties);
 	else
 		showUsage();
 
