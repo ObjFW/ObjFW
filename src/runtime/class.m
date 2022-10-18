@@ -405,7 +405,7 @@ objc_initializeClass(Class class)
 }
 
 static void
-processLoadQueue()
+processLoadQueue(void)
 {
 	for (size_t i = 0; i < loadQueueCount; i++) {
 		setUpClass(loadQueue[i]);

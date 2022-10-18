@@ -221,9 +221,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
-	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
-
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -268,9 +265,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
-
-	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]

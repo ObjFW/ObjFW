@@ -174,7 +174,7 @@
 
 	OFHashInit(&hash);
 
-	OFHashAdd(&hash, (uint8_t)_type);
+	OFHashAddByte(&hash, (uint8_t)_type);
 	OFHashAddHash(&hash, _data.hash);
 
 	OFHashFinalize(&hash);

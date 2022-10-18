@@ -22,20 +22,20 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
  *
  * @brief A class for storing and manipulating HTTP cookies.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPCookie: OFObject <OFCopying>
 {
 	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_Nullable _expires;
 	bool _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
-	OF_RESERVE_IVARS(OFHTTPCookie, 4)
 }
 
 /**
@@ -80,16 +80,18 @@ OF_ASSUME_NONNULL_BEGIN
     OFMutableArray OF_GENERIC(OFString *) *extensions;
 
 /**
- * @brief Parses the specified response header fields for the specified URL and
+ * @brief Parses the specified response header fields for the specified URI and
  *	  returns an array of cookies.
  *
  * @param headerFields The response header fields to parse
- * @param URL The URL for the response header fields to parse
+ * @param URI The URI for the response header fields to parse
  * @return An array of cookies
+ * @throw OFInvalidFormatException The specified response header has an invalid
+ *				   format
  */
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
-    forURL: (OFURL *)URL;
+    forURI: (OFURI *)URI;
 
 /**
  * @brief Returns the request header fields for the specified cookies.

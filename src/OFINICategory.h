@@ -78,6 +78,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param defaultValue The value to return if the key does not exist
  * @return The long long for the specified key or the specified default value
  *	   if it does not exist
+ * @throw OFInvalidFormatException The specified key is not in the correct
+ *				   format for a long long
  */
 - (long long)longLongForKey: (OFString *)key
 	       defaultValue: (long long)defaultValue;
@@ -93,6 +95,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param defaultValue The value to return if the key does not exist
  * @return The bool for the specified key or the specified default value if it
  *	   does not exist
+ * @throw OFInvalidFormatException The specified key is not in the correct
+ *				   format for a bool
  */
 - (bool)boolForKey: (OFString *)key defaultValue: (bool)defaultValue;
 
@@ -107,6 +111,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param defaultValue The value to return if the key does not exist
  * @return The float for the specified key or the specified default value if it
  *	   does not exist
+ * @throw OFInvalidFormatException The specified key is not in the correct
+ *				   format for a float
  */
 - (float)floatForKey: (OFString *)key defaultValue: (float)defaultValue;
 
@@ -121,6 +127,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param defaultValue The value to return if the key does not exist
  * @return The double for the specified key or the specified default value if
  *	   it does not exist
+ * @throw OFInvalidFormatException The specified key is not in the correct
+ *				   format for a double
  */
 - (double)doubleForKey: (OFString *)key defaultValue: (double)defaultValue;
 

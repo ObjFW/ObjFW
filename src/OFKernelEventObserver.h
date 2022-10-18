@@ -45,8 +45,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief This callback is called when an object did get ready for reading.
  *
  * @note If the object is a subclass of @ref OFStream and
- *	 @ref OFStream::tryReadLine or @ref OFStream::tryReadTillDelimiter: has
- *	 been called on the stream, this callback will not be called again
+ *	 @ref OFStream::tryReadLine or @ref OFStream::tryReadUntilDelimiter:
+ *	 has been called on the stream, this callback will not be called again
  *	 until new data has been received, even though there is still data in
  *	 the cache. The reason for this is to prevent spinning in a loop when
  *	 there is an incomplete string in the cache. Once the string has been
@@ -168,6 +168,8 @@ OF_ASSUME_NONNULL_BEGIN
  * for this is to prevent blocking even though the newly added object is ready.
  *
  * @param object The object to observe for reading
+ * @throw OFObserveKernelEventsFailedException Adding the object for observing
+ *					       failed
  */
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object;
 
@@ -178,6 +180,8 @@ OF_ASSUME_NONNULL_BEGIN
  * for this is to prevent blocking even though the newly added object is ready.
  *
  * @param object The object to observe for writing
+ * @throw OFObserveKernelEventsFailedException Adding the object for observing
+ *					       failed
  */
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
@@ -188,6 +192,8 @@ OF_ASSUME_NONNULL_BEGIN
  * for this is to prevent the removed object from still being observed.
  *
  * @param object The object to remove from observing for reading
+ * @throw OFObserveKernelEventsFailedException Removing the object for observing
+ *					       failed
  */
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object;
 
@@ -198,11 +204,16 @@ OF_ASSUME_NONNULL_BEGIN
  * for this is to prevent the removed object from still being observed.
  *
  * @param object The object to remove from observing for writing
+ * @throw OFObserveKernelEventsFailedException Removing the object for observing
+ *					       failed
  */
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
 /**
  * @brief Observes all objects and blocks until an event happens on an object.
+ *
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observe;
 
@@ -211,6 +222,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval;
 
@@ -219,6 +232,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified date is reached.
  *
  * @param date The until which to observe
+ * @throw OFObserveKernelEventsFailedException Observing for kernel events
+ *					       failed
  */
 - (void)observeUntilDate: (OFDate *)date;
 

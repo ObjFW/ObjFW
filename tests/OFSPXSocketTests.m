@@ -169,7 +169,7 @@ static OFString *const module = @"OFSPXSocket";
 
 		TEST(@"-[asyncAccept] & -[asyncConnectToNetwork:node:port:]",
 		    delegate->_accepted && delegate->_connected)
-	} @catch (OFObserveFailedException *e) {
+	} @catch (OFObserveKernelEventsFailedException *e) {
 		switch (e.errNo) {
 		case ENOTSOCK:
 			[OFStdOut setForegroundColor: [OFColor lime]];

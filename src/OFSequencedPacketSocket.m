@@ -318,14 +318,17 @@
 
 - (instancetype)accept
 {
-	OFSequencedPacketSocket *client =
-	    [[[[self class] alloc] init] autorelease];
+	OFSequencedPacketSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 

@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_HTTP_SERVER_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -31,7 +33,7 @@
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
@@ -359,7 +361,7 @@ normalizedKey(OFString *key)
 
 	@try {
 		OFString *version = [line
-		    substringWithRange: OFRangeMake(line.length - 9, 9)];
+		    substringWithRange: OFMakeRange(line.length - 9, 9)];
 		OFUnichar tmp;
 
 		if (![version hasPrefix: @" HTTP/1."])
@@ -386,7 +388,7 @@ normalizedKey(OFString *key)
 	}
 
 	@try {
-		OFRange range = OFRangeMake(pos + 1, line.length - pos - 10);
+		OFRange range = OFMakeRange(pos + 1, line.length - pos - 10);
 
 		path = [[[line substringWithRange:
 		    range] mutableCopy] autorelease];
@@ -512,7 +514,7 @@ normalizedKey(OFString *key)
 - (void)createResponse
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURL *URL;
+	OFMutableURI *URI;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
 	size_t pos;
@@ -532,11 +534,10 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URL = [OFMutableURL URL];
-	URL.scheme = @"http";
-	URL.host = _host;
+	URI = [OFMutableURI URIWithScheme: @"http"];
+	URI.host = _host;
 	if (_port != 80)
-		URL.port = [OFNumber numberWithUnsignedShort: _port];
+		URI.port = [OFNumber numberWithUnsignedShort: _port];
 
 	@try {
 		if ((pos = [_path rangeOfString: @"?"].location) !=
@@ -546,19 +547,19 @@ normalizedKey(OFString *key)
 			path = [_path substringToIndex: pos];
 			query = [_path substringFromIndex: pos + 1];
 
-			URL.URLEncodedPath = path;
-			URL.URLEncodedQuery = query;
+			URI.percentEncodedPath = path;
+			URI.percentEncodedQuery = query;
 		} else
-			URL.URLEncodedPath = _path;
+			URI.percentEncodedPath = _path;
 	} @catch (OFInvalidFormatException *e) {
 		objc_autoreleasePoolPop(pool);
 		[self sendErrorAndClose: 400];
 		return;
 	}
 
-	[URL makeImmutable];
+	[URI makeImmutable];
 
-	request = [OFHTTPRequest requestWithURL: URL];
+	request = [OFHTTPRequest requestWithURI: URI];
 	request.method = _method;
 	request.protocolVersion =
 	    (OFHTTPRequestProtocolVersion){ 1, _HTTPMinorVersion };

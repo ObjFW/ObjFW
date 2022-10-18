@@ -33,12 +33,12 @@ typedef OFConstantString *OFNotificationName;
  * @brief A class to represent a notification for or from
  *	  @ref OFNotificationCenter.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFNotification: OFObject <OFCopying>
 {
 	OFNotificationName _name;
 	id _Nullable _object;
 	OFDictionary *_Nullable _userInfo;
+	OF_RESERVE_IVARS(OFNotification, 4)
 }
 
 /**

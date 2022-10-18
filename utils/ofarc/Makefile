@@ -6,8 +6,8 @@ SRCS = GZIPArchive.m	\
        OFArc.m		\
        TarArchive.m	\
        ZIPArchive.m
-DATA = lang/de.json		\
-       lang/languages.json
+DATA = localization/de.json		\
+       localization/localizations.json
 
 include ../../buildsys.mk
 
@@ -15,11 +15,11 @@ PACKAGE_NAME = ofarc
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 
-CPPFLAGS += -I../../src					\
-	    -I../../src/runtime				\
-	    -I../../src/exceptions			\
-	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofarc/lang\"
+CPPFLAGS += -I../../src							\
+	    -I../../src/runtime						\
+	    -I../../src/exceptions					\
+	    -I../..							\
+	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"
 LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}

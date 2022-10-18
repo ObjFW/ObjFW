@@ -46,8 +46,8 @@
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFUUID.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFColor.h"
 
 #import "OFNotification.h"
@@ -150,7 +150,7 @@
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
 #endif
-#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
@@ -176,8 +176,9 @@
 #endif
 #import "OFEnumerationMutationException.h"
 #ifdef OF_HAVE_FILES
-# import "OFGetCurrentDirectoryPathFailedException.h"
+# import "OFGetCurrentDirectoryFailedException.h"
 #endif
+#import "OFGetItemAttributesFailedException.h"
 #import "OFGetOptionFailedException.h"
 #ifdef OF_WINDOWS
 # import "OFGetWindowsRegistryValueFailedException.h"
@@ -192,8 +193,8 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidJSONException.h"
-#import "OFInvalidServerReplyException.h"
-#import "OFLinkFailedException.h"
+#import "OFInvalidServerResponseException.h"
+#import "OFLinkItemFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFListenFailedException.h"
 #endif
@@ -206,7 +207,7 @@
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFObserveFailedException.h"
+# import "OFObserveKernelEventsFailedException.h"
 #endif
 #import "OFOpenItemFailedException.h"
 #ifdef OF_WINDOWS
@@ -220,7 +221,6 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFResolveHostFailedException.h"
 #endif
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"

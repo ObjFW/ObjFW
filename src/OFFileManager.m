@@ -39,13 +39,13 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 
-#import "OFChangeCurrentDirectoryPathFailedException.h"
+#import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
-#import "OFGetCurrentDirectoryPathFailedException.h"
+#import "OFGetCurrentDirectoryFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
@@ -53,7 +53,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFUndefinedKeyException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -171,7 +171,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	char buffer[PATH_MAX];
 
 	if ((getcwd(buffer, PATH_MAX)) == NULL)
-		@throw [OFGetCurrentDirectoryPathFailedException
+		@throw [OFGetCurrentDirectoryFailedException
 		    exceptionWithErrNo: errno];
 
 #  ifdef OF_DJGPP
@@ -189,12 +189,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 # endif
 }
 
-- (OFURL *)currentDirectoryURL
+- (OFURI *)currentDirectoryURI
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURL *ret;
+	OFURI *ret;
 
-	ret = [OFURL fileURLWithPath: self.currentDirectoryPath];
+	ret = [OFURI fileURIWithPath: self.currentDirectoryPath];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -202,17 +202,17 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 }
 #endif
 
-- (OFFileAttributes)attributesOfItemAtURL: (OFURL *)URL
+- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	return [URLHandler attributesOfItemAtURL: URL];
+	return [URIHandler attributesOfItemAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
@@ -221,7 +221,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	OFFileAttributes ret;
 
-	ret = [self attributesOfItemAtURL: [OFURL fileURLWithPath: path]];
+	ret = [self attributesOfItemAtURI: [OFURI fileURIWithPath: path]];
 
 	[ret retain];
 
@@ -231,17 +231,17 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 }
 #endif
 
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURL: (OFURL *)URL
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	[URLHandler setAttributes: attributes ofItemAtURL: URL];
+	[URIHandler setAttributes: attributes ofItemAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
@@ -250,22 +250,22 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self setAttributes: attributes
-		ofItemAtURL: [OFURL fileURLWithPath: path]];
+		ofItemAtURI: [OFURI fileURIWithPath: path]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (bool)fileExistsAtURL: (OFURL *)URL
+- (bool)fileExistsAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	return [URLHandler fileExistsAtURL: URL];
+	return [URIHandler fileExistsAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
@@ -274,7 +274,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	bool ret;
 
-	ret = [self fileExistsAtURL: [OFURL fileURLWithPath: path]];
+	ret = [self fileExistsAtURI: [OFURI fileURIWithPath: path]];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -282,17 +282,17 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 }
 #endif
 
-- (bool)directoryExistsAtURL: (OFURL *)URL
+- (bool)directoryExistsAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	return [URLHandler directoryExistsAtURL: URL];
+	return [URIHandler directoryExistsAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
@@ -301,7 +301,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	bool ret;
 
-	ret = [self directoryExistsAtURL: [OFURL fileURLWithPath: path]];
+	ret = [self directoryExistsAtURI: [OFURI fileURIWithPath: path]];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -309,34 +309,33 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 }
 #endif
 
-- (void)createDirectoryAtURL: (OFURL *)URL
+- (void)createDirectoryAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	[URLHandler createDirectoryAtURL: URL];
+	[URIHandler createDirectoryAtURI: URI];
 }
 
-- (void)createDirectoryAtURL: (OFURL *)URL
-	       createParents: (bool)createParents
+- (void)createDirectoryAtURI: (OFURI *)URI createParents: (bool)createParents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURL *mutableURL;
+	OFMutableURI *mutableURI;
 	OFArray OF_GENERIC(OFString *) *components;
-	OFMutableArray OF_GENERIC(OFURL *) *componentURLs;
-	size_t componentURLsCount;
+	OFMutableArray OF_GENERIC(OFURI *) *componentURIs;
+	size_t componentURIsCount;
 	ssize_t i;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (!createParents) {
-		[self createDirectoryAtURL: URL];
+		[self createDirectoryAtURI: URI];
 		return;
 	}
 
@@ -347,11 +346,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	 * create any of the parent directories will fail, while creating the
 	 * directory itself will work.
 	 */
-	if ([self directoryExistsAtURL: URL])
+	if ([self directoryExistsAtURI: URI])
 		return;
 
 	@try {
-		[self createDirectoryAtURL: URL];
+		[self createDirectoryAtURI: URI];
 		return;
 	} @catch (OFCreateDirectoryFailedException *e) {
 		/*
@@ -363,34 +362,34 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	}
 
 	/*
-	 * Because we might be sandboxed (and for remote URLs don't even know
-	 * anything at all), we generate the URL for every component. We then
+	 * Because we might be sandboxed (and for remote URIs don't even know
+	 * anything at all), we generate the URI for every component. We then
 	 * iterate them in reverse order until we find the first existing
 	 * directory, and then create subdirectories from there.
 	 */
-	mutableURL = [[URL mutableCopy] autorelease];
-	mutableURL.URLEncodedPath = @"/";
-	components = URL.pathComponents;
-	componentURLs = [OFMutableArray arrayWithCapacity: components.count];
+	mutableURI = [[URI mutableCopy] autorelease];
+	mutableURI.percentEncodedPath = @"/";
+	components = URI.pathComponents;
+	componentURIs = [OFMutableArray arrayWithCapacity: components.count];
 
 	for (OFString *component in components) {
-		[mutableURL appendPathComponent: component];
+		[mutableURI appendPathComponent: component];
 
-		if (![mutableURL.URLEncodedPath isEqual: @"/"])
-			[componentURLs addObject:
-			    [[mutableURL copy] autorelease]];
+		if (![mutableURI.percentEncodedPath isEqual: @"/"])
+			[componentURIs addObject:
+			    [[mutableURI copy] autorelease]];
 	}
 
-	componentURLsCount = componentURLs.count;
-	for (i = componentURLsCount - 1; i > 0; i--) {
-		if ([self directoryExistsAtURL:
-		    [componentURLs objectAtIndex: i]])
+	componentURIsCount = componentURIs.count;
+	for (i = componentURIsCount - 1; i > 0; i--) {
+		if ([self directoryExistsAtURI:
+		    [componentURIs objectAtIndex: i]])
 			break;
 	}
 
-	if (++i == (ssize_t)componentURLsCount) {
+	if (++i == (ssize_t)componentURIsCount) {
 		/*
-		 * The URL exists, even though before we made sure it did not.
+		 * The URI exists, even though before we made sure it did not.
 		 * That means it was created in the meantime by something else,
 		 * so we're done here.
 		 */
@@ -398,8 +397,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		return;
 	}
 
-	for (; i < (ssize_t)componentURLsCount; i++)
-		[self createDirectoryAtURL: [componentURLs objectAtIndex: i]];
+	for (; i < (ssize_t)componentURIsCount; i++)
+		[self createDirectoryAtURI: [componentURIs objectAtIndex: i]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -409,7 +408,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self createDirectoryAtURL: [OFURL fileURLWithPath: path]];
+	[self createDirectoryAtURI: [OFURI fileURIWithPath: path]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -419,38 +418,38 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self createDirectoryAtURL: [OFURL fileURLWithPath: path]
+	[self createDirectoryAtURI: [OFURI fileURIWithPath: path]
 		     createParents: createParents];
 
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (OFArray OF_GENERIC(OFURL *) *)contentsOfDirectoryAtURL: (OFURL *)URL
+- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	return [URLHandler contentsOfDirectoryAtURL: URL];
+	return [URIHandler contentsOfDirectoryAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFURL *) *URLs;
+	OFArray OF_GENERIC(OFURI *) *URIs;
 	OFMutableArray OF_GENERIC(OFString *) *ret;
 
-	URLs = [self contentsOfDirectoryAtURL: [OFURL fileURLWithPath: path]];
-	ret = [OFMutableArray arrayWithCapacity: URLs.count];
+	URIs = [self contentsOfDirectoryAtURI: [OFURI fileURIWithPath: path]];
+	ret = [OFMutableArray arrayWithCapacity: URIs.count];
 
-	for (OFURL *URL in URLs)
-		[ret addObject: URL.lastPathComponent];
+	for (OFURI *URI in URIs)
+		[ret addObject: URI.lastPathComponent];
 
 	[ret makeImmutable];
 	[ret retain];
@@ -515,7 +514,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			break;
 		}
 
-		@throw [OFChangeCurrentDirectoryPathFailedException
+		@throw [OFChangeCurrentDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errNo];
 	}
@@ -540,17 +539,17 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		    [path cStringWithEncoding: [OFLocale encoding]]);
 
 	if (status != 0)
-		@throw [OFChangeCurrentDirectoryPathFailedException
+		@throw [OFChangeCurrentDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errno];
 # endif
 }
 
-- (void)changeCurrentDirectoryURL: (OFURL *)URL
+- (void)changeCurrentDirectoryURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self changeCurrentDirectoryPath: URL.fileSystemRepresentation];
+	[self changeCurrentDirectoryPath: URI.fileSystemRepresentation];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -559,17 +558,17 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self copyItemAtURL: [OFURL fileURLWithPath: source]
-		      toURL: [OFURL fileURLWithPath: destination]];
+	[self copyItemAtURI: [OFURI fileURIWithPath: source]
+		      toURI: [OFURI fileURIWithPath: destination]];
 
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)copyItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (void)copyItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	void *pool;
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 	OFFileAttributes attributes;
 	OFFileAttributeType type;
 
@@ -578,35 +577,35 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	pool = objc_autoreleasePoolPush();
 
-	if ((URLHandler = [OFURLHandler handlerForURL: source]) == nil)
+	if ((URIHandler = [OFURIHandler handlerForURI: source]) == nil)
 		@throw [OFUnsupportedProtocolException
-		    exceptionWithURL: source];
+		    exceptionWithURI: source];
 
-	if ([URLHandler copyItemAtURL: source toURL: destination])
+	if ([URIHandler copyItemAtURI: source toURI: destination])
 		return;
 
-	if ([self fileExistsAtURL: destination])
+	if ([self fileExistsAtURI: destination])
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: EEXIST];
 
 	@try {
-		attributes = [self attributesOfItemAtURL: source];
-	} @catch (OFRetrieveItemAttributesFailedException *e) {
+		attributes = [self attributesOfItemAtURI: source];
+	} @catch (OFGetItemAttributesFailedException *e) {
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: e.errNo];
 	}
 
 	type = attributes.fileType;
 
 	if ([type isEqual: OFFileTypeDirectory]) {
-		OFArray OF_GENERIC(OFURL *) *contents;
+		OFArray OF_GENERIC(OFURI *) *contents;
 
 		@try {
-			[self createDirectoryAtURL: destination];
+			[self createDirectoryAtURI: destination];
 
 			@try {
 				OFFileAttributeKey key = OFFilePOSIXPermissions;
@@ -620,12 +619,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 							  forKey: key];
 					[self
 					    setAttributes: destinationAttributes
-					      ofItemAtURL: destination];
+					      ofItemAtURI: destination];
 				}
 			} @catch (OFNotImplementedException *e) {
 			}
 
-			contents = [self contentsOfDirectoryAtURL: source];
+			contents = [self contentsOfDirectoryAtURI: source];
 		} @catch (id e) {
 			/*
 			 * Only convert exceptions to OFCopyItemFailedException
@@ -635,20 +634,20 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourceURL: source
-					    destinationURL: destination
+				    exceptionWithSourceURI: source
+					    destinationURI: destination
 						     errNo: [e errNo]];
 
 			@throw e;
 		}
 
-		for (OFURL *item in contents) {
+		for (OFURI *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFURL *destinationURL = [destination
-			    URLByAppendingPathComponent:
+			OFURI *destinationURI = [destination
+			    URIByAppendingPathComponent:
 			    item.lastPathComponent];
 
-			[self copyItemAtURL: item toURL: destinationURL];
+			[self copyItemAtURI: item toURI: destinationURI];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -660,12 +659,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 		buffer = OFAllocMemory(1, pageSize);
 		@try {
-			sourceStream = [[OFURLHandler handlerForURL: source]
-			    openItemAtURL: source
-				     mode: @"r"];
-			destinationStream = [[OFURLHandler handlerForURL:
-			    destination] openItemAtURL: destination
-						  mode: @"w"];
+			sourceStream = [OFURIHandler openItemAtURI: source
+							      mode: @"r"];
+			destinationStream = [OFURIHandler
+			    openItemAtURI: destination
+				     mode: @"w"];
 
 			while (!sourceStream.atEndOfStream) {
 				size_t length;
@@ -689,7 +687,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 							  forKey: key];
 					[self
 					    setAttributes: destinationAttributes
-					      ofItemAtURL: destination];
+					      ofItemAtURI: destination];
 				}
 			} @catch (OFNotImplementedException *e) {
 			}
@@ -702,8 +700,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourceURL: source
-					    destinationURL: destination
+				    exceptionWithSourceURI: source
+					    destinationURI: destination
 						     errNo: [e errNo]];
 
 			@throw e;
@@ -717,7 +715,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			OFString *linkDestination =
 			    attributes.fileSymbolicLinkDestination;
 
-			[self createSymbolicLinkAtURL: destination
+			[self createSymbolicLinkAtURI: destination
 				  withDestinationPath: linkDestination];
 		} @catch (id e) {
 			/*
@@ -728,16 +726,16 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourceURL: source
-					    destinationURL: destination
+				    exceptionWithSourceURI: source
+					    destinationURI: destination
 						     errNo: [e errNo]];
 
 			@throw e;
 		}
 	} else
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: EINVAL];
 
 	objc_autoreleasePoolPop(pool);
@@ -747,89 +745,89 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self moveItemAtURL: [OFURL fileURLWithPath: source]
-		      toURL: [OFURL fileURLWithPath: destination]];
+	[self moveItemAtURI: [OFURI fileURIWithPath: source]
+		      toURI: [OFURI fileURIWithPath: destination]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)moveItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (void)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	void *pool;
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
-	if ((URLHandler = [OFURLHandler handlerForURL: source]) == nil)
+	if ((URIHandler = [OFURIHandler handlerForURI: source]) == nil)
 		@throw [OFUnsupportedProtocolException
-		    exceptionWithURL: source];
+		    exceptionWithURI: source];
 
 	@try {
-		if ([URLHandler moveItemAtURL: source toURL: destination])
+		if ([URIHandler moveItemAtURI: source toURI: destination])
 			return;
 	} @catch (OFMoveItemFailedException *e) {
 		if (e.errNo != EXDEV)
 			@throw e;
 	}
 
-	if ([self fileExistsAtURL: destination])
+	if ([self fileExistsAtURI: destination])
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: EEXIST];
 
 	@try {
-		[self copyItemAtURL: source toURL: destination];
+		[self copyItemAtURI: source toURI: destination];
 	} @catch (OFCopyItemFailedException *e) {
-		[self removeItemAtURL: destination];
+		[self removeItemAtURI: destination];
 
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: e.errNo];
 	}
 
 	@try {
-		[self removeItemAtURL: source];
+		[self removeItemAtURI: source];
 	} @catch (OFRemoveItemFailedException *e) {
 		@throw [OFMoveItemFailedException
-		    exceptionWithSourceURL: source
-			    destinationURL: destination
+		    exceptionWithSourceURI: source
+			    destinationURI: destination
 				     errNo: e.errNo];
 	}
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)removeItemAtURL: (OFURL *)URL
+- (void)removeItemAtURI: (OFURI *)URI
 {
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil)
+	if (URI == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if ((URIHandler = [OFURIHandler handlerForURI: URI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	[URLHandler removeItemAtURL: URL];
+	[URIHandler removeItemAtURI: URI];
 }
 
 #ifdef OF_HAVE_FILES
 - (void)removeItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self removeItemAtURL: [OFURL fileURLWithPath: path]];
+	[self removeItemAtURI: [OFURI fileURIWithPath: path]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)linkItemAtURL: (OFURL *)source toURL: (OFURL *)destination
+- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -837,13 +835,13 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if (![destination.scheme isEqual: source.scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	URLHandler = [OFURLHandler handlerForURL: source];
+	URIHandler = [OFURIHandler handlerForURI: source];
 
-	if (URLHandler == nil)
+	if (URIHandler == nil)
 		@throw [OFUnsupportedProtocolException
-		    exceptionWithURL: source];
+		    exceptionWithURI: source];
 
-	[URLHandler linkItemAtURL: source toURL: destination];
+	[URIHandler linkItemAtURI: source toURI: destination];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -852,27 +850,27 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self linkItemAtURL: [OFURL fileURLWithPath: source]
-		      toURL: [OFURL fileURLWithPath: destination]];
+	[self linkItemAtURI: [OFURI fileURIWithPath: source]
+		      toURI: [OFURI fileURIWithPath: destination]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-- (void)createSymbolicLinkAtURL: (OFURL *)URL
+- (void)createSymbolicLinkAtURI: (OFURI *)URI
 	    withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
+	OFURIHandler *URIHandler;
 
-	if (URL == nil || target == nil)
+	if (URI == nil || target == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	URLHandler = [OFURLHandler handlerForURL: URL];
+	URIHandler = [OFURIHandler handlerForURI: URI];
 
-	if (URLHandler == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	if (URIHandler == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
 
-	[URLHandler createSymbolicLinkAtURL: URL withDestinationPath: target];
+	[URIHandler createSymbolicLinkAtURI: URI withDestinationPath: target];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -882,7 +880,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	     withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self createSymbolicLinkAtURL: [OFURL fileURLWithPath: path]
+	[self createSymbolicLinkAtURI: [OFURI fileURIWithPath: path]
 		  withDestinationPath: target];
 	objc_autoreleasePoolPop(pool);
 }

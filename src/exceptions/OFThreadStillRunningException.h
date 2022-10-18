@@ -32,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFThreadStillRunningException: OFException
 {
 	OFThread *_Nullable _thread;
+	OF_RESERVE_IVARS(OFThreadStillRunningException, 4)
 }
 
 /**

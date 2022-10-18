@@ -34,22 +34,22 @@
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #ifdef HAVE_TLS_SUPPORT
 # import "ObjFWTLS.h"
 #endif
 
 #import "OFConnectionFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFInvalidServerResponseException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFResolveHostFailedException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -62,8 +62,8 @@
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
     OFStreamDelegate>
 {
-	OFArray OF_GENERIC(OFString *) *_URLs;
-	size_t _URLIndex;
+	OFArray OF_GENERIC(OFString *) *_URIs;
+	size_t _URIIndex;
 	int _errorCode;
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
@@ -79,7 +79,7 @@
 	ProgressBar *_progressBar;
 }
 
-- (void)downloadNextURL;
+- (void)downloadNextURI;
 @end
 
 #ifdef HAVE_TLS_SUPPORT
@@ -97,7 +97,7 @@ help(OFStream *stream, bool full, int status)
 {
 	[OFStdErr writeLine:
 	    OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] -[cehHmoOPqv] url1 [url2 ...]",
+	    @"Usage: %[prog] -[cehHmoOPqv] uri1 [uri2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	if (full) {
@@ -355,7 +355,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    [OFString stringWithFormat: @"%ju", fileSize];
 			[_clientHeaders setObject: contentLength
 					   forKey: @"Content-Length"];
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		} @catch (OFGetItemAttributesFailedException *e) {
 		}
 	}
 
@@ -451,9 +451,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
 #else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhttp/lang"];
+	[OFLocale addLocalizationDirectory:
+	    @"PROGDIR:/share/ofhttp/localization"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -545,9 +546,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 	_outputPath = [outputPath copy];
-	_URLs = [optionsParser.remainingArguments copy];
+	_URIs = [optionsParser.remainingArguments copy];
 
-	if (_URLs.count < 1)
+	if (_URIs.count < 1)
 		help(OFStdErr, false, 1);
 
 	if (_quiet && _verbose) {
@@ -567,10 +568,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	if (_outputPath != nil && _URLs.count > 1) {
+	if (_outputPath != nil && _URIs.count > 1) {
 		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"output_only_with_one_url",
-		    @"%[prog]: Cannot use -o / --output when more than one URL "
+		    OF_LOCALIZED(@"output_only_with_one_uri",
+		    @"%[prog]: Cannot use -o / --output when more than one URI "
 		    @"has been specified!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
@@ -585,7 +586,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 #endif
 
-	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
+	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
 }
 
 -	(void)client: (OFHTTPClient *)client
@@ -608,11 +609,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 }
 
--	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (short)statusCode
-	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response
+-	       (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirectToURI: (OFURI *)URI
+		 statusCode: (short)statusCode
+		    request: (OFHTTPRequest *)request
+		   response: (OFHTTPResponse *)response
 {
 	if (_verbose) {
 		void *pool = objc_autoreleasePoolPush();
@@ -631,9 +632,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"☇ %@", URL.string];
+			[OFStdOut writeFormat: @"☇ %@", URI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", URL.string];
+			[OFStdOut writeFormat: @"< %@", URI.string];
 	}
 
 	_length = 0;
@@ -647,7 +648,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		OFString *URL;
+		OFString *URI;
 
 		[_progressBar stop];
 		[_progressBar draw];
@@ -660,17 +661,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"Error!")];
 		}
 
-		URL = [_URLs objectAtIndex: _URLIndex - 1];
+		URI = [_URIs objectAtIndex: _URIIndex - 1];
 		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"download_failed_exception",
-		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"%[prog]: Failed to download <%[uri]>!\n"
 		    @"  %[exception]",
 		    @"prog", [OFApplication programName],
-		    @"url", URL,
+		    @"uri", URI,
 		    @"exception", exception)];
 
 		_errorCode = 1;
-		[self performSelector: @selector(downloadNextURL)
+		[self performSelector: @selector(downloadNextURI)
 			   afterDelay: 0];
 		return false;
 	}
@@ -692,7 +693,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
-		[self performSelector: @selector(downloadNextURL)
+		[self performSelector: @selector(downloadNextURI)
 			   afterDelay: 0];
 		return false;
 	}
@@ -816,10 +817,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_resolve_host_failed",
-			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"%[prog]: Failed to download <%[uri]>!\n"
 			    @"  Failed to resolve host: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"url", request.URL.string,
+			    @"uri", request.URI.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
 		    [OFConnectionFailedException class]]) {
@@ -828,22 +829,22 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_failed_connection_failed",
-			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"%[prog]: Failed to download <%[uri]>!\n"
 			    @"  Connection failed: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"url", request.URL.string,
+			    @"uri", request.URI.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
-		    [OFInvalidServerReplyException class]]) {
+		    [OFInvalidServerResponseException class]]) {
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_invalid_server_reply",
-			    @"%[prog]: Failed to download <%[url]>!\n"
-			    @"  Invalid server reply!",
+			    @"download_failed_invalid_server_response",
+			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"  Invalid server response!",
 			    @"prog", [OFApplication programName],
-			    @"url", request.URL.string)];
+			    @"uri", request.URI.string)];
 		} else if ([exception isKindOfClass:
 		    [OFUnsupportedProtocolException class]]) {
 			if (!_quiet)
@@ -880,10 +881,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_read_or_write_failed",
-			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"%[prog]: Failed to download <%[uri]>!\n"
 			    @"  %[error]: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"url", request.URL.string,
+			    @"uri", request.URI.string,
 			    @"error", error,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
@@ -900,16 +901,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			codeString = [OFString stringWithFormat: @"%hd %@",
 			    statusCode, OFHTTPStatusCodeString(statusCode)];
 			[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
-			    @"%[prog]: Failed to download <%[url]>!\n"
+			    @"%[prog]: Failed to download <%[uri]>!\n"
 			    @"  HTTP status code: %[code]",
 			    @"prog", [OFApplication programName],
-			    @"url", request.URL.string,
+			    @"uri", request.URI.string,
 			    @"code", codeString)];
 		} else
 			@throw exception;
 
 		_errorCode = 1;
-		[self performSelector: @selector(downloadNextURL)
+		[self performSelector: @selector(downloadNextURI)
 			   afterDelay: 0];
 		return;
 	}
@@ -924,10 +925,10 @@ after_exception_handling:
 		    copy];
 		_detectedFileName = true;
 
-		/* Handle this URL on the next -[downloadNextURL] call */
-		_URLIndex--;
+		/* Handle this URI on the next -[downloadNextURI] call */
+		_URIIndex--;
 
-		[self performSelector: @selector(downloadNextURL)
+		[self performSelector: @selector(downloadNextURI)
 			   afterDelay: 0];
 		return;
 	}
@@ -986,13 +987,13 @@ next:
 	[_currentFileName release];
 	_currentFileName = nil;
 
-	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
+	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
 }
 
-- (void)downloadNextURL
+- (void)downloadNextURI
 {
-	OFString *URLString = nil;
-	OFURL *URL;
+	OFString *URIString = nil;
+	OFURI *URI;
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 
@@ -1002,27 +1003,27 @@ next:
 		[_output release];
 	_output = nil;
 
-	if (_URLIndex >= _URLs.count)
+	if (_URIIndex >= _URIs.count)
 		[OFApplication terminateWithStatus: _errorCode];
 
 	@try {
-		URLString = [_URLs objectAtIndex: _URLIndex++];
-		URL = [OFURL URLWithString: URLString];
+		URIString = [_URIs objectAtIndex: _URIIndex++];
+		URI = [OFURI URIWithString: URIString];
 	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_url",
-		    @"%[prog]: Invalid URL: <%[url]>!",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_uri",
+		    @"%[prog]: Invalid URI: <%[uri]>!",
 		    @"prog", [OFApplication programName],
-		    @"url", URLString)];
+		    @"uri", URIString)];
 
 		_errorCode = 1;
 		goto next;
 	}
 
-	if (![URL.scheme isEqual: @"http"] && ![URL.scheme isEqual: @"https"]) {
+	if (![URI.scheme isEqual: @"http"] && ![URI.scheme isEqual: @"https"]) {
 		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_scheme",
-		    @"%[prog]: Invalid scheme: <%[url]>!",
+		    @"%[prog]: Invalid scheme: <%[uri]>!",
 		    @"prog", [OFApplication programName],
-		    @"url", URLString)];
+		    @"uri", URIString)];
 
 		_errorCode = 1;
 		goto next;
@@ -1033,12 +1034,12 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdOut writeFormat: @"⠒ %@", URL.string];
+				[OFStdOut writeFormat: @"⠒ %@", URI.string];
 			else
-				[OFStdOut writeFormat: @"? %@", URL.string];
+				[OFStdOut writeFormat: @"? %@", URI.string];
 		}
 
-		request = [OFHTTPRequest requestWithURL: URL];
+		request = [OFHTTPRequest requestWithURI: URI];
 		request.headers = clientHeaders;
 		request.method = OFHTTPRequestMethodHead;
 
@@ -1057,7 +1058,7 @@ next:
 		_currentFileName = [_outputPath copy];
 
 	if (_currentFileName == nil)
-		_currentFileName = [URL.path.lastPathComponent copy];
+		_currentFileName = [URI.path.lastPathComponent copy];
 
 	if ([_currentFileName isEqual: @"/"]) {
 		[_currentFileName release];
@@ -1082,18 +1083,18 @@ next:
 			range = [OFString stringWithFormat: @"bytes=%jd-",
 							    _resumedFrom];
 			[clientHeaders setObject: range forKey: @"Range"];
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
+		} @catch (OFGetItemAttributesFailedException *e) {
 		}
 	}
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"⇣ %@", URL.string];
+			[OFStdOut writeFormat: @"⇣ %@", URI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", URL.string];
+			[OFStdOut writeFormat: @"< %@", URI.string];
 	}
 
-	request = [OFHTTPRequest requestWithURL: URL];
+	request = [OFHTTPRequest requestWithURI: URI];
 	request.headers = clientHeaders;
 	request.method = _method;
 
@@ -1102,6 +1103,6 @@ next:
 	return;
 
 next:
-	[self performSelector: @selector(downloadNextURL) afterDelay: 0];
+	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
 }
 @end

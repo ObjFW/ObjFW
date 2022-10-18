@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFInitializationFailedException: OFException
 {
 	Class _inClass;
+	OF_RESERVE_IVARS(OFInitializationFailedException, 4)
 }
 
 /**

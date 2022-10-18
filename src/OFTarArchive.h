@@ -21,6 +21,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
+@class OFURI;
 
 /**
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
@@ -37,6 +38,10 @@ OF_SUBCLASSING_RESTRICTED
 		OFTarArchiveModeAppend
 	} _mode;
 	OFStringEncoding _encoding;
+	OFTarArchiveEntry *_Nullable _currentEntry;
+#ifdef OF_TAR_ARCHIVE_M
+@public
+#endif
 	OFStream *_Nullable _lastReturnedStream;
 }
 
@@ -67,18 +72,27 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Creates a new OFTarArchive object with the specified file.
  *
- * @param path The path to the tar archive
+ * @param URI The URI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
+
+/**
+ * @brief Creates a URI for accessing a the specified file within the specified
+ *	  tar archive.
+ *
+ * @param path The path of the file within the archive
+ * @param URI The URI of the archive
+ * @return A URI for accessing the specified file within the specified tar
+ *	   archive
+ */
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -96,19 +110,17 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified file.
  *
- * @param path The path to the tar archive
+ * @param URI The URI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
  * @brief Returns the next entry from the tar archive or `nil` if all entries

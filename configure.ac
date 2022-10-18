@@ -103,7 +103,7 @@ powerpc-*-amigaos*)
 	enable_sockets="no"
 	;;
 *-*-mingw*)
-	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition -static-libgcc"
 	LIBS="$LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
@@ -406,6 +406,12 @@ AC_COMPILE_IFELSE([
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 
+case "$host_os" in
+mingw*)
+	AC_CHECK_TOOL(RC, windres)
+	;;
+esac
+
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
 AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
@@ -498,6 +504,7 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
+	CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64 $CPPFLAGS"
 	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
 	gnu_source="yes"
 ], [
@@ -1075,6 +1082,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		dnl Compiler TLS is broken on AmigaOS
 		enable_compiler_tls="no"
 		;;
+	*-*-mingw*)
+		dnl Causes emutls to be pulled in, which pulls in winpthread.
+		enable_compiler_tls="no"
+		;;
 	*-*-morphos*)
 		dnl Compiler TLS needs helpers that we don't want in the
 		dnl .library
@@ -1251,6 +1262,7 @@ AC_ARG_ENABLE(files,
 AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
+	AC_SUBST(OBJFW_NEW, "objfw-new")
 	AC_SUBST(OFARC, "ofarc")
 	AC_SUBST(OFHASH, "ofhash")
 

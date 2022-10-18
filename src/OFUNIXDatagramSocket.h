@@ -65,6 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to bind to
  * @return The address on which this socket can be reached
+ * @throw OFBindFailedException Binding failed
+ * @throw OFAlreadyConnectedException The socket is already bound
  */
 - (OFSocketAddress)bindToPath: (OFString *)path;
 @end

@@ -32,6 +32,7 @@
 #endif
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFValue.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
@@ -258,7 +259,7 @@ backtraceCallback(struct _Unwind_Context *ctx, void *data)
 {
 	struct BacktraceCtx *bt = data;
 
-	if (bt->i < OFBacktraceSize) {
+	if (bt->i < OFStackTraceSize) {
 # ifndef HAVE_ARM_EHABI_EXCEPTIONS
 		bt->backtrace[bt->i++] = (void *)_Unwind_GetIP(ctx);
 # else
@@ -287,7 +288,7 @@ backtraceCallback(struct _Unwind_Context *ctx, void *data)
 
 	self = [super init];
 
-	ctx.backtrace = _backtrace;
+	ctx.backtrace = _stackTrace;
 	ctx.i = 0;
 	_Unwind_Backtrace(backtraceCallback, &ctx);
 
@@ -301,45 +302,69 @@ backtraceCallback(struct _Unwind_Context *ctx, void *data)
 	    @"An exception of type %@ occurred!", self.class];
 }
 
-- (OFArray OF_GENERIC(OFString *) *)backtrace
+- (OFArray OF_GENERIC(OFValue *) *)stackTraceAddresses
 {
 #ifdef HAVE__UNWIND_BACKTRACE
-	OFMutableArray OF_GENERIC(OFString *) *backtrace =
+	OFMutableArray OF_GENERIC(OFValue *) *stackTrace =
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (uint8_t i = 0; i < OFBacktraceSize && _backtrace[i] != NULL; i++) {
-# ifdef HAVE_DLADDR
+	for (uint_fast8_t i = 0; i < OFStackTraceSize &&
+	    _stackTrace[i] != NULL; i++)
+		[stackTrace addObject:
+		    [OFValue valueWithPointer: _stackTrace[i]]];
+
+	objc_autoreleasePoolPop(pool);
+
+	[stackTrace makeImmutable];
+
+	return stackTrace;
+#else
+	return nil;
+#endif
+}
+
+- (OFArray OF_GENERIC(OFString *) *)stackTraceSymbols
+{
+#if defined(HAVE__UNWIND_BACKTRACE) && defined(HAVE_DLADDR)
+	OFMutableArray OF_GENERIC(OFString *) *stackTrace =
+	    [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+
+	for (uint_fast8_t i = 0; i < OFStackTraceSize &&
+	    _stackTrace[i] != NULL; i++) {
 		Dl_info info;
 
-		if (dladdr(_backtrace[i], &info)) {
+		if (dladdr(_stackTrace[i], &info)) {
+			ptrdiff_t offset = (char *)_stackTrace[i] -
+			    (char *)info.dli_saddr;
 			OFString *frame;
 
-			if (info.dli_sname != NULL) {
-				ptrdiff_t offset = (char *)_backtrace[i] -
-				    (char *)info.dli_saddr;
-
+			if (info.dli_fname != NULL && info.dli_sname != NULL)
 				frame = [OFString stringWithFormat:
-				    @"%p <%s+%td> at %s",
-				    _backtrace[i], info.dli_sname, offset,
-				    info.dli_fname];
-			} else
+				    @"%s`%s+%td",
+				    info.dli_fname, info.dli_sname, offset];
+			else if (info.dli_sname != NULL)
 				frame = [OFString stringWithFormat:
-				    @"%p <?" @"?> at %s",
-				    _backtrace[i], info.dli_fname];
+				    @"%s+%td", info.dli_sname, offset];
+			else if (info.dli_fname != NULL)
+				frame = [OFString stringWithFormat:
+				    @"%s`%p", info.dli_fname, _stackTrace[i]];
+			else
+				frame = [OFString stringWithFormat:
+				    @"%p", _stackTrace[i]];
 
-			[backtrace addObject: frame];
+			[stackTrace addObject: frame];
 		} else
-# endif
-			[backtrace addObject:
-			    [OFString stringWithFormat: @"%p", _backtrace[i]]];
+			[stackTrace addObject:
+			    [OFString stringWithFormat: @"%p", _stackTrace[i]]];
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	[backtrace makeImmutable];
+	[stackTrace makeImmutable];
 
-	return backtrace;
+	return stackTrace;
 #else
 	return nil;
 #endif

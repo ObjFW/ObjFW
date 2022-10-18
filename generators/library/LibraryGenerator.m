@@ -18,7 +18,7 @@
 #import "OFApplication.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFURL.h"
+#import "OFURI.h"
 #import "OFXMLElement.h"
 
 #import "FuncArrayGenerator.h"
@@ -33,31 +33,31 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 @implementation LibraryGenerator
 - (void)generateInDirectory: (OFString *)directory
 {
-	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
-	    URLByAppendingPathComponent: directory];
-	OFURL *libraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"amiga-library.xml"];
-	OFURL *linkLibURL = [sourcesURL
-	    URLByAppendingPathComponent: @"linklib/linklib.m"];
-	OFURL *glueHeaderURL = [sourcesURL
-	    URLByAppendingPathComponent: @"amiga-glue.h"];
-	OFURL *glueURL = [sourcesURL
-	    URLByAppendingPathComponent: @"amiga-glue.m"];
-	OFURL *funcArrayURL = [sourcesURL
-	    URLByAppendingPathComponent: @"amiga-funcarray.inc"];
+	OFURI *sourcesURI = [[OFFileManager defaultManager].currentDirectoryURI
+	    URIByAppendingPathComponent: directory];
+	OFURI *libraryURI = [sourcesURI
+	    URIByAppendingPathComponent: @"amiga-library.xml"];
+	OFURI *linkLibURI = [sourcesURI
+	    URIByAppendingPathComponent: @"linklib/linklib.m"];
+	OFURI *glueHeaderURI = [sourcesURI
+	    URIByAppendingPathComponent: @"amiga-glue.h"];
+	OFURI *glueURI = [sourcesURI
+	    URIByAppendingPathComponent: @"amiga-glue.m"];
+	OFURI *funcArrayURI = [sourcesURI
+	    URIByAppendingPathComponent: @"amiga-funcarray.inc"];
 	OFXMLElement *library = [OFXMLElement elementWithStream:
-	    [OFFile fileWithPath: libraryURL.fileSystemRepresentation
+	    [OFFile fileWithPath: libraryURI.fileSystemRepresentation
 			    mode: @"r"]];
 	OFFile *linkLib =
-	    [OFFile fileWithPath: linkLibURL.fileSystemRepresentation
+	    [OFFile fileWithPath: linkLibURI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *glueHeader =
-	    [OFFile fileWithPath: glueHeaderURL.fileSystemRepresentation
+	    [OFFile fileWithPath: glueHeaderURI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *glue =
-	    [OFFile fileWithPath: glueURL.fileSystemRepresentation mode: @"w"];
+	    [OFFile fileWithPath: glueURI.fileSystemRepresentation mode: @"w"];
 	OFFile *funcArray =
-	    [OFFile fileWithPath: funcArrayURL.fileSystemRepresentation
+	    [OFFile fileWithPath: funcArrayURI.fileSystemRepresentation
 			    mode: @"w"];
 	LinkLibGenerator *linkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: library

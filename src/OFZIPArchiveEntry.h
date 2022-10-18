@@ -14,6 +14,7 @@
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -100,7 +101,8 @@ typedef enum {
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */
-@interface OFZIPArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFZIPArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFZIPArchiveEntryAttributeCompatibility _versionMadeBy;
 	OFZIPArchiveEntryAttributeCompatibility _minVersionNeeded;
@@ -108,7 +110,7 @@ typedef enum {
 	OFZIPArchiveEntryCompressionMethod _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
-	uint64_t _compressedSize, _uncompressedSize;
+	unsigned long long _compressedSize, _uncompressedSize;
 	OFString *_fileName;
 	OFData *_Nullable _extraField;
 	OFString *_Nullable _fileComment;
@@ -118,17 +120,6 @@ typedef enum {
 	int64_t _localFileHeaderOffset;
 	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
-
-/**
- * @brief The comment of the entry's file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *fileComment;
 
 /**
  * @brief The extra field of the entry.
@@ -158,13 +149,6 @@ typedef enum {
     OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
 
 /**
- * @brief The last modification date of the entry's file.
- *
- * @note Due to limitations of the ZIP format, this has only 2 second precision.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
-
-/**
  * @brief The compression method of the entry.
  *
  * Supported values are:
@@ -178,16 +162,6 @@ typedef enum {
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readonly, nonatomic) uint64_t compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readonly, nonatomic) uint64_t uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.
@@ -209,24 +183,7 @@ typedef enum {
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
-/**
- * @brief Creates a new OFZIPArchiveEntry with the specified file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return A new, autoreleased OFZIPArchiveEntry
- */
-+ (instancetype)entryWithFileName: (OFString *)fileName;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
- *	  file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return An initialized OFZIPArchiveEntry
- */
-- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 #ifdef __cplusplus

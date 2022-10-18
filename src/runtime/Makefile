@@ -31,11 +31,13 @@ SRCS = arc.m			\
        static-instances.m	\
        synchronized.m		\
        tagged-pointer.m		\
-       ${USE_SRCS_THREADS}
+       ${USE_SRCS_THREADS}	\
+       ${USE_SRCS_WINDOWS}
 SRCS_THREADS = OFOnce.m		\
 	       OFPlainMutex.m	\
 	       OFTLSKey.m	\
 	       threading.m
+SRCS_WINDOWS = versioninfo.rc
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 
@@ -56,3 +58,8 @@ CPPFLAGS += -I. -I.. -I../..					\
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
+RCFLAGS = --use-temp-file						      \
+	  -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}			      \
+	  -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}			      \
+	  -DOBJFWRT_LIB_VERSION=\"${OBJFWRT_LIB_MAJOR}.${OBJFWRT_LIB_MINOR}\" \
+	  -DOBJFWRT_SHARED_LIB=\"${OBJFWRT_SHARED_LIB}\"

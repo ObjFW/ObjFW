@@ -174,6 +174,7 @@ extern "C" {
  * @param IP The IP to parse
  * @param port The port to use
  * @return The parsed IP and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IP
  */
 extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
 
@@ -183,6 +184,7 @@ extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
  * @param IP The IPv4 to parse
  * @param port The port to use
  * @return The parsed IPv4 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv4
  */
 extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 
@@ -192,6 +194,7 @@ extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
  * @param IP The IPv6 to parse
  * @param port The port to use
  * @return The parsed IPv6 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv6
  */
 extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 

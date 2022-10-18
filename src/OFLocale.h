@@ -28,6 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param ID The ID of the localized string to retrieve
  * @return The localized string with the specified arguments replaced
+ * @throw OFInvalidFormatException The string (either the fallback or the
+ *				   localized one) contains an invalid format
  */
 #define OF_LOCALIZED(ID, ...)						 \
 	[[OFLocale currentLocale] localizedStringForID: ID		 \
@@ -44,34 +46,34 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFLocale: OFObject
 {
-	OFString *_Nullable _language, *_Nullable _territory;
+	OFString *_Nullable _languageCode, *_Nullable _countryCode;
 	OFStringEncoding _encoding;
-	OFString *_decimalPoint;
+	OFString *_decimalSeparator;
 	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString *, id) *)
 	    *_localizedStrings;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nullable, nonatomic) OFLocale *currentLocale;
-@property (class, readonly, nullable, nonatomic) OFString *language;
-@property (class, readonly, nullable, nonatomic) OFString *territory;
+@property (class, readonly, nullable, nonatomic) OFString *languageCode;
+@property (class, readonly, nullable, nonatomic) OFString *countryCode;
 @property (class, readonly, nonatomic) OFStringEncoding encoding;
-@property (class, readonly, nullable, nonatomic) OFString *decimalPoint;
+@property (class, readonly, nullable, nonatomic) OFString *decimalSeparator;
 #endif
 
 /**
- * @brief The language of the locale for messages.
+ * @brief The language code of the locale for messages.
  *
  * If the language is unknown, it is `nil`.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *language;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *languageCode;
 
 /**
- * @brief The territory of the locale for messages.
+ * @brief The country code of the locale for messages.
  *
  * If the territory is unknown, it is `nil`.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *territory;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *countryCode;
 
 /**
  * @brief The native 8-bit string encoding of the locale for messages.
@@ -84,9 +86,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFStringEncoding encoding;
 
 /**
- * @brief The decimal point of the system's locale.
+ * @brief The decimal separator of the locale.
  */
-@property (readonly, nonatomic) OFString *decimalPoint;
+@property (readonly, nonatomic) OFString *decimalSeparator;
 
 /**
  * @brief Returns the current OFLocale.
@@ -100,22 +102,22 @@ OF_SUBCLASSING_RESTRICTED
 + (nullable OFLocale *)currentLocale;
 
 /**
- * @brief Returns the language of the locale.
+ * @brief Returns the language code of the locale.
  *
  * If the language is unknown, `nil` is returned.
  *
- * @return The language of the locale.
+ * @return The language code of the locale.
  */
-+ (nullable OFString *)language;
++ (nullable OFString *)languageCode;
 
 /**
- * @brief Returns the territory of the locale.
+ * @brief Returns the country code of the locale.
  *
- * If the territory is unknown, `nil` is returned.
+ * If the country is unknown, `nil` is returned.
  *
- * @return The territory of the locale.
+ * @return The country code of the locale.
  */
-+ (nullable OFString *)territory;
++ (nullable OFString *)countryCode;
 
 /**
  * @brief Returns the native 8-bit string encoding for the locale.
@@ -134,15 +136,15 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The decimal point of the system's locale
  */
-+ (nullable OFString *)decimalPoint;
++ (nullable OFString *)decimalSeparator;
 
 #ifdef OF_HAVE_FILES
 /**
- * @brief Adds a directory to scan for language files.
+ * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for language files
+ * @param path The path to the directory to scan for localizations
  */
-+ (void)addLanguageDirectory: (OFString *)path;
++ (void)addLocalizationDirectory: (OFString *)path;
 #endif
 
 /**
@@ -159,11 +161,11 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_HAVE_FILES
 /**
- * @brief Adds a directory to scan for language files.
+ * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for language files
+ * @param path The path to the directory to scan for localizations 
  */
-- (void)addLanguageDirectory: (OFString *)path;
+- (void)addLocalizationDirectory: (OFString *)path;
 #endif
 
 /**
@@ -182,7 +184,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param ID The ID for the localized string
  * @param fallback The fallback to use in case the localized string cannot be
  *		   looked up or is missing. This can also be an array and use
- *		   plural scripting, just like with the JSON language files.
+ *		   plural scripting, just like with the JSON localization files.
  * @return The localized string
  */
 - (OFString *)localizedStringForID: (OFConstantString *)ID
@@ -204,11 +206,13 @@ OF_SUBCLASSING_RESTRICTED
  * @param ID The ID for the localized string
  * @param fallback The fallback to use in case the localized string cannot be
  *		   looked up or is missing. This can also be an array and use
- *		   plural scripting, just like with the JSON language files.
+ *		   plural scripting, just like with the JSON localization files.
  * @param arguments A va_list of arguments, consisting of pairs of variable
  *		    names and values to replace in the localized string,
  *		    terminated with `nil`
  * @return The localized string
+ * @throw OFInvalidFormatException The string (either the fallback or the
+ *				   localized one) contains an invalid format
  */
 - (OFString *)localizedStringForID: (OFConstantString *)ID
 			  fallback: (id)fallback

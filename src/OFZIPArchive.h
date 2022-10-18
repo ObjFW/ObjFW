@@ -33,13 +33,20 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
 	OFStream *_stream;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
 	int64_t _offset;
+@protected
 	uint_least8_t _mode;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
 	OFString *_Nullable _archiveComment;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
 	OFMutableArray OF_GENERIC(OFZIPArchiveEntry *) *_entries;
 	OFMutableDictionary OF_GENERIC(OFString *, OFZIPArchiveEntry *)
 	    *_pathToEntryMap;
@@ -74,18 +81,27 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param path The path to the ZIP file
+ * @param URI The URI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
+
+/**
+ * @brief Creates a URI for accessing a the specified file within the specified
+ *	  ZIP archive.
+ *
+ * @param path The path of the file within the archive
+ * @param URI The URI of the archive
+ * @return A URI for accessing the specified file within the specified ZIP
+ *	   archive
+ */
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -103,19 +119,17 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param path The path to the ZIP file
+ * @param URI The URI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.

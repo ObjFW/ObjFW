@@ -38,6 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned char _node[IPX_NODE_LEN];
 	id _socket;
 	int _errNo;
+	OF_RESERVE_IVARS(OFConnectionFailedException, 4)
 }
 
 /**

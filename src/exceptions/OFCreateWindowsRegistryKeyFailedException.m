@@ -18,23 +18,24 @@
 #import "OFCreateWindowsRegistryKeyFailedException.h"
 
 @implementation OFCreateWindowsRegistryKeyFailedException
-@synthesize registryKey = _registryKey, path = _path, options = _options;
-@synthesize securityAndAccessRights = _securityAndAccessRights;
-@synthesize securityAttributes = _securityAttributes, status = _status;
+@synthesize registryKey = _registryKey, path = _path;
+@synthesize accessRights = _accessRights;
+@synthesize securityAttributes = _securityAttributes, options = _options;
+@synthesize status = _status;
 
 + (instancetype)
     exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
+		accessRights: (REGSAM)accessRights
 	  securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+		     options: (DWORD)options
 		      status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
 					     path: path
-					  options: options
-			  securityAndAccessRights: securityAndAccessRights
+				     accessRights: accessRights
 			       securityAttributes: securityAttributes
+					  options: options
 					   status: status] autorelease];
 }
 
@@ -43,22 +44,21 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)
-	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
-		     status: (LSTATUS)status
+- (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			       path: (OFString *)path
+		       accessRights: (REGSAM)accessRights
+		 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+			    options: (DWORD)options
+			     status: (LSTATUS)status
 {
 	self = [super init];
 
 	@try {
 		_registryKey = [registryKey retain];
 		_path = [path copy];
-		_options = options;
-		_securityAndAccessRights = securityAndAccessRights;
+		_accessRights = accessRights;
 		_securityAttributes = securityAttributes;
+		_options = options;
 		_status = status;
 	} @catch (id e) {
 		[self release];

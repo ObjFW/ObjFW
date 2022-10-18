@@ -22,8 +22,8 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
-#import "OFFileURLHandler.h"
-#import "OFURL.h"
+#import "OFFileURIHandler.h"
+#import "OFURI.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
@@ -203,7 +203,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	components = [components objectsInRange:
-	    OFRangeMake(0, components.count - 1)];
+	    OFMakeRange(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
 	[ret retain];
@@ -288,7 +288,7 @@ int _OFString_PathAdditions_reference;
 			    ![parent hasSuffix: @"://"] &&
 			    (![parent hasPrefix: @"\\"] || i != 1)) {
 				[array removeObjectsInRange:
-				    OFRangeMake(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;
@@ -343,10 +343,11 @@ int _OFString_PathAdditions_reference;
 - (bool)of_isDirectoryPath
 {
 	return ([self hasSuffix: @"\\"] || [self hasSuffix: @"/"] ||
-	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+	    [OFFileURIHandler of_directoryExistsAtPath: self]);
 }
 
-- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+    (OFString **)percentEncodedHost
 {
 	OFString *path = self;
 
@@ -356,21 +357,22 @@ int _OFString_PathAdditions_reference;
 		if (components.count < 2)
 			@throw [OFInvalidFormatException exception];
 
-		*URLEncodedHost = [[components objectAtIndex: 1]
-		     stringByURLEncodingWithAllowedCharacters:
-		     [OFCharacterSet URLHostAllowedCharacterSet]];
+		*percentEncodedHost = [[components objectAtIndex: 1]
+		     stringByAddingPercentEncodingWithAllowedCharacters:
+		     [OFCharacterSet URIHostAllowedCharacterSet]];
 		path = [OFString pathWithComponents: [components
-		    objectsInRange: OFRangeMake(2, components.count - 2)]];
+		    objectsInRange: OFMakeRange(2, components.count - 2)]];
 	}
 
 	path = [path stringByReplacingOccurrencesOfString: @"\\"
 					       withString: @"/"];
-	path = [path stringByPrependingString: @"/"];
+	path = [@"/" stringByAppendingString: path];
 
 	return path;
 }
 
-- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+    (OFString *)percentEncodedHost
 {
 	OFString *path = self;
 
@@ -382,8 +384,9 @@ int _OFString_PathAdditions_reference;
 	path = [path stringByReplacingOccurrencesOfString: @"/"
 					       withString: @"\\"];
 
-	if (URLEncodedHost != nil) {
-		OFString *host = [URLEncodedHost stringByURLDecoding];
+	if (percentEncodedHost != nil) {
+		OFString *host = [percentEncodedHost
+		    stringByRemovingPercentEncoding];
 
 		if (path.length == 0)
 			path = [OFString stringWithFormat: @"\\\\%@", host];
@@ -395,7 +398,7 @@ int _OFString_PathAdditions_reference;
 	return path;
 }
 
-- (OFString *)of_pathComponentToURLPathComponent
+- (OFString *)of_pathComponentToURIPathComponent
 {
 	return [self stringByReplacingOccurrencesOfString: @"\\"
 					       withString: @"/"];

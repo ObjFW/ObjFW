@@ -248,7 +248,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		OFString *outFileName, *directory;
 		OFStream *stream;
 		OFFile *output;
-		uint64_t written = 0, size = entry.uncompressedSize;
+		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])
@@ -439,11 +439,11 @@ outer_loop_end:
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 
 		size = (isDirectory ? 0 : attributes.fileSize);
-		if (size > INT64_MAX)
+		if (size < 0 || size > ULLONG_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		entry.compressedSize = (int64_t)size;
-		entry.uncompressedSize = (int64_t)size;
+		entry.compressedSize = size;
+		entry.uncompressedSize = size;
 
 		entry.compressionMethod =
 		    OFZIPArchiveEntryCompressionMethodNone;

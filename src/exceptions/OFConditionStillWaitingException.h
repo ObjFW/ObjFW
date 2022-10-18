@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFConditionStillWaitingException: OFException
 {
 	OFCondition *_condition;
+	OF_RESERVE_IVARS(OFConditionStillWaitingException, 4)
 }
 
 /**

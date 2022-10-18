@@ -90,6 +90,8 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
+ * @throw OFConnectionFailedException Connecting failed
+ * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)connectToNetwork: (uint32_t)network
 		    node: (unsigned char [_Nonnull IPX_NODE_LEN])node
@@ -163,6 +165,8 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param port The port (sometimes called socket number) to bind to. 0 means to
  *	       pick one and return it.
  * @return The address on which this socket can be reached
+ * @throw OFConnectionFailedException Binding failed
+ * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (OFSocketAddress)bindToPort: (uint16_t)port;
 @end

@@ -20,7 +20,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFHTTPCookie;
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFHTTPCookieManager OFHTTPCookieManager.h ObjFW/OFHTTPCookieManager.h
@@ -46,35 +46,35 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)manager;
 
 /**
- * @brief Adds the specified cookie for the specified URL.
+ * @brief Adds the specified cookie for the specified URI.
  *
  * @warning This modifies the cookie (e.g. it sets the domain if it is unset)!
  *	    If you do not want this, pass a copy!
  *
  * @param cookie The cookie to add to the manager
- * @param URL The URL for which the cookie should be added
+ * @param URI The URI for which the cookie should be added
  */
-- (void)addCookie: (OFHTTPCookie *)cookie forURL: (OFURL *)URL;
+- (void)addCookie: (OFHTTPCookie *)cookie forURI: (OFURI *)URI;
 
 /**
- * @brief Adds the specified cookies for the specified URL.
+ * @brief Adds the specified cookies for the specified URI.
  *
  * @warning This modifies the cookies (e.g. it sets the domain if it is unset)!
  *	    If you do not want this, pass copies!
  *
  * @param cookies An array of cookies to add to the manager
- * @param URL The URL for which the cookies should be added
+ * @param URI The URI for which the cookies should be added
  */
 - (void)addCookies: (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
-	    forURL: (OFURL *)URL;
+	    forURI: (OFURI *)URI;
 
 /**
- * @brief Returns the cookies for the specified URL.
+ * @brief Returns the cookies for the specified URI.
  *
- * @param URL The URL for which the cookies should be returned
- * @return The cookies for the specified URL
+ * @param URI The URI for which the cookies should be returned
+ * @return The cookies for the specified URI
  */
-- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURL: (OFURL *)URL;
+- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURI: (OFURI *)URI;
 
 /**
  * @brief Purges all expired cookies.

@@ -95,9 +95,10 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	OFSHA512Hash *SHA512Hash = nil;
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
 #else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
+	[OFLocale addLocalizationDirectory:
+	    @"PROGDIR:/share/ofhash/localization"];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -134,7 +135,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		for (OFString *path in optionsParser.remainingArguments)
 			[sandbox unveilPath: path permissions: @"r"];
 
-		[sandbox unveilPath: @LANGUAGE_DIR permissions: @"r"];
+		[sandbox unveilPath: @LOCALIZATION_DIR permissions: @"r"];
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {

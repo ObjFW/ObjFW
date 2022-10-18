@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	id <OFLocking> _Nullable _lock;
 	int _errNo;
+	OF_RESERVE_IVARS(OFUnlockFailedException, 4)
 }
 
 /**

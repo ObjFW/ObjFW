@@ -45,17 +45,17 @@ OFObject *lock;
 @end
 
 int
-main()
+main(void)
 {
 	MyThread *t1, *t2;
 
 	lock = [[OFObject alloc] init];
 
 	t1 = [MyThread thread];
-	[t1 setName: @"A"];
+	t1.name = @"A";
 
 	t2 = [MyThread thread];
-	[t2 setName: @"B"];
+	t2.name = @"B";
 
 	[t1 start];
 	[t2 start];

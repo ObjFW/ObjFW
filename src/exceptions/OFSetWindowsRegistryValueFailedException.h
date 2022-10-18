@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFData *_Nullable _data;
 	DWORD _type;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFSetWindowsRegistryValueFailedException, 4)
 }
 
 /**

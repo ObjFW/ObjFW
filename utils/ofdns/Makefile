@@ -2,8 +2,8 @@ include ../../extra.mk
 
 PROG = ofdns${PROG_SUFFIX}
 SRCS = OFDNS.m
-DATA = lang/de.json		\
-       lang/languages.json
+DATA = localization/de.json		\
+       localization/localizations.json
 
 include ../../buildsys.mk
 
@@ -11,11 +11,11 @@ PACKAGE_NAME = ofdns
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 
-CPPFLAGS += -I../../src					\
-	    -I../../src/runtime				\
-	    -I../../src/exceptions			\
-	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofdns/lang\"
+CPPFLAGS += -I../../src							\
+	    -I../../src/runtime						\
+	    -I../../src/exceptions					\
+	    -I../..							\
+	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"
 LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}

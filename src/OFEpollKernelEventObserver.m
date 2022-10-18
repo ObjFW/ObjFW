@@ -31,7 +31,7 @@
 #import "OFNull.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 
 #define eventListSize 64
 
@@ -104,8 +104,9 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 	if (epoll_ctl(_epfd, (events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
 	    fd, &event) == -1)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[_FDToEvents setObject: (void *)(events | addEvents)
 			forKey: (void *)((intptr_t)fd + 1)];
@@ -129,7 +130,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			 * returned when we try to remove it after it failed.
 			 */
 			if (errno != ENOENT)
-				@throw [OFObserveFailedException
+				@throw [OFObserveKernelEventsFailedException
 				    exceptionWithObserver: self
 						    errNo: errno];
 
@@ -142,7 +143,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 		event.data.ptr = object;
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
-			@throw [OFObserveFailedException
+			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
@@ -200,8 +201,9 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	    (timeInterval != -1 ? timeInterval * 1000 : -1));
 
 	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {

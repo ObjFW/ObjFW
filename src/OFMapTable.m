@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_MAP_TABLE_M
+
 #include "config.h"
 
 #include <stdlib.h>
