@@ -33,6 +33,7 @@
 #import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFXMLAttribute.h"
 #import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
@@ -507,6 +508,10 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		    ![element.namespace isEqual: OFSerializationNS])
 			@throw [OFInvalidArgumentException exception];
 
+		if (![[element attributeForName: @"encoding"].stringValue
+		    isEqual: @"hex"])
+			@throw [OFInvalidFormatException exception];
+
 		value = [element unsignedLongLongValueWithBase: 16];
 
 		if (value > UINT64_MAX)
@@ -590,6 +595,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	element = [OFXMLElement elementWithName: @"OFDate"
 				      namespace: OFSerializationNS];
 
+	[element addAttributeWithName: @"encoding" stringValue: @"hex"];
 	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
 	    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
 	    self.timeIntervalSince1970)))];

@@ -57,7 +57,7 @@ test</OFString>
         <OFNumber type='signed'>1234</OFNumber>
         <OFNumber type='float'>40934a456d5cfaad</OFNumber>
         <OFMutableString>asd</OFMutableString>
-        <OFDate>40934a456d5cfaad</OFDate>
+        <OFDate encoding='hex'>40934a456d5cfaad</OFDate>
       </OFArray>
     </key>
     <object>
