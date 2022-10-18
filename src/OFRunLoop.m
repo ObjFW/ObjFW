@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,6 +42,7 @@
 #import "OFDate.h"
 
 #import "OFObserveFailedException.h"
+#import "OFWriteFailedException.h"
 
 #include "OFRunLoopConstants.inc"
 
@@ -569,22 +570,27 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		const char *dataItems = _data.items;
+		length = dataLength - _writtenLength;
+		[object writeBuffer: dataItems + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: dataItems + _writtenLength
-				      length: dataLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= dataLength);
 
 	if (_writtenLength != dataLength && exception == nil)
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, _writtenLength, exception);
+		newData = _block(_writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -641,22 +647,27 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		const char *cString = [_string cStringWithEncoding: _encoding];
+		length = cStringLength - _writtenLength;
+		[object writeBuffer: cString + _writtenLength length: length];
+	} @catch (OFWriteFailedException *e) {
+		length = e.bytesWritten;
 
-		length = [object writeBuffer: cString + _writtenLength
-				      length: cStringLength - _writtenLength];
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+			exception = e;
 	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
 
 	_writtenLength += length;
+	OFEnsure(_writtenLength <= cStringLength);
 
 	if (_writtenLength != cStringLength && exception == nil)
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newString = _block(_string, _writtenLength, exception);
+		newString = _block(_writtenLength, exception);
 
 		if (newString == nil)
 			return false;
@@ -850,7 +861,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, &_receiver, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -951,7 +962,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		newData = _block(_data, exception);
+		newData = _block(exception);
 
 		if (newData == nil)
 			return false;
@@ -1416,13 +1427,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	OFRunLoopState *state = stateForMode(self, mode, false);
 
-	if (state == nil)
+	/* {} required to avoid -Wmisleading-indentation false positive. */
+	if (state == nil) {
 		return;
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+	}
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1440,8 +1448,6 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 		[state->_timersQueueMutex unlock];
 	}
 #endif
-
-#pragma GCC diagnostic pop
 }
 
 #ifdef OF_AMIGAOS

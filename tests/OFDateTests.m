@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
 #include <time.h>
 
 #import "TestsAppDelegate.h"
+#import "OFStrPTime.h"
 
 static OFString *const module = @"OFDate";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,13 +28,13 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-extern unsigned long OFHashSeed;
+extern uint32_t OFHashSeed;
 
-static const unsigned long minCapacity = 16;
+static const uint32_t minCapacity = 16;
 
 struct OFMapTableBucket {
 	void *key, *object;
-	unsigned long hash;
+	uint32_t hash;
 };
 static struct OFMapTableBucket deletedBucket = { 0 };
 
@@ -65,7 +65,7 @@ OF_DIRECT_MEMBERS
 @interface OFMapTableEnumerator ()
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct OFMapTableBucket **)buckets
-			   capacity: (unsigned long)capacity
+			   capacity: (uint32_t)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
     OF_METHOD_FAMILY(init);
 @end
@@ -136,19 +136,19 @@ OF_DIRECT_MEMBERS
 
 #undef SET_DEFAULT
 
-		if (capacity > ULONG_MAX / sizeof(*_buckets) ||
-		    capacity > ULONG_MAX / 8)
+		if (capacity > UINT32_MAX / sizeof(*_buckets) ||
+		    capacity > UINT32_MAX / 8)
 			@throw [OFOutOfRangeException exception];
 
 		for (_capacity = 1; _capacity < capacity;) {
-			if (_capacity > ULONG_MAX / 2)
+			if (_capacity > UINT32_MAX / 2)
 				@throw [OFOutOfRangeException exception];
 
 			_capacity *= 2;
 		}
 
 		if (capacity * 8 / _capacity >= 6)
-			if (_capacity <= ULONG_MAX / 2)
+			if (_capacity <= UINT32_MAX / 2)
 				_capacity *= 2;
 
 		if (_capacity < minCapacity)
@@ -168,7 +168,7 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	for (unsigned long i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
@@ -183,19 +183,19 @@ OF_DIRECT_MEMBERS
 }
 
 static void
-resizeForCount(OFMapTable *self, unsigned long count)
+resizeForCount(OFMapTable *self, uint32_t count)
 {
-	unsigned long fullness, capacity;
+	uint32_t fullness, capacity;
 	struct OFMapTableBucket **buckets;
 
-	if (count > ULONG_MAX / sizeof(*self->_buckets) ||
-	    count > ULONG_MAX / 8)
+	if (count > UINT32_MAX / sizeof(*self->_buckets) ||
+	    count > UINT32_MAX / 8)
 		@throw [OFOutOfRangeException exception];
 
 	fullness = count * 8 / self->_capacity;
 
 	if (fullness >= 6) {
-		if (self->_capacity > ULONG_MAX / 2)
+		if (self->_capacity > UINT32_MAX / 2)
 			return;
 
 		capacity = self->_capacity * 2;
@@ -214,10 +214,10 @@ resizeForCount(OFMapTable *self, unsigned long count)
 
 	buckets = OFAllocZeroedMemory(capacity, sizeof(*buckets));
 
-	for (unsigned long i = 0; i < self->_capacity; i++) {
+	for (uint32_t i = 0; i < self->_capacity; i++) {
 		if (self->_buckets[i] != NULL &&
 		    self->_buckets[i] != &deletedBucket) {
-			unsigned long j, last;
+			uint32_t j, last;
 
 			last = capacity;
 
@@ -245,10 +245,9 @@ resizeForCount(OFMapTable *self, unsigned long count)
 }
 
 static void
-setObject(OFMapTable *restrict self, void *key, void *object,
-    unsigned long hash)
+setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
-	unsigned long i, last;
+	uint32_t i, last;
 	void *old;
 
 	if (key == NULL || object == NULL)
@@ -353,7 +352,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	    mapTable->_objectFunctions.equal != _objectFunctions.equal)
 		return false;
 
-	for (unsigned long i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
 			void *objectIter =
 			    [mapTable objectForKey: _buckets[i]->key];
@@ -389,7 +388,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 			capacity: _capacity];
 
 	@try {
-		for (unsigned long i = 0; i < _capacity; i++)
+		for (uint32_t i = 0; i < _capacity; i++)
 			if (_buckets[i] != NULL &&
 			    _buckets[i] != &deletedBucket)
 				setObject(copy, _buckets[i]->key,
@@ -410,12 +409,12 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 
 - (void *)objectForKey: (void *)key
 {
-	unsigned long i, hash, last;
+	uint32_t i, hash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft((uint32_t)_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
@@ -445,17 +444,17 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 
 - (void)setObject: (void *)object forKey: (void *)key
 {
-	setObject(self, key, object,_keyFunctions.hash(key));
+	setObject(self, key, object, (uint32_t)_keyFunctions.hash(key));
 }
 
 - (void)removeObjectForKey: (void *)key
 {
-	unsigned long i, hash, last;
+	uint32_t i, hash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OFRotateLeft(_keyFunctions.hash(key), _rotate);
+	hash = OFRotateLeft((uint32_t)_keyFunctions.hash(key), _rotate);
 	last = _capacity;
 
 	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
@@ -506,7 +505,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 
 - (void)removeAllObjects
 {
-	for (unsigned long i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL) {
 			if (_buckets[i] == &deletedBucket) {
 				_buckets[i] = NULL;
@@ -538,7 +537,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (object == NULL || _count == 0)
 		return false;
 
-	for (unsigned long i = 0; i < _capacity; i++)
+	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
 			if (_objectFunctions.equal(_buckets[i]->object, object))
 				return true;
@@ -551,7 +550,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 	if (object == NULL || _count == 0)
 		return false;
 
-	for (unsigned long i = 0; i < _capacity; i++)
+	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
 			if (_buckets[i]->object == object)
 				return true;
@@ -653,7 +652,7 @@ setObject(OFMapTable *restrict self, void *key, void *object,
 
 - (instancetype)of_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct OFMapTableBucket **)buckets
-			   capacity: (unsigned long)capacity
+			   capacity: (uint32_t)capacity
 		   mutationsPointer: (unsigned long *)mutationsPtr
 {
 	self = [super init];

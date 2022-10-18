@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -256,7 +256,6 @@
 
 #if __has_attribute(__unavailable__)
 # define OF_UNAVAILABLE __attribute__((__unavailable__))
-# define OF_HAVE_UNAVAILABLE
 #else
 # define OF_UNAVAILABLE
 #endif
@@ -419,23 +418,29 @@ extern int *_Nonnull OFErrNo(void);
 static OF_INLINE uint16_t OF_CONST_FUNC
 OFByteSwap16Const(uint16_t i)
 {
-	return (i & 0xFF00) >> 8 | (i & 0x00FF) << 8;
+	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
 OFByteSwap32Const(uint32_t i)
 {
-	return (i & 0xFF000000) >> 24 | (i & 0x00FF0000) >> 8 |
-	    (i & 0x0000FF00) << 8 | (i & 0x000000FF) << 24;
+	return (i & UINT32_C(0xFF000000)) >> 24 |
+	    (i & UINT32_C(0x00FF0000)) >> 8 |
+	    (i & UINT32_C(0x0000FF00)) << 8 |
+	    (i & UINT32_C(0x000000FF)) << 24;
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
 OFByteSwap64Const(uint64_t i)
 {
-	return (i & 0xFF00000000000000) >> 56 | (i & 0x00FF000000000000) >> 40 |
-	    (i & 0x0000FF0000000000) >> 24 | (i & 0x000000FF00000000) >> 8 |
-	    (i & 0x00000000FF000000) << 8 | (i & 0x0000000000FF0000) << 24 |
-	    (i & 0x000000000000FF00) << 40 | (i & 0x00000000000000FF) << 56;
+	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
+	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
+	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
+	    (i & UINT64_C(0x000000FF00000000)) >> 8 |
+	    (i & UINT64_C(0x00000000FF000000)) << 8 |
+	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
+	    (i & UINT64_C(0x000000000000FF00)) << 40 |
+	    (i & UINT64_C(0x00000000000000FF)) << 56;
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
@@ -520,7 +525,8 @@ OFByteSwap64NonConst(uint64_t i)
 	    : "0"(i)
 	);
 #else
-	i = (uint64_t)OFByteSwap32NonConst((uint32_t)(i & 0xFFFFFFFF)) << 32 |
+	i = (uint64_t)OFByteSwap32NonConst(
+	    (uint32_t)(i & UINT32_C(0xFFFFFFFF))) << 32 |
 	    OFByteSwap32NonConst((uint32_t)(i >> 32));
 #endif
 	return i;

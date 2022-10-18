@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,13 +42,16 @@ static OFString *const module = @"OFWindowsRegistryKey";
 	TEST(@"+[OFWindowsRegistryKey usersKey]",
 	    [OFWindowsRegistryKey usersKey])
 
-	TEST(@"-[openSubkeyAtPath:securityAndAccessRights:]",
+	TEST(@"-[openSubkeyAtPath:securityAndAccessRights:] #1",
 	    (softwareKey = [[OFWindowsRegistryKey currentUserKey]
 		   openSubkeyAtPath: @"Software"
-	    securityAndAccessRights: KEY_ALL_ACCESS]) &&
+	    securityAndAccessRights: KEY_ALL_ACCESS]))
+
+	EXPECT_EXCEPTION(@"-[openSubkeyAtPath:securityAndAccessRights:] #2",
+	    OFOpenWindowsRegistryKeyFailedException,
 	    [[OFWindowsRegistryKey currentUserKey]
 		   openSubkeyAtPath: @"nonexistent"
-	    securityAndAccessRights: KEY_ALL_ACCESS] == nil)
+	    securityAndAccessRights: KEY_ALL_ACCESS])
 
 	TEST(@"-[createSubkeyAtPath:securityAndAccessRights:]",
 	    (objFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -194,7 +194,7 @@ OFForward_stret:
 
 	mr	%r3, %r4
 #ifdef OF_PIC
-	bl	object_getClass+0x800@plt
+	bl	object_getClass+0x8000@plt
 
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	class_respondsToSelector+0x8000@plt

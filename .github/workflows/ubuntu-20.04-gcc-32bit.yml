@@ -6,22 +6,24 @@ jobs:
     strategy:
       matrix:
         configure_flags:
-          -
-          - --enable-seluid24
-          - --disable-compiler-tls
-          - --disable-threads
-          - --disable-threads --disable-sockets
-          - --disable-threads --disable-files
-          - --disable-threads --disable-sockets --disable-files
-          - --disable-sockets
-          - --disable-sockets --disable-files
-          - --disable-files
-          - --disable-shared
-          - --disable-shared --enable-seluid24
-          - --disable-compiler-tls --disable-threads
+          - --without-tls
+          - --without-tls --enable-seluid24
+          - --without-tls --disable-compiler-tls
+          - --without-tls --disable-threads
+          - --without-tls --disable-threads --disable-sockets
+          - --without-tls --disable-threads --disable-files
+          - --without-tls --disable-threads --disable-sockets --disable-files
+          - --without-tls --disable-sockets
+          - --without-tls --disable-sockets --disable-files
+          - --without-tls --disable-files
+          - --without-tls --disable-shared
+          - --without-tls --disable-shared --enable-seluid24
+          - --without-tls --disable-compiler-tls --disable-threads
     steps:
     - name: Install dependencies
-      run: sudo apt install gcc-multilib gobjc
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc-multilib gobjc
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh

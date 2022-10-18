@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -267,6 +267,27 @@ int _OFString_PathAdditions_reference;
 
 		return ret;
 	}
+}
+
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
+{
+	if ([self hasSuffix: @"/"]) {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableArray *components;
+		OFString *fileName, *ret;
+
+		components =
+		    [[self.pathComponents mutableCopy] autorelease];
+		fileName = [components.lastObject
+		    stringByAppendingFormat: @".%@", extension];
+		[components replaceObjectAtIndex: components.count - 1
+				      withObject: fileName];
+
+		ret = [[OFString pathWithComponents: components] retain];
+		objc_autoreleasePoolPop(pool);
+		return [ret autorelease];
+	} else
+		return [self stringByAppendingFormat: @".%@", extension];
 }
 
 - (bool)of_isDirectoryPath

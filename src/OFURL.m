@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -557,11 +557,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 
 			_port = [[OFNumber alloc] initWithUnsignedShort:
 			    portString.unsignedLongLongValue];
-		} else
+		} else {
 			_URLEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-		if (!isIPv6Host)
+			if (_URLEncodedHost.length == 0) {
+				[_URLEncodedHost release];
+				_URLEncodedHost = nil;
+			}
+		}
+
+		if (_URLEncodedHost != nil && !isIPv6Host)
 			OFURLVerifyIsEscaped(_URLEncodedHost,
 			    [OFCharacterSet URLHostAllowedCharacterSet]);
 
@@ -596,13 +602,17 @@ OFURLVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet)
 			 * slash for the path. So all we do here is go back to
 			 * that slash and restore it.
 			 */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wpragmas"
+# pragma GCC diagnostic ignored "-Wunknown-warning-option"
+# pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
 			UTF8String--;
 			*UTF8String = '/';
-#pragma GCC diagnostic pop
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic pop
+#endif
 
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];

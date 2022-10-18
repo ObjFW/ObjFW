@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -14,6 +14,8 @@
  */
 
 #include "config.h"
+
+#include <errno.h>
 
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
@@ -429,8 +431,6 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	size_t bytesWritten;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -438,16 +438,21 @@ OF_DIRECT_MEMBERS
 		@throw [OFOutOfRangeException exception];
 
 	@try {
-		bytesWritten = [_stream writeBuffer: buffer
-					     length: length];
+		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten <= length);
+
 		_toWrite -= e.bytesWritten;
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return e.bytesWritten;
+
 		@throw e;
 	}
 
-	_toWrite -= bytesWritten;
+	_toWrite -= length;
 
-	return bytesWritten;
+	return length;
 }
 
 - (bool)lowlevelIsAtEndOfStream

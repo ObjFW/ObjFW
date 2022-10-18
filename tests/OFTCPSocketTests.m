@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,7 +46,7 @@ static OFString *const module = @"OFTCPSocket";
 	    [OFSocketAddressString(accepted.remoteAddress)
 	    isEqual: @"127.0.0.1"])
 
-	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
+	TEST(@"-[writeString:]", R([client writeString: @"Hello!"]))
 
 	TEST(@"-[readIntoBuffer:length:]",
 	    [accepted readIntoBuffer: buffer length: 6] &&

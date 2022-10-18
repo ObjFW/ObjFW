@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,10 +64,16 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to write %zu bytes (after %zu bytes written) to an "
-	    @"object of type %@: %@",
-	    _requestedLength, _bytesWritten, [_object class],
-	    OFStrError(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes (after %zu bytes written) to "
+		    @"an object of type %@: %@",
+		    _requestedLength, _bytesWritten, [_object class],
+		    OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes (after %zu bytes written) to "
+		    @"an object of type %@",
+		    _requestedLength, _bytesWritten, [_object class]];
 }
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,11 +46,19 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *funcArrayURL = [sourcesURL
 	    URLByAppendingPathComponent: @"amiga-funcarray.inc"];
 	OFXMLElement *library = [OFXMLElement elementWithStream:
-	    [OFFile fileWithURL: libraryURL mode: @"r"]];
-	OFFile *linkLib = [OFFile fileWithURL: linkLibURL mode: @"w"];
-	OFFile *glueHeader = [OFFile fileWithURL: glueHeaderURL mode: @"w"];
-	OFFile *glue = [OFFile fileWithURL: glueURL mode: @"w"];
-	OFFile *funcArray = [OFFile fileWithURL: funcArrayURL mode: @"w"];
+	    [OFFile fileWithPath: libraryURL.fileSystemRepresentation
+			    mode: @"r"]];
+	OFFile *linkLib =
+	    [OFFile fileWithPath: linkLibURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *glueHeader =
+	    [OFFile fileWithPath: glueHeaderURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *glue =
+	    [OFFile fileWithPath: glueURL.fileSystemRepresentation mode: @"w"];
+	OFFile *funcArray =
+	    [OFFile fileWithPath: funcArrayURL.fileSystemRepresentation
+			    mode: @"w"];
 	LinkLibGenerator *linkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: library
 	     implementation: linkLib] autorelease];

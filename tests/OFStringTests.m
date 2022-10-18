@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -564,7 +564,8 @@ static const OFChar16 swappedChar16String[] = {
 	TEST(@"-[isAbsolutePath]",
 	    C(@"dh0:foo").absolutePath && C(@"dh0:a/b").absolutePath &&
 	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[isAbsolutePath]",
 	    C(@"sdmc:/foo").absolutePath && !C(@"sdmc:foo").absolutePath &&
 	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
@@ -594,6 +595,24 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: mutableString2] &&
 	    [[string stringByAppendingPathComponent: @"baz"]
 	    isEqual: mutableString2])
+
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"c:\\tmp\\foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp\\foo.bar"] &&
+	    [[C(@"c:\\tmp\\/\\") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"c:\\tmp.bar"])
+# else
+	TEST(@"-[stringByAppendingPathExtension:]",
+	    [[C(@"foo") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"] &&
+	    [[C(@"foo/bar") stringByAppendingPathExtension: @"baz"]
+	    isEqual: @"foo/bar.baz"] &&
+	    [[C(@"foo///") stringByAppendingPathExtension: @"bar"]
+	    isEqual: @"foo.bar"])
+# endif
 #endif
 
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
@@ -730,7 +749,8 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: @"foo//bar/baz//"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo/bar/baz"] &&
@@ -854,7 +874,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [[array objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[array objectAtIndex: 1] isEqual: @"/"] &&
 	    C(@"").pathComponents.count == 0)
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[pathComponents]",
 	    /* sdmc:/tmp */
 	    (array = C(@"sdmc:/tmp").pathComponents) && array.count == 2 &&
@@ -935,7 +956,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo/bar").lastPathComponent isEqual: @"bar"] &&
 	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[lastPathComponent]",
 	    [C(@"sdmc:/tmp").lastPathComponent isEqual: @"tmp"] &&
 	    [C(@"sdmc:/tmp/").lastPathComponent isEqual: @"tmp"] &&
@@ -1001,7 +1023,8 @@ static const OFChar16 swappedChar16String[] = {
 	    isEqual: @"dh0:tmp"] &&
 	    [C(@"foo/bar").stringByDeletingLastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @""])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
 	    [C(@"sdmc:/tmp/foo/").stringByDeletingLastPathComponent
@@ -1048,7 +1071,8 @@ static const OFChar16 swappedChar16String[] = {
 	    [C(@".foo\\bar").stringByDeletingPathExtension
 	    isEqual: @".foo\\bar"] &&
 	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
+    defined(OF_NINTENDO_SWITCH)
 	TEST(@"-[stringByDeletingPathExtension]",
 	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
 	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&

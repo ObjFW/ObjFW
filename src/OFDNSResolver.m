@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,6 +39,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 
@@ -747,7 +748,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			_IPv6Socket.canBlock = false;
+			@try {
+				_IPv6Socket.canBlock = false;
+			} @catch (OFNotImplementedException *e) {
+				/* Can't do anything about it... */
+			}
 			_IPv6Socket.delegate = self;
 		}
 
@@ -762,7 +767,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			_IPv4Socket.canBlock = false;
+			@try {
+				_IPv4Socket.canBlock = false;
+			} @catch (OFNotImplementedException *e) {
+				/* Can't do anything about it... */
+			}
 			_IPv4Socket.delegate = self;
 		}
 

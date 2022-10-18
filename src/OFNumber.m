@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -512,6 +512,42 @@ isFloat(OFNumber *number)
 	return [super alloc];
 }
 
++ (instancetype)valueWithBytes: (const void *)bytes
+		      objCType: (const char *)objCType
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithPointer: (const void *)pointer
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithNonretainedObject: (id)object
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithRange: (OFRange)range
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithPoint: (OFPoint)point
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithSize: (OFSize)size
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithRect: (OFRect)rect
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)numberWithBool: (bool)value
 {
 	return [[[self alloc] initWithBool: value] autorelease];
@@ -578,6 +614,12 @@ isFloat(OFNumber *number)
 }
 
 - (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithBytes: (const void *)bytes
+		     objCType: (const char *)objCType
 {
 	OF_INVALID_INIT_METHOD
 }

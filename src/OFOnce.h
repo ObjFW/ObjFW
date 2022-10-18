@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,14 +37,14 @@ typedef void (*OFOnceFunction)(void);
 extern "C" {
 #endif
 /**
- * @brief A method to call a function only once in a thread-safe manner.
+ * @brief Executes the specified function exactly once in the application's
+ *	  lifetime, even in a multi-threaded environment.
  *
- * @param control The once control. This needs to be set to
- *	  OFOnceControlInitValue at compile time.
- * @param func The function to call only once
+ * @param control An OFOnceControl. This should be a static variable
+ *		  preinitialized to `OFOnceControlInitValue`.
+ * @param function The function to execute once
  */
-extern void OFOnce(OFOnceControl *_Nonnull control,
-    OFOnceFunction _Nonnull func);
+extern void OFOnce(OFOnceControl *control, void (*function)(void));
 #ifdef __cplusplus
 }
 #endif

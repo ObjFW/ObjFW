@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -49,6 +49,11 @@
 # include <windows.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+# include <proto/dos.h>
+#endif
+
 #ifdef OF_WII
 # include <fat.h>
 #endif
@@ -58,9 +63,10 @@
 # include <filesystem.h>
 #endif
 
-#ifdef OF_AMIGAOS
-# include <proto/exec.h>
-# include <proto/dos.h>
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
 #endif
 
 #ifndef O_BINARY
@@ -184,6 +190,15 @@ parseMode(const char *mode, bool *append)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif
+
+#ifdef OF_NINTENDO_SWITCH
+	if (R_SUCCEEDED(romfsInit()))
+		/*
+		 * Errors are intentionally ignored, as it's possible we just
+		 * have no romfs.
+		 */
+		atexit((void (*)(void))romfsExit);
+#endif
 }
 
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode
@@ -191,19 +206,9 @@ parseMode(const char *mode, bool *append)
 	return [[[self alloc] initWithPath: path mode: mode] autorelease];
 }
 
-+ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
-}
-
 + (instancetype)fileWithHandle: (OFFileHandle)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
@@ -329,25 +334,6 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *fileSystemRepresentation;
-
-	@try {
-		fileSystemRepresentation = URL.fileSystemRepresentation;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithPath: fileSystemRepresentation mode: mode];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
 - (instancetype)initWithHandle: (OFFileHandle)handle
 {
 	self = [super init];
@@ -355,6 +341,11 @@ parseMode(const char *mode, bool *append)
 	_handle = handle;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (bool)lowlevelIsAtEndOfStream

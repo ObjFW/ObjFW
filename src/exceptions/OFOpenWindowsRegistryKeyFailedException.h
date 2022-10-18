@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
      securityAndAccessRights: (REGSAM)securityAndAccessRights
 		      status: (LSTATUS)status;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated open Windows registry key failed
@@ -102,6 +102,8 @@ OF_ASSUME_NONNULL_BEGIN
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 		     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,6 +17,10 @@
 
 #include "platform.h"
 
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+.abiversion 2
+#endif
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -24,13 +28,20 @@
 
 .section .text
 .macro GENERATE_LOOKUP name notFound
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+\name:
+	addis	%r2, %r12, .TOC.-\name@ha
+	addi	%r2, %r2, .TOC.-\name@l
+.localentry \name, .-\name
+#else
 .section .opd, "aw", @progbits
 \name:
 	.p2align 3
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.text
+.section .text
+#endif
 .Lbegin_\name:
 	cmpdi	%r3, 0
 	beq-	.LreturnNilMethod
@@ -89,13 +100,20 @@
 .endm
 
 .macro GENERATE_LOOKUP_SUPER name lookup
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+\name:
+	addis	%r2, %r12, .TOC.-\name@ha
+	addi	%r2, %r2, .TOC.-\name@l
+.localentry \name, .-\name
+#else
 .section .opd, "aw", @progbits
 \name:
 	.p2align 3
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.text
+.section .text
+#endif
 .Lbegin_\name:
 	mr	%r5, %r3
 	ld	%r3, 0(%r3)
@@ -120,13 +138,20 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	addi	%r3, %r3, nilMethod@toc@l
 	blr
 
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+nilMethod:
+	addis	%r2, %r12, .TOC.-nilMethod@ha
+	addi	%r2, %r2, .TOC.-nilMethod@l
+.localentry nilMethod, .-nilMethod
+#else
 .section .opd, "aw", @progbits
 nilMethod:
 	.p2align 3
 	.quad .Lbegin_nilMethod
 	.quad .TOC.@tocbase
 	.quad 0
-.text
+.section .text
+#endif
 .Lbegin_nilMethod:
 	li	%r3, 0
 	blr

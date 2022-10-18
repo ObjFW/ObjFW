@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,8 +46,8 @@ OF_DIRECT_MEMBERS
 @interface OFSPXSocketAsyncConnectDelegate: OFObject <OFRunLoopConnectDelegate>
 {
 	OFSPXSocket *_socket;
-	unsigned char _node[IPX_NODE_LEN];
 	uint32_t _network;
+	unsigned char _node[IPX_NODE_LEN];
 	uint16_t _port;
 #ifdef OF_HAVE_BLOCKS
 	OFSPXSocketAsyncConnectBlock _block;
@@ -55,8 +55,8 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)initWithSocket: (OFSPXSocket *)socket
-			  node: (unsigned char [IPX_NODE_LEN])node
 		       network: (uint32_t)network
+			  node: (unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
 			 block: (OFSPXSocketAsyncConnectBlock)block
@@ -67,8 +67,8 @@ OF_DIRECT_MEMBERS
 
 @implementation OFSPXSocketAsyncConnectDelegate
 - (instancetype)initWithSocket: (OFSPXSocket *)sock
-			  node: (unsigned char [IPX_NODE_LEN])node
 		       network: (uint32_t)network
+			  node: (unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
 			 block: (OFSPXSocketAsyncConnectBlock)block
@@ -78,8 +78,8 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		_socket = [sock retain];
-		memcpy(_node, node, IPX_NODE_LEN);
 		_network = network;
+		memcpy(_node, node, IPX_NODE_LEN);
 		_port = port;
 #ifdef OF_HAVE_BLOCKS
 		_block = [block copy];
@@ -105,7 +105,7 @@ OF_DIRECT_MEMBERS
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFSocketAddress address =
-	    OFSocketAddressMakeIPX(_node, _network, _port);
+	    OFSocketAddressMakeIPX(_network, _node, _port);
 	id exception = nil;
 	int errNo;
 
@@ -153,12 +153,12 @@ inform_delegate:
 	else {
 #endif
 		if ([delegate respondsToSelector:
-		    @selector(socket:didConnectToNode:network:port:exception:)])
-			[delegate     socket: _socket
-			    didConnectToNode: _node
-				     network: _network
-					port: _port
-				   exception: exception];
+		    @selector(socket:didConnectToNetwork:node:port:exception:)])
+			[delegate	 socket: _socket
+			    didConnectToNetwork: _network
+					   node: _node
+					   port: _port
+				      exception: exception];
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif
@@ -166,11 +166,11 @@ inform_delegate:
 
 - (id)of_connectionFailedExceptionForErrNo: (int)errNo
 {
-	return [OFConnectionFailedException exceptionWithNode: _node
-						      network: _network
-							 port: _port
-						       socket: _socket
-							errNo: errNo];
+	return [OFConnectionFailedException exceptionWithNetwork: _network
+							    node: _node
+							    port: _port
+							  socket: _socket
+							   errNo: errNo];
 }
 @end
 
@@ -208,7 +208,7 @@ inform_delegate:
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (connect(_socket, &address->sockaddr.sockaddr,
+	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
 		*errNo = OFSocketErrNo();
 		return false;
@@ -223,54 +223,54 @@ inform_delegate:
 	_socket = OFInvalidSocketHandle;
 }
 
-- (void)connectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-	      network: (uint32_t)network
-		 port: (uint16_t)port
+- (void)connectToNetwork: (uint32_t)network
+		    node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		    port: (uint16_t)port
 {
-	OFSocketAddress address = OFSocketAddressMakeIPX(node, network, port);
+	OFSocketAddress address = OFSocketAddressMakeIPX(network, node, port);
 	int errNo;
 
 	if (![self of_createSocketForAddress: &address errNo: &errNo])
 		@throw [OFConnectionFailedException
-		    exceptionWithNode: node
-			      network: network
-				 port: port
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: errNo];
 
 	if (![self of_connectSocketToAddress: &address errNo: &errNo]) {
 		[self of_closeSocket];
 
 		@throw [OFConnectionFailedException
-		    exceptionWithNode: node
-			      network: network
-				 port: port
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: errNo];
 	}
 }
 
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
 {
-	[self asyncConnectToNode: node
-			 network: network
-			    port: port
-		     runLoopMode: OFDefaultRunLoopMode];
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-	       runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFSPXSocketAsyncConnectDelegate alloc]
 	    initWithSocket: self
-		      node: node
 		   network: network
+		      node: node
 		      port: port
 #ifdef OF_HAVE_BLOCKS
 		     block: NULL
@@ -281,30 +281,30 @@ inform_delegate:
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-		     block: (OFSPXSocketAsyncConnectBlock)block
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+			block: (OFSPXSocketAsyncConnectBlock)block
 {
-	[self asyncConnectToNode: node
-			 network: network
-			    port: port
-		     runLoopMode: OFDefaultRunLoopMode
-			   block: block];
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: OFDefaultRunLoopMode
+			      block: block];
 }
 
-- (void)asyncConnectToNode: (unsigned char [_Nonnull IPX_NODE_LEN])node
-		   network: (uint32_t)network
-		      port: (uint16_t)port
-	       runLoopMode: (OFRunLoopMode)runLoopMode
-		     block: (OFSPXSocketAsyncConnectBlock)block
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
+			block: (OFSPXSocketAsyncConnectBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFSPXSocketAsyncConnectDelegate alloc]
 	    initWithSocket: self
-		      node: node
 		   network: network
+		      node: node
 		      port: port
 		     block: block
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
@@ -324,9 +324,9 @@ inform_delegate:
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeIPX(zeroNode, 0, port);
+	address = OFSocketAddressMakeIPX(0, zeroNode, port);
 
-	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
 	    OFInvalidSocketHandle)
 		@throw [OFBindFailedException
@@ -342,7 +342,8 @@ inform_delegate:
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, &address.sockaddr.sockaddr, address.length) != 0) {
+	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+	    address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
 		closesocket(_socket);
@@ -358,7 +359,7 @@ inform_delegate:
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, &address.sockaddr.sockaddr,
+	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
 		int errNo = OFSocketErrNo();
 
@@ -371,7 +372,7 @@ inform_delegate:
 							  errNo: errNo];
 	}
 
-	if (address.sockaddr.sockaddr.sa_family != AF_IPX) {
+	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 

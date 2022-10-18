@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "unistd_wrapper.h"
 
 #include <assert.h>
 
@@ -48,7 +49,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -143,8 +143,10 @@ OFAllocZeroedMemory(size_t count, size_t size)
 void *
 OFResizeMemory(void *pointer, size_t count, size_t size)
 {
-	if OF_UNLIKELY (count == 0 || size == 0)
+	if OF_UNLIKELY (count == 0 || size == 0) {
+		free(pointer);
 		return NULL;
+	}
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];

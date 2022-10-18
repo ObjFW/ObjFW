@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,6 +29,11 @@
 {
 	return [[[self alloc] initWithCondition: condition
 					  errNo: errNo] autorelease];
+}
+
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo

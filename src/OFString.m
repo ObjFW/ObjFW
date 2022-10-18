@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1084,6 +1084,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		[self release];
 		@throw e;
 	}
+
+	/* FIXME: Detect encoding where we can. */
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
 
 	self = [self initWithCString: data.items
 			    encoding: encoding

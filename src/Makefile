@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE}
+SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE} ${TLS}
 CLEAN = amiga-end.amigalib.dep		\
 	amiga-end.amigalib.o		\
 	amiga-glue.amigalib.dep		\
@@ -19,13 +19,9 @@ AMIGA_LIB = ${OBJFW_AMIGA_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASPrintF.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
-       OFBase64.m			\
        OFBlock.m			\
-       OFCRC16.m			\
-       OFCRC32.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\
@@ -35,11 +31,14 @@ SRCS = OFASPrintF.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
+       OFEmbeddedFileURLHandler.m	\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
-       OFHuffmanTree.m			\
+       OFINICategory.m			\
+       OFINIFile.m			\
+       OFINIFileSettings.m		\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -49,6 +48,7 @@ SRCS = OFASPrintF.m			\
        OFLocale.m			\
        OFMD5Hash.m			\
        OFMapTable.m			\
+       OFMemoryStream.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
@@ -62,6 +62,8 @@ SRCS = OFASPrintF.m			\
        OFMutableTriple.m		\
        OFMutableURL.m			\
        OFMutableZIPArchiveEntry.m	\
+       OFNotification.m			\
+       OFNotificationCenter.m		\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\
@@ -87,7 +89,6 @@ SRCS = OFASPrintF.m			\
        OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
-       OFStrPTime.m			\
        OFStream.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
@@ -97,7 +98,8 @@ SRCS = OFASPrintF.m			\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       ${OF_SUBUPROCESS_M}		\
+       ${OF_SUBPROCESS_M}		\
+       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -106,6 +108,7 @@ SRCS = OFASPrintF.m			\
        OFTriple.m			\
        OFURL.m				\
        OFURLHandler.m			\
+       OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
@@ -125,13 +128,7 @@ SRCS = OFASPrintF.m			\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
-	     OFINICategory.m		\
-	     OFINIFile.m		\
-	     OFSettings.m		\
 	     OFString+PathAdditions.m
-SRCS_IPX = OFIPXSocket.m	\
-	   OFSPXSocket.m	\
-	   OFSPXStreamSocket.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
@@ -148,16 +145,22 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
+	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocket.m	\
+	   OFSPXSocket.m	\
+	   OFSPXStreamSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+		    OFUNIXStreamSocket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\
 	       OFPlainMutex.m		\
 	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
-	       OFTLSKey.m		\
-	       OFThreadPool.m
+	       OFTLSKey.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 
@@ -175,18 +178,22 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
-	    OFTLSSocket.h			\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
 	    ${USE_INCLUDES_ATOMIC}
 
-SRCS += OFAdjacentArray.m		\
+SRCS += OFASPrintF.m			\
+	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
+	OFCRC16.m			\
+	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
+	OFHuffmanTree.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -203,20 +210,20 @@ SRCS += OFAdjacentArray.m		\
 	OFRectValue.m			\
 	OFSandbox.m			\
 	OFSizeValue.m			\
+	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
        ${UNICODE_M}
-SRCS_FILES += OFFileURLHandler.m	\
-	      OFINIFileSettings.m
+SRCS_FILES += OFFileURLHandler.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURLHandler.m			\
 		OFHostAddressResolver.m			\
 		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
-		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\

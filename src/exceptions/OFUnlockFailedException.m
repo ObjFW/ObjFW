@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,11 +38,6 @@
 	return self;
 }
 
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (void)dealloc
 {
 	[_lock release];
@@ -52,8 +47,11 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"A lock of type %@ could not be unlocked: %s",
-	    [_lock class], strerror(_errNo)];
+	if (_lock != nil)
+		return [OFString stringWithFormat:
+		    @"A lock of type %@ could not be unlocked: %s",
+		    [_lock class], strerror(_errNo)];
+	else
+		return @"A lock could not be unlocked!";
 }
 @end

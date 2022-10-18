@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 #import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFInvalidArgumentException.h"
 
 @implementation OFHMAC
@@ -84,6 +85,7 @@
 			    hashWithAllowsSwappableMemory:
 			    _allowsSwappableMemory];
 			[hash updateWithBuffer: key length: length];
+			[hash calculate];
 
 			length = hash.digestSize;
 			if OF_UNLIKELY (length > blockSize)
@@ -140,17 +142,26 @@
 	[_innerHash updateWithBuffer: buffer length: length];
 }
 
-- (const unsigned char *)digest
+- (void)calculate
 {
+	if (_calculated)
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithObject: self];
+
 	if (_outerHash == nil || _innerHash == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_calculated)
-		return _outerHash.digest;
-
+	[_innerHash calculate];
 	[_outerHash updateWithBuffer: _innerHash.digest
 			      length: _innerHash.digestSize];
+	[_outerHash calculate];
 	_calculated = true;
+}
+
+- (const unsigned char *)digest
+{
+	if (!_calculated)
+		@throw [OFHashNotCalculatedException exceptionWithObject: self];
 
 	return _outerHash.digest;
 }
