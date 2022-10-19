@@ -25,7 +25,7 @@
 #endif
 #include "unistd_wrapper.h"
 
-#import "platform.h"
+#include "platform.h"
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
