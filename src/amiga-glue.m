@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -339,90 +339,114 @@ glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressMakeIPX PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port)
+glue_OFSocketAddressMakeUNIX PPC_PARAMS(OFString *path)
 {
-	M68K_ARG(const unsigned char *_Nonnull, node, a0)
+	M68K_ARG(OFString *, path, a0)
+
+	return OFSocketAddressMakeUNIX(path);
+}
+
+OFSocketAddress __saveds
+glue_OFSocketAddressMakeIPX PPC_PARAMS(uint32_t network, const unsigned char *node, uint16_t port)
+{
 	M68K_ARG(uint32_t, network, d0)
+	M68K_ARG(const unsigned char *, node, a0)
 	M68K_ARG(uint16_t, port, d1)
 
-	return OFSocketAddressMakeIPX(node, network, port);
+	return OFSocketAddressMakeIPX(network, node, port);
 }
 
 bool __saveds
-glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *_Nonnull address1, const OFSocketAddress *_Nonnull address2)
+glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *address1, const OFSocketAddress *address2)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address1, a0)
-	M68K_ARG(const OFSocketAddress *_Nonnull, address2, a1)
+	M68K_ARG(const OFSocketAddress *, address1, a0)
+	M68K_ARG(const OFSocketAddress *, address2, a1)
 
 	return OFSocketAddressEqual(address1, address2);
 }
 
 unsigned long __saveds
-glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *_Nonnull address)
+glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *address)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
 
 	return OFSocketAddressHash(address);
 }
 
 OFString *_Nonnull __saveds
-glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *_Nonnull address)
+glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *address)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
 
 	return OFSocketAddressString(address);
 }
 
 void __saveds
-glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *_Nonnull address, uint16_t port)
+glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
 {
-	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint16_t, port, d0)
 
 	OFSocketAddressSetPort(address, port);
 }
 
 uint16_t __saveds
-glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *_Nonnull address)
+glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *address)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
 
 	return OFSocketAddressPort(address);
 }
 
-void __saveds
-glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *_Nonnull address, uint32_t network)
+OFString * __saveds
+glue_OFSocketAddressUNIXPath PPC_PARAMS(const OFSocketAddress *address)
 {
-	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
+
+	return OFSocketAddressUNIXPath(address);
+}
+
+void __saveds
+glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *address, uint32_t network)
+{
+	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint32_t, network, d0)
 
 	OFSocketAddressSetIPXNetwork(address, network);
 }
 
 uint32_t __saveds
-glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *_Nonnull address)
+glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *address)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
 
 	return OFSocketAddressIPXNetwork(address);
 }
 
 void __saveds
-glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *_Nonnull address, const unsigned char *_Nonnull node)
+glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *address, const unsigned char *node)
 {
-	M68K_ARG(OFSocketAddress *_Nonnull, address, a0)
-	M68K_ARG(const unsigned char *_Nonnull, node, a1)
+	M68K_ARG(OFSocketAddress *, address, a0)
+	M68K_ARG(const unsigned char *, node, a1)
 
 	OFSocketAddressSetIPXNode(address, node);
 }
 
 void __saveds
-glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *_Nonnull address, unsigned char *_Nonnull node)
+glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *address, unsigned char *_Nonnull node)
 {
-	M68K_ARG(const OFSocketAddress *_Nonnull, address, a0)
+	M68K_ARG(const OFSocketAddress *, address, a0)
 	M68K_ARG(unsigned char *_Nonnull, node, a1)
 
 	OFSocketAddressIPXNode(address, node);
+}
+
+OFString * __saveds
+glue_OFTLSStreamErrorCodeDescription PPC_PARAMS(OFTLSStreamErrorCode errorCode)
+{
+	M68K_ARG(OFTLSStreamErrorCode, errorCode, d0)
+
+	return OFTLSStreamErrorCodeDescription(errorCode);
 }
 
 const char *_Nullable __saveds

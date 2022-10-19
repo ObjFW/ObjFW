@@ -140,50 +140,52 @@
     <argument name='IP' type='OFString *' m68k-reg='a0'/>
     <argument name='port' type='uint16_t' m68k-reg='d0'/>
   </function>
+  <function name='OFSocketAddressMakeUNIX' return-type='OFSocketAddress'>
+    <argument name='path' type='OFString *' m68k-reg='a0'/>
+  </function>
   <function name='OFSocketAddressMakeIPX' return-type='OFSocketAddress'>
-    <argument name='node' type='const unsigned char *_Nonnull' m68k-reg='a0'/>
     <argument name='network' type='uint32_t' m68k-reg='d0'/>
+    <argument name='node' type='const unsigned char *' m68k-reg='a0'/>
     <argument name='port' type='uint16_t' m68k-reg='d1'/>
   </function>
   <function name='OFSocketAddressEqual' return-type='bool'>
-    <argument name='address1' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
-    <argument name='address2' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a1'/>
+    <argument name='address1' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address2' type='const OFSocketAddress *' m68k-reg='a1'/>
   </function>
   <function name='OFSocketAddressHash' return-type='unsigned long'>
-    <argument name='address' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <function name='OFSocketAddressString' return-type='OFString *_Nonnull'>
-    <argument name='address' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <function name='OFSocketAddressSetPort'>
-    <argument name='address' type='OFSocketAddress *_Nonnull' m68k-reg='a0'/>
+    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
     <argument name='port' type='uint16_t' m68k-reg='d0'/>
   </function>
   <function name='OFSocketAddressPort' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+  </function>
+  <function name='OFSocketAddressUNIXPath' return-type='OFString *'>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <function name='OFSocketAddressSetIPXNetwork'>
-    <argument name='address' type='OFSocketAddress *_Nonnull' m68k-reg='a0'/>
+    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
     <argument name='network' type='uint32_t' m68k-reg='d0'/>
   </function>
   <function name='OFSocketAddressIPXNetwork' return-type='uint32_t'>
-    <argument name='address' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <function name='OFSocketAddressSetIPXNode'>
-    <argument name='address' type='OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
-    <argument name='node' type='const unsigned char *_Nonnull' m68k-reg='a1'/>
+    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='node' type='const unsigned char *' m68k-reg='a1'/>
   </function>
   <function name='OFSocketAddressIPXNode'>
-    <argument name='address' type='const OFSocketAddress *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
     <argument name='node' type='unsigned char *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <include>OFTLSStream.h</include>
+  <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
+    <argument name='errorCode' type='OFTLSStreamErrorCode' m68k-reg='d0'/>
   </function>
   <!-- Only for tests. -->
   <include>OFStrPTime.h</include>

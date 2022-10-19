@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,6 +29,7 @@
 #import "OFPBKDF2.h"
 #import "OFScrypt.h"
 #import "OFSocket.h"
+#import "OFTLSStream.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFZIPArchiveEntry.h"
@@ -81,16 +82,19 @@ extern void glue_OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, si
 extern OFSocketAddress glue_OFSocketAddressParseIP PPC_PARAMS(OFString *IP, uint16_t port);
 extern OFSocketAddress glue_OFSocketAddressParseIPv4 PPC_PARAMS(OFString *IP, uint16_t port);
 extern OFSocketAddress glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port);
-extern OFSocketAddress glue_OFSocketAddressMakeIPX PPC_PARAMS(const unsigned char *_Nonnull node, uint32_t network, uint16_t port);
-extern bool glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *_Nonnull address1, const OFSocketAddress *_Nonnull address2);
-extern unsigned long glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *_Nonnull address);
-extern OFString *_Nonnull glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *_Nonnull address);
-extern void glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *_Nonnull address, uint16_t port);
-extern uint16_t glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *_Nonnull address);
-extern void glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *_Nonnull address, uint32_t network);
-extern uint32_t glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *_Nonnull address);
-extern void glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *_Nonnull address, const unsigned char *_Nonnull node);
-extern void glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *_Nonnull address, unsigned char *_Nonnull node);
+extern OFSocketAddress glue_OFSocketAddressMakeUNIX PPC_PARAMS(OFString *path);
+extern OFSocketAddress glue_OFSocketAddressMakeIPX PPC_PARAMS(uint32_t network, const unsigned char *node, uint16_t port);
+extern bool glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *address1, const OFSocketAddress *address2);
+extern unsigned long glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *address);
+extern OFString *_Nonnull glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *address);
+extern void glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *address, uint16_t port);
+extern uint16_t glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *address);
+extern OFString *glue_OFSocketAddressUNIXPath PPC_PARAMS(const OFSocketAddress *address);
+extern void glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *address, uint32_t network);
+extern uint32_t glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *address);
+extern void glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *address, const unsigned char *node);
+extern void glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *address, unsigned char *_Nonnull node);
+extern OFString *glue_OFTLSStreamErrorCodeDescription PPC_PARAMS(OFTLSStreamErrorCode errorCode);
 extern const char *_Nullable glue_OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz);
 extern OFStringEncoding glue_OFStringEncodingParseName PPC_PARAMS(OFString *string);
 extern OFString *_Nullable glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding);

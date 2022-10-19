@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,16 +53,19 @@
 (CONST_APTR)glue_OFSocketAddressParseIP,
 (CONST_APTR)glue_OFSocketAddressParseIPv4,
 (CONST_APTR)glue_OFSocketAddressParseIPv6,
+(CONST_APTR)glue_OFSocketAddressMakeUNIX,
 (CONST_APTR)glue_OFSocketAddressMakeIPX,
 (CONST_APTR)glue_OFSocketAddressEqual,
 (CONST_APTR)glue_OFSocketAddressHash,
 (CONST_APTR)glue_OFSocketAddressString,
 (CONST_APTR)glue_OFSocketAddressSetPort,
 (CONST_APTR)glue_OFSocketAddressPort,
+(CONST_APTR)glue_OFSocketAddressUNIXPath,
 (CONST_APTR)glue_OFSocketAddressSetIPXNetwork,
 (CONST_APTR)glue_OFSocketAddressIPXNetwork,
 (CONST_APTR)glue_OFSocketAddressSetIPXNode,
 (CONST_APTR)glue_OFSocketAddressIPXNode,
+(CONST_APTR)glue_OFTLSStreamErrorCodeDescription,
 (CONST_APTR)glue_OFStrPTime,
 (CONST_APTR)glue_OFStringEncodingParseName,
 (CONST_APTR)glue_OFStringEncodingName,
