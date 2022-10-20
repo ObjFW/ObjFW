@@ -139,7 +139,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return A stream for reading the current entry
  */
-- (FStream *)streamForReadingCurrentEntry;
+- (OFStream *)streamForReadingCurrentEntry;
 
 /**
  * @brief Returns a stream for writing the specified entry.
