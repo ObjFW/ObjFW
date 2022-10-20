@@ -78,6 +78,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
@@ -89,6 +90,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 + (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
@@ -115,6 +117,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
@@ -128,6 +131,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 - (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
@@ -147,6 +151,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in read mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed
+ * @throw OFInvalidFormatException The local header and the header in the
+ *				   central directory do not match enough
+ * @throw OFUnsupportedVersionException The file uses a version of the ZIP
+ *					format that is not supported
  */
 - (OFStream *)streamForReadingFile: (OFString *)path;
 
@@ -173,11 +185,21 @@ OF_SUBCLASSING_RESTRICTED
  *		  * The CRC32.
  *		  * Bit 3 and 11 of the general purpose bit flag.
  * @return A stream for writing the specified entry to the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in write mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed. If @ref errNo is `EEXIST`,
+ *				    because there is already a file with the
+ *				    same name in the archive.
+ * @throw OFNotImplementedException The desired compression method is not
+ *				    implemented
  */
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry;
 
 /**
  * @brief Closes the OFZIPArchive.
+ *
+ * @throw OFNotOpenException The archive is not open
  */
 - (void)close;
 @end
