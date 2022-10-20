@@ -47,16 +47,6 @@ OF_SUBCLASSING_RESTRICTED
 @property (nonatomic) OFStringEncoding encoding;
 
 /**
- * @brief A stream for reading the current entry.
- *
- * @note This is only available in read mode.
- *
- * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
- *	 underlying stream does so, too.
- */
-@property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
-
-/**
  * @brief Creates a new OFLHAArchive object with the specified stream.
  *
  * @param stream A stream from which the LHA archive will be read.
@@ -140,6 +130,18 @@ OF_SUBCLASSING_RESTRICTED
 - (nullable OFLHAArchiveEntry *)nextEntry;
 
 /**
+ * @brief Returns a stream for reading the current entry.
+ *
+ * @note This is only available in read mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
+ *
+ * @return A stream for reading the current entry
+ */
+- (FStream *)streamForReadingCurrentEntry;
+
+/**
  * @brief Returns a stream for writing the specified entry.
  *
  * @note This is only available in write and append mode.
@@ -163,6 +165,8 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Closes the OFLHAArchive.
+ *
+ * @throw OFNotOpenException The archive is not open
  */
 - (void)close;
 @end

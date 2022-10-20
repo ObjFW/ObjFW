@@ -134,6 +134,9 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * This is a value between -1.0 (meaning lowest priority that still schedules)
  * and +1.0 (meaning highest priority that still allows getting preempted)
  * with normal priority being 0.0 (meaning being the same as the main thread).
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the priority cannot be changed
  */
 @property (nonatomic) float priority;
 
@@ -141,6 +144,9 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief The stack size of the thread.
  *
  * @note This has to be set before the thread is started!
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the stack size cannot be changed
  */
 @property (nonatomic) size_t stackSize;
 
@@ -150,6 +156,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * Some operating systems such as AmigaOS need special per-thread
  * initialization of sockets. If you intend to use sockets in the thread, set
  * this property to true before starting the thread.
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the sockets support cannot be
+ *					enabled/disabled
  */
 @property (nonatomic) bool supportsSockets;
 
@@ -243,6 +253,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief Terminates the current thread, letting it return the specified object.
  *
  * @param object The object which the terminated thread will return
+ * @throw OFInvalidArgumentException The method was called from the main thread
  */
 + (void)terminateWithObject: (nullable id)object OF_NO_RETURN;
 
@@ -290,6 +301,9 @@ typedef id _Nullable (^OFThreadBlock)(void);
 
 /**
  * @brief Starts the thread.
+ *
+ * @throw OFThreadStillRunningException The thread is still running
+ * @throw OFThreadStartFailedException Starting the thread failed
  */
 - (void)start;
 
@@ -297,6 +311,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief Joins a thread.
  *
  * @return The object returned by the main method of the thread.
+ * @throw OFThreadJoinFailedException Joining the thread failed
  */
 - (id)join;
 #else
