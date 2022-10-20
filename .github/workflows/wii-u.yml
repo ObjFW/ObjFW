@@ -32,4 +32,4 @@ jobs:
           -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitppc \
-          sh -c "cd /objfw && make -j$(nproc)"
+          sh -c "cd /objfw && make install"
