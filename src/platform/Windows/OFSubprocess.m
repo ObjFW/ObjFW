@@ -370,8 +370,10 @@
 
 - (void)closeForWriting
 {
-	if (_writePipe[1] != NULL)
-		CloseHandle(_writePipe[1]);
+	if (_readPipe[0] == NULL || _writePipe[1] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	CloseHandle(_writePipe[1]);
 
 	_writePipe[1] = NULL;
 }

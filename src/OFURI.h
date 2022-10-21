@@ -201,6 +201,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The local file path
  * @return A new, autoreleased OFURI
+ * @throw OFInvalidFormatException The specified path is not a valid path
  */
 + (instancetype)fileURIWithPath: (OFString *)path;
 
@@ -248,6 +249,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The local file path
  * @return An initialized OFURI
+ * @throw OFInvalidFormatException The specified path is not a valid path
  */
 - (instancetype)initFileURIWithPath: (OFString *)path;
 
