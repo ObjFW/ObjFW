@@ -190,7 +190,7 @@ inform_delegate:
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
-	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
+	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) ==
 	    OFInvalidSocketHandle) {
 		*errNo = OFSocketErrNo();
 		return false;
