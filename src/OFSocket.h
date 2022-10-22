@@ -155,9 +155,11 @@ struct sockaddr_ipx {
 #ifndef OF_HAVE_APPLETALK
 struct sockaddr_at {
 	sa_family_t sat_family;
-	unsigned short sat_net;
-	unsigned char sat_node;
-	unsigned char sat_port;
+	uint8_t sat_port;
+	struct at_addr {
+		uint16_t s_net;
+		uint8_t s_node;
+	} sat_addr;
 };
 #endif
 #ifdef OF_WINDOWS
