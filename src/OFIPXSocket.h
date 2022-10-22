@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFSocketAddressMakeIPX to create an address or
  * @ref OFSocketAddressIPXNetwork to get the IPX network,
  * @ref OFSocketAddressIPXNode to get the IPX node and
- * @ref OFSocketAddressPort to get the port (sometimes also called
+ * @ref OFSocketAddressIPXPort to get the port (sometimes also called
  * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*

@@ -357,7 +357,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			OFSocketAddressSetPort(&address, rnd);
+			OFSocketAddressSetIPPort(&address, rnd);
 
 			if ((ret = bind(_socket,
 			    (struct sockaddr *)&address.sockaddr,
