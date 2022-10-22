@@ -163,7 +163,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @brief Bind the socket to the specified network, node and port.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to
- *	       pick one and return it.
+ *	       pick one and return via the returned socket address.
  * @return The address on which this socket can be reached
  * @throw OFConnectionFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound

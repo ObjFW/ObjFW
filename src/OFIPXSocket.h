@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified packet type.
  *
  * @param port The port (sometimes called socket number) to bind to. 0 means to
- *	       pick one and return it.
+ *	       pick one and return via the returned socket address.
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
  * @throw OFBindFailedException Binding failed
