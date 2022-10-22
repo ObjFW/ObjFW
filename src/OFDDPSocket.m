@@ -31,7 +31,9 @@
 @implementation OFDDPSocket
 @dynamic delegate;
 
-- (OFSocketAddress)bindToPort: (uint8_t)port
+- (OFSocketAddress)bindToNetwork: (uint16_t)network
+			    node: (uint8_t)node
+			    port: (uint8_t)port
 {
 	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
@@ -41,14 +43,16 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeAppleTalk(0, 0, port);
+	address = OFSocketAddressMakeAppleTalk(network, node, port);
 
 	if ((_socket = socket(address.sockaddr.at.sat_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindDDPSocketFailedException
-		    exceptionWithPort: port
-			       socket: self
-				errNo: OFSocketErrNo()];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -65,9 +69,11 @@
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindDDPSocketFailedException
-		    exceptionWithPort: port
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -82,9 +88,11 @@
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindDDPSocketFailedException
-		    exceptionWithPort: port
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: errNo];
 	}
 
 	if (address.sockaddr.at.sat_family != AF_APPLETALK) {
@@ -92,9 +100,11 @@
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindDDPSocketFailedException
-		    exceptionWithPort: port
-			       socket: self
-				errNo: EAFNOSUPPORT];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+				  socket: self
+				   errNo: EAFNOSUPPORT];
 	}
 
 	return address;

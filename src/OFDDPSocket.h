@@ -68,10 +68,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param port The port to bind to. 0 means to pick one and return it via the
  *	       returned socket address.
  * @return The address on which this socket can be reached
- * @throw OFBindFailedException Binding failed
+ * @throw OFBindDDPSockeFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
-- (OFSocketAddress)bindToPort: (uint8_t)port;
+- (OFSocketAddress)bindToNetwork: (uint16_t)network
+			    node: (uint8_t)node
+			    port: (uint8_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

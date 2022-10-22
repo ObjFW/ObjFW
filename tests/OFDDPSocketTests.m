@@ -32,19 +32,20 @@ static OFString *const module = @"OFDDPSocket";
 	TEST(@"+[socket]", (sock = [OFDDPSocket socket]))
 
 	@try {
-		TEST(@"-[bindToPort:]", R(address1 = [sock bindToPort: 0]))
+		TEST(@"-[bindToNetwork:node:port:]",
+		    R(address1 = [sock bindToNetwork: 0 node: 0 port: 0]))
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFDDPSocket] -[bindToPort:] "
+			    @"\r[OFDDPSocket] -[bindToNetwork:node:port:] "
 			    @"AppleTalk unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFDDPSocket] -[bindToPort:]: "
+			    @"\r[OFDDPSocket] -[bindToNetwork:node:port:] "
 			    @"AppleTalk not configured, skipping tests"];
 			break;
 		default:
