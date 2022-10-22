@@ -83,7 +83,7 @@ static OFString *const module = @"OFSocket";
 	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #6", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"127.0..1", 1234))
 
-	TEST(@"Port of an IPv4 address", OFSocketAddressPort(&addr) == 1234)
+	TEST(@"Port of an IPv4 address", OFSocketAddressIPPort(&addr) == 1234)
 
 	TEST(@"Converting an IPv4 to a string",
 	    [OFSocketAddressString(&addr) isEqual: @"127.0.0.1"])
@@ -145,7 +145,7 @@ static OFString *const module = @"OFSocket";
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #10", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"1:2", 1234))
 
-	TEST(@"Port of an IPv6 address", OFSocketAddressPort(&addr) == 1234)
+	TEST(@"Port of an IPv6 address", OFSocketAddressIPPort(&addr) == 1234)
 
 	SET_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0)
 	TEST(@"Converting an IPv6 to a string #1",

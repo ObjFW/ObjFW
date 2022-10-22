@@ -282,23 +282,21 @@ extern OFString *_Nonnull OFSocketAddressString(
     const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Sets the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the port
  * @param port The port to set on the address
  */
-extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressSetIPPort(OFSocketAddress *_Nonnull address,
     uint16_t port);
 
 /**
- * @brief Returns the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Returns the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to get the port
  * @return The port of the address
  */
-extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
+extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
 
 /**
  * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
@@ -346,6 +344,23 @@ extern void OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 /**
+ * @brief Sets the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetIPXPort(OFSocketAddress *_Nonnull address,
+    uint16_t port);
+
+/**
+ * @brief Returns the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint16_t OFSocketAddressIPXPort(const OFSocketAddress *_Nonnull address);
+
+/**
  * @brief Sets the AppleTalk network of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the AppleTalk network
@@ -379,6 +394,24 @@ extern void OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address,
  * @return The AppleTalk node of the address
  */
 extern uint8_t OFSocketAddressAppleTalkNode(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
+    uint8_t port);
+
+/**
+ * @brief Returns the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkPort(
     const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);

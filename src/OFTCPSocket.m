@@ -311,7 +311,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      addressFamily: OFSocketAddressFamilyAny];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
-	OFSocketAddressSetPort(&address, port);
+	OFSocketAddressSetIPPort(&address, port);
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address.sockaddr)->sa_family,

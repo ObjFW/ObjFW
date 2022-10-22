@@ -54,7 +54,7 @@
 	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: OFSocketErrNo()];
 
@@ -68,7 +68,7 @@
 #endif
 
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
-	if (OFSocketAddressPort(address) != 0) {
+	if (OFSocketAddressIPPort(address) != 0) {
 #endif
 		if (bind(_socket, (struct sockaddr *)&address->sockaddr,
 		    address->length) != 0) {
@@ -79,7 +79,7 @@
 
 			@throw [OFBindIPSocketFailedException
 			    exceptionWithHost: OFSocketAddressString(address)
-					 port: OFSocketAddressPort(address)
+					 port: OFSocketAddressIPPort(address)
 				       socket: self
 					errNo: errNo];
 		}
@@ -102,7 +102,7 @@
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				port = OFSocketAddressPort(address);
+				port = OFSocketAddressIPPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
@@ -119,7 +119,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	if ((port = OFSocketAddressPort(address)) > 0)
+	if ((port = OFSocketAddressIPPort(address)) > 0)
 		return port;
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -135,7 +135,7 @@
 
 		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: errNo];
 	}
@@ -153,7 +153,7 @@
 
 		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
@@ -163,7 +163,7 @@
 
 	@throw [OFBindIPSocketFailedException
 	    exceptionWithHost: OFSocketAddressString(address)
-			 port: OFSocketAddressPort(address)
+			 port: OFSocketAddressIPPort(address)
 		       socket: self
 			errNo: EADDRNOTAVAIL];
 #endif
@@ -183,7 +183,7 @@
 		      addressFamily: OFSocketAddressFamilyAny];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
-	OFSocketAddressSetPort(&address, port);
+	OFSocketAddressSetIPPort(&address, port);
 
 	port = [self of_bindToAddress: &address extraType: 0];
 

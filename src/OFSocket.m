@@ -885,7 +885,7 @@ OFSocketAddressString(const OFSocketAddress *address)
 }
 
 void
-OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
+OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
@@ -894,31 +894,19 @@ OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
 	case OFSocketAddressFamilyIPv6:
 		address->sockaddr.in6.sin6_port = OFToBigEndian16(port);
 		break;
-	case OFSocketAddressFamilyIPX:
-		address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
-		break;
-	case OFSocketAddressFamilyAppleTalk:
-		if (port > UINT8_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		address->sockaddr.at.sat_port = (uint8_t)port;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 }
 
 uint16_t
-OFSocketAddressPort(const OFSocketAddress *address)
+OFSocketAddressIPPort(const OFSocketAddress *address)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
 		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 	case OFSocketAddressFamilyIPv6:
 		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
-	case OFSocketAddressFamilyIPX:
-		return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
-	case OFSocketAddressFamilyAppleTalk:
-		return address->sockaddr.at.sat_port;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -991,6 +979,24 @@ OFSocketAddressGetIPXNode(const OFSocketAddress *address,
 }
 
 void
+OFSocketAddressSetIPXPort(OFSocketAddress *address, uint16_t port)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
+}
+
+uint16_t
+OFSocketAddressIPXPort(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
+}
+
+void
 OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network)
 {
 	if (address->family != OFSocketAddressFamilyAppleTalk)
@@ -1024,4 +1030,22 @@ OFSocketAddressAppleTalkNode(const OFSocketAddress *address)
 		@throw [OFInvalidArgumentException exception];
 
 	return address->sockaddr.at.sat_node;
+}
+
+void
+OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.at.sat_port = port;
+}
+
+uint8_t
+OFSocketAddressAppleTalkPort(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	return address->sockaddr.at.sat_port;
 }
