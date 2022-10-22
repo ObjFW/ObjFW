@@ -62,8 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFDDPSocketDelegate> delegate;
 
 /**
- * @brief Bind the socket to the specified network, node and port with the
- *	  specified packet type.
+ * @brief Bind the socket to the specified network, node and port.
  *
  * @param port The port to bind to. 0 means to pick one and return it via the
  *	       returned socket address.
