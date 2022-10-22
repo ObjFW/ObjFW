@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Binds the socket to the specified host and port.
  *
  * @param path The path to bind to
- * @throw OFBindSocketFailedException Binding failed
+ * @throw OFBindUNIXSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)bindToPath: (OFString *)path;

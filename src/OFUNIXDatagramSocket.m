@@ -25,7 +25,7 @@
 #import "OFString.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindSocketFailedException.h"
+#import "OFBindUNIXSocketFailedException.h"
 
 @implementation OFUNIXDatagramSocket
 @dynamic delegate;
@@ -44,7 +44,7 @@
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindSocketFailedException
+		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -63,9 +63,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException exceptionWithPath: path
-							       socket: self
-								errNo: errNo];
+		@throw [OFBindUNIXSocketFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: errNo];
 	}
 
 	return address;

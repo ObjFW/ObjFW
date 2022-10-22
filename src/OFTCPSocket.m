@@ -44,7 +44,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindSocketFailedException.h"
+#import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -316,7 +316,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address.sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
@@ -342,7 +342,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
 
-			@throw [OFBindSocketFailedException
+			@throw [OFBindIPSocketFailedException
 			    exceptionWithHost: host
 					 port: port
 				       socket: self
@@ -372,7 +372,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
 
-				@throw [OFBindSocketFailedException
+				@throw [OFBindIPSocketFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
@@ -398,10 +398,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException exceptionWithHost: host
-								 port: port
-							       socket: self
-								errNo: errNo];
+		@throw [OFBindIPSocketFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
 	}
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
@@ -415,7 +415,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
@@ -424,10 +424,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 #else
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
-	@throw [OFBindSocketFailedException exceptionWithHost: host
-							 port: port
-						       socket: self
-							errNo: EADDRNOTAVAIL];
+	@throw [OFBindIPSocketFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EADDRNOTAVAIL];
 #endif
 }
 

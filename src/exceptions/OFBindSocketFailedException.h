@@ -31,37 +31,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFBindSocketFailedException: OFException
 {
-	/* IP */
-	OFString *_Nullable _host;
-	uint16_t _port;
-	/* IPX */
-	uint8_t _packetType;
-	/* UNIX socket */
-	OFString *_Nullable _path;
 	id _socket;
 	int _errNo;
 	OF_RESERVE_IVARS(OFBindSocketFailedException, 4)
 }
-
-/**
- * @brief The host on which binding failed.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
-
-/**
- * @brief The port on which binding failed.
- */
-@property (readonly, nonatomic) uint16_t port;
-
-/**
- * @brief The IPX packet type for which binding failed.
- */
-@property (readonly, nonatomic) uint8_t packetType;
-
-/**
- * @brief The path on which binding failed.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
 
 /**
  * @brief The socket which could not be bound.
@@ -74,85 +47,25 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int errNo;
 
 /**
- * @brief Creates a new, autoreleased bind failed exception.
+ * @brief Creates a new, autoreleased bind socket failed exception.
  *
- * @param host The host on which binding failed
- * @param port The port on which binding failed
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased bind failed exception
+ * @return A new, autoreleased bind socket failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString *)host
-			     port: (uint16_t)port
-			   socket: (id)socket
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
- * @brief Creates a new, autoreleased bind failed exception.
+ * @brief Initializes an already allocated bind socket failed exception.
  *
- * @param port The IPX port to which binding failed
- * @param packetType The IPX packet type for which binding failed
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased bind failed exception
+ * @return An initialized bind socket failed exception
  */
-+ (instancetype)exceptionWithPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
-			   socket: (id)socket
-			    errNo: (int)errNo;
-
-/**
- * @brief Creates a new, autoreleased bind failed exception.
- *
- * @param path The path on which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return A new, autoreleased bind failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			   socket: (id)socket
-			    errNo: (int)errNo;
-
-/**
- * @brief Initializes an already allocated bind failed exception.
- *
- * @param host The host on which binding failed
- * @param port The port on which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return An initialized bind failed exception
- */
-- (instancetype)initWithHost: (OFString *)host
-			port: (uint16_t)port
-		      socket: (id)socket
-		       errNo: (int)errNo;
-
-/**
- * @brief Initializes an already allocated bind failed exception.
- *
- * @param port The IPX port to which binding failed
- * @param packetType The IPX packet type for which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return An initialized bind failed exception
- */
-- (instancetype)initWithPort: (uint16_t)port
-		  packetType: (uint8_t)packetType
-		      socket: (id)socket
-		       errNo: (int)errNo;
-/**
- * @brief Initializes an already allocated bind failed exception.
- *
- * @param path The path on which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return An initialized bind failed exception
- */
-- (instancetype)initWithPath: (OFString *)path
-		      socket: (id)socket
-		       errNo: (int)errNo;
+- (instancetype)initWithSocket: (id)socket
+			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

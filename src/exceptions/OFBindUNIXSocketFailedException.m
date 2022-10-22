@@ -15,34 +15,39 @@
 
 #include "config.h"
 
-#import "OFBindSocketFailedException.h"
+#import "OFBindUNIXSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFBindSocketFailedException
-@synthesize socket = _socket, errNo = _errNo;
+@implementation OFBindUNIXSocketFailedException
+@synthesize path = _path;
 
-+ (instancetype)exception
++ (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)sock
+			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: sock errNo: errNo] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
+	return [[[self alloc] initWithPath: path
+				    socket: sock
+				     errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithSocket: (id)sock errNo: (int)errNo
 {
-	self = [super init];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithPath: (OFString *)path
+		      socket: (id)sock
+		       errNo: (int)errNo
+{
+	self = [super initWithSocket: sock errNo: errNo];
 
 	@try {
-		_socket = [sock retain];
-		_errNo = errNo;
+		_path = [path copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -53,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_socket release];
+	[_path release];
 
 	[super dealloc];
 }
@@ -61,7 +66,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Binding a socket of type %@ failed: %@",
-	    [_socket class], OFStrError(_errNo)];
+	    @"Binding to path %@ failed in socket of type %@: %@",
+	    _path, [_socket class], OFStrError(_errNo)];
 }
 @end

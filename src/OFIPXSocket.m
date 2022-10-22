@@ -26,7 +26,7 @@
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindSocketFailedException.h"
+#import "OFBindIPXSocketFailedException.h"
 
 @implementation OFIPXSocket
 @dynamic delegate;
@@ -53,7 +53,7 @@
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPXSocketFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
@@ -73,7 +73,7 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPXSocketFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
@@ -91,7 +91,7 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPXSocketFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
@@ -102,7 +102,7 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPXSocketFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self

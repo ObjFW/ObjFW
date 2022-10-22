@@ -35,7 +35,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindSocketFailedException.h"
+#import "OFBindIPSocketFailedException.h"
 
 @implementation OFUDPSocket
 @dynamic delegate;
@@ -52,7 +52,7 @@
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressPort(address)
 			       socket: self
@@ -77,7 +77,7 @@
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
 
-			@throw [OFBindSocketFailedException
+			@throw [OFBindIPSocketFailedException
 			    exceptionWithHost: OFSocketAddressString(address)
 					 port: OFSocketAddressPort(address)
 				       socket: self
@@ -107,7 +107,7 @@
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
 
-				@throw [OFBindSocketFailedException
+				@throw [OFBindIPSocketFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
@@ -133,7 +133,7 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressPort(address)
 			       socket: self
@@ -151,7 +151,7 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindSocketFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressPort(address)
 			       socket: self
@@ -161,7 +161,7 @@
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
 
-	@throw [OFBindSocketFailedException
+	@throw [OFBindIPSocketFailedException
 	    exceptionWithHost: OFSocketAddressString(address)
 			 port: OFSocketAddressPort(address)
 		       socket: self

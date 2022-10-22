@@ -56,13 +56,18 @@ SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\
 	       OFBindSocketFailedException.m		\
+	       OFBindIPSocketFailedException.m		\
 	       OFConnectionFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
 	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
-	       OFTLSHandshakeFailedException.m
+	       OFTLSHandshakeFailedException.m		\
+	       ${USE_SRCS_IPX}				\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFBindIPXSocketFailedException.m
+SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

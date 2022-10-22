@@ -149,6 +149,13 @@
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindSocketFailedException.h"
+# import "OFBindIPSocketFailedException.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFBindUNIXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_IPX
+#  import "OFBindIPXSocketFailedException.h"
+# endif
 #endif
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
