@@ -35,14 +35,17 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
-#ifdef OF_HAVE_NETIPX_IPX_H
-# include <netipx/ipx.h>
-#endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
 #ifdef OF_HAVE_AFUNIX_H
 # include <afunix.h>
+#endif
+#ifdef OF_HAVE_NETIPX_IPX_H
+# include <netipx/ipx.h>
+#endif
+#ifdef OF_HAVE_NETATALK_AT_H
+# include <netatalk/at.h>
 #endif
 
 #ifdef OF_WINDOWS
@@ -50,6 +53,9 @@
 # include <ws2tcpip.h>
 # ifdef OF_HAVE_IPX
 #  include <wsipx.h>
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  include <atalkwsh.h>
 # endif
 #endif
 
@@ -103,6 +109,8 @@ typedef enum {
 	OFSocketAddressFamilyUNIX,
 	/** IPX */
 	OFSocketAddressFamilyIPX,
+	/** AppleTalk */
+	OFSocketAddressFamilyAppleTalk,
 	/** Any address family */
 	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
@@ -144,6 +152,21 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
+#ifndef OF_HAVE_APPLETALK
+struct sockaddr_at {
+	sa_family_t sat_family;
+	unsigned short sat_net;
+	unsigned char sat_node;
+	unsigned char sat_port;
+};
+#endif
+#ifdef OF_WINDOWS
+# define sat_port sat_socket
+#else
+# define sat_net sat_addr.s_net
+# define sat_node sat_addr.s_node
+#endif
+
 /**
  * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
  *
@@ -160,6 +183,7 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_in6 in6;
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
+		struct sockaddr_at at;
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -207,7 +231,7 @@ extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
 
 /**
- * @brief Creates an IPX address for the specified node, network and port.
+ * @brief Creates an IPX address for the specified network, node and port.
  *
  * @param network The IPX network
  * @param node The node in the IPX network
@@ -216,6 +240,18 @@ extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
  */
 extern OFSocketAddress OFSocketAddressMakeIPX(uint32_t network,
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
+
+/**
+ * @brief Creates an AppleTalk address for the specified network, node and port.
+ *
+ * @param network The AppleTalk network
+ * @param node The node in the AppleTalk network
+ * @param port The AppleTalk (sometimes called socket number) on the node
+ * @return An AppleTalk socket address with the specified node, network and
+ *	   port.
+ */
+extern OFSocketAddress OFSocketAddressMakeAppleTalk(uint16_t network,
+    uint8_t node, uint8_t port);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -308,6 +344,42 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  */
 extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/**
+ * @brief Sets the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk network
+ * @param network The AppleTalk network to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNetwork(
+    OFSocketAddress *_Nonnull address, uint16_t network);
+
+/**
+ * @brief Returns the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk network
+ * @return The AppleTalk network of the address
+ */
+extern uint16_t OFSocketAddressAppleTalkNetwork(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk node
+ * @param node The AppleTalk node to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address,
+    uint8_t node);
+
+/**
+ * @brief Gets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk node
+ * @return The AppleTalk node of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkNode(
+    const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
