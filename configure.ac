@@ -1396,6 +1396,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
+
 	AC_CHECK_HEADER(netinet/in.h, [
 		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
 			[Whether we have netinet/in.h])
@@ -1408,11 +1409,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_HEADER(sys/un.h, [
 		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])
-	AC_CHECK_HEADER(netipx/ipx.h, [
-		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
-			[Whether we have netipx/ipx.h])
-	])
-
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#ifdef _WIN32
@@ -1499,6 +1495,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 	])
 
+	AC_CHECK_HEADER(netipx/ipx.h, [
+		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
+			[Whether we have netipx/ipx.h])
+	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
 		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [], [
 			#ifdef _WIN32
@@ -1568,6 +1568,89 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
 			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
+		])
+	])
+
+	AC_CHECK_HEADER(netatalk/at.h, [
+		AC_DEFINE(OF_HAVE_NETATALK_AT_H, 1,
+			[Whether we have netatalk/at.h])
+	])
+	AC_CHECK_MEMBER(struct sockaddr_at.sat_addr, [], [
+		AC_CHECK_MEMBER(struct sockaddr_at.sat_net, [], [], [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_TYPES_H
+			# include <sys/types.h>
+			#endif
+			#ifdef OF_HAVE_NETATALK_AT_H
+			# include <netatalk/at.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <atalkwsh.h>
+			#endif
+		])
+	], [
+		#ifdef _WIN32
+		typedef int BOOL;
+		#endif
+
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_NETATALK_AT_H
+		# include <netatalk/at.h>
+		#endif
+
+		#ifdef _WIN32
+		# ifdef __MINGW32__
+		#  include <_mingw.h>
+		#  ifdef __MINGW64_VERSION_MAJOR
+		#   include <winsock2.h>
+		#  endif
+		# endif
+		# include <windows.h>
+		# include <atalkwsh.h>
+		#endif
+	])
+	AS_IF([test x"$ac_cv_member_struct_sockaddr_at_sat_addr" = x"yes" \
+	    -o x"$ac_cv_member_struct_sockaddr_at_sat_net" = x"yes"], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_SOCKET_H
+			# include <sys/socket.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <atalkwsh.h>
+			#endif
+
+			#ifdef AF_APPLETALK
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_DEFINE(OF_HAVE_APPLETALK, 1,
+			    [Whether we have AppleTalk])
+			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 		])
 	])
 
