@@ -126,7 +126,7 @@ constructRequestString(OFHTTPRequest *request)
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if (URI.path != nil)
+	if (URI.path.length > 0)
 		path = URI.percentEncodedPath;
 	else
 		path = @"/";
