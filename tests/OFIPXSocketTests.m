@@ -34,7 +34,7 @@ static OFString *const module = @"OFIPXSocket";
 	@try {
 		TEST(@"-[bindToPort:packetType:]",
 		    R(address1 = [sock bindToPort: 0 packetType: 0]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];

@@ -50,7 +50,7 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 
 	@try {
 		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:

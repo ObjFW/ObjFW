@@ -25,7 +25,7 @@
 #import "OFString.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindSocketFailedException.h"
 #import "OFConnectionFailedException.h"
 
 @implementation OFUNIXStreamSocket
@@ -84,7 +84,7 @@
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -103,9 +103,9 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPath: path
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException exceptionWithPath: path
+							       socket: self
+								errNo: errNo];
 	}
 }
 @end

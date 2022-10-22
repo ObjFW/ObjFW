@@ -44,7 +44,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -316,7 +316,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address.sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindSocketFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
@@ -342,10 +342,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
 
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self
-								  errNo: errNo];
+			@throw [OFBindSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: errNo];
 		}
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
@@ -371,7 +372,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
 
-				@throw [OFBindFailedException
+				@throw [OFBindSocketFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
@@ -397,10 +398,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException exceptionWithHost: host
+								 port: port
+							       socket: self
+								errNo: errNo];
 	}
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
@@ -414,18 +415,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindSocketFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 #else
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
-	@throw [OFBindFailedException exceptionWithHost: host
-						   port: port
-						 socket: self
-						  errNo: EADDRNOTAVAIL];
+	@throw [OFBindSocketFailedException exceptionWithHost: host
+							 port: port
+						       socket: self
+							errNo: EADDRNOTAVAIL];
 #endif
 }
 

@@ -160,7 +160,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param port The port (sometimes called socket number) to bind to. 0 means to
  *	       pick one and return via the returned socket address.
  * @return The address on which this socket can be reached
- * @throw OFBindFailedException Binding failed
+ * @throw OFBindSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (OFSocketAddress)bindToPort: (uint16_t)port;

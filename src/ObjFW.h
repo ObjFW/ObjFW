@@ -148,7 +148,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
-# import "OFBindFailedException.h"
+# import "OFBindSocketFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"

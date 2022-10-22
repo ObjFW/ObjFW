@@ -26,7 +26,7 @@
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindSocketFailedException.h"
 
 @implementation OFIPXSocket
 @dynamic delegate;
@@ -53,7 +53,7 @@
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindSocketFailedException
 		    exceptionWithPort: port
 			   packetType: packetType
 			       socket: self
@@ -73,10 +73,11 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: packetType
+			       socket: self
+				errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -90,20 +91,22 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: packetType
+			       socket: self
+				errNo: errNo];
 	}
 
 	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: packetType
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 
 	return address;

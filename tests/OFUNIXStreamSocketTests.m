@@ -50,7 +50,7 @@ static OFString *const module = @"OFUNIXStreamSocket";
 
 	@try {
 		TEST(@"-[bindToPath:]", R([sockServer bindToPath: path]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:

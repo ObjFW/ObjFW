@@ -24,7 +24,7 @@
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindSocketFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFNotOpenException.h"
 
@@ -330,7 +330,7 @@ inform_delegate:
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindSocketFailedException
 		    exceptionWithPort: port
 			   packetType: SPXPacketType
 			       socket: self
@@ -350,10 +350,11 @@ inform_delegate:
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPXPacketType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: SPXPacketType
+			       socket: self
+				errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -367,20 +368,22 @@ inform_delegate:
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPXPacketType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: SPXPacketType
+			       socket: self
+				errNo: errNo];
 	}
 
 	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: SPXPacketType
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindSocketFailedException
+		    exceptionWithPort: port
+			   packetType: SPXPacketType
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 
 	return address;

@@ -24,12 +24,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindFailedException \
- *	  OFBindFailedException.h ObjFW/OFBindFailedException.h
+ * @class OFBindSocketFailedException \
+ *	  OFBindSocketFailedException.h ObjFW/OFBindSocketFailedException.h
  *
  * @brief An exception indicating that binding a socket failed.
  */
-@interface OFBindFailedException: OFException
+@interface OFBindSocketFailedException: OFException
 {
 	/* IP */
 	OFString *_Nullable _host;
@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _path;
 	id _socket;
 	int _errNo;
-	OF_RESERVE_IVARS(OFBindFailedException, 4)
+	OF_RESERVE_IVARS(OFBindSocketFailedException, 4)
 }
 
 /**

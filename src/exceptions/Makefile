@@ -55,7 +55,7 @@ SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\
-	       OFBindFailedException.m			\
+	       OFBindSocketFailedException.m		\
 	       OFConnectionFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\

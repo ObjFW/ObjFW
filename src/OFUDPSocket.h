@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
- * @throw OFBindFailedException Binding failed
+ * @throw OFBindSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
 - (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
