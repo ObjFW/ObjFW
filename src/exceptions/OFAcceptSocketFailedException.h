@@ -22,16 +22,16 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFAcceptFailedException \
- *	  OFAcceptFailedException.h ObjFW/OFAcceptFailedException.h
+ * @class OFAcceptSocketFailedException \
+ *	  OFAcceptSocketFailedException.h ObjFW/OFAcceptSocketFailedException.h
  *
  * @brief An exception indicating that accepting a connection failed.
  */
-@interface OFAcceptFailedException: OFException
+@interface OFAcceptSocketFailedException: OFException
 {
 	id _socket;
 	int _errNo;
-	OF_RESERVE_IVARS(OFAcceptFailedException, 4)
+	OF_RESERVE_IVARS(OFAcceptSocketFailedException, 4)
 }
 
 /**

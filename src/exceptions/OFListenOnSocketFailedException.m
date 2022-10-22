@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFListenFailedException
+@implementation OFListenOnSocketFailedException
 @synthesize socket = _socket, backlog = _backlog, errNo = _errNo;
 
 + (instancetype)exception
@@ -26,11 +26,11 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)socket
++ (instancetype)exceptionWithSocket: (id)sock
 			    backlog: (int)backlog
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket
+	return [[[self alloc] initWithSocket: sock
 				     backlog: backlog
 				       errNo: errNo] autorelease];
 }
@@ -40,13 +40,11 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)socket
-		       backlog: (int)backlog
-			 errNo: (int)errNo
+- (instancetype)initWithSocket: (id)sock backlog: (int)backlog errNo: (int)errNo
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_socket = [sock retain];
 	_backlog = backlog;
 	_errNo = errNo;
 

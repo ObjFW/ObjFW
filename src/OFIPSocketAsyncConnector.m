@@ -23,7 +23,7 @@
 #import "OFThread.h"
 #import "OFTimer.h"
 
-#import "OFConnectionFailedException.h"
+#import "OFConnectIPSocketFailedException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFIPSocketAsyncConnector
@@ -126,10 +126,10 @@
 
 - (id)of_connectionFailedExceptionForErrNo: (int)errNo
 {
-	return [OFConnectionFailedException exceptionWithHost: _host
-							 port: _port
-						       socket: _socket
-							errNo: errNo];
+	return [OFConnectIPSocketFailedException exceptionWithHost: _host
+							      port: _port
+							    socket: _socket
+							     errNo: errNo];
 }
 
 - (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode
@@ -142,7 +142,7 @@
 
 	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: _socket
@@ -187,7 +187,7 @@
 			[_socket of_closeSocket];
 
 			if (_socketAddressesIndex >= _socketAddresses.count) {
-				_exception = [[OFConnectionFailedException
+				_exception = [[OFConnectIPSocketFailedException
 				    alloc] initWithHost: _host
 						   port: _port
 						 socket: _socket

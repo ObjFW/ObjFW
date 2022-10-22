@@ -53,16 +53,26 @@ SRCS = OFAllocFailedException.m				\
 SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
-SRCS_SOCKETS = OFAcceptFailedException.m		\
+SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFAlreadyConnectedException.m		\
-	       OFBindFailedException.m			\
-	       OFConnectionFailedException.m		\
+	       OFBindIPSocketFailedException.m		\
+	       OFBindSocketFailedException.m		\
+	       OFConnectIPSocketFailedException.m	\
+	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
-	       OFListenFailedException.m		\
+	       OFListenOnSocketFailedException.m	\
 	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
-	       OFTLSHandshakeFailedException.m
+	       OFTLSHandshakeFailedException.m		\
+	       ${USE_SRCS_APPLETALK}			\
+	       ${USE_SRCS_IPX}				\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFBindDDPSocketFailedException.m
+SRCS_IPX = OFBindIPXSocketFailedException.m	\
+	   OFConnectSPXSocketFailedException.m
+SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
+		    OFConnectUNIXSocketFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

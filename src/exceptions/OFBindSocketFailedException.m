@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFAcceptFailedException.h"
+#import "OFBindSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFAcceptFailedException
+@implementation OFBindSocketFailedException
 @synthesize socket = _socket, errNo = _errNo;
 
 + (instancetype)exception
@@ -26,9 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo
++ (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket errNo: errNo] autorelease];
+	return [[[self alloc] initWithSocket: sock errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -36,12 +36,17 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)socket errNo: (int)errNo
+- (instancetype)initWithSocket: (id)sock errNo: (int)errNo
 {
 	self = [super init];
 
-	_socket = [socket retain];
-	_errNo = errNo;
+	@try {
+		_socket = [sock retain];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -56,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to accept connection in socket of class %@: %@",
+	    @"Binding a socket of type %@ failed: %@",
 	    [_socket class], OFStrError(_errNo)];
 }
 @end

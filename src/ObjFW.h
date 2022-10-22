@@ -145,9 +145,19 @@
 #import "OFAllocFailedException.h"
 #import "OFException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFAcceptFailedException.h"
+# import "OFAcceptSocketFailedException.h"
 # import "OFAlreadyConnectedException.h"
-# import "OFBindFailedException.h"
+# import "OFBindSocketFailedException.h"
+# import "OFBindIPSocketFailedException.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFBindUNIXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_IPX
+#  import "OFBindIPXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  import "OFBindDDPSocketFailedException.h"
+# endif
 #endif
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -158,7 +168,14 @@
 # import "OFConditionWaitFailedException.h"
 #endif
 #ifdef OF_HAVE_SOCKETS
-# import "OFConnectionFailedException.h"
+# import "OFConnectSocketFailedException.h"
+# import "OFConnectIPSocketFailedException.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFConnectUNIXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_IPX
+#  import "OFConnectSPXSocketFailedException.h"
+# endif
 #endif
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
@@ -195,7 +212,7 @@
 #import "OFInvalidServerResponseException.h"
 #import "OFLinkItemFailedException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFListenFailedException.h"
+# import "OFListenOnSocketFailedException.h"
 #endif
 #ifdef OF_HAVE_PLUGINS
 # import "OFLoadPluginFailedException.h"

@@ -33,7 +33,7 @@ static OFString *const module = @"OFDDPSocket";
 
 	@try {
 		TEST(@"-[bindToPort:]", R(address1 = [sock bindToPort: 0]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];

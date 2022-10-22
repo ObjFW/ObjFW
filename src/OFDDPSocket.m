@@ -26,7 +26,7 @@
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindDDPSocketFailedException.h"
 
 @implementation OFDDPSocket
 @dynamic delegate;
@@ -45,7 +45,7 @@
 
 	if ((_socket = socket(address.sockaddr.at.sat_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindDDPSocketFailedException
 		    exceptionWithPort: port
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -64,9 +64,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindDDPSocketFailedException
+		    exceptionWithPort: port
+			       socket: self
+				errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -80,18 +81,20 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindDDPSocketFailedException
+		    exceptionWithPort: port
+			       socket: self
+				errNo: errNo];
 	}
 
 	if (address.sockaddr.at.sat_family != AF_APPLETALK) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindDDPSocketFailedException
+		    exceptionWithPort: port
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 
 	return address;

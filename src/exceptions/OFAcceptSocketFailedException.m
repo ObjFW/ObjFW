@@ -15,27 +15,33 @@
 
 #include "config.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAcceptSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFAlreadyConnectedException
-@synthesize socket = _socket;
+@implementation OFAcceptSocketFailedException
+@synthesize socket = _socket, errNo = _errNo;
 
-+ (instancetype)exceptionWithSocket: (id)sock
++ (instancetype)exception
 {
-	return [[[self alloc] initWithSocket: sock] autorelease];
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
+{
+	return [[[self alloc] initWithSocket: sock errNo: errNo] autorelease];
 }
 
 - (instancetype)init
 {
-	return [self initWithSocket: nil];
+	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)sock
+- (instancetype)initWithSocket: (id)sock errNo: (int)errNo
 {
 	self = [super init];
 
 	_socket = [sock retain];
+	_errNo = errNo;
 
 	return self;
 }
@@ -49,12 +55,8 @@
 
 - (OFString *)description
 {
-	if (_socket)
-		return [OFString stringWithFormat:
-		    @"The socket of type %@ is already connected or bound and "
-		    @"thus can't be connected or bound again!",
-		    [_socket class]];
-	else
-		return @"A connection has already been established!";
+	return [OFString stringWithFormat:
+	    @"Failed to accept connection in socket of class %@: %@",
+	    [_socket class], OFStrError(_errNo)];
 }
 @end
