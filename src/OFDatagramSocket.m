@@ -213,6 +213,11 @@
 		sender->family = OFSocketAddressFamilyIPX;
 		break;
 #endif
+#ifdef OF_HAVE_APPLETALK
+	case AF_APPLETALK:
+		sender->family = OFSocketAddressFamilyAppleTalk;
+		break;
+#endif
 	default:
 		sender->family = OFSocketAddressFamilyUnknown;
 		break;
