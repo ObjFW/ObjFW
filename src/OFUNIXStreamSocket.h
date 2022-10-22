@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Connects the OFUNIXStreamSocket to the specified destination.
  *
  * @param path The path to connect to
- * @throw OFConnectionFailedException Connecting failed
+ * @throw OFConnectSocketFailedException Connecting failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)connectToPath: (OFString *)path;

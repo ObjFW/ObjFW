@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFConnectionFailedException.h"
+#import "OFConnectSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFConnectionFailedException
+@implementation OFConnectSocketFailedException
 @synthesize host = _host, port = _port, path = _path, network = _network;
 @synthesize socket = _socket, errNo = _errNo;
 

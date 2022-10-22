@@ -24,12 +24,13 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFConnectionFailedException \
- *	  OFConnectionFailedException.h ObjFW/OFConnectionFailedException.h
+ * @class OFConnectSocketFailedException \
+ *	  OFConnectSocketFailedException.h \
+ *	  ObjFW/OFConnectSocketFailedException.h
  *
  * @brief An exception indicating that a connection could not be established.
  */
-@interface OFConnectionFailedException: OFException
+@interface OFConnectSocketFailedException: OFException
 {
 	OFString *_Nullable _host;
 	uint16_t _port;
@@ -38,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned char _node[IPX_NODE_LEN];
 	id _socket;
 	int _errNo;
-	OF_RESERVE_IVARS(OFConnectionFailedException, 4)
+	OF_RESERVE_IVARS(OFConnectSocketFailedException, 4)
 }
 
 /**

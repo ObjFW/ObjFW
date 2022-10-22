@@ -40,7 +40,7 @@
 # import "ObjFWTLS.h"
 #endif
 
-#import "OFConnectionFailedException.h"
+#import "OFConnectSocketFailedException.h"
 #import "OFGetItemAttributesFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -823,7 +823,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"uri", request.URI.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
-		    [OFConnectionFailedException class]]) {
+		    [OFConnectSocketFailedException class]]) {
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 

@@ -156,7 +156,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @throw OFConnectionFailedException Connecting failed
+ * @throw OFConnectSocketFailedException Connecting failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;

@@ -166,7 +166,7 @@
 # import "OFConditionWaitFailedException.h"
 #endif
 #ifdef OF_HAVE_SOCKETS
-# import "OFConnectionFailedException.h"
+# import "OFConnectSocketFailedException.h"
 #endif
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"

@@ -57,7 +57,7 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAlreadyConnectedException.m		\
 	       OFBindSocketFailedException.m		\
 	       OFBindIPSocketFailedException.m		\
-	       OFConnectionFailedException.m		\
+	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
