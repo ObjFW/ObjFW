@@ -146,7 +146,7 @@
 #import "OFAllocFailedException.h"
 #import "OFException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFAcceptFailedException.h"
+# import "OFAcceptSocketFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindSocketFailedException.h"
 # import "OFBindIPSocketFailedException.h"

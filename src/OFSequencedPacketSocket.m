@@ -35,7 +35,7 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAcceptFailedException.h"
+#import "OFAcceptSocketFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenFailedException.h"
@@ -337,7 +337,7 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
@@ -345,14 +345,14 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 

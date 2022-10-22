@@ -123,7 +123,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased OFStreamSocket for the accepted connection.
- * @throw OFAcceptFailedException Accepting failed
+ * @throw OFAcceptSocketFailedException Accepting failed
  * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;

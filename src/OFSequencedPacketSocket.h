@@ -322,7 +322,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased sequenced packet socket for the accepted connection.
- * @throw OFAcceptFailedException Accepting failed
+ * @throw OFAcceptSocketFailedException Accepting failed
  * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;

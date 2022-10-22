@@ -53,7 +53,7 @@ SRCS = OFAllocFailedException.m				\
 SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
-SRCS_SOCKETS = OFAcceptFailedException.m		\
+SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFAlreadyConnectedException.m		\
 	       OFBindSocketFailedException.m		\
 	       OFBindIPSocketFailedException.m		\
