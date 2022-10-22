@@ -44,7 +44,7 @@ static OFString *const module = @"OFUDPSocket";
 	    [sock receiveIntoBuffer: buf length: 6 sender: &addr2] == 6 &&
 	    !memcmp(buf, "Hello", 6) &&
 	    [OFSocketAddressString(&addr2) isEqual: @"127.0.0.1"] &&
-	    OFSocketAddressPort(&addr2) == port1)
+	    OFSocketAddressIPPort(&addr2) == port1)
 
 	addr3 = OFSocketAddressParseIP(@"127.0.0.1", port1 + 1);
 

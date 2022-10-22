@@ -838,7 +838,7 @@ OFSocketAddressString(const OFSocketAddress *address)
 }
 
 void
-OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
+OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
@@ -847,24 +847,19 @@ OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
 	case OFSocketAddressFamilyIPv6:
 		address->sockaddr.in6.sin6_port = OFToBigEndian16(port);
 		break;
-	case OFSocketAddressFamilyIPX:
-		address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
-		break;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 }
 
 uint16_t
-OFSocketAddressPort(const OFSocketAddress *address)
+OFSocketAddressIPPort(const OFSocketAddress *address)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
 		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 	case OFSocketAddressFamilyIPv6:
 		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
-	case OFSocketAddressFamilyIPX:
-		return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -934,4 +929,22 @@ OFSocketAddressGetIPXNode(const OFSocketAddress *address,
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
+}
+
+void
+OFSocketAddressSetIPXPort(OFSocketAddress *address, uint16_t port)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
+}
+
+uint16_t
+OFSocketAddressIPXPort(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
 }

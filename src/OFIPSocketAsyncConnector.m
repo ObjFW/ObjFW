@@ -138,7 +138,7 @@
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
 	int errNo;
 
-	OFSocketAddressSetPort(&address, _port);
+	OFSocketAddressSetIPPort(&address, _port);
 
 	if (![_socket of_createSocketForAddress: &address errNo: &errNo]) {
 		if (_socketAddressesIndex >= _socketAddresses.count) {

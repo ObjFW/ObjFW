@@ -120,7 +120,7 @@ static OFString *const module = @"OFSPXSocket";
 
 	network = OFSocketAddressIPXNetwork(&address1);
 	OFSocketAddressGetIPXNode(&address1, node);
-	port = OFSocketAddressPort(&address1);
+	port = OFSocketAddressIPXPort(&address1);
 
 	TEST(@"-[listen]", R([sockServer listen]))
 
@@ -160,7 +160,7 @@ static OFString *const module = @"OFSPXSocket";
 	    OFSocketAddressIPXNetwork(&address1);
 	OFSocketAddressGetIPXNode(&address1, node);
 	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
-	delegate->_expectedPort = port = OFSocketAddressPort(&address1);
+	delegate->_expectedPort = port = OFSocketAddressIPXPort(&address1);
 
 	@try {
 		[sockClient asyncConnectToNetwork: network
