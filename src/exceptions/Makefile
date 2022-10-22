@@ -55,8 +55,9 @@ SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFAlreadyConnectedException.m		\
-	       OFBindSocketFailedException.m		\
 	       OFBindIPSocketFailedException.m		\
+	       OFBindSocketFailedException.m		\
+	       OFConnectIPSocketFailedException.m	\
 	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
@@ -66,8 +67,10 @@ SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFTLSHandshakeFailedException.m		\
 	       ${USE_SRCS_IPX}				\
 	       ${USE_SRCS_UNIX_SOCKETS}
-SRCS_IPX = OFBindIPXSocketFailedException.m
-SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m
+SRCS_IPX = OFBindIPXSocketFailedException.m	\
+	   OFConnectSPXSocketFailedException.m
+SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
+		    OFConnectUNIXSocketFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

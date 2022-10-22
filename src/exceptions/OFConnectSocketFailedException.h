@@ -32,40 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFConnectSocketFailedException: OFException
 {
-	OFString *_Nullable _host;
-	uint16_t _port;
-	OFString *_Nullable _path;
-	uint32_t _network;
-	unsigned char _node[IPX_NODE_LEN];
 	id _socket;
 	int _errNo;
 	OF_RESERVE_IVARS(OFConnectSocketFailedException, 4)
 }
-
-/**
- * @brief The host to which the connection failed.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
-
-/**
- * @brief The port on the host to which the connection failed.
- */
-@property (readonly, nonatomic) uint16_t port;
-
-/**
- * @brief The path to which the connection failed.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
-
-/**
- * @brief The IPX network of the node to which the connection failed.
- */
-@property (readonly, nonatomic) uint32_t network;
-
-/**
- * @brief The IPX node to which the connection failed.
- */
-@property (readonly, nonatomic) unsigned char *node;
 
 /**
  * @brief The socket which could not connect.
@@ -78,92 +48,25 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int errNo;
 
 /**
- * @brief Creates a new, autoreleased connection failed exception.
+ * @brief Creates a new, autoreleased connect socket failed exception.
  *
- * @param host The host to which the connection failed
- * @param port The port on the host to which the connection failed
  * @param socket The socket which could not connect
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased connection failed exception
+ * @return A new, autoreleased connect socket failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString *)host
-			     port: (uint16_t)port
-			   socket: (id)socket
-			    errNo: (int)errNo;
-
-/**
- * @brief Creates a new, autoreleased connection failed exception.
- *
- * @param path The path to which the connection failed
- * @param socket The socket which could not connect
- * @param errNo The errno of the error that occurred
- * @return A new, autoreleased connection failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			   socket: (id)socket
-			    errNo: (int)errNo;
-
-/**
- * @brief Creates a new, autoreleased connection failed exception.
- *
- * @param network The IPX network of the node to which the connection failed
- * @param node The node to which the connection failed
- * @param port The port on the node to which the connection failed
- * @param socket The socket which could not connect
- * @param errNo The errno of the error that occurred
- * @return A new, autoreleased connection failed exception
- */
-+ (instancetype)
-    exceptionWithNetwork: (uint32_t)network
-		    node: (const unsigned char [_Nullable IPX_NODE_LEN])node
-		    port: (uint16_t)port
-		  socket: (id)socket
-		   errNo: (int)errNo;
++ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated connection failed exception.
+ * @brief Initializes an already allocated connect socket failed exception.
  *
- * @param host The host to which the connection failed
- * @param port The port on the host to which the connection failed
  * @param socket The socket which could not connect
  * @param errNo The errno of the error that occurred
- * @return An initialized connection failed exception
+ * @return An initialized connect socket failed exception
  */
-- (instancetype)initWithHost: (OFString *)host
-			port: (uint16_t)port
-		      socket: (id)socket
-		       errNo: (int)errNo;
-
-/**
- * @brief Initializes an already allocated connection failed exception.
- *
- * @param path The path to which the connection failed
- * @param socket The socket which could not connect
- * @param errNo The errno of the error that occurred
- * @return An initialized connection failed exception
- */
-- (instancetype)initWithPath: (OFString *)path
-		      socket: (id)socket
-		       errNo: (int)errNo;
-
-/**
- * @brief Initializes an already allocated connection failed exception.
- *
- * @param network The IPX network of the node to which the connection failed
- * @param node The node to which the connection failed
- * @param port The port on the node to which the connection failed
- * @param socket The socket which could not connect
- * @param errNo The errno of the error that occurred
- * @return An initialized connection failed exception
- */
-- (instancetype)
-    initWithNetwork: (uint32_t)network
-	       node: (const unsigned char [_Nullable IPX_NODE_LEN])node
-	       port: (uint16_t)port
-	     socket: (id)socket
-	      errNo: (int)errNo;
+- (instancetype)initWithSocket: (id)socket
+		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

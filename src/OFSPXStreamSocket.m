@@ -25,7 +25,7 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindIPXSocketFailedException.h"
-#import "OFConnectSocketFailedException.h"
+#import "OFConnectSPXSocketFailedException.h"
 #import "OFNotOpenException.h"
 
 #ifndef NSPROTO_SPX
@@ -168,11 +168,11 @@ inform_delegate:
 
 - (id)of_connectionFailedExceptionForErrNo: (int)errNo
 {
-	return [OFConnectSocketFailedException exceptionWithNetwork: _network
-							       node: _node
-							       port: _port
-							     socket: _socket
-							      errNo: errNo];
+	return [OFConnectSPXSocketFailedException exceptionWithNetwork: _network
+								  node: _node
+								  port: _port
+								socket: _socket
+								 errNo: errNo];
 }
 @end
 
@@ -233,7 +233,7 @@ inform_delegate:
 	int errNo;
 
 	if (![self of_createSocketForAddress: &address errNo: &errNo])
-		@throw [OFConnectSocketFailedException
+		@throw [OFConnectSPXSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
@@ -243,7 +243,7 @@ inform_delegate:
 	if (![self of_connectSocketToAddress: &address errNo: &errNo]) {
 		[self of_closeSocket];
 
-		@throw [OFConnectSocketFailedException
+		@throw [OFConnectSPXSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port

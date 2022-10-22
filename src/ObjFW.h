@@ -167,6 +167,13 @@
 #endif
 #ifdef OF_HAVE_SOCKETS
 # import "OFConnectSocketFailedException.h"
+# import "OFConnectIPSocketFailedException.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFConnectUNIXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_IPX
+#  import "OFConnectSPXSocketFailedException.h"
+# endif
 #endif
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"

@@ -23,7 +23,7 @@
 #import "OFRunLoop.h"
 #import "OFString.h"
 
-#import "OFConnectSocketFailedException.h"
+#import "OFConnectIPSocketFailedException.h"
 
 enum {
 	stateSendAuthentication = 1,
@@ -144,7 +144,7 @@ enum {
 		SOCKSVersion = buffer;
 
 		if (SOCKSVersion[0] != 5 || SOCKSVersion[1] != 0) {
-			_exception = [[OFConnectSocketFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -173,7 +173,7 @@ enum {
 		response = buffer;
 
 		if (response[0] != 5 || response[2] != 0) {
-			_exception = [[OFConnectSocketFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -216,7 +216,7 @@ enum {
 				break;
 			}
 
-			_exception = [[OFConnectSocketFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: _socket
@@ -246,7 +246,7 @@ enum {
 					 runLoopMode: runLoopMode];
 			return false;
 		default:
-			_exception = [[OFConnectSocketFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self

@@ -89,7 +89,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
- * @throw OFConnectSocketFailedException Connecting failed
+ * @throw OFConnectSPXSocketFailedException Connecting failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)connectToNetwork: (uint32_t)network

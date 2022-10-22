@@ -26,9 +26,9 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo
++ (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket errNo: errNo] autorelease];
+	return [[[self alloc] initWithSocket: sock errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -36,11 +36,11 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)socket errNo: (int)errNo
+- (instancetype)initWithSocket: (id)sock errNo: (int)errNo
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_socket = [sock retain];
 	_errNo = errNo;
 
 	return self;
