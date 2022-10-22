@@ -38,6 +38,24 @@
 				     errNo: errNo] autorelease];
 }
 
++ (instancetype)exceptionWithPath: (OFString *)path
+			   socket: (id)sock
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path
+				    socket: sock
+				     errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithPort: (uint16_t)port
+			   socket: (id)sock
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPort: port
+				    socket: sock
+				     errNo: errNo] autorelease];
+}
+
 + (instancetype)exceptionWithPort: (uint16_t)port
 		       packetType: (uint8_t)packetType
 			   socket: (id)sock
@@ -45,15 +63,6 @@
 {
 	return [[[self alloc] initWithPort: port
 				packetType: packetType
-				    socket: sock
-				     errNo: errNo] autorelease];
-}
-
-+ (instancetype)exceptionWithPath: (OFString *)path
-			   socket: (id)sock
-			    errNo: (int)errNo
-{
-	return [[[self alloc] initWithPath: path
 				    socket: sock
 				     errNo: errNo] autorelease];
 }
@@ -83,16 +92,14 @@
 	return self;
 }
 
-- (instancetype)initWithPort: (uint16_t)port
-		  packetType: (uint8_t)packetType
+- (instancetype)initWithPath: (OFString *)path
 		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_port = port;
-		_packetType = packetType;
+		_path = [path copy];
 		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -103,14 +110,26 @@
 	return self;
 }
 
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithPort: (uint16_t)port
+		      socket: (id)sock
+		       errNo: (int)errNo
+{
+	return [self initWithPort: port
+		       packetType: 0
+			   socket: sock
+			    errNo: errNo];
+}
+
+- (instancetype)initWithPort: (uint16_t)port
+		  packetType: (uint8_t)packetType
 		      socket: (id)sock
 		       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_path = [path copy];
+		_port = port;
+		_packetType = packetType;
 		_socket = [sock retain];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -141,10 +160,15 @@
 		    @"Binding to port %" @PRIu16 @" on host %@ failed in "
 		    @"socket of type %@: %@",
 		    _port, _host, [_socket class], OFStrError(_errNo)];
-	else
+	else if (_port != 0)
 		return [OFString stringWithFormat:
 		    @"Binding to port %" @PRIx16 @" for packet type %" @PRIx8
 		    @" failed in socket of type %@: %@",
 		    _port, _packetType, [_socket class], OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Binding to port %" @PRIx16 @" failed in socket of type "
+		    @"%@: %@",
+		    _port, [_socket class], OFStrError(_errNo)];
 }
 @end

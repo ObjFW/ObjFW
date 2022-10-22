@@ -87,22 +87,6 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
-/**
- * @brief Creates a new, autoreleased bind failed exception.
- *
- * @param port The IPX port to which binding failed
- * @param packetType The IPX packet type for which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return A new, autoreleased bind failed exception
- */
-+ (instancetype)exceptionWithPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
-			   socket: (id)socket
-			    errNo: (int)errNo;
-
 /**
  * @brief Creates a new, autoreleased bind failed exception.
  *
@@ -114,6 +98,34 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 			   socket: (id)socket
 			    errNo: (int)errNo;
+
+/**
+ * @brief Creates a new, autoreleased bind failed exception.
+ *
+ * @param port The port to which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased bind failed exception
+ */
++ (instancetype)exceptionWithPort: (uint16_t)port
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
+/**
+ * @brief Creates a new, autoreleased bind failed exception.
+ *
+ * @param port The port to which binding failed
+ * @param packetType The IPX packet type for which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased bind failed exception
+ */
++ (instancetype)exceptionWithPort: (uint16_t)port
+		       packetType: (uint8_t)packetType
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated bind failed exception.
@@ -128,20 +140,6 @@ OF_ASSUME_NONNULL_BEGIN
 			port: (uint16_t)port
 		      socket: (id)socket
 		       errNo: (int)errNo;
-
-/**
- * @brief Initializes an already allocated bind failed exception.
- *
- * @param port The IPX port to which binding failed
- * @param packetType The IPX packet type for which binding failed
- * @param socket The socket which could not be bound
- * @param errNo The errno of the error that occurred
- * @return An initialized bind failed exception
- */
-- (instancetype)initWithPort: (uint16_t)port
-		  packetType: (uint8_t)packetType
-		      socket: (id)socket
-		       errNo: (int)errNo;
 /**
  * @brief Initializes an already allocated bind failed exception.
  *
@@ -151,6 +149,32 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized bind failed exception
  */
 - (instancetype)initWithPath: (OFString *)path
+		      socket: (id)socket
+		       errNo: (int)errNo;
+
+/**
+ * @brief Initializes an already allocated bind failed exception.
+ *
+ * @param port The port to which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return An initialized bind failed exception
+ */
+- (instancetype)initWithPort: (uint16_t)port
+		      socket: (id)socket
+		       errNo: (int)errNo;
+
+/**
+ * @brief Initializes an already allocated bind failed exception.
+ *
+ * @param port The port to which binding failed
+ * @param packetType The IPX packet type for which binding failed
+ * @param socket The socket which could not be bound
+ * @param errNo The errno of the error that occurred
+ * @return An initialized bind failed exception
+ */
+- (instancetype)initWithPort: (uint16_t)port
+		  packetType: (uint8_t)packetType
 		      socket: (id)socket
 		       errNo: (int)errNo;
 

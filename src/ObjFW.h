@@ -84,20 +84,19 @@
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXStreamSocket.h"
+# endif
 # ifdef OF_HAVE_IPX
 #  import "OFIPXSocket.h"
 #  import "OFSPXSocket.h"
 #  import "OFSPXStreamSocket.h"
 # endif
-# ifdef OF_HAVE_UNIX_SOCKETS
-#  import "OFUNIXDatagramSocket.h"
-#  import "OFUNIXStreamSocket.h"
+# ifdef OF_HAVE_APPLETALK
+#  import "OFDDPSocket.h"
 # endif
-#endif
-#ifdef OF_HAVE_SOCKETS
-# ifdef OF_HAVE_THREADS
-#  import "OFHTTPClient.h"
-# endif
+# import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"
 # import "OFHTTPRequest.h"
