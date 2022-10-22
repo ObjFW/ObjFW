@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFSocketAddressMakeAppleTalk to create an address or
  * @ref OFSocketAddressAppleTalkNetwork to get the AppleTalk network,
  * @ref OFSocketAddressAppleTalkNode to get the AppleTalk node and
- * @ref OFSocketAddressPort to get the port (sometimes also called
+ * @ref OFSocketAddressAppleTalkPort to get the port (sometimes also called
  * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
