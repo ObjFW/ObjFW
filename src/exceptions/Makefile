@@ -61,7 +61,7 @@ SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
-	       OFListenFailedException.m		\
+	       OFListenOnSocketFailedException.m	\
 	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
 	       OFTLSHandshakeFailedException.m		\

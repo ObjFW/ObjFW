@@ -38,7 +38,7 @@
 #import "OFAcceptSocketFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -308,7 +308,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backlog) == -1)
-		@throw [OFListenFailedException
+		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
 				  errNo: OFSocketErrNo()];

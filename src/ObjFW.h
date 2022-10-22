@@ -210,7 +210,7 @@
 #import "OFInvalidServerResponseException.h"
 #import "OFLinkItemFailedException.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFListenFailedException.h"
+# import "OFListenOnSocketFailedException.h"
 #endif
 #ifdef OF_HAVE_PLUGINS
 # import "OFLoadPluginFailedException.h"

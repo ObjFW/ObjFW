@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFString.h"
 
-@implementation OFListenFailedException
+@implementation OFListenOnSocketFailedException
 @synthesize socket = _socket, backlog = _backlog, errNo = _errNo;
 
 + (instancetype)exception
