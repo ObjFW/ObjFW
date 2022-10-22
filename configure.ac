@@ -1581,6 +1581,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			typedef int BOOL;
 			#endif
 
+			#ifdef OF_HAVE_SYS_TYPES_H
+			# include <sys/types.h>
+			#endif
 			#ifdef OF_HAVE_NETATALK_AT_H
 			# include <netatalk/at.h>
 			#endif
@@ -1601,6 +1604,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		typedef int BOOL;
 		#endif
 
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
 		#ifdef OF_HAVE_NETATALK_AT_H
 		# include <netatalk/at.h>
 		#endif
