@@ -48,7 +48,7 @@
 }
 
 + (instancetype)exceptionWithNetwork: (uint32_t)network
-				node: (unsigned char [IPX_NODE_LEN])node
+				node: (const unsigned char [IPX_NODE_LEN])node
 				port: (uint16_t)port
 			      socket: (id)sock
 			       errNo: (int)errNo
@@ -99,7 +99,7 @@
 }
 
 - (instancetype)initWithNetwork: (uint32_t)network
-			   node: (unsigned char [IPX_NODE_LEN])node
+			   node: (const unsigned char [IPX_NODE_LEN])node
 			   port: (uint16_t)port
 			 socket: (id)sock
 			  errNo: (int)errNo

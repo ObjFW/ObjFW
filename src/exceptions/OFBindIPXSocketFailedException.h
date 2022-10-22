@@ -27,9 +27,16 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFBindIPXSocketFailedException: OFBindSocketFailedException
 {
+	uint32_t _network;
+	unsigned char _node[IPX_NODE_LEN];
 	uint16_t _port;
 	uint8_t _packetType;
 }
+
+/**
+ * @brief The IPX network on which binding failed.
+ */
+@property (readonly, nonatomic) uint32_t network;
 
 /**
  * @brief The IPX port on which binding failed.
@@ -44,16 +51,21 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new, autoreleased bind IPX socket failed exception.
  *
+ * @param network The IPX network to which binding failed
+ * @param node The IPX node to which binding failed
  * @param port The IPX port to which binding failed
  * @param packetType The IPX packet type for which binding failed
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased bind IPX socket failed exception
  */
-+ (instancetype)exceptionWithPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
-			   socket: (id)socket
-			    errNo: (int)errNo;
++ (instancetype)
+    exceptionWithNetwork: (uint32_t)network
+		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+		    port: (uint16_t)port
+	      packetType: (uint8_t)packetType
+		  socket: (id)socket
+		   errNo: (int)errNo;
 
 + (instancetype)exceptionWithSocket: (id)socket
 			      errNo: (int)errNo OF_UNAVAILABLE;
@@ -61,18 +73,30 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Initializes an already allocated bind IPX socket failed exception.
  *
+ * @param network The IPX network to which binding failed
+ * @param node The IPX node to which binding failed
  * @param port The IPX port to which binding failed
  * @param packetType The IPX packet type for which binding failed
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
  * @return An initialized bind IPX socket failed exception
  */
-- (instancetype)initWithPort: (uint16_t)port
-		  packetType: (uint8_t)packetType
-		      socket: (id)socket
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithNetwork: (uint32_t)network
+	       node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	       port: (uint16_t)port
+	 packetType: (uint8_t)packetType
+	     socket: (id)socket
+	      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithSocket: (id)socket errNo: (int)errNo OF_UNAVAILABLE;
+
+/**
+ * @brief Get the IPX node for which binding failed.
+ *
+ * @param node A pointer to where to write the node to
+ */
+- (void)getNode: (unsigned char [_Nonnull IPX_NODE_LEN])node;
 @end
 
 OF_ASSUME_NONNULL_END

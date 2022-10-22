@@ -114,7 +114,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)
     exceptionWithNetwork: (uint32_t)network
-		    node: (unsigned char [_Nullable IPX_NODE_LEN])node
+		    node: (const unsigned char [_Nullable IPX_NODE_LEN])node
 		    port: (uint16_t)port
 		  socket: (id)socket
 		   errNo: (int)errNo;
@@ -157,11 +157,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
-- (instancetype)initWithNetwork: (uint32_t)network
-			   node: (unsigned char [_Nullable IPX_NODE_LEN])node
-			   port: (uint16_t)port
-			 socket: (id)socket
-			  errNo: (int)errNo;
+- (instancetype)
+    initWithNetwork: (uint32_t)network
+	       node: (const unsigned char [_Nullable IPX_NODE_LEN])node
+	       port: (uint16_t)port
+	     socket: (id)socket
+	      errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

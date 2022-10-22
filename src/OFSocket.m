@@ -927,7 +927,7 @@ OFSocketAddressSetIPXNode(OFSocketAddress *address,
 }
 
 void
-OFSocketAddressIPXNode(const OFSocketAddress *address,
+OFSocketAddressGetIPXNode(const OFSocketAddress *address,
     unsigned char node[IPX_NODE_LEN])
 {
 	if (address->family != OFSocketAddressFamilyIPX)

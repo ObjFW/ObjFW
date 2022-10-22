@@ -24,6 +24,7 @@ static OFString *const module = @"OFIPXSocket";
 @implementation TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests
 {
+	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
 	OFSocketAddress address1, address2;
@@ -32,21 +33,25 @@ static OFString *const module = @"OFIPXSocket";
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
 	@try {
-		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0 packetType: 0]))
+		TEST(@"-[bindToNetwork:node:port:packetType:]",
+		R(address1 = [sock bindToNetwork: 0
+					    node: zeroNode
+					    port: 0
+				      packetType: 0]))
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX unsupported, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX not configured, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX not configured, skipping "
+			    @"tests"];
 			break;
 		default:
 			@throw e;

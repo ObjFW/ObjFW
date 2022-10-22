@@ -306,7 +306,7 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  * @param address The address on which to get the IPX node
  * @param node A byte array to store the IPX node of the address
  */
-extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
 
 extern bool OFSocketInit(void);

@@ -15,26 +15,34 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFBindIPXSocketFailedException.h"
+#import "OFData.h"
 #import "OFString.h"
 
 @implementation OFBindIPXSocketFailedException
-@synthesize port = _port, packetType = _packetType;
+@synthesize network = _network, port = _port, packetType = _packetType;
 
 + (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPort: (uint16_t)port
-		       packetType: (uint8_t)packetType
-			   socket: (id)sock
-			    errNo: (int)errNo
++ (instancetype)
+    exceptionWithNetwork: (uint32_t)network
+		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+		    port: (uint16_t)port
+	      packetType: (uint8_t)packetType
+		  socket: (id)sock
+		   errNo: (int)errNo
 {
-	return [[[self alloc] initWithPort: port
-				packetType: packetType
-				    socket: sock
-				     errNo: errNo] autorelease];
+	return [[[self alloc] initWithNetwork: network
+					 node: node
+					 port: port
+				   packetType: packetType
+				       socket: sock
+					errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithSocket: (id)sock errNo: (int)errNo
@@ -42,14 +50,19 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPort: (uint16_t)port
-		  packetType: (uint8_t)packetType
-		      socket: (id)sock
-		       errNo: (int)errNo
+- (instancetype)
+    initWithNetwork: (uint32_t)network
+	       node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	       port: (uint16_t)port
+	 packetType: (uint8_t)packetType
+	     socket: (id)sock
+	      errNo: (int)errNo
 {
 	self = [super initWithSocket: sock errNo: errNo];
 
 	@try {
+		_network = network;
+		memcpy(_node, node, sizeof(_node));
 		_port = port;
 		_packetType = packetType;
 	} @catch (id e) {
@@ -60,11 +73,19 @@
 	return self;
 }
 
+- (void)getNode: (unsigned char [IPX_NODE_LEN])node
+{
+	memcpy(node, _node, sizeof(_node));
+}
+
 - (OFString *)description
 {
+	OFData *node = [OFData dataWithItems: _node count: sizeof(_node)];
+
 	return [OFString stringWithFormat:
-	    @"Binding to port %" @PRIx16 @" for packet type %" @PRIx8
-	    @" failed in socket of type %@: %@",
-	    _port, _packetType, [_socket class], OFStrError(_errNo)];
+	    @"Binding to network %" @PRIx16 " on node %@ with port %" @PRIx16
+	    @" failed for packet type %" @PRIx8 " in socket of type %@: %@",
+	    _network, node, _port, _packetType, [_socket class],
+	    OFStrError(_errNo)];
 }
 @end

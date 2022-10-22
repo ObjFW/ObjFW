@@ -67,6 +67,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Bind the socket to the specified network, node and port with the
  *	  specified packet type.
  *
+ * @param network The IPX network to bind to. 0 means the current network.
+ * @param node The IPX network to bind to. An all zero node means the
+ *	       computer's node.
  * @param port The port (sometimes called socket number) to bind to. 0 means to
  *	       pick one and return via the returned socket address.
  * @param packetType The packet type to use on the socket
@@ -74,7 +77,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFBindIPXSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
-- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType;
+- (OFSocketAddress)
+    bindToNetwork: (uint32_t)network
+	     node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	     port: (uint16_t)port
+       packetType: (uint8_t)packetType;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -57,7 +57,7 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithSocket: (OFSPXStreamSocket *)socket
 		       network: (uint32_t)network
-			  node: (unsigned char [IPX_NODE_LEN])node
+			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
 			 block: (OFSPXStreamSocketAsyncConnectBlock)block
@@ -69,7 +69,7 @@ OF_DIRECT_MEMBERS
 @implementation OFSPXStreamSocketAsyncConnectDelegate
 - (instancetype)initWithSocket: (OFSPXStreamSocket *)sock
 		       network: (uint32_t)network
-			  node: (unsigned char [IPX_NODE_LEN])node
+			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
 			 block: (OFSPXStreamSocketAsyncConnectBlock)block
@@ -226,7 +226,7 @@ inform_delegate:
 }
 
 - (void)connectToNetwork: (uint32_t)network
-		    node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		    node: (const unsigned char [IPX_NODE_LEN])node
 		    port: (uint16_t)port
 {
 	OFSocketAddress address = OFSocketAddressMakeIPX(network, node, port);
@@ -253,7 +253,7 @@ inform_delegate:
 }
 
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [IPX_NODE_LEN])node
 			 port: (uint16_t)port
 {
 	[self asyncConnectToNetwork: network
@@ -263,7 +263,7 @@ inform_delegate:
 }
 
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [IPX_NODE_LEN])node
 			 port: (uint16_t)port
 		  runLoopMode: (OFRunLoopMode)runLoopMode
 {
@@ -284,7 +284,7 @@ inform_delegate:
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [IPX_NODE_LEN])node
 			 port: (uint16_t)port
 			block: (OFSPXStreamSocketAsyncConnectBlock)block
 {
@@ -296,7 +296,7 @@ inform_delegate:
 }
 
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [IPX_NODE_LEN])node
 			 port: (uint16_t)port
 		  runLoopMode: (OFRunLoopMode)runLoopMode
 			block: (OFSPXStreamSocketAsyncConnectBlock)block
@@ -315,9 +315,10 @@ inform_delegate:
 }
 #endif
 
-- (OFSocketAddress)bindToPort: (uint16_t)port
+- (OFSocketAddress)bindToNetwork: (uint32_t)network
+			    node: (const unsigned char [IPX_NODE_LEN])node
+			    port: (uint16_t)port
 {
-	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
@@ -326,15 +327,17 @@ inform_delegate:
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeIPX(0, zeroNode, port);
+	address = OFSocketAddressMakeIPX(network, node, port);
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, NSPROTO_SPX)) == OFInvalidSocketHandle)
 		@throw [OFBindIPXSocketFailedException
-		    exceptionWithPort: port
-			   packetType: SPXPacketType
-			       socket: self
-				errNo: OFSocketErrNo()];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: SPXPacketType
+				  socket: self
+				   errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -351,10 +354,12 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindIPXSocketFailedException
-		    exceptionWithPort: port
-			   packetType: SPXPacketType
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: SPXPacketType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -369,10 +374,12 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindIPXSocketFailedException
-		    exceptionWithPort: port
-			   packetType: SPXPacketType
-			       socket: self
-				errNo: errNo];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: SPXPacketType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
@@ -380,10 +387,12 @@ inform_delegate:
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindIPXSocketFailedException
-		    exceptionWithPort: port
-			   packetType: SPXPacketType
-			       socket: self
-				errNo: EAFNOSUPPORT];
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: SPXPacketType
+				  socket: self
+				   errNo: EAFNOSUPPORT];
 	}
 
 	return address;
