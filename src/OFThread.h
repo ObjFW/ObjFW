@@ -302,8 +302,8 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Starts the thread.
  *
+ * @throw OFStartThreadFailedException Starting the thread failed
  * @throw OFThreadStillRunningException The thread is still running
- * @throw OFThreadStartFailedException Starting the thread failed
  */
 - (void)start;
 
@@ -311,7 +311,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief Joins a thread.
  *
  * @return The object returned by the main method of the thread.
- * @throw OFThreadJoinFailedException Joining the thread failed
+ * @throw OFJoinThreadFailedException Joining the thread failed
  */
 - (id)join;
 #else

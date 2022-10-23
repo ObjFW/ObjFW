@@ -15,35 +15,22 @@
 
 #include "config.h"
 
-#include <string.h>
-
-#import "OFConditionWaitFailedException.h"
+#import "OFActivateSandboxFailedException.h"
 #import "OFString.h"
-#import "OFCondition.h"
+#import "OFSandbox.h"
 
-@implementation OFConditionWaitFailedException
-@synthesize condition = _condition, errNo = _errNo;
-
-+ (instancetype)exceptionWithCondition: (OFCondition *)condition
-				 errNo: (int)errNo
-{
-	return [[[self alloc] initWithCondition: condition
-					  errNo: errNo] autorelease];
-}
+@implementation OFActivateSandboxFailedException
+@synthesize sandbox = _sandbox, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
-	self = [super init];
-
-	_condition = [condition retain];
-	_errNo = errNo;
-
-	return self;
+	return [[[self alloc] initWithSandbox: sandbox
+					errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -51,9 +38,19 @@
 	OF_INVALID_INIT_METHOD
 }
 
+- (instancetype)initWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
+{
+	self = [super init];
+
+	_sandbox = [sandbox retain];
+	_errNo = errNo;
+
+	return self;
+}
+
 - (void)dealloc
 {
-	[_condition release];
+	[_sandbox release];
 
 	[super dealloc];
 }
@@ -61,7 +58,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Waiting for a condition of type %@ failed: %s",
-	    _condition.class, strerror(_errNo)];
+	    @"The sandbox could not be applied: %@", OFStrError(_errNo)];
 }
 @end

@@ -73,13 +73,13 @@ SRCS_IPX = OFBindIPXSocketFailedException.m	\
 	   OFConnectSPXSocketFailedException.m
 SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
 		    OFConnectUNIXSocketFailedException.m
-SRCS_THREADS = OFConditionBroadcastFailedException.m	\
-	       OFConditionSignalFailedException.m	\
+SRCS_THREADS = OFBroadcastConditionFailedException.m	\
 	       OFConditionStillWaitingException.m	\
-	       OFConditionWaitFailedException.m		\
-	       OFThreadJoinFailedException.m		\
-	       OFThreadStartFailedException.m		\
-	       OFThreadStillRunningException.m
+	       OFJoinThreadFailedException.m		\
+	       OFSignalConditionFailedException.m	\
+	       OFStartThreadFailedException.m		\
+	       OFThreadStillRunningException.m		\
+	       OFWaitForConditionFailedException.m
 SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryValueFailedException.m	\
@@ -89,7 +89,7 @@ SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 
 INCLUDES := ${SRCS:.m=.h}
 
-SRCS += OFSandboxActivationFailedException.m
+SRCS += OFActivateSandboxFailedException.m
 
 include ../../buildsys.mk
 

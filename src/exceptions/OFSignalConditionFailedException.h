@@ -24,17 +24,17 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFConditionSignalFailedException \
- *	  OFConditionSignalFailedException.h \
- *	  ObjFW/OFConditionSignalFailedException.h
+ * @class OFSignalConditionFailedException \
+ *	  OFSignalConditionFailedException.h \
+ *	  ObjFW/OFSignalConditionFailedException.h
  *
  * @brief An exception indicating signaling a condition failed.
  */
-@interface OFConditionSignalFailedException: OFException
+@interface OFSignalConditionFailedException: OFException
 {
 	OFCondition *_condition;
 	int _errNo;
-	OF_RESERVE_IVARS(OFConditionSignalFailedException, 4)
+	OF_RESERVE_IVARS(OFSignalConditionFailedException, 4)
 }
 
 /**

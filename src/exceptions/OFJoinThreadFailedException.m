@@ -17,18 +17,16 @@
 
 #include <string.h>
 
-#import "OFConditionBroadcastFailedException.h"
+#import "OFJoinThreadFailedException.h"
 #import "OFString.h"
-#import "OFCondition.h"
+#import "OFThread.h"
 
-@implementation OFConditionBroadcastFailedException
-@synthesize condition = _condition, errNo = _errNo;
+@implementation OFJoinThreadFailedException
+@synthesize thread = _thread, errNo = _errNo;
 
-+ (instancetype)exceptionWithCondition: (OFCondition *)condition
-				 errNo: (int)errNo
++ (instancetype)exceptionWithThread: (OFThread *)thread errNo: (int)errNo
 {
-	return [[[self alloc] initWithCondition: condition
-					  errNo: errNo] autorelease];
+	return [[[self alloc] initWithThread: thread errNo: errNo] autorelease];
 }
 
 + (instancetype)exception
@@ -36,11 +34,11 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo
+- (instancetype)initWithThread: (OFThread *)thread errNo: (int)errNo
 {
 	self = [super init];
 
-	_condition = [condition retain];
+	_thread = [thread retain];
 	_errNo = errNo;
 
 	return self;
@@ -53,7 +51,7 @@
 
 - (void)dealloc
 {
-	[_condition release];
+	[_thread release];
 
 	[super dealloc];
 }
@@ -61,7 +59,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Broadcasting a condition of type %@ failed: %s",
-	    _condition.class, strerror(_errNo)];
+	    @"Joining a thread of type %@ failed: %s",
+	    _thread.class, strerror(_errNo)];
 }
 @end

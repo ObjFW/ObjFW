@@ -75,8 +75,8 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #ifdef OF_HAVE_THREADS
-# import "OFThreadJoinFailedException.h"
-# import "OFThreadStartFailedException.h"
+# import "OFJoinThreadFailedException.h"
+# import "OFStartThreadFailedException.h"
 # import "OFThreadStillRunningException.h"
 #endif
 
@@ -437,7 +437,7 @@ callMain(id object)
 	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
 		[self release];
-		@throw [OFThreadStartFailedException
+		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
 	}
@@ -448,12 +448,12 @@ callMain(id object)
 	int error;
 
 	if (_running == OFThreadStateNotRunning)
-		@throw [OFThreadJoinFailedException
+		@throw [OFJoinThreadFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
 	if ((error = OFPlainThreadJoin(_thread)) != 0)
-		@throw [OFThreadJoinFailedException exceptionWithThread: self
+		@throw [OFJoinThreadFailedException exceptionWithThread: self
 								  errNo: error];
 
 	_running = OFThreadStateNotRunning;

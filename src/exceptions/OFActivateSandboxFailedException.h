@@ -19,7 +19,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFSandbox;
 
-@interface OFSandboxActivationFailedException: OFException
+@interface OFActivateSandboxFailedException: OFException
 {
 	OFSandbox *_sandbox;
 	int _errNo;
