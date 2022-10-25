@@ -75,6 +75,12 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 @implementation OFTarArchiveEntry
+/*
+ * The following is optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic fileComment;
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD

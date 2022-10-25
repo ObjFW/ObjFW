@@ -172,6 +172,13 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 }
 
 @implementation OFZIPArchiveEntry
+/*
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName;
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
