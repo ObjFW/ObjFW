@@ -62,17 +62,16 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFDDPSocketDelegate> delegate;
 
 /**
- * @brief Bind the socket to the specified network, node and port.
+ * @brief Bind the socket to the specified network and port.
  *
+ * @param network The network to bind to. 0 means any.
  * @param port The port to bind to. 0 means to pick one and return it via the
  *	       returned socket address.
  * @return The address on which this socket can be reached
  * @throw OFBindDDPSockeFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
-- (OFSocketAddress)bindToNetwork: (uint16_t)network
-			    node: (uint8_t)node
-			    port: (uint8_t)port;
+- (OFSocketAddress)bindToNetwork: (uint16_t)network port: (uint8_t)port;
 @end
 
 OF_ASSUME_NONNULL_END
