@@ -31,7 +31,9 @@
 @implementation OFDDPSocket
 @dynamic delegate;
 
-- (OFSocketAddress)bindToNetwork: (uint16_t)network port: (uint8_t)port
+- (OFSocketAddress)bindToNetwork: (uint16_t)network
+			    node: (uint8_t)node
+			    port: (uint8_t)port
 {
 	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
@@ -41,12 +43,13 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeAppleTalk(network, 0, port);
+	address = OFSocketAddressMakeAppleTalk(network, node, port);
 
 	if ((_socket = socket(address.sockaddr.at.sat_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
+				    node: node
 				    port: port
 				  socket: self
 				   errNo: OFSocketErrNo()];
@@ -67,6 +70,7 @@
 
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
+				    node: node
 				    port: port
 				  socket: self
 				   errNo: errNo];
@@ -85,6 +89,7 @@
 
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
+				    node: node
 				    port: port
 				  socket: self
 				   errNo: errNo];
@@ -96,6 +101,7 @@
 
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
+				    node: node
 				    port: port
 				  socket: self
 				   errNo: EAFNOSUPPORT];

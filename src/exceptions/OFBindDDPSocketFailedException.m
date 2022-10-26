@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFBindDDPSocketFailedException
-@synthesize network = _network, port = _port;
+@synthesize network = _network, node = _node, port = _port;
 
 + (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
@@ -28,11 +28,13 @@
 }
 
 + (instancetype)exceptionWithNetwork: (uint16_t)network
+				node: (uint8_t)node
 				port: (uint8_t)port
 			      socket: (id)sock
 			       errNo: (int)errNo
 {
 	return [[[self alloc] initWithNetwork: network
+					 node: node
 					 port: port
 				       socket: sock
 					errNo: errNo] autorelease];
@@ -44,6 +46,7 @@
 }
 
 - (instancetype)initWithNetwork: (uint16_t)network
+			   node: (uint8_t)node
 			   port: (uint8_t)port
 			 socket: (id)sock
 			  errNo: (int)errNo
@@ -52,6 +55,7 @@
 
 	@try {
 		_network = network;
+		_node = node;
 		_port = port;
 	} @catch (id e) {
 		[self release];
@@ -64,8 +68,8 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Binding to port %" @PRIx8 @" on network %" PRIx16 @" failed in "
-	    @"socket of type %@: %@",
-	    _port, _network, [_socket class], OFStrError(_errNo)];
+	    @"Binding to port %" @PRIx8 @" of node %" @PRIx8 @" on network "
+	    @"%" PRIx16 @" failed in socket of type %@: %@",
+	    _port, _node, _network, [_socket class], OFStrError(_errNo)];
 }
 @end
