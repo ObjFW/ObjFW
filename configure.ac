@@ -1730,6 +1730,23 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AS_IF([test x"$with_tls" = x"gnutls" \
+		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
+
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
+	])
+
 	AS_IF([test x"$with_tls" = x"openssl" \
 		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
@@ -1755,23 +1772,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					"OFOpenSSLTLSStream.m")
 			])
 		], [], [-l$crypto])
-	])
-
-	AS_IF([test x"$with_tls" = x"gnutls" \
-		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
-		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
-			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
-
-			tls_support="GnuTLS"
-			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
-			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
-
-			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
-		], [
-			dnl Disable default action-if-not-found, which exits
-			dnl configure with an error.
-			:
-		])
 	])
 
 	AS_IF([test x"$tls_support" != x"no"], [
