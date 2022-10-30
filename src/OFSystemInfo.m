@@ -71,6 +71,10 @@
 # include <sys/syspage.h>
 #endif
 
+#if !defined(PATH_MAX) && defined(MAX_PATH)
+# define PATH_MAX MAX_PATH
+#endif
+
 #if defined(OF_MACOS) || defined(OF_IOS)
 /*
  * These have been dropped from newer iOS SDKs, however, their replacements are
