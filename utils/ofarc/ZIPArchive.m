@@ -439,9 +439,6 @@ outer_loop_end:
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 
 		size = (isDirectory ? 0 : attributes.fileSize);
-		if (size < 0 || size > ULLONG_MAX)
-			@throw [OFOutOfRangeException exception];
-
 		entry.compressedSize = size;
 		entry.uncompressedSize = size;
 
