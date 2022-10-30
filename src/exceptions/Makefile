@@ -65,10 +65,8 @@ SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
 	       OFTLSHandshakeFailedException.m		\
-	       ${USE_SRCS_APPLETALK}			\
 	       ${USE_SRCS_IPX}				\
 	       ${USE_SRCS_UNIX_SOCKETS}
-SRCS_APPLETALK = OFBindDDPSocketFailedException.m
 SRCS_IPX = OFBindIPXSocketFailedException.m	\
 	   OFConnectSPXSocketFailedException.m
 SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\

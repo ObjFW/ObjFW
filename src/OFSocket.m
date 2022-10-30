@@ -573,27 +573,6 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 	return ret;
 }
 
-OFSocketAddress
-OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
-{
-	OFSocketAddress ret;
-
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyAppleTalk;
-	ret.length = sizeof(ret.sockaddr.at);
-
-#ifdef AF_APPLETALK
-	ret.sockaddr.at.sat_family = AF_APPLETALK;
-#else
-	ret.sockaddr.at.sat_family = AF_UNSPEC;
-#endif
-	ret.sockaddr.at.sat_net = OFToBigEndian16(network);
-	ret.sockaddr.at.sat_node = node;
-	ret.sockaddr.at.sat_port = port;
-
-	return ret;
-}
-
 bool
 OFSocketAddressEqual(const OFSocketAddress *address1,
     const OFSocketAddress *address2)
@@ -601,7 +580,6 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 	const struct sockaddr_ipx *addrIPX1, *addrIPX2;
-	const struct sockaddr_at *addrAT1, *addrAT2;
 	void *pool;
 	OFString *path1, *path2;
 	bool ret;
@@ -680,22 +658,6 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 			return false;
 
 		return true;
-	case OFSocketAddressFamilyAppleTalk:
-		if (address1->length < (socklen_t)sizeof(struct sockaddr_at) ||
-		    address2->length < (socklen_t)sizeof(struct sockaddr_at))
-			@throw [OFInvalidArgumentException exception];
-
-		addrAT1 = &address1->sockaddr.at;
-		addrAT2 = &address2->sockaddr.at;
-
-		if (addrAT1->sat_net != addrAT2->sat_net)
-			return false;
-		if (addrAT1->sat_node != addrAT2->sat_node)
-			return false;
-		if (addrAT1->sat_port != addrAT2->sat_port)
-			return false;
-
-		return true;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -770,15 +732,6 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		for (size_t i = 0; i < IPX_NODE_LEN; i++)
 			OFHashAddByte(&hash,
 			    address->sockaddr.ipx.sipx_node[i]);
-
-		break;
-	case OFSocketAddressFamilyAppleTalk:
-		if (address->length < (socklen_t)sizeof(struct sockaddr_at))
-			@throw [OFInvalidArgumentException exception];
-
-		OFHashAddByte(&hash, address->sockaddr.at.sat_net >> 8);
-		OFHashAddByte(&hash, address->sockaddr.at.sat_net);
-		OFHashAddByte(&hash, address->sockaddr.at.sat_port);
 
 		break;
 	default:
@@ -994,58 +947,4 @@ OFSocketAddressIPXPort(const OFSocketAddress *address)
 		@throw [OFInvalidArgumentException exception];
 
 	return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
-}
-
-void
-OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	address->sockaddr.at.sat_net = OFToBigEndian16(network);
-}
-
-uint16_t
-OFSocketAddressAppleTalkNetwork(const OFSocketAddress *address)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	return OFFromBigEndian16(address->sockaddr.at.sat_net);
-}
-
-void
-OFSocketAddressSetAppleTalkNode(OFSocketAddress *address, uint8_t node)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	address->sockaddr.at.sat_node = node;
-}
-
-uint8_t
-OFSocketAddressAppleTalkNode(const OFSocketAddress *address)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	return address->sockaddr.at.sat_node;
-}
-
-void
-OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	address->sockaddr.at.sat_port = port;
-}
-
-uint8_t
-OFSocketAddressAppleTalkPort(const OFSocketAddress *address)
-{
-	if (address->family != OFSocketAddressFamilyAppleTalk)
-		@throw [OFInvalidArgumentException exception];
-
-	return address->sockaddr.at.sat_port;
 }

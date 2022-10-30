@@ -93,9 +93,6 @@
 #  import "OFSPXSocket.h"
 #  import "OFSPXStreamSocket.h"
 # endif
-# ifdef OF_HAVE_APPLETALK
-#  import "OFDDPSocket.h"
-# endif
 # import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"
@@ -211,9 +208,6 @@
 # ifdef OF_HAVE_IPX
 #  import "OFBindIPXSocketFailedException.h"
 #  import "OFConnectSPXSocketFailedException.h"
-# endif
-# ifdef OF_HAVE_APPLETALK
-#  import "OFBindDDPSocketFailedException.h"
 # endif
 #endif
 #ifdef OF_HAVE_THREADS

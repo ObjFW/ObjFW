@@ -71,10 +71,6 @@
 - (void)characterSetTests;
 @end
 
-@interface TestsAppDelegate (OFDDPSocketTests)
-- (void)DDPSocketTests;
-@end
-
 @interface TestsAppDelegate (OFDNSResolverTests)
 - (void)DNSResolverTests;
 @end
