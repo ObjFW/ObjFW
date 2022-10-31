@@ -44,7 +44,9 @@
 #ifdef OF_HAVE_NETIPX_IPX_H
 # include <netipx/ipx.h>
 #endif
-#ifdef OF_HAVE_NETATALK_AT_H
+#if defined(OF_HAVE_NETAT_APPLETALK_H)
+# include <netat/appletalk.h>
+#elif defined(OF_HAVE_NETATALK_AT_H)
 # include <netatalk/at.h>
 #endif
 

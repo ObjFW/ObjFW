@@ -1571,6 +1571,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AC_CHECK_HEADER(netat/appletalk.h, [
+		AC_DEFINE(OF_HAVE_NETAT_APPLETALK_H, 1,
+			[Whether we have netat/appletalk.h])
+	])
 	AC_CHECK_HEADER(netatalk/at.h, [
 		AC_DEFINE(OF_HAVE_NETATALK_AT_H, 1,
 			[Whether we have netatalk/at.h])
@@ -1584,7 +1588,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#ifdef OF_HAVE_SYS_TYPES_H
 			# include <sys/types.h>
 			#endif
-			#ifdef OF_HAVE_NETATALK_AT_H
+			#if defined(OF_HAVE_NETAT_APPLETALK_H)
+			# include <netat/appletalk.h>
+			#elif defined(OF_HAVE_NETATALK_AT_H)
 			# include <netatalk/at.h>
 			#endif
 
@@ -1607,7 +1613,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>
 		#endif
-		#ifdef OF_HAVE_NETATALK_AT_H
+		#if defined(OF_HAVE_NETAT_APPLETALK_H)
+		# include <netat/appletalk.h>
+		#elif defined(OF_HAVE_NETATALK_AT_H)
 		# include <netatalk/at.h>
 		#endif
 
