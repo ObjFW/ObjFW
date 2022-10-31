@@ -420,6 +420,9 @@ main(int argc, char *argv[])
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
 # endif
+# ifdef OF_HAVE_APPLETALK
+	[self DDPSocketTests];
+# endif
 	[self kernelEventObserverTests];
 #endif
 #ifdef OF_HAVE_THREADS
