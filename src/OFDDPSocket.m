@@ -33,6 +33,16 @@
 
 #ifdef OF_HAVE_NETAT_APPLETALK_H
 # include <netat/ddp.h>
+# include <sys/ioctl.h>
+
+/* Unfortulately, there is no struct for the following in userland headers */
+struct ATInterfaceConfig {
+	char interfaceName[16];
+	unsigned int flags;
+	struct at_addr address, router;
+	unsigned short netStart, netEnd;
+	at_nvestr_t zoneName;
+};
 #endif
 
 @implementation OFDDPSocket
@@ -44,6 +54,7 @@
 {
 #ifdef OF_MACOS
 	const int one = 1;
+	struct ATInterfaceConfig config = { { 0 } };
 #endif
 	OFSocketAddress address;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
@@ -123,14 +134,19 @@
 	}
 
 #ifdef OF_MACOS
-	if (setsockopt(_socket, ATPROTO_NONE, DDP_HDRINCL, &one,
-	    sizeof(one)) != 0)
+	if (setsockopt(_socket, ATPROTO_NONE, DDP_HDRINCL, &one, sizeof(one)) !=
+	    0 ||
+	    ioctl(_socket, _IOWR('a', 2, struct ATInterfaceConfig), &config) !=
+	    0)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
 				  socket: self
 				   errNo: OFSocketErrNo()];
+
+	OFSocketAddressSetAppleTalkNetwork(&address, config.address.s_net);
+	OFSocketAddressSetAppleTalkNode(&address, config.address.s_node);
 #endif
 
 	return address;
