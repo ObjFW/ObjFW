@@ -587,7 +587,11 @@ OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 #else
 	ret.sockaddr.at.sat_family = AF_UNSPEC;
 #endif
+#ifdef OF_WINDOWS
+	ret.sockaddr.at.sat_net = network;
+#else
 	ret.sockaddr.at.sat_net = OFToBigEndian16(network);
+#endif
 	ret.sockaddr.at.sat_node = node;
 	ret.sockaddr.at.sat_port = port;
 
@@ -1002,7 +1006,11 @@ OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network)
 	if (address->family != OFSocketAddressFamilyAppleTalk)
 		@throw [OFInvalidArgumentException exception];
 
+#ifdef OF_WINDOWS
+	address->sockaddr.at.sat_net = network;
+#else
 	address->sockaddr.at.sat_net = OFToBigEndian16(network);
+#endif
 }
 
 uint16_t
@@ -1011,7 +1019,11 @@ OFSocketAddressAppleTalkNetwork(const OFSocketAddress *address)
 	if (address->family != OFSocketAddressFamilyAppleTalk)
 		@throw [OFInvalidArgumentException exception];
 
+#ifdef OF_WINDOWS
+	return address->sockaddr.at.sat_net;
+#else
 	return OFFromBigEndian16(address->sockaddr.at.sat_net);
+#endif
 }
 
 void
