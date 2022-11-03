@@ -27,6 +27,7 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFBindDDPSocketFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
@@ -45,12 +46,17 @@ struct ATInterfaceConfig {
 };
 #endif
 
+#ifndef ATPROTO_BASE
+# define ATPROTO_BASE 0
+#endif
+
 @implementation OFDDPSocket
 @dynamic delegate;
 
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node
 			    port: (uint8_t)port
+		    protocolType: (uint8_t)protocolType
 {
 #ifdef OF_MACOS
 	const int one = 1;
@@ -61,6 +67,9 @@ struct ATInterfaceConfig {
 	int flags;
 #endif
 
+	if (protocolType == 0)
+		@throw [OFInvalidArgumentException exception];
+
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
@@ -68,15 +77,17 @@ struct ATInterfaceConfig {
 
 #ifdef OF_MACOS
 	if ((_socket = socket(address.sockaddr.at.sat_family,
-	    SOCK_RAW | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+	    SOCK_RAW | SOCK_CLOEXEC, protocolType)) == OFInvalidSocketHandle)
 #else
 	if ((_socket = socket(address.sockaddr.at.sat_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+	    SOCK_DGRAM | SOCK_CLOEXEC, ATPROTO_BASE + protocolType)) ==
+	    OFInvalidSocketHandle)
 #endif
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
+			    protocolType: protocolType
 				  socket: self
 				   errNo: OFSocketErrNo()];
 
@@ -98,6 +109,7 @@ struct ATInterfaceConfig {
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
+			    protocolType: protocolType
 				  socket: self
 				   errNo: errNo];
 	}
@@ -117,6 +129,7 @@ struct ATInterfaceConfig {
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
+			    protocolType: protocolType
 				  socket: self
 				   errNo: errNo];
 	}
@@ -129,19 +142,20 @@ struct ATInterfaceConfig {
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
+			    protocolType: protocolType
 				  socket: self
 				   errNo: EAFNOSUPPORT];
 	}
 
 #ifdef OF_MACOS
-	if (setsockopt(_socket, ATPROTO_NONE, DDP_HDRINCL, &one, sizeof(one)) !=
-	    0 ||
-	    ioctl(_socket, _IOWR('a', 2, struct ATInterfaceConfig), &config) !=
-	    0)
+	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
+	    sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
+	    struct ATInterfaceConfig), &config) != 0)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
 				    port: port
+			    protocolType: protocolType
 				  socket: self
 				   errNo: OFSocketErrNo()];
 
@@ -149,48 +163,71 @@ struct ATInterfaceConfig {
 	OFSocketAddressSetAppleTalkNode(&address, config.address.s_node);
 #endif
 
+#if !defined(OF_MACOS) && !defined(OF_WINDOWS)
+	_protocolType = protocolType;
+#endif
+
 	return address;
 }
 
-#ifdef OF_MACOS
+/*
+ * Everybody but macOS and Windows is probably using a netatalk-compatible
+ * implementation, which includes the protocol type as the first byte of the
+ * data instead of considering it part of the header.
+ *
+ * The following overrides prepend the protocol type when sending and compare
+ * and strip it when receiving.
+ *
+ * Unfortunately, the downside of this is that the only way to handle receiving
+ * a packet with the wrong protocol type is to throw an exception with errNo
+ * ENOMSG, while macOS and Windows just filter those out in the kernel.
+ * Returning 0 would mean this is indistinguishable from an empty packet, so it
+ * has to be an exception.
+ */
+#if !defined(OF_MACOS) && !defined(OF_WINDOWS)
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		     sender: (OFSocketAddress *)sender
 {
 	ssize_t ret;
-	at_ddp_t header;
+	uint8_t protocolType;
 	struct iovec iov[2] = {
-		{ &header, offsetof(at_ddp_t, type) },
+		{ &protocolType, 1 },
 		{ buffer, length }
+	};
+	struct msghdr msg = {
+		.msg_name = (struct sockaddr *)&sender->sockaddr,
+		.msg_namelen = (socklen_t)sizeof(sender->sockaddr),
+		.msg_iov = iov,
+		.msg_iovlen = 2
 	};
 
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = readv(_socket, iov, 2)) < 0)
+	if ((ret = recvmsg(_socket, &msg, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: OFSocketErrNo()];
 
-	*sender = OFSocketAddressMakeAppleTalk(
-	    header.src_net[0] << 8 | header.src_net[1], header.src_node,
-	    header.src_socket);
+	if (ret < 1 || protocolType != _protocolType)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: ENOMSG];
 
-	ret -= offsetof(at_ddp_t, type);
-	if (ret < 0)
-		return 0;
+	sender->length = msg.msg_namelen;
+	sender->family = OFSocketAddressFamilyAppleTalk;
 
-	return ret;
+	return ret - 1;
 }
 
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  receiver: (const OFSocketAddress *)receiver
 {
-	at_ddp_t header = { 0 };
 	struct iovec iov[2] = {
-		{ &header, offsetof(at_ddp_t, type) },
+		{ &_protocolType, 1 },
 		{ (void *)buffer, length }
 	};
 	struct msghdr msg = {
@@ -199,27 +236,10 @@ struct ATInterfaceConfig {
 		.msg_iov = iov,
 		.msg_iovlen = 2
 	};
-	size_t packetLength = length + offsetof(at_ddp_t, type);
-	uint16_t net;
 	ssize_t bytesWritten;
 
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (packetLength > DDP_DATAGRAM_SIZE)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: EMSGSIZE];
-
-	net = OFSocketAddressAppleTalkNetwork(receiver);
-
-	header.length_H = (packetLength >> 8) & 3;
-	header.length_L = packetLength & 0xFF;
-	header.dst_net[0] = net >> 8;
-	header.dst_net[1] = net & 0xFF;
-	header.dst_node = OFSocketAddressAppleTalkNode(receiver);
-	header.dst_socket = OFSocketAddressAppleTalkPort(receiver);
 
 	if ((bytesWritten = sendmsg(_socket, &msg, 0)) < 0)
 		@throw [OFWriteFailedException
@@ -228,8 +248,8 @@ struct ATInterfaceConfig {
 			   bytesWritten: 0
 				  errNo: OFSocketErrNo()];
 
-	if ((size_t)bytesWritten != packetLength) {
-		bytesWritten -= offsetof(at_ddp_t, type);
+	if ((size_t)bytesWritten != length + 1) {
+		bytesWritten--;
 
 		if (bytesWritten < 0)
 			bytesWritten = 0;

@@ -21,6 +21,7 @@
 
 @implementation OFBindDDPSocketFailedException
 @synthesize network = _network, node = _node, port = _port;
+@synthesize protocolType = _protocolType;
 
 + (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
@@ -30,12 +31,14 @@
 + (instancetype)exceptionWithNetwork: (uint16_t)network
 				node: (uint8_t)node
 				port: (uint8_t)port
+			protocolType: (uint8_t)protocolType
 			      socket: (id)sock
 			       errNo: (int)errNo
 {
 	return [[[self alloc] initWithNetwork: network
 					 node: node
 					 port: port
+				 protocolType: protocolType
 				       socket: sock
 					errNo: errNo] autorelease];
 }
@@ -48,6 +51,7 @@
 - (instancetype)initWithNetwork: (uint16_t)network
 			   node: (uint8_t)node
 			   port: (uint8_t)port
+		   protocolType: (uint8_t)protocolType
 			 socket: (id)sock
 			  errNo: (int)errNo
 {
@@ -57,6 +61,7 @@
 		_network = network;
 		_node = node;
 		_port = port;
+		_protocolType = protocolType;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -69,7 +74,9 @@
 {
 	return [OFString stringWithFormat:
 	    @"Binding to port %" @PRIx8 @" of node %" @PRIx8 @" on network "
-	    @"%" PRIx16 @" failed in socket of type %@: %@",
-	    _port, _node, _network, [_socket class], OFStrError(_errNo)];
+	    @"%" PRIx16 @" with protocol type " @PRIx8 @" failed in socket of "
+	    @"type %@: %@",
+	    _port, _node, _network, _protocolType, [_socket class],
+	    OFStrError(_errNo)];
 }
 @end

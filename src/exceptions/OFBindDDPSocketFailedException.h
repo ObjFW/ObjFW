@@ -28,7 +28,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFBindDDPSocketFailedException: OFBindSocketFailedException
 {
 	uint16_t _network;
-	uint8_t _node, _port;
+	uint8_t _node, _port, _protocolType;
 }
 
 /**
@@ -47,11 +47,17 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) uint8_t port;
 
 /**
+ * @brief The DDP protocol type for which binding failed.
+ */
+@property (readonly, nonatomic) uint8_t protocolType;
+
+/**
  * @brief Creates a new, autoreleased bind DDP socket failed exception.
  *
  * @param network The DDP network on which binding failed
  * @param node The DDP node for which binding failed
  * @param port The DDP port on which binding failed
+ * @param protocolType The DDP protocol type for which binding failed.
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased bind DDP socket failed exception
@@ -59,6 +65,7 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)exceptionWithNetwork: (uint16_t)network
 				node: (uint8_t)node
 				port: (uint8_t)port
+			protocolType: (uint8_t)protocolType
 			      socket: (id)socket
 			       errNo: (int)errNo;
 
@@ -71,6 +78,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param network The DDP network on which binding failed
  * @param node The DDP node for which binding failed
  * @param port The DDP port on which binding failed
+ * @param protocolType The DDP protocol type for which binding failed.
  * @param socket The socket which could not be bound
  * @param errNo The errno of the error that occurred
  * @return An initialized bind DDP socket failed exception
@@ -78,6 +86,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithNetwork: (uint16_t)network
 			   node: (uint8_t)node
 			   port: (uint8_t)port
+		   protocolType: (uint8_t)protocolType
 			 socket: (id)socket
 			  errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 

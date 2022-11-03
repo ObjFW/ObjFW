@@ -40,6 +40,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFSocketAddressAppleTalkPort to get the port (sometimes also called
  * socket number).
  *
+ * @note On some systems, packets received with the wrong protocol type just
+ *	 get filtered by the kernel, however, on other systems, the packet is
+ *	 queued up and will raise an @ref OFReadFailedException with the
+ *	 @ref errNo set to `ENOMSG` when being received.
+ *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
  *	    This is so that the socket can be used as a key for a dictionary,
@@ -49,6 +54,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFDDPSocket: OFDatagramSocket
 {
+#if !defined(OF_MACOS) && !defined(OF_WINDOWS)
+	uint8_t _protocolType;
+#endif
 	OF_RESERVE_IVARS(OFDDPSocket, 4)
 }
 
@@ -68,13 +76,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @param node The node to bind to. 0 means "this node".
  * @param port The port to bind to. 0 means to pick one and return it via the
  *	       returned socket address.
+ * @param protocolType The DDP protocol type to use. Must not be 0. If you want
+ *		       to use DDP directly and not a protocol built on top of
+ *		       it, use 11 for compatibility with Open Transport.
  * @return The address on which this socket can be reached
  * @throw OFBindDDPSockeFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node
-			    port: (uint8_t)port;
+			    port: (uint8_t)port
+		    protocolType: (uint8_t)protocolType;
 @end
 
 OF_ASSUME_NONNULL_END
