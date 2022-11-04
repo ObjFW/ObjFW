@@ -1406,6 +1406,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h net/if.h])
+	AC_CHECK_FUNCS([if_indextoname if_nametoindex])
 	AC_CHECK_HEADER(sys/un.h, [
 		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])

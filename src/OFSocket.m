@@ -470,14 +470,16 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 	addrIn6->sin6_port = OFToBigEndian16(port);
 
 	if ((percent = [IPv6 rangeOfString: @"%"].location) != OFNotFound) {
+#if defined(HAVE_IF_NAMETOINDEX) || defined(OF_WINDOWS)
 		OFString *interface = [IPv6 substringFromIndex: percent + 1];
+#endif
 		IPv6 = [IPv6 substringToIndex: percent];
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS)
 		if (if_nametoindexPtr != NULL)
 			addrIn6->sin6_scope_id = if_nametoindexPtr([interface
 			    cStringWithEncoding: [OFLocale encoding]]);
-#else
+#elif defined(HAVE_IF_NAMETOINDEX)
 		addrIn6->sin6_scope_id = if_nametoindex(
 		    [interface cStringWithEncoding: [OFLocale encoding]]);
 #endif
@@ -906,21 +908,23 @@ IPv6String(const OFSocketAddress *address)
 		}
 	}
 
+#if defined(HAVE_IF_INDEXTONAME) || defined(OF_WINDOWS)
 	if (addrIn6->sin6_scope_id != 0) {
-#ifdef OF_WINDOWS
+# ifdef OF_WINDOWS
 		char interface[IF_MAX_STRING_SIZE];
 
 		if (if_indextonamePtr != NULL && if_indextonamePtr(
 		    addrIn6->sin6_scope_id, interface) != NULL)
-#else
+# else
 		char interface[IF_NAMESIZE];
 
 		if (if_indextoname(addrIn6->sin6_scope_id, interface) != NULL)
-#endif
+# endif
 			[string appendFormat: @"%%%s", interface];
 		else
 			[string appendFormat: @"%%%u", addrIn6->sin6_scope_id];
 	}
+#endif
 
 	[string makeImmutable];
 
