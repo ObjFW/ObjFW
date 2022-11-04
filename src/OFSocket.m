@@ -100,6 +100,11 @@ struct SocketIFace *ISocket = NULL;
 # endif
 #endif
 
+#ifdef OF_WINDOWS
+static WINAPI PCHAR (*if_indextonamePtr)(NET_IFINDEX, PCHAR);
+static WINAPI NET_IFINDEX (*if_nametoindexPtr)(PCSTR);
+#endif
+
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
@@ -119,9 +124,17 @@ init(void)
 {
 # if defined(OF_WINDOWS)
 	WSADATA wsa;
+	HMODULE module;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		return;
+
+	if ((module = LoadLibrary("iphlpapi.dll")) != NULL) {
+		if_indextonamePtr = (WINAPI PCHAR (*)(NET_IFINDEX, PCHAR))
+		    GetProcAddress(module, "if_indextoname");
+		if_nametoindexPtr = (WINAPI NET_IFINDEX (*)(PCSTR))
+		    GetProcAddress(module, "if_nametoindex");
+	}
 # elif defined(OF_AMIGAOS)
 	if ((SocketBase = OpenLibrary("bsdsocket.library", 4)) == NULL)
 		return;
@@ -460,8 +473,14 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 		OFString *interface = [IPv6 substringFromIndex: percent + 1];
 		IPv6 = [IPv6 substringToIndex: percent];
 
+#ifdef OF_WINDOWS
+		if (if_nametoindexPtr != NULL)
+			addrIn6->sin6_scope_id = if_nametoindexPtr([interface
+			    cStringWithEncoding: [OFLocale encoding]]);
+#else
 		addrIn6->sin6_scope_id = if_nametoindex(
 		    [interface cStringWithEncoding: [OFLocale encoding]]);
+#endif
 	}
 
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
@@ -888,9 +907,16 @@ IPv6String(const OFSocketAddress *address)
 	}
 
 	if (addrIn6->sin6_scope_id != 0) {
+#ifdef OF_WINDOWS
+		char interface[IF_MAX_STRING_SIZE];
+
+		if (if_indextonamePtr != NULL && if_indextonamePtr(
+		    addrIn6->sin6_scope_id, interface) != NULL)
+#else
 		char interface[IF_NAMESIZE];
 
 		if (if_indextoname(addrIn6->sin6_scope_id, interface) != NULL)
+#endif
 			[string appendFormat: @"%%%s", interface];
 		else
 			[string appendFormat: @"%%%u", addrIn6->sin6_scope_id];
