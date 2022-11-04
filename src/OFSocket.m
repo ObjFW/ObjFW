@@ -26,6 +26,10 @@
 
 #include <errno.h>
 
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFLocale.h"
@@ -47,6 +51,12 @@
 #import "OFLockFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFUnlockFailedException.h"
+
+#ifdef OF_WINDOWS
+# define interface struct
+# include <netioapi.h>
+# undef interface
+#endif
 
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
@@ -433,7 +443,7 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 	void *pool = objc_autoreleasePoolPush();
 	OFSocketAddress ret;
 	struct sockaddr_in6 *addrIn6 = &ret.sockaddr.in6;
-	size_t doubleColon;
+	size_t doubleColon, percent;
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPv6;
@@ -446,8 +456,15 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 #endif
 	addrIn6->sin6_port = OFToBigEndian16(port);
 
-	doubleColon = [IPv6 rangeOfString: @"::"].location;
+	if ((percent = [IPv6 rangeOfString: @"%"].location) != OFNotFound) {
+		OFString *interface = [IPv6 substringFromIndex: percent + 1];
+		IPv6 = [IPv6 substringToIndex: percent];
 
+		addrIn6->sin6_scope_id = if_nametoindex(
+		    [interface cStringWithEncoding: [OFLocale encoding]]);
+	}
+
+	doubleColon = [IPv6 rangeOfString: @"::"].location;
 	if (doubleColon != OFNotFound) {
 		OFString *left = [IPv6 substringToIndex: doubleColon];
 		OFString *right = [IPv6 substringFromIndex: doubleColon + 2];
@@ -868,6 +885,15 @@ IPv6String(const OFSocketAddress *address)
 			    addrIn6->sin6_addr.s6_addr[i + 1]];
 			first = false;
 		}
+	}
+
+	if (addrIn6->sin6_scope_id != 0) {
+		char interface[IF_NAMESIZE];
+
+		if (if_indextoname(addrIn6->sin6_scope_id, interface) != NULL)
+			[string appendFormat: @"%%%s", interface];
+		else
+			[string appendFormat: @"%%%u", addrIn6->sin6_scope_id];
 	}
 
 	[string makeImmutable];
