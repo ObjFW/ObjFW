@@ -26,7 +26,8 @@
 
 #include <errno.h>
 
-#ifdef HAVE_NET_IF_H
+#include "platform.h"
+#if defined(HAVE_NET_IF_H) && !defined(OF_MORPHOS)
 # include <net/if.h>
 #endif
 
