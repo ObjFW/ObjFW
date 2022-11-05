@@ -2098,7 +2098,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 									\
 				abort();				\
 									\
-				_Pragma("clang diagnostic push ignore	\
+				_Pragma("clang diagnostic push");	\
+			       	_Pragma("clang diagnostic ignored	\
 				    \"-Wunreachable-code\"");		\
 				[super dealloc];			\
 				_Pragma("clang diagnostic pop");
