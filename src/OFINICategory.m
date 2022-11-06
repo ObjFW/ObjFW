@@ -58,7 +58,7 @@ escapeString(OFString *string)
 	[mutableString replaceOccurrencesOfString: @"\n" withString: @"\\n"];
 	[mutableString replaceOccurrencesOfString: @"\"" withString: @"\\\""];
 
-	[mutableString prependString: @"\""];
+	[mutableString insertString: @"\"" atIndex: 0];
 	[mutableString appendString: @"\""];
 
 	[mutableString makeImmutable];
@@ -74,7 +74,7 @@ unescapeString(OFString *string)
 	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
 		return string;
 
-	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
+	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 	mutableString = [[string mutableCopy] autorelease];
 
 	[mutableString replaceOccurrencesOfString: @"\\f" withString: @"\f"];

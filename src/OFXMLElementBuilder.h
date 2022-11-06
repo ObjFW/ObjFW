@@ -54,8 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which built the OFXMLNode without parent
  * @param node The OFXMLNode the OFXMLElementBuilder built
  */
--   (void)elementBuilder: (OFXMLElementBuilder *)builder
-  didBuildParentlessNode: (OFXMLNode *)node;
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+    didBuildOrphanNode: (OFXMLNode *)node;
 
 /**
  * @brief This callback is called when the OFXMLElementBuilder gets a close tag
@@ -102,11 +102,11 @@ OF_ASSUME_NONNULL_BEGIN
  * first parsing stuff using the OFXMLParser with another delegate and then
  * setting the OFXMLElementBuilder as delegate for the parser.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
-	OF_RESERVE_IVARS(OFXMLElementBuilder, 4)
 }
 
 /**

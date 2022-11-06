@@ -17,10 +17,10 @@
 
 #import "OFSetItemAttributesFailedException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFSetItemAttributesFailedException
-@synthesize URL = _URL, attributes = _attributes;
+@synthesize URI = _URI, attributes = _attributes;
 @synthesize failedAttribute = _failedAttribute, errNo = _errNo;
 
 + (instancetype)exception
@@ -28,12 +28,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 		      attributes: (OFFileAttributes)attributes
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
+	return [[[self alloc] initWithURI: URI
 			       attributes: attributes
 			  failedAttribute: failedAttribute
 				    errNo: errNo] autorelease];
@@ -44,7 +44,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo
@@ -52,7 +52,7 @@
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_URI = [URI copy];
 		_attributes = [attributes copy];
 		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
@@ -66,7 +66,7 @@
 
 - (void)dealloc
 {
-	[_URL release];
+	[_URI release];
 	[_attributes release];
 	[_failedAttribute release];
 
@@ -77,6 +77,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set attribute %@ for item %@: %@",
-	    _failedAttribute, _URL, OFStrError(_errNo)];
+	    _failedAttribute, _URI, OFStrError(_errNo)];
 }
 @end

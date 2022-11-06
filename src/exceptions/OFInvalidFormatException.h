@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An exception indicating that the format is invalid.
  */
 @interface OFInvalidFormatException: OFException
+{
+	OF_RESERVE_IVARS(OFInvalidFormatException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

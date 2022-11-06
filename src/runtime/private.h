@@ -16,7 +16,6 @@
 #include "config.h"
 
 #import "macros.h"
-#import "platform.h"
 
 #if !defined(__has_feature) || !__has_feature(nullability)
 # ifndef _Nonnull

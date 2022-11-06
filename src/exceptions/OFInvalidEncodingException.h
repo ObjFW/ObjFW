@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An exception indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException
+{
+	OF_RESERVE_IVARS(OFInvalidEncodingException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

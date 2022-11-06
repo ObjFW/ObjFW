@@ -38,14 +38,19 @@
 #ifdef OF_HAVE_NETINET_SCTP_H
 # include <netinet/sctp.h>
 #endif
-#ifdef OF_HAVE_NETIPX_IPX_H
-# include <netipx/ipx.h>
-#endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
 #ifdef OF_HAVE_AFUNIX_H
 # include <afunix.h>
+#endif
+#ifdef OF_HAVE_NETIPX_IPX_H
+# include <netipx/ipx.h>
+#endif
+#if defined(OF_HAVE_NETAT_APPLETALK_H)
+# include <netat/appletalk.h>
+#elif defined(OF_HAVE_NETATALK_AT_H)
+# include <netatalk/at.h>
 #endif
 
 #ifdef OF_WINDOWS
@@ -53,6 +58,9 @@
 # include <ws2tcpip.h>
 # ifdef OF_HAVE_IPX
 #  include <wsipx.h>
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  include <atalkwsh.h>
 # endif
 #endif
 
@@ -106,6 +114,8 @@ typedef enum {
 	OFSocketAddressFamilyUNIX,
 	/** IPX */
 	OFSocketAddressFamilyIPX,
+	/** AppleTalk */
+	OFSocketAddressFamilyAppleTalk,
 	/** Any address family */
 	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
@@ -147,6 +157,23 @@ struct sockaddr_ipx {
 # define sipx_port sa_socket
 #endif
 
+#ifndef OF_HAVE_APPLETALK
+struct sockaddr_at {
+	sa_family_t sat_family;
+	uint8_t sat_port;
+	struct at_addr {
+		uint16_t s_net;
+		uint8_t s_node;
+	} sat_addr;
+};
+#endif
+#ifdef OF_WINDOWS
+# define sat_port sat_socket
+#else
+# define sat_net sat_addr.s_net
+# define sat_node sat_addr.s_node
+#endif
+
 /**
  * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
  *
@@ -163,6 +190,7 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_in6 in6;
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
+		struct sockaddr_at at;
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -177,6 +205,7 @@ extern "C" {
  * @param IP The IP to parse
  * @param port The port to use
  * @return The parsed IP and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IP
  */
 extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
 
@@ -186,6 +215,7 @@ extern OFSocketAddress OFSocketAddressParseIP(OFString *IP, uint16_t port);
  * @param IP The IPv4 to parse
  * @param port The port to use
  * @return The parsed IPv4 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv4
  */
 extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 
@@ -195,6 +225,7 @@ extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
  * @param IP The IPv6 to parse
  * @param port The port to use
  * @return The parsed IPv6 and port as an OFSocketAddress
+ * @throw OFInvalidFormatException The specified string is not a valid IPv6
  */
 extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 
@@ -207,7 +238,7 @@ extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
 
 /**
- * @brief Creates an IPX address for the specified node, network and port.
+ * @brief Creates an IPX address for the specified network, node and port.
  *
  * @param network The IPX network
  * @param node The node in the IPX network
@@ -216,6 +247,18 @@ extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
  */
 extern OFSocketAddress OFSocketAddressMakeIPX(uint32_t network,
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
+
+/**
+ * @brief Creates an AppleTalk address for the specified network, node and port.
+ *
+ * @param network The AppleTalk network
+ * @param node The node in the AppleTalk network
+ * @param port The AppleTalk (sometimes called socket number) on the node
+ * @return An AppleTalk socket address with the specified node, network and
+ *	   port.
+ */
+extern OFSocketAddress OFSocketAddressMakeAppleTalk(uint16_t network,
+    uint8_t node, uint8_t port);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -246,23 +289,21 @@ extern OFString *_Nonnull OFSocketAddressString(
     const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Sets the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the port
  * @param port The port to set on the address
  */
-extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressSetIPPort(OFSocketAddress *_Nonnull address,
     uint16_t port);
 
 /**
- * @brief Returns the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Returns the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to get the port
  * @return The port of the address
  */
-extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
+extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
 
 /**
  * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
@@ -306,8 +347,79 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  * @param address The address on which to get the IPX node
  * @param node A byte array to store the IPX node of the address
  */
-extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/**
+ * @brief Sets the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetIPXPort(OFSocketAddress *_Nonnull address,
+    uint16_t port);
+
+/**
+ * @brief Returns the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint16_t OFSocketAddressIPXPort(const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk network
+ * @param network The AppleTalk network to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNetwork(
+    OFSocketAddress *_Nonnull address, uint16_t network);
+
+/**
+ * @brief Returns the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk network
+ * @return The AppleTalk network of the address
+ */
+extern uint16_t OFSocketAddressAppleTalkNetwork(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk node
+ * @param node The AppleTalk node to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address,
+    uint8_t node);
+
+/**
+ * @brief Gets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk node
+ * @return The AppleTalk node of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkNode(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
+    uint8_t port);
+
+/**
+ * @brief Returns the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkPort(
+    const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)

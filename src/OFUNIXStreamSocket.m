@@ -25,8 +25,8 @@
 #import "OFString.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
-#import "OFConnectionFailedException.h"
+#import "OFBindUNIXSocketFailedException.h"
+#import "OFConnectUNIXSocketFailedException.h"
 
 @implementation OFUNIXStreamSocket
 @dynamic delegate;
@@ -45,7 +45,7 @@
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFConnectionFailedException
+		@throw [OFConnectUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -64,9 +64,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFConnectionFailedException exceptionWithPath: path
-							       socket: self
-								errNo: errNo];
+		@throw [OFConnectUNIXSocketFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: errNo];
 	}
 }
 
@@ -84,7 +85,7 @@
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -103,9 +104,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPath: path
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindUNIXSocketFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: errNo];
 	}
 }
 @end

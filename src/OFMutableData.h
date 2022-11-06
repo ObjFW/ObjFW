@@ -18,7 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
@@ -204,7 +204,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)removeAllItems;
 
 /**
- * @brief Converts the mutable URL to an immutable URL.
+ * @brief Converts the mutable data to an immutable data.
  */
 - (void)makeImmutable;
 @end

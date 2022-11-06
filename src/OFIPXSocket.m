@@ -26,14 +26,16 @@
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindIPXSocketFailedException.h"
 
 @implementation OFIPXSocket
 @dynamic delegate;
 
-- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType
+- (OFSocketAddress)bindToNetwork: (uint32_t)network
+			    node: (const unsigned char [IPX_NODE_LEN])node
+			    port: (uint16_t)port
+		      packetType: (uint8_t)packetType
 {
-	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	OFSocketAddress address;
 	int protocol = 0;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
@@ -43,7 +45,7 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	address = OFSocketAddressMakeIPX(0, zeroNode, port);
+	address = OFSocketAddressMakeIPX(network, node, port);
 
 #ifdef OF_WINDOWS
 	protocol = NSPROTO_IPX + packetType;
@@ -53,11 +55,13 @@
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
-		    exceptionWithPort: port
-			   packetType: packetType
-			       socket: self
-				errNo: OFSocketErrNo()];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -73,10 +77,13 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -90,20 +97,26 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: EAFNOSUPPORT];
 	}
 
 	return address;

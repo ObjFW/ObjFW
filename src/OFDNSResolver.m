@@ -38,7 +38,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFInvalidServerResponseException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -128,7 +128,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 			OFString *suffix;
 
 			if (pointerLevel == 0)
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 
 			if (*i >= length)
@@ -138,7 +138,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 
 			if (j == *i - 2)
 				/* Pointing to itself?! */
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 
 			suffix = parseName(buffer, length, &j,
@@ -175,7 +175,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFSocketAddress address;
 
 		if (dataLength != 4)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv4;
@@ -194,7 +194,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFNSDNSResourceRecord alloc]
 			 initWithName: name
@@ -207,7 +207,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFCNAMEDNSResourceRecord alloc]
 		    initWithName: name
@@ -223,13 +223,13 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		uint32_t expirationInterval, minTTL;
 
 		if (j > i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		responsiblePerson = parseName(buffer, length, &j,
 		    maxAllowedPointers);
 
 		if (dataLength - (j - i) != 20)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		serialNumber = (buffer[j] << 24) | (buffer[j + 1] << 16) |
 		    (buffer[j + 2] << 8) | buffer[j + 3];
@@ -261,7 +261,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFPTRDNSResourceRecord alloc]
 		    initWithName: name
@@ -274,12 +274,12 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFString *OS;
 
 		if (j > i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		OS = parseString(buffer, length, &j);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFHINFODNSResourceRecord alloc]
 		    initWithName: name
@@ -293,7 +293,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFString *mailExchange;
 
 		if (dataLength < 2)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		preference = (buffer[i] << 8) | buffer[i + 1];
 
@@ -302,7 +302,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFMXDNSResourceRecord alloc]
 		    initWithName: name
@@ -318,7 +318,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 			dataLength--;
 
 			if (stringLength > dataLength)
-				@throw [OFInvalidServerReplyException
+				@throw [OFInvalidServerResponseException
 				    exception];
 
 			[textStrings addObject:
@@ -343,13 +343,13 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFString *TXTDomainName;
 
 		if (j > i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		TXTDomainName = parseName(buffer, length, &j,
 		    maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFRPDNSResourceRecord alloc]
 		     initWithName: name
@@ -362,7 +362,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFSocketAddress address;
 
 		if (dataLength != 16)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv6;
@@ -386,7 +386,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		OFString *target;
 
 		if (dataLength < 6)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		priority = (buffer[i] << 8) | buffer[i + 1];
 		weight = (buffer[i + 2] << 8) | buffer[i + 3];
@@ -396,7 +396,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		target = parseName(buffer, length, &j, maxAllowedPointers);
 
 		if (j != i + dataLength)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		return [[[OFSRVDNSResourceRecord alloc]
 		    initWithName: name
@@ -910,7 +910,8 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_TCPSocket != nil) {
 		if ([_TCPQueries objectForKey: context->_TCPSocket] != context)
 			return true;
-	} else if (!OFSocketAddressEqual(sender, &context->_usedNameServer))
+	} else if (sender == NULL ||
+	    !OFSocketAddressEqual(sender, &context->_usedNameServer))
 		return true;
 
 	[context->_cancelTimer invalidate];
@@ -937,11 +938,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 		/* QR */
 		if ((buffer[2] & 0x80) == 0)
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		/* Opcode */
 		if ((buffer[2] & 0x78) != (queryDataBuffer[2] & 0x78))
-			@throw [OFInvalidServerReplyException exception];
+			@throw [OFInvalidServerResponseException exception];
 
 		/* TC */
 		if (buffer[2] & 0x02) {

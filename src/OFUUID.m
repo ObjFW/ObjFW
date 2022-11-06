@@ -187,7 +187,7 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(_bytes); i++)
-		OFHashAdd(&hash, _bytes[i]);
+		OFHashAddByte(&hash, _bytes[i]);
 
 	OFHashFinalize(&hash);
 

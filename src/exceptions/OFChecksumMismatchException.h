@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFChecksumMismatchException: OFException
 {
 	OFString *_actualChecksum, *_expectedChecksum;
+	OF_RESERVE_IVARS(OFChecksumMismatchException, 4)
 }
 
 /**

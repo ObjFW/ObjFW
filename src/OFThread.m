@@ -75,8 +75,8 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #ifdef OF_HAVE_THREADS
-# import "OFThreadJoinFailedException.h"
-# import "OFThreadStartFailedException.h"
+# import "OFJoinThreadFailedException.h"
+# import "OFStartThreadFailedException.h"
 # import "OFThreadStillRunningException.h"
 #endif
 
@@ -133,8 +133,8 @@ callMain(id object)
 	 */
 	if (setjmp(thread->_exitEnv) == 0) {
 # ifdef OF_HAVE_BLOCKS
-		if (thread->_threadBlock != NULL)
-			thread->_returnValue = [thread->_threadBlock() retain];
+		if (thread->_block != NULL)
+			thread->_returnValue = [thread->_block() retain];
 		else
 # endif
 			thread->_returnValue = [[thread main] retain];
@@ -160,7 +160,7 @@ callMain(id object)
 
 @synthesize name = _name;
 # ifdef OF_HAVE_BLOCKS
-@synthesize threadBlock = _threadBlock;
+@synthesize block = _block;
 # endif
 
 + (void)initialize
@@ -179,9 +179,9 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock
++ (instancetype)threadWithBlock: (OFThreadBlock)block
 {
-	return [[[self alloc] initWithThreadBlock: threadBlock] autorelease];
+	return [[[self alloc] initWithBlock: block] autorelease];
 }
 # endif
 
@@ -380,12 +380,12 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock
+- (instancetype)initWithBlock: (OFThreadBlock)block
 {
 	self = [self init];
 
 	@try {
-		_threadBlock = [threadBlock copy];
+		_block = [block copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -437,7 +437,7 @@ callMain(id object)
 	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
 		[self release];
-		@throw [OFThreadStartFailedException
+		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
 	}
@@ -448,12 +448,12 @@ callMain(id object)
 	int error;
 
 	if (_running == OFThreadStateNotRunning)
-		@throw [OFThreadJoinFailedException
+		@throw [OFJoinThreadFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
 	if ((error = OFPlainThreadJoin(_thread)) != 0)
-		@throw [OFThreadJoinFailedException exceptionWithThread: self
+		@throw [OFJoinThreadFailedException exceptionWithThread: self
 								  errNo: error];
 
 	_running = OFThreadStateNotRunning;
@@ -543,7 +543,7 @@ callMain(id object)
 
 	[_returnValue release];
 # ifdef OF_HAVE_BLOCKS
-	[_threadBlock release];
+	[_block release];
 # endif
 
 	[super dealloc];

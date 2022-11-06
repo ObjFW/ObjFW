@@ -56,6 +56,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param string The UUID string for the UUID
  * @return A new, autoreleased OFUUID
+ * @throw OFInvalidFormatException The specified string is not a valid UUID
+ *				   string
  */
 + (instancetype)UUIDWithUUIDString: (OFString *)string;
 
@@ -81,6 +83,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param string The UUID string to initialize the OFUUID with
  * @return An initialized OFUUID
+ * @throw OFInvalidFormatException The specified string is not a valid UUID
+ *				   string
  */
 - (instancetype)initWithUUIDString: (OFString *)string;
 

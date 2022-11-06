@@ -36,7 +36,7 @@ static OFString *module = @"OFSCTPSocket";
 	@try {
 		TEST(@"-[bindToHost:port:]",
 		    (port = [server bindToHost: @"127.0.0.1" port: 0]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];

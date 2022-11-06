@@ -24,29 +24,35 @@ static OFString *const module = @"OFIPXSocket";
 @implementation TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests
 {
+	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
 	OFSocketAddress address1, address2;
 	char buffer[5];
+	unsigned char node1[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
 	@try {
-		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0 packetType: 0]))
-	} @catch (OFBindFailedException *e) {
+		TEST(@"-[bindToNetwork:node:port:packetType:]",
+		R(address1 = [sock bindToNetwork: 0
+					    node: zeroNode
+					    port: 0
+				      packetType: 0]))
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX unsupported, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX not configured, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX not configured, skipping "
+			    @"tests"];
 			break;
 		default:
 			@throw e;
@@ -62,8 +68,11 @@ static OFString *const module = @"OFIPXSocket";
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
 	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
-	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
+	    R(OFSocketAddressGetIPXNode(&address1, node1)) &&
+	    R(OFSocketAddressGetIPXNode(&address2, node2)) &&
+	    memcmp(node1, node2, IPX_NODE_LEN) == 0 &&
+	    OFSocketAddressIPXPort(&address1) ==
+	    OFSocketAddressIPXPort(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }

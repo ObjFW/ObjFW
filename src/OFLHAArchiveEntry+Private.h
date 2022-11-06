@@ -17,14 +17,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
 @interface OFLHAArchiveEntry ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
 - (instancetype)of_initWithHeader: (char [_Nonnull 21])header
 			   stream: (OFStream *)stream
 			 encoding: (OFStringEncoding)encoding
-    OF_METHOD_FAMILY(init);
+    OF_METHOD_FAMILY(init) OF_DIRECT;
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (OFStringEncoding)encoding;
+		encoding: (OFStringEncoding)encoding OF_DIRECT;
 @end
 
 OF_ASSUME_NONNULL_END

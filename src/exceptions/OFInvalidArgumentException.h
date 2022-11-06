@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An exception indicating that the argument is invalid for this method.
  */
 @interface OFInvalidArgumentException: OFException
+{
+	OF_RESERVE_IVARS(OFInvalidArgumentException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

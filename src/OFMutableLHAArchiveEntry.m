@@ -16,6 +16,7 @@
 #include "config.h"
 
 #import "OFMutableLHAArchiveEntry.h"
+#import "OFLHAArchiveEntry+Private.h"
 
 #import "OFArray.h"
 #import "OFData.h"
@@ -24,9 +25,29 @@
 #import "OFString.h"
 
 @implementation OFMutableLHAArchiveEntry
-@dynamic fileName, compressionMethod, compressedSize, uncompressedSize, date;
-@dynamic headerLevel, CRC16, operatingSystemIdentifier, fileComment, mode, UID;
-@dynamic GID, owner, group, modificationDate, extensions;
+@dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
+@dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
+@dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName, extensions;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {
@@ -54,20 +75,20 @@
 	[old release];
 }
 
-- (void)setCompressedSize: (uint32_t)compressedSize
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
 	_compressedSize = compressedSize;
 }
 
-- (void)setUncompressedSize: (uint32_t)uncompressedSize
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
 {
 	_uncompressedSize = uncompressedSize;
 }
 
-- (void)setDate: (OFDate *)date
+- (void)setModificationDate: (OFDate *)modificationDate
 {
-	OFDate *old = _date;
-	_date = [date retain];
+	OFDate *old = _modificationDate;
+	_modificationDate = [modificationDate retain];
 	[old release];
 }
 
@@ -93,45 +114,38 @@
 	[old release];
 }
 
-- (void)setMode: (OFNumber *)mode
+- (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
-	OFNumber *old = _mode;
-	_mode = [mode retain];
+	OFNumber *old = _POSIXPermissions;
+	_POSIXPermissions = [POSIXPermissions retain];
 	[old release];
 }
 
-- (void)setUID: (OFNumber *)UID
+- (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
-	OFNumber *old = _UID;
-	_UID = [UID retain];
+	OFNumber *old = _ownerAccountID;
+	_ownerAccountID = [ownerAccountID retain];
 	[old release];
 }
 
-- (void)setGID: (OFNumber *)GID
+- (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
-	OFNumber *old = _GID;
-	_GID = [GID retain];
+	OFNumber *old = _groupOwnerAccountID;
+	_groupOwnerAccountID = [groupOwnerAccountID retain];
 	[old release];
 }
 
-- (void)setOwner: (OFString *)owner
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
-	OFString *old = _owner;
-	_owner = [owner copy];
+	OFString *old = _ownerAccountName;
+	_ownerAccountName = [ownerAccountName copy];
 	[old release];
 }
 
-- (void)setGroup: (OFString *)group
+- (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
-	OFString *old = _group;
-	_group = [group copy];
-	[old release];
-}
-
-- (void)setModificationDate: (OFDate *)modificationDate
-{
-	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
+	OFString *old = _groupOwnerAccountName;
+	_groupOwnerAccountName = [groupOwnerAccountName copy];
 	[old release];
 }
 

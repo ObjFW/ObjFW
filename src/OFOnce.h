@@ -15,7 +15,7 @@
 
 #include "objfw-defs.h"
 
-#include "platform.h"
+#import "macros.h"
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
@@ -28,6 +28,8 @@ typedef volatile int OFOnceControl;
 typedef int OFOnceControl;
 # define OFOnceControlInitValue 0
 #endif
+
+OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,3 +46,5 @@ extern void OFOnce(OFOnceControl *control, void (*function)(void));
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

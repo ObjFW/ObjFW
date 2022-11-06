@@ -22,10 +22,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class representing XML CDATA.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLCDATA: OFXMLNode
 {
 	OFString *_CDATA;
-	OF_RESERVE_IVARS(OFXMLCDATA, 4)
 }
 
 /**

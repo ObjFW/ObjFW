@@ -25,10 +25,10 @@
 #endif
 
 #import "OFSCTPSocket.h"
+#import "OFAsyncIPSocketConnector.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFSocket.h"
@@ -37,7 +37,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
@@ -45,7 +45,7 @@
 static const OFRunLoopMode connectRunLoopMode =
     @"OFSCTPSocketConnectRunLoopMode";
 
-@interface OFSCTPSocket () <OFIPSocketAsyncConnecting>
+@interface OFSCTPSocket () <OFAsyncIPSocketConnecting>
 @end
 
 @interface OFSCTPSocketConnectDelegate: OFObject <OFSCTPSocketDelegate>
@@ -167,7 +167,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -199,7 +199,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -229,12 +229,12 @@ static const OFRunLoopMode connectRunLoopMode =
 		      addressFamily: OFSocketAddressFamilyAny];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
-	OFSocketAddressSetPort(&address, port);
+	OFSocketAddressSetIPPort(&address, port);
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address.sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
@@ -257,10 +257,10 @@ static const OFRunLoopMode connectRunLoopMode =
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPSocketFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -278,10 +278,10 @@ static const OFRunLoopMode connectRunLoopMode =
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPSocketFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
 	}
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
@@ -295,10 +295,11 @@ static const OFRunLoopMode connectRunLoopMode =
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindIPSocketFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 }
 

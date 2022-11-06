@@ -20,7 +20,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFApplication.h"
-#import "OFURL.h"
+#import "OFURI.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFHTTPClient.h"
@@ -32,9 +32,9 @@
 #import "TableGenerator.h"
 #import "copyright.h"
 
-static OFString *const unicodeDataURL =
+static OFString *const unicodeDataURI =
     @"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
-static OFString *const caseFoldingURL =
+static OFString *const caseFoldingURI =
     @"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
 
 OF_APPLICATION_DELEGATE(TableGenerator)
@@ -68,8 +68,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[OFStdOut writeString: @"Downloading UnicodeData.txt…"];
 	_state = stateUnicodeData;
-	request = [OFHTTPRequest requestWithURL:
-	    [OFURL URLWithString: unicodeDataURL]];
+	request = [OFHTTPRequest requestWithURI:
+	    [OFURI URIWithString: unicodeDataURI]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
@@ -137,7 +137,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			if ([decomposed.firstObject hasPrefix: @"<"]) {
 				decomposed = [decomposed objectsInRange:
-				    OFRangeMake(1, decomposed.count - 1)];
+				    OFMakeRange(1, decomposed.count - 1)];
 				compat = true;
 			}
 
@@ -168,8 +168,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[OFStdOut writeString: @"Downloading CaseFolding.txt…"];
 	_state = stateCaseFolding;
-	request = [OFHTTPRequest requestWithURL:
-	    [OFURL URLWithString: caseFoldingURL]];
+	request = [OFHTTPRequest requestWithURI:
+	    [OFURI URIWithString: caseFoldingURI]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
@@ -270,15 +270,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)writeFiles
 {
-	OFURL *URL;
+	OFURI *URI;
 
 	[OFStdOut writeString: @"Writing files…"];
 
-	URL = [OFURL fileURLWithPath: @"../../src/unicode.m"];
-	[self writeTablesToFile: URL.fileSystemRepresentation];
+	URI = [OFURI fileURIWithPath: @"../../src/unicode.m"];
+	[self writeTablesToFile: URI.fileSystemRepresentation];
 
-	URL = [OFURL fileURLWithPath: @"../../src/unicode.h"];
-	[self writeHeaderToFile: URL.fileSystemRepresentation];
+	URI = [OFURI fileURIWithPath: @"../../src/unicode.h"];
+	[self writeHeaderToFile: URI.fileSystemRepresentation];
 
 	[OFStdOut writeLine: @" done"];
 

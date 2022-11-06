@@ -35,10 +35,10 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAcceptFailedException.h"
+#import "OFAcceptSocketFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -308,7 +308,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backlog) == -1)
-		@throw [OFListenFailedException
+		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
 				  errNo: OFSocketErrNo()];
@@ -318,14 +318,17 @@
 
 - (instancetype)accept
 {
-	OFSequencedPacketSocket *client =
-	    [[[[self class] alloc] init] autorelease];
+	OFSequencedPacketSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
@@ -334,7 +337,7 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
@@ -342,14 +345,14 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 

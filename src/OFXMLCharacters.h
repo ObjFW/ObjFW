@@ -22,10 +22,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class representing XML characters.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLCharacters: OFXMLNode
 {
 	OFString *_characters;
-	OF_RESERVE_IVARS(OFXMLCharacters, 4)
 }
 
 /**

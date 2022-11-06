@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnknownXMLEntityException: OFException
 {
 	OFString *_entityName;
+	OF_RESERVE_IVARS(OFUnknownXMLEntityException, 4)
 }
 
 /**

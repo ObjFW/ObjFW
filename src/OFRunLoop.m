@@ -41,7 +41,7 @@
 #import "OFTimer+Private.h"
 #import "OFDate.h"
 
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFWriteFailedException.h"
 
 #include "OFRunLoopConstants.inc"
@@ -1651,7 +1651,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 			@try {
 				[state->_kernelEventObserver
 				    observeForTimeInterval: timeout];
-			} @catch (OFObserveFailedException *e) {
+			} @catch (OFObserveKernelEventsFailedException *e) {
 				if (e.errNo != EINTR)
 					@throw e;
 			}
@@ -1679,7 +1679,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 #if defined(OF_HAVE_SOCKETS)
 			@try {
 				[state->_kernelEventObserver observe];
-			} @catch (OFObserveFailedException *e) {
+			} @catch (OFObserveKernelEventsFailedException *e) {
 				if (e.errNo != EINTR)
 					@throw e;
 			}

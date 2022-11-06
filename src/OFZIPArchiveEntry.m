@@ -172,35 +172,21 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 }
 
 @implementation OFZIPArchiveEntry
-+ (instancetype)entryWithFileName: (OFString *)fileName
-{
-	return [[[self alloc] initWithFileName: fileName] autorelease];
-}
+/*
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName;
 
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithFileName: (OFString *)fileName
+- (instancetype)of_init
 {
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (fileName.UTF8StringLength > UINT16_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		_fileName = [fileName copy];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [super init];
 }
 
 - (instancetype)of_initWithStream: (OFStream *)stream
@@ -255,7 +241,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
 			OFRange range =
-			    OFRangeMake(ZIP64Index - 4, ZIP64Size + 4);
+			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
 				_uncompressedSize = OFZIPArchiveReadField64(
@@ -387,12 +373,12 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _compressionMethod;
 }
 
-- (uint64_t)compressedSize
+- (unsigned long long)compressedSize
 {
 	return _compressedSize;
 }
 
-- (uint64_t)uncompressedSize
+- (unsigned long long)uncompressedSize
 {
 	return _uncompressedSize;
 }

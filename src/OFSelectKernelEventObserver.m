@@ -34,7 +34,7 @@
 #import "OFSocket+Private.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_AMIGAOS
@@ -84,8 +84,9 @@
 	int fd = object.fileDescriptorForReading;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
@@ -108,8 +109,9 @@
 	int fd = object.fileDescriptorForWriting;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
@@ -134,8 +136,9 @@
 	int fd = object.fileDescriptorForReading;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 #ifndef OF_WINDOWS
 	if (fd >= (int)FD_SETSIZE)
@@ -154,8 +157,9 @@
 	int fd = object.fileDescriptorForWriting;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 
 #ifndef OF_WINDOWS
@@ -206,8 +210,9 @@
 
 #ifdef OF_AMIGAOS
 	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EAGAIN];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EAGAIN];
 
 	execSignalMask = _execSignalMask | (1ul << cancelSignal);
 
@@ -231,7 +236,7 @@
 #endif
 
 	if (events < 0)
-		@throw [OFObserveFailedException
+		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
 				    errNo: OFSocketErrNo()];
 

@@ -26,23 +26,23 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLProcessingInstruction
-@synthesize target = _target, data = _data;
+@synthesize target = _target, text = _text;
 
 + (instancetype)processingInstructionWithTarget: (OFString *)target
-					   data: (OFString *)data
+					   text: (OFString *)text
 {
 	return [[[self alloc] initWithTarget: target
-					data: data] autorelease];
+					text: text] autorelease];
 }
 
 - (instancetype)initWithTarget: (OFString *)target
-			  data: (OFString *)data
+			  text: (OFString *)text
 {
 	self = [super of_init];
 
 	@try {
 		_target = [target copy];
-		_data = [data copy];
+		_text = [text copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -67,7 +67,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		self = [self initWithTarget: targetAttr.stringValue
-				       data: element.stringValue];
+				       text: element.stringValue];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -81,7 +81,7 @@
 - (void)dealloc
 {
 	[_target release];
-	[_data release];
+	[_text release];
 
 	[super dealloc];
 }
@@ -101,8 +101,8 @@
 	if (![processingInstruction->_target isEqual: _target])
 		return false;
 
-	if (processingInstruction->_data != _data &&
-	    ![processingInstruction->_data isEqual: _data])
+	if (processingInstruction->_text != _text &&
+	    ![processingInstruction->_text isEqual: _text])
 		return false;
 
 	return true;
@@ -114,7 +114,7 @@
 
 	OFHashInit(&hash);
 	OFHashAddHash(&hash, _target.hash);
-	OFHashAddHash(&hash, _data.hash);
+	OFHashAddHash(&hash, _text.hash);
 	OFHashFinalize(&hash);
 
 	return hash;
@@ -127,42 +127,11 @@
 
 - (OFString *)XMLString
 {
-	if (_data.length > 0)
+	if (_text.length > 0)
 		return [OFString stringWithFormat: @"<?%@ %@?>",
-						   _target, _data];
+						   _target, _text];
 	else
 		return [OFString stringWithFormat: @"<?%@?>", _target];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return self.XMLString;
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	if (indentation > 0 && level > 0) {
-		OFString *ret;
-		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
-		memset(whitespaces, ' ', level * indentation);
-		whitespaces[level * indentation] = 0;
-
-		@try {
-			if (_data.length > 0)
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@ %@?>", whitespaces,
-				    _target, _data];
-			else
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@?>", whitespaces, _target];
-		} @finally {
-			OFFreeMemory(whitespaces);
-		}
-
-		return ret;
-	} else
-		return self.XMLString;
 }
 
 - (OFString *)description
@@ -174,7 +143,7 @@
 {
 	OFXMLElement *ret = [OFXMLElement elementWithName: self.className
 						namespace: OFSerializationNS
-					      stringValue: _data];
+					      stringValue: _text];
 	void *pool = objc_autoreleasePoolPush();
 
 	[ret addAttribute: [OFXMLAttribute attributeWithName: @"target"

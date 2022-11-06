@@ -31,10 +31,10 @@
 #endif
 
 #import "OFTCPSocket.h"
+#import "OFAsyncIPSocketConnector.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFSocket.h"
@@ -44,7 +44,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -56,7 +56,7 @@ static const OFRunLoopMode connectRunLoopMode =
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket () <OFIPSocketAsyncConnecting>
+@interface OFTCPSocket () <OFAsyncIPSocketConnecting>
 @end
 
 @interface OFTCPSocketConnectDelegate: OFObject <OFTCPSocketDelegate>
@@ -221,9 +221,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
-	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
-
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -239,7 +236,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	} else
 		delegate = _delegate;
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -269,9 +266,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
-	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
-
 	if (_SOCKS5Host != nil) {
 		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -283,7 +277,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		port = _SOCKS5Port;
 	}
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -317,12 +311,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      addressFamily: OFSocketAddressFamilyAny];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
-	OFSocketAddressSetPort(&address, port);
+	OFSocketAddressSetIPPort(&address, port);
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address.sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
@@ -348,10 +342,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
 
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self
-								  errNo: errNo];
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: errNo];
 		}
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	} else {
@@ -362,7 +357,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			OFSocketAddressSetPort(&address, rnd);
+			OFSocketAddressSetIPPort(&address, rnd);
 
 			if ((ret = bind(_socket,
 			    (struct sockaddr *)&address.sockaddr,
@@ -377,7 +372,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
 
-				@throw [OFBindFailedException
+				@throw [OFBindIPSocketFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
@@ -403,10 +398,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPSocketFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
 	}
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
@@ -420,18 +415,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindIPSocketFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EAFNOSUPPORT];
 	}
 #else
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
-	@throw [OFBindFailedException exceptionWithHost: host
-						   port: port
-						 socket: self
-						  errNo: EADDRNOTAVAIL];
+	@throw [OFBindIPSocketFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EADDRNOTAVAIL];
 #endif
 }
 

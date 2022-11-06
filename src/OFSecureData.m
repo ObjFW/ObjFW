@@ -375,7 +375,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -499,7 +499,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -631,7 +631,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

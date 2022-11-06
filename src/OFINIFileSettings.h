@@ -19,11 +19,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFINIFile;
 @class OFString;
-@class OFURL;
+@class OFURI;
 
 @interface OFINIFileSettings: OFSettings
 {
-	OFURL *_fileURL;
+	OFURI *_fileURI;
 	OFINIFile *_INIFile;
 }
 @end
