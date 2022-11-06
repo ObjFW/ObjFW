@@ -213,11 +213,11 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_INSTANCE_M}		\
 	${UNICODE_M}
 SRCS_FILES += OFFileURIHandler.m
-SRCS_SOCKETS += OFDNSResolverSettings.m			\
+SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
+		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
 		OFHTTPURIHandler.m			\
 		OFHostAddressResolver.m			\
-		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\

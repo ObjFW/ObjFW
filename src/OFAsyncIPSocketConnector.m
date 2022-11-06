@@ -17,7 +17,7 @@
 
 #include <errno.h>
 
-#import "OFIPSocketAsyncConnector.h"
+#import "OFAsyncIPSocketConnector.h"
 #import "OFData.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
@@ -26,7 +26,7 @@
 #import "OFConnectIPSocketFailedException.h"
 #import "OFInvalidFormatException.h"
 
-@implementation OFIPSocketAsyncConnector
+@implementation OFAsyncIPSocketConnector
 - (instancetype)initWithSocket: (id)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port

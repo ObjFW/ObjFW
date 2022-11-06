@@ -31,10 +31,10 @@
 #endif
 
 #import "OFTCPSocket.h"
+#import "OFAsyncIPSocketConnector.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFIPSocketAsyncConnector.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFSocket.h"
@@ -56,7 +56,7 @@ static const OFRunLoopMode connectRunLoopMode =
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket () <OFIPSocketAsyncConnecting>
+@interface OFTCPSocket () <OFAsyncIPSocketConnecting>
 @end
 
 @interface OFTCPSocketConnectDelegate: OFObject <OFTCPSocketDelegate>
@@ -236,7 +236,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	} else
 		delegate = _delegate;
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -277,7 +277,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		port = _SOCKS5Port;
 	}
 
-	[[[[OFIPSocketAsyncConnector alloc]
+	[[[[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
