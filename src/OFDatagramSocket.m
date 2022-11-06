@@ -173,11 +173,13 @@
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	sender->length = (socklen_t)sizeof(sender->sockaddr);
+	if (sender != NULL)
+		sender->length = (socklen_t)sizeof(sender->sockaddr);
 
 #ifndef OF_WINDOWS
 	if ((ret = recvfrom(_socket, buffer, length, 0,
-	    (struct sockaddr *)&sender->sockaddr, &sender->length)) < 0)
+	    (sender != NULL ? (struct sockaddr *)&sender->sockaddr : NULL),
+	    (sender != NULL ? &sender->length : NULL))) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -187,40 +189,43 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
-	    (struct sockaddr *)&sender->sockaddr, &sender->length)) < 0)
+	    (sender != NULL ? (struct sockaddr *)&sender->sockaddr : NULL),
+	    (sender != NULL ? &sender->length : NULL))) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: OFSocketErrNo()];
 #endif
 
-	switch (((struct sockaddr *)&sender->sockaddr)->sa_family) {
-	case AF_INET:
-		sender->family = OFSocketAddressFamilyIPv4;
-		break;
+	if (sender != NULL) {
+		switch (((struct sockaddr *)&sender->sockaddr)->sa_family) {
+		case AF_INET:
+			sender->family = OFSocketAddressFamilyIPv4;
+			break;
 #ifdef OF_HAVE_IPV6
-	case AF_INET6:
-		sender->family = OFSocketAddressFamilyIPv6;
-		break;
+		case AF_INET6:
+			sender->family = OFSocketAddressFamilyIPv6;
+			break;
 #endif
 #ifdef OF_HAVE_UNIX_SOCKETS
-	case AF_UNIX:
-		sender->family = OFSocketAddressFamilyUNIX;
-		break;
+		case AF_UNIX:
+			sender->family = OFSocketAddressFamilyUNIX;
+			break;
 #endif
 #ifdef OF_HAVE_IPX
-	case AF_IPX:
-		sender->family = OFSocketAddressFamilyIPX;
-		break;
+		case AF_IPX:
+			sender->family = OFSocketAddressFamilyIPX;
+			break;
 #endif
 #ifdef OF_HAVE_APPLETALK
-	case AF_APPLETALK:
-		sender->family = OFSocketAddressFamilyAppleTalk;
-		break;
+		case AF_APPLETALK:
+			sender->family = OFSocketAddressFamilyAppleTalk;
+			break;
 #endif
-	default:
-		sender->family = OFSocketAddressFamilyUnknown;
-		break;
+		default:
+			sender->family = OFSocketAddressFamilyUnknown;
+			break;
+		}
 	}
 
 	return ret;

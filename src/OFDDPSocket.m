@@ -196,8 +196,10 @@ struct ATInterfaceConfig {
 		{ buffer, length }
 	};
 	struct msghdr msg = {
-		.msg_name = (struct sockaddr *)&sender->sockaddr,
-		.msg_namelen = (socklen_t)sizeof(sender->sockaddr),
+		.msg_name = (sender != NULL
+		    ? (struct sockaddr *)&sender->sockaddr : NULL),
+		.msg_namelen = (sender != NULL
+		    ? (socklen_t)sizeof(sender->sockaddr) : 0),
 		.msg_iov = iov,
 		.msg_iovlen = 2
 	};
@@ -216,8 +218,10 @@ struct ATInterfaceConfig {
 						  requestedLength: length
 							    errNo: ENOMSG];
 
-	sender->length = msg.msg_namelen;
-	sender->family = OFSocketAddressFamilyAppleTalk;
+	if (sender != NULL) {
+		sender->length = msg.msg_namelen;
+		sender->family = OFSocketAddressFamilyAppleTalk;
+	}
 
 	return ret - 1;
 }

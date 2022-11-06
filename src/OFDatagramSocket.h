@@ -160,7 +160,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (OFSocketAddress *)sender;
+		     sender: (nullable OFSocketAddress *)sender;
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
