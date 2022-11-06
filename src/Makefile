@@ -8,8 +8,7 @@ CLEAN = amiga-end.amigalib.dep		\
 	amiga-glue.amigalib.o		\
 	amiga-library-functable.inc	\
 	amiga-library.amigalib.dep	\
-	amiga-library.amigalib.o	\
-	inline.h
+	amiga-library.amigalib.o
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
