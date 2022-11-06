@@ -40,26 +40,39 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The contents of the receiver as a `long long` value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `long long`
  */
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as an
+ *				   `unsigned long long`
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
 /**
  * @brief The contents of the receiver as a float value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `float`
  */
 @property (readonly, nonatomic) float floatValue;
 
 /**
  * @brief The contents of the receiver as a double value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `double`
  */
 @property (readonly, nonatomic) double doubleValue;
 
 /**
  * @brief A string representing the node as an XML string.
+ *
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
  */
 @property (readonly, nonatomic) OFString *XMLString;
 

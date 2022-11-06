@@ -994,29 +994,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding
 {
-	char *tmp;
-	unsigned long long fileSize;
+	char *buffer = NULL;
+	OFStreamOffset fileSize;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = nil;
+		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
 
-		@try {
-			fileSize = [[OFFileManager defaultManager]
-			    attributesOfItemAtPath: path].fileSize;
-		} @catch (OFGetItemAttributesFailedException *e) {
-			@throw [OFOpenItemFailedException
-			    exceptionWithPath: path
-					 mode: @"r"
-					errNo: e.errNo];
-		}
-
-		objc_autoreleasePoolPop(pool);
-
-# if ULLONG_MAX > SIZE_MAX
-		if (fileSize > SIZE_MAX)
+		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
-#endif
 
 		/*
 		 * We need one extra byte for the terminating zero if we want
@@ -1025,40 +1012,36 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		tmp = OFAllocMemory((size_t)fileSize + 1, 1);
-		@try {
-			file = [[OFFile alloc] initWithPath: path mode: @"r"];
-			[file readIntoBuffer: tmp
-				 exactLength: (size_t)fileSize];
-		} @catch (id e) {
-			OFFreeMemory(tmp);
-			@throw e;
-		} @finally {
-			[file release];
-		}
+		[file seekToOffset: 0 whence: OFSeekSet];
 
-		tmp[(size_t)fileSize] = '\0';
+		buffer = OFAllocMemory((size_t)fileSize + 1, 1);
+		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
+		buffer[(size_t)fileSize] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
+		OFFreeMemory(buffer);
 		[self release];
+
 		@throw e;
 	}
 
 	if (encoding == OFStringEncodingUTF8) {
 		@try {
-			self = [self initWithUTF8StringNoCopy: tmp
+			self = [self initWithUTF8StringNoCopy: buffer
 						       length: (size_t)fileSize
 						 freeWhenDone: true];
 		} @catch (id e) {
-			OFFreeMemory(tmp);
+			OFFreeMemory(buffer);
 			@throw e;
 		}
 	} else {
 		@try {
-			self = [self initWithCString: tmp
+			self = [self initWithCString: buffer
 					    encoding: encoding
 					      length: (size_t)fileSize];
 		} @finally {
-			OFFreeMemory(tmp);
+			OFFreeMemory(buffer);
 		}
 	}
 

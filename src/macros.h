@@ -391,13 +391,14 @@ extern int *_Nonnull OFErrNo(void);
 	abort();
 #endif
 #ifdef __clang__
-# define OF_DEALLOC_UNSUPPORTED						 \
-	[self doesNotRecognizeSelector: _cmd];				 \
-									 \
-	abort();							 \
-									 \
-	_Pragma("clang diagnostic push ignored \"-Wunreachable-code\""); \
-	[super dealloc];	/* Get rid of a stupid warning */	 \
+# define OF_DEALLOC_UNSUPPORTED						\
+	[self doesNotRecognizeSelector: _cmd];				\
+									\
+	abort();							\
+									\
+	_Pragma("clang diagnostic push");				\
+	_Pragma("clang diagnostic ignored \"-Wunreachable-code\"");	\
+	[super dealloc];	/* Get rid of a stupid warning */	\
 	_Pragma("clang diagnostic pop");
 #else
 # define OF_DEALLOC_UNSUPPORTED						\

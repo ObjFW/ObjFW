@@ -15,33 +15,24 @@
 
 #include "config.h"
 
-#include <string.h>
-
-#import "OFThreadJoinFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFString.h"
-#import "OFThread.h"
 
-@implementation OFThreadJoinFailedException
-@synthesize thread = _thread, errNo = _errNo;
-
-+ (instancetype)exceptionWithThread: (OFThread *)thread errNo: (int)errNo
-{
-	return [[[self alloc] initWithThread: thread errNo: errNo] autorelease];
-}
+@implementation OFListenOnSocketFailedException
+@synthesize socket = _socket, backlog = _backlog, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithThread: (OFThread *)thread errNo: (int)errNo
++ (instancetype)exceptionWithSocket: (id)sock
+			    backlog: (int)backlog
+			      errNo: (int)errNo
 {
-	self = [super init];
-
-	_thread = [thread retain];
-	_errNo = errNo;
-
-	return self;
+	return [[[self alloc] initWithSocket: sock
+				     backlog: backlog
+				       errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -49,9 +40,20 @@
 	OF_INVALID_INIT_METHOD
 }
 
+- (instancetype)initWithSocket: (id)sock backlog: (int)backlog errNo: (int)errNo
+{
+	self = [super init];
+
+	_socket = [sock retain];
+	_backlog = backlog;
+	_errNo = errNo;
+
+	return self;
+}
+
 - (void)dealloc
 {
-	[_thread release];
+	[_socket release];
 
 	[super dealloc];
 }
@@ -59,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Joining a thread of type %@ failed: %s",
-	    _thread.class, strerror(_errNo)];
+	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
+	    [_socket class], _backlog, OFStrError(_errNo)];
 }
 @end

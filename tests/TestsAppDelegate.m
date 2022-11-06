@@ -419,14 +419,17 @@ main(int argc, char *argv[])
 	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
+# ifdef OF_HAVE_UNIX_SOCKETS
+	[self UNIXDatagramSocketTests];
+	[self UNIXStreamSocketTests];
+# endif
 # ifdef OF_HAVE_IPX
 	[self IPXSocketTests];
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
 # endif
-# ifdef OF_HAVE_UNIX_SOCKETS
-	[self UNIXDatagramSocketTests];
-	[self UNIXStreamSocketTests];
+# ifdef OF_HAVE_APPLETALK
+	[self DDPSocketTests];
 # endif
 	[self kernelEventObserverTests];
 #endif

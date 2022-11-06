@@ -26,6 +26,11 @@
 @dynamic compressedSize, uncompressedSize, modificationDate, type;
 @dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
 @dynamic deviceMinor;
+/*
+ * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic fileComment;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {

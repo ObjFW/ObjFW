@@ -17,11 +17,11 @@
 
 #include <string.h>
 
-#import "OFConditionBroadcastFailedException.h"
+#import "OFSignalConditionFailedException.h"
 #import "OFString.h"
 #import "OFCondition.h"
 
-@implementation OFConditionBroadcastFailedException
+@implementation OFSignalConditionFailedException
 @synthesize condition = _condition, errNo = _errNo;
 
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
@@ -61,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Broadcasting a condition of type %@ failed: %s",
+	    @"Signaling a condition of type %@ failed: %s",
 	    _condition.class, strerror(_errNo)];
 }
 @end

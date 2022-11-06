@@ -22,16 +22,17 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFListenFailedException \
- *	  OFListenFailedException.h ObjFW/OFListenFailedException.h
+ * @class OFListenOnSocketFailedException \
+ *	  OFListenOnSocketFailedException.h \
+ *	  ObjFW/OFListenOnSocketFailedException.h
  *
  * @brief An exception indicating that listening on the socket failed.
  */
-@interface OFListenFailedException: OFException
+@interface OFListenOnSocketFailedException: OFException
 {
 	id _socket;
 	int _backlog, _errNo;
-	OF_RESERVE_IVARS(OFListenFailedException, 4)
+	OF_RESERVE_IVARS(OFListenOnSocketFailedException, 4)
 }
 
 /**

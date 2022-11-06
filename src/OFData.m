@@ -175,26 +175,22 @@ _references_to_categories_of_OFData(void)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	char *buffer = NULL;
-	unsigned long long size;
+	OFStreamOffset fileSize;
 
 	@try {
-		OFFile *file;
+		void *pool = objc_autoreleasePoolPush();
+		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
 
-		size = [[OFFileManager defaultManager]
-		    attributesOfItemAtPath: path].fileSize;
-
-# if ULLONG_MAX > SIZE_MAX
-		if (size > SIZE_MAX)
+		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
-# endif
 
-		buffer = OFAllocMemory((size_t)size, 1);
-		file = [[OFFile alloc] initWithPath: path mode: @"r"];
-		@try {
-			[file readIntoBuffer: buffer exactLength: (size_t)size];
-		} @finally {
-			[file release];
-		}
+		[file seekToOffset: 0 whence: OFSeekSet];
+
+		buffer = OFAllocMemory((size_t)fileSize, 1);
+		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		[self release];
@@ -204,7 +200,7 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		self = [self initWithItemsNoCopy: buffer
-					   count: (size_t)size
+					   count: (size_t)fileSize
 				    freeWhenDone: true];
 	} @catch (id e) {
 		OFFreeMemory(buffer);

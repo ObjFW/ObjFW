@@ -17,11 +17,11 @@
 
 #include <string.h>
 
-#import "OFThreadStartFailedException.h"
+#import "OFJoinThreadFailedException.h"
 #import "OFString.h"
 #import "OFThread.h"
 
-@implementation OFThreadStartFailedException
+@implementation OFJoinThreadFailedException
 @synthesize thread = _thread, errNo = _errNo;
 
 + (instancetype)exceptionWithThread: (OFThread *)thread errNo: (int)errNo
@@ -59,7 +59,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Starting a thread of type %@ failed: %s",
+	    @"Joining a thread of type %@ failed: %s",
 	    _thread.class, strerror(_errNo)];
 }
 @end

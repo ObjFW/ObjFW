@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFSocketAddressMakeIPX to create an address or
  * @ref OFSocketAddressIPXNetwork to get the IPX network,
  * @ref OFSocketAddressIPXNode to get the IPX node and
- * @ref OFSocketAddressPort to get the port (sometimes also called
+ * @ref OFSocketAddressIPXPort to get the port (sometimes also called
  * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
@@ -67,14 +67,21 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Bind the socket to the specified network, node and port with the
  *	  specified packet type.
  *
+ * @param network The IPX network to bind to. 0 means the current network.
+ * @param node The IPX network to bind to. An all zero node means the
+ *	       computer's node.
  * @param port The port (sometimes called socket number) to bind to. 0 means to
- *	       pick one and return it.
+ *	       pick one and return via the returned socket address.
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
- * @throw OFBindFailedException Binding failed
+ * @throw OFBindIPXSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already bound
  */
-- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType;
+- (OFSocketAddress)
+    bindToNetwork: (uint32_t)network
+	     node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	     port: (uint16_t)port
+       packetType: (uint8_t)packetType;
 @end
 
 OF_ASSUME_NONNULL_END

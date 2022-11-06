@@ -17,8 +17,6 @@
 
 #import "macros.h"
 
-/** @file */
-
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
 typedef pthread_once_t OFOnceControl;
@@ -31,7 +29,9 @@ typedef int OFOnceControl;
 # define OFOnceControlInitValue 0
 #endif
 
-typedef void (*OFOnceFunction)(void);
+OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,3 +48,5 @@ extern void OFOnce(OFOnceControl *control, void (*function)(void));
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

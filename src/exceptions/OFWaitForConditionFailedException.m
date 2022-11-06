@@ -15,20 +15,35 @@
 
 #include "config.h"
 
-#import "OFAcceptFailedException.h"
-#import "OFString.h"
+#include <string.h>
 
-@implementation OFAcceptFailedException
-@synthesize socket = _socket, errNo = _errNo;
+#import "OFWaitForConditionFailedException.h"
+#import "OFString.h"
+#import "OFCondition.h"
+
+@implementation OFWaitForConditionFailedException
+@synthesize condition = _condition, errNo = _errNo;
+
++ (instancetype)exceptionWithCondition: (OFCondition *)condition
+				 errNo: (int)errNo
+{
+	return [[[self alloc] initWithCondition: condition
+					  errNo: errNo] autorelease];
+}
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)socket errNo: (int)errNo
+- (instancetype)initWithCondition: (OFCondition *)condition errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket errNo: errNo] autorelease];
+	self = [super init];
+
+	_condition = [condition retain];
+	_errNo = errNo;
+
+	return self;
 }
 
 - (instancetype)init
@@ -36,19 +51,9 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)socket errNo: (int)errNo
-{
-	self = [super init];
-
-	_socket = [socket retain];
-	_errNo = errNo;
-
-	return self;
-}
-
 - (void)dealloc
 {
-	[_socket release];
+	[_condition release];
 
 	[super dealloc];
 }
@@ -56,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to accept connection in socket of class %@: %@",
-	    [_socket class], OFStrError(_errNo)];
+	    @"Waiting for a condition of type %@ failed: %s",
+	    _condition.class, strerror(_errNo)];
 }
 @end

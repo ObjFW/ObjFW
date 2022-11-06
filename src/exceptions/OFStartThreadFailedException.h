@@ -24,20 +24,20 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFThread;
 
 /**
- * @class OFThreadJoinFailedException \
- *	  OFThreadJoinFailedException.h ObjFW/OFThreadJoinFailedException.h
+ * @class OFStartThreadFailedException \
+ *	  OFStartThreadFailedException.h ObjFW/OFStartThreadFailedException.h
  *
- * @brief An exception indicating that joining a thread failed.
+ * @brief An exception indicating that starting a thread failed.
  */
-@interface OFThreadJoinFailedException: OFException
+@interface OFStartThreadFailedException: OFException
 {
 	OFThread *_Nullable _thread;
 	int _errNo;
-	OF_RESERVE_IVARS(OFThreadJoinFailedException, 4)
+	OF_RESERVE_IVARS(OFStartThreadFailedException, 4)
 }
 
 /**
- * @brief The thread which could not be joined.
+ * @brief The thread which could not be started.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 
@@ -47,11 +47,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int errNo;
 
 /**
- * @brief Creates a new, autoreleased thread join failed exception.
+ * @brief Creates a new, autoreleased thread start failed exception.
  *
- * @param thread The thread which could not be joined
+ * @param thread The thread which could not be started
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased thread join failed exception
+ * @return A new, autoreleased thread start failed exception
  */
 + (instancetype)exceptionWithThread: (nullable OFThread *)thread
 			      errNo: (int)errNo;
@@ -59,11 +59,11 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated thread join failed exception.
+ * @brief Initializes an already allocated thread start failed exception.
  *
- * @param thread The thread which could not be joined
+ * @param thread The thread which could not be started
  * @param errNo The errno of the error that occurred
- * @return An initialized thread join failed exception
+ * @return An initialized thread start failed exception
  */
 - (instancetype)initWithThread: (nullable OFThread *)thread
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;

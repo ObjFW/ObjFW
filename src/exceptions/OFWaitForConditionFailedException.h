@@ -24,21 +24,21 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFConditionBroadcastFailedException \
- *	  OFConditionBroadcastFailedException.h \
- *	  ObjFW/OFConditionBroadcastFailedException.h
+ * @class OFWaitForConditionFailedException \
+ *	  OFWaitForConditionFailedException.h \
+ *	  ObjFW/OFWaitForConditionFailedException.h
  *
- * @brief An exception indicating broadcasting a condition failed.
+ * @brief An exception indicating waiting for a condition failed.
  */
-@interface OFConditionBroadcastFailedException: OFException
+@interface OFWaitForConditionFailedException: OFException
 {
 	OFCondition *_condition;
 	int _errNo;
-	OF_RESERVE_IVARS(OFConditionBroadcastFailedException, 4)
+	OF_RESERVE_IVARS(OFWaitForConditionFailedException, 4)
 }
 
 /**
- * @brief The condition which could not be broadcasted.
+ * @brief The condition for which could not be waited.
  */
 @property (readonly, nonatomic) OFCondition *condition;
 
@@ -48,11 +48,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int errNo;
 
 /**
- * @brief Returns a new, autoreleased condition broadcast failed exception.
+ * @brief Creates a new, autoreleased condition wait failed exception.
  *
- * @param condition The condition which could not be broadcasted
+ * @param condition The condition for which could not be waited
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased condition broadcast failed exception
+ * @return A new, autoreleased condition wait failed exception
  */
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo;
@@ -60,11 +60,11 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated condition broadcast failed exception.
+ * @brief Initializes an already allocated condition wait failed exception.
  *
- * @param condition The condition which could not be broadcasted
+ * @param condition The condition for which could not be waited
  * @param errNo The errno of the error that occurred
- * @return An initialized condition broadcast failed exception
+ * @return An initialized condition wait failed exception
  */
 - (instancetype)initWithCondition: (OFCondition *)condition
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;

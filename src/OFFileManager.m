@@ -21,7 +21,7 @@
 #include <limits.h>
 #include "unistd_wrapper.h"
 
-#import "platform.h"
+#include "platform.h"
 
 #ifdef OF_PSP
 # include <sys/syslimits.h>

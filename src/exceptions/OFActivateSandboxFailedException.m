@@ -15,24 +15,22 @@
 
 #include "config.h"
 
-#import "OFListenFailedException.h"
+#import "OFActivateSandboxFailedException.h"
 #import "OFString.h"
+#import "OFSandbox.h"
 
-@implementation OFListenFailedException
-@synthesize socket = _socket, backlog = _backlog, errNo = _errNo;
+@implementation OFActivateSandboxFailedException
+@synthesize sandbox = _sandbox, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSocket: (id)socket
-			    backlog: (int)backlog
-			      errNo: (int)errNo
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket
-				     backlog: backlog
-				       errNo: errNo] autorelease];
+	return [[[self alloc] initWithSandbox: sandbox
+					errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -40,14 +38,11 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSocket: (id)socket
-		       backlog: (int)backlog
-			 errNo: (int)errNo
+- (instancetype)initWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
 	self = [super init];
 
-	_socket = [socket retain];
-	_backlog = backlog;
+	_sandbox = [sandbox retain];
 	_errNo = errNo;
 
 	return self;
@@ -55,7 +50,7 @@
 
 - (void)dealloc
 {
-	[_socket release];
+	[_sandbox release];
 
 	[super dealloc];
 }
@@ -63,7 +58,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
-	    [_socket class], _backlog, OFStrError(_errNo)];
+	    @"The sandbox could not be applied: %@", OFStrError(_errNo)];
 }
 @end

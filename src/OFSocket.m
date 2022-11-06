@@ -48,6 +48,10 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnlockFailedException.h"
 
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+
 #ifdef OF_AMIGAOS
 # include <proto/exec.h>
 #endif
@@ -433,7 +437,7 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 	void *pool = objc_autoreleasePoolPush();
 	OFSocketAddress ret;
 	struct sockaddr_in6 *addrIn6 = &ret.sockaddr.in6;
-	size_t doubleColon;
+	size_t doubleColon, percent;
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPv6;
@@ -446,8 +450,25 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 #endif
 	addrIn6->sin6_port = OFToBigEndian16(port);
 
-	doubleColon = [IPv6 rangeOfString: @"::"].location;
+	if ((percent = [IPv6 rangeOfString: @"%"].location) != OFNotFound) {
+		OFString *interface = [IPv6 substringFromIndex: percent + 1];
+		IPv6 = [IPv6 substringToIndex: percent];
 
+		@try {
+			addrIn6->sin6_scope_id = (uint32_t)[interface
+			    unsignedLongLongValueWithBase: 10];
+		} @catch (OFInvalidFormatException *e) {
+#if defined(HAVE_IF_NAMETOINDEX) && !defined(OF_WINDOWS)
+			addrIn6->sin6_scope_id = if_nametoindex([interface
+			    cStringWithEncoding: [OFLocale encoding]]);
+#endif
+		}
+
+		if (addrIn6->sin6_scope_id == 0)
+			@throw [OFInvalidArgumentException exception];
+	}
+
+	doubleColon = [IPv6 rangeOfString: @"::"].location;
 	if (doubleColon != OFNotFound) {
 		OFString *left = [IPv6 substringToIndex: doubleColon];
 		OFString *right = [IPv6 substringFromIndex: doubleColon + 2];
@@ -573,6 +594,31 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 	return ret;
 }
 
+OFSocketAddress
+OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
+{
+	OFSocketAddress ret;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.family = OFSocketAddressFamilyAppleTalk;
+	ret.length = sizeof(ret.sockaddr.at);
+
+#ifdef AF_APPLETALK
+	ret.sockaddr.at.sat_family = AF_APPLETALK;
+#else
+	ret.sockaddr.at.sat_family = AF_UNSPEC;
+#endif
+#ifdef OF_WINDOWS
+	ret.sockaddr.at.sat_net = network;
+#else
+	ret.sockaddr.at.sat_net = OFToBigEndian16(network);
+#endif
+	ret.sockaddr.at.sat_node = node;
+	ret.sockaddr.at.sat_port = port;
+
+	return ret;
+}
+
 bool
 OFSocketAddressEqual(const OFSocketAddress *address1,
     const OFSocketAddress *address2)
@@ -580,6 +626,7 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 	const struct sockaddr_ipx *addrIPX1, *addrIPX2;
+	const struct sockaddr_at *addrAT1, *addrAT2;
 	void *pool;
 	OFString *path1, *path2;
 	bool ret;
@@ -658,6 +705,22 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 			return false;
 
 		return true;
+	case OFSocketAddressFamilyAppleTalk:
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_at) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_at))
+			@throw [OFInvalidArgumentException exception];
+
+		addrAT1 = &address1->sockaddr.at;
+		addrAT2 = &address2->sockaddr.at;
+
+		if (addrAT1->sat_net != addrAT2->sat_net)
+			return false;
+		if (addrAT1->sat_node != addrAT2->sat_node)
+			return false;
+		if (addrAT1->sat_port != addrAT2->sat_port)
+			return false;
+
+		return true;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -732,6 +795,15 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		for (size_t i = 0; i < IPX_NODE_LEN; i++)
 			OFHashAddByte(&hash,
 			    address->sockaddr.ipx.sipx_node[i]);
+
+		break;
+	case OFSocketAddressFamilyAppleTalk:
+		if (address->length < (socklen_t)sizeof(struct sockaddr_at))
+			@throw [OFInvalidArgumentException exception];
+
+		OFHashAddByte(&hash, address->sockaddr.at.sat_net >> 8);
+		OFHashAddByte(&hash, address->sockaddr.at.sat_net);
+		OFHashAddByte(&hash, address->sockaddr.at.sat_port);
 
 		break;
 	default:
@@ -819,6 +891,17 @@ IPv6String(const OFSocketAddress *address)
 		}
 	}
 
+	if (addrIn6->sin6_scope_id != 0) {
+#if defined(HAVE_IF_INDEXTONAME) && !defined(OF_WINDOWS)
+		char interface[IF_NAMESIZE];
+
+		if (if_indextoname(addrIn6->sin6_scope_id, interface) != NULL)
+			[string appendFormat: @"%%%s", interface];
+		else
+# endif
+			[string appendFormat: @"%%%u", addrIn6->sin6_scope_id];
+	}
+
 	[string makeImmutable];
 
 	return string;
@@ -838,7 +921,7 @@ OFSocketAddressString(const OFSocketAddress *address)
 }
 
 void
-OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
+OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
@@ -847,24 +930,19 @@ OFSocketAddressSetPort(OFSocketAddress *address, uint16_t port)
 	case OFSocketAddressFamilyIPv6:
 		address->sockaddr.in6.sin6_port = OFToBigEndian16(port);
 		break;
-	case OFSocketAddressFamilyIPX:
-		address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
-		break;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
 }
 
 uint16_t
-OFSocketAddressPort(const OFSocketAddress *address)
+OFSocketAddressIPPort(const OFSocketAddress *address)
 {
 	switch (address->family) {
 	case OFSocketAddressFamilyIPv4:
 		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 	case OFSocketAddressFamilyIPv6:
 		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
-	case OFSocketAddressFamilyIPX:
-		return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
@@ -927,11 +1005,91 @@ OFSocketAddressSetIPXNode(OFSocketAddress *address,
 }
 
 void
-OFSocketAddressIPXNode(const OFSocketAddress *address,
+OFSocketAddressGetIPXNode(const OFSocketAddress *address,
     unsigned char node[IPX_NODE_LEN])
 {
 	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
 	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
+}
+
+void
+OFSocketAddressSetIPXPort(OFSocketAddress *address, uint16_t port)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.ipx.sipx_port = OFToBigEndian16(port);
+}
+
+uint16_t
+OFSocketAddressIPXPort(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyIPX)
+		@throw [OFInvalidArgumentException exception];
+
+	return OFFromBigEndian16(address->sockaddr.ipx.sipx_port);
+}
+
+void
+OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+#ifdef OF_WINDOWS
+	address->sockaddr.at.sat_net = network;
+#else
+	address->sockaddr.at.sat_net = OFToBigEndian16(network);
+#endif
+}
+
+uint16_t
+OFSocketAddressAppleTalkNetwork(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+#ifdef OF_WINDOWS
+	return address->sockaddr.at.sat_net;
+#else
+	return OFFromBigEndian16(address->sockaddr.at.sat_net);
+#endif
+}
+
+void
+OFSocketAddressSetAppleTalkNode(OFSocketAddress *address, uint8_t node)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.at.sat_node = node;
+}
+
+uint8_t
+OFSocketAddressAppleTalkNode(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	return address->sockaddr.at.sat_node;
+}
+
+void
+OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	address->sockaddr.at.sat_port = port;
+}
+
+uint8_t
+OFSocketAddressAppleTalkPort(const OFSocketAddress *address)
+{
+	if (address->family != OFSocketAddressFamilyAppleTalk)
+		@throw [OFInvalidArgumentException exception];
+
+	return address->sockaddr.at.sat_port;
 }

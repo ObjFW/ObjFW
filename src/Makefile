@@ -145,8 +145,10 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFDDPSocket.m
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m

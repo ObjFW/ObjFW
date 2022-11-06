@@ -51,16 +51,6 @@ OF_SUBCLASSING_RESTRICTED
 @property (nonatomic) OFStringEncoding encoding;
 
 /**
- * @brief A stream for reading the current entry.
- *
- * @note This is only available in read mode.
- *
- * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
- *	 underlying stream does so, too.
- */
-@property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
-
-/**
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
  * @param stream A stream from which the tar archive will be read.
@@ -69,6 +59,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFTarArchive
+ * @throw OFInvalidFormatException The archive has an invalid format
+ * @throw OFSeekFailedException The archive was open in append mode and seeking
+ *				failed
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
@@ -80,6 +73,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFTarArchive
+ * @throw OFInvalidFormatException The archive has an invalid format
+ * @throw OFSeekFailedException The archive was open in append mode and seeking
+ *				failed
  */
 + (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
 
@@ -106,6 +102,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFTarArchive
+ * @throw OFInvalidFormatException The archive has an invalid format
+ * @throw OFSeekFailedException The archive was open in append mode and seeking
+ *				failed
  */
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
@@ -119,6 +118,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFTarArchive
+ * @throw OFInvalidFormatException The archive has an invalid format
+ * @throw OFSeekFailedException The archive was open in append mode and seeking
+ *				failed
  */
 - (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
 
@@ -136,8 +138,21 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The next entry from the tar archive or `nil` if all entries have
  *	   been read
+ * @throw OFInvalidFormatException The archive has an invalid format
  */
 - (nullable OFTarArchiveEntry *)nextEntry;
+
+/**
+ * @brief Returns a stream for reading the current entry.
+ *
+ * @note This is only available in read mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
+ *
+ * @return A stream for reading the current entry
+ */
+- (OFStream *)streamForReadingCurrentEntry;
 
 /**
  * @brief Returns a stream for writing the specified entry.
@@ -160,6 +175,8 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Closes the OFTarArchive.
+ *
+ * @throw OFNotOpenException The archive is not open
  */
 - (void)close;
 @end

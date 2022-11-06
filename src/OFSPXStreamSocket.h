@@ -53,7 +53,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  */
 -	 (void)socket: (OFSPXStreamSocket *)socket
   didConnectToNetwork: (uint32_t)network
-		 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 		 port: (uint16_t)port
 	    exception: (nullable id)exception;
 @end
@@ -90,11 +90,11 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
- * @throw OFConnectionFailedException Connecting failed
+ * @throw OFConnectSPXSocketFailedException Connecting failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
 - (void)connectToNetwork: (uint32_t)network
-		    node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 		    port: (uint16_t)port;
 
 /**
@@ -107,7 +107,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  *	       connect to
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port;
 
 /**
@@ -121,7 +121,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param runLoopMode The run loop mode in which to perform the async connect
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port
 		  runLoopMode: (OFRunLoopMode)runLoopMode;
 
@@ -137,7 +137,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port
 			block: (OFSPXStreamSocketAsyncConnectBlock)block;
 
@@ -153,7 +153,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
-			 node: (unsigned char [_Nonnull IPX_NODE_LEN])node
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port
 		  runLoopMode: (OFRunLoopMode)runLoopMode
 			block: (OFSPXStreamSocketAsyncConnectBlock)block;
@@ -162,13 +162,19 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
 /**
  * @brief Bind the socket to the specified network, node and port.
  *
+ * @param network The IPX network to bind to. 0 means the current network.
+ * @param node The IPX network to bind to. An all zero node means the
+ *	       computer's node.
  * @param port The port (sometimes called socket number) to bind to. 0 means to
- *	       pick one and return it.
+ *	       pick one and return via the returned socket address.
  * @return The address on which this socket can be reached
- * @throw OFConnectionFailedException Binding failed
+ * @throw OFBindIPXSocketFailedException Binding failed
  * @throw OFAlreadyConnectedException The socket is already connected or bound
  */
-- (OFSocketAddress)bindToPort: (uint16_t)port;
+- (OFSocketAddress)
+    bindToNetwork: (uint32_t)network
+	     node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	     port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

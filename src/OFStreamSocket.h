@@ -106,7 +106,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief Listen on the socket.
  *
  * @param backlog Maximum length for the queue of pending connections.
- * @throw OFListenFailedException Listening failed
+ * @throw OFListenOnSocketFailedException Listening failed
  * @throw OFNotOpenException The socket is not open
  */
 - (void)listenWithBacklog: (int)backlog;
@@ -114,7 +114,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 /**
  * @brief Listen on the socket.
  *
- * @throw OFListenFailedException Listening failed
+ * @throw OFListenOnSocketFailedException Listening failed
  * @throw OFNotOpenException The socket is not open
  */
 - (void)listen;
@@ -123,7 +123,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased OFStreamSocket for the accepted connection.
- * @throw OFAcceptFailedException Accepting failed
+ * @throw OFAcceptSocketFailedException Accepting failed
  * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;
