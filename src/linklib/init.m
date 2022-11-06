@@ -222,7 +222,6 @@ void *__objc_class_name_OFOutOfRangeException;
 void *__objc_class_name_OFReadFailedException;
 void *__objc_class_name_OFReadOrWriteFailedException;
 void *__objc_class_name_OFRemoveItemFailedException;
-void *__objc_class_name_OFSandboxActivationFailedException;
 void *__objc_class_name_OFSeekFailedException;
 void *__objc_class_name_OFSetItemAttributesFailedException;
 void *__objc_class_name_OFSetOptionFailedException;
@@ -241,25 +240,27 @@ void *__objc_class_name_OFChangeCurrentDirectoryFailedException;
 void *__objc_class_name_OFGetCurrentDirectoryFailedException;
 #endif
 #ifdef OF_HAVE_SOCKETS
-void *__objc_class_name_OFAcceptFailedException;
+void *__objc_class_name_OFAcceptSocketFailedException;
 void *__objc_class_name_OFAlreadyConnectedException;
-void *__objc_class_name_OFBindFailedException;
-void *__objc_class_name_OFConnectionFailedException;
+void *__objc_class_name_OFBindIPSocketFailedException;
+void *__objc_class_name_OFBindSocketFailedException;
+void *__objc_class_name_OFConnectIPSocketFailedException;
+void *__objc_class_name_OFConnectSocketFailedException;
 void *__objc_class_name_OFDNSQueryFailedException;
 void *__objc_class_name_OFHTTPRequestFailedException;
-void *__objc_class_name_OFListenFailedException;
+void *__objc_class_name_OFListenOnSocketFailedException;
 void *__objc_class_name_OFObserveKernelEventsFailedException;
 void *__objc_class_name_OFResolveHostFailedException;
 void *__objc_class_name_OFTLSHandshakeFailedException;
 #endif
 #ifdef OF_HAVE_THREADS
-void *__objc_class_name_OFConditionBroadcastFailedException;
-void *__objc_class_name_OFConditionSignalFailedException;
+void *__objc_class_name_OFBroadcastConditionFailedException;
 void *__objc_class_name_OFConditionStillWaitingException;
-void *__objc_class_name_OFConditionWaitFailedException;
-void *__objc_class_name_OFThreadJoinFailedException;
-void *__objc_class_name_OFThreadStartFailedException;
+void *__objc_class_name_OFJoinThreadFailedException;
+void *__objc_class_name_OFSignalConditionFailedException;
+void *__objc_class_name_OFStartThreadFailedException;
 void *__objc_class_name_OFThreadStillRunningException;
+void *__objc_class_name_OFWaitForConditionFailedException;
 #endif
 #include "OFFileManagerConstants.inc"
 #include "OFRunLoopConstants.inc"
