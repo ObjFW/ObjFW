@@ -356,6 +356,16 @@ glue_OFSocketAddressMakeIPX PPC_PARAMS(uint32_t network, const unsigned char *no
 	return OFSocketAddressMakeIPX(network, node, port);
 }
 
+OFSocketAddress __saveds
+glue_OFSocketAddressMakeAppleTalk PPC_PARAMS(uint16_t network, uint8_t node, uint8_t port)
+{
+	M68K_ARG(uint16_t, network, d0)
+	M68K_ARG(uint8_t, node, d1)
+	M68K_ARG(uint8_t, port, d2)
+
+	return OFSocketAddressMakeAppleTalk(network, node, port);
+}
+
 bool __saveds
 glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *address1, const OFSocketAddress *address2)
 {
@@ -382,20 +392,20 @@ glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
+glue_OFSocketAddressSetIPPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint16_t, port, d0)
 
-	OFSocketAddressSetPort(address, port);
+	OFSocketAddressSetIPPort(address, port);
 }
 
 uint16_t __saveds
-glue_OFSocketAddressPort PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressIPPort PPC_PARAMS(const OFSocketAddress *address)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
-	return OFSocketAddressPort(address);
+	return OFSocketAddressIPPort(address);
 }
 
 OFString * __saveds
@@ -433,12 +443,80 @@ glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *address, const unsign
 }
 
 void __saveds
-glue_OFSocketAddressIPXNode PPC_PARAMS(const OFSocketAddress *address, unsigned char *_Nonnull node)
+glue_OFSocketAddressGetIPXNode PPC_PARAMS(const OFSocketAddress *address, unsigned char *_Nonnull node)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 	M68K_ARG(unsigned char *_Nonnull, node, a1)
 
-	OFSocketAddressIPXNode(address, node);
+	OFSocketAddressGetIPXNode(address, node);
+}
+
+void __saveds
+glue_OFSocketAddressSetIPXPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
+{
+	M68K_ARG(OFSocketAddress *, address, a0)
+	M68K_ARG(uint16_t, port, d0)
+
+	OFSocketAddressSetIPXPort(address, port);
+}
+
+uint16_t __saveds
+glue_OFSocketAddressIPXPort PPC_PARAMS(const OFSocketAddress *address)
+{
+	M68K_ARG(const OFSocketAddress *, address, a0)
+
+	return OFSocketAddressIPXPort(address);
+}
+
+void __saveds
+glue_OFSocketAddressSetAppleTalkNetwork PPC_PARAMS(OFSocketAddress *address, uint16_t network)
+{
+	M68K_ARG(OFSocketAddress *, address, a0)
+	M68K_ARG(uint16_t, network, d0)
+
+	OFSocketAddressSetAppleTalkNetwork(address, network);
+}
+
+uint16_t __saveds
+glue_OFSocketAddressAppleTalkNetwork PPC_PARAMS(const OFSocketAddress *address)
+{
+	M68K_ARG(const OFSocketAddress *, address, a0)
+
+	return OFSocketAddressAppleTalkNetwork(address);
+}
+
+void __saveds
+glue_OFSocketAddressSetAppleTalkNode PPC_PARAMS(OFSocketAddress *address, uint8_t node)
+{
+	M68K_ARG(OFSocketAddress *, address, a0)
+	M68K_ARG(uint8_t, node, (nil))
+
+	OFSocketAddressSetAppleTalkNode(address, node);
+}
+
+uint8_t __saveds
+glue_OFSocketAddressAppleTalkNode PPC_PARAMS(const OFSocketAddress *address)
+{
+	M68K_ARG(const OFSocketAddress *, address, a0)
+
+	return OFSocketAddressAppleTalkNode(address);
+}
+
+void __saveds
+glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_t port)
+{
+	M68K_ARG(OFSocketAddress *, address, a0)
+	M68K_ARG(uint8_t, port, (nil))
+
+	OFSocketAddressSetAppleTalkPort(address, port);
+}
+
+void __saveds
+glue_OFSocketAddressAppleTalkPort PPC_PARAMS(const OFSocketAddress *address)
+{
+	M68K_ARG(const OFSocketAddress *, address, a0)
+
+	OFSocketAddressAppleTalkPort(address);
 }
 
 OFString * __saveds
