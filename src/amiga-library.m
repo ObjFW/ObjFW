@@ -47,7 +47,7 @@
 
 /* This always needs to be the first thing in the file. */
 int
-_start()
+_start(void)
 {
 	return -1;
 }
@@ -301,9 +301,9 @@ libClose(void)
 
 #ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
-			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				libC.__deregister_frame_info(
-				    (&_EH_FRAME_BEGINS__)[i]);
+			for (void *const *frame = _EH_FRAME_BEGINS__;
+			    *frame != NULL;)
+				libC.__deregister_frame_info(*frame++);
 #endif
 
 		parent = base->parent;
@@ -353,12 +353,9 @@ OFInit(unsigned int version, struct OFLibC *libC_, FILE **sF)
 	__sF = sF;
 
 #ifdef OF_AMIGAOS_M68K
-	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
-		return false;
-
-	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		libC.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
-		    (&_EH_FRAME_OBJECTS__)[i]);
+	for (void *const *frame = _EH_FRAME_BEGINS__,
+	    **object = _EH_FRAME_OBJECTS__; *frame != NULL;)
+		libC.__register_frame_info(*frame++, *object++);
 
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
