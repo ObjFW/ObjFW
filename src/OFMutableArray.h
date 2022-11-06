@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -94,7 +94,7 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 		       atIndex: (size_t)index;
 
 /**
- * @brief Replaces the first object equivalent to the specified object with the
+ * @brief Replaces all objects equivalent to the specified object with the
  *	  other specified object.
  *
  * @param oldObject The object to replace
@@ -133,14 +133,14 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 		      withObject: (ObjectType)newObject;
 
 /**
- * @brief Removes the first object equivalent to the specified object.
+ * @brief Removes all objects equivalent to the specified object.
  *
  * @param object The object to remove
  */
 - (void)removeObject: (ObjectType)object;
 
 /**
- * @brief Removes the first object that has the same address as the specified
+ * @brief Removes all objects that have the same address as the specified
  *	  object.
  *
  * @param object The object to remove
@@ -155,7 +155,7 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 - (void)removeObjectAtIndex: (size_t)index;
 
 /**
- * @brief Removes the object in the specified range.
+ * @brief Removes the objects in the specified range.
  *
  * @param range The range of the objects to remove
  */

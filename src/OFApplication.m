@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,6 +32,7 @@
 # import "OFFileManager.h"
 #endif
 #import "OFLocale.h"
+#import "OFNotificationCenter.h"
 #import "OFPair.h"
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
@@ -75,17 +76,26 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 - (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t *[])argv;
+- (void)of_setArgumentCount: (int *)argc
+	  andArgumentValues: (char **[])argv
+       andWideArgumentCount: (int)wargc
+      andWideArgumentValues: (wchar_t *[])wargv;
 #endif
 - (void)of_run;
 @end
 
+const OFNotificationName OFApplicationWillTerminateNotification =
+    @"OFApplicationWillTerminateNotification";
 static OFApplication *app = nil;
 
 static void
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
+
+	[[OFNotificationCenter defaultCenter]
+	    postNotificationName: OFApplicationWillTerminateNotification
+			  object: app];
 
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
 		[delegate applicationWillTerminate];
@@ -113,7 +123,10 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-		[app of_setArgumentCount: wargc andWideArgumentValues: wargv];
+		[app of_setArgumentCount: argc
+		       andArgumentValues: argv
+		    andWideArgumentCount: wargc
+		   andWideArgumentValues: wargv];
 	} else
 #endif
 		[app of_setArgumentCount: argc andArgumentValues: argv];
@@ -462,7 +475,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	[super dealloc];
 }
 
-- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char ***)argv
+- (void)of_setArgumentCount: (int *)argc andArgumentValues: (char **[])argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -495,18 +508,24 @@ SIGNAL_HANDLER(SIGUSR2)
 }
 
 #ifdef OF_WINDOWS
-- (void)of_setArgumentCount: (int)argc andWideArgumentValues: (wchar_t **)argv
+- (void)of_setArgumentCount: (int *)argc
+	  andArgumentValues: (char **[])argv
+       andWideArgumentCount: (int)wargc
+      andWideArgumentValues: (wchar_t *[])wargv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
 
-	if (argc > 0) {
-		_programName = [[OFString alloc] initWithUTF16String: argv[0]];
+	_argc = argc;
+	_argv = argv;
+
+	if (wargc > 0) {
+		_programName = [[OFString alloc] initWithUTF16String: wargv[0]];
 		arguments = [[OFMutableArray alloc] init];
 
-		for (int i = 1; i < argc; i++)
+		for (int i = 1; i < wargc; i++)
 			[arguments addObject:
-			    [OFString stringWithUTF16String: argv[i]]];
+			    [OFString stringWithUTF16String: wargv[i]]];
 
 		[arguments makeImmutable];
 		_arguments = arguments;

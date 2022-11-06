@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,6 +41,12 @@
 #ifdef OF_HAVE_NETIPX_IPX_H
 # include <netipx/ipx.h>
 #endif
+#ifdef OF_HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
+#ifdef OF_HAVE_AFUNIX_H
+# include <afunix.h>
+#endif
 
 #ifdef OF_WINDOWS
 # include <windows.h>
@@ -72,6 +78,10 @@ typedef SOCKET OFSocketHandle;
 static const OFSocketHandle OFInvalidSocketHandle = INVALID_SOCKET;
 #endif
 
+#ifdef OF_WINDOWS
+typedef short sa_family_t;
+#endif
+
 #ifdef OF_WII
 typedef u8 sa_family_t;
 #endif
@@ -92,6 +102,8 @@ typedef enum {
 	OFSocketAddressFamilyIPv4,
 	/** IPv6 */
 	OFSocketAddressFamilyIPv6,
+	/** UNIX */
+	OFSocketAddressFamilyUNIX,
 	/** IPX */
 	OFSocketAddressFamilyIPX,
 	/** Any address family */
@@ -107,6 +119,13 @@ struct sockaddr_in6 {
 		uint8_t s6_addr[16];
 	} sin6_addr;
 	uint32_t sin6_scope_id;
+};
+#endif
+
+#if !defined(OF_HAVE_UNIX_SOCKETS) && !defined(OF_MORPHOS) && !defined(OF_MINT)
+struct sockaddr_un {
+	sa_family_t sun_family;
+	char sun_path[108];
 };
 #endif
 
@@ -134,18 +153,15 @@ struct sockaddr_ipx {
  * @brief A struct which represents a host / port pair for a socket.
  */
 typedef struct OF_BOXABLE {
-	/*
-	 * Even though struct sockaddr contains the family, we need to use our
-	 * own family, as we need to support storing an IPv6 address on systems
-	 * that don't support IPv6. These may not have AF_INET6 defined and we
-	 * can't just define it, as the value is system-dependent and might
-	 * clash with an existing value.
-	 */
 	OFSocketAddressFamily family;
+	/*
+	 * We can't use struct sockaddr as it can contain variable length
+	 * arrays.
+	 */
 	union {
-		struct sockaddr sockaddr;
 		struct sockaddr_in in;
 		struct sockaddr_in6 in6;
+		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
 	} sockaddr;
 	socklen_t length;
@@ -183,15 +199,23 @@ extern OFSocketAddress OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
 extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 
 /**
- * @brief Creates an IPX address for the specified network, node and port.
+ * @brief Creates a UNIX socket address from the specified path.
  *
- * @param node The node in the IPX network
- * @param network The IPX network
- * @param port The IPX port (sometimes called socket number) on the node
+ * @param path The path of the UNIX socket
+ * @return A UNIX socket address with the specified path
  */
-extern OFSocketAddress OFSocketAddressMakeIPX(
-    const unsigned char node[_Nonnull IPX_NODE_LEN], uint32_t network,
-    uint16_t port);
+extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
+
+/**
+ * @brief Creates an IPX address for the specified node, network and port.
+ *
+ * @param network The IPX network
+ * @param node The node in the IPX network
+ * @param port The IPX port (sometimes called socket number) on the node
+ * @return An IPX socket address with the specified node, network and port.
+ */
+extern OFSocketAddress OFSocketAddressMakeIPX(uint32_t network,
+    const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -239,6 +263,15 @@ extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
  * @return The port of the address
  */
 extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the UNIX socket path
+ * @return The UNIX socket path
+ */
+extern OFString *_Nullable OFSocketAddressUNIXPath(
+    const OFSocketAddress *_Nonnull address);
 
 /**
  * @brief Sets the IPX network of the specified @ref OFSocketAddress.

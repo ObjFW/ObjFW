@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1085,6 +1085,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		@throw e;
 	}
 
+	/* FIXME: Detect encoding where we can. */
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
+
 	self = [self initWithCString: data.items
 			    encoding: encoding
 			      length: data.count * data.itemSize];
@@ -1380,6 +1384,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t length = self.length;
 	char *cString;
 	size_t cStringLength;
+	const char *ret;
 
 	switch (encoding) {
 	case OFStringEncodingUTF8:
@@ -1434,13 +1439,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 
 	@try {
-		return [[OFData dataWithItemsNoCopy: cString
-					      count: cStringLength + 1
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: cString
+					     count: cStringLength + 1
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(cString);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (const char *)cStringWithEncoding: (OFStringEncoding)encoding
@@ -2539,19 +2546,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	size_t length = self.length;
 	OFUnichar *buffer;
+	const OFUnichar *ret;
 
 	buffer = OFAllocMemory(length, sizeof(OFUnichar));
 	@try {
 		[self getCharacters: buffer inRange: OFRangeMake(0, length)];
 
-		return [[OFData dataWithItemsNoCopy: buffer
-					      count: length
-					   itemSize: sizeof(OFUnichar)
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: length
+					  itemSize: sizeof(OFUnichar)
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (const OFChar16 *)UTF16String
@@ -2567,6 +2577,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	OFChar16 *buffer;
 	size_t j;
 	bool swap = (byteOrder != OFByteOrderNative);
+	const OFChar16 *ret;
 
 	/* Allocate memory for the worst case */
 	buffer = OFAllocMemory((length + 1) * 2, sizeof(OFChar16));
@@ -2608,14 +2619,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 
 	@try {
-		return [[OFData dataWithItemsNoCopy: buffer
-					      count: j + 1
-					   itemSize: sizeof(OFChar16)
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: j + 1
+					  itemSize: sizeof(OFChar16)
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (size_t)UTF16StringLength
@@ -2641,6 +2654,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	size_t length = self.length;
 	OFChar32 *buffer;
+	const OFChar32 *ret;
 
 	buffer = OFAllocMemory(length + 1, sizeof(OFChar32));
 	@try {
@@ -2651,14 +2665,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			for (size_t i = 0; i < length; i++)
 				buffer[i] = OFByteSwap32(buffer[i]);
 
-		return [[OFData dataWithItemsNoCopy: buffer
-					      count: length + 1
-					   itemSize: sizeof(OFChar32)
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: length + 1
+					  itemSize: sizeof(OFChar32)
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (OFData *)dataWithEncoding: (OFStringEncoding)encoding

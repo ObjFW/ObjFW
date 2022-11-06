@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -106,7 +106,7 @@
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval
 	       orExecSignal: (ULONG *)signalMask
 {
-	int error = OFPlainConditionTimedWaitExecOrSignal(&_condition, &_mutex,
+	int error = OFPlainConditionTimedWaitOrExecSignal(&_condition, &_mutex,
 	    timeInterval, signalMask);
 
 	if (error == ETIMEDOUT)

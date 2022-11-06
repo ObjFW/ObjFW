@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -182,9 +182,8 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @param count The length of the C array
  * @return A new autoreleased OFArray
  */
-+ (instancetype)
-    arrayWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-	       count: (size_t)count;
++ (instancetype)arrayWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
+			   count: (size_t)count;
 
 /**
  * @brief Initializes an OFArray with the specified object.
@@ -436,14 +435,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  */
 - (OFArray OF_GENERIC(ObjectType) *)arrayByAddingObjectsFromArray:
     (OFArray OF_GENERIC(ObjectType) *)array;
-
-/**
- * @brief Creates a new array with the specified object removed.
- *
- * @param object The object to remove
- * @return A new array with the specified object removed
- */
-- (OFArray OF_GENERIC(ObjectType) *)arrayByRemovingObject: (ObjectType)object;
 
 #ifdef OF_HAVE_BLOCKS
 /**

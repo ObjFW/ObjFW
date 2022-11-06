@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -239,18 +239,21 @@ static struct {
 {
 	size_t count = self.count;
 	id *buffer = OFAllocMemory(count, sizeof(id));
+	id const *ret;
 
 	@try {
 		[self getObjects: buffer inRange: OFRangeMake(0, count)];
 
-		return [[OFData dataWithItemsNoCopy: buffer
-					      count: count
-					   itemSize: sizeof(id)
-				       freeWhenDone: true] items];
+		ret = [[OFData dataWithItemsNoCopy: buffer
+					     count: count
+					  itemSize: sizeof(id)
+				      freeWhenDone: true] items];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		@throw e;
 	}
+
+	return ret;
 }
 
 - (id)copy
@@ -809,14 +812,6 @@ static struct {
 	[ret addObjectsFromArray: array];
 	[ret makeImmutable];
 
-	return ret;
-}
-
-- (OFArray *)arrayByRemovingObject: (id)object
-{
-	OFMutableArray *ret = [[self mutableCopy] autorelease];
-	[ret removeObject: object];
-	[ret makeImmutable];
 	return ret;
 }
 

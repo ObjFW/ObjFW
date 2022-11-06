@@ -15,11 +15,12 @@ ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
+	    -I../../src/tls				\
 	    -I../..					\
 	    -DLANGUAGE_DIR='"${datadir}/ofhttp/lang"'	\
 	    -DLIB_PREFIX='"${LIB_PREFIX}"'		\
 	    -DLIB_SUFFIX='"${LIB_SUFFIX}"'
-LIBS := -L../../src -lobjfw						\
+LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}
 LD = ${OBJC}

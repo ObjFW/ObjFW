@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -51,7 +51,7 @@ extern "C" {
  * @param listItem The list item for which the next list item should be returned
  * @return The next list item of the list item
  */
-OFListItem OFListItemNext(OFListItem _Nonnull listItem);
+extern OFListItem _Nullable OFListItemNext(OFListItem _Nonnull listItem);
 
 /*!
  * @brief Returns the previous list item of the list item.
@@ -60,7 +60,7 @@ OFListItem OFListItemNext(OFListItem _Nonnull listItem);
  *		   returned
  * @return The previous list item of the list item
  */
-OFListItem OFListItemPrevious(OFListItem _Nonnull listItem);
+extern OFListItem _Nullable OFListItemPrevious(OFListItem _Nonnull listItem);
 
 /*!
  * @brief Returns the object of the list item.
@@ -71,7 +71,7 @@ OFListItem OFListItemPrevious(OFListItem _Nonnull listItem);
  * @param listItem The list item for which the object should be returned
  * @return The object of the list item
  */
-id OFListItemObject(OFListItem _Nonnull listItem);
+extern id _Nonnull OFListItemObject(OFListItem _Nonnull listItem);
 #ifdef __cplusplus
 }
 #endif

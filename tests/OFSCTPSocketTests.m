@@ -41,7 +41,7 @@ static OFString *module = @"OFSCTPSocket";
 		case EPROTONOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"[OFSCTPSocket] -[bindToHost:port:]: "
+			    @"\r[OFSCTPSocket] -[bindToHost:port:]: "
 			    @"SCTP unsupported, skipping tests"];
 			break;
 		default:

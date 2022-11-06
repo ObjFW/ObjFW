@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -76,6 +76,14 @@ extern int _OFString_PathAdditions_reference;
  * @return A new, autoreleased OFString with the path component appended
  */
 - (OFString *)stringByAppendingPathComponent: (OFString *)component;
+
+/**
+ * @brief Creates a new string by appending a path extension.
+ *
+ * @param extension The extension to append
+ * @return A new, autoreleased OFString with the path extension appended
+ */
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension;
 
 - (bool)of_isDirectoryPath;
 - (OFString *)of_pathToURLPathWithURLEncodedHost:

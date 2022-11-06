@@ -10,8 +10,8 @@ include ../buildsys.mk
 
 DISTCLEAN = objfw-config
 
-install-extra: objfw-config objfw-compile objfw-new
-	for i in objfw-config objfw-compile objfw-new; do \
+install-extra: objfw-config objfw-compile objfw-embed
+	for i in objfw-config objfw-compile objfw-embed; do \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/${BIN_PREFIX}$$i; then \
 			${INSTALL_OK}; \
@@ -21,7 +21,7 @@ install-extra: objfw-config objfw-compile objfw-new
 	done
 
 uninstall-extra:
-	for i in objfw-config objfw-compile objfw-new; do \
+	for i in objfw-config objfw-compile objfw-embed; do \
 		if test -f ${DESTDIR}${bindir}/${BIN_PREFIX}$$i; then \
 			if rm -f ${DESTDIR}${bindir}/${BIN_PREFIX}$$i; then \
 				${DELETE_OK}; \

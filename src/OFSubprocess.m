@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,7 +18,7 @@
 #include "platform.h"
 
 #ifdef OF_WINDOWS
-# include "platform/windows/OFSubprocess.m"
+# include "platform/Windows/OFSubprocess.m"
 #else
-# include "platform/posix/OFSubprocess.m"
+# include "platform/POSIX/OFSubprocess.m"
 #endif

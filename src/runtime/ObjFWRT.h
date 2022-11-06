@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -146,14 +146,14 @@ typedef id _Nullable (*IMP)(id _Nonnull object, SEL _Nonnull selector, ...);
  *
  * @param exception The exception which was not caught.
  */
-typedef void (*objc_uncaught_exception_handler_t)(id _Nullable exception);
+typedef void (*objc_uncaught_exception_handler)(id _Nullable exception);
 
 /**
  * @brief A handler for mutation during enumeration.
  *
  * @param object The object that was mutated during enumeration
  */
-typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull object);
+typedef void (*objc_enumeration_mutation_handler)(id _Nonnull object);
 
 /**
  * @brief A struct representing a call to super.
@@ -520,13 +520,13 @@ extern char *_Nullable property_copyAttributeValue(
     objc_property_t _Nonnull property, const char *_Nonnull name);
 
 /**
- * @brief Exits the Objective-C runtime.
+ * @brief Deinitializes the Objective-C runtime.
  *
  * This frees all data structures used by the runtime, after which Objective-C
  * can no longer be used inside the current process. This is only useful for
- * debugging.
+ * debugging and tests.
  */
-extern void objc_exit(void);
+extern void objc_deinit(void);
 
 /**
  * @brief Sets the handler for uncaught exceptions.
@@ -534,9 +534,9 @@ extern void objc_exit(void);
  * @param handler The new handler for uncaught exceptions
  * @return The old handler for uncaught exceptions
  */
-extern _Nullable objc_uncaught_exception_handler_t
+extern _Nullable objc_uncaught_exception_handler
     objc_setUncaughtExceptionHandler(
-    objc_uncaught_exception_handler_t _Nullable handler);
+    objc_uncaught_exception_handler _Nullable handler);
 
 /**
  * @brief Sets the forwarding handler for unimplemented methods.
@@ -554,7 +554,7 @@ extern void objc_setForwardHandler(IMP _Nullable forward,
  * @param handler The handler for mutations during enumeration
  */
 extern void objc_setEnumerationMutationHandler(
-    objc_enumeration_mutation_handler_t _Nullable handler);
+    objc_enumeration_mutation_handler _Nullable handler);
 
 /**
  * @brief Constructs an instance of the specified class in the specified array

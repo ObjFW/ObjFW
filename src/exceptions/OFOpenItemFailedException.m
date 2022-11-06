@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,11 +22,6 @@
 @implementation OFOpenItemFailedException
 @synthesize URL = _URL, path = _path, mode = _mode, errNo = _errNo;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithURL: (OFURL *)URL
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
@@ -45,9 +40,9 @@
 				     errNo: errNo] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (instancetype)initWithURL: (OFURL *)URL
@@ -84,6 +79,11 @@
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,8 +20,8 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFHTTPClient";
-static OFCondition *cond;
+static OFString *const module = @"OFHTTPClient";
+static OFCondition *condition;
 static OFHTTPResponse *response = nil;
 
 @interface TestsAppDelegate (HTTPClientTests) <OFHTTPClientDelegate>
@@ -40,40 +40,31 @@ static OFHTTPResponse *response = nil;
 	OFTCPSocket *listener, *client;
 	char buffer[5];
 
-	[cond lock];
+	[condition lock];
 
 	listener = [OFTCPSocket socket];
 	_port = [listener bindToHost: @"127.0.0.1" port: 0];
 	[listener listen];
 
-	[cond signal];
-	[cond unlock];
+	[condition signal];
+	[condition unlock];
 
 	client = [listener accept];
 
-	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
-		OFEnsure(0);
-
-	if (![[client readLine] hasPrefix: @"User-Agent:"])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual: @"Content-Length: 5"])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual:
-	    @"Content-Type: application/x-www-form-urlencoded; charset=UTF-8"])
-		OFEnsure(0);
+	OFEnsure([[client readLine] isEqual: @"GET /foo HTTP/1.1"]);
+	OFEnsure([[client readLine] hasPrefix: @"User-Agent:"]);
+	OFEnsure([[client readLine] isEqual: @"Content-Length: 5"]);
+	OFEnsure([[client readLine] isEqual:
+	    @"Content-Type: application/x-www-form-urlencoded; charset=UTF-8"]);
 
 	if (![[client readLine] isEqual:
 	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
 		OFEnsure(0);
 
-	if (![[client readLine] isEqual: @""])
-		OFEnsure(0);
+	OFEnsure([[client readLine] isEqual: @""]);
 
 	[client readIntoBuffer: buffer exactLength: 5];
-	if (memcmp(buffer, "Hello", 5) != 0)
-		OFEnsure(0);
+	OFEnsure(memcmp(buffer, "Hello", 5) == 0);
 
 	[client writeString: @"HTTP/1.0 200 OK\r\n"
 			     @"cONTeNT-lENgTH: 7\r\n"
@@ -115,15 +106,15 @@ static OFHTTPResponse *response = nil;
 	OFHTTPRequest *request;
 	OFData *data;
 
-	cond = [OFCondition condition];
-	[cond lock];
+	condition = [OFCondition condition];
+	[condition lock];
 
 	server = [[[HTTPClientTestsServer alloc] init] autorelease];
 	server.supportsSockets = true;
 	[server start];
 
-	[cond wait];
-	[cond unlock];
+	[condition wait];
+	[condition unlock];
 
 	URL = [OFURL URLWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",

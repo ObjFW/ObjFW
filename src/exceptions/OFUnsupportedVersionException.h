@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,8 +34,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *version;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased unsupported version exception.
  *
@@ -44,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithVersion: (OFString *)version;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated unsupported protocol exception.
@@ -53,6 +51,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized unsupported version exception
  */
 - (instancetype)initWithVersion: (OFString *)version OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

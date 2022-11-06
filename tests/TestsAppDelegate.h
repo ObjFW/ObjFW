@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -119,6 +119,10 @@
 - (void)JSONTests;
 @end
 
+@interface TestsAppDelegate (OFHMACTests)
+- (void)HMACTests;
+@end
+
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end
@@ -135,8 +139,16 @@
 - (void)MD5HashTests;
 @end
 
+@interface TestsAppDelegate  (OFMemoryStreamTests)
+- (void)memoryStreamTests;
+@end
+
 @interface TestsAppDelegate (OFMethodSignatureTests)
 - (void)methodSignatureTests;
+@end
+
+@interface TestsAppDelegate (OFNotificationCenterTests)
+- (void)notificationCenterTests;
 @end
 
 @interface TestsAppDelegate (OFNumberTests)
@@ -145,6 +157,10 @@
 
 @interface TestsAppDelegate (OFObjectTests)
 - (void)objectTests;
+@end
+
+@interface TestsAppDelegate (OFPBKDF2Tests)
+- (void)PBKDF2Tests;
 @end
 
 @interface TestsAppDelegate (OFPropertyListTests)
@@ -167,7 +183,7 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (ScryptTests)
+@interface TestsAppDelegate (OFScryptTests)
 - (void)scryptTests;
 @end
 
@@ -215,8 +231,8 @@
 - (void)systemInfoTests;
 @end
 
-@interface TestsAppDelegate (OFHMACTests)
-- (void)HMACTests;
+@interface TestsAppDelegate (OFSocketTests)
+- (void)socketTests;
 @end
 
 @interface TestsAppDelegate (OFStreamTests)
@@ -237,6 +253,14 @@
 
 @interface TestsAppDelegate (OFUDPSocketTests)
 - (void)UDPSocketTests;
+@end
+
+@interface TestsAppDelegate (OFUNIXDatagramSocketTests)
+- (void)UNIXDatagramSocketTests;
+@end
+
+@interface TestsAppDelegate (OFUNIXStreamSocketTests)
+- (void)UNIXStreamSocketTests;
 @end
 
 @interface TestsAppDelegate (OFURLTests)
@@ -262,12 +286,4 @@
 @interface TestsAppDelegate (OFXMLParserTests)
     <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
-@end
-
-@interface TestsAppDelegate (PBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
-@interface TestsAppDelegate (SocketTests)
-- (void)socketTests;
 @end

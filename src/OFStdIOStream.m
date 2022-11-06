@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,6 +52,12 @@
 # undef HAVE_ISATTY
 #endif
 
+#ifdef OF_WII_U
+# define BOOL WUT_BOOL
+# include <coreinit/debug.h>
+# undef BOOL
+#endif
+
 /* References for static linking */
 #ifdef OF_WINDOWS
 void
@@ -77,10 +83,19 @@ OF_DESTRUCTOR()
 void
 OFLog(OFConstantString *format, ...)
 {
+	va_list arguments;
+
+	va_start(arguments, format);
+	OFLogV(format, arguments);
+	va_end(arguments);
+}
+
+void
+OFLogV(OFConstantString *format, va_list arguments)
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *date;
 	OFString *dateString, *me, *msg;
-	va_list arguments;
 
 	date = [OFDate date];
 	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
@@ -90,10 +105,8 @@ OFLog(OFConstantString *format, ...)
 	me = [OFApplication programName];
 #endif
 
-	va_start(arguments, format);
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
-	va_end(arguments);
 
 	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 			       date.microsecond / 1000, me, getpid(), msg];
@@ -101,7 +114,7 @@ OFLog(OFConstantString *format, ...)
 	objc_autoreleasePoolPop(pool);
 }
 
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 static int
 colorToANSI(OFColor *color)
 {
@@ -149,18 +162,7 @@ colorToANSI(OFColor *color)
 	if (self != [OFStdIOStream class])
 		return;
 
-# ifndef OF_AMIGAOS
-	int fd;
-
-	if ((fd = fileno(stdin)) >= 0)
-		OFStdIn = [[OFStdIOStream alloc] of_initWithFileDescriptor: fd];
-	if ((fd = fileno(stdout)) >= 0)
-		OFStdOut = [[OFStdIOStream alloc]
-		    of_initWithFileDescriptor: fd];
-	if ((fd = fileno(stderr)) >= 0)
-		OFStdErr = [[OFStdIOStream alloc]
-		    of_initWithFileDescriptor: fd];
-# else
+# if defined(OF_AMIGAOS)
 	BPTR input, output, error;
 	bool inputClosable = false, outputClosable = false,
 	    errorClosable = false;
@@ -190,6 +192,20 @@ colorToANSI(OFColor *color)
 						   closable: outputClosable];
 	OFStdErr = [[OFStdIOStream alloc] of_initWithHandle: error
 						   closable: errorClosable];
+# elif defined(OF_WII_U)
+	OFStdOut = [[OFStdIOStream alloc] of_init];
+	OFStdErr = [[OFStdIOStream alloc] of_init];
+# else
+	int fd;
+
+	if ((fd = fileno(stdin)) >= 0)
+		OFStdIn = [[OFStdIOStream alloc] of_initWithFileDescriptor: fd];
+	if ((fd = fileno(stdout)) >= 0)
+		OFStdOut = [[OFStdIOStream alloc]
+		    of_initWithFileDescriptor: fd];
+	if ((fd = fileno(stderr)) >= 0)
+		OFStdErr = [[OFStdIOStream alloc]
+		    of_initWithFileDescriptor: fd];
 # endif
 }
 #endif
@@ -199,16 +215,7 @@ colorToANSI(OFColor *color)
 	OF_INVALID_INIT_METHOD
 }
 
-#ifndef OF_AMIGAOS
-- (instancetype)of_initWithFileDescriptor: (int)fd
-{
-	self = [super init];
-
-	_fd = fd;
-
-	return self;
-}
-#else
+#if defined(OF_AMIGAOS)
 - (instancetype)of_initWithHandle: (BPTR)handle closable: (bool)closable
 {
 	self = [super init];
@@ -218,37 +225,75 @@ colorToANSI(OFColor *color)
 
 	return self;
 }
+#elif defined(OF_WII_U)
+- (instancetype)of_init
+{
+	return [super init];
+}
+#else
+- (instancetype)of_initWithFileDescriptor: (int)fd
+{
+	self = [super init];
+
+	_fd = fd;
+
+	return self;
+}
 #endif
 
 - (void)dealloc
 {
-#ifndef OF_AMIGAOS
-	if (_fd != -1)
-#else
+#if defined(OF_AMIGAOS)
 	if (_handle != 0)
-#endif
 		[self close];
+#elif !defined(OF_WII_U)
+	if (_fd != -1)
+		[self close];
+#endif
 
 	[super dealloc];
 }
 
 - (bool)lowlevelIsAtEndOfStream
 {
-#ifndef OF_AMIGAOS
-	if (_fd == -1)
-#else
+#if defined(OF_AMIGAOS)
 	if (_handle == 0)
-#endif
 		@throw [OFNotOpenException exceptionWithObject: self];
+#elif !defined(OF_WII_U)
+	if (_fd == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+#endif
 
 	return _atEndOfStream;
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
+#if defined(OF_AMIGAOS)
 	ssize_t ret;
 
-#ifndef OF_AMIGAOS
+	if (_handle == 0)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (length > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((ret = Read(_handle, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: EIO];
+
+	if (ret == 0)
+		_atEndOfStream = true;
+
+	return ret;
+#elif defined(OF_WII_U)
+	@throw [OFReadFailedException exceptionWithObject: self
+					  requestedLength: length
+						    errNo: EOPNOTSUPP];
+#else
+	ssize_t ret;
+
 	if (_fd == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -266,28 +311,37 @@ colorToANSI(OFColor *color)
 						  requestedLength: length
 							    errNo: errno];
 # endif
-#else
-	if (_handle == 0)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (length > LONG_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	if ((ret = Read(_handle, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: EIO];
-#endif
 
 	if (ret == 0)
 		_atEndOfStream = true;
 
 	return ret;
+#endif
 }
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-#ifndef OF_AMIGAOS
+#if defined(OF_AMIGAOS)
+	LONG bytesWritten;
+
+	if (_handle == 0)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((bytesWritten = Write(_handle, (void *)buffer, length)) < 0)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: 0
+							     errNo: EIO];
+
+	return (size_t)bytesWritten;
+#elif defined(OF_WII_U)
+	OSConsoleWrite(buffer, length);
+
+	return length;
+#else
 	if (_fd == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -314,26 +368,12 @@ colorToANSI(OFColor *color)
 						      bytesWritten: 0
 							     errNo: errno];
 # endif
-#else
-	LONG bytesWritten;
-
-	if (_handle == 0)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (length > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	if ((bytesWritten = Write(_handle, (void *)buffer, length)) < 0)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: EIO];
-#endif
 
 	return (size_t)bytesWritten;
+#endif
 }
 
-#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
+#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 - (int)fileDescriptorForReading
 {
 	return _fd;
@@ -347,13 +387,7 @@ colorToANSI(OFColor *color)
 
 - (void)close
 {
-#ifndef OF_AMIGAOS
-	if (_fd == -1)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	close(_fd);
-	_fd = -1;
-#else
+#if defined(OF_AMIGAOS)
 	if (_handle == 0)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -361,6 +395,12 @@ colorToANSI(OFColor *color)
 		Close(_handle);
 
 	_handle = 0;
+#elif !defined(OF_WII_U)
+	if (_fd == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	close(_fd);
+	_fd = -1;
 #endif
 
 	[super close];
@@ -387,7 +427,7 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);
 #else
 	return false;
@@ -396,7 +436,8 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+    !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
@@ -410,7 +451,8 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+    !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
@@ -424,7 +466,7 @@ colorToANSI(OFColor *color)
 
 - (void)setForegroundColor: (OFColor *)color
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
 	if (!isatty(_fd))
@@ -439,7 +481,7 @@ colorToANSI(OFColor *color)
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
 	if (!isatty(_fd))
@@ -454,7 +496,7 @@ colorToANSI(OFColor *color)
 
 - (void)reset
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 
@@ -464,7 +506,7 @@ colorToANSI(OFColor *color)
 
 - (void)clear
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 
@@ -474,7 +516,7 @@ colorToANSI(OFColor *color)
 
 - (void)eraseLine
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 
@@ -484,7 +526,7 @@ colorToANSI(OFColor *color)
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 
@@ -497,7 +539,7 @@ colorToANSI(OFColor *color)
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
 
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 
@@ -508,7 +550,7 @@ colorToANSI(OFColor *color)
 
 - (void)setRelativeCursorPosition: (OFPoint)position
 {
-#ifdef HAVE_ISATTY
+#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	if (!isatty(_fd))
 		return;
 

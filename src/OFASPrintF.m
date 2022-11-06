@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,7 +53,7 @@
 # define vasprintf vasprintf_
 #endif
 
-struct context {
+struct Context {
 	const char *format;
 	size_t formatLen;
 	char subformat[maxSubformatLen + 1];
@@ -148,7 +148,7 @@ asprintf(char **string, const char *format, ...)
 #endif
 
 static bool
-appendString(struct context *ctx, const char *append, size_t appendLen)
+appendString(struct Context *ctx, const char *append, size_t appendLen)
 {
 	char *newBuf;
 
@@ -168,7 +168,7 @@ appendString(struct context *ctx, const char *append, size_t appendLen)
 }
 
 static bool
-appendSubformat(struct context *ctx, const char *subformat,
+appendSubformat(struct Context *ctx, const char *subformat,
     size_t subformatLen)
 {
 	if (ctx->subformatLen + subformatLen > maxSubformatLen)
@@ -182,7 +182,7 @@ appendSubformat(struct context *ctx, const char *subformat,
 }
 
 static bool
-stringState(struct context *ctx)
+stringState(struct Context *ctx)
 {
 	if (ctx->format[ctx->i] == '%') {
 		if (ctx->i > 0)
@@ -201,7 +201,7 @@ stringState(struct context *ctx)
 }
 
 static bool
-formatFlagsState(struct context *ctx)
+formatFlagsState(struct Context *ctx)
 {
 	switch (ctx->format[ctx->i]) {
 	case '-':
@@ -228,7 +228,7 @@ formatFlagsState(struct context *ctx)
 }
 
 static bool
-formatFieldWidthState(struct context *ctx)
+formatFieldWidthState(struct Context *ctx)
 {
 	if ((ctx->format[ctx->i] >= '0' && ctx->format[ctx->i] <= '9') ||
 	    ctx->format[ctx->i] == '*' || ctx->format[ctx->i] == '.') {
@@ -243,7 +243,7 @@ formatFieldWidthState(struct context *ctx)
 }
 
 static bool
-formatLengthModifierState(struct context *ctx)
+formatLengthModifierState(struct Context *ctx)
 {
 	/* Only one allowed */
 	switch (ctx->format[ctx->i]) {
@@ -373,7 +373,7 @@ formatLengthModifierState(struct context *ctx)
 }
 
 static bool
-formatConversionSpecifierState(struct context *ctx)
+formatConversionSpecifierState(struct Context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
@@ -731,7 +731,7 @@ formatConversionSpecifierState(struct context *ctx)
 	return true;
 }
 
-static bool (*states[])(struct context *) = {
+static bool (*states[])(struct Context *) = {
 	stringState,
 	formatFlagsState,
 	formatFieldWidthState,
@@ -742,7 +742,7 @@ static bool (*states[])(struct context *) = {
 int
 OFVASPrintF(char **string, const char *format, va_list arguments)
 {
-	struct context ctx;
+	struct Context ctx;
 
 	ctx.format = format;
 	ctx.formatLen = strlen(format);

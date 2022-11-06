@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,11 +24,11 @@
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
 
-static struct lock {
+static struct Lock {
 	id object;
 	int count;
 	OFPlainRecursiveMutex rmutex;
-	struct lock *next;
+	struct Lock *next;
 } *locks = NULL;
 
 static OFPlainMutex mutex;
@@ -47,7 +47,7 @@ objc_sync_enter(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock *lock;
+	struct Lock *lock;
 
 	if (OFPlainMutexLock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
@@ -98,7 +98,7 @@ objc_sync_exit(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock *lock, *last = NULL;
+	struct Lock *lock, *last = NULL;
 
 	if (OFPlainMutexLock(&mutex) != 0)
 		OBJC_ERROR("Failed to lock mutex!");
@@ -130,7 +130,7 @@ objc_sync_exit(id object)
 		return 0;
 	}
 
-	OBJC_ERROR("objc_sync_exit() was called for an object not locked!");
+	OBJC_ERROR("objc_sync_exit() was called for an unlocked object!");
 #else
 	return 0;
 #endif

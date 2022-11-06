@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -146,7 +146,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 + (uint16_t)SOCKS5Port;
 
 /**
- * @brief Connect the OFTCPSocket to the specified destination.
+ * @brief Connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -154,7 +154,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -162,7 +162,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -174,7 +174,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -185,7 +185,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 		     block: (OFTCPSocketAsyncConnectBlock)block;
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -199,7 +199,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
- * @brief Bind the socket to the specified host and port.
+ * @brief Binds the socket to the specified host and port.
  *
  * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for
  *	       IPv6 to bind to all.
@@ -209,13 +209,5 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  */
 - (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern Class _Nullable OFTLSSocketClass;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

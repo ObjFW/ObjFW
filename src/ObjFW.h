@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,11 +45,17 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFUUID.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
 #import "OFColor.h"
 
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
+
 #import "OFStream.h"
+#import "OFSeekableStream.h"
+#import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
@@ -63,16 +69,16 @@
 #import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
-# import "OFINIFile.h"
-# import "OFSettings.h"
 #endif
+#import "OFINIFile.h"
+#import "OFSettings.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
-# import "OFTLSSocket.h"
+# import "OFTLSStream.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
@@ -86,8 +92,10 @@
 # ifdef OF_HAVE_SCTP
 #  import "OFSCTPSocket.h"
 # endif
-#endif
-#ifdef OF_HAVE_SOCKETS
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXStreamSocket.h"
+# endif
 # ifdef OF_HAVE_THREADS
 #  import "OFHTTPClient.h"
 # endif
@@ -176,6 +184,7 @@
 # import "OFGetWindowsRegistryValueFailedException.h"
 #endif
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPRequestFailedException.h"
 #endif
@@ -194,7 +203,6 @@
 #endif
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -226,6 +234,9 @@
 # import "OFThreadStartFailedException.h"
 # import "OFThreadStillRunningException.h"
 #endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFTLSHandshakeFailedException.h"
+#endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
 #import "OFUnboundPrefixException.h"
@@ -254,14 +265,7 @@
 # import "OFPlainThread.h"
 # import "OFRecursiveMutex.h"
 # import "OFTLSKey.h"
-# import "OFThreadPool.h"
 #endif
 
-#import "OFASPrintF.h"
-#import "OFBase64.h"
-#import "OFCRC16.h"
-#import "OFCRC32.h"
-#import "OFHuffmanTree.h"
 #import "OFPBKDF2.h"
 #import "OFScrypt.h"
-#import "OFStrPTime.h"

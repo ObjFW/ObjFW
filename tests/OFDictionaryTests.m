@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = nil;
+static OFString *module;
 static OFString *keys[] = {
 	@"key1",
 	@"key2"
@@ -104,7 +104,7 @@ static OFString *values[] = {
 
 - (size_t)count
 {
-	return [_dictionary count];
+	return _dictionary.count;
 }
 
 - (OFEnumerator *)keyEnumerator
@@ -159,22 +159,22 @@ static OFString *values[] = {
 		    mutableClass: (Class)mutableDictionaryClass
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableDictionary *mutDict = [mutableDictionaryClass dictionary];
+	OFMutableDictionary *mutableDict = [mutableDictionaryClass dictionary];
 	OFDictionary *dict;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFArray *keysArray, *valuesArray;
 
-	[mutDict setObject: values[0] forKey: keys[0]];
-	[mutDict setValue: values[1] forKey: keys[1]];
+	[mutableDict setObject: values[0] forKey: keys[0]];
+	[mutableDict setValue: values[1] forKey: keys[1]];
 
 	TEST(@"-[objectForKey:]",
-	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
-	    [[mutDict objectForKey: keys[1]] isEqual: values[1]] &&
-	    [mutDict objectForKey: @"key3"] == nil)
+	    [[mutableDict objectForKey: keys[0]] isEqual: values[0]] &&
+	    [[mutableDict objectForKey: keys[1]] isEqual: values[1]] &&
+	    [mutableDict objectForKey: @"key3"] == nil)
 
 	TEST(@"-[valueForKey:]",
-	    [[mutDict valueForKey: keys[0]] isEqual: values[0]] &&
-	    [[mutDict valueForKey: @"@count"] isEqual:
+	    [[mutableDict valueForKey: keys[0]] isEqual: values[0]] &&
+	    [[mutableDict valueForKey: @"@count"] isEqual:
 	    [OFNumber numberWithInt: 2]])
 
 	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
@@ -182,29 +182,29 @@ static OFString *values[] = {
 	    [[dictionaryClass dictionary] setValue: @"x" forKey: @"x"])
 
 	TEST(@"-[containsObject:]",
-	    [mutDict containsObject: values[0]] &&
-	    ![mutDict containsObject: @"nonexistent"])
+	    [mutableDict containsObject: values[0]] &&
+	    ![mutableDict containsObject: @"nonexistent"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
-	    [mutDict containsObjectIdenticalTo: values[0]] &&
-	    ![mutDict containsObjectIdenticalTo:
+	    [mutableDict containsObjectIdenticalTo: values[0]] &&
+	    ![mutableDict containsObjectIdenticalTo:
 	    [OFString stringWithString: values[0]]])
 
 	TEST(@"-[description]",
-	    [[mutDict description] isEqual:
+	    [[mutableDict description] isEqual:
 	    @"{\n\tkey1 = value1;\n\tkey2 = value2;\n}"])
 
 	TEST(@"-[allKeys]",
-	    [[mutDict allKeys] isEqual: [OFArray arrayWithObjects: keys[0],
-	    keys[1], nil]])
+	    [[mutableDict allKeys] isEqual:
+	    [OFArray arrayWithObjects: keys[0], keys[1], nil]])
 
 	TEST(@"-[allObjects]",
-	    [[mutDict allObjects] isEqual: [OFArray arrayWithObjects: values[0],
-	    values[1], nil]])
+	    [[mutableDict allObjects] isEqual:
+	    [OFArray arrayWithObjects: values[0], values[1], nil]])
 
-	TEST(@"-[keyEnumerator]", (keyEnumerator = [mutDict keyEnumerator]))
+	TEST(@"-[keyEnumerator]", (keyEnumerator = [mutableDict keyEnumerator]))
 	TEST(@"-[objectEnumerator]",
-	    (objectEnumerator = [mutDict objectEnumerator]))
+	    (objectEnumerator = [mutableDict objectEnumerator]))
 
 	TEST(@"OFEnumerator's -[nextObject]",
 	    [[keyEnumerator nextObject] isEqual: keys[0]] &&
@@ -214,23 +214,24 @@ static OFString *values[] = {
 	    [keyEnumerator nextObject] == nil &&
 	    [objectEnumerator nextObject] == nil)
 
-	[mutDict removeObjectForKey: keys[0]];
+	[mutableDict removeObjectForKey: keys[0]];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [keyEnumerator nextObject]);
 
-	[mutDict setObject: values[0] forKey: keys[0]];
+	[mutableDict setObject: values[0] forKey: keys[0]];
 
 	size_t i = 0;
 	bool ok = true;
 
-	for (OFString *key in mutDict) {
+	for (OFString *key in mutableDict) {
 		if (i > 1 || ![key isEqual: keys[i]]) {
 			ok = false;
 			break;
 		}
 
-		[mutDict setObject: [mutDict objectForKey: key] forKey: key];
+		[mutableDict setObject: [mutableDict objectForKey: key]
+				forKey: key];
 		i++;
 	}
 
@@ -238,9 +239,9 @@ static OFString *values[] = {
 
 	ok = false;
 	@try {
-		for (OFString *key in mutDict) {
+		for (OFString *key in mutableDict) {
 			(void)key;
-			[mutDict setObject: @"" forKey: @""];
+			[mutableDict setObject: @"" forKey: @""];
 		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;
@@ -248,7 +249,7 @@ static OFString *values[] = {
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
-	[mutDict removeObjectForKey: @""];
+	[mutableDict removeObjectForKey: @""];
 
 	TEST(@"-[stringByURLEncoding]",
 	    [[[OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
@@ -260,7 +261,7 @@ static OFString *values[] = {
 		__block size_t j = 0;
 		__block bool blockOk = true;
 
-		[mutDict enumerateKeysAndObjectsUsingBlock:
+		[mutableDict enumerateKeysAndObjectsUsingBlock:
 		    ^ (id key, id object, bool *stop) {
 			if (j > 1 || ![key isEqual: keys[j]]) {
 				blockOk = false;
@@ -268,8 +269,8 @@ static OFString *values[] = {
 				return;
 			}
 
-			[mutDict setObject: [mutDict objectForKey: key]
-				    forKey: key];
+			[mutableDict setObject: [mutableDict objectForKey: key]
+					forKey: key];
 			j++;
 		}];
 
@@ -277,10 +278,9 @@ static OFString *values[] = {
 
 		blockOk = false;
 		@try {
-			[mutDict enumerateKeysAndObjectsUsingBlock:
+			[mutableDict enumerateKeysAndObjectsUsingBlock:
 			    ^ (id key, id object, bool *stop) {
-				[mutDict setObject: @""
-					    forKey: @""];
+				[mutableDict setObject: @"" forKey: @""];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
 			blockOk = true;
@@ -289,38 +289,39 @@ static OFString *values[] = {
 		TEST(@"Detection of mutation during enumeration using blocks",
 		    blockOk)
 
-		[mutDict removeObjectForKey: @""];
+		[mutableDict removeObjectForKey: @""];
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([mutDict replaceObjectsUsingBlock: ^ id (id key, id object) {
-		if ([key isEqual: keys[0]])
-			return @"value_1";
-		if ([key isEqual: keys[1]])
-			return @"value_2";
+	    R([mutableDict replaceObjectsUsingBlock: ^ id (id key, id object) {
+		    if ([key isEqual: keys[0]])
+			    return @"value_1";
+		    if ([key isEqual: keys[1]])
+			    return @"value_2";
 
-		return nil;
-	    }]) && [[mutDict objectForKey: keys[0]] isEqual: @"value_1"] &&
-	    [[mutDict objectForKey: keys[1]] isEqual: @"value_2"])
+		    return nil;
+	    }]) && [[mutableDict objectForKey: keys[0]] isEqual: @"value_1"] &&
+	    [[mutableDict objectForKey: keys[1]] isEqual: @"value_2"])
 
 	TEST(@"-[mappedDictionaryUsingBlock:]",
-	    [[[mutDict mappedDictionaryUsingBlock: ^ id (id key, id object) {
-		if ([key isEqual: keys[0]])
-			return @"val1";
-		if ([key isEqual: keys[1]])
-			return @"val2";
+	    [[[mutableDict mappedDictionaryUsingBlock:
+		^ id (id key, id object) {
+		    if ([key isEqual: keys[0]])
+			    return @"val1";
+		    if ([key isEqual: keys[1]])
+			    return @"val2";
 
 		return nil;
 	    }] description] isEqual: @"{\n\tkey1 = val1;\n\tkey2 = val2;\n}"])
 
 	TEST(@"-[filteredDictionaryUsingBlock:]",
-	    [[[mutDict filteredDictionaryUsingBlock:
-	    ^ bool (id key, id object) {
-		return [key isEqual: keys[0]];
+	    [[[mutableDict filteredDictionaryUsingBlock:
+		^ bool (id key, id object) {
+		    return [key isEqual: keys[0]];
 	    }] description] isEqual: @"{\n\tkey1 = value_1;\n}"])
 #endif
 
-	TEST(@"-[count]", mutDict.count == 2)
+	TEST(@"-[count]", mutableDict.count == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",
 	    (dict = [dictionaryClass dictionaryWithKeysAndObjects:
@@ -347,26 +348,26 @@ static OFString *values[] = {
 	    [[dict objectForKey: keys[1]] isEqual: values[1]])
 
 	TEST(@"-[mutableCopy]",
-	    (mutDict = [[dict mutableCopy] autorelease]) &&
-	    mutDict.count == dict.count &&
-	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
-	    [[mutDict objectForKey: keys[1]] isEqual: values[1]] &&
-	    R([mutDict setObject: @"value3" forKey: @"key3"]) &&
-	    [[mutDict objectForKey: @"key3"] isEqual: @"value3"] &&
-	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
-	    R([mutDict setObject: @"foo" forKey: keys[0]]) &&
-	    [[mutDict objectForKey: keys[0]] isEqual: @"foo"])
+	    (mutableDict = [[dict mutableCopy] autorelease]) &&
+	    mutableDict.count == dict.count &&
+	    [[mutableDict objectForKey: keys[0]] isEqual: values[0]] &&
+	    [[mutableDict objectForKey: keys[1]] isEqual: values[1]] &&
+	    R([mutableDict setObject: @"value3" forKey: @"key3"]) &&
+	    [[mutableDict objectForKey: @"key3"] isEqual: @"value3"] &&
+	    [[mutableDict objectForKey: keys[0]] isEqual: values[0]] &&
+	    R([mutableDict setObject: @"foo" forKey: keys[0]]) &&
+	    [[mutableDict objectForKey: keys[0]] isEqual: @"foo"])
 
 	TEST(@"-[removeObjectForKey:]",
-	    R([mutDict removeObjectForKey: keys[0]]) &&
-	    [mutDict objectForKey: keys[0]] == nil)
+	    R([mutableDict removeObjectForKey: keys[0]]) &&
+	    [mutableDict objectForKey: keys[0]] == nil)
 
-	[mutDict setObject: @"foo" forKey: keys[0]];
-	TEST(@"-[isEqual:]", ![mutDict isEqual: dict] &&
-	    R([mutDict removeObjectForKey: @"key3"]) &&
-	    ![mutDict isEqual: dict] &&
-	    R([mutDict setObject: values[0] forKey: keys[0]]) &&
-	    [mutDict isEqual: dict])
+	[mutableDict setObject: @"foo" forKey: keys[0]];
+	TEST(@"-[isEqual:]", ![mutableDict isEqual: dict] &&
+	    R([mutableDict removeObjectForKey: @"key3"]) &&
+	    ![mutableDict isEqual: dict] &&
+	    R([mutableDict setObject: values[0] forKey: keys[0]]) &&
+	    [mutableDict isEqual: dict])
 
 	objc_autoreleasePoolPop(pool);
 }

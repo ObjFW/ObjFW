@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,6 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFConstantString;
 @class OFXMLElement;
 
 /**
@@ -42,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *const OFSerializationNS;
+extern OFConstantString *const OFSerializationNS;
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 # import "OFPlainMutex.h"
 #endif
 
-struct weakref {
+struct WeakRef {
 	id **locations;
 	size_t count;
 };
@@ -117,7 +117,7 @@ objc_storeStrong(id *object, id value)
 id
 objc_storeWeak(id *object, id value)
 {
-	struct weakref *old;
+	struct WeakRef *old;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -155,7 +155,7 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weakref *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -188,7 +188,7 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct weakref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -239,7 +239,7 @@ objc_copyWeak(id *dest, id *src)
 void
 objc_moveWeak(id *dest, id *src)
 {
-	struct weakref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
@@ -266,9 +266,9 @@ objc_moveWeak(id *dest, id *src)
 }
 
 void
-objc_zero_weak_references(id value)
+objc_zeroWeakReferences(id value)
 {
-	struct weakref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)

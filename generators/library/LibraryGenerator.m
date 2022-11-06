@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,7 +36,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *sourcesURL = [[OFFileManager defaultManager].currentDirectoryURL
 	    URLByAppendingPathComponent: @"../../src"];
 	OFURL *runtimeLibraryURL = [sourcesURL
-	    URLByAppendingPathComponent: @"runtime/library.xml"];
+	    URLByAppendingPathComponent: @"runtime/amiga-library.xml"];
 	OFURL *runtimeLinkLibURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/linklib/linklib.m"];
 	OFURL *runtimeGlueHeaderURL = [sourcesURL
@@ -46,16 +46,20 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFURL *runtimeFuncArrayURL = [sourcesURL
 	    URLByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
-	    [OFFile fileWithURL: runtimeLibraryURL
-			   mode: @"r"]];
-	OFFile *runtimeLinkLib = [OFFile fileWithURL: runtimeLinkLibURL
-						mode: @"w"];
-	OFFile *runtimeGlueHeader = [OFFile fileWithURL: runtimeGlueHeaderURL
-						   mode: @"w"];
-	OFFile *runtimeGlue = [OFFile fileWithURL: runtimeGlueURL
-					     mode: @"w"];
-	OFFile *runtimeFuncArray = [OFFile fileWithURL: runtimeFuncArrayURL
-						  mode: @"w"];
+	    [OFFile fileWithPath: runtimeLibraryURL.fileSystemRepresentation
+			    mode: @"r"]];
+	OFFile *runtimeLinkLib =
+	    [OFFile fileWithPath: runtimeLinkLibURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlueHeader =
+	    [OFFile fileWithPath: runtimeGlueHeaderURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeGlue =
+	    [OFFile fileWithPath: runtimeGlueURL.fileSystemRepresentation
+			    mode: @"w"];
+	OFFile *runtimeFuncArray =
+	    [OFFile fileWithPath: runtimeFuncArrayURL.fileSystemRepresentation
+			    mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary
 	     implementation: runtimeLinkLib] autorelease];

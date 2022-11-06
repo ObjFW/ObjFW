@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -81,7 +81,7 @@ objc_destructInstance(id object)
 		return NULL;
 
 #ifdef OF_OBJFW_RUNTIME
-	objc_zero_weak_references(object);
+	objc_zeroWeakReferences(object);
 #endif
 
 	if (destructSelector == NULL)

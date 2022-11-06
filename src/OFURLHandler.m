@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,7 @@
 # import "OFMutex.h"
 #endif
 
+#import "OFEmbeddedFileURLHandler.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileURLHandler.h"
 #endif
@@ -56,6 +57,8 @@ releaseMutex(void)
 	atexit(releaseMutex);
 #endif
 
+	[self registerClass: [OFEmbeddedFileURLHandler class]
+		  forScheme: @"objfw-embedded"];
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFFileURLHandler class] forScheme: @"file"];
 #endif

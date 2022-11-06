@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,6 +42,7 @@
 #import "OFSeekFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+#import "OFWriteFailedException.h"
 
 /*
  * FIXME: Current limitations:
@@ -434,6 +435,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
@@ -483,6 +487,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFString *fileName;
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
+
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
@@ -876,8 +883,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	size_t bytesWritten;
-
 #if SIZE_MAX >= INT64_MAX
 	if (length > INT64_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -886,12 +891,24 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (INT64_MAX - _bytesWritten < (int64_t)length)
 		@throw [OFOutOfRangeException exception];
 
-	bytesWritten = [_stream writeBuffer: buffer length: length];
+	@try {
+		[_stream writeBuffer: buffer length: length];
+	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten <= length);
 
-	_bytesWritten += (int64_t)bytesWritten;
+		_bytesWritten += (int64_t)e.bytesWritten;
+		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return e.bytesWritten;
+
+		@throw e;
+	}
+
+	_bytesWritten += (int64_t)length;
 	_CRC32 = OFCRC32(_CRC32, buffer, length);
 
-	return bytesWritten;
+	return length;
 }
 
 - (void)close
