@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,13 +23,13 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	testq	%rdi, %rdi
-	jz	ret_nil
+	jz	returnNilMethod
 
 	testb	$1, %dil
-	jnz	.Ltagged_pointer_\name
+	jnz	.LtaggedPointer_\name
 
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
@@ -47,17 +47,17 @@
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	\not_found@PLT
+	jz	\notFound@PLT
 
 	ret
 
-.Ltagged_pointer_\name:
-	movq	objc_tagged_pointer_secret@GOTPCREL(%rip), %rax
+.LtaggedPointer_\name:
+	movq	objc_taggedPointerSecret@GOTPCREL(%rip), %rax
 	xorq	(%rax), %rdi
 	andb	$0xE, %dil
 	movzbl	%dil, %r8d
 
-	movq	objc_tagged_pointer_classes@GOTPCREL(%rip), %rax
+	movq	objc_taggedPointerClasses@GOTPCREL(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	64(%r8), %r8
 
@@ -66,12 +66,12 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	movq	%rdi, %r8
 	movq	(%rdi), %rdi
 	testq	%rdi, %rdi
-	jz	ret_nil
+	jz	returnNilMethod
 
 	movq	8(%r8), %r8
 	movq	64(%r8), %r8
@@ -80,16 +80,16 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	leaq	nil_method(%rip), %rax
+returnNilMethod:
+	leaq	nilMethod(%rip), %rax
 	ret
 
-nil_method:
+nilMethod:
 	xorq	%rax, %rax
 	ret
 

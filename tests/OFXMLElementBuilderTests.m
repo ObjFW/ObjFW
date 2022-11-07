@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFXMLElementBuilder";
+static OFString *const module = @"OFXMLElementBuilder";
 static OFXMLNode *nodes[2];
 static size_t i = 0;
 
@@ -39,19 +39,19 @@ static size_t i = 0;
 - (void)XMLElementBuilderTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFXMLParser *p = [OFXMLParser parser];
+	OFXMLParser *parser = [OFXMLParser parser];
 	OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
-	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
+	OFString *string = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
 	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
-	p.delegate = builder;
+	parser.delegate = builder;
 	builder.delegate = self;
 
 	TEST(@"Building elements from parsed XML",
-	    R([p parseString: str]) &&
-	    nodes[0] != nil && [nodes[0].XMLString isEqual: str] &&
-	    R([p parseString: @"<!--foo-->"]) &&
+	    R([parser parseString: string]) &&
+	    nodes[0] != nil && [nodes[0].XMLString isEqual: string] &&
+	    R([parser parseString: @"<!--foo-->"]) &&
 	    nodes[1] != nil && [nodes[1].XMLString isEqual: @"<!--foo-->"] &&
 	    i == 2)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,11 +19,13 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_DIRECT_MEMBERS
 @interface OFStdIOStream ()
-#ifndef OF_AMIGAOS
-- (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
-#else
+#if defined(OF_AMIGAOS)
 - (instancetype)of_initWithHandle: (BPTR)handle
 			 closable: (bool)closable OF_METHOD_FAMILY(init);
+#elif defined(OF_WII_U)
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+#else
+- (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
 #endif
 @end
 

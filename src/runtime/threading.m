@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,7 +34,7 @@ init(void)
 }
 
 void
-objc_global_mutex_lock(void)
+objc_globalMutex_lock(void)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, init);
@@ -44,7 +44,7 @@ objc_global_mutex_lock(void)
 }
 
 void
-objc_global_mutex_unlock(void)
+objc_globalMutex_unlock(void)
 {
 	if (OFPlainRecursiveMutexUnlock(&globalMutex) != 0)
 		OBJC_ERROR("Failed to unlock global mutex!");

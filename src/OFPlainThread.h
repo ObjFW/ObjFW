@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,12 +75,7 @@ OFPlainThreadIsCurrent(OFPlainThread thread)
 }
 #elif defined(OF_AMIGAOS)
 extern OFPlainThread OFCurrentPlainThread(void);
-
-static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread thread)
-{
-	return (thread->thread == FindTask(NULL));
-}
+extern bool OFPlainThreadIsCurrent(OFPlainThread);
 #endif
 
 #ifdef __cplusplus

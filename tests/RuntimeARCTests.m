@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"Runtime (ARC)";
+static OFString *const module = @"Runtime (ARC)";
 
 @interface RuntimeARCTest: OFObject
 @end
@@ -27,7 +27,16 @@ static OFString *module = @"Runtime (ARC)";
 {
 	self = [super init];
 
+#ifdef OF_WINDOWS
+	/*
+	 * Clang has a bug on Windows where it creates an invalid call into
+	 * objc_retainAutoreleasedReturnValue(). Work around it by not using an
+	 * autoreleased exception.
+	 */
+	@throw [[OFException alloc] init];
+#else
 	@throw [OFException exception];
+#endif
 
 	return self;
 }

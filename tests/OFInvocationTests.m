@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,18 +24,18 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFInvocation";
+static OFString *const module = @"OFInvocation";
 
-struct test_struct {
+struct TestStruct {
 	unsigned char c;
 	unsigned int i;
 };
 
 @implementation TestsAppDelegate (OFInvocationTests)
-- (struct test_struct)invocationTestMethod1: (unsigned char)c
-					   : (unsigned int)i
-					   : (struct test_struct *)ptr
-					   : (struct test_struct)st
+- (struct TestStruct)invocationTestMethod1: (unsigned char)c
+					  : (unsigned int)i
+					  : (struct TestStruct *)ptr
+					  : (struct TestStruct)st
 {
 	return st;
 }
@@ -46,7 +46,7 @@ struct test_struct {
 	SEL selector = @selector(invocationTestMethod1::::);
 	OFMethodSignature *sig = [self methodSignatureForSelector: selector];
 	OFInvocation *invocation;
-	struct test_struct st, st2, *stp = &st, *stp2;
+	struct TestStruct st, st2, *stp = &st, *stp2;
 	unsigned const char c = 0xAA;
 	unsigned char c2;
 	const unsigned int i = 0x55555555;

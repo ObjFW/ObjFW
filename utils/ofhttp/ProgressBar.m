@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,6 +29,11 @@ static const float oneMebibyte = 1024 * 1024;
 static const float oneGibibyte = 1024 * 1024 * 1024;
 
 static const OFTimeInterval updateInterval = 0.1;
+
+#ifdef OF_MINT
+/* freemint-gcc does not have trunc() */
+# define trunc(x) ((int64_t)(x))
+#endif
 
 #ifndef HAVE_TRUNCF
 # define truncf(x) trunc(x)

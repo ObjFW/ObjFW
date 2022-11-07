@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,18 +19,18 @@
 
 #import "TestsAppDelegate.h"
 
-#define FMT @"%@ %@ %@ %@ %@ %@ %@ %@ %@ %g %g %g %g %g %g %g %g %g"
+#define FORMAT @"%@ %@ %@ %@ %@ %@ %@ %@ %@ %g %g %g %g %g %g %g %g %g"
 #define ARGS @"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", \
 	    1.5, 2.25, 3.125, 4.0625, 5.03125, 6.5, 7.25, 8.0, 9.0
 #define RESULT @"a b c d e f g h i 1.5 2.25 3.125 4.0625 5.03125 6.5 7.25 8 9"
 
-static OFString *module = @"Forwarding";
-static size_t forwardings = 0;
+static OFString *const module = @"Forwarding";
+static size_t forwardingsCount = 0;
 static bool success = false;
 static id target = nil;
 
-struct stret_test {
-	char s[1024];
+struct StretTest {
+	char buffer[1024];
 };
 
 @interface ForwardingTest: OFObject
@@ -43,13 +43,13 @@ struct stret_test {
 				: (intptr_t)a1
 				: (double)a2
 				: (double)a3;
-- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)fmt, ...;
+- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)format, ...;
 - (long double)forwardingTargetFPRetTest;
-- (struct stret_test)forwardingTargetStRetTest;
+- (struct StretTest)forwardingTargetStRetTest;
 - (void)forwardingTargetNilTest;
 - (void)forwardingTargetSelfTest;
-- (struct stret_test)forwardingTargetNilStRetTest;
-- (struct stret_test)forwardingTargetSelfStRetTest;
+- (struct StretTest)forwardingTargetNilStRetTest;
+- (struct StretTest)forwardingTargetSelfStRetTest;
 @end
 
 @interface ForwardingTarget: OFObject
@@ -64,7 +64,7 @@ test(id self, SEL _cmd)
 @implementation ForwardingTest
 + (bool)resolveClassMethod: (SEL)selector
 {
-	forwardings++;
+	forwardingsCount++;
 
 	if (sel_isEqual(selector, @selector(test))) {
 		class_replaceMethod(object_getClass(self), @selector(test),
@@ -77,7 +77,7 @@ test(id self, SEL _cmd)
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	forwardings++;
+	forwardingsCount++;
 
 	if (sel_isEqual(selector, @selector(test))) {
 		class_replaceMethod(self, @selector(test), (IMP)test, "v@:");
@@ -141,15 +141,15 @@ test(id self, SEL _cmd)
 	return 0x12345678;
 }
 
-- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)fmt, ...
+- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)format, ...
 {
 	va_list args;
 	OFString *ret;
 
 	OFEnsure(self == target);
 
-	va_start(args, fmt);
-	ret = [[[OFString alloc] initWithFormat: fmt
+	va_start(args, format);
+	ret = [[[OFString alloc] initWithFormat: format
 				      arguments: args] autorelease];
 	va_end(args);
 
@@ -163,13 +163,13 @@ test(id self, SEL _cmd)
 	return 12345678.00006103515625;
 }
 
-- (struct stret_test)forwardingTargetStRetTest
+- (struct StretTest)forwardingTargetStRetTest
 {
-	struct stret_test ret = { { 0 } };
+	struct StretTest ret = { { 0 } };
 
 	OFEnsure(self == target);
 
-	memcpy(ret.s, "abcdefghijklmnopqrstuvwxyz", 27);
+	memcpy(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
 
 	return ret;
 }
@@ -182,25 +182,28 @@ test(id self, SEL _cmd)
 
 	TEST(@"Forwarding a message and adding a class method",
 	    R([ForwardingTest test]) && success &&
-	    R([ForwardingTest test]) && forwardings == 1);
+	    R([ForwardingTest test]) && forwardingsCount == 1);
 
-	ForwardingTest *t = [[[ForwardingTest alloc] init] autorelease];
+	ForwardingTest *testObject =
+	    [[[ForwardingTest alloc] init] autorelease];
 
 	success = false;
-	forwardings = 0;
+	forwardingsCount = 0;
 
 	TEST(@"Forwarding a message and adding an instance method",
-	    R([t test]) && success && R([t test]) && forwardings == 1);
+	    R([testObject test]) && success && R([testObject test]) &&
+	    forwardingsCount == 1);
 
 #ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 	target = [[[ForwardingTarget alloc] init] autorelease];
 	TEST(@"-[forwardingTargetForSelector:]",
-	    [t forwardingTargetTest: 0xDEADBEEF
-				   : -1
-				   : 1.25
-				   : 2.75] == 0x12345678)
+	    [testObject forwardingTargetTest: 0xDEADBEEF
+					    : -1
+					    : 1.25
+					    : 2.75] == 0x12345678)
 	TEST(@"-[forwardingTargetForSelector:] variable arguments",
-	    [[t forwardingTargetVarArgTest: FMT, ARGS] isEqual: RESULT])
+	    [[testObject forwardingTargetVarArgTest: FORMAT, ARGS]
+	    isEqual: RESULT])
 	/*
 	 * Don't try fpret on Win64 if we don't have stret forwarding, as
 	 * long double is handled as a struct there.
@@ -208,24 +211,24 @@ test(id self, SEL _cmd)
 # if !defined(OF_WINDOWS) || !defined(OF_X86_64) || \
 	defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
 	TEST(@"-[forwardingTargetForSelector:] fp return",
-	    [t forwardingTargetFPRetTest] == 12345678.00006103515625)
+	    [testObject forwardingTargetFPRetTest] == 12345678.00006103515625)
 # endif
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 	TEST(@"-[forwardingTargetForSelector:] struct return",
-	    !memcmp([t forwardingTargetStRetTest].s,
+	    !memcmp([testObject forwardingTargetStRetTest].buffer,
 	    "abcdefghijklmnopqrstuvwxyz", 27))
 # endif
 	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target",
-	    OFNotImplementedException, [t forwardingTargetNilTest])
+	    OFNotImplementedException, [testObject forwardingTargetNilTest])
 	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target",
-	    OFNotImplementedException, [t forwardingTargetSelfTest])
+	    OFNotImplementedException, [testObject forwardingTargetSelfTest])
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target + "
 	    @"stret", OFNotImplementedException,
-	    [t forwardingTargetNilStRetTest])
+	    [testObject forwardingTargetNilStRetTest])
 	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target + "
 	    @"stret", OFNotImplementedException,
-	    [t forwardingTargetSelfStRetTest])
+	    [testObject forwardingTargetSelfStRetTest])
 # endif
 #endif
 

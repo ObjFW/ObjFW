@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +21,7 @@
 #import "OFMapTableSet.h"
 #import "OFMutableMapTableSet.h"
 
-static OFString *module = nil;
+static OFString *module;
 
 @interface SimpleSet: OFSet
 {

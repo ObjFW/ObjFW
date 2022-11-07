@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,6 +73,7 @@ OFPBKDF2(OFPBKDF2Parameters param)
 			[param.HMAC reset];
 			[param.HMAC updateWithBuffer: extendedSaltItems
 					      length: param.saltLength + 4];
+			[param.HMAC calculate];
 			memcpy(bufferItems, param.HMAC.digest, digestSize);
 			memcpy(digestItems, param.HMAC.digest, digestSize);
 
@@ -80,6 +81,7 @@ OFPBKDF2(OFPBKDF2Parameters param)
 				[param.HMAC reset];
 				[param.HMAC updateWithBuffer: digestItems
 						      length: digestSize];
+				[param.HMAC calculate];
 				memcpy(digestItems, param.HMAC.digest,
 				    digestSize);
 

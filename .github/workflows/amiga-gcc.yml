@@ -1,0 +1,37 @@
+name: amiga-gcc
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-amiga-lib
+    steps:
+    - name: Install dependencies
+      run: docker pull amigadev/crosstools:m68k-amigaos
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: |
+        docker run \
+          -e PATH="/opt/m68k-amigaos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:m68k-amigaos \
+          sh -c 'cd /objfw && ./configure --host=m68k-amigaos ${{ matrix.configure_flags }}'
+    - name: make
+      run: |
+        docker run \
+          -e PATH="/opt/m68k-amigaos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:m68k-amigaos \
+          sh -c "cd /objfw && make -j$(nproc)"
+    - name: make install
+      run: |
+        docker run \
+          -e PATH="/opt/m68k-amigaos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:m68k-amigaos \
+          sh -c "cd /objfw && make -j$(nproc)"

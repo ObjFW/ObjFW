@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFTCPSocket";
+static OFString *const module = @"OFTCPSocket";
 
 @implementation TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests
@@ -27,7 +27,7 @@ static OFString *module = @"OFTCPSocket";
 	void *pool = objc_autoreleasePoolPush();
 	OFTCPSocket *server, *client = nil, *accepted;
 	uint16_t port;
-	char buf[6];
+	char buffer[6];
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
@@ -46,11 +46,11 @@ static OFString *module = @"OFTCPSocket";
 	    [OFSocketAddressString(accepted.remoteAddress)
 	    isEqual: @"127.0.0.1"])
 
-	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
+	TEST(@"-[writeString:]", R([client writeString: @"Hello!"]))
 
 	TEST(@"-[readIntoBuffer:length:]",
-	    [accepted readIntoBuffer: buf length: 6] &&
-	    !memcmp(buf, "Hello!", 6))
+	    [accepted readIntoBuffer: buffer length: 6] &&
+	    !memcmp(buffer, "Hello!", 6))
 
 	objc_autoreleasePoolPop(pool);
 }

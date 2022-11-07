@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,9 +18,9 @@
 #include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "platform/posix/OFPlainMutex.m"
+# include "platform/POSIX/OFPlainMutex.m"
 #elif defined(OF_WINDOWS)
-# include "platform/windows/OFPlainMutex.m"
+# include "platform/Windows/OFPlainMutex.m"
 #elif defined(OF_AMIGAOS)
-# include "platform/amiga/OFPlainMutex.m"
+# include "platform/AmigaOS/OFPlainMutex.m"
 #endif

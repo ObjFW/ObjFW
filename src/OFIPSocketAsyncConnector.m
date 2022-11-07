@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -76,7 +76,7 @@
 #endif
 		if ([_delegate respondsToSelector:
 		    @selector(socket:didConnectToHost:port:exception:)])
-			[_delegate socket: _socket
+			[_delegate    socket: _socket
 			    didConnectToHost: _host
 					port: _port
 				   exception: _exception];
@@ -173,7 +173,11 @@
 
 	if (![_socket of_connectSocketToAddress: &address errNo: &errNo]) {
 #if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
+# ifdef OF_WINDOWS
+		if (errNo == EINPROGRESS || errNo == EWOULDBLOCK) {
+# else
 		if (errNo == EINPROGRESS) {
+# endif
 			[OFRunLoop of_addAsyncConnectForSocket: _socket
 							  mode: runLoopMode
 						      delegate: self];

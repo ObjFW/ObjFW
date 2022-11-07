@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@
 
 #import "TestsAppDelegate.h"
 
-#define EXPECTED_EVENTS 3
+static const size_t numExpectedEvents = 3;
 
 static OFString *module;
 
@@ -90,7 +90,7 @@ static OFString *module;
 				inModule: module];
 
 	deadline = [OFDate dateWithTimeIntervalSinceNow: 1];
-	while (_events < EXPECTED_EVENTS) {
+	while (_events < numExpectedEvents) {
 		if (deadline.timeIntervalSinceNow < 0) {
 			deadlineExceeded = true;
 			break;
@@ -110,7 +110,7 @@ static OFString *module;
 		_fails++;
 	}
 
-	if (_events == EXPECTED_EVENTS)
+	if (_events == numExpectedEvents)
 		[_testsAppDelegate
 		    outputSuccess: @"-[observe] handling all events"
 			 inModule: module];
@@ -124,7 +124,7 @@ static OFString *module;
 
 - (void)objectIsReadyForReading: (id)object
 {
-	char buf;
+	char buffer;
 
 	switch (_events++) {
 	case 0:
@@ -149,7 +149,8 @@ static OFString *module;
 		break;
 	case 1:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf length: 1] == 1 && buf == '0')
+		    [object readIntoBuffer: &buffer length: 1] == 1 &&
+		    buffer == '0')
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with data ready to read"
 				 inModule: module];
@@ -169,7 +170,7 @@ static OFString *module;
 		break;
 	case 2:
 		if (object == _accepted &&
-		    [object readIntoBuffer: &buf length: 1] == 0)
+		    [object readIntoBuffer: &buffer length: 1] == 0)
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with closed connection"
 				 inModule: module];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,7 +37,7 @@
 # undef __NOLIBBASE__
 #endif
 
-static objc_enumeration_mutation_handler_t enumerationMutationHandler = NULL;
+static objc_enumeration_mutation_handler enumerationMutationHandler = NULL;
 
 void
 objc_enumerationMutation(id object)
@@ -49,7 +49,7 @@ objc_enumerationMutation(id object)
 }
 
 void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
+objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
 {
 	enumerationMutationHandler = handler;
 }
@@ -58,14 +58,14 @@ void
 objc_error(const char *title, const char *format, ...)
 {
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
-# define BUF_LEN 512
-	char message[BUF_LEN];
+# define messageLen 512
+	char message[messageLen];
 	int status;
 	va_list args;
 
 	va_start(args, format);
-	status = vsnprintf(message, BUF_LEN, format, args);
-	if (status <= 0 || status >= BUF_LEN)
+	status = vsnprintf(message, messageLen, format, args);
+	if (status <= 0 || status >= messageLen)
 		message[0] = '\0';
 	va_end(args);
 # undef BUF_LEN

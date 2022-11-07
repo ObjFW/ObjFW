@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,6 +84,7 @@ int _OFString_URLEncoding_reference;
 	char byte = 0;
 	int state = 0;
 	size_t i = 0;
+	OFString *ret;
 
 	retCString = OFAllocMemory(length + 1, 1);
 
@@ -137,12 +138,14 @@ int _OFString_URLEncoding_reference;
 	}
 
 	@try {
-		return [OFString stringWithUTF8StringNoCopy: retCString
-						     length: i
-					       freeWhenDone: true];
+		ret = [OFString stringWithUTF8StringNoCopy: retCString
+						    length: i
+					      freeWhenDone: true];
 	} @catch (id e) {
 		OFFreeMemory(retCString);
 		@throw e;
 	}
+
+	return ret;
 }
 @end

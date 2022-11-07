@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -49,7 +49,8 @@
 	int flags;
 #endif
 
-	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
+	if ((_socket = socket(
+	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
 		@throw [OFBindFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
@@ -69,7 +70,7 @@
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (OFSocketAddressPort(address) != 0) {
 #endif
-		if (bind(_socket, &address->sockaddr.sockaddr,
+		if (bind(_socket, (struct sockaddr *)&address->sockaddr,
 		    address->length) != 0) {
 			int errNo = OFSocketErrNo();
 
@@ -93,16 +94,15 @@
 
 			OFSocketAddressSetPort(address, rnd);
 
-			if ((ret = bind(_socket, &address->sockaddr.sockaddr,
-			    address->length)) == 0) {
-				port = rnd;
+			if ((ret = bind(_socket,
+			    (struct sockaddr *)&address->sockaddr,
+			    address->length)) == 0)
 				break;
-			}
 
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				uint16_t port = OFSocketAddressPort(port);
+				port = OFSocketAddressPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
@@ -126,7 +126,7 @@
 	memset(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
-	if (OFGetSockName(_socket, &address->sockaddr.sockaddr,
+	if (OFGetSockName(_socket, (struct sockaddr *)&address->sockaddr,
 	    &address->length) != 0) {
 		int errNo = OFSocketErrNo();
 
@@ -140,13 +140,14 @@
 				errNo: errNo];
 	}
 
-	if (address->sockaddr.sockaddr.sa_family == AF_INET)
+	switch (((struct sockaddr *)&address->sockaddr)->sa_family) {
+	case AF_INET:
 		return OFFromBigEndian16(address->sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	else if (address->sockaddr.sockaddr.sa_family == AF_INET6)
+	case AF_INET6:
 		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
 # endif
-	else {
+	default:
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 

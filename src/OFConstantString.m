@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -348,6 +348,12 @@ struct {
 {
 	[self finishInitialization];
 	return [self stringByAppendingPathComponent: component];
+}
+
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
+{
+	[self finishInitialization];
+	return [self stringByAppendingPathExtension: extension];
 }
 
 - (OFString *)stringByPrependingString: (OFString *)string

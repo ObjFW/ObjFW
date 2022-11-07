@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,96 +17,96 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFXMLNode";
+static OFString *module;
 
 @implementation TestsAppDelegate (OFXMLNodeTests)
 - (void)XMLNodeTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	id nodes[4];
-	OFArray *a;
+	id node1, node2, node3, node4;
+	OFArray *array;
+
+	module = @"OFXMLNode";
 
 	TEST(@"+[elementWithName:]",
-	    (nodes[0] = [OFXMLElement elementWithName: @"foo"]) &&
-	    [[nodes[0] XMLString] isEqual: @"<foo/>"])
+	    (node1 = [OFXMLElement elementWithName: @"foo"]) &&
+	    [[node1 XMLString] isEqual: @"<foo/>"])
 
 	TEST(@"+[elementWithName:stringValue:]",
-	    (nodes[1] = [OFXMLElement elementWithName: @"foo"
-					  stringValue: @"b&ar"]) &&
-	    [[nodes[1] XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
+	    (node2 = [OFXMLElement elementWithName: @"foo"
+				       stringValue: @"b&ar"]) &&
+	    [[node2 XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	TEST(@"+[elementWithName:namespace:]",
-	    (nodes[2] = [OFXMLElement elementWithName: @"foo"
-					    namespace: @"urn:objfw:test"]) &&
-	    R([nodes[2] addAttributeWithName: @"test" stringValue: @"test"]) &&
-	    R([nodes[2] setPrefix: @"objfw-test"
-		     forNamespace: @"urn:objfw:test"]) &&
-	    [[nodes[2] XMLString] isEqual: @"<objfw-test:foo test='test'/>"] &&
-	    (nodes[3] = [OFXMLElement elementWithName: @"foo"
-					    namespace: @"urn:objfw:test"]) &&
-	    R([nodes[3] addAttributeWithName: @"test" stringValue: @"test"]) &&
-	    [[nodes[3] XMLString] isEqual:
+	    (node3 = [OFXMLElement elementWithName: @"foo"
+					 namespace: @"urn:objfw:test"]) &&
+	    R([node3 addAttributeWithName: @"test" stringValue: @"test"]) &&
+	    R([node3 setPrefix: @"objfw-test"
+		  forNamespace: @"urn:objfw:test"]) &&
+	    [[node3 XMLString] isEqual: @"<objfw-test:foo test='test'/>"] &&
+	    (node4 = [OFXMLElement elementWithName: @"foo"
+					 namespace: @"urn:objfw:test"]) &&
+	    R([node4 addAttributeWithName: @"test" stringValue: @"test"]) &&
+	    [[node4 XMLString] isEqual:
 	    @"<foo xmlns='urn:objfw:test' test='test'/>"])
 
 	TEST(@"+[elementWithName:namespace:stringValue:]",
-	    (nodes[3] = [OFXMLElement elementWithName: @"foo"
-					    namespace: @"urn:objfw:test"
-					  stringValue: @"x"]) &&
-	    R([nodes[3] setPrefix: @"objfw-test"
-		     forNamespace: @"urn:objfw:test"]) &&
-	    [[nodes[3] XMLString] isEqual:
-	    @"<objfw-test:foo>x</objfw-test:foo>"])
+	    (node4 = [OFXMLElement elementWithName: @"foo"
+					 namespace: @"urn:objfw:test"
+				       stringValue: @"x"]) &&
+	    R([node4 setPrefix: @"objfw-test"
+		  forNamespace: @"urn:objfw:test"]) &&
+	    [[node4 XMLString] isEqual: @"<objfw-test:foo>x</objfw-test:foo>"])
 
 	TEST(@"+[charactersWithString:]",
-	    (nodes[3] = [OFXMLCharacters charactersWithString: @"<foo>"]) &&
-	    [[nodes[3] XMLString] isEqual: @"&lt;foo&gt;"])
+	    (node4 = [OFXMLCharacters charactersWithString: @"<foo>"]) &&
+	    [[node4 XMLString] isEqual: @"&lt;foo&gt;"])
 
 	TEST(@"+[CDATAWithString:]",
-	    (nodes[3] = [OFXMLCDATA CDATAWithString: @"<foo>"]) &&
-	    [[nodes[3] XMLString] isEqual: @"<![CDATA[<foo>]]>"]);
+	    (node4 = [OFXMLCDATA CDATAWithString: @"<foo>"]) &&
+	    [[node4 XMLString] isEqual: @"<![CDATA[<foo>]]>"]);
 
 	TEST(@"+[commentWithText:]",
-	    (nodes[3] = [OFXMLComment commentWithText: @" comment "]) &&
-	    [[nodes[3] XMLString] isEqual: @"<!-- comment -->"])
+	    (node4 = [OFXMLComment commentWithText: @" comment "]) &&
+	    [[node4 XMLString] isEqual: @"<!-- comment -->"])
 
 	module = @"OFXMLElement";
 
 	TEST(@"-[addAttributeWithName:stringValue:]",
-	    R([nodes[0] addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
-	    [[nodes[0] XMLString] isEqual: @"<foo foo='b&amp;ar'/>"] &&
-	    R([nodes[1] addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
-	    [[nodes[1] XMLString] isEqual:
-	    @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
+	    R([node1 addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
+	    [[node1 XMLString] isEqual: @"<foo foo='b&amp;ar'/>"] &&
+	    R([node2 addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
+	    [[node2 XMLString] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
 
 	TEST(@"-[setPrefix:forNamespace:]",
-	    R([nodes[1] setPrefix: @"objfw-test"
-		     forNamespace: @"urn:objfw:test"]))
+	    R([node2 setPrefix: @"objfw-test"
+		  forNamespace: @"urn:objfw:test"]))
 
 	TEST(@"-[addAttributeWithName:namespace:stringValue:]",
-	    R([nodes[1] addAttributeWithName: @"foo"
-				   namespace: @"urn:objfw:test"
-				 stringValue: @"bar"]) &&
-	    R([nodes[1] addAttributeWithName: @"foo"
-				   namespace: @"urn:objfw:test"
-				 stringValue: @"ignored"]) &&
-	    [[nodes[1] XMLString] isEqual:
+	    R([node2 addAttributeWithName: @"foo"
+				namespace: @"urn:objfw:test"
+			      stringValue: @"bar"]) &&
+	    R([node2 addAttributeWithName: @"foo"
+				namespace: @"urn:objfw:test"
+			      stringValue: @"ignored"]) &&
+	    [[node2 XMLString] isEqual:
 	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>"])
 
 	TEST(@"-[removeAttributeForName:namespace:]",
-	    R([nodes[1] removeAttributeForName: @"foo"]) &&
-	    [[nodes[1] XMLString] isEqual:
+	    R([node2 removeAttributeForName: @"foo"]) &&
+	    [[node2 XMLString] isEqual:
 	    @"<foo objfw-test:foo='bar'>b&amp;ar</foo>"] &&
-	    R([nodes[1] removeAttributeForName: @"foo"
-				     namespace: @"urn:objfw:test"]) &&
-	    [[nodes[1] XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
+	    R([node2 removeAttributeForName: @"foo"
+				  namespace: @"urn:objfw:test"]) &&
+	    [[node2 XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
 
 	TEST(@"-[addChild:]",
-	    R([nodes[0] addChild: [OFXMLElement elementWithName: @"bar"]]) &&
-	    [[nodes[0] XMLString] isEqual:
+	    R([node1 addChild: [OFXMLElement elementWithName: @"bar"]]) &&
+	    [[node1 XMLString] isEqual:
 	    @"<foo foo='b&amp;ar'><bar/></foo>"] &&
-	    R([nodes[2] addChild: [OFXMLElement elementWithName: @"bar"
-		       namespace: @"urn:objfw:test"]]) &&
-	    [[nodes[2] XMLString] isEqual:
+	    R([node3 addChild: [OFXMLElement elementWithName: @"bar"
+		    namespace: @"urn:objfw:test"]]) &&
+	    [[node3 XMLString] isEqual:
 	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
 
 	TEST(@"+[elementWithXMLString:] and -[stringValue]",
@@ -116,9 +116,9 @@ static OFString *module = @"OFXMLNode";
 	    isEqual: @"foobarbazqux"])
 
 	TEST(@"-[elementsForName:namespace:]",
-	    (a = [nodes[2] elementsForName: @"bar"
-				 namespace: @"urn:objfw:test"]) &&
-	    a.count == 1 && [[[a firstObject] XMLString] isEqual:
+	    (array = [node3 elementsForName: @"bar"
+				  namespace: @"urn:objfw:test"]) &&
+	    array.count == 1 && [[array.firstObject XMLString] isEqual:
 	    @"<bar xmlns='urn:objfw:test'/>"])
 
 	TEST(@"-[isEqual:]",

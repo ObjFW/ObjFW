@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -59,6 +59,8 @@ OF_ASSUME_NONNULL_BEGIN
 		    addressFamily: (OFSocketAddressFamily)addressFamily
 			errorCode: (OFDNSResolverErrorCode)errorCode;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated resolve host failed exception.
  *
@@ -71,6 +73,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
 		   errorCode: (OFDNSResolverErrorCode)errorCode;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

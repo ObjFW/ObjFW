@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -143,6 +143,27 @@ writingNotSupported(OFString *type)
 	    @"writing_not_supported",
 	    @"Writing archives of type %[type] is not (yet) supported!",
 	    @"type", type)];
+}
+
+static void
+addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
+{
+	OFMutableArray *expandedFiles =
+	    [OFMutableArray arrayWithCapacity: files.count];
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	for (OFString *file in files) {
+		OFFileAttributes attributes =
+		    [fileManager attributesOfItemAtPath: file];
+
+		if ([attributes.fileType isEqual: OFFileTypeDirectory])
+			[expandedFiles addObjectsFromArray: 
+			    [fileManager subpathsOfDirectoryAtPath: file]];
+		else
+			[expandedFiles addObject: file];
+	}
+
+	[archive addFiles: expandedFiles];
 }
 
 @implementation OFArc
@@ -336,7 +357,7 @@ writingNotSupported(OFString *type)
 				   mode: mode
 			       encoding: encoding];
 
-		[archive addFiles: files];
+		addFiles(archive, files);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
