@@ -23,6 +23,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFMutex OFMutex.h ObjFW/OFMutex.h
  *
  * @brief A class for creating mutual exclusions.
+ *
+ * If the mutex is deallocated while being held, it throws an
+ * @ref OFStillLockedException. While this might break ARC's assumption that no
+ * object ever throws in dealloc, it is considered a fatal programmer error
+ * that should terminate the application.
  */
 @interface OFMutex: OFObject <OFLocking>
 {

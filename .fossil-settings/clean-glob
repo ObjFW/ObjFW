@@ -50,6 +50,7 @@ tests/tests.nds
 tests/tests.nro
 tests/tests.rpx
 utils/objfw-config
+utils/objfw-new/objfw-new
 utils/ofarc/ofarc
 utils/ofdns/ofdns
 utils/ofhash/ofhash

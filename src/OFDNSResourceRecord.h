@@ -641,6 +641,7 @@ extern OFString *_Nonnull OFDNSRecordTypeName(OFDNSRecordType recordType);
  *
  * @param string The string to parse as an @ref OFDNSClass
  * @return The parsed OFDNSClass
+ * @throw OFInvalidFormatException The specified string is not valid DNS class
  */
 extern OFDNSClass OFDNSClassParseName(OFString *_Nonnull string);
 
@@ -649,6 +650,7 @@ extern OFDNSClass OFDNSClassParseName(OFString *_Nonnull string);
  *
  * @param string The string to parse as an @ref OFDNSRecordType
  * @return The parsed OFDNSRecordType
+ * @throw OFInvalidFormatException The specified string is not valid DNS class
  */
 extern OFDNSRecordType OFDNSRecordTypeParseName(OFString *_Nonnull string);
 #ifdef __cplusplus

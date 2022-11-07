@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLElement: OFXMLNode
 {
-	OFString *_name, *_Nullable _namespace, *_Nullable _defaultNamespace;
+	OFString *_name, *_Nullable _namespace;
 	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
 	    _namespaces;
@@ -54,12 +54,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy, nonatomic,
     getter=namespace, setter=setNamespace:) OFString *nameSpace;
 #endif
-
-/**
- * @brief The default namespace for the element to be used if there is no
- *	  parent.
- */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *defaultNamespace;
 
 /**
  * @brief An array with the attributes of the element.
@@ -123,19 +117,14 @@ OF_ASSUME_NONNULL_BEGIN
 		    stringValue: (nullable OFString *)stringValue;
 
 /**
- * @brief Creates a new element with the specified element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-+ (instancetype)elementWithElement: (OFXMLElement *)element;
-
-/**
  * @brief Parses the string and returns an OFXMLElement for it.
  *
  * @param string The string to parse
  * @return A new autoreleased OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithXMLString: (OFString *)string;
 
@@ -145,6 +134,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream to parse
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithStream: (OFStream *)stream;
 
@@ -180,7 +173,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	   namespace
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)nameSpace;
+		   namespace: (nullable OFString *)nameSpace
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFXMLElement with the specified name,
@@ -197,21 +191,15 @@ OF_ASSUME_NONNULL_BEGIN
 		 stringValue: (nullable OFString *)stringValue;
 
 /**
- * @brief Initializes an already allocated OFXMLElement with the specified
- *	  element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-- (instancetype)initWithElement: (OFXMLElement *)element;
-
-/**
  * @brief Parses the string and initializes an already allocated OFXMLElement
  *	  with it.
  *
  * @param string The string to parse
  * @return An initialized OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithXMLString: (OFString *)string;
 
@@ -221,10 +209,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param stream The stream to parse
  * @return An initialized OFXMLElement with the contents of the specified stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithStream: (OFStream *)stream;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 
 /**
  * @brief Sets a prefix for a namespace.
@@ -349,8 +339,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param index The index of the child to remove
  */
-
 - (void)removeChildAtIndex: (size_t)index;
+
 /**
  * @brief Replaces the first child that is equal to the specified OFXMLNode
  *	  with the specified node.
@@ -373,8 +363,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return All children that have the specified namespace
  */
-- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForNamespace:
-    (nullable OFString *)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement *) *)
+    elementsForNamespace: (nullable OFString *)elementNS;
 
 /**
  * @brief Returns the first child element with the specified name.
@@ -390,8 +380,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementName The name of the elements
  * @return The child elements with the specified name
  */
-- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForName:
-    (OFString *)elementName;
+- (OFArray OF_GENERIC(OFXMLElement *) *)
+    elementsForName: (OFString *)elementName;
 
 /**
  * @brief Returns the first child element with the specified name and namespace.
@@ -413,6 +403,34 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFArray OF_GENERIC(OFXMLElement *) *)
     elementsForName: (OFString *)elementName
 	  namespace: (nullable OFString *)elementNS;
+
+/**
+ * @brief Returns an OFString representing the OFXMLElement as an XML string
+ *	  with the specified indentation per level.
+ *
+ * @param indentation The indentation per level
+ * @return An OFString representing the OFXMLNode as an XML string with
+ *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
+ */
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
+
+/**
+ * @brief Returns an OFString representing the OFXMLElement as an XML string
+ *	  with the specified default namespace and indentation per level.
+ *
+ * @param defaultNS The default namespace
+ * @param indentation The indentation per level
+ * @return An OFString representing the OFXMLNode as an XML string with
+ *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
+ */
+- (OFString *)XMLStringWithDefaultNamespace: (OFString *)defaultNS
+				indentation: (unsigned int)indentation;
 @end
 
 OF_ASSUME_NONNULL_END

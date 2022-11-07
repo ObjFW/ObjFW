@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_prefix;
 	OFXMLParser *_parser;
+	OF_RESERVE_IVARS(OFUnboundPrefixException, 4)
 }
 
 /**

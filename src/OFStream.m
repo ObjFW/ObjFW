@@ -674,8 +674,8 @@
 	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
 }
 
-- (OFString *)tryReadTillDelimiter: (OFString *)delimiter
-			  encoding: (OFStringEncoding)encoding
+- (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
+			   encoding: (OFStringEncoding)encoding
 {
 	const char *delimiterCString;
 	size_t j, delimiterLength, pageSize, bufferLength;
@@ -836,29 +836,29 @@
 }
 
 
-- (OFString *)readTillDelimiter: (OFString *)delimiter
+- (OFString *)readUntilDelimiter: (OFString *)delimiter
 {
-	return [self readTillDelimiter: delimiter
-			      encoding: OFStringEncodingUTF8];
+	return [self readUntilDelimiter: delimiter
+			       encoding: OFStringEncodingUTF8];
 }
 
-- (OFString *)readTillDelimiter: (OFString *)delimiter
-		       encoding: (OFStringEncoding)encoding
+- (OFString *)readUntilDelimiter: (OFString *)delimiter
+			encoding: (OFStringEncoding)encoding
 {
 	OFString *ret = nil;
 
-	while ((ret = [self tryReadTillDelimiter: delimiter
-					encoding: encoding]) == nil)
+	while ((ret = [self tryReadUntilDelimiter: delimiter
+					 encoding: encoding]) == nil)
 		if (self.atEndOfStream)
 			return nil;
 
 	return ret;
 }
 
-- (OFString *)tryReadTillDelimiter: (OFString *)delimiter
+- (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
 {
-	return [self tryReadTillDelimiter: delimiter
-				 encoding: OFStringEncodingUTF8];
+	return [self tryReadUntilDelimiter: delimiter
+				  encoding: OFStringEncodingUTF8];
 }
 
 - (bool)flushWriteBuffer

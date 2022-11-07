@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A representation of an attribute of an XML element as an object.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLAttribute: OFXMLNode
 {
 #if defined(OF_XML_ELEMENT_M) || defined(OF_XML_PARSER_M)
@@ -31,7 +32,6 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFString *_name, *_Nullable _namespace, *_stringValue;
 	bool _useDoubleQuotes;
-	OF_RESERVE_IVARS(OFXMLAttribute, 4)
 }
 
 /**
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (nullable OFString *)nameSpace
-		 stringValue: (OFString *)stringValue;
+		 stringValue: (OFString *)stringValue OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end

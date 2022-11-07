@@ -405,7 +405,7 @@ objc_initializeClass(Class class)
 }
 
 static void
-processLoadQueue()
+processLoadQueue(void)
 {
 	for (size_t i = 0; i < loadQueueCount; i++) {
 		setUpClass(loadQueue[i]);
@@ -780,6 +780,10 @@ addMethod(Class class, SEL selector, IMP implementation,
 }
 
 Method
+#if defined(__clang__) && __clang_major__ == 3 && __clang_minor__ <= 7
+/* Work around an ICE in Clang 3.7.0 on Windows/x86 */
+__attribute__((__optnone__))
+#endif
 class_getInstanceMethod(Class class, SEL selector)
 {
 	Method method;

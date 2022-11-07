@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_namespace;
 	OFXMLElement *_element;
+	OF_RESERVE_IVARS(OFUnboundNamespaceException, 4)
 }
 
 /**

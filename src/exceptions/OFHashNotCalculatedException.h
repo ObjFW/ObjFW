@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFHashNotCalculatedException: OFException
 {
 	id _object;
+	OF_RESERVE_IVARS(OFHashNotCalculatedException, 4)
 }
 
 /**

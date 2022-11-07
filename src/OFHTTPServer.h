@@ -106,16 +106,16 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The host on which the HTTP server will listen.
  *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
+ * @throw OFAlreadyConnectedException The host could not be set because
+ *				      @ref start had already been called
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
 /**
  * @brief The port on which the HTTP server will listen.
  *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
+ * @throw OFAlreadyConnectedException The port could not be set because
+ *				      @ref start had already been called
  */
 @property (nonatomic) uint16_t port;
 
@@ -134,8 +134,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * For maximum CPU utilization, set this to `[OFSystemInfo numberOfCPUs] + 1`.
  *
- * Setting this after @ref start has been called raises an
- * @ref OFAlreadyConnectedException.
+ * @throw OFAlreadyConnectedException The number of threads could not be set
+ *				      because @ref start had already been called
  */
 @property (nonatomic) size_t numberOfThreads;
 #endif
@@ -157,6 +157,8 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Starts the HTTP server in the current thread's run loop.
+ *
+ * @throw OFAlreadyConnectedException The server had already been started
  */
 - (void)start;
 

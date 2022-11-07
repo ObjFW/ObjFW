@@ -40,7 +40,7 @@ static OFDictionary *operatorPrecedences = nil;
 #ifndef OF_AMIGAOS
 static void
 parseLocale(char *locale, OFStringEncoding *encoding,
-    OFString **language, OFString **territory)
+    OFString **languageCode, OFString **countryCode)
 {
 	locale = OFStrDup(locale);
 
@@ -65,18 +65,19 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 			}
 		}
 
-		/* Territory */
+		/* Country code */
 		if ((tmp = strrchr(locale, '_')) != NULL) {
 			*tmp++ = '\0';
 
-			if (territory != NULL)
-				*territory = [OFString stringWithCString: tmp
-								encoding: enc];
+			if (countryCode != NULL)
+				*countryCode = [OFString
+				    stringWithCString: tmp
+					     encoding: enc];
 		}
 
-		if (language != NULL)
-			*language = [OFString stringWithCString: locale
-						       encoding: enc];
+		if (languageCode != NULL)
+			*languageCode = [OFString stringWithCString: locale
+							   encoding: enc];
 	} @finally {
 		OFFreeMemory(locale);
 	}
@@ -303,8 +304,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 }
 
 @implementation OFLocale
-@synthesize language = _language, territory = _territory, encoding = _encoding;
-@synthesize decimalPoint = _decimalPoint;
+@synthesize languageCode = _languageCode, countryCode = _countryCode;
+@synthesize encoding = _encoding, decimalSeparator = _decimalSeparator;
 
 + (void)initialize
 {
@@ -340,14 +341,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale;
 }
 
-+ (OFString *)language
++ (OFString *)languageCode
 {
-	return currentLocale.language;
+	return currentLocale.languageCode;
 }
 
-+ (OFString *)territory
++ (OFString *)countryCode
 {
-	return currentLocale.territory;
+	return currentLocale.countryCode;
 }
 
 + (OFStringEncoding)encoding
@@ -355,15 +356,15 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.encoding;
 }
 
-+ (OFString *)decimalPoint
++ (OFString *)decimalSeparator
 {
-	return currentLocale.decimalPoint;
+	return currentLocale.decimalSeparator;
 }
 
 #ifdef OF_HAVE_FILES
-+ (void)addLanguageDirectory: (OFString *)path
++ (void)addLocalizationDirectory: (OFString *)path
 {
-	[currentLocale addLanguageDirectory: path];
+	[currentLocale addLocalizationDirectory: path];
 }
 #endif
 
@@ -380,11 +381,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			    exceptionWithClass: self.class];
 
 		_encoding = OFStringEncodingUTF8;
-		_decimalPoint = @".";
+		_decimalSeparator = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
 		if ((locale = setlocale(LC_ALL, "")) != NULL)
-			_decimalPoint = [[OFString alloc]
+			_decimalSeparator = [[OFString alloc]
 			    initWithCString: localeconv()->decimal_point
 				   encoding: _encoding];
 
@@ -398,10 +399,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			void *pool = objc_autoreleasePoolPush();
 
 			parseLocale(messagesLocale, &_encoding,
-			    &_language, &_territory);
+			    &_languageCode, &_countryCode);
 
-			[_language retain];
-			[_territory retain];
+			[_languageCode retain];
+			[_countryCode retain];
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -439,31 +440,31 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		 * Get it via localeconv() instead of from the Locale struct,
 		 * to make sure we and printf etc. have the same expectations.
 		 */
-		_decimalPoint = [[OFString alloc]
+		_decimalSeparator = [[OFString alloc]
 		    initWithCString: localeconv()->decimal_point
 			   encoding: _encoding];
 
 		_localizedStrings = [[OFMutableArray alloc] init];
 
 		if (GetVar("Language", buffer, sizeof(buffer), 0) > 0)
-			_language = [[OFString alloc]
+			_languageCode = [[OFString alloc]
 			    initWithCString: buffer
 				   encoding: _encoding];
 
 		if ((locale = OpenLocale(NULL)) != NULL) {
 			@try {
-				uint32_t territory;
+				uint32_t countryCode;
 				size_t length;
 
-				territory =
+				countryCode =
 				    OFToBigEndian32(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
-					if (((char *)&territory)[length] == 0)
+					if (((char *)&countryCode)[length] == 0)
 						break;
 
-				_territory = [[OFString alloc]
-				    initWithCString: (char *)&territory
+				_countryCode = [[OFString alloc]
+				    initWithCString: (char *)&countryCode
 					   encoding: _encoding
 					     length: length];
 			} @finally {
@@ -485,27 +486,27 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 - (void)dealloc
 {
-	[_language release];
-	[_territory release];
-	[_decimalPoint release];
+	[_languageCode release];
+	[_countryCode release];
+	[_decimalSeparator release];
 	[_localizedStrings release];
 
 	[super dealloc];
 }
 
 #ifdef OF_HAVE_FILES
-- (void)addLanguageDirectory: (OFString *)path
+- (void)addLocalizationDirectory: (OFString *)path
 {
 	void *pool;
-	OFString *mapPath, *language, *territory, *languageFile;
+	OFString *mapPath, *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
-	if (_language == nil)
+	if (_languageCode == nil)
 		return;
 
 	pool = objc_autoreleasePoolPush();
 
-	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
+	mapPath = [path stringByAppendingPathComponent: @"localizations.json"];
 	@try {
 		map = [[OFString stringWithContentsOfFile: mapPath]
 		     objectByParsingJSON];
@@ -514,26 +515,28 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		return;
 	}
 
-	language = _language.lowercaseString;
-	territory = _territory.lowercaseString;
+	languageCode = _languageCode.lowercaseString;
+	countryCode = _countryCode.lowercaseString;
 
-	if (territory == nil)
-		territory = @"";
+	if (countryCode == nil)
+		countryCode = @"";
 
-	languageFile = [[map objectForKey: language] objectForKey: territory];
-	if (languageFile == nil)
-		languageFile = [[map objectForKey: language] objectForKey: @""];
+	localizationFile = [[map objectForKey: languageCode]
+	    objectForKey: countryCode];
+	if (localizationFile == nil)
+		localizationFile = [[map objectForKey: languageCode]
+		    objectForKey: @""];
 
-	if (languageFile == nil) {
+	if (localizationFile == nil) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	languageFile = [path stringByAppendingPathComponent:
-	    [languageFile stringByAppendingString: @".json"]];
+	localizationFile = [path stringByAppendingPathComponent:
+	    [localizationFile stringByAppendingString: @".json"]];
 
 	[_localizedStrings addObject: [[OFString stringWithContentsOfFile:
-	    languageFile] objectByParsingJSON]];
+	    localizationFile] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }

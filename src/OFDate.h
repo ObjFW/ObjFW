@@ -171,6 +171,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string describing the date
  * @param format The format of the string describing the date
  * @return A new, autoreleased OFDate with the specified date and time
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 + (instancetype)dateWithDateString: (OFString *)string
 			    format: (OFString *)format;
@@ -188,6 +189,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string describing the date
  * @param format The format of the string describing the date
  * @return A new, autoreleased OFDate with the specified date and time
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 + (instancetype)dateWithLocalDateString: (OFString *)string
 				 format: (OFString *)format;
@@ -245,6 +247,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string describing the date
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format;
@@ -263,6 +266,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string describing the date
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (instancetype)initWithLocalDateString: (OFString *)string
 				 format: (OFString *)format;
@@ -282,6 +286,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (OFString *)dateStringWithFormat: (OFConstantString *)format;
 
@@ -292,6 +297,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (OFString *)localDateStringWithFormat: (OFConstantString *)format;
 

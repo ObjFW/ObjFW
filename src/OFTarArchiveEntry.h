@@ -14,12 +14,14 @@
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
 @class OFDate;
+@class OFNumber;
 
 /**
  * @brief The type of the archive entry.
@@ -48,49 +50,20 @@ typedef enum {
  *
  * @brief A class which represents an entry of a tar archive.
  */
-@interface OFTarArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFTarArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFString *_fileName;
-	unsigned long _mode;
-	unsigned long long _size;
-	unsigned long _UID, _GID;
+	OFNumber *_POSIXPermissions, *_ownerAccountID, *_groupOwnerAccountID;
+	unsigned long long _compressedSize, _uncompressedSize;
 	OFDate *_modificationDate;
 	OFTarArchiveEntryType _type;
 	OFString *_Nullable _targetFileName;
-	OFString *_Nullable _owner, *_Nullable _group;
+	OFString *_Nullable _ownerAccountName;
+	OFString *_Nullable _groupOwnerAccountName;
 	unsigned long _deviceMajor, _deviceMinor;
 	OF_RESERVE_IVARS(OFTarArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
-
-/**
- * @brief The mode of the entry.
- */
-@property (readonly, nonatomic) unsigned long mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property (readonly, nonatomic) unsigned long UID;
-
-/**
- * @brief The GID of the group.
- */
-@property (readonly, nonatomic) unsigned long GID;
-
-/**
- * @brief The size of the file.
- */
-@property (readonly, nonatomic) unsigned long long size;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /**
  * @brief The type of the archive entry.
@@ -106,16 +79,6 @@ typedef enum {
     OFString *targetFileName;
 
 /**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
-
-/**
  * @brief The device major (if the file is a device).
  */
 @property (readonly, nonatomic) unsigned long deviceMajor;
@@ -125,24 +88,7 @@ typedef enum {
  */
 @property (readonly, nonatomic) unsigned long deviceMinor;
 
-/**
- * @brief Creates a new OFTarArchiveEntry with the specified file name.
- *
- * @param fileName The file name for the OFTarArchiveEntry
- * @return A new, autoreleased OFTarArchiveEntry
- */
-+ (instancetype)entryWithFileName: (OFString *)fileName;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated OFTarArchiveEntry with the specified
- *	  file name.
- *
- * @param fileName The file name for the OFTarArchiveEntry
- * @return An initialized OFTarArchiveEntry
- */
-- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 OF_ASSUME_NONNULL_END

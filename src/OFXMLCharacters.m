@@ -108,20 +108,9 @@
 	return _characters.stringByXMLEscaping;
 }
 
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return _characters.stringByXMLEscaping;
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	return _characters.stringByXMLEscaping;
-}
-
 - (OFString *)description
 {
-	return _characters.stringByXMLEscaping;
+	return self.XMLString;
 }
 
 - (OFXMLElement *)XMLElementBySerializing

@@ -28,7 +28,7 @@
 #import "OFData.h"
 #import "OFSocket+Private.h"
 
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_WII
@@ -74,8 +74,9 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	bool found;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 	FDs = self->_FDs.mutableItems;
 	count = self->_FDs.count;
@@ -110,8 +111,9 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	size_t nFDs;
 
 	if (fd < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: EBADF];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
 
 	FDs = self->_FDs.mutableItems;
 	nFDs = self->_FDs.count;
@@ -185,8 +187,9 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1));
 
 	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	for (size_t i = 0; i < nFDs; i++) {
 		assert(FDs[i].fd <= _maxFD);

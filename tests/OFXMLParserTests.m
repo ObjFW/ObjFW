@@ -275,7 +275,7 @@ enum EventType {
 
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data
+				  text: (OFString *)text
 {
 	[self	    parser: parser
 	    didCreateEvent: eventTypeProcessingInstruction
@@ -283,7 +283,7 @@ enum EventType {
 		    prefix: nil
 		 namespace: nil
 		attributes: nil
-		    string: data];
+		    string: text];
 }
 
 -    (void)parser: (OFXMLParser *)parser

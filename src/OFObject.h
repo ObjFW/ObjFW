@@ -110,7 +110,7 @@ typedef struct OF_BOXABLE {
  * @return An OFRangeith the specified start and length
  */
 static OF_INLINE OFRange OF_CONST_FUNC
-OFRangeMake(size_t start, size_t length)
+OFMakeRange(size_t start, size_t length)
 {
 	OFRange range = { start, length };
 
@@ -125,7 +125,7 @@ OFRangeMake(size_t start, size_t length)
  * @return Whether the two ranges are equal
  */
 static OF_INLINE bool
-OFRangeEqual(OFRange range1, OFRange range2)
+OFEqualRanges(OFRange range1, OFRange range2)
 {
 	if (range1.location != range2.location)
 		return false;
@@ -161,7 +161,7 @@ typedef struct OF_BOXABLE {
  * @return An OFPoint with the specified coordinates
  */
 static OF_INLINE OFPoint OF_CONST_FUNC
-OFPointMake(float x, float y)
+OFMakePoint(float x, float y)
 {
 	OFPoint point = { x, y };
 
@@ -176,7 +176,7 @@ OFPointMake(float x, float y)
  * @return Whether the two points are equal
  */
 static OF_INLINE bool
-OFPointEqual(OFPoint point1, OFPoint point2)
+OFEqualPoints(OFPoint point1, OFPoint point2)
 {
 	if (point1.x != point2.x)
 		return false;
@@ -207,7 +207,7 @@ typedef struct OF_BOXABLE {
  * @return An OFSize with the specified width and height
  */
 static OF_INLINE OFSize OF_CONST_FUNC
-OFSizeMake(float width, float height)
+OFMakeSize(float width, float height)
 {
 	OFSize size = { width, height };
 
@@ -222,7 +222,7 @@ OFSizeMake(float width, float height)
  * @return Whether the two sizes are equal
  */
 static OF_INLINE bool
-OFSizeEqual(OFSize size1, OFSize size2)
+OFEqualSizes(OFSize size1, OFSize size2)
 {
 	if (size1.width != size2.width)
 		return false;
@@ -255,11 +255,11 @@ typedef struct OF_BOXABLE {
  * @return An OFRect with the specified origin and size
  */
 static OF_INLINE OFRect OF_CONST_FUNC
-OFRectMake(float x, float y, float width, float height)
+OFMakeRect(float x, float y, float width, float height)
 {
 	OFRect rect = {
-		OFPointMake(x, y),
-		OFSizeMake(width, height)
+		OFMakePoint(x, y),
+		OFMakeSize(width, height)
 	};
 
 	return rect;
@@ -273,12 +273,12 @@ OFRectMake(float x, float y, float width, float height)
  * @return Whether the two rectangles are equal
  */
 static OF_INLINE bool
-OFRectEqual(OFRect rect1, OFRect rect2)
+OFEqualRects(OFRect rect1, OFRect rect2)
 {
-	if (!OFPointEqual(rect1.origin, rect2.origin))
+	if (!OFEqualPoints(rect1.origin, rect2.origin))
 		return false;
 
-	if (!OFSizeEqual(rect1.size, rect2.size))
+	if (!OFEqualSizes(rect1.size, rect2.size))
 		return false;
 
 	return true;
@@ -343,7 +343,7 @@ OF3DVectorEqual(OF3DVector vec1, OF3DVector vec2)
  * @param byte The byte to add to the hash
  */
 static OF_INLINE void
-OFHashAdd(unsigned long *_Nonnull hash, unsigned char byte)
+OFHashAddByte(unsigned long *_Nonnull hash, unsigned char byte)
 {
 	uint32_t tmp = (uint32_t)*hash;
 
@@ -363,10 +363,10 @@ OFHashAdd(unsigned long *_Nonnull hash, unsigned char byte)
 static OF_INLINE void
 OFHashAddHash(unsigned long *_Nonnull hash, unsigned long otherHash)
 {
-	OFHashAdd(hash, (otherHash >> 24) & 0xFF);
-	OFHashAdd(hash, (otherHash >> 16) & 0xFF);
-	OFHashAdd(hash, (otherHash >>  8) & 0xFF);
-	OFHashAdd(hash, otherHash & 0xFF);
+	OFHashAddByte(hash, (otherHash >> 24) & 0xFF);
+	OFHashAddByte(hash, (otherHash >> 16) & 0xFF);
+	OFHashAddByte(hash, (otherHash >>  8) & 0xFF);
+	OFHashAddByte(hash, otherHash & 0xFF);
 }
 
 /**
@@ -414,7 +414,7 @@ static const size_t OFNotFound = SIZE_MAX;
 - (nullable Class)superclass;
 
 /**
- * @brief Returns a 32 bit hash for the object.
+ * @brief Returns a hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -423,7 +423,7 @@ static const size_t OFNotFound = SIZE_MAX;
  *	    to behave in a way compatible to your reimplementation of this
  *	    method!
  *
- * @return A 32 bit hash for the object
+ * @return A hash for the object
  */
 - (unsigned long)hash;
 
@@ -442,16 +442,9 @@ static const size_t OFNotFound = SIZE_MAX;
 - (bool)isProxy;
 
 /**
- * @brief Returns whether the object allows weak references.
+ * @brief Returns a boolean whether the object is of the specified kind.
  *
- * @return Whether the object allows weak references
- */
-- (bool)allowsWeakReference;
-
-/**
- * @brief Returns a boolean whether the object of the specified kind.
- *
- * @param class_ The class whose kind is checked
+ * @param class_ The class for which the receiver is checked
  * @return A boolean whether the object is of the specified kind
  */
 - (bool)isKindOfClass: (Class)class_;
@@ -605,6 +598,13 @@ static const size_t OFNotFound = SIZE_MAX;
 - (instancetype)self;
 
 /**
+ * @brief Returns whether the object allows a weak reference.
+ *
+ * @return Whether the object allows a weak references
+ */
+- (bool)allowsWeakReference;
+
+/**
  * @brief Retain a weak reference to this object.
  *
  * @return Whether a weak reference to this object has been retained
@@ -702,10 +702,12 @@ OF_ROOT_CLASS
  * @brief Allocates memory for an instance of the class and sets up the memory
  *	  pool for the object.
  *
- * This method will never return `nil`, instead, it will throw an
- * @ref OFAllocFailedException.
+ * This method will never return `nil`.
  *
  * @return The allocated object
+ * @throw OFAllocFailedException There was not enough memory to allocate the
+ *				 object
+ * @throw OFInitializationFailedException The instance could not be constructed
  */
 + (instancetype)alloc;
 
@@ -1274,6 +1276,7 @@ OF_ROOT_CLASS
  *	    returns!
  *
  * @param selector The selector not understood by the receiver
+ * @throw OFNotImplementedException
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
@@ -1344,13 +1347,13 @@ extern "C" {
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param count The number of items to allocate
  * @param size The size of each item to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1361,13 +1364,13 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param size The size of each item to allocate
  * @param count The number of items to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_WARN_UNUSED_RESULT;
@@ -1380,13 +1383,14 @@ extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param pointer A pointer to the already allocated memory
  * @param size The size of each item to resize to
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
+ * @throw OFOutOfMemoryException The reallocation failed due to not enough
+ *				 memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;

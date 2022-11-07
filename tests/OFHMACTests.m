@@ -51,9 +51,8 @@ static const uint8_t SHA512Digest[] =
 - (void)HMACTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
-	OFStream *file = [[OFURLHandler handlerForURL: URL]
-	    openItemAtURL: URL mode: @"r"];
+	OFURI *URI = [OFURI URIWithString: @"embedded:testfile.bin"];
+	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
 	OFHMAC *HMACMD5, *HMACSHA1, *HMACRMD160;
 	OFHMAC *HMACSHA256, *HMACSHA384, *HMACSHA512;
 

@@ -56,6 +56,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path to the plugin file. The suffix is appended
  *	       automatically.
  * @return An new, autoreleased OFPlugin
+ * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
 + (instancetype)pluginWithPath: (OFString *)path;
 
@@ -66,6 +67,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path to the plugin file. The suffix is appended
  *	       automatically.
  * @return An initialized OFPlugin
+ * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
 - (instancetype)initWithPath: (OFString *)path;
 
