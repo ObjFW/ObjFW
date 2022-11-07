@@ -42,12 +42,13 @@
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
 #import "OFXMLElement.h"
 
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -56,7 +57,6 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -133,9 +133,9 @@ _references_to_categories_of_OFString(void)
 #ifdef OF_HAVE_FILES
 	_OFString_PathAdditions_reference = 1;
 #endif
+	_OFString_PercentEncoding_reference = 1;
 	_OFString_PropertyListParsing_reference = 1;
 	_OFString_Serialization_reference = 1;
-	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
 }
@@ -582,15 +582,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL];
+	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL
+	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI
 						      encoding: encoding];
 }
 
@@ -796,15 +796,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
+	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfURL: URL
+	return [[[self alloc] initWithContentsOfURI: URI
 					   encoding: encoding] autorelease];
 }
 
@@ -994,29 +994,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding
 {
-	char *tmp;
-	unsigned long long fileSize;
+	char *buffer = NULL;
+	OFStreamOffset fileSize;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = nil;
+		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
 
-		@try {
-			fileSize = [[OFFileManager defaultManager]
-			    attributesOfItemAtPath: path].fileSize;
-		} @catch (OFRetrieveItemAttributesFailedException *e) {
-			@throw [OFOpenItemFailedException
-			    exceptionWithPath: path
-					 mode: @"r"
-					errNo: e.errNo];
-		}
-
-		objc_autoreleasePoolPop(pool);
-
-# if ULLONG_MAX > SIZE_MAX
-		if (fileSize > SIZE_MAX)
+		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
-#endif
 
 		/*
 		 * We need one extra byte for the terminating zero if we want
@@ -1025,40 +1012,36 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		if (SIZE_MAX - (size_t)fileSize < 1)
 			@throw [OFOutOfRangeException exception];
 
-		tmp = OFAllocMemory((size_t)fileSize + 1, 1);
-		@try {
-			file = [[OFFile alloc] initWithPath: path mode: @"r"];
-			[file readIntoBuffer: tmp
-				 exactLength: (size_t)fileSize];
-		} @catch (id e) {
-			OFFreeMemory(tmp);
-			@throw e;
-		} @finally {
-			[file release];
-		}
+		[file seekToOffset: 0 whence: OFSeekSet];
 
-		tmp[(size_t)fileSize] = '\0';
+		buffer = OFAllocMemory((size_t)fileSize + 1, 1);
+		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
+		buffer[(size_t)fileSize] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
+		OFFreeMemory(buffer);
 		[self release];
+
 		@throw e;
 	}
 
 	if (encoding == OFStringEncodingUTF8) {
 		@try {
-			self = [self initWithUTF8StringNoCopy: tmp
+			self = [self initWithUTF8StringNoCopy: buffer
 						       length: (size_t)fileSize
 						 freeWhenDone: true];
 		} @catch (id e) {
-			OFFreeMemory(tmp);
+			OFFreeMemory(buffer);
 			@throw e;
 		}
 	} else {
 		@try {
-			self = [self initWithCString: tmp
+			self = [self initWithCString: buffer
 					    encoding: encoding
 					      length: (size_t)fileSize];
 		} @finally {
-			OFFreeMemory(tmp);
+			OFFreeMemory(buffer);
 		}
 	}
 
@@ -1066,20 +1049,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return [self initWithContentsOfURL: URL
+	return [self initWithContentsOfURI: URI
 				  encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	@try {
-		data = [OFData dataWithContentsOfURL: URL];
+		data = [OFData dataWithContentsOfURI: URI];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1353,8 +1336,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		return length;
 #endif
 	default:
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		@throw [OFInvalidArgumentException exception];
 	}
 }
 
@@ -1435,7 +1417,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 		break;
 	default:
-		@throw [OFInvalidEncodingException exception];
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	@try {
@@ -1506,7 +1488,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	case OFStringEncodingKOI8U:
 		return self.length;
 	default:
-		@throw [OFInvalidEncodingException exception];
+		@throw [OFInvalidArgumentException exception];
 	}
 }
 
@@ -1685,9 +1667,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	for (size_t i = 0; i < length; i++) {
 		const OFUnichar c = characters[i];
 
-		OFHashAdd(&hash, (c & 0xFF0000) >> 16);
-		OFHashAdd(&hash, (c & 0x00FF00) >> 8);
-		OFHashAdd(&hash, c & 0x0000FF);
+		OFHashAddByte(&hash, (c & 0xFF0000) >> 16);
+		OFHashAddByte(&hash, (c & 0x00FF00) >> 8);
+		OFHashAddByte(&hash, c & 0x0000FF);
 	}
 
 	OFHashFinalize(&hash);
@@ -1756,17 +1738,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			if ((!OFASCIIIsAlpha(cString[0]) &&
 			    cString[0] != '_' && cString[0] != '$') ||
 			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
-				[JSON prependString: @"\""];
+				[JSON insertString: @"\"" atIndex: 0];
 				[JSON appendString: @"\""];
 			}
 		} else {
-			[JSON prependString: @"\""];
+			[JSON insertString: @"\"" atIndex: 0];
 			[JSON appendString: @"\""];
 		}
 	} else {
 		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\n"];
 
-		[JSON prependString: @"\""];
+		[JSON insertString: @"\"" atIndex: 0];
 		[JSON appendString: @"\""];
 	}
 
@@ -1820,7 +1802,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	return [self rangeOfString: string
 			   options: 0
-			     range: OFRangeMake(0, self.length)];
+			     range: OFMakeRange(0, self.length)];
 }
 
 - (OFRange)rangeOfString: (OFString *)string
@@ -1828,7 +1810,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	return [self rangeOfString: string
 			   options: options
-			     range: OFRangeMake(0, self.length)];
+			     range: OFMakeRange(0, self.length)];
 }
 
 - (OFRange)rangeOfString: (OFString *)string
@@ -1841,10 +1823,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	size_t searchLength;
 
 	if ((searchLength = string.length) == 0)
-		return OFRangeMake(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return OFRangeMake(OFNotFound, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	if (range.length > SIZE_MAX / sizeof(OFUnichar))
 		@throw [OFOutOfRangeException exception];
@@ -1862,7 +1844,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(OFUnichar)) == 0) {
 					objc_autoreleasePoolPop(pool);
-					return OFRangeMake(range.location + i,
+					return OFMakeRange(range.location + i,
 					    searchLength);
 				}
 
@@ -1876,7 +1858,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(OFUnichar)) == 0) {
 					objc_autoreleasePoolPop(pool);
-					return OFRangeMake(range.location + i,
+					return OFMakeRange(range.location + i,
 					    searchLength);
 				}
 			}
@@ -1887,14 +1869,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	objc_autoreleasePoolPop(pool);
 
-	return OFRangeMake(OFNotFound, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
 	return [self indexOfCharacterFromSet: characterSet
 				     options: 0
-				       range: OFRangeMake(0, self.length)];
+				       range: OFMakeRange(0, self.length)];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
@@ -1902,7 +1884,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	return [self indexOfCharacterFromSet: characterSet
 				     options: options
-				       range: OFRangeMake(0, self.length)];
+				       range: OFMakeRange(0, self.length)];
 }
 
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
@@ -1981,12 +1963,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (OFString *)substringFromIndex: (size_t)idx
 {
-	return [self substringWithRange: OFRangeMake(idx, self.length - idx)];
+	return [self substringWithRange: OFMakeRange(idx, self.length - idx)];
 }
 
 - (OFString *)substringToIndex: (size_t)idx
 {
-	return [self substringWithRange: OFRangeMake(0, idx)];
+	return [self substringWithRange: OFMakeRange(0, idx)];
 }
 
 - (OFString *)substringWithRange: (OFRange)range
@@ -2036,14 +2018,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	OFMutableString *new = [OFMutableString stringWithString: self];
 	[new appendFormat: format arguments: arguments];
-	[new makeImmutable];
-	return new;
-}
-
-- (OFString *)stringByPrependingString: (OFString *)string
-{
-	OFMutableString *new = [[string mutableCopy] autorelease];
-	[new appendString: self];
 	[new makeImmutable];
 	return new;
 }
@@ -2132,7 +2106,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		[self getCharacters: tmp inRange: OFRangeMake(0, prefixLength)];
+		[self getCharacters: tmp inRange: OFMakeRange(0, prefixLength)];
 
 		hasPrefix = (memcmp(tmp, prefix.characters,
 		    prefixLength * sizeof(OFUnichar)) == 0);
@@ -2162,7 +2136,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		void *pool = objc_autoreleasePoolPush();
 
 		[self getCharacters: tmp
-			    inRange: OFRangeMake(length - suffixLength,
+			    inRange: OFMakeRange(length - suffixLength,
 					 suffixLength)];
 
 		suffixCharacters = suffix.characters;
@@ -2222,14 +2196,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			continue;
 
 		component = [self substringWithRange:
-		    OFRangeMake(last, i - last)];
+		    OFMakeRange(last, i - last)];
 		if (!skipEmpty || component.length > 0)
 			[array addObject: component];
 
 		i += delimiterLength - 1;
 		last = i + 1;
 	}
-	component = [self substringWithRange: OFRangeMake(last, length - last)];
+	component = [self substringWithRange: OFMakeRange(last, length - last)];
 	if (!skipEmpty || component.length > 0)
 		[array addObject: component];
 
@@ -2267,7 +2241,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		    @selector(characterIsMember:), characters[i])) {
 			if (!skipEmpty || i != last) {
 				OFString *component = [self substringWithRange:
-				    OFRangeMake(last, i - last)];
+				    OFMakeRange(last, i - last)];
 				[array addObject: component];
 			}
 
@@ -2276,7 +2250,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 	if (!skipEmpty || length != last) {
 		OFString *component = [self substringWithRange:
-		    OFRangeMake(last, length - last)];
+		    OFMakeRange(last, length - last)];
 		[array addObject: component];
 	}
 
@@ -2292,7 +2266,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [self longLongValueWithBase: 10];
 }
 
-- (long long)longLongValueWithBase: (int)base
+- (long long)longLongValueWithBase: (unsigned char)base
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
@@ -2368,7 +2342,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [self unsignedLongLongValueWithBase: 10];
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
@@ -2459,10 +2433,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtof_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocale decimalPoint];
+	OFString *decimalSeparator = [OFLocale decimalSeparator];
 	const char *UTF8String = [self
 	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalPoint].UTF8String;
+				      withString: decimalSeparator].UTF8String;
 #endif
 	char *endPtr = NULL;
 	float value;
@@ -2512,10 +2486,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtod_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocale decimalPoint];
+	OFString *decimalSeparator = [OFLocale decimalSeparator];
 	const char *UTF8String = [self
 	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalPoint].UTF8String;
+				      withString: decimalSeparator].UTF8String;
 #endif
 	char *endPtr = NULL;
 	double value;
@@ -2550,7 +2524,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	buffer = OFAllocMemory(length, sizeof(OFUnichar));
 	@try {
-		[self getCharacters: buffer inRange: OFRangeMake(0, length)];
+		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 
 		ret = [[OFData dataWithItemsNoCopy: buffer
 					     count: length
@@ -2658,7 +2632,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	buffer = OFAllocMemory(length + 1, sizeof(OFChar32));
 	@try {
-		[self getCharacters: buffer inRange: OFRangeMake(0, length)];
+		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 		buffer[length] = 0;
 
 		if (byteOrder != OFByteOrderNative)
@@ -2750,21 +2724,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
-	[self writeToURL: URL encoding: OFStringEncodingUTF8];
+	[self writeToURI: URI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
 	OFStream *stream;
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	stream = [URLHandler openItemAtURL: URL mode: @"w"];
+	stream = [OFURIHandler openItemAtURI: URI mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);
@@ -2790,7 +2760,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			void *pool2 = objc_autoreleasePoolPush();
 
 			block([self substringWithRange:
-			    OFRangeMake(last, i - last)], &stop);
+			    OFMakeRange(last, i - last)], &stop);
 			last = i + 1;
 
 			objc_autoreleasePoolPop(pool2);
@@ -2800,7 +2770,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 
 	if (!stop)
-		block([self substringWithRange: OFRangeMake(last, i - last)],
+		block([self substringWithRange: OFMakeRange(last, i - last)],
 		    &stop);
 
 	objc_autoreleasePoolPop(pool);

@@ -99,7 +99,7 @@ typedef enum {
 	/** KOI8-U */
 	OFStringEncodingKOI8U,
 	/** Try to automatically detect the encoding */
-	OFStringEncodingAutodetect = 0xFF
+	OFStringEncodingAutodetect = -1
 } OFStringEncoding;
 
 /**
@@ -136,7 +136,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #ifdef __OBJC__
 @class OFArray OF_GENERIC(ObjectType);
 @class OFCharacterSet;
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFString OFString.h ObjFW/OFString.h
@@ -212,16 +212,16 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief The float value of the string as a float.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
+ * @throw OFInvalidFormatException The string cannot be parsed as a `float`
+ * @throw OFOutOfRangeException The value cannot be represented as a `float`
  */
 @property (readonly, nonatomic) float floatValue;
 
 /**
  * @brief The double value of the string as a double.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
+ * @throw OFInvalidFormatException The string cannot be parsed as a `double`
+ * @throw OFOutOfRangeException The value cannot be represented as a `double`
  */
 @property (readonly, nonatomic) double doubleValue;
 
@@ -231,6 +231,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is *not* null-terminated.
  */
 @property (readonly, nonatomic) const OFUnichar *characters
     OF_RETURNS_INNER_POINTER;
@@ -241,6 +243,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  */
 @property (readonly, nonatomic) const OFChar16 *UTF16String
     OF_RETURNS_INNER_POINTER;
@@ -256,6 +260,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  */
 @property (readonly, nonatomic) const OFChar32 *UTF32String
     OF_RETURNS_INNER_POINTER;
@@ -308,6 +314,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 + (instancetype)stringWithUTF8String: (const char *)UTF8String;
 
@@ -318,6 +325,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 + (instancetype)stringWithUTF8String: (const char *)UTF8String
 			      length: (size_t)UTF8StringLength;
@@ -335,6 +343,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param freeWhenDone Whether to free the C string when the OFString gets
  *		       deallocated
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 			      freeWhenDone: (bool)freeWhenDone;
@@ -353,6 +362,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param freeWhenDone Whether to free the C string when the OFString gets
  *		       deallocated
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 				    length: (size_t)UTF8StringLength
@@ -364,6 +374,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param cString A C string to initialize the OFString with
  * @param encoding The encoding of the C string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding;
@@ -376,6 +387,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding of the C string
  * @param cStringLength The length of the C string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding
@@ -387,6 +399,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param data OFData with the contents of the string
  * @param encoding The encoding in which the string is stored in the OFData
  * @return An new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 + (instancetype)stringWithData: (OFData *)data
 		      encoding: (OFStringEncoding)encoding;
@@ -413,8 +426,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Creates a new OFString from a UTF-16 encoded string.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string;
 
@@ -422,9 +436,10 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-16 encoded string with the
  *	  specified length.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length;
@@ -433,9 +448,10 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-16 encoded string, assuming the
  *	  specified byte order if no byte order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			    byteOrder: (OFByteOrder)byteOrder;
@@ -445,10 +461,11 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  specified length, assuming the specified byte order if no byte order
  *	  mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
@@ -457,7 +474,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Creates a new OFString from a UTF-32 encoded string.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string;
@@ -466,7 +483,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-32 encoded string with the
  *	  specified length.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @return A new autoreleased OFString
  */
@@ -477,7 +494,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a new OFString from a UTF-32 encoded string, assuming the
  *	  specified byte order if no byte order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
@@ -489,7 +506,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  specified length, assuming the specified byte order if no byte order
  *	  mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
@@ -507,6 +524,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param format A string used as format to initialize the OFString
  * @return A new autoreleased OFString
+ * @throw OFInvalidFormatException The specified format is invalid
+ * @throw OFInvalidEncodingException The resulting string is not in not in UTF-8
+ *				     encoding
  */
 + (instancetype)stringWithFormat: (OFConstantString *)format, ...;
 
@@ -517,6 +537,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param path The path to the file
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 + (instancetype)stringWithContentsOfFile: (OFString *)path;
 
@@ -527,34 +548,37 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param path The path to the file
  * @param encoding The encoding of the file
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (OFStringEncoding)encoding;
 # endif
 
 /**
- * @brief Creates a new OFString with the contents of the specified URL.
+ * @brief Creates a new OFString with the contents of the specified URI.
  *
- * If the URL's scheme is file, it tries UTF-8 encoding.
+ * If the URI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL;
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI;
 
 /**
- * @brief Creates a new OFString with the contents of the specified URL in the
+ * @brief Creates a new OFString with the contents of the specified URI in the
  *	  specified encoding.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @param encoding The encoding to assume
  * @return A new autoreleased OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL *)URL
++ (instancetype)stringWithContentsOfURI: (OFURI *)URI
 			       encoding: (OFStringEncoding)encoding;
 
 /**
@@ -563,6 +587,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 - (instancetype)initWithUTF8String: (const char *)UTF8String;
 
@@ -573,6 +598,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 			    length: (size_t)UTF8StringLength;
@@ -590,6 +616,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param freeWhenDone Whether to free the C string when it is not needed
  *		       anymore
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone;
@@ -609,6 +636,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param freeWhenDone Whether to free the C string when it is not needed
  *		       anymore
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 				  length: (size_t)UTF8StringLength
@@ -621,6 +649,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param cString A C string to initialize the OFString with
  * @param encoding The encoding of the C string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding;
@@ -633,6 +662,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding of the C string
  * @param cStringLength The length of the C string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding
@@ -645,6 +675,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param data OFData with the contents of the string
  * @param encoding The encoding in which the string is stored in the OFData
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 - (instancetype)initWithData: (OFData *)data
 		    encoding: (OFStringEncoding)encoding;
@@ -671,8 +702,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Initializes an already allocated OFString with a UTF-16 string.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 - (instancetype)initWithUTF16String: (const OFChar16 *)string;
 
@@ -680,9 +712,10 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-16 string with
  *	  the specified length.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length;
@@ -691,9 +724,10 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-16 string,
  *	  assuming the specified byte order if no byte order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 			  byteOrder: (OFByteOrder)byteOrder;
@@ -703,10 +737,11 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  the specified length, assuming the specified byte order if no byte
  *	  order mark is found.
  *
- * @param string The UTF-16 string
+ * @param string A zero-terminated UTF-16 string
  * @param length The length of the UTF-16 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-16-encoded
  */
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
@@ -715,7 +750,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 /**
  * @brief Initializes an already allocated OFString with a UTF-32 string.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF32String: (const OFChar32 *)string;
@@ -724,7 +759,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-32 string with
  *	  the specified length
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @return An initialized OFString
  */
@@ -735,7 +770,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Initializes an already allocated OFString with a UTF-32 string,
  *	  assuming the specified byte order if no byte order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
@@ -747,7 +782,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  the specified length, assuming the specified byte order if no byte
  *	  order mark is found.
  *
- * @param string The UTF-32 string
+ * @param string A zero-terminated UTF-32 string
  * @param length The length of the UTF-32 string
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
@@ -765,6 +800,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
+ * @throw OFInvalidFormatException The specified format is invalid
+ * @throw OFInvalidEncodingException The resulting string is not in not in UTF-8
+ *				     encoding
  */
 - (instancetype)initWithFormat: (OFConstantString *)format, ...;
 
@@ -778,6 +816,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param format A string used as format to initialize the OFString
  * @param arguments The arguments used in the format string
  * @return An initialized OFString
+ * @throw OFInvalidFormatException The specified format is invalid
+ * @throw OFInvalidEncodingException The resulting string is not in not in UTF-8
+ *				     encoding
  */
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments;
@@ -789,6 +830,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param path The path to the file
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not properly UTF-8-encoded
  */
 - (instancetype)initWithContentsOfFile: (OFString *)path;
 
@@ -799,6 +841,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param path The path to the file
  * @param encoding The encoding of the file
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding;
@@ -806,28 +849,30 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URL.
+ *	  specified URI.
  *
- * If the URL's scheme is file, it tries UTF-8 encoding.
+ * If the URI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URL's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI;
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URL in the specified encoding.
+ *	  specified URI in the specified encoding.
  *
- * @param URL The URL to the contents for the string
+ * @param URI The URI to the contents for the string
  * @param encoding The encoding to assume
  * @return An initialized OFString
+ * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding;
 
 /**
@@ -840,6 +885,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding to use for writing into the C string
  * @return The number of bytes written into the C string, without the
  *	   terminating zero
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
 - (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
@@ -870,6 +917,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
 - (const char *)cStringWithEncoding: (OFStringEncoding)encoding
     OF_RETURNS_INNER_POINTER;
@@ -895,6 +944,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param encoding The encoding for the string
  * @return The number of bytes the string needs in the specified encoding.
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
 - (size_t)cStringLengthWithEncoding: (OFStringEncoding)encoding;
 
@@ -1045,8 +1096,10 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
  * 	       assumed.
  * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string cannot be parsed as a `long long`
+ * @throw OFOutOfRangeException The value cannot be represented as a `long long`
  */
-- (long long)longLongValueWithBase: (int)base;
+- (long long)longLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as an
@@ -1065,8 +1118,12 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
  * 	       assumed.
  * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string cannot be parsed as an
+ *				   `unsigned long long`
+ * @throw OFOutOfRangeException The value cannot be represented as an
+ *				`unsigned long long`
  */
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief Creates a new string by appending another string.
@@ -1081,6 +1138,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param format A format string which generates the string to append
  * @return A new, autoreleased OFString with the specified format appended
+ * @throw OFInvalidEncodingException The string was not properly UTF-8-encoded
+ *				     after formatting it
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (OFString *)stringByAppendingFormat: (OFConstantString *)format, ...;
 
@@ -1090,17 +1150,12 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string
  * @return A new, autoreleased OFString with the specified format appended
+ * @throw OFInvalidEncodingException The string was not properly UTF-8-encoded
+ *				     after formatting it
+ * @throw OFInvalidFormatException The specified format is invalid
  */
 - (OFString *)stringByAppendingFormat: (OFConstantString *)format
 			    arguments: (va_list)arguments;
-
-/**
- * @brief Creates a new string by prepending another string.
- *
- * @param string The string to prepend
- * @return A new autoreleased OFString with the specified string prepended
- */
-- (OFString *)stringByPrependingString: (OFString *)string;
 
 /**
  * @brief Creates a new string by replacing the occurrences of the specified
@@ -1121,7 +1176,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param replacement The string with which it should be replaced
  * @param options Options modifying search behaviour.
  *		  Possible values are:
- *		    * None yet
+ *		    * None yet, pass 0
  * @param range The range in which to replace the string
  * @return A new string with the occurrences of the specified string replaced
  */
@@ -1197,8 +1252,11 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  *
+ * The returned string is null-terminated.
+ *
  * @param byteOrder The byte order for the UTF-16 encoding
  * @return The string in UTF-16 encoding with the specified byte order
+ * @throw OFInvalidEncodingException The string cannot be represented in UTF-16
  */
 - (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
     OF_RETURNS_INNER_POINTER;
@@ -1209,6 +1267,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
+ *
+ * The returned string is null-terminated.
  *
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
@@ -1221,6 +1281,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param encoding The encoding to use for the returned OFData
  * @return The string as OFData with the specified encoding
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
 - (OFData *)dataWithEncoding: (OFStringEncoding)encoding;
 
@@ -1238,24 +1300,28 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param path The path of the file to write to
  * @param encoding The encoding to use to write the string into the file
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
 - (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
 # endif
 
 /**
- * @brief Writes the string to the specified URL using UTF-8 encoding.
+ * @brief Writes the string to the specified URI using UTF-8 encoding.
  *
- * @param URL The URL to write to
+ * @param URI The URI to write to
  */
-- (void)writeToURL: (OFURL *)URL;
+- (void)writeToURI: (OFURI *)URI;
 
 /**
- * @brief Writes the string to the specified URL using the specified encoding.
+ * @brief Writes the string to the specified URI using the specified encoding.
  *
- * @param URL The URL to write to
- * @param encoding The encoding to use to write the string to the URL
+ * @param URI The URI to write to
+ * @param encoding The encoding to use to write the string to the URI
+ * @throw OFInvalidEncodingException The string cannot be represented in the
+ *				     specified encoding
  */
-- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
+- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
 
 # ifdef OF_HAVE_BLOCKS
 /**
@@ -1310,9 +1376,9 @@ OF_ASSUME_NONNULL_END
 # ifdef OF_HAVE_FILES
 #  import "OFString+PathAdditions.h"
 # endif
+# import "OFString+PercentEncoding.h"
 # import "OFString+PropertyListParsing.h"
 # import "OFString+Serialization.h"
-# import "OFString+URLEncoding.h"
 # import "OFString+XMLEscaping.h"
 # import "OFString+XMLUnescaping.h"
 #endif

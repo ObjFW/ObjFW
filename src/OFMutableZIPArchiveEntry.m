@@ -29,6 +29,38 @@
 @dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
 @dynamic of_localFileHeaderOffset;
+/*
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (fileName.UTF8StringLength > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		_fileName = [fileName copy];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {
@@ -116,12 +148,12 @@
 	_compressionMethod = compressionMethod;
 }
 
-- (void)setCompressedSize: (uint64_t)compressedSize
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
 	_compressedSize = compressedSize;
 }
 
-- (void)setUncompressedSize: (uint64_t)uncompressedSize
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
 {
 	_uncompressedSize = uncompressedSize;
 }

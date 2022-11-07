@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Addresses are of type @ref OFSocketAddress. You can use the current thread's
  * @ref OFDNSResolver to create an address for a host / port pair,
  * @ref OFSocketAddressString to get the IP address string for an address and
- * @ref OFSocketAddressPort to get the port for an address. If you want to
+ * @ref OFSocketAddressIPPort to get the port for an address. If you want to
  * compare two addresses, you can use
  * @ref OFSocketAddressEqual and you can use @ref OFSocketAddressHash to get a
  * hash to use in e.g. @ref OFMapTable.
@@ -72,6 +72,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
+ * @throw OFBindIPSocketFailedException Binding failed
+ * @throw OFAlreadyConnectedException The socket is already bound
  */
 - (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end

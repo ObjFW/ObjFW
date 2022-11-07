@@ -25,10 +25,10 @@ static OFString *const module = @"OFValue";
 - (void)valueTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFRange range = OFRangeMake(1, 64), range2;
-	OFPoint point = OFPointMake(1.5f, 3.0f), point2;
-	OFSize size = OFSizeMake(4.5f, 5.0f), size2;
-	OFRect rect = OFRectMake(1.5f, 3.0f, 4.5f, 6.0f), rect2;
+	OFRange range = OFMakeRange(1, 64), range2;
+	OFPoint point = OFMakePoint(1.5f, 3.0f), point2;
+	OFSize size = OFMakeSize(4.5f, 5.0f), size2;
+	OFRect rect = OFMakeRect(1.5f, 3.0f, 4.5f, 6.0f), rect2;
 	OFValue *value;
 	void *pointer = &value;
 
@@ -40,7 +40,7 @@ static OFString *const module = @"OFValue";
 
 	TEST(@"-[getValue:size:]",
 	    R([value getValue: &range2 size: sizeof(OFRange)]) &&
-	    OFRangeEqual(range2, range))
+	    OFEqualRanges(range2, range))
 
 	EXPECT_EXCEPTION(@"-[getValue:size:] with wrong size throws",
 	    OFOutOfRangeException,
@@ -76,15 +76,15 @@ static OFString *const module = @"OFValue";
 	    (value = [OFValue valueWithRange: range]))
 
 	TEST(@"-[rangeValue]",
-	    OFRangeEqual(value.rangeValue, range) &&
+	    OFEqualRanges(value.rangeValue, range) &&
 	    (value = [OFValue valueWithBytes: &range
 				    objCType: @encode(OFRange)]) &&
-	    OFRangeEqual(value.rangeValue, range))
+	    OFEqualRanges(value.rangeValue, range))
 
 	TEST(@"-[getValue:size:] for OFRangeValue",
 	    (value = [OFValue valueWithRange: range]) &&
 	    R([value getValue: &range2 size: sizeof(range2)]) &&
-	    OFRangeEqual(range2, range))
+	    OFEqualRanges(range2, range))
 
 	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
 	    OFOutOfRangeException,
@@ -95,15 +95,15 @@ static OFString *const module = @"OFValue";
 	    (value = [OFValue valueWithPoint: point]))
 
 	TEST(@"-[pointValue]",
-	    OFPointEqual(value.pointValue, point) &&
+	    OFEqualPoints(value.pointValue, point) &&
 	    (value = [OFValue valueWithBytes: &point
 				    objCType: @encode(OFPoint)]) &&
-	    OFPointEqual(value.pointValue, point))
+	    OFEqualPoints(value.pointValue, point))
 
 	TEST(@"-[getValue:size:] for OFPointValue",
 	    (value = [OFValue valueWithPoint: point]) &&
 	    R([value getValue: &point2 size: sizeof(point2)]) &&
-	    OFPointEqual(point2, point))
+	    OFEqualPoints(point2, point))
 
 	EXPECT_EXCEPTION(@"-[pointValue] with wrong size throws",
 	    OFOutOfRangeException,
@@ -114,15 +114,15 @@ static OFString *const module = @"OFValue";
 	    (value = [OFValue valueWithSize: size]))
 
 	TEST(@"-[sizeValue]",
-	    OFSizeEqual(value.sizeValue, size) &&
+	    OFEqualSizes(value.sizeValue, size) &&
 	    (value = [OFValue valueWithBytes: &size
 				    objCType: @encode(OFSize)]) &&
-	    OFSizeEqual(value.sizeValue, size))
+	    OFEqualSizes(value.sizeValue, size))
 
 	TEST(@"-[getValue:size:] for OFSizeValue",
 	    (value = [OFValue valueWithSize: size]) &&
 	    R([value getValue: &size2 size: sizeof(size2)]) &&
-	    OFSizeEqual(size2, size))
+	    OFEqualSizes(size2, size))
 
 	EXPECT_EXCEPTION(@"-[sizeValue] with wrong size throws",
 	    OFOutOfRangeException,
@@ -133,15 +133,15 @@ static OFString *const module = @"OFValue";
 	    (value = [OFValue valueWithRect: rect]))
 
 	TEST(@"-[rectValue]",
-	    OFRectEqual(value.rectValue, rect) &&
+	    OFEqualRects(value.rectValue, rect) &&
 	    (value = [OFValue valueWithBytes: &rect
 				    objCType: @encode(OFRect)]) &&
-	    OFRectEqual(value.rectValue, rect))
+	    OFEqualRects(value.rectValue, rect))
 
 	TEST(@"-[getValue:size:] for OFRectValue",
 	    (value = [OFValue valueWithRect: rect]) &&
 	    R([value getValue: &rect2 size: sizeof(rect2)]) &&
-	    OFRectEqual(rect2, rect))
+	    OFEqualRects(rect2, rect))
 
 	EXPECT_EXCEPTION(@"-[rectValue] with wrong size throws",
 	    OFOutOfRangeException,

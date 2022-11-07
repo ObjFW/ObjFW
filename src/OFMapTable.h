@@ -231,6 +231,9 @@ OF_SUBCLASSING_RESTRICTED
  * @brief A class which provides methods to enumerate through an OFMapTable's
  *	  keys or objects.
  */
+#ifndef OF_MAP_TABLE_M
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFMapTableEnumerator: OFObject
 {
 	OFMapTable *_mapTable;

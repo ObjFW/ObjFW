@@ -17,37 +17,37 @@
 
 #import "OFUnsupportedProtocolException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFUnsupportedProtocolException
-@synthesize URL = _URL;
+@synthesize URI = _URI;
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithURL: URL] autorelease];
+	return [[[self alloc] initWithURI: URI] autorelease];
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 {
 	self = [super init];
 
-	_URL = [URL retain];
+	_URI = [URI retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_URL release];
+	[_URI release];
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	if (_URL != nil)
+	if (_URI != nil)
 		return [OFString stringWithFormat:
-		    @"The protocol of URL %@ is not supported!", _URL];
+		    @"The protocol of URI %@ is not supported!", _URI];
 	else
 		return @"The requested protocol is unsupported!";
 }

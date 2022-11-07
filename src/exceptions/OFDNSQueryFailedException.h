@@ -30,6 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFDNSQuery *_query;
 	OFDNSResolverErrorCode _errorCode;
+	OF_RESERVE_IVARS(OFDNSQueryFailedException, 4)
 }
 
 /**

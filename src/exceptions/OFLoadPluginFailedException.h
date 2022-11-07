@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFLoadPluginFailedException: OFException
 {
 	OFString *_path, *_Nullable _error;
+	OF_RESERVE_IVARS(OFLoadPluginFailedException, 4)
 }
 
 /**

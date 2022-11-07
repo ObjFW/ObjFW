@@ -32,9 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFWindowsRegistryKey *_registryKey;
 	OFString *_path;
 	DWORD _options;
-	REGSAM _securityAndAccessRights;
+	REGSAM _accessRights;
 	LPSECURITY_ATTRIBUTES _Nullable _securityAttributes;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFCreateWindowsRegistryKeyFailedException, 4)
 }
 
 /**
@@ -48,21 +49,20 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *path;
 
 /**
- * @brief The options for the subkey that could not be created.
+ * @brief The access rights for the subkey that could not be created.
  */
-@property (readonly, nonatomic) DWORD options;
-
-/**
- * @brief The security and access rights for the subkey that could not be
- *	  created.
- */
-@property (readonly, nonatomic) REGSAM securityAndAccessRights;
+@property (readonly, nonatomic) REGSAM accessRights;
 
 /**
  * @brief The security options for the subkey that could not be created.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     LPSECURITY_ATTRIBUTES securityAttributes;
+
+/**
+ * @brief The options for the subkey that could not be created.
+ */
+@property (readonly, nonatomic) DWORD options;
 
 /**
  * @brief The status returned by RegCreateKeyEx().
@@ -75,20 +75,20 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which creating the subkey failed
  * @param path The path for the subkey that could not be created
- * @param options The options for the subkey that could not be created
- * @param securityAndAccessRights The security and access rights for the sub
- *				  key that could not be created
+ * @param accessRights The access rights for the sub key that could not be
+ *		       created
  * @param securityAttributes The security options for the subkey that could
  *			     not be created
+ * @param options The options for the subkey that could not be created
  * @param status The status returned by RegCreateKeyEx()
  * @return A new, autoreleased creates Windows registry key failed exception
  */
 + (instancetype)
     exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
+		accessRights: (REGSAM)accessRights
 	  securityAttributes: (nullable LPSECURITY_ATTRIBUTES)securityAttributes
+		     options: (DWORD)options
 		      status: (LSTATUS)status;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -99,20 +99,20 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which creating the subkey failed
  * @param path The path for the subkey that could not be created
- * @param options The options for the subkey that could not be created
- * @param securityAndAccessRights The security and access rights for the sub
- *				  key that could not be created
+ * @param accessRights The access rights for the sub key that could not be
+ *		       created
  * @param securityAttributes The security options for the subkey that could
  *			     not be created
+ * @param options The options for the subkey that could not be created
  * @param status The status returned by RegCreateKeyEx()
  * @return An initialized create Windows registry key failed exception
  */
 - (instancetype)
 	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
+	       accessRights: (REGSAM)accessRights
 	 securityAttributes: (nullable LPSECURITY_ATTRIBUTES)securityAttributes
+		    options: (DWORD)options
 		     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
 @end
 

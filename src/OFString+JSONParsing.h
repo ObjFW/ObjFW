@@ -40,6 +40,8 @@ extern int _OFString_JSONParsing_reference;
  *          assumptions about the object returned by this method if you don't
  *          want your program to terminate due to a message not understood, but
  *          instead check the returned object using @ref isKindOfClass:.
+ *
+ * @throw OFInvalidJSONException The string contained invalid JSON
  */
 @property (readonly, nonatomic) id objectByParsingJSON;
 
@@ -60,8 +62,8 @@ extern int _OFString_JSONParsing_reference;
  *
  * @param depthLimit The maximum depth the parser should accept (defaults to 32
  *		     if not specified, 0 means no limit (insecure!))
- *
  * @return An object
+ * @throw OFInvalidJSONException The string contained invalid JSON
  */
 - (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit;
 @end

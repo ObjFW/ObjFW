@@ -63,7 +63,7 @@ OF_CONSTRUCTOR()
 #endif
 
 void *
-objc_autoreleasePoolPush()
+objc_autoreleasePoolPush(void)
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	uintptr_t count = (uintptr_t)OFTLSKeyGet(countKey);

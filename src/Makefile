@@ -22,14 +22,12 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
-       OFEmbeddedFileURLHandler.m	\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
-       OFINIFileSettings.m		\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -51,7 +49,7 @@ SRCS = OFApplication.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURL.m			\
+       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -84,9 +82,9 @@ SRCS = OFApplication.m			\
        OFString.m			\
        OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
+       OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
        OFString+Serialization.m		\
-       OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
@@ -97,8 +95,8 @@ SRCS = OFApplication.m			\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURL.m				\
-       OFURLHandler.m			\
+       OFURI.m				\
+       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -138,8 +136,10 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFDDPSocket.m
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
@@ -152,8 +152,7 @@ SRCS_THREADS = OFCondition.m		\
 	       OFPlainThread.m		\
 	       OFRecursiveMutex.m	\
 	       OFTLSKey.m
-SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
-	       OFWindowsRegistryKey.m
+SRCS_WINDOWS = OFWindowsRegistryKey.m
 
 INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/GCC4/OFAtomic.h	\
@@ -162,6 +161,7 @@ INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/macOS/OFAtomic.h	\
 		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
+	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
 	    OFJSONRepresentation.h		\
@@ -169,6 +169,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
+	    OFMutableArchiveEntry.h		\
 	    ObjFW.h				\
 	    macros.h				\
 	    objfw-defs.h			\
@@ -178,13 +179,16 @@ INCLUDES := ${SRCS:.m=.h}			\
 SRCS += OFASPrintF.m			\
 	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
+	OFArchiveURIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
+	OFEmbeddedURIHandler.m		\
 	OFHuffmanTree.m			\
+	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
@@ -207,18 +211,20 @@ SRCS += OFASPrintF.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
-       ${UNICODE_M}
-SRCS_FILES += OFFileURLHandler.m
-SRCS_SOCKETS += OFDNSResolverSettings.m			\
+	${UNICODE_M}
+SRCS_FILES += OFFileURIHandler.m
+SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
+		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURLHandler.m			\
+		OFHTTPURIHandler.m			\
 		OFHostAddressResolver.m			\
-		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
+		versioninfo.rc
 
 OBJS_EXTRA = exceptions/exceptions.a	\
 	     encodings/encodings.a	\
@@ -236,3 +242,8 @@ FRAMEWORK_LIBS := -Fruntime				\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
 LIBS := -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
+RCFLAGS = --use-temp-file						\
+	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
+	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
+	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
+	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"

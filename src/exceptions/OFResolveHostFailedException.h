@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_host;
 	OFSocketAddressFamily _addressFamily;
 	OFDNSResolverErrorCode _errorCode;
+	OF_RESERVE_IVARS(OFResolveHostFailedException, 4)
 }
 
 /**

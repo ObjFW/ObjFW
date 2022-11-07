@@ -23,7 +23,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 #define bufferLen 4096
 
@@ -41,25 +41,25 @@ OF_APPLICATION_DELEGATE(OFSock)
 static OFPair OF_GENERIC(OFStream *, OFStream *) *
 streamFromString(OFString *string)
 {
-	OFURL *URL;
+	OFURI *URI;
 	OFString *scheme;
 
 	if ([string isEqual: @"-"])
 		return [OFPair pairWithFirstObject: OFStdIn
 				      secondObject: OFStdOut];
 
-	URL = [OFURL URLWithString: string];
-	scheme = URL.scheme;
+	URI = [OFURI URIWithString: string];
+	scheme = URI.scheme;
 
 	if ([scheme isEqual: @"tcp"]) {
 		OFTCPSocket *sock = [OFTCPSocket socket];
 
-		if (URL.port == nil) {
+		if (URI.port == nil) {
 			[OFStdErr writeLine: @"Need a port!"];
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		[sock connectToHost: URL.host port: URL.port.shortValue];
+		[sock connectToHost: URI.host port: URI.port.shortValue];
 		return [OFPair pairWithFirstObject: sock secondObject: sock];
 	}
 

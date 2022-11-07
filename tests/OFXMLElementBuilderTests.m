@@ -29,8 +29,8 @@ static size_t i = 0;
 	nodes[i++] = [element retain];
 }
 
--   (void)elementBuilder: (OFXMLElementBuilder *)builder
-  didBuildParentlessNode: (OFXMLNode *)node
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+    didBuildOrphanNode: (OFXMLNode *)node
 {
 	OFEnsure(i == 1);
 	nodes[i++] = [node retain];

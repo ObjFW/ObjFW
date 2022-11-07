@@ -174,16 +174,16 @@ static struct {
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
-	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURL: URL];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURI: URI];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
-	    initWithContentsOfURL: URL
+	    initWithContentsOfURI: URI
 			 encoding: encoding];
 }
 
@@ -289,7 +289,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string =
 	    [OFString stringWithCharacters: &character length: 1];
-	[self replaceCharactersInRange: OFRangeMake(idx, 1) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 1) withString: string];
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -372,22 +372,6 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	}
 }
 
-- (void)prependString: (OFString *)string
-{
-	[self insertString: string atIndex: 0];
-}
-
-- (void)reverse
-{
-	size_t i, j, length = self.length;
-
-	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
-		OFUnichar tmp = [self characterAtIndex: j];
-		[self setCharacter: [self characterAtIndex: i] atIndex: j];
-		[self setCharacter: tmp atIndex: i];
-	}
-}
-
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
@@ -431,7 +415,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 - (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: OFRangeMake(idx, 0) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 0) withString: string];
 }
 
 - (void)deleteCharactersInRange: (OFRange)range
@@ -451,7 +435,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
 				 options: 0
-				   range: OFRangeMake(0, self.length)];
+				   range: OFMakeRange(0, self.length)];
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
@@ -485,7 +469,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;
 
-		[self replaceCharactersInRange: OFRangeMake(i, searchLength)
+		[self replaceCharactersInRange: OFMakeRange(i, searchLength)
 				    withString: replacement];
 
 		range.length -= searchLength;
@@ -517,7 +501,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: OFRangeMake(0, i)];
+	[self deleteCharactersInRange: OFMakeRange(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
@@ -544,7 +528,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: OFRangeMake(length - d, d)];
+	[self deleteCharactersInRange: OFMakeRange(length - d, d)];
 }
 
 - (void)deleteEnclosingWhitespaces

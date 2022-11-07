@@ -260,6 +260,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param host The host to resolve
  * @param addressFamily The desired socket address family
  * @return OFData containing several OFSocketAddress
+ * @throw OFInvalidServerResponseException The received response was invalid
+ * @throw OFTruncatedDataException The received response was truncated
  */
 - (OFData *)resolveAddressesForHost: (OFString *)host
 		      addressFamily: (OFSocketAddressFamily)addressFamily;

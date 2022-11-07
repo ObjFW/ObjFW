@@ -32,7 +32,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: clang
 BuildRequires: make
-BuildRequires: pkgconfig(openssl)
+BuildRequires: pkgconfig(gnutls)
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
@@ -89,7 +89,7 @@ ObjFW's Objective-C runtime library.
 
 %package -n %{libobjfwtls_pkgname}
 Summary:       TLS support for ObjFW
-Requires:      openssl%{_isa} >= 1.1.1
+Requires:      gnutls%{_isa} >= 3.0.5
 
 %description -n %{libobjfwtls_pkgname}
 The %{libobjfwtls_pkgname} package contains TLS support for ObjFW
@@ -138,10 +138,10 @@ Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfwtls_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofhttp
-ofhttp is a command line downloader for HTTP and HTTPS (via ObjOpenSSL) using
-ObjFW's OFHTTPClient class. It supports all features one would expect from a
-modern command line downloader such as resuming of downloads, using a SOCKS5
-proxy, a modern terminal-based UI, etc.
+ofhttp is a command line downloader for HTTP and HTTPS using ObjFW's
+OFHTTPClient class. It supports all features one would expect from a modern
+command line downloader such as resuming of downloads, using a SOCKS5 proxy, a
+modern terminal-based UI, etc.
 
 %prep
 %autosetup

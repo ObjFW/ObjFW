@@ -46,14 +46,14 @@
 	    @"[OFSystemInfo] Operating system version: %@\n",
 	    [OFSystemInfo operatingSystemVersion]];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] User config URL: %@\n",
-	    [OFSystemInfo userConfigURL].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] User config URI: %@\n",
+	    [OFSystemInfo userConfigURI].string];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] User data URL: %@\n",
-	    [OFSystemInfo userDataURL].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] User data URI: %@\n",
+	    [OFSystemInfo userDataURI].string];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] Temporary directory URL: %@\n",
-	    [OFSystemInfo temporaryDirectoryURL].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] Temporary directory URI: %@\n",
+	    [OFSystemInfo temporaryDirectoryURI].string];
 
 	[OFStdOut writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
 	    [OFSystemInfo CPUVendor]];

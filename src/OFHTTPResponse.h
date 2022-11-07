@@ -26,21 +26,31 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing an HTTP request response as a stream.
  */
+#if !defined(OF_HTTP_CLIENT_M) && !defined(OF_HTTP_SERVER_M)
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFHTTPResponse: OFStream
 {
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
 /**
  * @brief The protocol version of the HTTP request response.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
  */
 @property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
  * @brief The protocol version of the HTTP request response as a string.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
+ * @throw OFInvalidFormatException The specified version cannot be set because
+ *				   it is not in a valid format
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 

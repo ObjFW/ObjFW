@@ -1,6 +1,7 @@
 include ../extra.mk
 
-SUBDIRS += ${OFARC}	\
+SUBDIRS += ${OBJFW_NEW}	\
+	   ${OFARC}	\
 	   ${OFDNS}	\
 	   ${OFHASH}	\
 	   ${OFHTTP}	\

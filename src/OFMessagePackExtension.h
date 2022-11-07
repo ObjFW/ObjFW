@@ -26,12 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing the MessagePack extension type.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMessagePackExtension: OFObject <OFMessagePackRepresentation,
     OFCopying>
 {
 	int8_t _type;
 	OFData *_data;
-	OF_RESERVE_IVARS(OFMessagePackExtension, 4)
 }
 
 /**

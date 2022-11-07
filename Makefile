@@ -28,10 +28,9 @@ release: docs
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.cirrus*,.fossil*,.git*' | ofarc -ttgz -xq -
+		--exclude '.fossil*,.git*' | ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
-	ofarc -cq objfw-${PACKAGE_VERSION}.tar \
-		$$(find objfw-${PACKAGE_VERSION} | sort)
+	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
 	gzip -9 objfw-${PACKAGE_VERSION}.tar
 	rm -f objfw-${PACKAGE_VERSION}.tar
@@ -44,7 +43,7 @@ release: docs
 	mv docs objfw-docs-${PACKAGE_VERSION}
 	echo "Generating docs tarball for version ${PACKAGE_VERSION}..."
 	ofarc -cq objfw-docs-${PACKAGE_VERSION}.tar \
-		$$(find objfw-docs-${PACKAGE_VERSION} | sort)
+		objfw-docs-${PACKAGE_VERSION}
 	rm -fr objfw-docs-${PACKAGE_VERSION}
 	gzip -9 objfw-docs-${PACKAGE_VERSION}.tar
 	rm -f objfw-docs-${PACKAGE_VERSION}.tar

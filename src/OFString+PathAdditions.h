@@ -86,11 +86,11 @@ extern int _OFString_PathAdditions_reference;
 - (OFString *)stringByAppendingPathExtension: (OFString *)extension;
 
 - (bool)of_isDirectoryPath;
-- (OFString *)of_pathToURLPathWithURLEncodedHost:
-    (OFString *__autoreleasing _Nullable *_Nonnull)URLEncodedHost;
-- (OFString *)of_URLPathToPathWithURLEncodedHost:
-    (nullable OFString *)URLEncodedHost;
-- (OFString *)of_pathComponentToURLPathComponent;
+- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+    (OFString *__autoreleasing _Nullable *_Nonnull)percentEncodedHost;
+- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+    (nullable OFString *)percentEncodedHost;
+- (OFString *)of_pathComponentToURIPathComponent;
 @end
 
 OF_ASSUME_NONNULL_END

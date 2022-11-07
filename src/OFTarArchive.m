@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_TAR_ARCHIVE_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -20,12 +22,12 @@
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
+#import "OFArchiveURIHandler.h"
 #import "OFDate.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
-#ifdef OF_HAVE_FILES
-# import "OFFile.h"
-#endif
+#import "OFURI.h"
+#import "OFURIHandler.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -37,27 +39,31 @@
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
+	OFTarArchive *_archive;
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
-	uint64_t _toRead;
+	unsigned long long _toRead;
 	bool _atEndOfStream, _skipped;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
+	OFTarArchive *_archive;
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
-	uint64_t _toWrite;
+	unsigned long long _toWrite;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry;
 @end
 
 @implementation OFTarArchive: OFObject
@@ -68,12 +74,15 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-#ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
++ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path mode: mode] autorelease];
+	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
 }
-#endif
+
++ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
+{
+	return OFArchiveURIHandlerURIForFileInArchive(@"tar", path, URI);
+}
 
 - (instancetype)init
 {
@@ -104,7 +113,7 @@ OF_DIRECT_MEMBERS
 				@throw [OFInvalidArgumentException exception];
 
 			[(OFSeekableStream *)_stream seekToOffset: -1024
-							   whence: SEEK_END];
+							   whence: OFSeekEnd];
 			[_stream readIntoBuffer: buffer exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
@@ -115,7 +124,7 @@ OF_DIRECT_MEMBERS
 				@throw [OFInvalidFormatException exception];
 
 			[(OFSeekableStream *)stream seekToOffset: -1024
-							  whence: SEEK_END];
+							  whence: OFSeekEnd];
 		}
 
 		_encoding = OFStringEncodingUTF8;
@@ -127,41 +136,47 @@ OF_DIRECT_MEMBERS
 	return self;
 }
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
+- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
 {
-	OFFile *file;
-
-	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
-	else
-		file = [[OFFile alloc] initWithPath: path mode: mode];
+	void *pool = objc_autoreleasePoolPush();
+	OFStream *stream;
 
 	@try {
-		self = [self initWithStream: file mode: mode];
-	} @finally {
-		[file release];
+		if ([mode isEqual: @"a"])
+			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
+		else
+			stream = [OFURIHandler openItemAtURI: URI mode: mode];
+	} @catch (id e) {
+		[self release];
+		@throw e;
 	}
+
+	self = [self initWithStream: stream mode: mode];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
-#endif
 
 - (void)dealloc
 {
 	[self close];
+
+	[_currentEntry release];
 
 	[super dealloc];
 }
 
 - (OFTarArchiveEntry *)nextEntry
 {
-	OFTarArchiveEntry *entry;
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
 	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
+
+	[_currentEntry release];
+	_currentEntry = nil;
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
 	@try {
@@ -169,7 +184,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	if (_stream.atEndOfStream)
@@ -191,15 +205,11 @@ OF_DIRECT_MEMBERS
 		return nil;
 	}
 
-	entry = [[[OFTarArchiveEntry alloc]
+	_currentEntry = [[OFTarArchiveEntry alloc]
 	    of_initWithHeader: (unsigned char *)buffer
-		     encoding: _encoding] autorelease];
+		     encoding: _encoding];
 
-	_lastReturnedStream = [[OFTarArchiveFileReadStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
-
-	return entry;
+	return _currentEntry;
 }
 
 - (OFStream *)streamForReadingCurrentEntry
@@ -207,40 +217,39 @@ OF_DIRECT_MEMBERS
 	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_lastReturnedStream == nil)
+	if (_currentEntry == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFTarArchiveFileReadStream *)_lastReturnedStream
-	    retain] autorelease];
+	_lastReturnedStream = [[[OFTarArchiveFileReadStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: _currentEntry] autorelease];
+	[_currentEntry release];
+	_currentEntry = nil;
+
+	return _lastReturnedStream;
 }
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
-	void *pool;
-
 	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
 		@throw [OFInvalidArgumentException exception];
-
-	pool = objc_autoreleasePoolPush();
 
 	@try {
 		[_lastReturnedStream close];
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	[entry of_writeToStream: _stream encoding: _encoding];
 
-	_lastReturnedStream = [[OFTarArchiveFileWriteStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
+	_lastReturnedStream = [[[OFTarArchiveFileWriteStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: entry] autorelease];
 
-	objc_autoreleasePoolPop(pool);
-
-	return [[(OFTarArchiveFileWriteStream *)_lastReturnedStream
-	    retain] autorelease];
+	return _lastReturnedStream;
 }
 
 - (void)close
@@ -253,7 +262,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
@@ -268,15 +276,17 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFTarArchiveFileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toRead = entry.size;
+		_toRead = entry.uncompressedSize;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -292,11 +302,13 @@ OF_DIRECT_MEMBERS
 
 	[_entry release];
 
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	size_t ret;
 
@@ -306,12 +318,12 @@ OF_DIRECT_MEMBERS
 	if (_atEndOfStream)
 		return 0;
 
-#if SIZE_MAX >= UINT64_MAX
-	if (length > UINT64_MAX)
+#if SIZE_MAX >= ULLONG_MAX
+	if (length > ULLONG_MAX)
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if ((uint64_t)length > _toRead)
+	if ((unsigned long long)length > _toRead)
 		length = (size_t)_toRead;
 
 	ret = [_stream readIntoBuffer: buffer length: length];
@@ -361,23 +373,25 @@ OF_DIRECT_MEMBERS
 		return;
 
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
-	    _toRead <= INT64_MAX && (OFFileOffset)_toRead == (int64_t)_toRead) {
-		uint64_t size;
+	    _toRead <= LLONG_MAX &&
+	    (OFStreamOffset)_toRead == (long long)_toRead) {
+		unsigned long long size;
 
-		[(OFSeekableStream *)_stream seekToOffset: (OFFileOffset)_toRead
-						   whence: SEEK_CUR];
+		[(OFSeekableStream *)_stream
+		    seekToOffset: (OFStreamOffset)_toRead
+			  whence: OFSeekCurrent];
 
 		_toRead = 0;
 
-		size = _entry.size;
+		size = _entry.uncompressedSize;
 
 		if (size % 512 != 0)
 			[(OFSeekableStream *)_stream
 			    seekToOffset: 512 - (size % 512)
-				  whence: SEEK_CUR];
+				  whence: OFSeekCurrent];
 	} else {
 		char buffer[512];
-		uint64_t size;
+		unsigned long long size;
 
 		while (_toRead >= 512) {
 			[_stream readIntoBuffer: buffer exactLength: 512];
@@ -390,7 +404,7 @@ OF_DIRECT_MEMBERS
 			_toRead = 0;
 		}
 
-		size = _entry.size;
+		size = _entry.uncompressedSize;
 
 		if (size % 512 != 0)
 			[_stream readIntoBuffer: buffer
@@ -402,15 +416,17 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFTarArchiveFileWriteStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFTarArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = [archive retain];
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toWrite = entry.size;
+		_toWrite = entry.uncompressedSize;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -426,6 +442,9 @@ OF_DIRECT_MEMBERS
 
 	[_entry release];
 
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
 	[super dealloc];
 }
 
@@ -434,7 +453,7 @@ OF_DIRECT_MEMBERS
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((uint64_t)length > _toWrite)
+	if (length > _toWrite)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
@@ -471,7 +490,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	uint64_t remainder;
+	unsigned long long remainder;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -479,7 +498,7 @@ OF_DIRECT_MEMBERS
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
-	remainder = 512 - _entry.size % 512;
+	remainder = 512 - _entry.uncompressedSize % 512;
 
 	if (remainder != 512) {
 		bool didBufferWrites = _stream.buffersWrites;

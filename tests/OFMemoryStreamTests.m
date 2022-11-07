@@ -49,13 +49,13 @@ static const char string[] = "abcdefghijkl";
 	TEST(@"-[lowlevelIsAtEndOfStream]", [stream lowlevelIsAtEndOfStream])
 
 	TEST(@"-[lowlevelSeekToOffset:whence:]",
-	    [stream lowlevelSeekToOffset: 0 whence: SEEK_CUR] ==
+	    [stream lowlevelSeekToOffset: 0 whence: OFSeekCurrent] ==
 	    sizeof(string) && [stream lowlevelIsAtEndOfStream] &&
-	    [stream lowlevelSeekToOffset: 4 whence: SEEK_SET] == 4 &&
+	    [stream lowlevelSeekToOffset: 4 whence: OFSeekSet] == 4 &&
 	    ![stream lowlevelIsAtEndOfStream] &&
 	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 9 &&
 	    memcmp(buffer, "efghijkl", 9) == 0 &&
-	    [stream lowlevelSeekToOffset: -2 whence: SEEK_END] == 11 &&
+	    [stream lowlevelSeekToOffset: -2 whence: OFSeekEnd] == 11 &&
 	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 2 &&
 	    memcmp(buffer, "l", 2) == 0 &&
 	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 0)
@@ -73,7 +73,7 @@ static const char string[] = "abcdefghijkl";
 	    [stream lowlevelWriteBuffer: "fgh" length: 3] == 3 &&
 	    [stream lowlevelWriteBuffer: "ijkl" length: 5] == 5 &&
 	    memcmp(data.items, string, data.count) == 0 &&
-	    [stream lowlevelSeekToOffset: -3 whence: SEEK_END] == 10)
+	    [stream lowlevelSeekToOffset: -3 whence: OFSeekEnd] == 10)
 
 	EXPECT_EXCEPTION(@"Out of bound writes rejected",
 	    OFWriteFailedException,

@@ -13,6 +13,8 @@
  * file.
  */
 
+#define OF_NOTIFICATION_CENTER_M
+
 #include "config.h"
 
 #import "OFNotificationCenter.h"

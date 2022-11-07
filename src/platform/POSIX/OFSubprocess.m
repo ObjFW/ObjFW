@@ -363,8 +363,10 @@ extern char **environ;
 
 - (void)closeForWriting
 {
-	if (_writePipe[1] != -1)
-		close(_writePipe[1]);
+	if (_readPipe[0] == -1 || _writePipe[1] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	close(_writePipe[1]);
 
 	_writePipe[1] = -1;
 }

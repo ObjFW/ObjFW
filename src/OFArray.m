@@ -242,7 +242,7 @@ static struct {
 	id const *ret;
 
 	@try {
-		[self getObjects: buffer inRange: OFRangeMake(0, count)];
+		[self getObjects: buffer inRange: OFMakeRange(0, count)];
 
 		ret = [[OFData dataWithItemsNoCopy: buffer
 					     count: count
@@ -535,7 +535,7 @@ static struct {
 	ret = [[self componentsJoinedByString: @",\n"] mutableCopy];
 
 	@try {
-		[ret prependString: @"(\n"];
+		[ret insertString: @"(\n" atIndex: 0];
 		[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 		[ret appendString: @"\n)"];
 	} @catch (id e) {
@@ -751,7 +751,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
-	OFRange range = OFRangeMake(state->state, count);
+	OFRange range = OFMakeRange(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exception];

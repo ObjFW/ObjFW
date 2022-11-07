@@ -39,13 +39,15 @@ typedef void (^OFNotificationCenterBlock)(OFNotification *notification);
  *
  * @brief A class to send and register for notifications.
  */
+#ifndef OF_NOTIFICATION_CENTER_M
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFNotificationCenter: OFObject
 {
 #ifdef OF_HAVE_THREADS
 	OFMutex *_mutex;
 #endif
 	OFMutableDictionary *_handles;
-	OF_RESERVE_IVARS(OFNotificationCenter, 4)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
