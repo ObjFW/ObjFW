@@ -35,7 +35,7 @@
 #import "OFThread.h"
 
 #import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFBindIPSocketFailedException.h"
 
 @implementation OFUDPSocket
 @dynamic delegate;
@@ -52,9 +52,9 @@
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: OFSocketErrNo()];
 
@@ -68,7 +68,7 @@
 #endif
 
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
-	if (OFSocketAddressPort(address) != 0) {
+	if (OFSocketAddressIPPort(address) != 0) {
 #endif
 		if (bind(_socket, (struct sockaddr *)&address->sockaddr,
 		    address->length) != 0) {
@@ -77,9 +77,9 @@
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
 
-			@throw [OFBindFailedException
+			@throw [OFBindIPSocketFailedException
 			    exceptionWithHost: OFSocketAddressString(address)
-					 port: OFSocketAddressPort(address)
+					 port: OFSocketAddressIPPort(address)
 				       socket: self
 					errNo: errNo];
 		}
@@ -92,7 +92,7 @@
 			while (rnd < 1024)
 				rnd = (uint16_t)rand();
 
-			OFSocketAddressSetPort(address, rnd);
+			OFSocketAddressSetIPPort(address, rnd);
 
 			if ((ret = bind(_socket,
 			    (struct sockaddr *)&address->sockaddr,
@@ -102,12 +102,12 @@
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				port = OFSocketAddressPort(address);
+				port = OFSocketAddressIPPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
 
-				@throw [OFBindFailedException
+				@throw [OFBindIPSocketFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
@@ -119,7 +119,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	if ((port = OFSocketAddressPort(address)) > 0)
+	if ((port = OFSocketAddressIPPort(address)) > 0)
 		return port;
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -133,9 +133,9 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: errNo];
 	}
@@ -151,9 +151,9 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException
+		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressPort(address)
+				 port: OFSocketAddressIPPort(address)
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
@@ -161,9 +161,9 @@
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
 
-	@throw [OFBindFailedException
+	@throw [OFBindIPSocketFailedException
 	    exceptionWithHost: OFSocketAddressString(address)
-			 port: OFSocketAddressPort(address)
+			 port: OFSocketAddressIPPort(address)
 		       socket: self
 			errNo: EADDRNOTAVAIL];
 #endif
@@ -183,7 +183,7 @@
 		      addressFamily: OFSocketAddressFamilyAny];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
-	OFSocketAddressSetPort(&address, port);
+	OFSocketAddressSetIPPort(&address, port);
 
 	port = [self of_bindToAddress: &address extraType: 0];
 

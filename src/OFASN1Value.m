@@ -103,9 +103,9 @@
 
 	OFHashInit(&hash);
 
-	OFHashAdd(&hash, _tagClass & 0xFF);
-	OFHashAdd(&hash, _tagNumber & 0xFF);
-	OFHashAdd(&hash, _constructed);
+	OFHashAddByte(&hash, _tagClass & 0xFF);
+	OFHashAddByte(&hash, _tagNumber & 0xFF);
+	OFHashAddByte(&hash, _constructed);
 	OFHashAddHash(&hash, _DEREncodedContents.hash);
 
 	OFHashFinalize(&hash);

@@ -42,20 +42,26 @@ static OFString *const module = @"OFWindowsRegistryKey";
 	TEST(@"+[OFWindowsRegistryKey usersKey]",
 	    [OFWindowsRegistryKey usersKey])
 
-	TEST(@"-[openSubkeyAtPath:securityAndAccessRights:] #1",
+	    TEST(@"-[openSubkeyAtPath:accessRights:options:] #1",
 	    (softwareKey = [[OFWindowsRegistryKey currentUserKey]
-		   openSubkeyAtPath: @"Software"
-	    securityAndAccessRights: KEY_ALL_ACCESS]))
+		openSubkeyAtPath: @"Software"
+		    accessRights: KEY_ALL_ACCESS
+			 options: 0]))
 
-	EXPECT_EXCEPTION(@"-[openSubkeyAtPath:securityAndAccessRights:] #2",
+	EXPECT_EXCEPTION(@"-[openSubkeyAtPath:accessRights:options:] #2",
 	    OFOpenWindowsRegistryKeyFailedException,
 	    [[OFWindowsRegistryKey currentUserKey]
-		   openSubkeyAtPath: @"nonexistent"
-	    securityAndAccessRights: KEY_ALL_ACCESS])
+		openSubkeyAtPath: @"nonexistent"
+		    accessRights: KEY_ALL_ACCESS
+			 options: 0])
 
-	TEST(@"-[createSubkeyAtPath:securityAndAccessRights:]",
+	TEST(@"-[createSubkeyAtPath:accessRights:securityAttributes:options:"
+	    @"disposition:]",
 	    (objFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
-				securityAndAccessRights: KEY_ALL_ACCESS]))
+					   accessRights: KEY_ALL_ACCESS
+				     securityAttributes: NULL
+						options: 0
+					    disposition: NULL]))
 
 	TEST(@"-[setData:forValueNamed:type:]",
 	    R([objFWKey setData: data forValueNamed: @"data" type: REG_BINARY]))

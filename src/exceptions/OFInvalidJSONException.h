@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_string;
 	size_t _line;
+	OF_RESERVE_IVARS(OFInvalidJSONException, 4)
 }
 
 /**

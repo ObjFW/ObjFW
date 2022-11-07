@@ -16,12 +16,40 @@
 #include "config.h"
 
 #import "OFMutableTarArchiveEntry.h"
-#import "OFString.h"
+#import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFNumber.h"
+#import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
-@dynamic owner, group, deviceMajor, deviceMinor;
+@dynamic fileName, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic compressedSize, uncompressedSize, modificationDate, type;
+@dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
+@dynamic deviceMinor;
+/*
+ * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic fileComment;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {
@@ -39,24 +67,35 @@
 	[old release];
 }
 
-- (void)setMode: (unsigned long)mode
+- (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
-	_mode = mode;
+	OFNumber *old = _POSIXPermissions;
+	_POSIXPermissions = [POSIXPermissions retain];
+	[old release];
 }
 
-- (void)setUID: (unsigned long)UID
+- (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
-	_UID = UID;
+	OFNumber *old = _ownerAccountID;
+	_ownerAccountID = [ownerAccountID retain];
+	[old release];
 }
 
-- (void)setGID: (unsigned long)GID
+- (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
-	_GID = GID;
+	OFNumber *old = _groupOwnerAccountID;
+	_groupOwnerAccountID = [groupOwnerAccountID retain];
+	[old release];
 }
 
-- (void)setSize: (unsigned long long)size
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
-	_size = size;
+	_compressedSize = compressedSize;
+}
+
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
+{
+	_uncompressedSize = uncompressedSize;
 }
 
 - (void)setModificationDate: (OFDate *)modificationDate
@@ -78,17 +117,17 @@
 	[old release];
 }
 
-- (void)setOwner: (OFString *)owner
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
-	OFString *old = _owner;
-	_owner = [owner copy];
+	OFString *old = _ownerAccountName;
+	_ownerAccountName = [ownerAccountName copy];
 	[old release];
 }
 
-- (void)setGroup: (OFString *)group
+- (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
-	OFString *old = _group;
-	_group = [group copy];
+	OFString *old = _groupOwnerAccountName;
+	_groupOwnerAccountName = [groupOwnerAccountName copy];
 	[old release];
 }
 

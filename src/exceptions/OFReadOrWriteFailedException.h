@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 	size_t _requestedLength;
 	int _errNo;
+	OF_RESERVE_IVARS(OFReadOrWriteFailedException, 4)
 }
 
 /**

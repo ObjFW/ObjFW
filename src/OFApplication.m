@@ -42,10 +42,10 @@
 #import "OFThread+Private.h"
 #import "OFThread.h"
 
+#import "OFActivateSandboxFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-#import "OFSandboxActivationFailedException.h"
 
 #if defined(OF_MACOS)
 # include <crt_externs.h>
@@ -654,7 +654,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	promises = [sandbox.pledgeString cStringWithEncoding: encoding];
 
 	if (pledge(promises, NULL) != 0)
-		@throw [OFSandboxActivationFailedException
+		@throw [OFActivateSandboxFailedException
 		    exceptionWithSandbox: sandbox
 				   errNo: errno];
 
@@ -682,7 +682,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	    cStringWithEncoding: [OFLocale encoding]];
 
 	if (pledge(NULL, promises) != 0)
-		@throw [OFSandboxActivationFailedException
+		@throw [OFActivateSandboxFailedException
 		    exceptionWithSandbox: sandbox
 				   errNo: errno];
 

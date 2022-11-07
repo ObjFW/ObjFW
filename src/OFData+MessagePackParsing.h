@@ -29,6 +29,12 @@ extern int _OFData_MessagePackParsing_reference;
 /**
  * @brief The data interpreted as MessagePack representation and parsed as an
  *	  object.
+ *
+ * @throw OFInvalidFormatException The MessagePack representation contained in
+ *				   the data contained an invalid format
+ * @throw OFTruncatedDataException The MessagePack representation contained in
+ *				   the data is truncated
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingMessagePack;
 
@@ -38,6 +44,11 @@ extern int _OFData_MessagePackParsing_reference;
  * @param depthLimit The maximum depth the parser should accept (defaults to 32
  *		     if not specified, 0 means no limit (insecure!))
  * @return The MessagePack representation as an object
+ * @throw OFInvalidFormatException The MessagePack representation contained in
+ *				   the data contained an invalid format
+ * @throw OFTruncatedDataException The MessagePack representation contained in
+ *				   the data is truncated
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit;
 @end

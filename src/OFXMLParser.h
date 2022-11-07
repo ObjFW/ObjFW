@@ -39,11 +39,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param parser The parser which found a processing instruction
  * @param target The target of the processing instruction
- * @param data The data of the processing instruction
+ * @param text The text of the processing instruction
  */
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data;
+				  text: (OFString *)text;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new
@@ -52,14 +52,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a new tag
  * @param name The name of the tag which just started
  * @param prefix The prefix of the tag which just started or `nil`
- * @param ns The namespace of the tag which just started or `nil`
+ * @param nameSpace The namespace of the tag which just started or `nil`
  * @param attributes The attributes included in the tag which just started or
  *		     `nil`
  */
 -    (void)parser: (OFXMLParser *)parser
   didStartElement: (OFString *)name
 	   prefix: (nullable OFString *)prefix
-	namespace: (nullable OFString *)ns
+	namespace: (nullable OFString *)nameSpace
        attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
 
 /**
@@ -68,12 +68,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found the end of a tag
  * @param name The name of the tag which just ended
  * @param prefix The prefix of the tag which just ended or `nil`
- * @param ns The namespace of the tag which just ended or `nil`
+ * @param nameSpace The namespace of the tag which just ended or `nil`
  */
 -  (void)parser: (OFXMLParser *)parser
   didEndElement: (OFString *)name
 	 prefix: (nullable OFString *)prefix
-      namespace: (nullable OFString *)ns;
+      namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief This callback is called when the XML parser found characters.
@@ -187,6 +187,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param buffer The buffer to parse
  * @param length The length of the buffer
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseBuffer: (const char *)buffer length: (size_t)length;
 
@@ -194,6 +198,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified string.
  *
  * @param string The string to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseString: (OFString *)string;
 
@@ -201,6 +209,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified stream.
  *
  * @param stream The stream to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseStream: (OFStream *)stream;
 @end

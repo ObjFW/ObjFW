@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An exception indicating that reading from an object failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException
+{
+	OF_RESERVE_IVARS(OFReadFailedException, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

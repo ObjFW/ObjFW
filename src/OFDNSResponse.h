@@ -29,12 +29,12 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
  *
  * @brief A class storing a response from @ref OFDNSResolver.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFDNSResponse: OFObject
 {
 	OFString *_domainName;
 	OFDNSResponseRecords _answerRecords, _authorityRecords;
 	OFDNSResponseRecords _additionalRecords;
-	OF_RESERVE_IVARS(OFDNSResponse, 4)
 }
 
 /**

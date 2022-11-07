@@ -229,26 +229,36 @@ other place, you are most likely using a mirror.
 
 <h3 id="setting-up-msys2">Setting up MSYS2</h3>
 
-  MSYS2 currently supports 5 different
+  MSYS2 currently supports 7 different
   [environments](https://www.msys2.org/docs/environments/). All of them except
   for the one called just "MSYS" are supported, but which packages you need to
-  install depends on the environment(s) you want to use.
-
-  For MINGW64, use:
-
-    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
-
-  For UCRT64, use:
-
-    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
+  install depends on the environment(s) you want to use. If you only want to
+  target Windows 10 and newer, the CLANG64 and CLANG32 environments are the
+  recommended ones.
 
   For CLANG64, use:
 
     $ pacman -Syu mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-fossil
 
+  For CLANG32, use:
+
+    $ pacman -Syu mingw-w64-clang-i686-clang mingw-w64-clang-i686-fossil
+
+  For CLANGARM64, use (you need to use Fossil via another environment):
+
+    $ pacman -Syu mingw-w64-clang-aarch64-clang
+
+  For MINGW64, use:
+
+    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
+
   For MINGW32, use:
 
     $ pacman -Syu mingw-w64-i686-clang mingw-w64-i686-fossil
+
+  For UCRT64, use:
+
+    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
 
   When using `pacman` to install the packages, `pacman` might tell you to close
   the window. If it does so, close the window, restart MSYS2 and execute the
@@ -311,7 +321,7 @@ other place, you are most likely using a mirror.
 
   To create your first, empty application, you can use `objfw-new`:
 
-    $ objfw-new app MyFirstApp
+    $ objfw-new --app MyFirstApp
 
   This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
   method is called as soon as ObjFW finished all initialization. Use this as

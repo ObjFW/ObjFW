@@ -4,13 +4,13 @@ STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
 SRCS = OFAllocFailedException.m				\
-       OFChangeCurrentDirectoryPathFailedException.m	\
        OFChecksumMismatchException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
        OFCreateSymbolicLinkFailedException.m		\
        OFEnumerationMutationException.m			\
        OFException.m					\
+       OFGetItemAttributesFailedException.m		\
        OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
        OFHashNotCalculatedException.m			\
@@ -19,8 +19,8 @@ SRCS = OFAllocFailedException.m				\
        OFInvalidEncodingException.m			\
        OFInvalidFormatException.m			\
        OFInvalidJSONException.m				\
-       OFInvalidServerReplyException.m			\
-       OFLinkFailedException.m				\
+       OFInvalidServerResponseException.m		\
+       OFLinkItemFailedException.m			\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
        OFMoveItemFailedException.m			\
@@ -32,7 +32,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
-       OFRetrieveItemAttributesFailedException.m	\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
@@ -51,25 +50,36 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
-SRCS_FILES = OFGetCurrentDirectoryPathFailedException.m
+SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
+	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
-SRCS_SOCKETS = OFAcceptFailedException.m		\
+SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFAlreadyConnectedException.m		\
-	       OFBindFailedException.m			\
-	       OFConnectionFailedException.m		\
+	       OFBindIPSocketFailedException.m		\
+	       OFBindSocketFailedException.m		\
+	       OFConnectIPSocketFailedException.m	\
+	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
-	       OFListenFailedException.m		\
-	       OFObserveFailedException.m		\
+	       OFListenOnSocketFailedException.m	\
+	       OFObserveKernelEventsFailedException.m	\
 	       OFResolveHostFailedException.m		\
-	       OFTLSHandshakeFailedException.m
-SRCS_THREADS = OFConditionBroadcastFailedException.m	\
-	       OFConditionSignalFailedException.m	\
+	       OFTLSHandshakeFailedException.m		\
+	       ${USE_SRCS_APPLETALK}			\
+	       ${USE_SRCS_IPX}				\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFBindDDPSocketFailedException.m
+SRCS_IPX = OFBindIPXSocketFailedException.m	\
+	   OFConnectSPXSocketFailedException.m
+SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
+		    OFConnectUNIXSocketFailedException.m
+SRCS_THREADS = OFBroadcastConditionFailedException.m	\
 	       OFConditionStillWaitingException.m	\
-	       OFConditionWaitFailedException.m		\
-	       OFThreadJoinFailedException.m		\
-	       OFThreadStartFailedException.m		\
-	       OFThreadStillRunningException.m
+	       OFJoinThreadFailedException.m		\
+	       OFSignalConditionFailedException.m	\
+	       OFStartThreadFailedException.m		\
+	       OFThreadStillRunningException.m		\
+	       OFWaitForConditionFailedException.m
 SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryValueFailedException.m	\
@@ -79,7 +89,7 @@ SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 
 INCLUDES := ${SRCS:.m=.h}
 
-SRCS += OFSandboxActivationFailedException.m
+SRCS += OFActivateSandboxFailedException.m
 
 include ../../buildsys.mk
 

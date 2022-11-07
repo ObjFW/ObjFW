@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFMalformedXMLException: OFException
 {
 	OFXMLParser *_parser;
+	OF_RESERVE_IVARS(OFMalformedXMLException, 4)
 }
 
 /**

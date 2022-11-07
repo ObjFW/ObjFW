@@ -48,6 +48,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
  * receiver's memory pool.
+ *
+ * @throw OFHashNotCalculatedException The HMAC hasn't been calculated yet
  */
 @property (readonly, nonatomic) const unsigned char *digest
     OF_RETURNS_INNER_POINTER;
@@ -100,11 +102,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
+ * @throw OFHashAlreadyCalculatedException The HMAC has already been calculated
  */
 - (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
 
 /**
  * @brief Performs the final calculation of the HMAC.
+ *
+ * @throw OFHashAlreadyCalculatedException The HMAC has already been calculated
  */
 - (void)calculate;
 

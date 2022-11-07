@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFAlreadyConnectedException: OFException
 {
 	id _socket;
+	OF_RESERVE_IVARS(OFAlreadyConnectedException, 4)
 }
 
 /**

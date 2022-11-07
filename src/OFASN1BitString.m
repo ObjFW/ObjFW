@@ -91,7 +91,7 @@
 
 		length = (count - 1) * 8;
 		bitString = [DEREncodedContents subdataWithRange:
-		    OFRangeMake(1, count - 1)];
+		    OFMakeRange(1, count - 1)];
 
 		if (unusedBits != 0)
 			length -= unusedBits;

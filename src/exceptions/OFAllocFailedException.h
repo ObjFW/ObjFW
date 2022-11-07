@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * like other exceptions, as the exception handling code is not allowed to
  * allocate *any* memory.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFAllocFailedException: OFObject
 + (instancetype)exception OF_UNAVAILABLE;
 - (instancetype)init OF_UNAVAILABLE;

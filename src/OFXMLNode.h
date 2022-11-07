@@ -40,53 +40,44 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The contents of the receiver as a `long long` value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `long long`
  */
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as an
+ *				   `unsigned long long`
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
 /**
  * @brief The contents of the receiver as a float value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `float`
  */
 @property (readonly, nonatomic) float floatValue;
 
 /**
  * @brief The contents of the receiver as a double value.
+ *
+ * @throw OFInvalidFormatException The node cannot be parsed as a `double`
  */
 @property (readonly, nonatomic) double doubleValue;
 
 /**
  * @brief A string representing the node as an XML string.
+ *
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
  */
 @property (readonly, nonatomic) OFString *XMLString;
 
 - (instancetype)init OF_UNAVAILABLE;
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
-
-/**
- * @brief Returns an OFString representing the OFXMLNode as an XML string with
- *	  indentation.
- *
- * @param indentation The indentation for the XML string
- * @return An OFString representing the OFXMLNode as an XML string with
- *	   indentation
- */
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
-
-/**
- * @brief Returns an OFString representing the OFXMLNode as an XML string with
- *	  indentation for the specified level.
- *
- * @param indentation The indentation for the XML string
- * @param level The level of indentation
- * @return An OFString representing the OFXMLNode as an XML string with
- *	   indentation
- */
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level;
 
 /**
  * @brief The contents of the receiver as a `long long` value in the specified
@@ -99,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as a `long long` value in the specified
  *	   base
  */
-- (long long)longLongValueWithBase: (int)base;
+- (long long)longLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value in the
@@ -112,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as an `unsigned long long` value in the
  * 	   specified base
  */
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base;
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
 @end
 
 OF_ASSUME_NONNULL_END

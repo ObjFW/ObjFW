@@ -52,7 +52,7 @@ SRCS = ForwardingTests.m		\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFSystemInfoTests.m		\
-       OFURLTests.m			\
+       OFURITests.m			\
        OFValueTests.m			\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
@@ -77,8 +77,10 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
@@ -93,11 +95,11 @@ IOS_TMP ?= /tmp/objfw-test
 include ../buildsys.mk
 
 serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml /serialization.xml $@
+	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
 testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin /testfile.bin $@
+	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini /testfile.ini $@
+	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:

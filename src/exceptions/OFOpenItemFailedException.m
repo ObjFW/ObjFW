@@ -17,16 +17,16 @@
 
 #import "OFOpenItemFailedException.h"
 #import "OFString.h"
-#import "OFURL.h"
+#import "OFURI.h"
 
 @implementation OFOpenItemFailedException
-@synthesize URL = _URL, path = _path, mode = _mode, errNo = _errNo;
+@synthesize URI = _URI, path = _path, mode = _mode, errNo = _errNo;
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithURI: (OFURI *)URI
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
+	return [[[self alloc] initWithURI: URI
 				     mode: mode
 				    errNo: errNo] autorelease];
 }
@@ -45,14 +45,14 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithURI: (OFURI *)URI
 		       mode: (OFString *)mode
 		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_URI = [URI copy];
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -88,7 +88,7 @@
 
 - (void)dealloc
 {
-	[_URL release];
+	[_URI release];
 	[_path release];
 	[_mode release];
 
@@ -99,14 +99,14 @@
 {
 	id item = nil;
 
-	if (_URL != nil)
-		item = _URL;
+	if (_URI != nil)
+		item = _URI;
 	else if (_path != nil)
 		item = _path;
 
 	if (_mode != nil)
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@ with mode %@: %@",
+		    @"Failed to open file %@ with mode %@: %@",
 		    item, _mode, OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:

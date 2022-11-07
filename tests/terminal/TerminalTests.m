@@ -92,21 +92,21 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[OFStdOut clear];
 	[OFThread sleepForTimeInterval: 2];
 
-	[OFStdOut setCursorPosition: OFPointMake(5, 3)];
+	[OFStdOut setCursorPosition: OFMakePoint(5, 3)];
 	[OFStdOut writeString: @"Text at (5, 3)"];
 	[OFThread sleepForTimeInterval: 2];
 
-	[OFStdOut setRelativeCursorPosition: OFPointMake(-2, 0)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(-2, 0)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFPointMake(2, 0)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(2, 0)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFPointMake(0, -2)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(0, -2)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFPointMake(0, 2)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(0, 2)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFPointMake(1, 1)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(1, 1)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFPointMake(-1, -1)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(-1, -1)];
 	[OFThread sleepForTimeInterval: 2];
 
 	[OFStdOut setCursorColumn: 2];

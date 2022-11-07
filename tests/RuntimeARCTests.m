@@ -27,7 +27,7 @@ static OFString *const module = @"Runtime (ARC)";
 {
 	self = [super init];
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && defined(OF_X86_64)
 	/*
 	 * Clang has a bug on Windows where it creates an invalid call into
 	 * objc_retainAutoreleasedReturnValue(). Work around it by not using an

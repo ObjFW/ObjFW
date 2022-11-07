@@ -80,6 +80,9 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief The remote address.
  *
  * @note This only works for accepted sockets!
+ *
+ * @throw OFNotOpenException The socket is not open
+ * @throw OFInvalidArgumentException The socket has no remote address
  */
 @property (readonly, nonatomic) const OFSocketAddress *remoteAddress;
 
@@ -103,11 +106,16 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief Listen on the socket.
  *
  * @param backlog Maximum length for the queue of pending connections.
+ * @throw OFListenOnSocketFailedException Listening failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)listenWithBacklog: (int)backlog;
 
 /**
  * @brief Listen on the socket.
+ *
+ * @throw OFListenOnSocketFailedException Listening failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (void)listen;
 
@@ -115,6 +123,8 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased OFStreamSocket for the accepted connection.
+ * @throw OFAcceptSocketFailedException Accepting failed
+ * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;
 

@@ -58,18 +58,18 @@
 
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data
+				  text: (OFString *)text
 {
 	OFXMLProcessingInstruction *node = [OFXMLProcessingInstruction
 	    processingInstructionWithTarget: target
-				       data: data];
+				       text: text];
 	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
-	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self didBuildParentlessNode: node];
+	    @selector(elementBuilder:didBuildOrphanNode:)])
+		[_delegate elementBuilder: self didBuildOrphanNode: node];
 }
 
 -    (void)parser: (OFXMLParser *)parser
@@ -136,8 +136,8 @@
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
-	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate  elementBuilder: self didBuildParentlessNode: node];
+	    @selector(elementBuilder:didBuildOrphanNode:)])
+		[_delegate elementBuilder: self didBuildOrphanNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
@@ -149,8 +149,8 @@
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
-	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self didBuildParentlessNode: node];
+	    @selector(elementBuilder:didBuildOrphanNode:)])
+		[_delegate elementBuilder: self didBuildOrphanNode: node];
 }
 
 - (void)parser: (OFXMLParser *)parser
@@ -162,8 +162,8 @@
 	if (parent != nil)
 		[parent addChild: node];
 	else if ([_delegate respondsToSelector:
-	    @selector(elementBuilder:didBuildParentlessNode:)])
-		[_delegate elementBuilder: self didBuildParentlessNode: node];
+	    @selector(elementBuilder:didBuildOrphanNode:)])
+		[_delegate elementBuilder: self didBuildOrphanNode: node];
 }
 
 -      (OFString *)parser: (OFXMLParser *)parser

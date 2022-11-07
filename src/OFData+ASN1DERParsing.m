@@ -61,7 +61,7 @@ parseSequence(OFData *contents, size_t depthLimit)
 
 		count -= objectLength;
 		contents = [contents subdataWithRange:
-		    OFRangeMake(objectLength, count)];
+		    OFMakeRange(objectLength, count)];
 
 		[ret addObject: object];
 	}
@@ -88,7 +88,7 @@ parseSet(OFData *contents, size_t depthLimit)
 
 		objectLength = parseObject(contents, &object, depthLimit);
 		objectData = [contents subdataWithRange:
-		    OFRangeMake(0, objectLength)];
+		    OFMakeRange(0, objectLength)];
 
 		if (previousObjectData != nil &&
 		    [objectData compare: previousObjectData] !=
@@ -97,7 +97,7 @@ parseSet(OFData *contents, size_t depthLimit)
 
 		count -= objectLength;
 		contents = [contents subdataWithRange:
-		    OFRangeMake(objectLength, count)];
+		    OFMakeRange(objectLength, count)];
 
 		[ret addObject: object];
 
@@ -155,7 +155,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		@throw [OFTruncatedDataException exception];
 
 	contents = [self subdataWithRange:
-	    OFRangeMake(bytesConsumed, contentsLength)];
+	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
 	switch (tag & ~tagConstructedMask) {

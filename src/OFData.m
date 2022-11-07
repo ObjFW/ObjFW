@@ -29,13 +29,13 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFURI.h"
+#import "OFURIHandler.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFInvalidServerReplyException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -94,9 +94,9 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI
 {
-	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
+	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
 }
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
@@ -176,26 +176,22 @@ _references_to_categories_of_OFData(void)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	char *buffer = NULL;
-	unsigned long long size;
+	OFStreamOffset fileSize;
 
 	@try {
-		OFFile *file;
+		void *pool = objc_autoreleasePoolPush();
+		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
 
-		size = [[OFFileManager defaultManager]
-		    attributesOfItemAtPath: path].fileSize;
-
-# if ULLONG_MAX > SIZE_MAX
-		if (size > SIZE_MAX)
+		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
-# endif
 
-		buffer = OFAllocMemory((size_t)size, 1);
-		file = [[OFFile alloc] initWithPath: path mode: @"r"];
-		@try {
-			[file readIntoBuffer: buffer exactLength: (size_t)size];
-		} @finally {
-			[file release];
-		}
+		[file seekToOffset: 0 whence: OFSeekSet];
+
+		buffer = OFAllocMemory((size_t)fileSize, 1);
+		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		[self release];
@@ -205,7 +201,7 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		self = [self initWithItemsNoCopy: buffer
-					   count: (size_t)size
+					   count: (size_t)fileSize
 				    freeWhenDone: true];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
@@ -216,22 +212,15 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURI: (OFURI *)URI
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFURLHandler *URLHandler;
-		OFStream *stream;
+		OFStream *stream = [OFURIHandler openItemAtURI: URI mode: @"r"];
 		size_t pageSize;
 		unsigned char *buffer;
-
-		if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-			@throw [OFUnsupportedProtocolException
-			    exceptionWithURL: URL];
-
-		stream = [URLHandler openItemAtURL: URL mode: @"r"];
 
 		_count = 0;
 		_itemSize = 1;
@@ -485,7 +474,7 @@ _references_to_categories_of_OFData(void)
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		OFHashAdd(&hash, ((uint8_t *)_items)[i]);
+		OFHashAddByte(&hash, ((uint8_t *)_items)[i]);
 
 	OFHashFinalize(&hash);
 
@@ -559,10 +548,10 @@ _references_to_categories_of_OFData(void)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((searchLength = data.count) == 0)
-		return OFRangeMake(0, 0);
+		return OFMakeRange(0, 0);
 
 	if (searchLength > range.length)
-		return OFRangeMake(OFNotFound, 0);
+		return OFMakeRange(OFNotFound, 0);
 
 	search = data.items;
 
@@ -570,7 +559,7 @@ _references_to_categories_of_OFData(void)
 		for (size_t i = range.length - searchLength;; i--) {
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return OFRangeMake(i, searchLength);
+				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
 			if (i == 0)
@@ -581,10 +570,10 @@ _references_to_categories_of_OFData(void)
 		    i <= range.length - searchLength; i++)
 			if (memcmp(_items + i * _itemSize, search,
 			    searchLength * _itemSize) == 0)
-				return OFRangeMake(i, searchLength);
+				return OFMakeRange(i, searchLength);
 	}
 
-	return OFRangeMake(OFNotFound, 0);
+	return OFMakeRange(OFNotFound, 0);
 }
 
 #ifdef OF_HAVE_FILES
@@ -599,15 +588,11 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (void)writeToURL: (OFURL *)URL
+- (void)writeToURI: (OFURI *)URI
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURLHandler *URLHandler;
 
-	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	[[URLHandler openItemAtURL: URL mode: @"w"] writeData: self];
+	[[OFURIHandler openItemAtURI: URI mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -618,7 +603,8 @@ _references_to_categories_of_OFData(void)
 	OFXMLElement *element;
 
 	if (_itemSize != 1)
-		@throw [OFInvalidArgumentException exception];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement
@@ -638,7 +624,8 @@ _references_to_categories_of_OFData(void)
 	OFMutableData *data;
 
 	if (_itemSize != 1)
-		@throw [OFInvalidArgumentException exception];
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	if (_count <= UINT8_MAX) {
 		uint8_t type = 0xC4;

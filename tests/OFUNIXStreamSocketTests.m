@@ -30,15 +30,15 @@ static OFString *const module = @"OFUNIXStreamSocket";
 	char buffer[5];
 
 #if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryURL]
-	    URLByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	path = [[OFSystemInfo temporaryDirectoryURI]
+	    URIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
 	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectoryURL is
+	 * We also use this code path for iOS, as the temporaryDirectoryURI is
 	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",
@@ -50,7 +50,7 @@ static OFString *const module = @"OFUNIXStreamSocket";
 
 	@try {
 		TEST(@"-[bindToPath:]", R([sockServer bindToPath: path]))
-	} @catch (OFBindFailedException *e) {
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:

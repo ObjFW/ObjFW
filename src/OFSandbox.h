@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 typedef OFPair OF_GENERIC(OFString *, OFString *) *OFSandboxUnveilPath;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFSandbox: OFObject <OFCopying>
 {
 	unsigned int _allowsStdIO: 1;
@@ -58,7 +59,6 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *OFSandboxUnveilPath;
 	OFMutableArray OF_GENERIC(OFSandboxUnveilPath) *_unveiledPaths;
 @public
 	size_t _unveiledPathsIndex;
-	OF_RESERVE_IVARS(OFSandbox, 4)
 }
 
 @property (nonatomic) bool allowsStdIO;

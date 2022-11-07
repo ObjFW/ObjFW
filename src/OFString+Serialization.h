@@ -28,6 +28,13 @@ extern int _OFString_Serialization_reference;
 @interface OFString (Serialization)
 /**
  * @brief The string interpreted as serialization and parsed as an object.
+ *
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundNamespaceException A prefix was used that was not bound to
+ *				      any namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
+ * @throw OFUnsupportedVersionException The serialization is in an unsupported
+ *					version
  */
 @property (readonly, nonatomic) id objectByDeserializing;
 @end
