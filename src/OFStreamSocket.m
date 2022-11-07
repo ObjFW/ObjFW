@@ -31,10 +31,10 @@
 #import "OFRunLoop+Private.h"
 #import "OFSocket+Private.h"
 
-#import "OFAcceptFailedException.h"
+#import "OFAcceptSocketFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
@@ -233,7 +233,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backlog) == -1)
-		@throw [OFListenFailedException
+		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
 				  errNo: OFSocketErrNo()];
@@ -258,7 +258,7 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
@@ -266,14 +266,14 @@
 	    (struct sockaddr * )&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 

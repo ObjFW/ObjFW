@@ -64,7 +64,7 @@
 	const char *method = OFHTTPRequestMethodName(_request.method);
 
 	return [OFString stringWithFormat:
-	    @"An HTTP %s request with URL %@ failed with code %hd!", method,
-	    _request.URL, _response.statusCode];
+	    @"An HTTP %s request with URI %@ failed with code %hd!", method,
+	    _request.URI, _response.statusCode];
 }
 @end

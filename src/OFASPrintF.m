@@ -582,7 +582,7 @@ formatConversionSpecifierState(struct Context *ctx)
 		 * use this ugly hack to replace the locale's decimal point
 		 * back to ".".
 		 */
-		point = [OFLocale decimalPoint];
+		point = [OFLocale decimalSeparator];
 
 		if (!ctx->useLocale && point != nil && ![point isEqual: @"."]) {
 			void *pool = objc_autoreleasePoolPush();

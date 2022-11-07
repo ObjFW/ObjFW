@@ -31,7 +31,7 @@
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #define eventListSize 64
@@ -94,8 +94,9 @@
 	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[super addObjectForReading: object];
 }
@@ -115,8 +116,9 @@
 	event.udata = (__typeof__(event.udata))object;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[super addObjectForWriting: object];
 }
@@ -131,8 +133,9 @@
 	event.flags = EV_DELETE;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[super removeObjectForReading: object];
 }
@@ -147,8 +150,9 @@
 	event.flags = EV_DELETE;
 
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[super removeObjectForWriting: object];
 }
@@ -169,14 +173,15 @@
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		void *pool;
 
 		if (eventList[i].flags & EV_ERROR)
-			@throw [OFObserveFailedException
+			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: (int)eventList[i].data];
 

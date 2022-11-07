@@ -24,17 +24,17 @@
 
 	[OFStdOut setForegroundColor: [OFColor lime]];
 
-	[OFStdOut writeFormat: @"[OFLocale] Language: %@\n",
-	    [OFLocale language]];
+	[OFStdOut writeFormat: @"[OFLocale] Language code: %@\n",
+	    [OFLocale languageCode]];
 
-	[OFStdOut writeFormat: @"[OFLocale] Territory: %@\n",
-	    [OFLocale territory]];
+	[OFStdOut writeFormat: @"[OFLocale] Country code: %@\n",
+	    [OFLocale countryCode]];
 
 	[OFStdOut writeFormat: @"[OFLocale] Encoding: %@\n",
 	    OFStringEncodingName([OFLocale encoding])];
 
-	[OFStdOut writeFormat: @"[OFLocale] Decimal point: %@\n",
-	    [OFLocale decimalPoint]];
+	[OFStdOut writeFormat: @"[OFLocale] Decimal separator: %@\n",
+	    [OFLocale decimalSeparator]];
 
 	objc_autoreleasePoolPop(pool);
 }

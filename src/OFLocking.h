@@ -30,6 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Locks the lock.
+ *
+ * @throw OFLockFailedException Acquiring the lock failed
  */
 - (void)lock;
 
@@ -37,11 +39,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Tries to lock the lock.
  *
  * @return A boolean whether the lock could be locked
+ *
+ * @throw OFLockFailedException The lock could not be acquired for another
+ *				reason than it already being held
  */
 - (bool)tryLock;
 
 /**
  * @brief Unlocks the lock.
+ *
+ * @throw OFUnlockFailedException Releasing the lock failed
  */
 - (void)unlock;
 @end

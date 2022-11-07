@@ -52,7 +52,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 
 -	 (void)socket: (OFSPXStreamSocket *)sock
   didConnectToNetwork: (uint32_t)network
-		 node: (unsigned char [IPX_NODE_LEN])node
+		 node: (const unsigned char [IPX_NODE_LEN])node
 		 port: (uint16_t)port
 	    exception: (id)exception
 {
@@ -71,6 +71,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 @implementation TestsAppDelegate (OFSPXStreamSocketTests)
 - (void)SPXStreamSocketTests
 {
+	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	void *pool = objc_autoreleasePoolPush();
 	OFSPXStreamSocket *sockClient, *sockServer = nil, *sockAccepted;
 	OFSocketAddress address1;
@@ -85,27 +86,30 @@ static OFString *const module = @"OFSPXStreamSocket";
 	    (sockServer = [OFSPXStreamSocket socket]))
 
 	@try {
-		TEST(@"-[bindToPort:]",
-		    R(address1 = [sockServer bindToPort: 0]))
-	} @catch (OFBindFailedException *e) {
+		TEST(@"-[bindToNetwork:node:port:]",
+		    R(address1 = [sockServer bindToNetwork: 0
+						      node: zeroNode
+						      port: 0]))
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
-			    @"IPX unsupported, skipping tests"];
+			    @"\r[OFSPXStreamSocket] -[bindToNetwork:node:"
+			    @"port:]: IPX unsupported, skipping tests"];
 			break;
 		case ESOCKTNOSUPPORT:
+		case EPROTONOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
-			    @"SPX unsupported, skipping tests"];
+			    @"\r[OFSPXStreamSocket] -[bindToNetwork:node:"
+			    @"port:]: SPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFSPXStreamSocket] -[bindToPort:]: "
-			    @"IPX not configured, skipping tests"];
+			    @"\r[OFSPXStreamSocket] -[bindToNetwork:node:"
+			    @"port:]: IPX not configured, skipping tests"];
 			break;
 		default:
 			@throw e;
@@ -116,8 +120,8 @@ static OFString *const module = @"OFSPXStreamSocket";
 	}
 
 	network = OFSocketAddressIPXNetwork(&address1);
-	OFSocketAddressIPXNode(&address1, node);
-	port = OFSocketAddressPort(&address1);
+	OFSocketAddressGetIPXNode(&address1, node);
+	port = OFSocketAddressIPXPort(&address1);
 
 	TEST(@"-[listen]", R([sockServer listen]))
 
@@ -139,7 +143,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 	TEST(@"-[remoteAddress]",
 	    (address2 = sockAccepted.remoteAddress) &&
 	    OFSocketAddressIPXNetwork(address2) == network &&
-	    R(OFSocketAddressIPXNode(address2, node2)) &&
+	    R(OFSocketAddressGetIPXNode(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0)
 
 	delegate = [[[SPXStreamSocketDelegate alloc] init] autorelease];
@@ -152,15 +156,15 @@ static OFString *const module = @"OFSPXStreamSocket";
 	delegate->_expectedClientSocket = sockClient;
 	sockClient.delegate = delegate;
 
-	address1 = [sockServer bindToPort: 0];
+	address1 = [sockServer bindToNetwork: 0 node: zeroNode port: 0];
 	[sockServer listen];
 	[sockServer asyncAccept];
 
 	delegate->_expectedNetwork = network =
 	    OFSocketAddressIPXNetwork(&address1);
-	OFSocketAddressIPXNode(&address1, node);
+	OFSocketAddressGetIPXNode(&address1, node);
 	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
-	delegate->_expectedPort = port = OFSocketAddressPort(&address1);
+	delegate->_expectedPort = port = OFSocketAddressIPXPort(&address1);
 
 	@try {
 		[sockClient asyncConnectToNetwork: network
@@ -172,7 +176,7 @@ static OFString *const module = @"OFSPXStreamSocket";
 
 		TEST(@"-[asyncAccept] & -[asyncConnectToNetwork:node:port:]",
 		    delegate->_accepted && delegate->_connected)
-	} @catch (OFObserveFailedException *e) {
+	} @catch (OFObserveKernelEventsFailedException *e) {
 		switch (e.errNo) {
 		case ENOTSOCK:
 			[OFStdOut setForegroundColor: [OFColor lime]];

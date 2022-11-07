@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFNotOpenException: OFException
 {
 	id _object;
+	OF_RESERVE_IVARS(OFNotOpenException, 4)
 }
 
 /**

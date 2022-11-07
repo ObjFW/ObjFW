@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 @class OFTCPSocket;
 @class OFTLSStream;
-@class OFURL;
+@class OFURI;
 
 /**
  * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
@@ -119,21 +119,21 @@ OF_ASSUME_NONNULL_BEGIN
  * callback will not be called.
  *
  * @param client The OFHTTPClient which wants to follow a redirect
- * @param URL The URL to which it will follow a redirect
+ * @param URI The URI to which it will follow a redirect
  * @param statusCode The status code for the redirection
  * @param request The request for which the OFHTTPClient wants to redirect.
  *		  You are allowed to change the request's headers from this
  *		  callback and they will be used when following the redirect
- *		  (e.g. to set the cookies for the new URL), however, keep in
+ *		  (e.g. to set the cookies for the new URI), however, keep in
  *		  mind that this will change the request you originally passed.
  * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
--	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (short)statusCode
-	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response;
+-	       (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirectToURI: (OFURI *)URI
+		 statusCode: (short)statusCode
+		    request: (OFHTTPRequest *)request
+		   response: (OFHTTPResponse *)response;
 @end
 
 /**
@@ -144,13 +144,13 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPClient: OFObject
 {
-#ifdef OF_HTTPCLIENT_M
+#ifdef OF_HTTP_CLIENT_M
 @public
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
 	bool _allowsInsecureRedirects, _inProgress;
 	OFStream *_Nullable _stream;
-	OFURL *_Nullable _lastURL;
+	OFURI *_Nullable _lastURI;
 	bool _lastWasHEAD;
 	OFHTTPResponse *_Nullable _lastResponse;
 }
@@ -182,6 +182,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param request The request to perform
  * @return The OFHTTPResponse for the request
+ * @throw OFHTTPRequestFailedException The HTTP request failed
+ * @throw OFInvalidServerResponseException The server sent an invalid response
+ * @throw OFUnsupportedVersionException The server responded in an unsupported
+ *					version
+ * @throw OFAlreadyConnectedException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
 
@@ -197,6 +202,11 @@ OF_SUBCLASSING_RESTRICTED
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
  * @return The OFHTTPResponse for the request
+ * @throw OFHTTPRequestFailedException The HTTP request failed
+ * @throw OFInvalidServerResponseException The server sent an invalid response
+ * @throw OFUnsupportedVersionException The server responded in an unsupported
+ *					version
+ * @throw OFAlreadyConnectedException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects;
@@ -205,6 +215,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
+ * @throw OFAlreadyConnectedException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
@@ -215,6 +226,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
+ * @throw OFAlreadyConnectedException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;

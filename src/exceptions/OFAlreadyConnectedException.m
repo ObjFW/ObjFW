@@ -21,9 +21,9 @@
 @implementation OFAlreadyConnectedException
 @synthesize socket = _socket;
 
-+ (instancetype)exceptionWithSocket: (id)socket
++ (instancetype)exceptionWithSocket: (id)sock
 {
-	return [[[self alloc] initWithSocket: socket] autorelease];
+	return [[[self alloc] initWithSocket: sock] autorelease];
 }
 
 - (instancetype)init
@@ -31,11 +31,11 @@
 	return [self initWithSocket: nil];
 }
 
-- (instancetype)initWithSocket: (id)socket
+- (instancetype)initWithSocket: (id)sock
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_socket = [sock retain];
 
 	return self;
 }

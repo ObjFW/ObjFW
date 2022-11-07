@@ -99,9 +99,10 @@ help(OFStream *stream, bool full, int status)
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
 # else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofdns/lang"];
+	[OFLocale addLocalizationDirectory:
+	    @"PROGDIR:/share/ofdns/localization"];
 # endif
 #endif
 

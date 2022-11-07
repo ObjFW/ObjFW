@@ -1038,12 +1038,12 @@ isFloat(OFNumber *number)
 		d = OFToLittleEndianDouble(self.doubleValue);
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OFHashAdd(&hash, ((char *)&d)[i]);
+			OFHashAddByte(&hash, ((char *)&d)[i]);
 	} else if (isSigned(self) || isUnsigned(self)) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		while (value != 0) {
-			OFHashAdd(&hash, value & 0xFF);
+			OFHashAddByte(&hash, value & 0xFF);
 			value >>= 8;
 		}
 	} else

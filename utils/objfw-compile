@@ -300,7 +300,7 @@ for i in $srcs; do
 		build="yes"
 	else
 		deps=$($OBJC -E -M $CPPFLAGS $OBJCFLAGS $i |
-			sed 's/.*: //' | sed 's/\\//g')
+			sed -e 's/.*: //' -e 's/\\//g')
 		for dep in $deps; do
 			test "$dep" -nt $obj && build="yes"
 		done

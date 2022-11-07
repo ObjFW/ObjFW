@@ -38,13 +38,7 @@ int _OFString_Serialization_reference;
 	OFArray *elements;
 	id object;
 
-	@try {
-		root = [OFXMLElement elementWithXMLString: self];
-	} @catch (OFMalformedXMLException *e) {
-		@throw [OFInvalidArgumentException exception];
-	} @catch (OFUnboundNamespaceException *e) {
-		@throw [OFInvalidArgumentException exception];
-	}
+	root = [OFXMLElement elementWithXMLString: self];
 
 	version = [root attributeForName: @"version"].stringValue;
 	if (version == nil)

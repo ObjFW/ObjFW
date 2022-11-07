@@ -49,7 +49,7 @@
 	return self.stringValue.longLongValue;
 }
 
-- (long long)longLongValueWithBase: (int)base
+- (long long)longLongValueWithBase: (unsigned char)base
 {
 	return [self.stringValue longLongValueWithBase: base];
 }
@@ -59,7 +59,7 @@
 	return self.stringValue.unsignedLongLongValue;
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (int)base
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
 	return [self.stringValue unsignedLongLongValueWithBase: base];
 }
@@ -76,23 +76,12 @@
 
 - (OFString *)XMLString
 {
-	return [self XMLStringWithIndentation: 0 level: 0];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return [self XMLStringWithIndentation: 0 level: 0];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFString *)description
 {
-	return [self XMLStringWithIndentation: 2 level: 0];
+	return self.XMLString;
 }
 
 - (OFXMLElement *)XMLElementBySerializing

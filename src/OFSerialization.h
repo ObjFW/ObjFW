@@ -36,6 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param element An OFXMLElement with the serialized object
  * @return An initialized object
+ * @throw OFInvalidFormatException The specified element is not of the correct
+ *				   serialization format
  */
 - (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end

@@ -36,7 +36,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
+static OFCharacterSet *URIQueryPartAllowedCharacterSet = nil;
 
 @interface OFDictionary ()
 - (OFString *)
@@ -58,8 +58,8 @@ OF_DIRECT_MEMBERS
 @end
 
 OF_DIRECT_MEMBERS
-@interface OFURLQueryPartAllowedCharacterSet: OFCharacterSet
-+ (OFCharacterSet *)URLQueryPartAllowedCharacterSet;
+@interface OFURIQueryPartAllowedCharacterSet: OFCharacterSet
++ (OFCharacterSet *)URIQueryPartAllowedCharacterSet;
 @end
 
 @implementation OFDictionaryPlaceholder
@@ -141,19 +141,19 @@ OF_DIRECT_MEMBERS
 }
 @end
 
-@implementation OFURLQueryPartAllowedCharacterSet
+@implementation OFURIQueryPartAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFURLQueryPartAllowedCharacterSet class])
+	if (self != [OFURIQueryPartAllowedCharacterSet class])
 		return;
 
-	URLQueryPartAllowedCharacterSet =
-	    [[OFURLQueryPartAllowedCharacterSet alloc] init];
+	URIQueryPartAllowedCharacterSet =
+	    [[OFURIQueryPartAllowedCharacterSet alloc] init];
 }
 
-+ (OFCharacterSet *)URLQueryPartAllowedCharacterSet
++ (OFCharacterSet *)URIQueryPartAllowedCharacterSet
 {
-	return URLQueryPartAllowedCharacterSet;
+	return URIQueryPartAllowedCharacterSet;
 }
 
 - (instancetype)autorelease
@@ -631,38 +631,6 @@ OF_DIRECT_MEMBERS
 	}
 	[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 	[ret appendString: @";\n}"];
-
-	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
-- (OFString *)stringByURLEncoding
-{
-	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *keyEnumerator = [self keyEnumerator];
-	OFEnumerator *objectEnumerator = [self objectEnumerator];
-	OFCharacterSet *allowed = [OFURLQueryPartAllowedCharacterSet
-	    URLQueryPartAllowedCharacterSet];
-	bool first = true;
-	OFObject *key, *object;
-
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		if OF_UNLIKELY (first)
-			first = false;
-		else
-			[ret appendString: @"&"];
-
-		[ret appendString: [key.description
-		    stringByURLEncodingWithAllowedCharacters: allowed]];
-		[ret appendString: @"="];
-		[ret appendString: [object.description
-		    stringByURLEncodingWithAllowedCharacters: allowed]];
-	}
 
 	[ret makeImmutable];
 

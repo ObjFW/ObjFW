@@ -15,7 +15,7 @@
 
 #include "config.h"
 
-#import "platform.h"
+#include "platform.h"
 
 #ifdef OF_MORPHOS
 __asm__ (

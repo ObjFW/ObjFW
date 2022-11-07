@@ -182,7 +182,7 @@ parseNetStackArray(OFString *string)
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
 		return nil;
 
-	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
+	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
 	return [string componentsSeparatedByString: @"|"];
 }
@@ -268,7 +268,8 @@ parseNetStackArray(OFString *string)
 
 	staticHosts = [OFMutableDictionary dictionary];
 
-	while ((line = [file readLine]) != nil) {
+	while ((line =
+	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
 		OFArray *components, *hosts;
 		size_t pos;
 		OFString *address;
@@ -286,7 +287,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -368,7 +369,8 @@ parseNetStackArray(OFString *string)
 	if (nameServers == nil)
 		nameServers = [OFMutableArray array];
 
-	while ((line = [file readLine]) != nil) {
+	while ((line =
+	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
 		size_t pos;
 		OFArray *components, *arguments;
@@ -389,7 +391,7 @@ parseNetStackArray(OFString *string)
 
 		option = components.firstObject;
 		arguments = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
 			if (arguments.count != 1) {
@@ -488,7 +490,7 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			OFMutableArray *addresses =
@@ -623,7 +625,8 @@ parseNetStackArray(OFString *string)
 	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
 		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 				     @"Tcpip\\Parameters"
-	    securityAndAccessRights: KEY_QUERY_VALUE];
+		       accessRights: KEY_QUERY_VALUE
+			    options: 0];
 	path = [[[key stringForValueNamed: @"DataBasePath"]
 	    stringByAppendingPathComponent: @"hosts"]
 	    stringByExpandingWindowsEnvironmentStrings];

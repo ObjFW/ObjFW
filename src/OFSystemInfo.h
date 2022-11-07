@@ -18,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
+@class OFURI;
 
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
@@ -36,9 +36,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
-@property (class, readonly, nullable, nonatomic) OFURL *userDataURL;
-@property (class, readonly, nullable, nonatomic) OFURL *userConfigURL;
-@property (class, readonly, nullable, nonatomic) OFURL *temporaryDirectoryURL;
+@property (class, readonly, nullable, nonatomic) OFURI *userDataURI;
+@property (class, readonly, nullable, nonatomic) OFURI *userConfigURI;
+@property (class, readonly, nullable, nonatomic) OFURI *temporaryDirectoryURI;
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
 @property (class, readonly, nullable, nonatomic) OFString *CPUModel;
 # if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
@@ -126,7 +126,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user data for the application can be stored
  */
-+ (nullable OFURL *)userDataURL;
++ (nullable OFURI *)userDataURI;
 
 /**
  * @brief Returns the path where user configuration for the application can be
@@ -141,7 +141,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user configuration for the application can be stored
  */
-+ (nullable OFURL *)userConfigURL;
++ (nullable OFURI *)userConfigURI;
 
 /**
  * @brief Returns a path where temporary files for can be stored.
@@ -159,7 +159,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return A path where temporary files can be stored
  */
-+ (nullable OFURL *)temporaryDirectoryURL;
++ (nullable OFURI *)temporaryDirectoryURI;
 
 /**
  * @brief Returns the vendor of the CPU.

@@ -64,7 +64,7 @@ OF_SUBCLASSING_RESTRICTED
 + (void)preallocateUnswappableMemoryWithSize: (size_t)size;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of item
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of item
  *	  size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -76,7 +76,7 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of the
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of the
  *	  specified item size, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -104,12 +104,12 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
++ (instancetype)dataWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of
+ * @brief Initializes an already allocated OFSecureData with `count` items of
  *	  item size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -121,8 +121,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of the
- *	  specified item size, all set to zero.
+ * @brief Initializes an already allocated OFSecureData with `count` items of
+ *	  the specified item size, all set to zero.
  *
  * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
@@ -150,7 +150,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (instancetype)initWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
+- (instancetype)initWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
 - (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
@@ -187,7 +187,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (void)writeToURL: (OFURL *)URL OF_UNAVAILABLE;
+- (void)writeToURI: (OFURI *)URI OF_UNAVAILABLE;
 - (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
 @end

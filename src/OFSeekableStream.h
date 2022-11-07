@@ -30,17 +30,31 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 #if defined(OF_WINDOWS)
-typedef __int64 OFFileOffset;
+typedef __int64 OFStreamOffset;
 #elif defined(OF_ANDROID)
-typedef long long OFFileOffset;
+typedef long long OFStreamOffset;
 #elif defined(OF_MORPHOS)
-typedef signed long long OFFileOffset;
+typedef signed long long OFStreamOffset;
 #elif defined(OF_HAVE_OFF64_T)
-typedef off64_t OFFileOffset;
+typedef off64_t OFStreamOffset;
 #else
-typedef off_t OFFileOffset;
+typedef off_t OFStreamOffset;
 #endif
+
+/**
+ * @brief From where to seek.
+ */
+typedef enum {
+	/** Seek to the end of the stream + offset. */
+	OFSeekSet,
+	/** Seek to the current location + offset. */
+	OFSeekCurrent,
+	/** Seek to the specified byte. */
+	OFSeekEnd
+} OFSeekWhence;
 
 /**
  * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
@@ -59,19 +73,16 @@ typedef off_t OFFileOffset;
 }
 
 /**
- * @brief Seeks to the specified absolute offset.
+ * @brief Seeks to the specified offset.
  *
  * @param offset The offset in bytes
- * @param whence From where to seek.@n
- *		 Possible values are:
- *		 Value      | Description
- *		 -----------|---------------------------------------
- *		 `SEEK_SET` | Seek to the specified byte
- *		 `SEEK_CUR` | Seek to the current location + offset
- *		 `SEEK_END` | Seek to the end of the stream + offset
+ * @param whence From where to seek.
  * @return The new offset form the start of the file
+ * @throw OFSeekFailedException Seeking failed
+ * @throw OFNotOpenException The stream is not open
  */
-- (OFFileOffset)seekToOffset: (OFFileOffset)offset whence: (int)whence;
+- (OFStreamOffset)seekToOffset: (OFStreamOffset)offset
+			whence: (OFSeekWhence)whence;
 
 /**
  * @brief Seek the stream on the lowlevel.
@@ -82,16 +93,13 @@ typedef off_t OFFileOffset;
  *	 subclassing!
  *
  * @param offset The offset to seek to
- * @param whence From where to seek.@n
- *		 Possible values are:
- *		 Value      | Description
- *		 -----------|---------------------------------------
- *		 `SEEK_SET` | Seek to the specified byte
- *		 `SEEK_CUR` | Seek to the current location + offset
- *		 `SEEK_END` | Seek to the end of the stream + offset
+ * @param whence From where to seek.
  * @return The new offset from the start of the file
+ * @throw OFSeekFailedException Seeking failed
+ * @throw OFNotOpenException The stream is not open
  */
-- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence;
+- (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
+				whence: (OFSeekWhence)whence;
 @end
 
 OF_ASSUME_NONNULL_END

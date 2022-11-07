@@ -14,7 +14,7 @@ extern void OFRegisterEmbeddedFile(const char *, const uint8_t *, size_t);
 
 static const uint8_t bytes[] = {
 EOF
-od -vtx1 $1 | sed '/^[^ ][^ ]*$/d;s/  */ /g;s/ $//g;s/^[^ ][^ ]* //;s/ /, 0x/g;s/^/	0x/;s/$/,/'
+od -vtx1 $1 | sed -e '/^[^ ][^ ]*$/d;s/  */ /g' -e 's/ $//g;s/^[^ ][^ ]* //' -e 's/ /, 0x/g' -e 's/^/	0x/' -e 's/$/,/'
 cat <<EOF
 };
 
