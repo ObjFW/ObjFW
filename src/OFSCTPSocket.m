@@ -132,7 +132,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	    [[[OFSCTPSocketConnectDelegate alloc] init] autorelease];
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
-	self.delegate = connectDelegate;
+	_delegate = connectDelegate;
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: connectRunLoopMode];
@@ -146,7 +146,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
 
-	self.delegate = delegate;
+	_delegate = delegate;
 
 	objc_autoreleasePoolPop(pool);
 }
