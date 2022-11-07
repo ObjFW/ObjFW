@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,6 +26,8 @@
 #  include "lookup-asm-arm64-elf.S"
 # elif defined(OF_ARM)
 #  include "lookup-asm-arm-elf.S"
+# elif defined(OF_POWERPC64)
+#  include "lookup-asm-powerpc64-elf.S"
 # elif defined(OF_POWERPC)
 #  include "lookup-asm-powerpc-elf.S"
 # elif defined(OF_MIPS64_N64)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
  *
- * @brief A class for representing an HTTP request reply as a stream.
+ * @brief A class for representing an HTTP request response as a stream.
  */
 @interface OFHTTPResponse: OFStream
 {
@@ -35,38 +35,41 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The protocol version of the HTTP request reply.
+ * @brief The protocol version of the HTTP request response.
  */
 @property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
- * @brief The protocol version of the HTTP request reply as a string.
+ * @brief The protocol version of the HTTP request response as a string.
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 
 /**
- * @brief The status code of the reply to the HTTP request.
+ * @brief The status code of the response to the HTTP request.
  */
 @property (nonatomic) short statusCode;
 
 /**
- * @brief The headers of the reply to the HTTP request.
+ * @brief The headers of the response to the HTTP request.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
     *headers;
 
 /**
- * @brief The reply as a string, trying to detect the encoding.
- */
-@property (readonly, nonatomic) OFString *string;
-
-/**
- * @brief Returns the reply as a string, trying to detect the encoding and
+ * @brief Read the response as a string, trying to detect the encoding and
  *	  falling back to the specified encoding if not detectable.
  *
- * @return The reply as a string
+ * @return The response as a string
  */
-- (OFString *)stringWithEncoding: (OFStringEncoding)encoding;
+- (OFString *)readString;
+
+/**
+ * @brief Rread the response as a string, trying to detect the encoding and
+ *	  falling back to the specified encoding if not detectable.
+ *
+ * @return The response as a string
+ */
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 @end
 
 #ifdef __cplusplus

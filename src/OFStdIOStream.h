@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,15 +38,15 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFStdIOStream: OFStream
-#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
+#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && !defined(OF_WII_U)
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
 #endif
 {
-#ifndef OF_AMIGAOS
-	int _fd;
-#else
+#if defined(OF_AMIGAOS)
 	BPTR _handle;
 	bool _closable;
+#elif !defined(OF_WII_U)
+	int _fd;
 #endif
 	bool _atEndOfStream;
 }
@@ -150,12 +150,23 @@ extern OFStdIOStream *_Nullable OFStdOut;
 extern OFStdIOStream *_Nullable OFStdErr;
 
 /**
- * @brief Log the specified printf-style format to @ref OFStdErr.
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
  *
- * This prefixes the output with the date, timestamp, process name and PID and
- * allows `%@` as a printf-style formatted to print objects.
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
  */
 extern void OFLog(OFConstantString *format, ...);
+
+/**
+ * @brief Logs the specified printf-style format to @ref OFStdErr.
+ *
+ * This prefixes the output with the date, timestamp, process name and PID.
+ *
+ * @param format The format for the line to log. See @ref OFStream#writeFormat:.
+ * @param arguments The arguments for the format
+ */
+extern void OFLogV(OFConstantString *format, va_list arguments);
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -295,12 +295,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 	count = self.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if ([[self objectAtIndex: i] isEqual: oldObject]) {
+	for (size_t i = 0; i < count; i++)
+		if ([[self objectAtIndex: i] isEqual: oldObject])
 			[self replaceObjectAtIndex: i withObject: newObject];
-			return;
-		}
-	}
 }
 
 - (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
@@ -339,7 +336,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		if ([[self objectAtIndex: i] isEqual: object]) {
 			[self removeObjectAtIndex: i];
 
-			return;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -357,7 +356,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		if ([self objectAtIndex: i] == object) {
 			[self removeObjectAtIndex: i];
 
-			return;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }

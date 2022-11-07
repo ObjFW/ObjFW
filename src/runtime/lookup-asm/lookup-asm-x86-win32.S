@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,14 +21,14 @@
 .globl _objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	movl	4(%esp), %edx
 	testl	%edx, %edx
-	jz	ret_nil
+	jz	returnNilMethod
 
 	testb	$1, %dl
-	jnz	.Ltagged_pointer_\name
+	jnz	.LtaggedPointer_\name
 
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
@@ -46,16 +46,16 @@
 	movl	(%edx,%ecx,4), %eax
 
 	testl	%eax, %eax
-	jz	\not_found
+	jz	\notFound
 
 	ret
 
-.Ltagged_pointer_\name:
-	xorl	_objc_tagged_pointer_secret, %edx
+.LtaggedPointer_\name:
+	xorl	_objc_taggedPointerSecret, %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	movl	_objc_tagged_pointer_classes(,%edx,2), %edx
+	movl	_objc_taggedPointerClasses(,%edx,2), %edx
 	movl	32(%edx), %edx
 
 	jmp	.Lmain_\name
@@ -65,12 +65,12 @@
 .endef
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
 	test	%eax, %eax
-	jz	ret_nil
+	jz	returnNilMethod
 
 	movl	%eax, 4(%esp)
 	movl	4(%edx), %edx
@@ -82,15 +82,15 @@
 .endef
 .endm
 
-generate_lookup _objc_msg_lookup _objc_method_not_found
-generate_lookup _objc_msg_lookup_stret _objc_method_not_found_stret
-generate_lookup_super _objc_msg_lookup_super _objc_msg_lookup
-generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
+GENERATE_LOOKUP _objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP _objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super _objc_msg_lookup
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
-ret_nil:
-	movl	$nil_method, %eax
+returnNilMethod:
+	movl	$nilMethod, %eax
 	ret
 
-nil_method:
+nilMethod:
 	xorl	%eax, %eax
 	ret

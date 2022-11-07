@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,8 +43,8 @@ static void
 help(void)
 {
 	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] [--md5|--ripemd160|--sha1|--sha224|--sha256|"
-	    @"--sha384|--sha512] file1 [file2 ...]",
+	    @"Usage: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] "
+	    @"[--sha256] [--sha384] [--sha512] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
@@ -53,8 +53,11 @@ help(void)
 static void
 printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
-	const unsigned char *digest = hash.digest;
 	size_t digestSize = hash.digestSize;
+	const unsigned char *digest;
+
+	[hash calculate];
+	digest = hash.digest;
 
 	[OFStdOut writeFormat: @"%@ ", algo];
 

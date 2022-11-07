@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,13 +21,13 @@
 .globl _objc_msg_lookup_super_stret
 
 .section __TEXT, __text, regular, pure_instructions
-.macro generate_lookup
+.macro GENERATE_LOOKUP
 $0:
 	testq	%rdi, %rdi
-	jz	ret_nil
+	jz	returnNilMethod
 
 	testb	$$1, %dil
-	jnz	Ltagged_pointer_$0
+	jnz	LtaggedPointer_$0
 
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
@@ -49,40 +49,40 @@ Lmain_$0:
 
 	ret
 
-Ltagged_pointer_$0:
-	movq	_objc_tagged_pointer_secret@GOTPCREL(%rip), %rax
+LtaggedPointer_$0:
+	movq	_objc_taggedPointerSecret@GOTPCREL(%rip), %rax
 	xorq	(%rax), %rdi
 	andb	$$0xE, %dil
 	movzbl	%dil, %r8d
 
-	movq	_objc_tagged_pointer_classes@GOTPCREL(%rip), %rax
+	movq	_objc_taggedPointerClasses@GOTPCREL(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	64(%r8), %r8
 
 	jmp	Lmain_$0
 .endmacro
 
-.macro generate_lookup_super
+.macro GENERATE_LOOKUP_SUPER
 $0:
 	movq	%rdi, %r8
 	movq	(%rdi), %rdi
 	testq	%rdi, %rdi
-	jz	ret_nil
+	jz	returnNilMethod
 
 	movq	8(%r8), %r8
 	movq	64(%r8), %r8
 	jmp	Lmain_$1
 .endmacro
 
-generate_lookup _objc_msg_lookup, _objc_method_not_found
-generate_lookup _objc_msg_lookup_stret, _objc_method_not_found_stret
-generate_lookup_super _objc_msg_lookup_super, _objc_msg_lookup
-generate_lookup_super _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
+GENERATE_LOOKUP _objc_msg_lookup, _objc_methodNotFound
+GENERATE_LOOKUP _objc_msg_lookup_stret, _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super, _objc_msg_lookup
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 
-ret_nil:
-	leaq	nil_method(%rip), %rax
+returnNilMethod:
+	leaq	nilMethod(%rip), %rax
 	ret
 
-nil_method:
+nilMethod:
 	xorq	%rax, %rax
 	ret

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The path of the source item.
+ * @brief The URL of the source item.
  */
 @property (readonly, nonatomic) OFURL *sourceURL;
 
 /**
- * @brief The destination path.
+ * @brief The destination URL.
  */
 @property (readonly, nonatomic) OFURL *destinationURL;
 
@@ -46,13 +46,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased copy item failed exception.
  *
- * @param sourceURL The original path
- * @param destinationURL The new path
+ * @param sourceURL The URL of the source item
+ * @param destinationURL The destination URL
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased copy item failed exception
  */
@@ -60,19 +58,21 @@ OF_ASSUME_NONNULL_BEGIN
 			destinationURL: (OFURL *)destinationURL
 				 errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated copy item failed exception.
  *
- * @param sourceURL The original path
- * @param destinationURL The new path
+ * @param sourceURL The URL of the source item
+ * @param destinationURL The destination URL
  * @param errNo The errno of the error that occurred
  * @return An initialized copy item failed exception
  */
 - (instancetype)initWithSourceURL: (OFURL *)sourceURL
 		   destinationURL: (OFURL *)destinationURL
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

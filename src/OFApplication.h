@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +16,7 @@
 #include <signal.h>
 
 #import "OFObject.h"
+#import "OFNotification.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +28,11 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFSandbox;
 @class OFString;
+
+/**
+ * @brief A notification that will be sent when the application will terminate.
+ */
+extern const OFNotificationName OFApplicationWillTerminateNotification;
 
 /**
  * @brief Specify the class to be used as the application delegate.
@@ -145,6 +151,10 @@ OF_ASSUME_NONNULL_BEGIN
  * In order to create a new OFApplication, you should create a class conforming
  * to the optional @ref OFApplicationDelegate protocol and put
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
+ *
+ * When the application is about to be terminated,
+ * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFApplication: OFObject

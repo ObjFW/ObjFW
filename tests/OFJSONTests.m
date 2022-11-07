@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,38 +17,42 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFJSON";
+static OFString *const module = @"OFJSON";
 
 @implementation TestsAppDelegate (JSONTests)
 - (void)JSONTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *s = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,null"
-	    @"//bar\n,\"foo\",false]}";
-	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
+	OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
+	    @"null//bar\n,\"foo\",false]}";
+	OFDictionary *dict = [OFDictionary dictionaryWithKeysAndObjects:
 	    @"foo", @"b\na\r",
 	    @"x", [OFArray arrayWithObjects:
-	    [OFNumber numberWithFloat: .5f],
-	    [OFNumber numberWithInt: 0xF],
-	    [OFNull null],
-	    @"foo",
-	    [OFNumber numberWithBool: false],
-	    nil],
+		[OFNumber numberWithFloat: .5f],
+		[OFNumber numberWithInt: 0xF],
+		[OFNull null],
+		@"foo",
+		[OFNumber numberWithBool: false],
+		nil],
 	    nil];
 
-	TEST(@"-[objectByParsingJSON] #1", [s.objectByParsingJSON isEqual: d])
+	TEST(@"-[objectByParsingJSON] #1",
+	    [string.objectByParsingJSON isEqual: dict])
 
-	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
+	TEST(@"-[JSONRepresentation]",
+	    [[dict JSONRepresentation] isEqual:
 	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"b\\na\\r\"}"])
 
 	TEST(@"OFJSONRepresentationOptionPretty",
-	    [[d JSONRepresentationWithOptions: OFJSONRepresentationOptionPretty]
-	    isEqual: @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
-		     @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"b\\na\\r\"\n}"])
+	    [[dict JSONRepresentationWithOptions:
+	    OFJSONRepresentationOptionPretty] isEqual:
+	    @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
+	    @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"b\\na\\r\"\n}"])
 
 	TEST(@"OFJSONRepresentationOptionJSON5",
-	    [[d JSONRepresentationWithOptions: OFJSONRepresentationOptionJSON5]
-	    isEqual: @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}"])
+	    [[dict JSONRepresentationWithOptions:
+	    OFJSONRepresentationOptionJSON5] isEqual:
+	    @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}"])
 
 	EXPECT_EXCEPTION(@"-[objectByParsingJSON] #2", OFInvalidJSONException,
 	    [@"{" objectByParsingJSON])

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -99,6 +99,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param length The length of the buffer
  */
 - (void)updateWithBuffer: (const void *)buffer length: (size_t)length;
+
+/**
+ * @brief Performs the final calculation of the cryptographic hash.
+ */
+- (void)calculate;
 
 /**
  * @brief Resets all state so that a new hash can be calculated.

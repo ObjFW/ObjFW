@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFList";
+static OFString *const module = @"OFList";
 static OFString *strings[] = {
 	@"Foo",
 	@"Bar",
@@ -31,7 +31,7 @@ static OFString *strings[] = {
 	OFList *list;
 	OFEnumerator *enumerator;
 	OFListItem iter;
-	OFString *obj;
+	OFString *object;
 	size_t i;
 	bool ok;
 
@@ -97,8 +97,8 @@ static OFString *strings[] = {
 	iter = list.firstListItem;
 	i = 0;
 	ok = true;
-	while ((obj = [enumerator nextObject]) != nil) {
-		if (![obj isEqual: OFListItemObject(iter)])
+	while ((object = [enumerator nextObject]) != nil) {
+		if (![object isEqual: OFListItemObject(iter)])
 			ok = false;
 
 		iter = OFListItemNext(iter);
@@ -121,8 +121,8 @@ static OFString *strings[] = {
 	i = 0;
 	ok = true;
 
-	for (OFString *object in list) {
-		if (![object isEqual: OFListItemObject(iter)])
+	for (OFString *object_ in list) {
+		if (![object_ isEqual: OFListItemObject(iter)])
 			ok = false;
 
 		iter = OFListItemNext(iter);
@@ -136,8 +136,8 @@ static OFString *strings[] = {
 
 	ok = false;
 	@try {
-		for (OFString *object in list) {
-			(void)object;
+		for (OFString *object_ in list) {
+			(void)object_;
 
 			[list removeListItem: list.lastListItem];
 		}
