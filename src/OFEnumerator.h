@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,8 +50,6 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief State information for fast enumerations.
  */
-#define OFFastEnumerationState NSFastEnumerationState
-#ifndef NSINTEGER_DEFINED
 typedef struct {
 	/** Arbitrary state information for the enumeration */
 	unsigned long state;
@@ -62,6 +60,8 @@ typedef struct {
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } OFFastEnumerationState;
+#ifndef NSINTEGER_DEFINED
+typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 
 /**

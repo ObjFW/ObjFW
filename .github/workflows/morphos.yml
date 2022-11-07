@@ -1,0 +1,37 @@
+name: morphos
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-amiga-lib
+    steps:
+    - name: Install dependencies
+      run: docker pull amigadev/crosstools:ppc-morphos
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: |
+        docker run \
+          -e PATH="/opt/ppc-morphos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:ppc-morphos \
+          sh -c 'cd /objfw && ./configure --host=ppc-morphos ${{ matrix.configure_flags }}'
+    - name: make
+      run: |
+        docker run \
+          -e PATH="/opt/ppc-morphos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:ppc-morphos \
+          sh -c "cd /objfw && make -j$(nproc)"
+    - name: make install
+      run: |
+        docker run \
+          -e PATH="/opt/ppc-morphos/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          amigadev/crosstools:ppc-morphos \
+          sh -c "cd /objfw && make -j$(nproc)"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -426,7 +426,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			OFStringEncoding ASCII = OFStringEncodingASCII;
 
 			@try {
-				_encoding = OFStringEncodingForName(
+				_encoding = OFStringEncodingParseName(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
 			} @catch (OFInvalidArgumentException *e) {

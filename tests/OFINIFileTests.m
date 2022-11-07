@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFINIFile";
+static OFString *module;
 
 @implementation TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests
@@ -43,16 +43,20 @@ static OFString *module = @"OFINIFile";
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
+	OFURL *URL;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
-#ifndef OF_NINTENDO_DS
-	OFString *writePath;
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
+	OFURL *writeURL;
 #endif
 
-	TEST(@"+[fileWithPath:encoding:]",
-	    (file = [OFINIFile fileWithPath: @"testfile.ini"
-				   encoding: OFStringEncodingCodepage437]))
+	module = @"OFINIFile";
+
+	URL = [OFURL URLWithString: @"objfw-embedded:///testfile.ini"];
+	TEST(@"+[fileWithURL:encoding:]",
+	    (file = [OFINIFile fileWithURL: URL
+				  encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
 	foobar = [file categoryForName: @"foobar"];
@@ -111,22 +115,17 @@ static OFString *module = @"OFINIFile";
 	module = @"OFINIFile";
 
 	/* FIXME: Find a way to write files on Nintendo DS */
-#ifndef OF_NINTENDO_DS
-# ifndef OF_IOS
-	writePath = @"tmpfile.ini";
-# else
-	writePath = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    [[OFApplication environment] objectForKey: @"HOME"],
-	    @"tmp", @"tmpfile.ini", nil]];
-# endif
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
+	writeURL = [[OFSystemInfo temporaryDirectoryURL]
+	    URLByAppendingPathComponent: @"objfw-tests.ini"
+			    isDirectory: false];
 	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToFile: writePath
-		       encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString
-		stringWithContentsOfFile: writePath
-				encoding: OFStringEncodingCodepage437]
+	    R([file writeToURL: writeURL
+		      encoding: OFStringEncodingCodepage437]) &&
+	    [[OFString stringWithContentsOfURL: writeURL
+				      encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtPath: writePath];
+	[[OFFileManager defaultManager] removeItemAtURL: writeURL];
 #else
 	(void)output;
 #endif

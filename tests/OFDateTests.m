@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,14 +18,15 @@
 #include <time.h>
 
 #import "TestsAppDelegate.h"
+#import "OFStrPTime.h"
 
-static OFString *module = @"OFDate";
+static OFString *const module = @"OFDate";
 
 @implementation TestsAppDelegate (OFDateTests)
 - (void)dateTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFDate *d1, *d2;
+	OFDate *date1, *date2;
 
 	struct tm tm;
 	int16_t tz;
@@ -36,14 +37,14 @@ static OFString *module = @"OFDate";
 	    tm.tm_year == 2021 - 1900 && tz == 2 * 60)
 
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
-	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
+	    (date1 = [OFDate dateWithTimeIntervalSince1970: 0]))
 
 	TEST(@"-[dateByAddingTimeInterval:]",
-	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000002]))
+	    (date2 = [date1 dateByAddingTimeInterval: 3600 * 25 + 5.000002]))
 
 	TEST(@"-[description]",
-	    [d1.description isEqual: @"1970-01-01T00:00:00Z"] &&
-	    [d2.description isEqual: @"1970-01-02T01:00:05Z"])
+	    [date1.description isEqual: @"1970-01-01T00:00:00Z"] &&
+	    [date2.description isEqual: @"1970-01-02T01:00:05Z"])
 
 	TEST(@"+[dateWithDateString:format:]",
 	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56+0200"
@@ -77,32 +78,34 @@ static OFString *module = @"OFDate";
 				     format: @"%Y-%m-%dT%H:%M:%S%z"])
 
 	TEST(@"-[isEqual:]",
-	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
-	    ![d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
+	    [date1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
+	    ![date1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
 
-	TEST(@"-[compare:]", [d1 compare: d2] == OFOrderedAscending)
+	TEST(@"-[compare:]", [date1 compare: date2] == OFOrderedAscending)
 
-	TEST(@"-[second]", d1.second == 0 && d2.second == 5)
+	TEST(@"-[second]", date1.second == 0 && date2.second == 5)
 
-	TEST(@"-[microsecond]", d1.microsecond == 0 && d2.microsecond == 2)
+	TEST(@"-[microsecond]",
+	    date1.microsecond == 0 && date2.microsecond == 2)
 
-	TEST(@"-[minute]", d1.minute == 0 && d2.minute == 0)
+	TEST(@"-[minute]", date1.minute == 0 && date2.minute == 0)
 
-	TEST(@"-[hour]", d1.hour == 0 && d2.hour == 1)
+	TEST(@"-[hour]", date1.hour == 0 && date2.hour == 1)
 
-	TEST(@"-[dayOfMonth]", d1.dayOfMonth == 1 && d2.dayOfMonth == 2)
+	TEST(@"-[dayOfMonth]", date1.dayOfMonth == 1 && date2.dayOfMonth == 2)
 
-	TEST(@"-[monthOfYear]", d1.monthOfYear == 1 && d2.monthOfYear == 1)
+	TEST(@"-[monthOfYear]",
+	    date1.monthOfYear == 1 && date2.monthOfYear == 1)
 
-	TEST(@"-[year]", d1.year == 1970 && d2.year == 1970)
+	TEST(@"-[year]", date1.year == 1970 && date2.year == 1970)
 
-	TEST(@"-[dayOfWeek]", d1.dayOfWeek == 4 && d2.dayOfWeek == 5)
+	TEST(@"-[dayOfWeek]", date1.dayOfWeek == 4 && date2.dayOfWeek == 5)
 
-	TEST(@"-[dayOfYear]", d1.dayOfYear == 1 && d2.dayOfYear == 2)
+	TEST(@"-[dayOfYear]", date1.dayOfYear == 1 && date2.dayOfYear == 2)
 
-	TEST(@"-[earlierDate:]", [[d1 earlierDate: d2] isEqual: d1])
+	TEST(@"-[earlierDate:]", [[date1 earlierDate: date2] isEqual: date1])
 
-	TEST(@"-[laterDate:]", [[d1 laterDate: d2] isEqual: d2])
+	TEST(@"-[laterDate:]", [[date1 laterDate: date2] isEqual: date2])
 
 	objc_autoreleasePoolPop(pool);
 }

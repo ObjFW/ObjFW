@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,8 +38,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *error;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased load plugin failed exception.
  *
@@ -50,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 			    error: (nullable OFString *)error;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated load plugin failed exception.
@@ -62,6 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath: (OFString *)path
 		       error: (nullable OFString *)error
     OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

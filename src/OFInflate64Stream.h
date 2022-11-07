@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -14,7 +14,6 @@
  */
 
 #import "OFStream.h"
-#import "OFHuffmanTree.h"
 #import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -51,19 +50,19 @@ OF_SUBCLASSING_RESTRICTED
 			uint16_t position, length;
 		} uncompressed;
 		struct {
-			OFHuffmanTree _Nullable litLenTree;
-			OFHuffmanTree _Nullable distTree;
-			OFHuffmanTree _Nullable codeLenTree;
-			OFHuffmanTree _Nullable treeIter;
+			struct _OFHuffmanTree *_Nullable litLenTree;
+			struct _OFHuffmanTree *_Nullable distTree;
+			struct _OFHuffmanTree *_Nullable codeLenTree;
+			struct _OFHuffmanTree *_Nullable treeIter;
 			uint8_t *_Nullable lengths;
 			uint16_t receivedCount;
 			uint8_t value, litLenCodesCount, distCodesCount;
 			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
-			OFHuffmanTree _Nullable litLenTree;
-			OFHuffmanTree _Nullable distTree;
-			OFHuffmanTree _Nullable treeIter;
+			struct _OFHuffmanTree *_Nullable litLenTree;
+			struct _OFHuffmanTree *_Nullable distTree;
+			struct _OFHuffmanTree *_Nullable treeIter;
 			int state;
 			uint16_t value, length, distance, extraBits;
 		} huffman;

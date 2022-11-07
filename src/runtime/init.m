@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,26 +21,26 @@
 void
 __objc_exec_class(struct objc_module *module)
 {
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
-	objc_register_all_selectors(module->symtab);
-	objc_register_all_classes(module->symtab);
-	objc_register_all_categories(module->symtab);
-	objc_init_static_instances(module->symtab);
+	objc_registerAllSelectors(module->symtab);
+	objc_registerAllClasses(module->symtab);
+	objc_registerAllCategories(module->symtab);
+	objc_initStaticInstances(module->symtab);
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 }
 
 void
-objc_exit(void)
+objc_deinit(void)
 {
-	objc_global_mutex_lock();
+	objc_globalMutex_lock();
 
-	objc_unregister_all_categories();
-	objc_unregister_all_classes();
-	objc_unregister_all_selectors();
-	objc_forget_pending_static_instances();
+	objc_unregisterAllCategories();
+	objc_unregisterAllClasses();
+	objc_unregisterAllSelectors();
+	objc_forgetPendingStaticInstances();
 	objc_dtable_cleanup();
 
-	objc_global_mutex_unlock();
+	objc_globalMutex_unlock();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,6 +41,7 @@ stringByHashing(Class <OFCryptographicHash> class, OFData *self)
 
 	[hash updateWithBuffer: self->_items
 			length: self->_count * self->_itemSize];
+	[hash calculate];
 	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -107,8 +107,6 @@
 			[newObject retain];
 			[objects[i] release];
 			objects[i] = newObject;
-
-			return;
 		}
 	}
 }
@@ -166,14 +164,17 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
-			object = objects[i];
+			id tmp = objects[i];
 
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			[tmp release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }
@@ -196,7 +197,10 @@
 
 			[object release];
 
-			return;
+			objects = _array.items;
+			i--;
+			count--;
+			continue;
 		}
 	}
 }

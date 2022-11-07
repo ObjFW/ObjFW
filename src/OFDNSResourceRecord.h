@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -620,9 +620,36 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Returns the name for the specified OFDNSClass.
+ *
+ * @param DNSClass The OFDNSClass to return the name for
+ * @return The name for the specified OFDNSClass
+ */
 extern OFString *_Nonnull OFDNSClassName(OFDNSClass DNSClass);
+
+/**
+ * @brief Returns the name for the specified OFDNSRecordType.
+ *
+ * @param recordType The OFDNSRecordType to return the name for
+ * @return The name for the specified OFDNSRecordType
+ */
 extern OFString *_Nonnull OFDNSRecordTypeName(OFDNSRecordType recordType);
+
+/**
+ * @brief Parses the specified string as an @ref OFDNSClass.
+ *
+ * @param string The string to parse as an @ref OFDNSClass
+ * @return The parsed OFDNSClass
+ */
 extern OFDNSClass OFDNSClassParseName(OFString *_Nonnull string);
+
+/**
+ * @brief Parses the specified string as an @ref OFDNSRecordType.
+ *
+ * @param string The string to parse as an @ref OFDNSRecordType
+ * @return The parsed OFDNSRecordType
+ */
 extern OFDNSRecordType OFDNSRecordTypeParseName(OFString *_Nonnull string);
 #ifdef __cplusplus
 }

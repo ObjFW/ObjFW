@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -149,6 +149,8 @@
 # define OF_MSDOS
 #elif defined(__riscos__)
 # define OF_ACORN_RISC_OS
+#elif defined(__MINT__)
+# define OF_MINT
 #endif
 
 #if defined(__ELF__)

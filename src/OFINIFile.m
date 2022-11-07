@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,17 +19,19 @@
 
 #import "OFINIFile.h"
 #import "OFArray.h"
-#import "OFString.h"
-#import "OFFile.h"
-#import "OFINICategory.h"
 #import "OFINICategory+Private.h"
+#import "OFINICategory.h"
+#import "OFStream.h"
+#import "OFString.h"
+#import "OFURL.h"
+#import "OFURLHandler.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding;
+- (void)of_parseURL: (OFURL *)URL encoding: (OFStringEncoding)encoding;
 @end
 
 static bool
@@ -48,16 +50,14 @@ isWhitespaceLine(OFString *line)
 @implementation OFINIFile
 @synthesize categories = _categories;
 
-+ (instancetype)fileWithPath: (OFString *)path
++ (instancetype)fileWithURL: (OFURL *)URL
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
-+ (instancetype)fileWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
++ (instancetype)fileWithURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				  encoding: encoding] autorelease];
+	return [[[self alloc] initWithURL: URL encoding: encoding] autorelease];
 }
 
 - (instancetype)init
@@ -65,20 +65,19 @@ isWhitespaceLine(OFString *line)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithURL: (OFURL *)URL
 {
-	return [self initWithPath: path encoding: OFStringEncodingUTF8];
+	return [self initWithURL: URL encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self of_parseFile: path encoding: encoding];
+		[self of_parseURL: URL encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -111,15 +110,16 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (void)of_parseURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file;
+	OFStream *file;
 	OFINICategory *category = nil;
 	OFString *line;
 
 	@try {
-		file = [OFFile fileWithPath: path mode: @"r"];
+		file = [[OFURLHandler handlerForURL: URL] openItemAtURL: URL
+								   mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -154,15 +154,17 @@ isWhitespaceLine(OFString *line)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeToFile: (OFString *)path
+- (void)writeToURL: (OFURL *)URL
 {
-	[self writeToFile: path encoding: OFStringEncodingUTF8];
+	[self writeToURL: URL encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (void)writeToURL: (OFURL *)URL encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
+	OFStream *file = [[OFURLHandler handlerForURL: URL]
+	    openItemAtURL: URL
+		     mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)

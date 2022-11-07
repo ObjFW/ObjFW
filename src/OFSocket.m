@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,6 +45,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFLockFailedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnlockFailedException.h"
 
 #ifdef OF_AMIGAOS
@@ -54,6 +55,12 @@
 #ifdef OF_NINTENDO_3DS
 # include <3ds/types.h>
 # include <3ds/services/soc.h>
+#endif
+
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
 #endif
 
 #if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
@@ -129,16 +136,16 @@ init(void)
 		return;
 
 	atexit((void (*)(void))socExit);
+# elif defined(OF_NINTENDO_SWITCH)
+	if (R_FAILED(socketInitializeDefault()))
+		return;
+
+	atexit(socketExit);
 # endif
 
 # if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
 	mutex = [[OFMutex alloc] init];
 	atexit(releaseMutex);
-
-#  ifdef OF_WII
-	if (OFSpinlockNew(&spinlock) != 0)
-		return;
-#  endif
 # endif
 
 	initSuccessful = true;
@@ -514,7 +521,36 @@ OFSocketAddressParseIP(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress
-OFSocketAddressMakeIPX(const unsigned char node[IPX_NODE_LEN], uint32_t network,
+OFSocketAddressMakeUNIX(OFString *path)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFStringEncoding encoding = [OFLocale encoding];
+	size_t length = [path cStringLengthWithEncoding: encoding];
+	OFSocketAddress ret;
+
+	if (length > sizeof(ret.sockaddr.un.sun_path))
+		@throw [OFOutOfRangeException exception];
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.family = OFSocketAddressFamilyUNIX;
+	ret.length = (socklen_t)
+	    (offsetof(struct sockaddr_un, sun_path) + length);
+
+#ifdef AF_UNIX
+	ret.sockaddr.un.sun_family = AF_UNIX;
+#else
+	ret.sockaddr.un.sun_family = AF_UNSPEC;
+#endif
+	memcpy(ret.sockaddr.un.sun_path,
+	    [path cStringWithEncoding: encoding], length);
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+OFSocketAddress
+OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
     uint16_t port)
 {
 	OFSocketAddress ret;
@@ -528,10 +564,10 @@ OFSocketAddressMakeIPX(const unsigned char node[IPX_NODE_LEN], uint32_t network,
 #else
 	ret.sockaddr.ipx.sipx_family = AF_UNSPEC;
 #endif
-	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 	network = OFToBigEndian32(network);
 	memcpy(&ret.sockaddr.ipx.sipx_network, &network,
 	    sizeof(ret.sockaddr.ipx.sipx_network));
+	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 	ret.sockaddr.ipx.sipx_port = OFToBigEndian16(port);
 
 	return ret;
@@ -544,6 +580,9 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 	const struct sockaddr_in *addrIn1, *addrIn2;
 	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 	const struct sockaddr_ipx *addrIPX1, *addrIPX2;
+	void *pool;
+	OFString *path1, *path2;
+	bool ret;
 
 	if (address1->family != address2->family)
 		return false;
@@ -567,7 +606,7 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 		if (addrIn1->sin_addr.s_addr != addrIn2->sin_addr.s_addr)
 			return false;
 
-		break;
+		return true;
 	case OFSocketAddressFamilyIPv6:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_in6) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_in6))
@@ -583,7 +622,24 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
 			return false;
 
-		break;
+		return true;
+	case OFSocketAddressFamilyUNIX:
+		pool = objc_autoreleasePoolPush();
+
+		path1 = OFSocketAddressUNIXPath(address1);
+		path2 = OFSocketAddressUNIXPath(address2);
+
+		if (path1 == nil || path2 == nil) {
+			objc_autoreleasePoolPop(pool);
+
+			return false;
+		}
+
+		ret = [path1 isEqual: path2];
+
+		objc_autoreleasePoolPop(pool);
+
+		return ret;
 	case OFSocketAddressFamilyIPX:
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_ipx) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_ipx))
@@ -601,12 +657,10 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 		    IPX_NODE_LEN) != 0)
 			return false;
 
-		break;
+		return true;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
-
-	return true;
 }
 
 unsigned long
@@ -648,6 +702,15 @@ OFSocketAddressHash(const OFSocketAddress *address)
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
 
 		break;
+	case OFSocketAddressFamilyUNIX:;
+		void *pool = objc_autoreleasePoolPush();
+		OFString *path = OFSocketAddressUNIXPath(address);
+
+		hash = path.hash;
+
+		objc_autoreleasePoolPop(pool);
+
+		return hash;
 	case OFSocketAddressFamilyIPX:;
 		unsigned char network[
 		    sizeof(address->sockaddr.ipx.sipx_network)];
@@ -802,6 +865,28 @@ OFSocketAddressPort(const OFSocketAddress *address)
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
+}
+
+OFString *
+OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
+{
+	socklen_t length;
+
+	if (address->family != OFSocketAddressFamilyUNIX)
+		@throw [OFInvalidArgumentException exception];
+
+	length = address->length - offsetof(struct sockaddr_un, sun_path);
+
+	for (socklen_t i = 0; i < length; i++)
+		if (address->sockaddr.un.sun_path[i] == 0)
+			length = i;
+
+	if (length <= 0)
+		return nil;
+
+	return [OFString stringWithCString: address->sockaddr.un.sun_path
+				  encoding: [OFLocale encoding]
+				    length: length];
 }
 
 void

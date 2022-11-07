@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -51,8 +51,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) int errNo;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /**
  * @brief Creates a new, autoreleased seek failed exception.
  *
@@ -67,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     whence: (int)whence
 			      errNo: (int)errNo;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated seek failed exception.
@@ -82,6 +80,8 @@ OF_ASSUME_NONNULL_BEGIN
 			offset: (OFFileOffset)offset
 			whence: (int)whence
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
