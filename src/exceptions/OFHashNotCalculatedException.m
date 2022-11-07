@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,21 +15,20 @@
 
 #include "config.h"
 
-#import "OFMemoryNotPartOfObjectException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFString.h"
 
-@implementation OFMemoryNotPartOfObjectException
-@synthesize pointer = _pointer, object = _object;
+@implementation OFHashNotCalculatedException
+@synthesize object = _object;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPointer: (void *)pointer object: (id)object
++ (instancetype)exceptionWithObject: (id)object
 {
-	return [[[self alloc] initWithPointer: pointer
-				       object: object] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
 - (instancetype)init
@@ -37,11 +36,10 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPointer: (void *)pointer object: (id)object
+- (instancetype)initWithObject: (id)object
 {
 	self = [super init];
 
-	_pointer = pointer;
 	_object = [object retain];
 
 	return self;
@@ -57,9 +55,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Deallocation or reallocation of memory not allocated as part of "
-	    @"object of type %@ was attempted! It is also possible that there "
-	    @"was an attempt to free the same memory twice.",
+	    @"The hash of type %@ has not been calculated yet!",
 	    [_object class]];
 }
 @end

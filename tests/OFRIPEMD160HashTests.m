@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,9 @@ const uint8_t testFileRIPEMD160[20] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRIPEMD160Hash *RIPEMD160, *RIPEMD160Copy;
-	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
+	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
+	OFStream *file = [[OFURLHandler handlerForURL: URL]
+	    openItemAtURL: URL mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (RIPEMD160 = [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true]))
@@ -43,6 +45,9 @@ const uint8_t testFileRIPEMD160[20] =
 	[file close];
 
 	TEST(@"-[copy]", (RIPEMD160Copy = [[RIPEMD160 copy] autorelease]))
+
+	TEST(@"-[calculate]",
+	    R([RIPEMD160 calculate]) && R([RIPEMD160Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(RIPEMD160.digest, testFileRIPEMD160, 20) == 0 &&

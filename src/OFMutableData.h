@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,7 +39,8 @@ OF_ASSUME_NONNULL_BEGIN
  * Modifying the returned array directly is allowed and will change the contents
  * of the data.
  */
-@property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableItems
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The first item of the OFMutableData or `NULL`.

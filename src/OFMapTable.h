@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,7 +73,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMapTableFunctions _keyFunctions, _objectFunctions;
 	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
-	unsigned long _count, _capacity;
+	uint32_t _count, _capacity;
 	unsigned char _rotate;
 	unsigned long _mutations;
 }
@@ -235,8 +235,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMapTable *_mapTable;
 	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
-	unsigned long _capacity, _mutations, *_Nullable _mutationsPtr;
-	unsigned long _position;
+	uint32_t _capacity;
+	unsigned long _mutations, *_Nullable _mutationsPtr, _position;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

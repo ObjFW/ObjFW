@@ -34,6 +34,7 @@ src/libobjfw.*
 src/objfw-defs.h
 src/runtime/Info.plist
 src/runtime/libobjfwrt.*
+src/tls/Info.plist
 tests/DerivedData
 tests/EBOOT.PBP
 tests/Info.plist
@@ -43,11 +44,16 @@ tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata
 tests/objc_sync/objc_sync
 tests/plugin/Info.plist
+tests/serialization_xml.m
 tests/terminal/terminal_tests
+tests/testfile_bin.m
+tests/testfile_ini.m
 tests/tests
 tests/tests.3dsx
 tests/tests.arm9
 tests/tests.nds
+tests/tests.nro
+tests/tests.rpx
 utils/objfw-config
 utils/ofarc/ofarc
 utils/ofdns/ofdns

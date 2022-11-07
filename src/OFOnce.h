@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,7 +32,15 @@ typedef int OFOnceControl;
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void OFOnce(OFOnceControl *control, void (*func)(void));
+/**
+ * @brief Executes the specified function exactly once in the application's
+ *	  lifetime, even in a multi-threaded environment.
+ *
+ * @param control An OFOnceControl. This should be a static variable
+ *		  preinitialized to `OFOnceControlInitValue`.
+ * @param function The function to execute once
+ */
+extern void OFOnce(OFOnceControl *control, void (*function)(void));
 #ifdef __cplusplus
 }
 #endif

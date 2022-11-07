@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -209,8 +209,9 @@ extern char **environ;
 			close(_writePipe[0]);
 			OFFreeMemory(argv);
 
-			for (iter = env; *iter != NULL; iter++)
-				OFFreeMemory(*iter);
+			if (env != NULL)
+				for (iter = env; *iter != NULL; iter++)
+					OFFreeMemory(*iter);
 
 			OFFreeMemory(env);
 		}
@@ -331,8 +332,7 @@ extern char **environ;
 	return ret;
 }
 
-- (size_t)lowlevelWriteBuffer: (const void *)buffer
-		       length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	ssize_t bytesWritten;
 

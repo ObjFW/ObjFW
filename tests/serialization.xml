@@ -2,6 +2,12 @@
 <serialization xmlns='https://objfw.nil.im/serialization' version='1'>
   <OFMutableDictionary>
     <key>
+      <OFUUID>01234567-89ab-cdef-fedc-ba9876543210</OFUUID>
+    </key>
+    <object>
+      <OFString>uuid</OFString>
+    </object>
+    <key>
       <OFString>Blub</OFString>
     </key>
     <object>

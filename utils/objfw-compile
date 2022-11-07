@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+#  Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
 #
 #  All rights reserved.
 #
@@ -295,15 +295,15 @@ for i in $srcs; do
 	esac
 	objs="$objs $obj"
 	build="no"
-	deps=$($OBJC -E -M $CPPFLAGS $OBJCFLAGS $i |
-		sed 's/.*: //' | sed 's/\\//g')
 
-	if test -f "$obj"; then
+	if test ! -f "$obj" -o "$i" -nt "$obj"; then
+		build="yes"
+	else
+		deps=$($OBJC -E -M $CPPFLAGS $OBJCFLAGS $i |
+			sed 's/.*: //' | sed 's/\\//g')
 		for dep in $deps; do
 			test "$dep" -nt $obj && build="yes"
 		done
-	else
-		build="yes"
 	fi
 
 	if test x"$build" = x"yes"; then

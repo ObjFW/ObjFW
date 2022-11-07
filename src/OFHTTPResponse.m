@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -296,12 +296,12 @@ encodingForContentType(OFString *contentType)
 					   _protocolVersion.minor];
 }
 
-- (OFString *)string
+- (OFString *)readString
 {
-	return [self stringWithEncoding: OFStringEncodingAutodetect];
+	return [self readStringWithEncoding: OFStringEncodingAutodetect];
 }
 
-- (OFString *)stringWithEncoding: (OFStringEncoding)encoding
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *contentType, *contentLengthString, *ret;

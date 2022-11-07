@@ -1,13 +1,18 @@
 include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}	\
-	  objc_sync	\
+	  ${OBJC_SYNC}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
 	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds
+	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.nro	\
+	${PROG_NOINST}.rpx	\
+	serialization_xml.m	\
+	testfile_bin.m		\
+	testfile_ini.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -20,16 +25,28 @@ SRCS = ForwardingTests.m		\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
+       OFHMACTests.m			\
+       OFINIFileTests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
+       OFMD5HashTests.m			\
+       OFMemoryStreamTests.m		\
        OFMethodSignatureTests.m		\
+       OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
        OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
+       OFRIPEMD160HashTests.m		\
+       OFSHA1HashTests.m		\
+       OFSHA224HashTests.m		\
+       OFSHA256HashTests.m		\
+       OFSHA384HashTests.m		\
+       OFSHA512HashTests.m		\
        OFScryptTests.m			\
+       OFSerializationTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -46,20 +63,10 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
-       ${USE_SRCS_WINDOWS}
-SRCS_FILES = OFHMACTests.m		\
-	     OFINIFileTests.m		\
-	     OFMD5HashTests.m		\
-	     OFRIPEMD160HashTests.m	\
-	     OFSerializationTests.m	\
-	     OFSHA1HashTests.m		\
-	     OFSHA224HashTests.m	\
-	     OFSHA256HashTests.m	\
-	     OFSHA384HashTests.m	\
-	     OFSHA512HashTests.m
-SRCS_IPX = OFIPXSocketTests.m		\
-	   OFSPXSocketTests.m		\
-	   OFSPXStreamSocketTests.m
+       ${USE_SRCS_WINDOWS}		\
+       serialization_xml.m		\
+       testfile_bin.m			\
+       testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
@@ -69,7 +76,13 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+		    OFUNIXStreamSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -77,6 +90,13 @@ IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
+
+serialization_xml.m: serialization.xml
+	${SHELL} ../utils/objfw-embed serialization.xml /serialization.xml $@
+testfile_bin.m: testfile.bin
+	${SHELL} ../utils/objfw-embed testfile.bin /testfile.bin $@
+testfile_ini.m: testfile.ini
+	${SHELL} ../utils/objfw-embed testfile.ini /testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -151,8 +171,7 @@ run-on-ios: all
 	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	scp -q ../src/libobjfw.dylib \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.bin testfile.txt testfile.ini serialization.xml \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
+	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.bundle \
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
@@ -170,10 +189,7 @@ run-on-android: all
 		    /data/local/tmp/objfw/libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
 	fi
 	adb push tests /data/local/tmp/objfw/tests
-	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
-	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
-	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
 	if test -f plugin/TestPlugin.so; then \
 		adb push plugin/TestPlugin.so \
 		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
@@ -192,18 +208,30 @@ boot.dol: ${PROG_NOINST}
 
 ${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
 
+${PROG_NOINST}.3dsx: ${PROG_NOINST}
+	3dsxtool $< $@
+
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
-${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt
 	rm -fr nds-data
 	mkdir -p nds-data
-	cp testfile.bin testfile.txt testfile.ini serialization.xml nds-data
-	ndstool -c $@ -9 $< -d nds-data
+	cp testfile.txt nds-data
+	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
-${PROG_NOINST}.3dsx: ${PROG_NOINST}
-	3dsxtool $< $@
+${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
+	rm -fr romfs
+	mkdir -p romfs
+	cp testfile.txt romfs
+	nacptool --create "ObjFW tests" "Jonathan Schleifer" \
+		"${PACKAGE_VERSION}" tests.nacp
+	elf2nro ${PROG_NOINST} $@ --nacp=tests.nacp --romfsdir=romfs
+	rm -fr romfs tests.nacp
+
+${PROG_NOINST}.rpx: ${PROG_NOINST}
+	elf2rpl $< $@
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions

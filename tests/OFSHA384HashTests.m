@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,9 @@ const uint8_t testFileSHA384[48] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFSHA384Hash *SHA384, *SHA384Copy;
-	OFFile *file = [OFFile fileWithPath: @"testfile.bin" mode: @"r"];
+	OFURL *URL = [OFURL URLWithString: @"objfw-embedded:///testfile.bin"];
+	OFStream *file = [[OFURLHandler handlerForURL: URL]
+	    openItemAtURL: URL mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (SHA384 = [OFSHA384Hash hashWithAllowsSwappableMemory: true]))
@@ -44,6 +46,9 @@ const uint8_t testFileSHA384[48] =
 	[file close];
 
 	TEST(@"-[copy]", (SHA384Copy = [[SHA384 copy] autorelease]))
+
+	TEST(@"-[calculate]",
+	    R([SHA384 calculate]) && R([SHA384Copy calculate]))
 
 	TEST(@"-[digest]",
 	    memcmp(SHA384.digest, testFileSHA384, 48) == 0 &&

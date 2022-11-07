@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -76,11 +76,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param path The path of the subkey to open
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Opens the subkey at the specified path.
@@ -90,12 +89,11 @@ OF_SUBCLASSING_RESTRICTED
  *		  `ulOptions`. Usually 0.
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
+ * @return The subkey with the specified path
  */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+				   options: (DWORD)options
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /**
  * @brief Creates a subkey at the specified path or opens it if it already
@@ -191,6 +189,38 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name
 	     type: (DWORD)type;
+
+/**
+ * @brief Returns the DWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The DWORD for the specified value
+ */
+- (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the DWORD for the specified value.
+ *
+ * @param dword The DWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Returns the QWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The QWORD for the specified value
+ */
+- (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the QWORD for the specified value.
+ *
+ * @param qword The QWORD to set the value to
+ * @param name The name of the value to set
+ */
+- (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
 
 /**
  * @brief Deletes the specified value.

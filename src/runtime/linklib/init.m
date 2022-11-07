@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -153,8 +153,8 @@ dtor(void)
 }
 
 #if defined(OF_AMIGAOS_M68K)
-ADD2INIT(ctor, -5);
-ADD2EXIT(dtor, -5);
+ADD2INIT(ctor, -5)
+ADD2EXIT(dtor, -5)
 #elif defined(OF_MORPHOS)
 CONSTRUCTOR_P(ObjFWRT, 4000)
 {
@@ -163,7 +163,7 @@ CONSTRUCTOR_P(ObjFWRT, 4000)
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFWRT, 4000)
+DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
 }

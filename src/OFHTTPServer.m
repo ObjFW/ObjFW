@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,6 +15,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,7 +29,6 @@
 #import "OFNumber.h"
 #import "OFSocket+Private.h"
 #import "OFTCPSocket.h"
-#import "OFTLSSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
 #import "OFURL.h"
@@ -228,8 +228,18 @@ normalizedKey(OFString *key)
 	if (!_headersSent)
 		[self of_sendHeaders];
 
-	if (!_chunked)
-		return [_socket writeBuffer: buffer length: length];
+	if (!_chunked) {
+		@try {
+			[_socket writeBuffer: buffer length: length];
+		} @catch (OFWriteFailedException *e) {
+			if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+				return e.bytesWritten;
+
+			@throw e;
+		}
+
+		return length;
+	}
 
 	pool = objc_autoreleasePoolPush();
 	[_socket writeString: [OFString stringWithFormat: @"%zX\r\n", length]];
@@ -528,16 +538,23 @@ normalizedKey(OFString *key)
 	if (_port != 80)
 		URL.port = [OFNumber numberWithUnsignedShort: _port];
 
-	if ((pos = [_path rangeOfString: @"?"].location) != OFNotFound) {
-		OFString *path, *query;
+	@try {
+		if ((pos = [_path rangeOfString: @"?"].location) !=
+		    OFNotFound) {
+			OFString *path, *query;
 
-		path = [_path substringToIndex: pos];
-		query = [_path substringFromIndex: pos + 1];
+			path = [_path substringToIndex: pos];
+			query = [_path substringFromIndex: pos + 1];
 
-		URL.URLEncodedPath = path;
-		URL.URLEncodedQuery = query;
-	} else
-		URL.URLEncodedPath = _path;
+			URL.URLEncodedPath = path;
+			URL.URLEncodedQuery = query;
+		} else
+			URL.URLEncodedPath = _path;
+	} @catch (OFInvalidFormatException *e) {
+		objc_autoreleasePoolPop(pool);
+		[self sendErrorAndClose: 400];
+		return;
+	}
 
 	[URL makeImmutable];
 
@@ -811,66 +828,6 @@ normalizedKey(OFString *key)
 	return _port;
 }
 
-- (void)setUsesTLS: (bool)usesTLS
-{
-	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
-
-	_usesTLS = usesTLS;
-}
-
-- (bool)usesTLS
-{
-	return _usesTLS;
-}
-
-- (void)setCertificateFile: (OFString *)certificateFile
-{
-	OFString *old;
-
-	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
-
-	old = _certificateFile;
-	_certificateFile = [certificateFile copy];
-	[old release];
-}
-
-- (OFString *)certificateFile
-{
-	return _certificateFile;
-}
-
-- (void)setPrivateKeyFile: (OFString *)privateKeyFile
-{
-	OFString *old;
-
-	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
-
-	old = _privateKeyFile;
-	_privateKeyFile = [privateKeyFile copy];
-	[old release];
-}
-
-- (OFString *)privateKeyFile
-{
-	return _privateKeyFile;
-}
-
-- (void)setPrivateKeyPassphrase: (const char *)privateKeyPassphrase
-{
-	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
-
-	_privateKeyPassphrase = privateKeyPassphrase;
-}
-
-- (const char *)privateKeyPassphrase
-{
-	return _privateKeyPassphrase;
-}
-
 #ifdef OF_HAVE_THREADS
 - (void)setNumberOfThreads: (size_t)numberOfThreads
 {
@@ -899,21 +856,7 @@ normalizedKey(OFString *key)
 	if (_listeningSocket != nil)
 		@throw [OFAlreadyConnectedException exception];
 
-	if (_usesTLS) {
-		OFTCPSocket <OFTLSSocket> *TLSSocket;
-
-		if (OFTLSSocketClass == Nil)
-			@throw [OFUnsupportedProtocolException exception];
-
-		TLSSocket = [[OFTLSSocketClass alloc] init];
-		_listeningSocket = TLSSocket;
-
-		TLSSocket.certificateFile = _certificateFile;
-		TLSSocket.privateKeyFile = _privateKeyFile;
-		TLSSocket.privateKeyPassphrase = _privateKeyPassphrase;
-	} else
-		_listeningSocket = [[OFTCPSocket alloc] init];
-
+	_listeningSocket = [[OFTCPSocket alloc] init];
 	_port = [_listeningSocket bindToHost: _host port: _port];
 	[_listeningSocket listen];
 

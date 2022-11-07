@@ -32,6 +32,8 @@ other place, you are most likely using a mirror.
  * [Documentation](#documentation)
  * [Bugs and feature requests](#bugs)
  * [Support and community](#support)
+ * [Donating](#donating)
+ * [Thanks](#thanks)
  * [Commercial use](#commercial-use)
 
 
@@ -124,6 +126,12 @@ other place, you are most likely using a mirror.
 
     $ fossil artifact current | gpg --verify
 
+  Please note that not all checkins are signed, as the signing key only resides
+  on trusted systems. This means that checkins I perform on e.g. Windows are
+  unsigned. However, usually it should not take long until there is another
+  signed checkin. Alternatively, you can go back until the last signed checkin
+  and review changes from there on.
+
 <h2 id="cloning-git">Git</h2>
 
   To clone the Git repository, use the following:
@@ -139,7 +147,8 @@ other place, you are most likely using a mirror.
 
     $ ./configure
     $ make
-    $ make install
+    $ make check
+    $ sudo make install
 
   In case you checked out ObjFW from the Fossil or Git repository, you need to
   run the following command first:
@@ -151,9 +160,14 @@ other place, you are most likely using a mirror.
 <h3 id="building-framework">Building as a framework</h3>
 
   When building for macOS or iOS, everything is built as a `.framework` by
-  default if `--disable-shared` has not been specified to `configure`.
+  default if `--disable-shared` has not been specified to `./configure`. The
+  frameworks will end up in `$PREFIX/Library/Frameworks`.
 
-  To build for iOS, use something like this:
+  To build for macOS, just follow the
+  <a href="#installation">regular instructions</a> above.
+
+  To build for iOS, follow the regular instructions, but instead of
+  `./configure` do something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
     $ export OBJC="$clang -arch armv7 -arch arm64"
@@ -161,13 +175,14 @@ other place, you are most likely using a mirror.
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
     $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
-  To build for the iOS simulator, use something like this:
+  To build for the iOS simulator, follow the regular instructions, but instead
+  of `./configure` use something like this:
 
     $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-    $ export OBJC="$clang -arch i386 -arch x86_64"
-    $ export OBJCPP="$clang -arch i386 -E"
+    $ export OBJC="$clang -arch arm64 -arch x86_64"
+    $ export OBJCPP="$clang -arch arm64 -E"
     $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/iossim --host=x86_64-apple-darwin
+    $ ./configure --prefix=/usr/local/iossim --host=arm64-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
@@ -355,6 +370,21 @@ other place, you are most likely using a mirror.
      above
 
   Please don't hesitate to join any or all of those!
+
+
+<h1 id="donating">Donating</h1>
+
+  If you want to donate to ObjFW, you can read about possible ways to do so
+  [here](https://objfw.nil.im/wiki?name=Donating).
+
+
+<h1 id="thanks">Thanks</h1>
+
+  * Thank you to [Jonathan Neuschäfer](https://github.com/neuschaefer) for
+    reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in
+    2017!
+  * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
+    Mini to the project!
 
 
 <h1 id="commercial-use">Commercial use</h1>

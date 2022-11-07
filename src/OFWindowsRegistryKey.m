@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,6 +31,7 @@
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetWindowsRegistryValueFailedException.h"
+#import "OFUndefinedKeyException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
@@ -115,19 +116,13 @@ OF_DIRECT_MEMBERS
 		    [path cStringWithEncoding: [OFLocale encoding]], options,
 		    securityAndAccessRights, &subKey);
 
-	if (status != ERROR_SUCCESS) {
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
-
+	if (status != ERROR_SUCCESS)
 		@throw [OFOpenWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
 				     options: options
 		     securityAndAccessRights: securityAndAccessRights
 				      status: status];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -362,6 +357,71 @@ OF_DIRECT_MEMBERS
 
 	[self setData: data forValueNamed: name type: type];
 
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint32_t)DWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type, ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_DWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setDWORD: (uint32_t)dword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &dword count: sizeof(dword)];
+	[self setData: data forValueNamed: name type: REG_DWORD];
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint64_t)QWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
+	uint64_t ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_QWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setQWORD: (uint64_t)qword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &qword count: sizeof(qword)];
+	[self setData: data forValueNamed: name type: REG_QWORD];
 	objc_autoreleasePoolPop(pool);
 }
 

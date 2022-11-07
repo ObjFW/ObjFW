@@ -1,0 +1,35 @@
+name: ios
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch:
+          - arm64
+          - x86_64
+        configure_flags:
+          - 
+          - --disable-shared
+    steps:
+    - name: Install dependencies
+      run: brew install autoconf automake
+    - uses: actions/checkout@v2
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: |
+        export IPHONEOS_DEPLOYMENT_TARGET="9.0"
+        if [ "${{ matrix.arch}}" = "x86_64" ]; then
+          sdk="iphonesimulator"
+        else
+          sdk="iphoneos"
+        fi
+        export OBJC="clang -isysroot $(xcrun --sdk $sdk --show-sdk-path)"
+        export OBJC="$OBJC -arch ${{ matrix.arch }}"
+        ./configure --host=${{ matrix.arch }}-apple-darwin \
+          ${{ matrix.configure_flags }}
+    - name: make
+      run: make -j$(sysctl -n hw.logicalcpu)
+    - name: make install
+      run: sudo make install

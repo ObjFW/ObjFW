@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -210,7 +210,9 @@ static OFString *const cArray[] = {
 
 	TEST(@"-[removeObject:]",
 	    R([mutableArray1 removeObject: cArray[0]]) &&
-	    mutableArray1.count == 2)
+	    mutableArray1.count == 1)
+
+	[mutableArray1 addObject: cArray[0]];
 
 	TEST(@"-[removeObjectIdenticalTo:]",
 	    R([mutableArray1 removeObjectIdenticalTo: cArray[2]]) &&
