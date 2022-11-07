@@ -143,10 +143,10 @@ static const OFRunLoopMode connectRunLoopMode =
 	/* Cleanup */
 	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
 
+	_delegate = delegate;
+
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
-
-	_delegate = delegate;
 
 	objc_autoreleasePoolPop(pool);
 }
