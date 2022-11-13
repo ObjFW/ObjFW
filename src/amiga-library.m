@@ -528,12 +528,33 @@ OFErrNo(void)
 	return libC.errNo();
 }
 
+#ifdef OF_MORPHOS
+int
+vasprintf(char **restrict strp, const char *restrict fmt, va_list args)
+{
+	return libC.vasprintf(strp, fmt, args);
+}
+
+int
+asprintf(char **restrict strp, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vasprintf(strp, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+#else
 int
 vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
     va_list args)
 {
 	return libC.vsnprintf(str, size, fmt, args);
 }
+#endif
 
 float
 strtof(const char *str, char **endptr)

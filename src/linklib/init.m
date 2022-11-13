@@ -342,7 +342,11 @@ ctor(void)
 		.__deregister_frame = __deregister_frame,
 #endif
 		.errNo = errNo,
+#ifdef OF_MORPHOS
+		.vasprintf = vasprintf,
+#else
 		.vsnprintf = vsnprintf,
+#endif
 		.strtof = strtof,
 		.strtod = strtod,
 #ifdef OF_MORPHOS

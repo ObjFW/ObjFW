@@ -71,8 +71,13 @@ struct OFLibC {
 	int *_Nonnull (*_Nonnull errNo)(void);
 
 	/* Needed only by ObjFW. */
+#ifdef OF_MORPHOS
+	int (*_Nonnull vasprintf)(char *_Nonnull *_Nullable restrict,
+	    const char *_Nonnull restrict, va_list);
+#else
 	int (*_Nonnull vsnprintf)(char *_Nonnull restrict, size_t,
 	    const char *_Nonnull restrict, va_list);
+#endif
 	float (*_Nonnull strtof)(const char *_Nonnull,
 	    char *_Nullable *_Nullable);
 	double (*_Nonnull strtod)(const char *_Nonnull,
