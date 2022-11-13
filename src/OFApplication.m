@@ -37,6 +37,7 @@
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
 #import "OFThread+Private.h"
@@ -260,9 +261,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				pos = [tmp rangeOfString: @"="].location;
 				if (pos == OFNotFound) {
-					fprintf(stderr,
-					    "Warning: Invalid environment "
-					    "variable: %s\n", tmp.UTF8String);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %@", tmp);
 					continue;
 				}
 
@@ -302,9 +302,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				pos = [tmp rangeOfString: @"="].location;
 				if (pos == OFNotFound) {
-					fprintf(stderr,
-					    "Warning: Invalid environment "
-					    "variable: %s\n", tmp.UTF8String);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %@", tmp);
 					continue;
 				}
 
@@ -396,8 +395,8 @@ SIGNAL_HANDLER(SIGUSR2)
 				char *sep;
 
 				if ((sep = strchr(*env, '=')) == NULL) {
-					fprintf(stderr, "Warning: Invalid "
-					    "environment variable: %s\n", *env);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %s", *env);
 					continue;
 				}
 

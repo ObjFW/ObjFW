@@ -41,6 +41,7 @@
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 # import "OFPlainMutex.h"	/* For OFSpinlock */
 #endif
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -260,13 +261,12 @@ typeEncodingForSelector(Class class, SEL selector)
 static void
 uncaughtExceptionHandler(id exception)
 {
-	OFString *description = [exception description];
 	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
 	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
-	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: encoding]);
+	OFLog(@"Runtime error: Unhandled exception:");
+	OFLog(@"%@", exception);
 
 	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
 		stackTraceAddresses = [exception stackTraceAddresses];
@@ -281,7 +281,8 @@ uncaughtExceptionHandler(id exception)
 		if (stackTraceSymbols.count != count)
 			stackTraceSymbols = nil;
 
-		fputs("\nStack trace:\n", stderr);
+		OFLog(@"");
+		OFLog(@"Stack trace:");
 
 		if (stackTraceSymbols != nil) {
 			for (size_t i = 0; i < count; i++) {
@@ -291,18 +292,16 @@ uncaughtExceptionHandler(id exception)
 				    objectAtIndex: i]
 				    cStringWithEncoding: encoding];
 
-				fprintf(stderr, "  %p  %s\n", address, symbol);
+				OFLog(@"  %p  %s", address, symbol);
 			}
 		} else {
 			for (size_t i = 0; i < count; i++) {
 				void *address = [[stackTraceAddresses
 				    objectAtIndex: i] pointerValue];
 
-				fprintf(stderr, "  %p\n", address);
+				OFLog(@"  %p", address);
 			}
 		}
-
-		fputs("\n", stderr);
 	}
 
 	abort();
