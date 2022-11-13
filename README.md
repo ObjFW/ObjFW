@@ -323,7 +323,7 @@ other place, you are most likely using a mirror.
 
     $ objfw-new --app MyFirstApp
 
-  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
+  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching:]`
   method is called as soon as ObjFW finished all initialization. Use this as
   the entry point to your own code. For example, you could add the following
   line there to create a "Hello World":

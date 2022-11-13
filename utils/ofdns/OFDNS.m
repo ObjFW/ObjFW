@@ -80,7 +80,7 @@ help(OFStream *stream, bool full, int status)
 		[OFApplication terminateWithStatus: _errors];
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *DNSClassString, *server;
 	const OFOptionsParserOption options[] = {

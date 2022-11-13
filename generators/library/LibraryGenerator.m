@@ -31,7 +31,7 @@
 OF_APPLICATION_DELEGATE(LibraryGenerator)
 
 @implementation LibraryGenerator
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFURI *sourcesURI = [[OFFileManager defaultManager].currentDirectoryURI
 	    URIByAppendingPathComponent: @"../../src"];

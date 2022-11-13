@@ -40,7 +40,7 @@ showUsage(void)
 }
 
 @implementation ObjFWNew
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	bool app, class;
 	OFString *superclass = nil, *name;

@@ -412,7 +412,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *outputPath;
 	const OFOptionsParserOption options[] = {
