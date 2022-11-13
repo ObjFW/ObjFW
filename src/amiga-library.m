@@ -406,31 +406,6 @@ free(void *ptr)
 	libC.free(ptr);
 }
 
-int
-fprintf(FILE *restrict stream, const char *restrict fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	va_start(args, fmt);
-	ret = libC.vfprintf(stream, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-vfprintf(FILE *restrict stream, const char *restrict fmt, va_list args)
-{
-	return libC.vfprintf(stream, fmt, args);
-}
-
-int
-fflush(FILE *restrict stream)
-{
-	return libC.fflush(stream);
-}
-
 void
 abort(void)
 {
