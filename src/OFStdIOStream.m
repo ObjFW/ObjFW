@@ -105,6 +105,9 @@ OFLogV(OFConstantString *format, va_list arguments)
 	me = [OFApplication programName];
 #endif
 
+	if (me == nil)
+		me = @"?";
+
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
 
