@@ -1080,7 +1080,7 @@ next:
 
 			_resumedFrom = (unsigned long long)size;
 
-			range = [OFString stringWithFormat: @"bytes=%jd-",
+			range = [OFString stringWithFormat: @"bytes=%ju-",
 							    _resumedFrom];
 			[clientHeaders setObject: range forKey: @"Range"];
 		} @catch (OFGetItemAttributesFailedException *e) {
