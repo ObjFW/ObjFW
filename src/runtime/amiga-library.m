@@ -573,7 +573,7 @@ struct Resident resident = {
 #endif
 };
 
-#ifdef OF_MORPHOS
+#if defined(OF_MORPHOS)
 __asm__ (
     ".section .eh_frame, \"aw\"\n"
     ".globl __EH_FRAME_BEGIN__\n"
@@ -583,6 +583,22 @@ __asm__ (
     ".globl __CTOR_LIST__\n"
     ".type __CTOR_LIST__, @object\n"
     "__CTOR_LIST__:\n"
+    ".section .text"
+);
+#elif defined(OF_AMIGAOS_M68K)
+__asm__ (
+    ".section .list___EH_FRAME_BEGINS__, \"aw\"\n"
+    ".globl __EH_FRAME_BEGIN__\n"
+    ".type __EH_FRAME_BEGIN__, @object\n"
+    "__EH_FRAME_BEGINS__:\n"
+    ".section .dlist___EH_FRAME_OBJECTS__, \"aw\"\n"
+    ".globl __EH_FRAME_OBJECTS__\n"
+    ".type __EH_FRAME_OBJECTS__, @object\n"
+    "__EH_FRAME_OBJECTS__:\n"
+    ".section .list___CTOR_LIST__, \"aw\"\n"
+    ".globl ___CTOR_LIST__\n"
+    ".type ___CTOR_LIST__, @object\n"
+    "___CTOR_LIST__:\n"
     ".section .text"
 );
 #endif
