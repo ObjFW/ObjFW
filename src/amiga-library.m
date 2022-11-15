@@ -632,6 +632,20 @@ _Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 	return libC._Unwind_Backtrace(callback, data);
 }
 
+#ifdef OF_MORPHOS
+int
+setjmp(jmp_buf env)
+{
+	return libC.setjmp(env);
+}
+
+void
+longjmp(jmp_buf env, int val)
+{
+	libC.longjmp(env, val);
+}
+#endif
+
 void
 OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters)
 {

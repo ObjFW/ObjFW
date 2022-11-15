@@ -26,6 +26,10 @@
 	type name = reg_##name;
 #endif
 
+#ifdef OF_MORPHOS
+# include <setjmp.h>
+#endif
+
 typedef void (*OFSignalHandler)(int);
 
 struct OFLibC {
@@ -99,6 +103,10 @@ struct OFLibC {
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
 	int (*_Nonnull _Unwind_Backtrace)(int (*_Nonnull)(void *_Nonnull,
 	    void *_Null_unspecified), void *_Null_unspecified);
+#ifdef OF_MORPHOS
+	int (*_Nonnull setjmp)(jmp_buf);
+	void __dead2 (*_Nonnull longjmp)(jmp_buf, int);
+#endif
 };
 
 extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC,
