@@ -46,10 +46,6 @@ struct ATInterfaceConfig {
 };
 #endif
 
-#ifndef ATPROTO_BASE
-# define ATPROTO_BASE 0
-#endif
-
 @implementation OFDDPSocket
 @dynamic delegate;
 
@@ -75,13 +71,16 @@ struct ATInterfaceConfig {
 
 	address = OFSocketAddressMakeAppleTalk(network, node, port);
 
-#ifdef OF_MACOS
+#if defined(OF_MACOS)
 	if ((_socket = socket(address.sockaddr.at.sat_family,
 	    SOCK_RAW | SOCK_CLOEXEC, protocolType)) == OFInvalidSocketHandle)
-#else
+#elif defined(OF_WINDOWS)
 	if ((_socket = socket(address.sockaddr.at.sat_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, ATPROTO_BASE + protocolType)) ==
 	    OFInvalidSocketHandle)
+#else
+	if ((_socket = socket(address.sockaddr.at.sat_family,
+	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
 #endif
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
@@ -196,8 +195,10 @@ struct ATInterfaceConfig {
 		{ buffer, length }
 	};
 	struct msghdr msg = {
-		.msg_name = (struct sockaddr *)&sender->sockaddr,
-		.msg_namelen = (socklen_t)sizeof(sender->sockaddr),
+		.msg_name = (sender != NULL
+		    ? (struct sockaddr *)&sender->sockaddr : NULL),
+		.msg_namelen = (sender != NULL
+		    ? (socklen_t)sizeof(sender->sockaddr) : 0),
 		.msg_iov = iov,
 		.msg_iovlen = 2
 	};
@@ -216,8 +217,10 @@ struct ATInterfaceConfig {
 						  requestedLength: length
 							    errNo: ENOMSG];
 
-	sender->length = msg.msg_namelen;
-	sender->family = OFSocketAddressFamilyAppleTalk;
+	if (sender != NULL) {
+		sender->length = msg.msg_namelen;
+		sender->family = OFSocketAddressFamilyAppleTalk;
+	}
 
 	return ret - 1;
 }

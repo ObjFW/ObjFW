@@ -85,6 +85,8 @@ OF_DIRECT_MEMBERS
 - (void)of_run;
 @end
 
+const OFNotificationName OFApplicationDidFinishLaunchingNotification =
+    @"OFApplicationDidFinishLaunchingNotification";
 const OFNotificationName OFApplicationWillTerminateNotification =
     @"OFApplicationWillTerminateNotification";
 static OFApplication *app = nil;
@@ -93,15 +95,16 @@ static void
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
-
-	[[OFNotificationCenter defaultCenter]
-	    postNotificationName: OFApplicationWillTerminateNotification
+	OFNotification *notification = [OFNotification
+	    notificationWithName: OFApplicationWillTerminateNotification
 			  object: app];
 
-	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
-		[delegate applicationWillTerminate];
+	if ([delegate respondsToSelector: @selector(applicationWillTerminate:)])
+		[delegate applicationWillTerminate: notification];
 
 	[delegate release];
+
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
@@ -579,6 +582,7 @@ SIGNAL_HANDLER(SIGUSR2)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
+	OFNotification *notification;
 
 #ifdef OF_HAVE_THREADS
 	[OFThread of_createMainThread];
@@ -598,7 +602,15 @@ SIGNAL_HANDLER(SIGUSR2)
 	 */
 
 	pool = objc_autoreleasePoolPush();
-	[_delegate applicationDidFinishLaunching];
+
+	notification = [OFNotification
+	    notificationWithName: OFApplicationDidFinishLaunchingNotification
+			  object: app];
+
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
+
+	[_delegate applicationDidFinishLaunching: notification];
+
 	objc_autoreleasePoolPop(pool);
 
 	[runLoop run];

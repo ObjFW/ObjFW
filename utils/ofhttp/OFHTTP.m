@@ -412,7 +412,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *outputPath;
 	const OFOptionsParserOption options[] = {
@@ -1080,7 +1080,7 @@ next:
 
 			_resumedFrom = (unsigned long long)size;
 
-			range = [OFString stringWithFormat: @"bytes=%jd-",
+			range = [OFString stringWithFormat: @"bytes=%ju-",
 							    _resumedFrom];
 			[clientHeaders setObject: range forKey: @"Range"];
 		} @catch (OFGetItemAttributesFailedException *e) {

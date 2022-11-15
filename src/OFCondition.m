@@ -19,6 +19,7 @@
 
 #import "OFCondition.h"
 #import "OFDate.h"
+#import "OFString.h"
 
 #import "OFBroadcastConditionFailedException.h"
 #import "OFConditionStillWaitingException.h"

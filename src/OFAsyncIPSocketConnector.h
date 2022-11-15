@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@protocol OFIPSocketAsyncConnecting
+@protocol OFAsyncIPSocketConnecting
 - (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo;
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)of_closeSocket;
 @end
 
-@interface OFIPSocketAsyncConnector: OFObject <OFRunLoopConnectDelegate,
+@interface OFAsyncIPSocketConnector: OFObject <OFRunLoopConnectDelegate,
     OFDNSResolverHostDelegate>
 {
 	id _socket;

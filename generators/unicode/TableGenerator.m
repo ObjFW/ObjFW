@@ -62,7 +62,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	return self;
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFHTTPRequest *request;
 

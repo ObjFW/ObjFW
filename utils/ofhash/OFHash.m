@@ -68,7 +68,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 }
 
 @implementation OFHash
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;

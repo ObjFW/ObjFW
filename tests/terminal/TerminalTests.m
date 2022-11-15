@@ -27,7 +27,7 @@
 OF_APPLICATION_DELEGATE(TerminalTests)
 
 @implementation TerminalTests
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFArray *colors = [OFArray arrayWithObjects:
 	    [OFColor black], [OFColor silver], [OFColor grey], [OFColor white],

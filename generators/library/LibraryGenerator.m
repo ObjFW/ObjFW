@@ -75,7 +75,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	[funcArrayGenerator generate];
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	[self generateInDirectory: @"../../src"];
 	[self generateInDirectory: @"../../src/runtime"];

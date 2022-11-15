@@ -167,7 +167,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 }
 
 @implementation OFArc
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *outputDir, *encodingString, *type;
 	const OFOptionsParserOption options[] = {

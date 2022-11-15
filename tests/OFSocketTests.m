@@ -115,6 +115,12 @@ static OFString *const module = @"OFSocket";
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0xAAAA) &&
 	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
+	TEST(@"Parsing an IPv6 #6",
+	    R(addr = OFSocketAddressParseIP(@"fd00::1%123", 1234)) &&
+	    COMPARE_V6(addr, 0xFD00, 0, 0, 0, 0, 0, 0, 1) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234 &&
+	    addr.sockaddr.in6.sin6_scope_id == 123)
+
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"1:::2", 1234))
 
@@ -146,6 +152,8 @@ static OFString *const module = @"OFSocket";
 	    OFSocketAddressParseIP(@"1:2", 1234))
 
 	TEST(@"Port of an IPv6 address", OFSocketAddressIPPort(&addr) == 1234)
+
+	addr.sockaddr.in6.sin6_scope_id = 0;
 
 	SET_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0)
 	TEST(@"Converting an IPv6 to a string #1",

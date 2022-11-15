@@ -357,7 +357,7 @@ main(int argc, char *argv[])
 	}
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 #if defined(OF_IOS) && defined(OF_HAVE_FILES)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();

@@ -29,6 +29,7 @@ static OFString *const module = @"OFIPXSocket";
 	OFIPXSocket *sock;
 	OFSocketAddress address1, address2;
 	char buffer[5];
+	unsigned char node1[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
@@ -67,8 +68,11 @@ static OFString *const module = @"OFIPXSocket";
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
 	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
-	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
+	    R(OFSocketAddressGetIPXNode(&address1, node1)) &&
+	    R(OFSocketAddressGetIPXNode(&address2, node2)) &&
+	    memcmp(node1, node2, IPX_NODE_LEN) == 0 &&
+	    OFSocketAddressIPXPort(&address1) ==
+	    OFSocketAddressIPXPort(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }
