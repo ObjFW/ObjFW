@@ -511,12 +511,12 @@ glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_
 	OFSocketAddressSetAppleTalkPort(address, port);
 }
 
-void __saveds
+uint8_t __saveds
 glue_OFSocketAddressAppleTalkPort PPC_PARAMS(const OFSocketAddress *address)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
-	OFSocketAddressAppleTalkPort(address);
+	return OFSocketAddressAppleTalkPort(address);
 }
 
 OFString * __saveds

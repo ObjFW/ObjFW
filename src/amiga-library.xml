@@ -213,7 +213,7 @@
     <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
     <argument name='port' type='uint8_t' m68k-arg='d0'/>
   </function>
-  <function name='OFSocketAddressAppleTalkPort' return='uint8_t'>
+  <function name='OFSocketAddressAppleTalkPort' return-type='uint8_t'>
     <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <include>OFTLSStream.h</include>

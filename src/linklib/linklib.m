@@ -1026,20 +1026,20 @@ OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
 #endif
 }
 
-void
+uint8_t
 OFSocketAddressAppleTalkPort(const OFSocketAddress *address)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 378))(address);
+	return ((uint8_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 378))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 376))(address);
+	return __extension__ ((uint8_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 376))(address);
 #endif
 }
 
