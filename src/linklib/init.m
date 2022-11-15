@@ -107,7 +107,7 @@ void *__objc_class_name_OFMutableTarArchiveEntry;
 void *__objc_class_name_OFMutableTriple;
 void *__objc_class_name_OFMutableURI;
 void *__objc_class_name_OFMutableZIPArchiveEntry;
-void *__objc_class_name_OFNotification
+void *__objc_class_name_OFNotification;
 void *__objc_class_name_OFNotificationCenter;
 void *__objc_class_name_OFNull;
 void *__objc_class_name_OFNumber;
@@ -310,8 +310,6 @@ ctor(void)
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-		.vfprintf = vfprintf,
-		.fflush = fflush,
 		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
@@ -403,13 +401,13 @@ extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters);
 extern void OFScryptWrapper(const OFScryptParameters *parameters);
 
 void
-OFPBKDF2(OFPBKDF2Parameters *parameters)
+OFPBKDF2(OFPBKDF2Parameters parameters)
 {
 	OFPBKDF2Wrapper(&parameters);
 }
 
 void
-OFScrypt(OFScryptParameters *parameters)
+OFScrypt(OFScryptParameters parameters)
 {
 	OFScryptWrapper(&parameters);
 }
