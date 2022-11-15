@@ -85,6 +85,9 @@
 			    @"\n",
 			    libBase];
 
+	[_impl writeString:
+	    @"#pragma GCC diagnostic ignored \"-Warray-parameter\"\n\n"];
+
 	functions = [_library elementsForName: @"function"];
 	for (OFXMLElement *function in functions) {
 		OFString *name =

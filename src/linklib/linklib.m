@@ -38,6 +38,8 @@
 
 extern struct Library *ObjFWBase;
 
+#pragma GCC diagnostic ignored "-Warray-parameter"
+
 bool
 OFInit(unsigned int version, struct OFLibC *_Nonnull libc, FILE *_Nonnull *_Nonnull sF)
 {
