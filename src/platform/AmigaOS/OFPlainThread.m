@@ -20,6 +20,7 @@
 
 #import "OFPlainThread.h"
 #import "OFData.h"
+#import "OFString.h"
 #import "OFTLSKey.h"
 
 #include <dos/dostags.h>

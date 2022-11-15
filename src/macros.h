@@ -359,12 +359,13 @@
 			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
+@class OFConstantString;
+extern void OFLog(OFConstantString *_Nonnull, ...);
 # define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\
-			fprintf(stderr, "Failed to ensure condition "	\
-			    "in " __FILE__ ":%d:\n" #cond "\n",		\
-			    __LINE__);					\
+			OFLog(@"Failed to ensure condition in "		\
+			    @__FILE__ ":%d: " @#cond, __LINE__);	\
 			abort();					\
 		}							\
 	} while (0)
