@@ -17,8 +17,6 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
@@ -826,7 +824,7 @@ OF_DIRECT_MEMBERS
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	assert(i == count);
+	OFAssert(i == count);
 
 	[data makeImmutable];
 

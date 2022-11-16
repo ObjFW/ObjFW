@@ -16,7 +16,6 @@
 #include "config.h"
 
 #include <string.h>
-#include <assert.h>
 
 #import "OFList.h"
 #import "OFString.h"
@@ -256,7 +255,7 @@ OFListItemObject(OFListItem listItem)
 			return false;
 
 	/* One is bigger than the other even though we checked the count */
-	assert(iter == NULL && iter2 == NULL);
+	OFAssert(iter == NULL && iter2 == NULL);
 
 	return true;
 }

@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
-
 #import "OFLHADecompressingStream.h"
 #import "OFKernelEventObserver.h"
 
@@ -50,7 +48,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
-	assert(stream->_savedBitsLength < count);
+	OFAssert(stream->_savedBitsLength < count);
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {

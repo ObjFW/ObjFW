@@ -371,6 +371,12 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	} while (0)
 #endif
 
+#ifndef NDEBUG
+# define OFAssert(...) OFEnsure(__VA_ARGS__)
+#else
+# define OFAssert(...)
+#endif
+
 #define OF_UNRECOGNIZED_SELECTOR OFMethodNotFound(self, _cmd);
 #if __has_feature(objc_arc)
 # define OF_INVALID_INIT_METHOD OFMethodNotFound(self, _cmd);

@@ -17,7 +17,6 @@
 
 #define _LARGEFILE64_SOURCE
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H

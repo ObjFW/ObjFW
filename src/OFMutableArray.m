@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "OFMutableArray.h"
 #import "OFMutableAdjacentArray.h"
 

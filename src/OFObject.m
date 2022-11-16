@@ -20,8 +20,6 @@
 #include <string.h>
 #include "unistd_wrapper.h"
 
-#include <assert.h>
-
 #ifdef OF_APPLE_RUNTIME
 # include <dlfcn.h>
 #endif
@@ -1170,7 +1168,7 @@ _references_to_categories_of_OFObject(void)
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVARS->retainCount >= 0);
+	OFAssert(PRE_IVARS->retainCount >= 0);
 	return PRE_IVARS->retainCount;
 }
 

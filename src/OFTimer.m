@@ -17,8 +17,6 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFTimer.h"
 #import "OFTimer+Private.h"
 #import "OFDate.h"
@@ -487,8 +485,8 @@
 	 * The run loop references the timer, so it should never be deallocated
 	 * if it is still in a run loop.
 	 */
-	assert(_inRunLoop == nil);
-	assert(_inRunLoopMode == nil);
+	OFAssert(_inRunLoop == nil);
+	OFAssert(_inRunLoopMode == nil);
 
 	[_fireDate release];
 	[_target release];

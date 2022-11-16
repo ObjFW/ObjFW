@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <ctype.h>
 
 #import "OFMethodSignature.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -36,7 +36,7 @@ alignmentOfArray(const char **type, size_t *length)
 {
 	size_t alignment;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -65,7 +65,7 @@ alignmentOfStruct(const char **type, size_t *length)
 	bool first = true;
 #endif
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -111,7 +111,7 @@ alignmentOfUnion(const char **type, size_t *length)
 {
 	size_t alignment = 0;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -292,7 +292,7 @@ sizeOfArray(const char **type, size_t *length)
 	size_t count = 0;
 	size_t size;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -332,7 +332,7 @@ sizeOfStruct(const char **type, size_t *length)
 	bool first = true;
 #endif
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -405,7 +405,7 @@ sizeOfUnion(const char **type, size_t *length)
 {
 	size_t size = 0;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;

@@ -21,7 +21,6 @@
 #define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
-#include <assert.h>
 #include <errno.h>
 #include <string.h>
 
@@ -283,7 +282,7 @@
 # endif
 #endif
 
-	assert(client->_remoteAddress.length <=
+	OFAssert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
 	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)

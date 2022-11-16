@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
-
 #import "OFMapTableDictionary.h"
 #import "OFArray.h"
 #import "OFMapTable+Private.h"
@@ -346,7 +344,7 @@ static const OFMapTableFunctions objectFunctions = {
 		i = 0;
 		enumerator = [_mapTable keyEnumerator];
 		while ((keyPtr = [enumerator nextObject]) != NULL) {
-			assert(i < count);
+			OFAssert(i < count);
 
 			keys[i++] = (id)*keyPtr;
 		}
@@ -379,7 +377,7 @@ static const OFMapTableFunctions objectFunctions = {
 		i = 0;
 		enumerator = [_mapTable objectEnumerator];
 		while ((objectPtr = [enumerator nextObject]) != NULL) {
-			assert(i < count);
+			OFAssert(i < count);
 
 			objects[i++] = (id)*objectPtr;
 		}

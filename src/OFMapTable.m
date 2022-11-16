@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "OFMapTable.h"
 #import "OFMapTable+Private.h"
 #import "OFEnumerator.h"

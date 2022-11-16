@@ -20,8 +20,6 @@
 
 #include <math.h>
 
-#include <assert.h>
-
 #import "OFString+JSONParsing.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -652,10 +650,6 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	const char *stop = pointer + self.UTF8StringLength;
 	id object;
 	size_t line = 1;
-
-#ifdef __clang_analyzer__
-	assert(pointer != NULL);
-#endif
 
 	object = nextObject(&pointer, stop, &line, depthLimit);
 	skipWhitespacesAndComments(&pointer, stop, &line);

@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFPlainThread.h"
@@ -194,7 +193,7 @@ OFPlainThreadJoin(OFPlainThread thread)
 	Wait(1ul << thread->joinSigBit);
 	FreeSignal(thread->joinSigBit);
 
-	assert(thread->done);
+	OFAssert(thread->done);
 	free(thread);
 
 	return 0;
