@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "OFXMLElement.h"
 #import "OFArray.h"
 #import "OFData.h"
@@ -633,7 +631,7 @@ _references_to_categories_of_OFXMLElement(void)
 			cString[i++] = '/';
 
 		cString[i++] = '>';
-		assert(i == length);
+		OFAssert(i == length);
 
 		objc_autoreleasePoolPop(pool);
 

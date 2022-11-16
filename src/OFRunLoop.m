@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFRunLoop.h"
@@ -274,7 +273,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFList OF_GENERIC(OF_KINDOF(OFRunLoopReadQueueItem *)) *queue =
 	    [[_readQueues objectForKey: object] retain];
 
-	assert(queue != nil);
+	OFAssert(queue != nil);
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
@@ -318,7 +317,7 @@ static OFRunLoop *mainRunLoop = nil;
 	 */
 	OFList *queue = [[_writeQueues objectForKey: object] retain];
 
-	assert(queue != nil);
+	OFAssert(queue != nil);
 
 	@try {
 		if (![queue.firstObject handleObject: object]) {
@@ -1328,7 +1327,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 		return;
 
 	if ((queue = [state->_writeQueues objectForKey: object]) != nil) {
-		assert(queue.count > 0);
+		OFAssert(queue.count > 0);
 
 		/*
 		 * Clear the queue now, in case this has been called from a
@@ -1341,7 +1340,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	}
 
 	if ((queue = [state->_readQueues objectForKey: object]) != nil) {
-		assert(queue.count > 0);
+		OFAssert(queue.count > 0);
 
 		/*
 		 * Clear the queue now, in case this has been called from a

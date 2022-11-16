@@ -39,7 +39,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 #include <io.h>
 
@@ -295,7 +294,7 @@ codepageToEncoding(UINT codepage)
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
-			assert(UTF8Len == 0 || UTF8Len < -4);
+			OFAssert(UTF8Len == 0 || UTF8Len < -4);
 
 			UTF16[0] = 0xFFFD;
 			UTF16Len = 1;

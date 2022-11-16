@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #ifndef OF_INFLATE64_STREAM_M
 # import "OFInflateStream.h"
 #else
@@ -107,7 +105,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
-	assert(stream->_savedBitsLength < count);
+	OFAssert(stream->_savedBitsLength < count);
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {

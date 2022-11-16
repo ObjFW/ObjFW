@@ -18,8 +18,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFArray.h"
 #import "OFArray+Private.h"
 #import "OFAdjacentArray.h"
@@ -689,7 +687,7 @@ static struct {
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	assert(i == count);
+	OFAssert(i == count);
 
 	[data makeImmutable];
 

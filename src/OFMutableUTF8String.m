@@ -18,7 +18,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #import "OFMutableUTF8String.h"
 #import "OFASPrintF.h"
@@ -79,7 +78,7 @@
 		uint8_t t;
 		const OFUnichar *const *table;
 
-		assert(startTableSize >= 1 && middleTableSize >= 1);
+		OFAssert(startTableSize >= 1 && middleTableSize >= 1);
 
 		_s->hasHash = false;
 
@@ -173,7 +172,7 @@
 		j += d;
 	}
 
-	assert(j == newCStringLength);
+	OFAssert(j == newCStringLength);
 	newCString[j] = 0;
 	OFFreeMemory(unicodeString);
 

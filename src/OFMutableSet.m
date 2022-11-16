@@ -17,10 +17,9 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFMutableSet.h"
 #import "OFMutableMapTableSet.h"
+#import "OFString.h"
 
 static struct {
 	Class isa;
@@ -174,7 +173,7 @@ static struct {
 
 		i = 0;
 		for (id object in self) {
-			assert(i < count);
+			OFAssert(i < count);
 			cArray[i++] = object;
 		}
 
