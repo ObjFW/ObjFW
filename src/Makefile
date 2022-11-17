@@ -22,6 +22,7 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
+       OFEmbeddedURIHandler.m		\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
@@ -186,7 +187,6 @@ SRCS += OFASPrintF.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
-	OFEmbeddedURIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\

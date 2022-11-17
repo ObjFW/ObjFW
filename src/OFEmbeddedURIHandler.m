@@ -32,7 +32,7 @@
 #endif
 
 struct EmbeddedFile {
-	const char *name;
+	OFString *path;
 	const uint8_t *bytes;
 	size_t size;
 } *embeddedFiles = NULL;
@@ -48,7 +48,7 @@ init(void)
 #endif
 
 void
-OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
+OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 {
 #ifdef OF_HAVE_THREADS
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -61,7 +61,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 	    sizeof(*embeddedFiles) * (numEmbeddedFiles + 1));
 	OFEnsure(embeddedFiles != NULL);
 
-	embeddedFiles[numEmbeddedFiles].name = name;
+	embeddedFiles[numEmbeddedFiles].path = [path retain];
 	embeddedFiles[numEmbeddedFiles].bytes = bytes;
 	embeddedFiles[numEmbeddedFiles].size = size;
 	numEmbeddedFiles++;
@@ -74,7 +74,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 @implementation OFEmbeddedURIHandler
 - (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
 {
-	const char *path;
+	OFString *path;
 
 	if (![URI.scheme isEqual: @"embedded"] || URI.host.length > 0 ||
 	    URI.port != nil || URI.user != nil || URI.password != nil ||
@@ -86,7 +86,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 							      mode: mode
 							     errNo: EROFS];
 
-	if ((path = URI.path.UTF8String) == NULL) {
+	if ((path = URI.path) == nil) {
 		@throw [OFInvalidArgumentException exception];
 	}
 
@@ -95,7 +95,7 @@ OFRegisterEmbeddedFile(const char *name, const uint8_t *bytes, size_t size)
 	@try {
 #endif
 		for (size_t i = 0; i < numEmbeddedFiles; i++) {
-			if (strcmp(embeddedFiles[i].name, path) != 0)
+			if (![embeddedFiles[i].path isEqual: path])
 				continue;
 
 			return [OFMemoryStream

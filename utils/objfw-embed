@@ -10,7 +10,11 @@ cat <<EOF
 #include <stddef.h>
 #include <stdint.h>
 
-extern void OFRegisterEmbeddedFile(const char *, const uint8_t *, size_t);
+#ifdef OF_COMPILING_OBJFW
+# import "OFEmbeddedURIHandler.h"
+#else
+# import <ObjFW/OFEmbeddedURIHandler.h>
+#endif
 
 static const uint8_t bytes[] = {
 EOF
@@ -21,6 +25,6 @@ cat <<EOF
 static void __attribute__((__constructor__))
 ctor(void)
 {
-	OFRegisterEmbeddedFile("$2", bytes, sizeof(bytes));
+	OFRegisterEmbeddedFile(@"$2", bytes, sizeof(bytes));
 }
 EOF
