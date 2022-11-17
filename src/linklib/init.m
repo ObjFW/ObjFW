@@ -25,6 +25,7 @@
 
 #import "OFFileManager.h"
 #import "OFRunLoop.h"
+#import "OFStdIOStream.h"
 
 #import "macros.h"
 #import "amiga-library.h"
@@ -84,6 +85,8 @@ void *__objc_class_name_OFEnumerator;
 void *__objc_class_name_OFFileManager;
 void *__objc_class_name_OFGZIPStream;
 void *__objc_class_name_OFHMAC;
+void *__objc_class_name_OFINICategory;
+void *__objc_class_name_OFINIFile;
 void *__objc_class_name_OFInflate64Stream;
 void *__objc_class_name_OFInflateStream;
 void *__objc_class_name_OFInvocation;
@@ -94,6 +97,7 @@ void *__objc_class_name_OFLocale;
 void *__objc_class_name_OFMD5Hash;
 void *__objc_class_name_OFMapTable;
 void *__objc_class_name_OFMapTableEnumerator;
+void *__objc_class_name_OFMemoryStream;
 void *__objc_class_name_OFMessagePackExtension;
 void *__objc_class_name_OFMethodSignature;
 void *__objc_class_name_OFMutableArray;
@@ -127,6 +131,7 @@ void *__objc_class_name_OFSandbox;
 void *__objc_class_name_OFSecureData;
 void *__objc_class_name_OFSeekableStream;
 void *__objc_class_name_OFSet;
+void *__objc_class_name_OFSettings;
 void *__objc_class_name_OFSortedList;
 void *__objc_class_name_OFStdIOStream;
 void *__objc_class_name_OFStream;
@@ -154,9 +159,6 @@ void *__objc_class_name_OFZIPArchive;
 void *__objc_class_name_OFZIPArchiveEntry;
 #ifdef OF_HAVE_FILES
 void *__objc_class_name_OFFile;
-void *__objc_class_name_OFINICategory;
-void *__objc_class_name_OFINIFile;
-void *__objc_class_name_OFSettings;
 #endif
 #ifdef OF_HAVE_SOCKETS
 void *__objc_class_name_OFAAAADNSResourceRecord;
@@ -399,6 +401,16 @@ DESTRUCTOR_P(ObjFW, 4000)
 
 extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters);
 extern void OFScryptWrapper(const OFScryptParameters *parameters);
+
+void
+OFLog(OFConstantString *format, ...)
+{
+	va_list arguments;
+
+	va_start(arguments, format);
+	OFLogV(format, arguments);
+	va_end(arguments);
+}
 
 void
 OFPBKDF2(OFPBKDF2Parameters parameters)

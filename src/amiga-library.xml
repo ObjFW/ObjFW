@@ -68,6 +68,12 @@
   <function name='OFDNSRecordTypeParseName' return-type='OFDNSRecordType'>
     <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
   </function>
+  <include>OFEmbeddedURIHandler.h</include>
+  <function name='OFRegisterEmbeddedFile'>
+    <argument name='name' type='OFString *_Nonnull' m68k-reg='a0'/>
+    <argument name='bytes' type='const uint8_t *_Nonnull' m68k-reg='a1'/>
+    <argument name='size' type='size_t' m68k-reg='d0'/>
+  </function>
   <include>OFHTTPRequest.h</include>
   <function name='OFHTTPRequestMethodName' return-type='const char *_Nullable'>
     <argument name='method' type='OFHTTPRequestMethod' m68k-reg='d0'/>

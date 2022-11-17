@@ -193,6 +193,16 @@ glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string)
 	return OFDNSRecordTypeParseName(string);
 }
 
+void __saveds
+glue_OFRegisterEmbeddedFile PPC_PARAMS(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, size_t size)
+{
+	M68K_ARG(OFString *_Nonnull, name, a0)
+	M68K_ARG(const uint8_t *_Nonnull, bytes, a1)
+	M68K_ARG(size_t, size, d0)
+
+	OFRegisterEmbeddedFile(name, bytes, size);
+}
+
 const char *_Nullable __saveds
 glue_OFHTTPRequestMethodName PPC_PARAMS(OFHTTPRequestMethod method)
 {

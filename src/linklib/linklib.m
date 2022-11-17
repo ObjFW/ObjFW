@@ -23,6 +23,7 @@
 #import "OFApplication.h"
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
+#import "OFEmbeddedURIHandler.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFList.h"
@@ -397,20 +398,37 @@ OFDNSRecordTypeParseName(OFString *_Nonnull string)
 #endif
 }
 
-const char *_Nullable
-OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+void
+OFRegisterEmbeddedFile(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, size_t size)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((const char *_Nullable (*)(OFHTTPRequestMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 156))(method);
+	((void (*)(OFString *_Nonnull __asm__("a0"), const uint8_t *_Nonnull __asm__("a1"), size_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 156))(name, bytes, size);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(OFHTTPRequestMethod))*(void **)(((uintptr_t)ObjFWBase) - 154))(method);
+	__extension__ ((void (*)(OFString *_Nonnull, const uint8_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 154))(name, bytes, size);
+#endif
+}
+
+const char *_Nullable
+OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+{
+#if defined(OF_AMIGAOS_M68K)
+	register struct Library *a6 __asm__("a6") = ObjFWBase;
+	(void)a6;
+	return ((const char *_Nullable (*)(OFHTTPRequestMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 162))(method);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((const char *_Nullable (*)(OFHTTPRequestMethod))*(void **)(((uintptr_t)ObjFWBase) - 160))(method);
 #endif
 }
 
@@ -420,14 +438,14 @@ OFHTTPRequestMethodParseName(OFString *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFHTTPRequestMethod (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 162))(string);
+	return ((OFHTTPRequestMethod (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 168))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFHTTPRequestMethod (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 160))(string);
+	return __extension__ ((OFHTTPRequestMethod (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 166))(string);
 #endif
 }
 
@@ -437,36 +455,19 @@ OFHTTPStatusCodeString(short code)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(short __asm__("d0")))(((uintptr_t)ObjFWBase) - 168))(code);
+	return ((OFString *_Nonnull (*)(short __asm__("d0")))(((uintptr_t)ObjFWBase) - 174))(code);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(short))*(void **)(((uintptr_t)ObjFWBase) - 166))(code);
+	return __extension__ ((OFString *_Nonnull (*)(short))*(void **)(((uintptr_t)ObjFWBase) - 172))(code);
 #endif
 }
 
 OFListItem _Nullable
 OFListItemNext(OFListItem _Nonnull listItem)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWBase;
-	(void)a6;
-	return ((OFListItem _Nullable (*)(OFListItem _Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 174))(listItem);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWBase) : "r12"
-	);
-
-	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 172))(listItem);
-#endif
-}
-
-OFListItem _Nullable
-OFListItemPrevious(OFListItem _Nonnull listItem)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
@@ -482,42 +483,42 @@ OFListItemPrevious(OFListItem _Nonnull listItem)
 #endif
 }
 
+OFListItem _Nullable
+OFListItemPrevious(OFListItem _Nonnull listItem)
+{
+#if defined(OF_AMIGAOS_M68K)
+	register struct Library *a6 __asm__("a6") = ObjFWBase;
+	(void)a6;
+	return ((OFListItem _Nullable (*)(OFListItem _Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 186))(listItem);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 184))(listItem);
+#endif
+}
+
 id _Nonnull
 OFListItemObject(OFListItem _Nonnull listItem)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((id _Nonnull (*)(OFListItem _Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 186))(listItem);
+	return ((id _Nonnull (*)(OFListItem _Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 192))(listItem);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((id _Nonnull (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 184))(listItem);
+	return __extension__ ((id _Nonnull (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 190))(listItem);
 #endif
 }
 
 size_t
 OFSizeOfTypeEncoding(const char *type)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWBase;
-	(void)a6;
-	return ((size_t (*)(const char *__asm__("a0")))(((uintptr_t)ObjFWBase) - 192))(type);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWBase) : "r12"
-	);
-
-	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 190))(type);
-#endif
-}
-
-size_t
-OFAlignmentOfTypeEncoding(const char *type)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
@@ -533,20 +534,37 @@ OFAlignmentOfTypeEncoding(const char *type)
 #endif
 }
 
-void
-OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
+size_t
+OFAlignmentOfTypeEncoding(const char *type)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFOnceControl *_Nonnull __asm__("a0"), OFOnceFunction _Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 204))(control, func);
+	return ((size_t (*)(const char *__asm__("a0")))(((uintptr_t)ObjFWBase) - 204))(type);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFOnceControl *_Nonnull, OFOnceFunction _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 202))(control, func);
+	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 202))(type);
+#endif
+}
+
+void
+OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
+{
+#if defined(OF_AMIGAOS_M68K)
+	register struct Library *a6 __asm__("a6") = ObjFWBase;
+	(void)a6;
+	((void (*)(OFOnceControl *_Nonnull __asm__("a0"), OFOnceFunction _Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 210))(control, func);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	__extension__ ((void (*)(OFOnceControl *_Nonnull, OFOnceFunction _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 208))(control, func);
 #endif
 }
 
@@ -556,14 +574,14 @@ OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(const OFPBKDF2Parameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 210))(parameters);
+	((void (*)(const OFPBKDF2Parameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 216))(parameters);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const OFPBKDF2Parameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 208))(parameters);
+	__extension__ ((void (*)(const OFPBKDF2Parameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 214))(parameters);
 #endif
 }
 
@@ -573,14 +591,14 @@ OFScryptWrapper(const OFScryptParameters *_Nonnull parameters)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(const OFScryptParameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 216))(parameters);
+	((void (*)(const OFScryptParameters *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 222))(parameters);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const OFScryptParameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 214))(parameters);
+	__extension__ ((void (*)(const OFScryptParameters *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 220))(parameters);
 #endif
 }
 
@@ -590,14 +608,14 @@ OFSalsa20_8Core(uint32_t *_Nonnull buffer)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(uint32_t *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 222))(buffer);
+	((void (*)(uint32_t *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 228))(buffer);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 220))(buffer);
+	__extension__ ((void (*)(uint32_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 226))(buffer);
 #endif
 }
 
@@ -607,14 +625,14 @@ OFScryptBlockMix(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(uint32_t *_Nonnull __asm__("a0"), const uint32_t *_Nonnull __asm__("a1"), size_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 228))(output, input, blockSize);
+	((void (*)(uint32_t *_Nonnull __asm__("a0"), const uint32_t *_Nonnull __asm__("a1"), size_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 234))(output, input, blockSize);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *_Nonnull, const uint32_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 226))(output, input, blockSize);
+	__extension__ ((void (*)(uint32_t *_Nonnull, const uint32_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 232))(output, input, blockSize);
 #endif
 }
 
@@ -624,36 +642,19 @@ OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *t
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(uint32_t *__asm__("a0"), size_t __asm__("d0"), size_t __asm__("d1"), uint32_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 234))(buffer, blockSize, costFactor, tmp);
+	((void (*)(uint32_t *__asm__("a0"), size_t __asm__("d0"), size_t __asm__("d1"), uint32_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 240))(buffer, blockSize, costFactor, tmp);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *, size_t, size_t, uint32_t *))*(void **)(((uintptr_t)ObjFWBase) - 232))(buffer, blockSize, costFactor, tmp);
+	__extension__ ((void (*)(uint32_t *, size_t, size_t, uint32_t *))*(void **)(((uintptr_t)ObjFWBase) - 238))(buffer, blockSize, costFactor, tmp);
 #endif
 }
 
 OFSocketAddress
 OFSocketAddressParseIP(OFString *IP, uint16_t port)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWBase;
-	(void)a6;
-	return ((OFSocketAddress (*)(OFString *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 240))(IP, port);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWBase) : "r12"
-	);
-
-	return __extension__ ((OFSocketAddress (*)(OFString *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 238))(IP, port);
-#endif
-}
-
-OFSocketAddress
-OFSocketAddressParseIPv4(OFString *IP, uint16_t port)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
@@ -670,7 +671,7 @@ OFSocketAddressParseIPv4(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress
-OFSocketAddressParseIPv6(OFString *IP, uint16_t port)
+OFSocketAddressParseIPv4(OFString *IP, uint16_t port)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
@@ -687,19 +688,36 @@ OFSocketAddressParseIPv6(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress
-OFSocketAddressMakeUNIX(OFString *path)
+OFSocketAddressParseIPv6(OFString *IP, uint16_t port)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFSocketAddress (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 258))(path);
+	return ((OFSocketAddress (*)(OFString *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 258))(IP, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 256))(path);
+	return __extension__ ((OFSocketAddress (*)(OFString *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 256))(IP, port);
+#endif
+}
+
+OFSocketAddress
+OFSocketAddressMakeUNIX(OFString *path)
+{
+#if defined(OF_AMIGAOS_M68K)
+	register struct Library *a6 __asm__("a6") = ObjFWBase;
+	(void)a6;
+	return ((OFSocketAddress (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 264))(path);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((OFSocketAddress (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 262))(path);
 #endif
 }
 
@@ -709,14 +727,14 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char *node, uint16_t por
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFSocketAddress (*)(uint32_t __asm__("d0"), const unsigned char *__asm__("a0"), uint16_t __asm__("d1")))(((uintptr_t)ObjFWBase) - 264))(network, node, port);
+	return ((OFSocketAddress (*)(uint32_t __asm__("d0"), const unsigned char *__asm__("a0"), uint16_t __asm__("d1")))(((uintptr_t)ObjFWBase) - 270))(network, node, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(uint32_t, const unsigned char *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 262))(network, node, port);
+	return __extension__ ((OFSocketAddress (*)(uint32_t, const unsigned char *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 268))(network, node, port);
 #endif
 }
 
@@ -726,14 +744,14 @@ OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFSocketAddress (*)(uint16_t __asm__("d0"), uint8_t __asm__("d1"), uint8_t __asm__("d2")))(((uintptr_t)ObjFWBase) - 270))(network, node, port);
+	return ((OFSocketAddress (*)(uint16_t __asm__("d0"), uint8_t __asm__("d1"), uint8_t __asm__("d2")))(((uintptr_t)ObjFWBase) - 276))(network, node, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(uint16_t, uint8_t, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 268))(network, node, port);
+	return __extension__ ((OFSocketAddress (*)(uint16_t, uint8_t, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 274))(network, node, port);
 #endif
 }
 
@@ -743,14 +761,14 @@ OFSocketAddressEqual(const OFSocketAddress *address1, const OFSocketAddress *add
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((bool (*)(const OFSocketAddress *__asm__("a0"), const OFSocketAddress *__asm__("a1")))(((uintptr_t)ObjFWBase) - 276))(address1, address2);
+	return ((bool (*)(const OFSocketAddress *__asm__("a0"), const OFSocketAddress *__asm__("a1")))(((uintptr_t)ObjFWBase) - 282))(address1, address2);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(const OFSocketAddress *, const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 274))(address1, address2);
+	return __extension__ ((bool (*)(const OFSocketAddress *, const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 280))(address1, address2);
 #endif
 }
 
@@ -760,14 +778,14 @@ OFSocketAddressHash(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((unsigned long (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 282))(address);
+	return ((unsigned long (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 288))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((unsigned long (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 280))(address);
+	return __extension__ ((unsigned long (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 286))(address);
 #endif
 }
 
@@ -777,14 +795,14 @@ OFSocketAddressString(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 288))(address);
+	return ((OFString *_Nonnull (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 294))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 286))(address);
+	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 292))(address);
 #endif
 }
 
@@ -794,14 +812,14 @@ OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 294))(address, port);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 300))(address, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 292))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 298))(address, port);
 #endif
 }
 
@@ -811,14 +829,14 @@ OFSocketAddressIPPort(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 300))(address);
+	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 306))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 298))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 304))(address);
 #endif
 }
 
@@ -828,14 +846,14 @@ OFSocketAddressUNIXPath(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *(*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 306))(address);
+	return ((OFString *(*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 312))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *(*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 304))(address);
+	return __extension__ ((OFString *(*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 310))(address);
 #endif
 }
 
@@ -845,14 +863,14 @@ OFSocketAddressSetIPXNetwork(OFSocketAddress *address, uint32_t network)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint32_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 312))(address, network);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint32_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 318))(address, network);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint32_t))*(void **)(((uintptr_t)ObjFWBase) - 310))(address, network);
+	__extension__ ((void (*)(OFSocketAddress *, uint32_t))*(void **)(((uintptr_t)ObjFWBase) - 316))(address, network);
 #endif
 }
 
@@ -862,14 +880,14 @@ OFSocketAddressIPXNetwork(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint32_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 318))(address);
+	return ((uint32_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 324))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint32_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 316))(address);
+	return __extension__ ((uint32_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 322))(address);
 #endif
 }
 
@@ -879,14 +897,14 @@ OFSocketAddressSetIPXNode(OFSocketAddress *address, const unsigned char *node)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), const unsigned char *__asm__("a1")))(((uintptr_t)ObjFWBase) - 324))(address, node);
+	((void (*)(OFSocketAddress *__asm__("a0"), const unsigned char *__asm__("a1")))(((uintptr_t)ObjFWBase) - 330))(address, node);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, const unsigned char *))*(void **)(((uintptr_t)ObjFWBase) - 322))(address, node);
+	__extension__ ((void (*)(OFSocketAddress *, const unsigned char *))*(void **)(((uintptr_t)ObjFWBase) - 328))(address, node);
 #endif
 }
 
@@ -896,14 +914,14 @@ OFSocketAddressGetIPXNode(const OFSocketAddress *address, unsigned char *_Nonnul
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(const OFSocketAddress *__asm__("a0"), unsigned char *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 330))(address, node);
+	((void (*)(const OFSocketAddress *__asm__("a0"), unsigned char *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 336))(address, node);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const OFSocketAddress *, unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 328))(address, node);
+	__extension__ ((void (*)(const OFSocketAddress *, unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 334))(address, node);
 #endif
 }
 
@@ -913,14 +931,14 @@ OFSocketAddressSetIPXPort(OFSocketAddress *address, uint16_t port)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 336))(address, port);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 342))(address, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 334))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 340))(address, port);
 #endif
 }
 
@@ -930,14 +948,14 @@ OFSocketAddressIPXPort(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 342))(address);
+	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 348))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 340))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 346))(address);
 #endif
 }
 
@@ -947,14 +965,14 @@ OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 348))(address, network);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 354))(address, network);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 346))(address, network);
+	__extension__ ((void (*)(OFSocketAddress *, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 352))(address, network);
 #endif
 }
 
@@ -964,14 +982,14 @@ OFSocketAddressAppleTalkNetwork(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 354))(address);
+	return ((uint16_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 360))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 352))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 358))(address);
 #endif
 }
 
@@ -981,14 +999,14 @@ OFSocketAddressSetAppleTalkNode(OFSocketAddress *address, uint8_t node)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 360))(address, node);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 366))(address, node);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 358))(address, node);
+	__extension__ ((void (*)(OFSocketAddress *, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 364))(address, node);
 #endif
 }
 
@@ -998,14 +1016,14 @@ OFSocketAddressAppleTalkNode(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint8_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 366))(address);
+	return ((uint8_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 372))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint8_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 364))(address);
+	return __extension__ ((uint8_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 370))(address);
 #endif
 }
 
@@ -1015,14 +1033,14 @@ OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 372))(address, port);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 378))(address, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 370))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 376))(address, port);
 #endif
 }
 
@@ -1032,14 +1050,14 @@ OFSocketAddressAppleTalkPort(const OFSocketAddress *address)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((uint8_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 378))(address);
+	return ((uint8_t (*)(const OFSocketAddress *__asm__("a0")))(((uintptr_t)ObjFWBase) - 384))(address);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint8_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 376))(address);
+	return __extension__ ((uint8_t (*)(const OFSocketAddress *))*(void **)(((uintptr_t)ObjFWBase) - 382))(address);
 #endif
 }
 
@@ -1049,14 +1067,14 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *(*)(OFTLSStreamErrorCode __asm__("d0")))(((uintptr_t)ObjFWBase) - 384))(errorCode);
+	return ((OFString *(*)(OFTLSStreamErrorCode __asm__("d0")))(((uintptr_t)ObjFWBase) - 390))(errorCode);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *(*)(OFTLSStreamErrorCode))*(void **)(((uintptr_t)ObjFWBase) - 382))(errorCode);
+	return __extension__ ((OFString *(*)(OFTLSStreamErrorCode))*(void **)(((uintptr_t)ObjFWBase) - 388))(errorCode);
 #endif
 }
 
@@ -1066,14 +1084,14 @@ OFStrPTime(const char *buffer, const char *format, struct tm *tm, int16_t *_Null
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((const char *_Nullable (*)(const char *__asm__("a0"), const char *__asm__("a1"), struct tm *__asm__("a2"), int16_t *_Nullable __asm__("a3")))(((uintptr_t)ObjFWBase) - 390))(buffer, format, tm, tz);
+	return ((const char *_Nullable (*)(const char *__asm__("a0"), const char *__asm__("a1"), struct tm *__asm__("a2"), int16_t *_Nullable __asm__("a3")))(((uintptr_t)ObjFWBase) - 396))(buffer, format, tm, tz);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 388))(buffer, format, tm, tz);
+	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 394))(buffer, format, tm, tz);
 #endif
 }
 
@@ -1083,14 +1101,14 @@ OFStringEncodingParseName(OFString *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFStringEncoding (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 396))(string);
+	return ((OFStringEncoding (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 402))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStringEncoding (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 394))(string);
+	return __extension__ ((OFStringEncoding (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 400))(string);
 #endif
 }
 
@@ -1100,14 +1118,14 @@ OFStringEncodingName(OFStringEncoding encoding)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nullable (*)(OFStringEncoding __asm__("d0")))(((uintptr_t)ObjFWBase) - 402))(encoding);
+	return ((OFString *_Nullable (*)(OFStringEncoding __asm__("d0")))(((uintptr_t)ObjFWBase) - 408))(encoding);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 400))(encoding);
+	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 406))(encoding);
 #endif
 }
 
@@ -1117,14 +1135,14 @@ OFUTF16StringLength(const OFChar16 *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(const OFChar16 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 408))(string);
+	return ((size_t (*)(const OFChar16 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 414))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar16 *))*(void **)(((uintptr_t)ObjFWBase) - 406))(string);
+	return __extension__ ((size_t (*)(const OFChar16 *))*(void **)(((uintptr_t)ObjFWBase) - 412))(string);
 #endif
 }
 
@@ -1134,14 +1152,14 @@ OFUTF32StringLength(const OFChar32 *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(const OFChar32 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 414))(string);
+	return ((size_t (*)(const OFChar32 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 420))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar32 *))*(void **)(((uintptr_t)ObjFWBase) - 412))(string);
+	return __extension__ ((size_t (*)(const OFChar32 *))*(void **)(((uintptr_t)ObjFWBase) - 418))(string);
 #endif
 }
 
@@ -1151,14 +1169,14 @@ OFZIPArchiveEntryVersionToString(uint16_t version)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 420))(version);
+	return ((OFString *_Nonnull (*)(uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 426))(version);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 418))(version);
+	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 424))(version);
 #endif
 }
 
@@ -1168,14 +1186,14 @@ OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compre
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 426))(compressionMethod);
+	return ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 432))(compressionMethod);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 424))(compressionMethod);
+	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 430))(compressionMethod);
 #endif
 }
 
@@ -1185,13 +1203,13 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField, OFZIPArchiveEntryExtraFieldT
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(OFData *__asm__("a0"), OFZIPArchiveEntryExtraFieldTag __asm__("d0"), uint16_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 432))(extraField, tag, size);
+	return ((size_t (*)(OFData *__asm__("a0"), OFZIPArchiveEntryExtraFieldTag __asm__("d0"), uint16_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 438))(extraField, tag, size);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(OFData *, OFZIPArchiveEntryExtraFieldTag, uint16_t *))*(void **)(((uintptr_t)ObjFWBase) - 430))(extraField, tag, size);
+	return __extension__ ((size_t (*)(OFData *, OFZIPArchiveEntryExtraFieldTag, uint16_t *))*(void **)(((uintptr_t)ObjFWBase) - 436))(extraField, tag, size);
 #endif
 }

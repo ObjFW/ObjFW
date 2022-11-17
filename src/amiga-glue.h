@@ -21,6 +21,7 @@
 #import "OFApplication.h"
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
+#import "OFEmbeddedURIHandler.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFList.h"
@@ -65,6 +66,7 @@ extern OFString *_Nonnull glue_OFDNSClassName PPC_PARAMS(OFDNSClass DNSClass);
 extern OFString *_Nonnull glue_OFDNSRecordTypeName PPC_PARAMS(OFDNSRecordType recordType);
 extern OFDNSClass glue_OFDNSClassParseName PPC_PARAMS(OFString *_Nonnull string);
 extern OFDNSRecordType glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string);
+extern void glue_OFRegisterEmbeddedFile PPC_PARAMS(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, size_t size);
 extern const char *_Nullable glue_OFHTTPRequestMethodName PPC_PARAMS(OFHTTPRequestMethod method);
 extern OFHTTPRequestMethod glue_OFHTTPRequestMethodParseName PPC_PARAMS(OFString *string);
 extern OFString *_Nonnull glue_OFHTTPStatusCodeString PPC_PARAMS(short code);

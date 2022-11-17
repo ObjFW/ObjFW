@@ -85,6 +85,7 @@ SRCS = OFApplication.m			\
        OFSeekableStream.m		\
        OFSerialization.m		\
        OFSet.m				\
+       OFSettings.m			\
        OFSortedList.m			\
        OFStdIOStream.m			\
        OFStream.m			\
@@ -97,7 +98,6 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
-       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\

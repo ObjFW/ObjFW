@@ -36,6 +36,7 @@
 (CONST_APTR)glue_OFDNSRecordTypeName,
 (CONST_APTR)glue_OFDNSClassParseName,
 (CONST_APTR)glue_OFDNSRecordTypeParseName,
+(CONST_APTR)glue_OFRegisterEmbeddedFile,
 (CONST_APTR)glue_OFHTTPRequestMethodName,
 (CONST_APTR)glue_OFHTTPRequestMethodParseName,
 (CONST_APTR)glue_OFHTTPStatusCodeString,
