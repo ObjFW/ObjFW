@@ -61,7 +61,7 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	    sizeof(*embeddedFiles) * (numEmbeddedFiles + 1));
 	OFEnsure(embeddedFiles != NULL);
 
-	embeddedFiles[numEmbeddedFiles].path = [path retain];
+	embeddedFiles[numEmbeddedFiles].path = path;
 	embeddedFiles[numEmbeddedFiles].bytes = bytes;
 	embeddedFiles[numEmbeddedFiles].size = size;
 	numEmbeddedFiles++;
