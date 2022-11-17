@@ -26,6 +26,7 @@
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
 #endif
+#import "OFString.h"
 
 #import "OFAllocFailedException.h"
 #import "OFInitializationFailedException.h"

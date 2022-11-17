@@ -20,4 +20,23 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFEmbeddedURIHandler: OFURIHandler
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief Register a file for the `embedded:` URI scheme.
+ *
+ * Usually, you should not use the directly, but rather generate a source file
+ * for a file to be embedded using the `objfw-embed` tool.
+ *
+ * @param path The path to the file under the `embedded:` scheme
+ * @param bytes The raw bytes for the file
+ * @param size The size of the file
+ */
+extern void OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes,
+    size_t size);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END
