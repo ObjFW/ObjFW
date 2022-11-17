@@ -22,7 +22,9 @@
 
 extern struct Library *ObjFWRTBase;
 
-#pragma GCC diagnostic ignored "-Warray-parameter"
+#if OF_GCC_VERSION >= 1100
+# pragma GCC diagnostic ignored "-Warray-parameter"
+#endif
 
 bool
 objc_init(unsigned int version, struct objc_libC *libC)

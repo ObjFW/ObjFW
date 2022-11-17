@@ -86,7 +86,10 @@
 			    libBase];
 
 	[_impl writeString:
-	    @"#pragma GCC diagnostic ignored \"-Warray-parameter\"\n\n"];
+	    @"#if OF_GCC_VERSION >= 1100\n"
+	    @"# pragma GCC diagnostic ignored \"-Warray-parameter\"\n"
+	    @"#endif\n"
+	    @"\n"];
 
 	functions = [_library elementsForName: @"function"];
 	for (OFXMLElement *function in functions) {

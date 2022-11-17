@@ -39,7 +39,9 @@
 
 extern struct Library *ObjFWBase;
 
-#pragma GCC diagnostic ignored "-Warray-parameter"
+#if OF_GCC_VERSION >= 1100
+# pragma GCC diagnostic ignored "-Warray-parameter"
+#endif
 
 bool
 OFInit(unsigned int version, struct OFLibC *_Nonnull libc)
