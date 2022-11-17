@@ -1001,7 +1001,7 @@ OFSocketAddressSetAppleTalkNode(OFSocketAddress *address, uint8_t node)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 366))(address, node);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 366))(address, node);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
@@ -1035,7 +1035,7 @@ OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("(nil)")))(((uintptr_t)ObjFWBase) - 378))(address, port);
+	((void (*)(OFSocketAddress *__asm__("a0"), uint8_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 378))(address, port);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"

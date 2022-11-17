@@ -209,14 +209,14 @@
   </function>
   <function name='OFSocketAddressSetAppleTalkNode'>
     <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='node' type='uint8_t' m68k-arg='d0'/>
+    <argument name='node' type='uint8_t' m68k-reg='d0'/>
   </function>
   <function name='OFSocketAddressAppleTalkNode' return-type='uint8_t'>
     <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkPort'>
     <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='port' type='uint8_t' m68k-arg='d0'/>
+    <argument name='port' type='uint8_t' m68k-reg='d0'/>
   </function>
   <function name='OFSocketAddressAppleTalkPort' return-type='uint8_t'>
     <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>

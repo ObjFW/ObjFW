@@ -498,7 +498,7 @@ void __saveds
 glue_OFSocketAddressSetAppleTalkNode PPC_PARAMS(OFSocketAddress *address, uint8_t node)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
-	M68K_ARG(uint8_t, node, (nil))
+	M68K_ARG(uint8_t, node, d0)
 
 	OFSocketAddressSetAppleTalkNode(address, node);
 }
@@ -515,7 +515,7 @@ void __saveds
 glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_t port)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
-	M68K_ARG(uint8_t, port, (nil))
+	M68K_ARG(uint8_t, port, d0)
 
 	OFSocketAddressSetAppleTalkPort(address, port);
 }
