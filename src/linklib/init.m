@@ -386,14 +386,14 @@ dtor(void)
 ADD2INIT(ctor, -2);
 ADD2EXIT(dtor, -2);
 #elif defined(OF_MORPHOS)
-CONSTRUCTOR_P(ObjFW, 4000)
+CONSTRUCTOR_P(ObjFW, 5000)
 {
 	ctor();
 
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFW, 4000)
+DESTRUCTOR_P(ObjFW, 5000)
 {
 	dtor();
 }
