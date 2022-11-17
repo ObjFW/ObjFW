@@ -29,7 +29,9 @@ extern "C" {
  * Usually, you should not use the directly, but rather generate a source file
  * for a file to be embedded using the `objfw-embed` tool.
  *
- * @param path The path to the file under the `embedded:` scheme
+ * @param path The path to the file under the `embedded:` scheme. This is not
+ *	       retained, so you must either pass a constant string or pass a
+ *	       string that is already retained!
  * @param bytes The raw bytes for the file
  * @param size The size of the file
  */
