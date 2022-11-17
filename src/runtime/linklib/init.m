@@ -65,7 +65,7 @@ extern void __deregister_frame(void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
-extern bool objc_init(unsigned int version, struct objc_libc *libc);
+extern bool objc_init(unsigned int version, struct objc_libC *libC);
 
 static void
 error(const char *string, ULONG arg)
@@ -93,7 +93,7 @@ static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
-	struct objc_libc libc = {
+	struct objc_libC libC = {
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
@@ -141,7 +141,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!objc_init(1, &libc))
+	if (!objc_init(1, &libC))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;

@@ -4,7 +4,7 @@
   <!-- The following function is only for the linklib. -->
   <function name='objc_init' return-type='bool'>
     <argument name='version' type='unsigned int' m68k-reg='d0'/>
-    <argument name='libc' type='struct objc_libc *' m68k-reg='a0'/>
+    <argument name='libC' type='struct objc_libC *' m68k-reg='a0'/>
   </function>
   <function name='__objc_exec_class'>
     <argument name='module' type='struct objc_module *_Nonnull' m68k-reg='a0'/>

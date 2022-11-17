@@ -370,7 +370,7 @@ ctor(void)
 		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
 		    OBJFW_LIB_MINOR);
 
-	if (!OFInit(1, &libC, __sF))
+	if (!OFInit(1, &libC))
 		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;

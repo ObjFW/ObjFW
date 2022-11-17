@@ -45,7 +45,7 @@
 # define M68K_ARG(...)
 #endif
 
-extern bool glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, FILE *_Nonnull *_Nonnull sF);
+extern bool glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc);
 extern void *_Nullable glue_OFAllocMemory PPC_PARAMS(size_t count, size_t size);
 extern void *_Nullable glue_OFAllocZeroedMemory PPC_PARAMS(size_t count, size_t size);
 extern void *_Nullable glue_OFResizeMemory PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size);

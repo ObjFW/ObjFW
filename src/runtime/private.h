@@ -217,7 +217,7 @@ struct objc_dtable {
 
 #if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
     defined(OBJC_COMPILING_AMIGA_LINKLIB)
-struct objc_libc {
+struct objc_libC {
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
@@ -270,7 +270,7 @@ struct objc_libc {
 	type name = reg_##name;
 # endif
 
-extern bool objc_init(unsigned int, struct objc_libc *);
+extern bool objc_init(unsigned int, struct objc_libC *);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 #  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
 	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)

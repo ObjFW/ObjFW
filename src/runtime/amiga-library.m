@@ -52,6 +52,7 @@ _start(void)
 void
 __init_eh(void)
 {
+	/* Taken care of by objc_init() */
 }
 #endif
 
@@ -73,7 +74,7 @@ extern void *_EH_FRAME_OBJECTS__;
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
-struct objc_libc libc;
+struct objc_libC libC;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -165,7 +166,7 @@ getDataDataRelocs(void)
 }
 
 static struct Library *
-lib_init(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
+libInit(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
     void *segList OBJC_M68K_REG(a0), struct ExecBase *sysBase OBJC_M68K_REG(a6))
 {
 #if defined(OF_AMIGAOS_M68K)
@@ -189,7 +190,7 @@ lib_init(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
 }
 
 struct Library *__saveds
-lib_open(void)
+libOpen(void)
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
@@ -204,7 +205,7 @@ lib_open(void)
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
 	/*
-	 * We cannot use malloc here, as that depends on the libc passed from
+	 * We cannot use malloc here, as that depends on the libC passed from
 	 * the application.
 	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
@@ -270,7 +271,7 @@ expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 }
 
 static void *__saveds
-lib_expunge(void)
+libExpunge(void)
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
@@ -278,7 +279,7 @@ lib_expunge(void)
 }
 
 static void *__saveds
-lib_close(void)
+libClose(void)
 {
 	/*
 	 * SysBase becomes invalid during this function, so we store it in
@@ -296,7 +297,7 @@ lib_close(void)
 		if (base->initialized)
 			for (void *const *frame = _EH_FRAME_BEGINS__;
 			    *frame != NULL;)
-				libc.__deregister_frame_info(*frame++);
+				libC.__deregister_frame_info(*frame++);
 #endif
 
 		parent = base->parent;
@@ -317,13 +318,13 @@ lib_close(void)
 }
 
 static void *
-lib_null(void)
+libNull(void)
 {
 	return NULL;
 }
 
 bool
-objc_init(unsigned int version, struct objc_libc *libc_)
+objc_init(unsigned int version, struct objc_libC *libC_)
 {
 #ifdef OF_AMIGAOS_M68K
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
@@ -342,12 +343,12 @@ objc_init(unsigned int version, struct objc_libc *libc_)
 	if (base->initialized)
 		return true;
 
-	memcpy(&libc, libc_, sizeof(libc));
+	memcpy(&libC, libC_, sizeof(libC));
 
 #ifdef OF_AMIGAOS_M68K
-	for (void *const *frame = _EH_FRAME_OBJECTS__,
+	for (void *const *frame = _EH_FRAME_BEGINS__,
 	    **object = _EH_FRAME_OBJECTS__; *frame != NULL;)
-		libc.__register_frame_info(*frame++, *object++);
+		libC.__register_frame_info(*frame++, *object++);
 
 	iter0 = &__CTOR_LIST__[1];
 #elif defined(OF_MORPHOS)
@@ -359,7 +360,7 @@ objc_init(unsigned int version, struct objc_libc *libc_)
 	    : "=r"(frame), "=r"(iter0)
 	);
 
-	libc.__register_frame(frame);
+	libC.__register_frame(frame);
 #endif
 
 	for (iter = iter0; *iter != 0; iter++);
@@ -377,106 +378,132 @@ objc_init(unsigned int version, struct objc_libc *libc_)
 void *
 malloc(size_t size)
 {
-	return libc.malloc(size);
+	return libC.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	return libc.calloc(count, size);
+	return libC.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	return libc.realloc(ptr, size);
+	return libC.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	libc.free(ptr);
+	libC.free(ptr);
 }
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 int
 _Unwind_SjLj_RaiseException(void *ex)
 {
-	return libc._Unwind_SjLj_RaiseException(ex);
+	return libC._Unwind_SjLj_RaiseException(ex);
 }
 #else
 int
 _Unwind_RaiseException(void *ex)
 {
-	return libc._Unwind_RaiseException(ex);
+	return libC._Unwind_RaiseException(ex);
 }
 #endif
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	libc._Unwind_DeleteException(ex);
+	libC._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	return libc._Unwind_GetLanguageSpecificData(ctx);
+	return libC._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	return libc._Unwind_GetRegionStart(ctx);
+	return libC._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	return libc._Unwind_GetDataRelBase(ctx);
+	return libC._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	return libc._Unwind_GetTextRelBase(ctx);
+	return libC._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	return libc._Unwind_GetIP(ctx);
+	return libC._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	return libc._Unwind_GetGR(ctx, gr);
+	return libC._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	libc._Unwind_SetIP(ctx, ip);
+	libC._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	libc._Unwind_SetGR(ctx, gr, value);
+	libC._Unwind_SetGR(ctx, gr, value);
 }
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 void
 _Unwind_SjLj_Resume(void *ex)
 {
-	libc._Unwind_SjLj_Resume(ex);
+	libC._Unwind_SjLj_Resume(ex);
 }
 #else
 void
 _Unwind_Resume(void *ex)
 {
-	libc._Unwind_Resume(ex);
+	libC._Unwind_Resume(ex);
+}
+#endif
+
+#ifdef OF_AMIGAOS_M68K
+void
+__register_frame_info(const void *begin, void *object)
+{
+	libC.__register_frame_info(begin, object);
+}
+
+void
+*__deregister_frame_info(const void *begin)
+{
+	return libC.__deregister_frame_info(begin);
+}
+#endif
+
+#ifdef OF_MORPHOS
+void __register_frame(void *frame)
+{
+	libC.__register_frame(frame);
+}
+
+void __deregister_frame(void *frame)
+{
+	libC.__deregister_frame(frame);
 }
 #endif
 
@@ -498,20 +525,20 @@ int
 vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
     va_list args)
 {
-	return libc.vsnprintf(str, size, fmt, args);
+	return libC.vsnprintf(str, size, fmt, args);
 }
 #endif
 
 int
 atexit(void (*function)(void))
 {
-	return libc.atexit(function);
+	return libC.atexit(function);
 }
 
 void
 exit(int status)
 {
-	libc.exit(status);
+	libC.exit(status);
 
 	OF_UNREACHABLE
 }
@@ -523,10 +550,10 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
 #endif
-	(CONST_APTR)lib_open,
-	(CONST_APTR)lib_close,
-	(CONST_APTR)lib_expunge,
-	(CONST_APTR)lib_null,
+	(CONST_APTR)libOpen,
+	(CONST_APTR)libClose,
+	(CONST_APTR)libExpunge,
+	(CONST_APTR)libNull,
 #ifdef OF_MORPHOS
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
@@ -551,7 +578,7 @@ static struct {
 	sizeof(struct ObjFWRTBase),
 	functionTable,
 	NULL,
-	lib_init
+	libInit
 };
 
 struct Resident resident = {

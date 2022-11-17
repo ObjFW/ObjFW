@@ -15,19 +15,21 @@
 
 #include "config.h"
 
-#include <exec/libraries.h>
-#include <exec/nodes.h>
-#include <exec/resident.h>
-#include <proto/exec.h>
-
 #import "OFDNSResourceRecord.h"
 #import "OFHTTPRequest.h"
 #import "OFSocket.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
 
-#import "amiga-library.h"
 #import "macros.h"
+
+#import "amiga-glue.h"
+#import "amiga-library.h"
+
+#include <exec/libraries.h>
+#include <exec/nodes.h>
+#include <exec/resident.h>
+#include <proto/exec.h>
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
@@ -52,6 +54,14 @@ _start(void)
 	return -1;
 }
 
+#ifdef OF_AMIGAOS_M68K
+void
+__init_eh(void)
+{
+	/* Taken care of by OFInit() */
+}
+#endif
+
 struct ObjFWBase {
 	struct Library library;
 	void *segList;
@@ -66,22 +76,11 @@ extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
 
-#include "amiga-glue.h"
-
-#ifdef OF_AMIGAOS_M68K
-void
-__init_eh(void)
-{
-	/* Taken care of by OFInit() */
-}
-#endif
-
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct OFLibC libC;
-FILE **__sF;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -173,8 +172,8 @@ getDataDataRelocs(void)
 }
 
 static struct Library *
-libInit(struct ObjFWBase *base OF_M68K_REG(d0), void *segList OF_M68K_REG(a0),
-    struct ExecBase *sysBase OF_M68K_REG(a6))
+libInit(struct ObjFWBase *base OF_M68K_REG(d0),
+    void *segList OF_M68K_REG(a0), struct ExecBase *sysBase OF_M68K_REG(a6))
 {
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ __volatile__ (
@@ -330,7 +329,7 @@ libNull(void)
 }
 
 bool
-OFInit(unsigned int version, struct OFLibC *libC_, FILE **sF)
+OFInit(unsigned int version, struct OFLibC *libC_)
 {
 #ifdef OF_AMIGAOS_M68K
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
@@ -350,7 +349,6 @@ OFInit(unsigned int version, struct OFLibC *libC_, FILE **sF)
 		return true;
 
 	memcpy(&libC, libC_, sizeof(libC));
-	__sF = sF;
 
 #ifdef OF_AMIGAOS_M68K
 	for (void *const *frame = _EH_FRAME_BEGINS__,
@@ -718,7 +716,7 @@ struct Resident resident = {
 #endif
 };
 
-#ifdef OF_MORPHOS
+#if defined(OF_MORPHOS)
 __asm__ (
     ".section .eh_frame, \"aw\"\n"
     ".globl __EH_FRAME_BEGIN__\n"
@@ -728,6 +726,22 @@ __asm__ (
     ".globl __CTOR_LIST__\n"
     ".type __CTOR_LIST__, @object\n"
     "__CTOR_LIST__:\n"
+    ".section .text"
+);
+#elif defined(OF_AMIGAOS_M68K)
+__asm__ (
+    ".section .list___EH_FRAME_BEGINS__, \"aw\"\n"
+    ".globl __EH_FRAME_BEGIN__\n"
+    ".type __EH_FRAME_BEGIN__, @object\n"
+    "__EH_FRAME_BEGINS__:\n"
+    ".section .dlist___EH_FRAME_OBJECTS__, \"aw\"\n"
+    ".globl __EH_FRAME_OBJECTS__\n"
+    ".type __EH_FRAME_OBJECTS__, @object\n"
+    "__EH_FRAME_OBJECTS__:\n"
+    ".section .list___CTOR_LIST__, \"aw\"\n"
+    ".globl ___CTOR_LIST__\n"
+    ".type ___CTOR_LIST__, @object\n"
+    "___CTOR_LIST__:\n"
     ".section .text"
 );
 #endif

@@ -31,12 +31,12 @@ __asm__ (
 #endif
 
 bool __saveds
-glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc)
+glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libC *libC)
 {
 	M68K_ARG(unsigned int, version, d0)
-	M68K_ARG(struct objc_libc *, libc, a0)
+	M68K_ARG(struct objc_libC *, libC, a0)
 
-	return objc_init(version, libc);
+	return objc_init(version, libC);
 }
 
 void __saveds

@@ -4,7 +4,6 @@
   <function name='OFInit' return-type='bool'>
     <argument name='version' type='unsigned int' m68k-reg='d0'/>
     <argument name='libc' type='struct OFLibC *_Nonnull' m68k-reg='a0'/>
-    <argument name='sF' type='FILE *_Nonnull *_Nonnull' m68k-reg='a1'/>
   </function>
   <include>OFObject.h</include>
   <function name='OFAllocMemory' return-type='void *_Nullable'>

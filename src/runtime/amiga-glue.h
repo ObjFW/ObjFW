@@ -28,7 +28,7 @@
 # define M68K_ARG(...)
 #endif
 
-extern bool glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc);
+extern bool glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libC *libC);
 extern void glue___objc_exec_class PPC_PARAMS(struct objc_module *_Nonnull module);
 extern IMP _Nonnull glue_objc_msg_lookup PPC_PARAMS(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull glue_objc_msg_lookup_stret PPC_PARAMS(id _Nullable object, SEL _Nonnull selector);

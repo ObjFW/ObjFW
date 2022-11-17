@@ -109,8 +109,7 @@ struct OFLibC {
 #endif
 };
 
-extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC,
-    FILE *_Nonnull *_Nonnull sF);
+extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC);
 extern unsigned long *OFHashSeedRef(void);
 extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters);
 extern void OFScryptWrapper(const OFScryptParameters *_Nonnull parameters);

@@ -25,19 +25,19 @@ extern struct Library *ObjFWRTBase;
 #pragma GCC diagnostic ignored "-Warray-parameter"
 
 bool
-objc_init(unsigned int version, struct objc_libc *libc)
+objc_init(unsigned int version, struct objc_libC *libC)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
 	(void)a6;
-	return ((bool (*)(unsigned int __asm__("d0"), struct objc_libc *__asm__("a0")))(((uintptr_t)ObjFWRTBase) - 30))(version, libc);
+	return ((bool (*)(unsigned int __asm__("d0"), struct objc_libC *__asm__("a0")))(((uintptr_t)ObjFWRTBase) - 30))(version, libC);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(unsigned int, struct objc_libc *))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(version, libc);
+	return __extension__ ((bool (*)(unsigned int, struct objc_libC *))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(version, libC);
 #endif
 }
 
