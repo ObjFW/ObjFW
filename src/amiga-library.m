@@ -329,7 +329,7 @@ libNull(void)
 	return NULL;
 }
 
-bool __saveds
+bool
 OFInit(unsigned int version, struct OFLibC *libC_, FILE **sF)
 {
 #ifdef OF_AMIGAOS_M68K
