@@ -175,6 +175,19 @@ OF_DIRECT_MEMBERS
 	if (_mode != OFTarArchiveModeRead)
 		@throw [OFInvalidArgumentException exception];
 
+	if (_currentEntry != nil && _lastReturnedStream == nil) {
+		/*
+		 * No read stream was created since the last call to
+		 * -[nextEntry]. Create it so that we can properly skip the
+		 *  data.
+		 */
+		void *pool = objc_autoreleasePoolPush();
+
+		[self streamForReadingCurrentEntry];
+
+		objc_autoreleasePoolPop(pool);
+	}
+
 	[_currentEntry release];
 	_currentEntry = nil;
 
