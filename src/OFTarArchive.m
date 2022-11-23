@@ -36,6 +36,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
+
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
@@ -97,15 +103,15 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OFTarArchiveModeRead;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OFTarArchiveModeWrite;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OFTarArchiveModeAppend;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OFTarArchiveModeAppend) {
+		if (_mode == modeAppend) {
 			uint32_t buffer[1024 / sizeof(uint32_t)];
 			bool empty = true;
 
@@ -172,7 +178,7 @@ OF_DIRECT_MEMBERS
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
-	if (_mode != OFTarArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_currentEntry != nil && _lastReturnedStream == nil) {
@@ -227,7 +233,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OFTarArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_currentEntry == nil)
@@ -245,7 +251,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
-	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
@@ -277,7 +283,7 @@ OF_DIRECT_MEMBERS
 	}
 	_lastReturnedStream = nil;
 
-	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
+	if (_mode == modeWrite || _mode == modeAppend) {
 		char buffer[1024];
 		memset(buffer, '\0', 1024);
 		[_stream writeBuffer: buffer length: 1024];
