@@ -47,10 +47,13 @@
 @interface OFURIPathAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
-@interface OFURIQueryOrFragmentAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFURIQueryAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
 @interface OFURIQueryKeyValueAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@end
+
+@interface OFURIFragmentAllowedCharacterSet: OFURIAllowedCharacterSetBase
 @end
 
 OF_DIRECT_MEMBERS
@@ -66,12 +69,11 @@ OF_DIRECT_MEMBERS
 static OFCharacterSet *URIAllowedCharacterSet = nil;
 static OFCharacterSet *URISchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URIPathAllowedCharacterSet = nil;
-static OFCharacterSet *URIQueryOrFragmentAllowedCharacterSet = nil;
+static OFCharacterSet *URIQueryAllowedCharacterSet = nil;
 static OFCharacterSet *URIQueryKeyValueAllowedCharacterSet = nil;
+static OFCharacterSet *URIFragmentAllowedCharacterSet = nil;
 
 static OFOnceControl URIAllowedCharacterSetOnce = OFOnceControlInitValue;
-static OFOnceControl URIQueryOrFragmentAllowedCharacterSetOnce =
-    OFOnceControlInitValue;
 
 static void
 initURIAllowedCharacterSet(void)
@@ -94,10 +96,10 @@ initURIPathAllowedCharacterSet(void)
 }
 
 static void
-initURIQueryOrFragmentAllowedCharacterSet(void)
+initURIQueryAllowedCharacterSet(void)
 {
-	URIQueryOrFragmentAllowedCharacterSet =
-	    [[OFURIQueryOrFragmentAllowedCharacterSet alloc] init];
+	URIQueryAllowedCharacterSet =
+	    [[OFURIQueryAllowedCharacterSet alloc] init];
 }
 
 static void
@@ -105,6 +107,13 @@ initURIQueryKeyValueAllowedCharacterSet(void)
 {
 	URIQueryKeyValueAllowedCharacterSet =
 	    [[OFURIQueryKeyValueAllowedCharacterSet alloc] init];
+}
+
+static void
+initURIFragmentAllowedCharacterSet(void)
+{
+	URIFragmentAllowedCharacterSet =
+	    [[OFURIFragmentAllowedCharacterSet alloc] init];
 }
 
 bool
@@ -126,6 +135,19 @@ OFURIIsIPv6Host(OFString *host)
 	}
 
 	return hasColon;
+}
+
+static bool
+isUnicodePrivate(OFUnichar character)
+{
+	if (character >= 0xE00 && character <= 0xF8FF)
+		return true;
+	if (character >= 0xF0000 && character <= 0xFFFFD)
+		return true;
+	if (character >= 0x100000 && character <= 0x10FFFD)
+		return true;
+
+	return false;
 }
 
 @implementation OFURIAllowedCharacterSetBase
@@ -154,6 +176,9 @@ OFURIIsIPv6Host(OFString *host)
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
+
+	if (character > 0x7F)
+		return !isUnicodePrivate(character);
 
 	switch (character) {
 	case '-':
@@ -201,6 +226,9 @@ OFURIIsIPv6Host(OFString *host)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
+	if (character > 0x7F)
+		return !isUnicodePrivate(character);
+
 	switch (character) {
 	case '-':
 	case '.':
@@ -227,10 +255,13 @@ OFURIIsIPv6Host(OFString *host)
 }
 @end
 
-@implementation OFURIQueryOrFragmentAllowedCharacterSet
+@implementation OFURIQueryAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
+		return true;
+
+	if (character > 0x7F)
 		return true;
 
 	switch (character) {
@@ -266,6 +297,9 @@ OFURIIsIPv6Host(OFString *host)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
+	if (character > 0x7F)
+		return true;
+
 	switch (character) {
 	case '-':
 	case '.':
@@ -280,6 +314,42 @@ OFURIIsIPv6Host(OFString *host)
 	case '+':
 	case ',':
 	case ';':
+	case ':':
+	case '@':
+	case '/':
+	case '?':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
+@implementation OFURIFragmentAllowedCharacterSet
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
+		return true;
+
+	if (character > 0x7F)
+		return !isUnicodePrivate(character);
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+	case '=':
 	case ':':
 	case '@':
 	case '/':
@@ -381,10 +451,10 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 
 + (OFCharacterSet *)URIQueryAllowedCharacterSet
 {
-	OFOnce(&URIQueryOrFragmentAllowedCharacterSetOnce,
-	    initURIQueryOrFragmentAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURIQueryAllowedCharacterSet);
 
-	return URIQueryOrFragmentAllowedCharacterSet;
+	return URIQueryAllowedCharacterSet;
 }
 
 + (OFCharacterSet *)URIQueryKeyValueAllowedCharacterSet
@@ -397,10 +467,10 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 
 + (OFCharacterSet *)URIFragmentAllowedCharacterSet
 {
-	OFOnce(&URIQueryOrFragmentAllowedCharacterSetOnce,
-	    initURIQueryOrFragmentAllowedCharacterSet);
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initURIFragmentAllowedCharacterSet);
 
-	return URIQueryOrFragmentAllowedCharacterSet;
+	return URIFragmentAllowedCharacterSet;
 }
 @end
 
@@ -583,7 +653,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 					      length: length];
 
 	OFURIVerifyIsEscaped(*pathString,
-	    [OFCharacterSet URIQueryAllowedCharacterSet], true);
+	    [OFCharacterSet URIPathAllowedCharacterSet], true);
 }
 
 - (instancetype)initWithString: (OFString *)string

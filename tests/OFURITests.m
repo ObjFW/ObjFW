@@ -26,7 +26,7 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURI *URI1, *URI2, *URI3, *URI4, *URI5, *URI6, *URI7, *URI8, *URI9;
-	OFURI *URI10;
+	OFURI *URI10, *URI11;
 	OFMutableURI *mutableURI;
 
 	TEST(@"+[URIWithString:]",
@@ -39,7 +39,8 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R(URI7 = [OFURI URIWithString: @"https://[12:34::56:abcd]:234/"]) &&
 	    R(URI8 = [OFURI URIWithString: @"urn:qux:foo"]) &&
 	    R(URI9 = [OFURI URIWithString: @"file:/foo?query#frag"]) &&
-	    R(URI10 = [OFURI URIWithString: @"file:foo@bar/qux?query#frag"]))
+	    R(URI10 = [OFURI URIWithString: @"file:foo@bar/qux?query#frag"]) &&
+	    R(URI11 = [OFURI URIWithString: @"http://ä/ö?ü"]))
 
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -72,6 +73,10 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #8",
 	    OFInvalidFormatException,
 	    [OFURI URIWithString: @"https://[f]:f/"])
+
+	EXPECT_EXCEPTION(@"+[URIWithString:] fails with invalid characters #9",
+	    OFInvalidFormatException,
+	    [OFURI URIWithString: @"foo:"])
 
 	TEST(@"+[URIWithString:relativeToURI:]",
 	    [[[OFURI URIWithString: @"/foo" relativeToURI: URI1] string]
@@ -149,30 +154,35 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI7.string isEqual: @"https://[12:34::56:abcd]:234/"] &&
 	    [URI8.string isEqual: @"urn:qux:foo"] &&
 	    [URI9.string isEqual: @"file:/foo?query#frag"] &&
-	    [URI10.string isEqual: @"file:foo@bar/qux?query#frag"])
+	    [URI10.string isEqual: @"file:foo@bar/qux?query#frag"] &&
+	    [URI11.string isEqual: @"http://ä/ö?ü"])
 
 	TEST(@"-[scheme]",
 	    [URI1.scheme isEqual: @"ht+tp"] && [URI4.scheme isEqual: @"file"] &&
-	    [URI9.scheme isEqual: @"file"] && [URI10.scheme isEqual: @"file"])
+	    [URI9.scheme isEqual: @"file"] && [URI10.scheme isEqual: @"file"] &&
+	    [URI11.scheme isEqual: @"http"])
 
 	TEST(@"-[user]", [URI1.user isEqual: @"us:er"] && URI4.user == nil &&
-	    URI10.user == nil)
+	    URI10.user == nil && URI11.user == nil)
 	TEST(@"-[password]",
 	    [URI1.password isEqual: @"p@w"] && URI4.password == nil &&
-	    URI10.password == nil)
+	    URI10.password == nil && URI11.password == nil)
 	TEST(@"-[host]", [URI1.host isEqual: @"ho:st"] &&
 	    [URI6.host isEqual: @"12:34::56:abcd"] &&
 	    [URI7.host isEqual: @"12:34::56:abcd"] &&
-	    URI8.host == nil && URI9.host == nil && URI10.host == nil)
+	    URI8.host == nil && URI9.host == nil && URI10.host == nil &&
+	    [URI11.host isEqual: @"ä"])
 	TEST(@"-[port]", URI1.port.unsignedShortValue == 1234 &&
 	    [URI4 port] == nil && URI7.port.unsignedShortValue == 234 &&
-	    URI8.port == nil && URI9.port == nil && URI10.port == nil)
+	    URI8.port == nil && URI9.port == nil && URI10.port == nil &&
+	    URI11.port == nil)
 	TEST(@"-[path]",
 	    [URI1.path isEqual: @"/pa?th"] &&
 	    [URI4.path isEqual: @"/etc/passwd"] &&
 	    [URI8.path isEqual: @"qux:foo"] &&
 	    [URI9.path isEqual: @"/foo"] &&
-	    [URI10.path isEqual: @"foo@bar/qux"])
+	    [URI10.path isEqual: @"foo@bar/qux"] &&
+	    [URI11.path isEqual: @"/ö"])
 	TEST(@"-[pathComponents]",
 	    [URI1.pathComponents isEqual:
 	    [OFArray arrayWithObjects: @"/", @"pa?th", nil]] &&
@@ -192,7 +202,8 @@ static OFString *URIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [URI5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
 	    [URI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && URI4.query == nil &&
-	    [URI9.query isEqual: @"query"] && [URI10.query isEqual: @"query"])
+	    [URI9.query isEqual: @"query"] && [URI10.query isEqual: @"query"] &&
+	    [URI11.query isEqual: @"ü"])
 	TEST(@"-[queryItems]",
 	    [URI1.queryItems isEqual: [OFArray arrayWithObjects:
 	    [OFPair pairWithFirstObject: @"que#ry" secondObject: @"1"],
