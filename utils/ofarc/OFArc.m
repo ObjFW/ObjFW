@@ -207,10 +207,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryURI:
+	    [OFURI fileURIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofarc/localization"];
+	[OFLocale addLocalizationDirectoryURI:
+	    [OFURI fileURIWithPath: @"PROGDIR:/share/ofarc/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURI;
+
 /** @file */
 
 /**
@@ -138,14 +140,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)decimalSeparator;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for localizations
+ * @param URI The URI to the directory to scan for localizations
  */
-+ (void)addLocalizationDirectory: (OFString *)path;
-#endif
++ (void)addLocalizationDirectoryURI: (OFURI *)URI;
 
 /**
  * @brief Initializes the current OFLocale.
@@ -159,14 +159,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)init;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for localizations 
+ * @param URI The URI to the directory to scan for localizations
  */
-- (void)addLocalizationDirectory: (OFString *)path;
-#endif
+- (void)addLocalizationDirectoryURI: (OFURI *)URI;
 
 /**
  * @brief Returns the localized string for the specified ID, using the fallback

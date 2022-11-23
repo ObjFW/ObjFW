@@ -18,10 +18,11 @@
 #include <locale.h>
 
 #import "OFLocale.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
+#import "OFString.h"
+#import "OFURI.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -361,12 +362,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.decimalSeparator;
 }
 
-#ifdef OF_HAVE_FILES
-+ (void)addLocalizationDirectory: (OFString *)path
++ (void)addLocalizationDirectoryURI: (OFURI *)URI
 {
-	[currentLocale addLocalizationDirectory: path];
+	[currentLocale addLocalizationDirectoryURI: URI];
 }
-#endif
 
 - (instancetype)init
 {
@@ -494,11 +493,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	[super dealloc];
 }
 
-#ifdef OF_HAVE_FILES
-- (void)addLocalizationDirectory: (OFString *)path
+- (void)addLocalizationDirectoryURI: (OFURI *)URI
 {
 	void *pool;
-	OFString *mapPath, *languageCode, *countryCode, *localizationFile;
+	OFURI *mapURI, *localizationURI;
+	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
 	if (_languageCode == nil)
@@ -506,9 +505,9 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	pool = objc_autoreleasePoolPush();
 
-	mapPath = [path stringByAppendingPathComponent: @"localizations.json"];
+	mapURI = [URI URIByAppendingPathComponent: @"localizations.json"];
 	@try {
-		map = [[OFString stringWithContentsOfFile: mapPath]
+		map = [[OFString stringWithContentsOfURI: mapURI]
 		     objectByParsingJSON];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
@@ -532,15 +531,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		return;
 	}
 
-	localizationFile = [path stringByAppendingPathComponent:
+	localizationURI = [URI URIByAppendingPathComponent:
 	    [localizationFile stringByAppendingString: @".json"]];
 
-	[_localizedStrings addObject: [[OFString stringWithContentsOfFile:
-	    localizationFile] objectByParsingJSON]];
+	[_localizedStrings addObject: [[OFString stringWithContentsOfURI:
+	    localizationURI] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }
-#endif
 
 - (OFString *)localizedStringForID: (OFConstantString *)ID
 			  fallback: (id)fallback, ...

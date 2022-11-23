@@ -30,6 +30,7 @@
 #import "OFSandbox.h"
 #import "OFSecureData.h"
 #import "OFStdIOStream.h"
+#import "OFURI.h"
 
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
@@ -95,10 +96,11 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	OFSHA512Hash *SHA512Hash = nil;
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryURI:
+	    [OFURI fileURIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofhash/localization"];
+	[OFLocale addLocalizationDirectoryURI:
+	    [OFURI fileURIWithPath: @"PROGDIR:/share/ofhash/localization"]];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
