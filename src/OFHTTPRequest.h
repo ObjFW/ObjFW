@@ -19,9 +19,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFData;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFIRI;
 @class OFString;
 
 /** @file */
@@ -68,7 +68,7 @@ typedef struct OF_BOXABLE {
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
-	OFURI *_URI;
+	OFIRI *_IRI;
 	OFHTTPRequestMethod _method;
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
@@ -77,9 +77,9 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief The URI of the HTTP request.
+ * @brief The IRI of the HTTP request.
  */
-@property (copy, nonatomic) OFURI *URI;
+@property (copy, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The protocol version of the HTTP request.
@@ -118,20 +118,20 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
- * @brief Creates a new OFHTTPRequest with the specified URI.
+ * @brief Creates a new OFHTTPRequest with the specified IRI.
  *
- * @param URI The URI for the request
+ * @param IRI The IRI for the request
  * @return A new, autoreleased OFHTTPRequest
  */
-+ (instancetype)requestWithURI: (OFURI *)URI;
++ (instancetype)requestWithIRI: (OFIRI *)IRI;
 
 /**
- * @brief Initializes an already allocated OFHTTPRequest with the specified URI.
+ * @brief Initializes an already allocated OFHTTPRequest with the specified IRI.
  *
- * @param URI The URI for the request
+ * @param IRI The IRI for the request
  * @return An initialized OFHTTPRequest
  */
-- (instancetype)initWithURI: (OFURI *)URI;
+- (instancetype)initWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

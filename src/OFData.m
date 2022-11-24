@@ -26,11 +26,11 @@
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
@@ -93,9 +93,9 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
+	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
 }
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
@@ -211,13 +211,13 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFStream *stream = [OFURIHandler openItemAtURI: URI mode: @"r"];
+		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 		size_t pageSize;
 		unsigned char *buffer;
 
@@ -587,11 +587,11 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[OFURIHandler openItemAtURI: URI mode: @"w"] writeData: self];
+	[[OFIRIHandler openItemAtIRI: IRI mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
 }

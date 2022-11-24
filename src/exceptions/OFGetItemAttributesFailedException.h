@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFGetItemAttributesFailedException \
@@ -28,15 +28,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFGetItemAttributesFailedException: OFException
 {
-	OFURI *_URI;
+	OFIRI *_IRI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFGetItemAttributesFailedException, 4)
 }
 
 /**
- * @brief The URI of the item whose attributes could not be retrieved.
+ * @brief The IRI of the item whose attributes could not be retrieved.
  */
-@property (readonly, nonatomic) OFURI *URI;
+@property (readonly, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -46,11 +46,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased retrieve item attributes failed exception.
  *
- * @param URI The URI of the item whose attributes could not be retrieved
+ * @param IRI The IRI of the item whose attributes could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased retrieve item attributes failed exception
  */
-+ (instancetype)exceptionWithURI: (OFURI *)URI errNo: (int)errNo;
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
@@ -58,11 +58,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated retrieve item attributes failed
  *	  exception.
  *
- * @param URI The URI of the item whose attributes could not be retrieved
+ * @param IRI The IRI of the item whose attributes could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return An initialized retrieve item attributes failed exception
  */
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

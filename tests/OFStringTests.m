@@ -357,8 +357,8 @@ static const OFChar16 swappedChar16String[] = {
 			    encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURI:encoding]", (string = [stringClass
-	    stringWithContentsOfURI: [OFURI fileURIWithPath: @"testfile.txt"]
+	TEST(@"+[stringWithContentsOfIRI:encoding]", (string = [stringClass
+	    stringWithContentsOfIRI: [OFIRI fileIRIWithPath: @"testfile.txt"]
 			   encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 #endif

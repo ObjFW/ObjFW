@@ -17,19 +17,19 @@
 
 #include <errno.h>
 
-#import "OFArchiveURIHandler.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFCharacterSet.h"
 #import "OFGZIPStream.h"
+#import "OFIRI.h"
 #import "OFLHAArchive.h"
 #import "OFStream.h"
 #import "OFTarArchive.h"
-#import "OFURI.h"
 #import "OFZIPArchive.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
 
-@interface OFArchiveURIHandlerPathAllowedCharacterSet: OFCharacterSet
+@interface OFArchiveIRIHandlerPathAllowedCharacterSet: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
 	bool (*_characterIsMember)(id, SEL, OFUnichar);
@@ -42,21 +42,21 @@ static void
 initPathAllowedCharacters(void)
 {
 	pathAllowedCharacters =
-	    [[OFArchiveURIHandlerPathAllowedCharacterSet alloc] init];
+	    [[OFArchiveIRIHandlerPathAllowedCharacterSet alloc] init];
 }
 
-@implementation OFArchiveURIHandler
-- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
+@implementation OFArchiveIRIHandler
+- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *scheme = URI.scheme;
+	OFString *scheme = IRI.scheme;
 	OFString *percentEncodedPath, *path;
 	size_t pos;
-	OFURI *archiveURI;
+	OFIRI *archiveIRI;
 	OFStream *stream;
 
-	if (URI.host != nil || URI.port != nil || URI.user != nil ||
-	    URI.password != nil || URI.query != nil || URI.fragment != nil)
+	if (IRI.host != nil || IRI.port != nil || IRI.user != nil ||
+	    IRI.password != nil || IRI.query != nil || IRI.fragment != nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![mode isEqual: @"r"])
@@ -72,20 +72,20 @@ initPathAllowedCharacters(void)
 	 * archive.
 	 */
 	if ([scheme isEqual: @"gzip"]) {
-		stream = [OFURIHandler openItemAtURI: [OFURI URIWithString:
-							  URI.path]
+		stream = [OFIRIHandler openItemAtIRI: [OFIRI IRIWithString:
+							  IRI.path]
 						mode: @"r"];
 		stream = [OFGZIPStream streamWithStream: stream mode: @"r"];
 		goto end;
 	}
 
-	percentEncodedPath = URI.percentEncodedPath;
+	percentEncodedPath = IRI.percentEncodedPath;
 	pos = [percentEncodedPath rangeOfString: @"!"].location;
 
 	if (pos == OFNotFound)
 		@throw [OFInvalidArgumentException exception];
 
-	archiveURI = [OFURI URIWithString:
+	archiveIRI = [OFIRI IRIWithString:
 	    [percentEncodedPath substringWithRange: OFMakeRange(0, pos)]
 	    .stringByRemovingPercentEncoding];
 	path = [percentEncodedPath substringWithRange:
@@ -93,7 +93,7 @@ initPathAllowedCharacters(void)
 	    .stringByRemovingPercentEncoding;
 
 	if ([scheme isEqual: @"lha"]) {
-		OFLHAArchive *archive = [OFLHAArchive archiveWithURI: archiveURI
+		OFLHAArchive *archive = [OFLHAArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 		OFLHAArchiveEntry *entry;
 
@@ -104,11 +104,11 @@ initPathAllowedCharacters(void)
 			}
 		}
 
-		@throw [OFOpenItemFailedException exceptionWithURI: URI
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"tar"]) {
-		OFTarArchive *archive = [OFTarArchive archiveWithURI: archiveURI
+		OFTarArchive *archive = [OFTarArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 		OFTarArchiveEntry *entry;
 
@@ -119,11 +119,11 @@ initPathAllowedCharacters(void)
 			}
 		}
 
-		@throw [OFOpenItemFailedException exceptionWithURI: URI
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"zip"]) {
-		OFZIPArchive *archive = [OFZIPArchive archiveWithURI: archiveURI
+		OFZIPArchive *archive = [OFZIPArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 
 		stream = [archive streamForReadingFile: path];
@@ -139,14 +139,14 @@ end:
 }
 @end
 
-@implementation OFArchiveURIHandlerPathAllowedCharacterSet
+@implementation OFArchiveIRIHandlerPathAllowedCharacterSet
 - (instancetype)init
 {
 	self = [super init];
 
 	@try {
 		_characterSet =
-		    [[OFCharacterSet URIPathAllowedCharacterSet] retain];
+		    [[OFCharacterSet IRIPathAllowedCharacterSet] retain];
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
@@ -172,26 +172,26 @@ end:
 }
 @end
 
-OFURI *
-OFArchiveURIHandlerURIForFileInArchive(OFString *scheme,
-    OFString *pathInArchive, OFURI *archiveURI)
+OFIRI *
+OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
+    OFString *pathInArchive, OFIRI *archiveIRI)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFMutableURI *ret = [OFMutableURI URIWithScheme: scheme];
+	OFMutableIRI *ret = [OFMutableIRI IRIWithScheme: scheme];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *archiveURIString;
+	OFString *archiveIRIString;
 
 	OFOnce(&onceControl, initPathAllowedCharacters);
 
 	pathInArchive = [pathInArchive
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    pathAllowedCharacters];
-	archiveURIString = [archiveURI.string
+	archiveIRIString = [archiveIRI.string
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    pathAllowedCharacters];
 
 	ret.percentEncodedPath = [OFString
-	    stringWithFormat: @"%@!%@", archiveURIString, pathInArchive];
+	    stringWithFormat: @"%@!%@", archiveIRIString, pathInArchive];
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);

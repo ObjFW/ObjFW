@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFMoveItemFailedException \
@@ -27,20 +27,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMoveItemFailedException: OFException
 {
-	OFURI *_sourceURI, *_destinationURI;
+	OFIRI *_sourceIRI, *_destinationIRI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFMoveItemFailedException, 4)
 }
 
 /**
- * @brief The original URI.
+ * @brief The original IRI.
  */
-@property (readonly, nonatomic) OFURI *sourceURI;
+@property (readonly, nonatomic) OFIRI *sourceIRI;
 
 /**
- * @brief The new URI.
+ * @brief The new IRI.
  */
-@property (readonly, nonatomic) OFURI *destinationURI;
+@property (readonly, nonatomic) OFIRI *destinationIRI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -50,13 +50,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased move item failed exception.
  *
- * @param sourceURI The original URI
- * @param destinationURI The new URI
+ * @param sourceIRI The original IRI
+ * @param destinationIRI The new IRI
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased move item failed exception
  */
-+ (instancetype)exceptionWithSourceURI: (OFURI *)sourceURI
-			destinationURI: (OFURI *)destinationURI
++ (instancetype)exceptionWithSourceIRI: (OFIRI *)sourceIRI
+			destinationIRI: (OFIRI *)destinationIRI
 				 errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
@@ -64,13 +64,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an already allocated move item failed exception.
  *
- * @param sourceURI The original URI
- * @param destinationURI The new URI
+ * @param sourceIRI The original IRI
+ * @param destinationIRI The new IRI
  * @param errNo The errno of the error that occurred
  * @return An initialized move item failed exception
  */
-- (instancetype)initWithSourceURI: (OFURI *)sourceURI
-		   destinationURI: (OFURI *)destinationURI
+- (instancetype)initWithSourceIRI: (OFIRI *)sourceIRI
+		   destinationIRI: (OFIRI *)destinationIRI
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

@@ -28,12 +28,12 @@
 #import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFSocket+Private.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
-#import "OFURI.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
@@ -514,7 +514,7 @@ normalizedKey(OFString *key)
 - (void)createResponse
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURI *URI;
+	OFMutableIRI *IRI;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
 	size_t pos;
@@ -534,10 +534,10 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URI = [OFMutableURI URIWithScheme: @"http"];
-	URI.host = _host;
+	IRI = [OFMutableIRI IRIWithScheme: @"http"];
+	IRI.host = _host;
 	if (_port != 80)
-		URI.port = [OFNumber numberWithUnsignedShort: _port];
+		IRI.port = [OFNumber numberWithUnsignedShort: _port];
 
 	@try {
 		if ((pos = [_path rangeOfString: @"?"].location) !=
@@ -547,19 +547,19 @@ normalizedKey(OFString *key)
 			path = [_path substringToIndex: pos];
 			query = [_path substringFromIndex: pos + 1];
 
-			URI.percentEncodedPath = path;
-			URI.percentEncodedQuery = query;
+			IRI.percentEncodedPath = path;
+			IRI.percentEncodedQuery = query;
 		} else
-			URI.percentEncodedPath = _path;
+			IRI.percentEncodedPath = _path;
 	} @catch (OFInvalidFormatException *e) {
 		objc_autoreleasePoolPop(pool);
 		[self sendErrorAndClose: 400];
 		return;
 	}
 
-	[URI makeImmutable];
+	[IRI makeImmutable];
 
-	request = [OFHTTPRequest requestWithURI: URI];
+	request = [OFHTTPRequest requestWithIRI: IRI];
 	request.method = _method;
 	request.protocolVersion =
 	    (OFHTTPRequestProtocolVersion){ 1, _HTTPMinorVersion };

@@ -21,8 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
 @class OFString;
-@class OFURI;
 
 /**
  * @brief Options for searching in data.
@@ -167,12 +167,12 @@ typedef enum {
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the specified URI.
+ *	  the specified IRI.
  *
- * @param URI The URI to the contents for the OFData
+ * @param IRI The IRI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI;
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
@@ -270,12 +270,12 @@ typedef enum {
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the specified URI.
+ *	  containing the data of the specified IRI.
  *
- * @param URI The URI to the contents for the OFData
+ * @param IRI The IRI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-- (instancetype)initWithContentsOfURI: (OFURI *)URI;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
@@ -346,11 +346,11 @@ typedef enum {
 #endif
 
 /**
- * @brief Writes the OFData to the specified URI.
+ * @brief Writes the OFData to the specified IRI.
  *
- * @param URI The URI to write to
+ * @param IRI The IRI to write to
  */
-- (void)writeToURI: (OFURI *)URI;
+- (void)writeToIRI: (OFIRI *)IRI;
 @end
 
 OF_ASSUME_NONNULL_END

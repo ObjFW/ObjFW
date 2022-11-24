@@ -13,19 +13,25 @@
  * file.
  */
 
-#import "OFSettings.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFHTTPIRIHandler.h"
+#import "OFHTTPClient.h"
+#import "OFHTTPRequest.h"
+#import "OFHTTPResponse.h"
 
-@class OFINIFile;
-@class OFIRI;
-@class OFString;
-
-@interface OFINIFileSettings: OFSettings
+@implementation OFHTTPIRIHandler
+- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	OFIRI *_fileIRI;
-	OFINIFile *_INIFile;
+	void *pool = objc_autoreleasePoolPush();
+	OFHTTPClient *client = [OFHTTPClient client];
+	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: IRI];
+	OFHTTPResponse *response = [client performRequest: request];
+
+	[response retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [response autorelease];
 }
 @end
-
-OF_ASSUME_NONNULL_END

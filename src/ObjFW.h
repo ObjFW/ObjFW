@@ -45,9 +45,9 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFUUID.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFColor.h"
 
 #import "OFNotification.h"

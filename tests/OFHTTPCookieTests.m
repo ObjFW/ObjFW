@@ -23,26 +23,26 @@ static OFString *const module = @"OFHTTPCookie";
 - (void)HTTPCookieTests
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURI *URI = [OFURI URIWithString: @"http://nil.im"];
+	OFIRI *IRI = [OFIRI IRIWithString: @"http://nil.im"];
 	OFHTTPCookie *cookie1, *cookie2;
 	OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
 	cookie1 = [OFHTTPCookie cookieWithName: @"foo"
 					 value: @"bar"
 					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #1",
+	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #1",
 	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
 	    dictionaryWithObject: @"foo=bar"
-	    forKey: @"Set-Cookie"] forURI: URI]
+	    forKey: @"Set-Cookie"] forIRI: IRI]
 	    isEqual: [OFArray arrayWithObject: cookie1]])
 
 	cookie2 = [OFHTTPCookie cookieWithName: @"qux"
 					 value: @"cookie"
 					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #2",
+	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #2",
 	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
 	    dictionaryWithObject: @"foo=bar,qux=cookie"
-	    forKey: @"Set-Cookie"] forURI: URI]
+	    forKey: @"Set-Cookie"] forIRI: IRI]
 	    isEqual: [OFArray arrayWithObjects: cookie1, cookie2, nil]])
 
 	cookie1.expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
@@ -54,13 +54,13 @@ static OFString *const module = @"OFHTTPCookie";
 	cookie2.HTTPOnly = true;
 	[cookie2.extensions addObject: @"foo"];
 	[cookie2.extensions addObject: @"bar"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #3",
+	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #3",
 	    [(cookies = [OFHTTPCookie cookiesWithResponseHeaderFields:
 	    [OFDictionary dictionaryWithObject:
 	    @"foo=bar; Expires=Fri, 13 Feb 2009 23:31:30 GMT; Path=/x,"
 	    @"qux=cookie; Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
 	    @"Domain=webkeks.org; Path=/objfw; Secure; HTTPOnly; foo; bar"
-	    forKey: @"Set-Cookie"] forURI: URI]) isEqual:
+	    forKey: @"Set-Cookie"] forIRI: IRI]) isEqual:
 	    [OFArray arrayWithObjects: cookie1, cookie2, nil]])
 
 	TEST(@"+[requestHeaderFieldsWithCookies:]",

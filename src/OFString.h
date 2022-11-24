@@ -136,7 +136,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #ifdef __OBJC__
 @class OFArray OF_GENERIC(ObjectType);
 @class OFCharacterSet;
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFString OFString.h ObjFW/OFString.h
@@ -555,30 +555,30 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 # endif
 
 /**
- * @brief Creates a new OFString with the contents of the specified URI.
+ * @brief Creates a new OFString with the contents of the specified IRI.
  *
- * If the URI's scheme is file, it tries UTF-8 encoding.
+ * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @return A new autoreleased OFString
  * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI;
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
- * @brief Creates a new OFString with the contents of the specified URI in the
+ * @brief Creates a new OFString with the contents of the specified IRI in the
  *	  specified encoding.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @param encoding The encoding to assume
  * @return A new autoreleased OFString
  * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding;
 
 /**
@@ -849,30 +849,30 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URI.
+ *	  specified IRI.
  *
- * If the URI's scheme is file, it tries UTF-8 encoding.
+ * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @return An initialized OFString
  * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-- (instancetype)initWithContentsOfURI: (OFURI *)URI;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URI in the specified encoding.
+ *	  specified IRI in the specified encoding.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @param encoding The encoding to assume
  * @return An initialized OFString
  * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding;
 
 /**
@@ -1307,21 +1307,21 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 # endif
 
 /**
- * @brief Writes the string to the specified URI using UTF-8 encoding.
+ * @brief Writes the string to the specified IRI using UTF-8 encoding.
  *
- * @param URI The URI to write to
+ * @param IRI The IRI to write to
  */
-- (void)writeToURI: (OFURI *)URI;
+- (void)writeToIRI: (OFIRI *)IRI;
 
 /**
- * @brief Writes the string to the specified URI using the specified encoding.
+ * @brief Writes the string to the specified IRI using the specified encoding.
  *
- * @param URI The URI to write to
- * @param encoding The encoding to use to write the string to the URI
+ * @param IRI The IRI to write to
+ * @param encoding The encoding to use to write the string to the IRI
  * @throw OFInvalidEncodingException The string cannot be represented in the
  *				     specified encoding
  */
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 
 # ifdef OF_HAVE_BLOCKS
 /**

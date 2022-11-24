@@ -41,7 +41,7 @@ static OFString *const module = @"OFSerialization";
 
 	[list appendObject: @"Hello"];
 	[list appendObject: @"Wo\rld!\nHow are you?"];
-	[list appendObject: [OFURI URIWithString: @"https://objfw.nil.im/"]];
+	[list appendObject: [OFIRI IRIWithString: @"https://objfw.nil.im/"]];
 	[list appendObject:
 	    [OFXMLElement elementWithXMLString: @"<x><y/><![CDATA[<]]></x>"]];
 	[list appendObject:
@@ -61,8 +61,8 @@ static OFString *const module = @"OFSerialization";
 
 	TEST(@"-[stringBySerializing]",
 	    (string = dict.stringBySerializing) && [string isEqual:
-	    [OFString stringWithContentsOfURI:
-	    [OFURI URIWithString: @"embedded:serialization.xml"]]])
+	    [OFString stringWithContentsOfIRI:
+	    [OFIRI IRIWithString: @"embedded:serialization.xml"]]])
 
 	TEST(@"-[objectByDeserializing]",
 	    [string.objectByDeserializing isEqual: dict])

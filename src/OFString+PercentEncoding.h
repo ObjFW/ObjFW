@@ -36,7 +36,7 @@ extern int _OFString_PercentEncoding_reference;
 @property (readonly, nonatomic) OFString *stringByRemovingPercentEncoding;
 
 /**
- * @brief Percent-encodes a string for use in a URI, but does not escape the
+ * @brief Percent-encodes a string for use in an IRI, but does not escape the
  *	  specified allowed characters.
  *
  * @param allowedCharacters A character set of characters that should not be

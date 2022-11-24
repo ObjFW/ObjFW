@@ -22,14 +22,14 @@
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
-#import "OFArchiveURIHandler.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFCRC16.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLHADecompressingStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -88,14 +88,14 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"lha", path, URI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
 }
 
 - (instancetype)init
@@ -136,16 +136,16 @@ OF_DIRECT_MEMBERS
 	return self;
 }
 
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
 	@try {
 		if ([mode isEqual: @"a"])
-			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
 		else
-			stream = [OFURIHandler openItemAtURI: URI mode: mode];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;

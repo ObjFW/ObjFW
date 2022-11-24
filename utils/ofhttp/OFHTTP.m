@@ -24,6 +24,7 @@
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #ifdef OF_HAVE_PLUGINS
@@ -34,7 +35,6 @@
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
-#import "OFURI.h"
 
 #ifdef HAVE_TLS_SUPPORT
 # import "ObjFWTLS.h"
@@ -62,8 +62,8 @@
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
     OFStreamDelegate>
 {
-	OFArray OF_GENERIC(OFString *) *_URIs;
-	size_t _URIIndex;
+	OFArray OF_GENERIC(OFString *) *_IRIs;
+	size_t _IRIIndex;
 	int _errorCode;
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
@@ -79,7 +79,7 @@
 	ProgressBar *_progressBar;
 }
 
-- (void)downloadNextURI;
+- (void)downloadNextIRI;
 @end
 
 #ifdef HAVE_TLS_SUPPORT
@@ -97,7 +97,7 @@ help(OFStream *stream, bool full, int status)
 {
 	[OFStdErr writeLine:
 	    OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] -[cehHmoOPqv] uri1 [uri2 ...]",
+	    @"Usage: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	if (full) {
@@ -451,11 +451,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectoryURI:
-	    [OFURI fileURIWithPath: @LOCALIZATION_DIR]];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectoryURI:
-	    [OFURI fileURIWithPath: @"PROGDIR:/share/ofhttp/localization"]];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhttp/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -547,9 +547,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 	_outputPath = [outputPath copy];
-	_URIs = [optionsParser.remainingArguments copy];
+	_IRIs = [optionsParser.remainingArguments copy];
 
-	if (_URIs.count < 1)
+	if (_IRIs.count < 1)
 		help(OFStdErr, false, 1);
 
 	if (_quiet && _verbose) {
@@ -569,10 +569,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	if (_outputPath != nil && _URIs.count > 1) {
+	if (_outputPath != nil && _IRIs.count > 1) {
 		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"output_only_with_one_uri",
-		    @"%[prog]: Cannot use -o / --output when more than one URI "
+		    OF_LOCALIZED(@"output_only_with_one_iri",
+		    @"%[prog]: Cannot use -o / --output when more than one IRI "
 		    @"has been specified!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
@@ -587,7 +587,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 #endif
 
-	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
+	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
 
 -	(void)client: (OFHTTPClient *)client
@@ -611,7 +611,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 -	       (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirectToURI: (OFURI *)URI
+  shouldFollowRedirectToIRI: (OFIRI *)IRI
 		 statusCode: (short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response
@@ -633,9 +633,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"☇ %@", URI.string];
+			[OFStdOut writeFormat: @"☇ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", URI.string];
+			[OFStdOut writeFormat: @"< %@", IRI.string];
 	}
 
 	_length = 0;
@@ -649,7 +649,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		OFString *URI;
+		OFString *IRI;
 
 		[_progressBar stop];
 		[_progressBar draw];
@@ -662,17 +662,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"Error!")];
 		}
 
-		URI = [_URIs objectAtIndex: _URIIndex - 1];
+		IRI = [_IRIs objectAtIndex: _IRIIndex - 1];
 		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"download_failed_exception",
-		    @"%[prog]: Failed to download <%[uri]>!\n"
+		    @"%[prog]: Failed to download <%[iri]>!\n"
 		    @"  %[exception]",
 		    @"prog", [OFApplication programName],
-		    @"uri", URI,
+		    @"iri", IRI,
 		    @"exception", exception)];
 
 		_errorCode = 1;
-		[self performSelector: @selector(downloadNextURI)
+		[self performSelector: @selector(downloadNextIRI)
 			   afterDelay: 0];
 		return false;
 	}
@@ -694,7 +694,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
-		[self performSelector: @selector(downloadNextURI)
+		[self performSelector: @selector(downloadNextIRI)
 			   afterDelay: 0];
 		return false;
 	}
@@ -818,10 +818,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_resolve_host_failed",
-			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  Failed to resolve host: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"uri", request.URI.string,
+			    @"iri", request.IRI.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
 		    [OFConnectSocketFailedException class]]) {
@@ -830,10 +830,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_failed_connection_failed",
-			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  Connection failed: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"uri", request.URI.string,
+			    @"iri", request.IRI.string,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
 		    [OFInvalidServerResponseException class]]) {
@@ -842,10 +842,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_invalid_server_response",
-			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  Invalid server response!",
 			    @"prog", [OFApplication programName],
-			    @"uri", request.URI.string)];
+			    @"iri", request.IRI.string)];
 		} else if ([exception isKindOfClass:
 		    [OFUnsupportedProtocolException class]]) {
 			if (!_quiet)
@@ -882,10 +882,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_read_or_write_failed",
-			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  %[error]: %[exception]",
 			    @"prog", [OFApplication programName],
-			    @"uri", request.URI.string,
+			    @"iri", request.IRI.string,
 			    @"error", error,
 			    @"exception", exception)];
 		} else if ([exception isKindOfClass:
@@ -902,16 +902,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			codeString = [OFString stringWithFormat: @"%hd %@",
 			    statusCode, OFHTTPStatusCodeString(statusCode)];
 			[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
-			    @"%[prog]: Failed to download <%[uri]>!\n"
+			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  HTTP status code: %[code]",
 			    @"prog", [OFApplication programName],
-			    @"uri", request.URI.string,
+			    @"iri", request.IRI.string,
 			    @"code", codeString)];
 		} else
 			@throw exception;
 
 		_errorCode = 1;
-		[self performSelector: @selector(downloadNextURI)
+		[self performSelector: @selector(downloadNextIRI)
 			   afterDelay: 0];
 		return;
 	}
@@ -926,10 +926,10 @@ after_exception_handling:
 		    copy];
 		_detectedFileName = true;
 
-		/* Handle this URI on the next -[downloadNextURI] call */
-		_URIIndex--;
+		/* Handle this IRI on the next -[downloadNextIRI] call */
+		_IRIIndex--;
 
-		[self performSelector: @selector(downloadNextURI)
+		[self performSelector: @selector(downloadNextIRI)
 			   afterDelay: 0];
 		return;
 	}
@@ -988,13 +988,13 @@ next:
 	[_currentFileName release];
 	_currentFileName = nil;
 
-	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
+	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
 
-- (void)downloadNextURI
+- (void)downloadNextIRI
 {
-	OFString *URIString = nil;
-	OFURI *URI;
+	OFString *IRIString = nil;
+	OFIRI *IRI;
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 
@@ -1004,27 +1004,27 @@ next:
 		[_output release];
 	_output = nil;
 
-	if (_URIIndex >= _URIs.count)
+	if (_IRIIndex >= _IRIs.count)
 		[OFApplication terminateWithStatus: _errorCode];
 
 	@try {
-		URIString = [_URIs objectAtIndex: _URIIndex++];
-		URI = [OFURI URIWithString: URIString];
+		IRIString = [_IRIs objectAtIndex: _IRIIndex++];
+		IRI = [OFIRI IRIWithString: IRIString];
 	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_uri",
-		    @"%[prog]: Invalid URI: <%[uri]>!",
+		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_iri",
+		    @"%[prog]: Invalid IRI: <%[iri]>!",
 		    @"prog", [OFApplication programName],
-		    @"uri", URIString)];
+		    @"iri", IRIString)];
 
 		_errorCode = 1;
 		goto next;
 	}
 
-	if (![URI.scheme isEqual: @"http"] && ![URI.scheme isEqual: @"https"]) {
+	if (![IRI.scheme isEqual: @"http"] && ![IRI.scheme isEqual: @"https"]) {
 		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_scheme",
-		    @"%[prog]: Invalid scheme: <%[uri]>!",
+		    @"%[prog]: Invalid scheme: <%[iri]>!",
 		    @"prog", [OFApplication programName],
-		    @"uri", URIString)];
+		    @"iri", IRIString)];
 
 		_errorCode = 1;
 		goto next;
@@ -1035,12 +1035,12 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdOut writeFormat: @"⠒ %@", URI.string];
+				[OFStdOut writeFormat: @"⠒ %@", IRI.string];
 			else
-				[OFStdOut writeFormat: @"? %@", URI.string];
+				[OFStdOut writeFormat: @"? %@", IRI.string];
 		}
 
-		request = [OFHTTPRequest requestWithURI: URI];
+		request = [OFHTTPRequest requestWithIRI: IRI];
 		request.headers = clientHeaders;
 		request.method = OFHTTPRequestMethodHead;
 
@@ -1059,7 +1059,7 @@ next:
 		_currentFileName = [_outputPath copy];
 
 	if (_currentFileName == nil)
-		_currentFileName = [URI.path.lastPathComponent copy];
+		_currentFileName = [IRI.path.lastPathComponent copy];
 
 	if ([_currentFileName isEqual: @"/"]) {
 		[_currentFileName release];
@@ -1090,12 +1090,12 @@ next:
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"⇣ %@", URI.string];
+			[OFStdOut writeFormat: @"⇣ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", URI.string];
+			[OFStdOut writeFormat: @"< %@", IRI.string];
 	}
 
-	request = [OFHTTPRequest requestWithURI: URI];
+	request = [OFHTTPRequest requestWithIRI: IRI];
 	request.headers = clientHeaders;
 	request.method = _method;
 
@@ -1104,6 +1104,6 @@ next:
 	return;
 
 next:
-	[self performSelector: @selector(downloadNextURI) afterDelay: 0];
+	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
 @end

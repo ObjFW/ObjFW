@@ -15,8 +15,8 @@
 
 #include "config.h"
 
-#import "OFMutableURI.h"
-#import "OFURI+Private.h"
+#import "OFMutableIRI.h"
+#import "OFIRI+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
@@ -29,13 +29,13 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-@implementation OFMutableURI
+@implementation OFMutableIRI
 @dynamic scheme, host, percentEncodedHost, port, user, percentEncodedUser;
 @dynamic password, percentEncodedPassword, path, percentEncodedPath;
 @dynamic pathComponents, query, percentEncodedQuery, queryItems, fragment;
 @dynamic percentEncodedFragment;
 
-+ (instancetype)URIWithScheme: (OFString *)scheme
++ (instancetype)IRIWithScheme: (OFString *)scheme
 {
 	return [[[self alloc] initWithScheme: scheme] autorelease];
 }
@@ -63,8 +63,8 @@
 	if (scheme.length < 1 || !OFASCIIIsAlpha(*scheme.UTF8String))
 		@throw [OFInvalidFormatException exception];
 
-	OFURIVerifyIsEscaped(scheme,
-	    [OFCharacterSet URISchemeAllowedCharacterSet], false);
+	OFIRIVerifyIsEscaped(scheme,
+	    [OFCharacterSet IRISchemeAllowedCharacterSet], false);
 
 	_scheme = [scheme.lowercaseString copy];
 
@@ -78,13 +78,13 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedHost;
 
-	if (OFURIIsIPv6Host(host))
+	if (OFIRIIsIPv6Host(host))
 		_percentEncodedHost = [[OFString alloc]
 		    initWithFormat: @"[%@]", host];
 	else
 		_percentEncodedHost = [[host
 		    stringByAddingPercentEncodingWithAllowedCharacters:
-		    [OFCharacterSet URIHostAllowedCharacterSet]] copy];
+		    [OFCharacterSet IRIHostAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -97,12 +97,12 @@
 
 	if ([percentEncodedHost hasPrefix: @"["] &&
 	    [percentEncodedHost hasSuffix: @"]"]) {
-		if (!OFURIIsIPv6Host([percentEncodedHost substringWithRange:
+		if (!OFIRIIsIPv6Host([percentEncodedHost substringWithRange:
 		    OFMakeRange(1, percentEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (percentEncodedHost != nil)
-		OFURIVerifyIsEscaped(percentEncodedHost,
-		    [OFCharacterSet URIHostAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(percentEncodedHost,
+		    [OFCharacterSet IRIHostAllowedCharacterSet], true);
 
 	old = _percentEncodedHost;
 	_percentEncodedHost = [percentEncodedHost copy];
@@ -127,7 +127,7 @@
 
 	_percentEncodedUser = [[user
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIUserAllowedCharacterSet]] copy];
+	    [OFCharacterSet IRIUserAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -139,8 +139,8 @@
 	OFString *old;
 
 	if (percentEncodedUser != nil)
-		OFURIVerifyIsEscaped(percentEncodedUser,
-		    [OFCharacterSet URIUserAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(percentEncodedUser,
+		    [OFCharacterSet IRIUserAllowedCharacterSet], true);
 
 	old = _percentEncodedUser;
 	_percentEncodedUser = [percentEncodedUser copy];
@@ -154,7 +154,7 @@
 
 	_percentEncodedPassword = [[password
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIPasswordAllowedCharacterSet]] copy];
+	    [OFCharacterSet IRIPasswordAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -166,8 +166,8 @@
 	OFString *old;
 
 	if (percentEncodedPassword != nil)
-		OFURIVerifyIsEscaped(percentEncodedPassword,
-		    [OFCharacterSet URIPasswordAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(percentEncodedPassword,
+		    [OFCharacterSet IRIPasswordAllowedCharacterSet], true);
 
 	old = _percentEncodedPassword;
 	_percentEncodedPassword = [percentEncodedPassword copy];
@@ -181,7 +181,7 @@
 
 	_percentEncodedPath = [[path
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIPathAllowedCharacterSet]] copy];
+	    [OFCharacterSet IRIPathAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -192,8 +192,8 @@
 {
 	OFString *old;
 
-	OFURIVerifyIsEscaped(percentEncodedPath,
-	    [OFCharacterSet URIPathAllowedCharacterSet], true);
+	OFIRIVerifyIsEscaped(percentEncodedPath,
+	    [OFCharacterSet IRIPathAllowedCharacterSet], true);
 
 	old = _percentEncodedPath;
 	_percentEncodedPath = [percentEncodedPath copy];
@@ -226,7 +226,7 @@
 
 	_percentEncodedQuery = [[query
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIQueryAllowedCharacterSet]] copy];
+	    [OFCharacterSet IRIQueryAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -238,8 +238,8 @@
 	OFString *old;
 
 	if (percentEncodedQuery != nil)
-		OFURIVerifyIsEscaped(percentEncodedQuery,
-		    [OFCharacterSet URIQueryAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(percentEncodedQuery,
+		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 	old = _percentEncodedQuery;
 	_percentEncodedQuery = [percentEncodedQuery copy];
@@ -263,7 +263,7 @@
 
 	pool = objc_autoreleasePoolPush();
 	percentEncodedQuery = [OFMutableString string];
-	characterSet = [OFCharacterSet URIQueryKeyValueAllowedCharacterSet];
+	characterSet = [OFCharacterSet IRIQueryKeyValueAllowedCharacterSet];
 
 	for (OFPair OF_GENERIC(OFString *, OFString *) *item in queryItems) {
 		OFString *key = [item.firstObject
@@ -293,7 +293,7 @@
 
 	_percentEncodedFragment = [[fragment
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIFragmentAllowedCharacterSet]] copy];
+	    [OFCharacterSet IRIFragmentAllowedCharacterSet]] copy];
 
 	[old release];
 
@@ -305,8 +305,8 @@
 	OFString *old;
 
 	if (percentEncodedFragment != nil)
-		OFURIVerifyIsEscaped(percentEncodedFragment,
-		    [OFCharacterSet URIFragmentAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(percentEncodedFragment,
+		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 	old = _percentEncodedFragment;
 	_percentEncodedFragment = [percentEncodedFragment copy];
@@ -315,7 +315,7 @@
 
 - (id)copy
 {
-	OFMutableURI *copy = [self mutableCopy];
+	OFMutableIRI *copy = [self mutableCopy];
 
 	[copy makeImmutable];
 
@@ -329,7 +329,7 @@
 #ifdef OF_HAVE_FILES
 	if ([_scheme isEqual: @"file"] &&
 	    ![_percentEncodedPath hasSuffix: @"/"] &&
-	    [[OFFileManager defaultManager] directoryExistsAtURI: self]) {
+	    [[OFFileManager defaultManager] directoryExistsAtIRI: self]) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *path = [_percentEncodedPath
 		    stringByAppendingString: @"/"];
@@ -354,7 +354,7 @@
 	pool = objc_autoreleasePoolPush();
 	component = [component
 	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet URIPathAllowedCharacterSet]];
+	    [OFCharacterSet IRIPathAllowedCharacterSet]];
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	if ([_percentEncodedPath hasSuffix: @"/"] ||
@@ -434,6 +434,6 @@
 
 - (void)makeImmutable
 {
-	object_setClass(self, [OFURI class]);
+	object_setClass(self, [OFIRI class]);
 }
 @end

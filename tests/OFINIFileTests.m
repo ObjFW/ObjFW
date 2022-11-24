@@ -43,19 +43,19 @@ static OFString *module;
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
-	OFURI *URI;
+	OFIRI *IRI;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
-	OFURI *writeURI;
+	OFIRI *writeIRI;
 #endif
 
 	module = @"OFINIFile";
 
-	URI = [OFURI URIWithString: @"embedded:testfile.ini"];
-	TEST(@"+[fileWithURI:encoding:]",
-	    (file = [OFINIFile fileWithURI: URI
+	IRI = [OFIRI IRIWithString: @"embedded:testfile.ini"];
+	TEST(@"+[fileWithIRI:encoding:]",
+	    (file = [OFINIFile fileWithIRI: IRI
 				  encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
@@ -116,16 +116,16 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
-	writeURI = [[OFSystemInfo temporaryDirectoryURI]
-	    URIByAppendingPathComponent: @"objfw-tests.ini"
+	writeIRI = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: @"objfw-tests.ini"
 			    isDirectory: false];
 	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToURI: writeURI
+	    R([file writeToIRI: writeIRI
 		      encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString stringWithContentsOfURI: writeURI
+	    [[OFString stringWithContentsOfIRI: writeIRI
 				      encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtURI: writeURI];
+	[[OFFileManager defaultManager] removeItemAtIRI: writeIRI];
 #else
 	(void)output;
 #endif

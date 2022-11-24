@@ -22,13 +22,15 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
-       OFEmbeddedURIHandler.m		\
+       OFEmbeddedIRIHandler.m		\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFIRI.m				\
+       OFIRIHandler.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -44,13 +46,13 @@ SRCS = OFApplication.m			\
        OFMutableArray.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
+       OFMutableIRI.m			\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -96,8 +98,6 @@ SRCS = OFApplication.m			\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURI.m				\
-       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -180,7 +180,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 SRCS += OFASPrintF.m			\
 	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
-	OFArchiveURIHandler.m		\
+	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
@@ -212,11 +212,11 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
 	${UNICODE_M}
-SRCS_FILES += OFFileURIHandler.m
+SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURIHandler.m			\
+		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\

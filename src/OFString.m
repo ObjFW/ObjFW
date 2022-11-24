@@ -39,11 +39,11 @@
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
 #import "OFXMLElement.h"
@@ -582,15 +582,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI];
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI
 						      encoding: encoding];
 }
 
@@ -796,15 +796,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
+	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfURI: URI
+	return [[[self alloc] initWithContentsOfIRI: IRI
 					   encoding: encoding] autorelease];
 }
 
@@ -1049,20 +1049,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [self initWithContentsOfURI: URI
+	return [self initWithContentsOfIRI: IRI
 				  encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	@try {
-		data = [OFData dataWithContentsOfURI: URI];
+		data = [OFData dataWithContentsOfIRI: IRI];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -2724,17 +2724,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
-	[self writeToURI: URI encoding: OFStringEncodingUTF8];
+	[self writeToIRI: IRI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
-	stream = [OFURIHandler openItemAtURI: URI mode: @"w"];
+	stream = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);

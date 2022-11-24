@@ -13,23 +13,23 @@
  * file.
  */
 
-#import "OFURI.h"
+#import "OFIRI.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableURI OFMutableURI.h ObjFW/OFMutableURI.h
+ * @class OFMutableIRI OFMutableIRI.h ObjFW/OFMutableIRI.h
  *
- * @brief A class for parsing URIs as per RFC 3986 and accessing and modifying
+ * @brief A class for parsing IRIs as per RFC 3987 and accessing and modifying
  *	  parts of it.
  */
-@interface OFMutableURI: OFURI
+@interface OFMutableIRI: OFIRI
 {
-	OF_RESERVE_IVARS(OFMutableURI, 4)
+	OF_RESERVE_IVARS(OFMutableIRI, 4)
 }
 
 /**
- * @brief The scheme part of the URI.
+ * @brief The scheme part of the IRI.
  *
  * @throw OFInvalidFormatException The scheme being set is not in the correct
  *				   format
@@ -37,12 +37,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy, nonatomic) OFString *scheme;
 
 /**
- * @brief The host part of the URI.
+ * @brief The host part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *host;
 
 /**
- * @brief The host part of the URI in percent-encoded form.
+ * @brief The host part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedHost;
 
 /**
- * @brief The port part of the URI.
+ * @brief The port part of the IRI.
  *
  * @throw OFInvalidArgumentException The port is not valid (e.g. negative or
  *				     too big)
@@ -62,12 +62,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 
 /**
- * @brief The user part of the URI.
+ * @brief The user part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *user;
 
 /**
- * @brief The user part of the URI in percent-encoded form.
+ * @brief The user part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -79,12 +79,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedUser;
 
 /**
- * @brief The password part of the URI.
+ * @brief The password part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *password;
 
 /**
- * @brief The password part of the URI in URI-encoded form.
+ * @brief The password part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -96,12 +96,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedPassword;
 
 /**
- * @brief The path part of the URI.
+ * @brief The path part of the IRI.
  */
 @property (readwrite, copy, nonatomic) OFString *path;
 
 /**
- * @brief The path part of the URI in percent-encoded form.
+ * @brief The path part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy, nonatomic) OFString *percentEncodedPath;
 
 /**
- * @brief The path of the URI split into components.
+ * @brief The path of the IRI split into components.
  *
  * The first component must always be empty to designate the root.
  *
@@ -123,12 +123,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /**
- * @brief The query part of the URI.
+ * @brief The query part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;
 
 /**
- * @brief The query part of the URI in percent-encoded form.
+ * @brief The query part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -140,7 +140,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedQuery;
 
 /**
- * @brief The query part of the URI as an array.
+ * @brief The query part of the IRI as an array.
  *
  * For example, a query like `key1=value1&key2=value2` would correspond to the
  * following array:
@@ -156,12 +156,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *) *queryItems;
 
 /**
- * @brief The fragment part of the URI.
+ * @brief The fragment part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;
 
 /**
- * @brief The fragment part of the URI in percent-encoded form.
+ * @brief The fragment part of the IRI in percent-encoded form.
  *
  * Setting this retains the original percent-encoding used - if more characters
  * than necessary are percent-encoded, it is kept this way.
@@ -173,19 +173,19 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *percentEncodedFragment;
 
 /**
- * @brief Creates a new mutable URI with the specified schemed.
+ * @brief Creates a new mutable IRI with the specified schemed.
  *
- * @param scheme The scheme for the URI
- * @return A new, autoreleased OFMutableURI
+ * @param scheme The scheme for the IRI
+ * @return A new, autoreleased OFMutableIRI
  */
-+ (instancetype)URIWithScheme: (OFString *)scheme;
++ (instancetype)IRIWithScheme: (OFString *)scheme;
 
 /**
- * @brief Initializes an already allocated mutable URI with the specified
+ * @brief Initializes an already allocated mutable IRI with the specified
  *	  schemed.
  *
- * @param scheme The scheme for the URI
- * @return An initialized OFMutableURI
+ * @param scheme The scheme for the IRI
+ * @return An initialized OFMutableIRI
  */
 - (instancetype)initWithScheme: (OFString *)scheme;
 
@@ -212,7 +212,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)standardizePath;
 
 /**
- * @brief Converts the mutable URI to an immutable URI.
+ * @brief Converts the mutable IRI to an immutable IRI.
  */
 - (void)makeImmutable;
 @end

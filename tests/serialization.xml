@@ -18,7 +18,7 @@
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
 How are you?</OFString>
-        <OFURI>https://objfw.nil.im/</OFURI>
+        <OFIRI>https://objfw.nil.im/</OFIRI>
         <OFXMLElement name='x'>
           <children>
             <OFMutableArray>

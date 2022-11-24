@@ -101,7 +101,7 @@ static OFHTTPResponse *response = nil;
 {
 	void *pool = objc_autoreleasePoolPush();
 	HTTPClientTestsServer *server;
-	OFURI *URI;
+	OFIRI *IRI;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFData *data;
@@ -116,13 +116,13 @@ static OFHTTPResponse *response = nil;
 	[condition wait];
 	[condition unlock];
 
-	URI = [OFURI URIWithString:
+	IRI = [OFIRI IRIWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->_port]];
 
 	TEST(@"-[asyncPerformRequest:]",
 	    (client = [OFHTTPClient client]) && (client.delegate = self) &&
-	    (request = [OFHTTPRequest requestWithURI: URI]) &&
+	    (request = [OFHTTPRequest requestWithIRI: IRI]) &&
 	    (request.headers =
 	    [OFDictionary dictionaryWithObject: @"5"
 					forKey: @"Content-Length"]) &&

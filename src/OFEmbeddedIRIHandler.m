@@ -19,9 +19,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFEmbeddedURIHandler.h"
+#import "OFEmbeddedIRIHandler.h"
+#import "OFIRI.h"
 #import "OFMemoryStream.h"
-#import "OFURI.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
@@ -71,22 +71,22 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 #endif
 }
 
-@implementation OFEmbeddedURIHandler
-- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
+@implementation OFEmbeddedIRIHandler
+- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OFString *path;
 
-	if (![URI.scheme isEqual: @"embedded"] || URI.host.length > 0 ||
-	    URI.port != nil || URI.user != nil || URI.password != nil ||
-	    URI.query != nil || URI.fragment != nil)
+	if (![IRI.scheme isEqual: @"embedded"] || IRI.host.length > 0 ||
+	    IRI.port != nil || IRI.user != nil || IRI.password != nil ||
+	    IRI.query != nil || IRI.fragment != nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (![mode isEqual: @"r"])
-		@throw [OFOpenItemFailedException exceptionWithURI: URI
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: EROFS];
 
-	if ((path = URI.path) == nil) {
+	if ((path = IRI.path) == nil) {
 		@throw [OFInvalidArgumentException exception];
 	}
 
@@ -110,7 +110,7 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	}
 #endif
 
-	@throw [OFOpenItemFailedException exceptionWithURI: URI
+	@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 						      mode: mode
 						     errNo: ENOENT];
 }

@@ -20,8 +20,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
 @class OFStream;
-@class OFURI;
 
 /**
  * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
@@ -61,24 +61,24 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFLHAArchive object with the specified file.
  *
- * @param URI The URI to the LHA file
+ * @param IRI The IRI to the LHA file
  * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFLHAArchive
  */
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates a URI for accessing a the specified file within the specified
- *	  LHA archive.
+ * @brief Creates an IRI for accessing a the specified file within the
+ *	  specified LHA archive.
  *
  * @param path The path of the file within the archive
- * @param URI The URI of the archive
- * @return A URI for accessing the specified file within the specified LHA
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified LHA
  *	   archive
  */
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -100,13 +100,13 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified file.
  *
- * @param URI The URI to the LHA file
+ * @param IRI The IRI to the LHA file
  * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFLHAArchive
  */
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns the next entry from the LHA archive or `nil` if all entries

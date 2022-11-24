@@ -13,11 +13,11 @@
  * file.
  */
 
-#import "OFURI.h"
+#import "OFIRI.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFURI ()
+@interface OFIRI ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 @end
 

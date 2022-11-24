@@ -428,7 +428,7 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_THREADS
 	[self threadTests];
 #endif
-	[self URITests];
+	[self IRITests];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif

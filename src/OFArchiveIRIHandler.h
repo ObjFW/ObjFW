@@ -13,11 +13,20 @@
  * file.
  */
 
-#import "OFURIHandler.h"
+#import "OFIRIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFHTTPURIHandler: OFURIHandler
+@interface OFArchiveIRIHandler: OFIRIHandler
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFIRI *OFArchiveIRIHandlerIRIForFileInArchive(OFString *, OFString *,
+    OFIRI *);
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

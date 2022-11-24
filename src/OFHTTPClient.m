@@ -25,13 +25,13 @@
 #import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFIRI.h"
 #import "OFKernelEventObserver.h"
 #import "OFNumber.h"
 #import "OFRunLoop.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
-#import "OFURI.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -117,26 +117,26 @@ constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequestMethod method = request.method;
-	OFURI *URI = request.URI;
+	OFIRI *IRI = request.IRI;
 	OFString *path;
-	OFString *user = URI.user, *password = URI.password;
+	OFString *user = IRI.user, *password = IRI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	bool hasContentLength, chunked;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if (URI.path.length > 0)
-		path = URI.percentEncodedPath;
+	if (IRI.path.length > 0)
+		path = IRI.percentEncodedPath;
 	else
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
 	    @"%s %@", OFHTTPRequestMethodName(method), path];
 
-	if (URI.query != nil) {
+	if (IRI.query != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: URI.percentEncodedQuery];
+		[requestString appendString: IRI.percentEncodedQuery];
 	}
 
 	[requestString appendString: @" HTTP/"];
@@ -148,15 +148,15 @@ constructRequestString(OFHTTPRequest *request)
 		headers = [OFMutableDictionary dictionary];
 
 	if ([headers objectForKey: @"Host"] == nil) {
-		OFNumber *port = URI.port;
+		OFNumber *port = IRI.port;
 
 		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%@", URI.percentEncodedHost, port];
+			    @"%@:%@", IRI.percentEncodedHost, port];
 
 			[headers setObject: host forKey: @"Host"];
 		} else
-			[headers setObject: URI.percentEncodedHost
+			[headers setObject: IRI.percentEncodedHost
 				    forKey: @"Host"];
 	}
 
@@ -299,7 +299,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)createResponseWithStreamOrThrow: (OFStream *)stream
 {
-	OFURI *URI = _request.URI;
+	OFIRI *IRI = _request.IRI;
 	OFHTTPClientResponse *response;
 	OFString *connectionHeader;
 	bool keepAlive;
@@ -330,7 +330,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		response.of_keepAlive = true;
 
 		_client->_stream = [stream retain];
-		_client->_lastURI = [URI copy];
+		_client->_lastIRI = [IRI copy];
 		_client->_lastWasHEAD =
 		    (_request.method == OFHTTPRequestMethodHead);
 		_client->_lastResponse = [response retain];
@@ -340,30 +340,30 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	    _status == 303 || _status == 307) &&
 	    (location = [_serverHeaders objectForKey: @"Location"]) != nil) {
 		bool follow = true;
-		OFURI *newURI;
-		OFString *newURIScheme;
+		OFIRI *newIRI;
+		OFString *newIRIScheme;
 
-		newURI = [OFURI URIWithString: location relativeToURI: URI];
-		newURIScheme = newURI.scheme;
+		newIRI = [OFIRI IRIWithString: location relativeToIRI: IRI];
+		newIRIScheme = newIRI.scheme;
 
-		if ([newURIScheme caseInsensitiveCompare: @"http"] !=
+		if ([newIRIScheme caseInsensitiveCompare: @"http"] !=
 		    OFOrderedSame &&
-		    [newURIScheme caseInsensitiveCompare: @"https"] !=
+		    [newIRIScheme caseInsensitiveCompare: @"https"] !=
 		    OFOrderedSame)
 			follow = false;
 
 		if (!_client->_allowsInsecureRedirects &&
-		    [URI.scheme caseInsensitiveCompare: @"https"] ==
+		    [IRI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame &&
-		    [newURIScheme caseInsensitiveCompare: @"http"] ==
+		    [newIRIScheme caseInsensitiveCompare: @"http"] ==
 		    OFOrderedSame)
 			follow = false;
 
 		if (follow && [_client->_delegate respondsToSelector:
-		    @selector(client:shouldFollowRedirectToURI:statusCode:
+		    @selector(client:shouldFollowRedirectToIRI:statusCode:
 		    request:response:)])
 			follow = [_client->_delegate client: _client
-				  shouldFollowRedirectToURI: newURI
+				  shouldFollowRedirectToIRI: newIRI
 						 statusCode: _status
 						    request: _request
 						   response: response];
@@ -378,7 +378,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFMutableDictionary *newHeaders =
 			    [[headers mutableCopy] autorelease];
 
-			if (![newURI.host isEqual: URI.host])
+			if (![newIRI.host isEqual: IRI.host])
 				[newHeaders removeObjectForKey: @"Host"];
 
 			/*
@@ -404,7 +404,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 				newRequest.method = OFHTTPRequestMethodGet;
 			}
 
-			newRequest.URI = newURI;
+			newRequest.IRI = newIRI;
 			newRequest.headers = newHeaders;
 
 			_client->_inProgress = false;
@@ -648,7 +648,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			didCreateTCPSocket: sock
 				   request: _request];
 
-	if ([_request.URI.scheme caseInsensitiveCompare: @"https"] ==
+	if ([_request.IRI.scheme caseInsensitiveCompare: @"https"] ==
 	    OFOrderedSame) {
 		OFTLSStream *stream;
 		@try {
@@ -656,7 +656,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		} @catch (OFNotImplementedException *e) {
 			[self raiseException:
 			    [OFUnsupportedProtocolException
-			    exceptionWithURI: _request.URI]];
+			    exceptionWithIRI: _request.IRI]];
 			return;
 		}
 
@@ -667,7 +667,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 					   request: _request];
 
 		stream.delegate = self;
-		[stream asyncPerformClientHandshakeWithHost: _request.URI.host];
+		[stream asyncPerformClientHandshakeWithHost: _request.IRI.host];
 	} else {
 		sock.delegate = self;
 		[self performSelector: @selector(handleStream:)
@@ -692,15 +692,15 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)start
 {
-	OFURI *URI = _request.URI;
+	OFIRI *IRI = _request.IRI;
 	OFStream *stream;
 
 	/* Can we reuse the last socket? */
 	if (_client->_stream != nil && !_client->_stream.atEndOfStream &&
-	    [_client->_lastURI.scheme isEqual: URI.scheme] &&
-	    [_client->_lastURI.host isEqual: URI.host] &&
-	    (_client->_lastURI.port == URI.port ||
-	    [_client->_lastURI.port isEqual: URI.port]) &&
+	    [_client->_lastIRI.scheme isEqual: IRI.scheme] &&
+	    [_client->_lastIRI.host isEqual: IRI.host] &&
+	    (_client->_lastIRI.port == IRI.port ||
+	    [_client->_lastIRI.port isEqual: IRI.port]) &&
 	    (_client->_lastWasHEAD || _client->_lastResponse.atEndOfStream)) {
 		/*
 		 * Set _stream to nil, so that in case of an error it won't be
@@ -710,8 +710,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		stream = [_client->_stream autorelease];
 		_client->_stream = nil;
 
-		[_client->_lastURI release];
-		_client->_lastURI = nil;
+		[_client->_lastIRI release];
+		_client->_lastIRI = nil;
 
 		[_client->_lastResponse release];
 		_client->_lastResponse = nil;
@@ -728,27 +728,27 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)closeAndReconnect
 {
 	@try {
-		OFURI *URI = _request.URI;
+		OFIRI *IRI = _request.IRI;
 		OFTCPSocket *sock;
 		uint16_t port;
-		OFNumber *URIPort;
+		OFNumber *IRIPort;
 
 		[_client close];
 
 		sock = [OFTCPSocket socket];
 
-		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
+		if ([IRI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame)
 			port = 443;
 		else
 			port = 80;
 
-		URIPort = URI.port;
-		if (URIPort != nil)
-			port = URIPort.unsignedShortValue;
+		IRIPort = IRI.port;
+		if (IRIPort != nil)
+			port = IRIPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: URI.host port: port];
+		[sock asyncConnectToHost: IRI.host port: port];
 	} @catch (id e) {
 		[self raiseException: e];
 	}
@@ -1203,15 +1203,15 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 }
 
 -	       (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirectToURI: (OFURI *)URI
+  shouldFollowRedirectToIRI: (OFIRI *)IRI
 		 statusCode: (short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response
 {
 	if ([_delegate respondsToSelector: @selector(
-	    client:shouldFollowRedirectToURI:statusCode:request:response:)])
+	    client:shouldFollowRedirectToIRI:statusCode:request:response:)])
 		return [_delegate      client: client
-		    shouldFollowRedirectToURI: URI
+		    shouldFollowRedirectToIRI: IRI
 				   statusCode: statusCode
 				      request: request
 				     response: response];
@@ -1267,12 +1267,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		  redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURI *URI = request.URI;
-	OFString *scheme = URI.scheme;
+	OFIRI *IRI = request.IRI;
+	OFString *scheme = IRI.scheme;
 
 	if ([scheme caseInsensitiveCompare: @"http"] != OFOrderedSame &&
 	    [scheme caseInsensitiveCompare: @"https"] != OFOrderedSame)
-		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
+		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	if (_inProgress)
 		@throw [OFAlreadyConnectedException exception];
@@ -1292,8 +1292,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	[_stream release];
 	_stream = nil;
 
-	[_lastURI release];
-	_lastURI = nil;
+	[_lastIRI release];
+	_lastIRI = nil;
 
 	[_lastResponse release];
 	_lastResponse = nil;

@@ -34,7 +34,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFCharacterSet *URIQueryPartAllowedCharacterSet = nil;
+static OFCharacterSet *IRIQueryPartAllowedCharacterSet = nil;
 
 @interface OFDictionary ()
 - (OFString *)
@@ -56,8 +56,8 @@ OF_DIRECT_MEMBERS
 @end
 
 OF_DIRECT_MEMBERS
-@interface OFURIQueryPartAllowedCharacterSet: OFCharacterSet
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet;
+@interface OFIRIQueryPartAllowedCharacterSet: OFCharacterSet
++ (OFCharacterSet *)IRIQueryPartAllowedCharacterSet;
 @end
 
 @implementation OFDictionaryPlaceholder
@@ -139,19 +139,19 @@ OF_DIRECT_MEMBERS
 }
 @end
 
-@implementation OFURIQueryPartAllowedCharacterSet
+@implementation OFIRIQueryPartAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFURIQueryPartAllowedCharacterSet class])
+	if (self != [OFIRIQueryPartAllowedCharacterSet class])
 		return;
 
-	URIQueryPartAllowedCharacterSet =
-	    [[OFURIQueryPartAllowedCharacterSet alloc] init];
+	IRIQueryPartAllowedCharacterSet =
+	    [[OFIRIQueryPartAllowedCharacterSet alloc] init];
 }
 
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet
++ (OFCharacterSet *)IRIQueryPartAllowedCharacterSet
 {
-	return URIQueryPartAllowedCharacterSet;
+	return IRIQueryPartAllowedCharacterSet;
 }
 
 - (instancetype)autorelease

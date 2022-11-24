@@ -18,12 +18,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFURI.h"
+#import "OFIRI.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
-# import "OFFileURIHandler.h"
+# import "OFFileIRIHandler.h"
 #endif
 #import "OFNumber.h"
 #import "OFOnce.h"
@@ -35,25 +35,25 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
-@interface OFURIAllowedCharacterSetBase: OFCharacterSet
+@interface OFIRIAllowedCharacterSetBase: OFCharacterSet
 @end
 
-@interface OFURIAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRIAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
-@interface OFURISchemeAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRISchemeAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
-@interface OFURIPathAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRIPathAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
-@interface OFURIQueryAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRIQueryAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
-@interface OFURIQueryKeyValueAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRIQueryKeyValueAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
-@interface OFURIFragmentAllowedCharacterSet: OFURIAllowedCharacterSetBase
+@interface OFIRIFragmentAllowedCharacterSet: OFIRIAllowedCharacterSetBase
 @end
 
 OF_DIRECT_MEMBERS
@@ -66,58 +66,58 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithCharacterSet: (OFCharacterSet *)characterSet;
 @end
 
-static OFCharacterSet *URIAllowedCharacterSet = nil;
-static OFCharacterSet *URISchemeAllowedCharacterSet = nil;
-static OFCharacterSet *URIPathAllowedCharacterSet = nil;
-static OFCharacterSet *URIQueryAllowedCharacterSet = nil;
-static OFCharacterSet *URIQueryKeyValueAllowedCharacterSet = nil;
-static OFCharacterSet *URIFragmentAllowedCharacterSet = nil;
+static OFCharacterSet *IRIAllowedCharacterSet = nil;
+static OFCharacterSet *IRISchemeAllowedCharacterSet = nil;
+static OFCharacterSet *IRIPathAllowedCharacterSet = nil;
+static OFCharacterSet *IRIQueryAllowedCharacterSet = nil;
+static OFCharacterSet *IRIQueryKeyValueAllowedCharacterSet = nil;
+static OFCharacterSet *IRIFragmentAllowedCharacterSet = nil;
 
-static OFOnceControl URIAllowedCharacterSetOnce = OFOnceControlInitValue;
+static OFOnceControl IRIAllowedCharacterSetOnce = OFOnceControlInitValue;
 
 static void
-initURIAllowedCharacterSet(void)
+initIRIAllowedCharacterSet(void)
 {
-	URIAllowedCharacterSet = [[OFURIAllowedCharacterSet alloc] init];
+	IRIAllowedCharacterSet = [[OFIRIAllowedCharacterSet alloc] init];
 }
 
 static void
-initURISchemeAllowedCharacterSet(void)
+initIRISchemeAllowedCharacterSet(void)
 {
-	URISchemeAllowedCharacterSet =
-	    [[OFURISchemeAllowedCharacterSet alloc] init];
+	IRISchemeAllowedCharacterSet =
+	    [[OFIRISchemeAllowedCharacterSet alloc] init];
 }
 
 static void
-initURIPathAllowedCharacterSet(void)
+initIRIPathAllowedCharacterSet(void)
 {
-	URIPathAllowedCharacterSet =
-	    [[OFURIPathAllowedCharacterSet alloc] init];
+	IRIPathAllowedCharacterSet =
+	    [[OFIRIPathAllowedCharacterSet alloc] init];
 }
 
 static void
-initURIQueryAllowedCharacterSet(void)
+initIRIQueryAllowedCharacterSet(void)
 {
-	URIQueryAllowedCharacterSet =
-	    [[OFURIQueryAllowedCharacterSet alloc] init];
+	IRIQueryAllowedCharacterSet =
+	    [[OFIRIQueryAllowedCharacterSet alloc] init];
 }
 
 static void
-initURIQueryKeyValueAllowedCharacterSet(void)
+initIRIQueryKeyValueAllowedCharacterSet(void)
 {
-	URIQueryKeyValueAllowedCharacterSet =
-	    [[OFURIQueryKeyValueAllowedCharacterSet alloc] init];
+	IRIQueryKeyValueAllowedCharacterSet =
+	    [[OFIRIQueryKeyValueAllowedCharacterSet alloc] init];
 }
 
 static void
-initURIFragmentAllowedCharacterSet(void)
+initIRIFragmentAllowedCharacterSet(void)
 {
-	URIFragmentAllowedCharacterSet =
-	    [[OFURIFragmentAllowedCharacterSet alloc] init];
+	IRIFragmentAllowedCharacterSet =
+	    [[OFIRIFragmentAllowedCharacterSet alloc] init];
 }
 
 bool
-OFURIIsIPv6Host(OFString *host)
+OFIRIIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
@@ -150,7 +150,7 @@ isUnicodePrivate(OFUnichar character)
 	return false;
 }
 
-@implementation OFURIAllowedCharacterSetBase
+@implementation OFIRIAllowedCharacterSetBase
 - (instancetype)autorelease
 {
 	return self;
@@ -171,7 +171,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURIAllowedCharacterSet
+@implementation OFIRIAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -203,7 +203,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURISchemeAllowedCharacterSet
+@implementation OFIRISchemeAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -220,7 +220,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURIPathAllowedCharacterSet
+@implementation OFIRIPathAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -255,7 +255,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURIQueryAllowedCharacterSet
+@implementation OFIRIQueryAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -291,7 +291,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURIQueryKeyValueAllowedCharacterSet
+@implementation OFIRIQueryKeyValueAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -325,7 +325,7 @@ isUnicodePrivate(OFUnichar character)
 }
 @end
 
-@implementation OFURIFragmentAllowedCharacterSet
+@implementation OFIRIFragmentAllowedCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
@@ -394,7 +394,7 @@ isUnicodePrivate(OFUnichar character)
 @end
 
 void
-OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
+OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
     bool allowPercent)
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -411,103 +411,101 @@ OFURIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 	objc_autoreleasePoolPop(pool);
 }
 
-@implementation OFCharacterSet (URICharacterSets)
-+ (OFCharacterSet *)URISchemeAllowedCharacterSet
+@implementation OFCharacterSet (IRICharacterSets)
++ (OFCharacterSet *)IRISchemeAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURISchemeAllowedCharacterSet);
+	OFOnce(&onceControl, initIRISchemeAllowedCharacterSet);
 
-	return URISchemeAllowedCharacterSet;
+	return IRISchemeAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIHostAllowedCharacterSet
++ (OFCharacterSet *)IRIHostAllowedCharacterSet
 {
-	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
+	OFOnce(&IRIAllowedCharacterSetOnce, initIRIAllowedCharacterSet);
 
-	return URIAllowedCharacterSet;
+	return IRIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIUserAllowedCharacterSet
++ (OFCharacterSet *)IRIUserAllowedCharacterSet
 {
-	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
+	OFOnce(&IRIAllowedCharacterSetOnce, initIRIAllowedCharacterSet);
 
-	return URIAllowedCharacterSet;
+	return IRIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIPasswordAllowedCharacterSet
++ (OFCharacterSet *)IRIPasswordAllowedCharacterSet
 {
-	OFOnce(&URIAllowedCharacterSetOnce, initURIAllowedCharacterSet);
+	OFOnce(&IRIAllowedCharacterSetOnce, initIRIAllowedCharacterSet);
 
-	return URIAllowedCharacterSet;
+	return IRIAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIPathAllowedCharacterSet
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURIPathAllowedCharacterSet);
-
-	return URIPathAllowedCharacterSet;
-}
-
-+ (OFCharacterSet *)URIQueryAllowedCharacterSet
++ (OFCharacterSet *)IRIPathAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURIQueryAllowedCharacterSet);
+	OFOnce(&onceControl, initIRIPathAllowedCharacterSet);
 
-	return URIQueryAllowedCharacterSet;
+	return IRIPathAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIQueryKeyValueAllowedCharacterSet
++ (OFCharacterSet *)IRIQueryAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURIQueryKeyValueAllowedCharacterSet);
+	OFOnce(&onceControl, initIRIQueryAllowedCharacterSet);
 
-	return URIQueryKeyValueAllowedCharacterSet;
+	return IRIQueryAllowedCharacterSet;
 }
 
-+ (OFCharacterSet *)URIFragmentAllowedCharacterSet
++ (OFCharacterSet *)IRIQueryKeyValueAllowedCharacterSet
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initURIFragmentAllowedCharacterSet);
+	OFOnce(&onceControl, initIRIQueryKeyValueAllowedCharacterSet);
 
-	return URIFragmentAllowedCharacterSet;
+	return IRIQueryKeyValueAllowedCharacterSet;
+}
+
++ (OFCharacterSet *)IRIFragmentAllowedCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initIRIFragmentAllowedCharacterSet);
+
+	return IRIFragmentAllowedCharacterSet;
 }
 @end
 
-@implementation OFURI
-+ (instancetype)URI
+@implementation OFIRI
++ (instancetype)IRI
 {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)URIWithString: (OFString *)string
++ (instancetype)IRIWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ (instancetype)URIWithString: (OFString *)string
-		relativeToURI: (OFURI *)URI
++ (instancetype)IRIWithString: (OFString *)string relativeToIRI: (OFIRI *)IRI
 {
 	return [[[self alloc] initWithString: string
-			       relativeToURI: URI] autorelease];
+			       relativeToIRI: IRI] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)fileURIWithPath: (OFString *)path
++ (instancetype)fileIRIWithPath: (OFString *)path
 {
-	return [[[self alloc] initFileURIWithPath: path] autorelease];
+	return [[[self alloc] initFileIRIWithPath: path] autorelease];
 }
 
-+ (instancetype)fileURIWithPath: (OFString *)path
-		    isDirectory: (bool)isDirectory
++ (instancetype)fileIRIWithPath: (OFString *)path isDirectory: (bool)isDirectory
 {
-	return [[[self alloc] initFileURIWithPath: path
+	return [[[self alloc] initFileIRIWithPath: path
 				      isDirectory: isDirectory] autorelease];
 }
 #endif
 
 static void
-parseUserInfo(OFURI *self, const char *UTF8String, size_t length)
+parseUserInfo(OFIRI *self, const char *UTF8String, size_t length)
 {
 	const char *colon;
 
@@ -519,19 +517,19 @@ parseUserInfo(OFURI *self, const char *UTF8String, size_t length)
 		    initWithUTF8String: colon + 1
 				length: length - (colon - UTF8String) - 1];
 
-		OFURIVerifyIsEscaped(self->_percentEncodedPassword,
-		    [OFCharacterSet URIPasswordAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(self->_percentEncodedPassword,
+		    [OFCharacterSet IRIPasswordAllowedCharacterSet], true);
 	} else
 		self->_percentEncodedUser = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: length];
 
-	OFURIVerifyIsEscaped(self->_percentEncodedUser,
-	    [OFCharacterSet URIUserAllowedCharacterSet], true);
+	OFIRIVerifyIsEscaped(self->_percentEncodedUser,
+	    [OFCharacterSet IRIUserAllowedCharacterSet], true);
 }
 
 static void
-parseHostPort(OFURI *self, const char *UTF8String, size_t length)
+parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 {
 	OFString *portString;
 
@@ -572,8 +570,8 @@ parseHostPort(OFURI *self, const char *UTF8String, size_t length)
 			length = 0;
 		}
 
-		OFURIVerifyIsEscaped(self->_percentEncodedHost,
-		    [OFCharacterSet URIHostAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(self->_percentEncodedHost,
+		    [OFCharacterSet IRIHostAllowedCharacterSet], true);
 	}
 
 	if (length == 0)
@@ -599,7 +597,7 @@ parseHostPort(OFURI *self, const char *UTF8String, size_t length)
 }
 
 static size_t
-parseAuthority(OFURI *self, const char *UTF8String, size_t length)
+parseAuthority(OFIRI *self, const char *UTF8String, size_t length)
 {
 	size_t ret;
 	const char *slash, *at;
@@ -632,8 +630,8 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: fragment + 1
 				  length: length - (fragment - UTF8String) - 1];
 
-		OFURIVerifyIsEscaped(*fragmentString,
-		    [OFCharacterSet URIQueryAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(*fragmentString,
+		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
 	}
@@ -643,8 +641,8 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: query + 1
 				  length: length - (query - UTF8String) - 1];
 
-		OFURIVerifyIsEscaped(*queryString,
-		    [OFCharacterSet URIFragmentAllowedCharacterSet], true);
+		OFIRIVerifyIsEscaped(*queryString,
+		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = query - UTF8String;
 	}
@@ -652,8 +650,8 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 	*pathString = [OFString stringWithUTF8String: UTF8String
 					      length: length];
 
-	OFURIVerifyIsEscaped(*pathString,
-	    [OFCharacterSet URIPathAllowedCharacterSet], true);
+	OFIRIVerifyIsEscaped(*pathString,
+	    [OFCharacterSet IRIPathAllowedCharacterSet], true);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -675,8 +673,8 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 						    length: colon - UTF8String]
 		    lowercaseString] copy];
 
-		OFURIVerifyIsEscaped(_scheme,
-		    [OFCharacterSet URISchemeAllowedCharacterSet], false);
+		OFIRIVerifyIsEscaped(_scheme,
+		    [OFCharacterSet IRISchemeAllowedCharacterSet], false);
 
 		length -= colon - UTF8String + 1;
 		UTF8String = colon + 1;
@@ -764,7 +762,7 @@ merge(OFString *base, OFString *path)
 	return [components componentsJoinedByString: @"/"];
 }
 
-- (instancetype)initWithString: (OFString *)string relativeToURI: (OFURI *)URI
+- (instancetype)initWithString: (OFString *)string relativeToIRI: (OFIRI *)IRI
 {
 	bool absolute;
 
@@ -787,7 +785,7 @@ merge(OFString *base, OFString *path)
 		bool hasAuthority = false;
 		OFString *path, *query = nil, *fragment = nil;
 
-		_scheme = [URI->_scheme copy];
+		_scheme = [IRI->_scheme copy];
 
 		if (length >= 2 && UTF8String[0] == '/' &&
 		    UTF8String[1] == '/') {
@@ -807,11 +805,11 @@ merge(OFString *base, OFString *path)
 			if (length > 0)
 				OFEnsure(UTF8String[0] == '/');
 		} else {
-			_percentEncodedHost = [URI->_percentEncodedHost copy];
-			_port = [URI->_port copy];
-			_percentEncodedUser = [URI->_percentEncodedUser copy];
+			_percentEncodedHost = [IRI->_percentEncodedHost copy];
+			_port = [IRI->_port copy];
+			_percentEncodedUser = [IRI->_percentEncodedUser copy];
 			_percentEncodedPassword =
-			    [URI->_percentEncodedPassword copy];
+			    [IRI->_percentEncodedPassword copy];
 		}
 
 		parsePathQueryFragment(UTF8String, length,
@@ -824,16 +822,16 @@ merge(OFString *base, OFString *path)
 		} else {
 			if (path.length == 0) {
 				_percentEncodedPath =
-				    [URI->_percentEncodedPath copy];
+				    [IRI->_percentEncodedPath copy];
 				_percentEncodedQuery = (query != nil
 				    ? [query copy]
-				    : [URI->_percentEncodedQuery copy]);
+				    : [IRI->_percentEncodedQuery copy]);
 			} else {
 				if ([path hasPrefix: @"/"])
 					_percentEncodedPath = [path copy];
 				else
 					_percentEncodedPath = [merge(
-					    URI->_percentEncodedPath, path)
+					    IRI->_percentEncodedPath, path)
 					    copy];
 
 				_percentEncodedQuery = [query copy];
@@ -850,7 +848,7 @@ merge(OFString *base, OFString *path)
 }
 
 #ifdef OF_HAVE_FILES
-- (instancetype)initFileURIWithPath: (OFString *)path
+- (instancetype)initFileIRIWithPath: (OFString *)path
 {
 	bool isDirectory;
 
@@ -863,12 +861,12 @@ merge(OFString *base, OFString *path)
 		@throw e;
 	}
 
-	self = [self initFileURIWithPath: path isDirectory: isDirectory];
+	self = [self initFileIRIWithPath: path isDirectory: isDirectory];
 
 	return self;
 }
 
-- (instancetype)initFileURIWithPath: (OFString *)path
+- (instancetype)initFileIRIWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory
 {
 	self = [super init];
@@ -886,7 +884,7 @@ merge(OFString *base, OFString *path)
 			path = path.stringByStandardizingPath;
 		}
 
-		path = [path of_pathToURIPathWithPercentEncodedHost:
+		path = [path of_pathToIRIPathWithPercentEncodedHost:
 		    &percentEncodedHost];
 		_percentEncodedHost = [percentEncodedHost copy];
 
@@ -896,7 +894,7 @@ merge(OFString *base, OFString *path)
 		_scheme = @"file";
 		_percentEncodedPath = [[path
 		    stringByAddingPercentEncodingWithAllowedCharacters:
-		    [OFCharacterSet URIPathAllowedCharacterSet]] copy];
+		    [OFCharacterSet IRIPathAllowedCharacterSet]] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -957,36 +955,36 @@ merge(OFString *base, OFString *path)
 
 - (bool)isEqual: (id)object
 {
-	OFURI *URI;
+	OFIRI *IRI;
 
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFURI class]])
+	if (![object isKindOfClass: [OFIRI class]])
 		return false;
 
-	URI = object;
+	IRI = object;
 
-	if (![URI->_scheme isEqual: _scheme])
+	if (![IRI->_scheme isEqual: _scheme])
 		return false;
-	if (URI->_percentEncodedHost != _percentEncodedHost &&
-	    ![URI->_percentEncodedHost isEqual: _percentEncodedHost])
+	if (IRI->_percentEncodedHost != _percentEncodedHost &&
+	    ![IRI->_percentEncodedHost isEqual: _percentEncodedHost])
 		return false;
-	if (URI->_port != _port && ![URI->_port isEqual: _port])
+	if (IRI->_port != _port && ![IRI->_port isEqual: _port])
 		return false;
-	if (URI->_percentEncodedUser != _percentEncodedUser &&
-	    ![URI->_percentEncodedUser isEqual: _percentEncodedUser])
+	if (IRI->_percentEncodedUser != _percentEncodedUser &&
+	    ![IRI->_percentEncodedUser isEqual: _percentEncodedUser])
 		return false;
-	if (URI->_percentEncodedPassword != _percentEncodedPassword &&
-	    ![URI->_percentEncodedPassword isEqual: _percentEncodedPassword])
+	if (IRI->_percentEncodedPassword != _percentEncodedPassword &&
+	    ![IRI->_percentEncodedPassword isEqual: _percentEncodedPassword])
 		return false;
-	if (![URI->_percentEncodedPath isEqual: _percentEncodedPath])
+	if (![IRI->_percentEncodedPath isEqual: _percentEncodedPath])
 		return false;
-	if (URI->_percentEncodedQuery != _percentEncodedQuery &&
-	    ![URI->_percentEncodedQuery isEqual: _percentEncodedQuery])
+	if (IRI->_percentEncodedQuery != _percentEncodedQuery &&
+	    ![IRI->_percentEncodedQuery isEqual: _percentEncodedQuery])
 		return false;
-	if (URI->_percentEncodedFragment != _percentEncodedFragment &&
-	    ![URI->_percentEncodedFragment isEqual: _percentEncodedFragment])
+	if (IRI->_percentEncodedFragment != _percentEncodedFragment &&
+	    ![IRI->_percentEncodedFragment isEqual: _percentEncodedFragment])
 		return false;
 
 	return true;
@@ -1024,7 +1022,7 @@ merge(OFString *base, OFString *path)
 		OFString *host = [_percentEncodedHost substringWithRange:
 		    OFMakeRange(1, _percentEncodedHost.length - 2)];
 
-		if (!OFURIIsIPv6Host(host))
+		if (!OFIRIIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;
@@ -1085,7 +1083,7 @@ merge(OFString *base, OFString *path)
 #ifdef OF_HAVE_FILES
 	if (isFile) {
 		OFString *path = [_percentEncodedPath
-		    of_URIPathToPathWithPercentEncodedHost: nil];
+		    of_IRIPathToPathWithPercentEncodedHost: nil];
 		ret = [[path.pathComponents mutableCopy] autorelease];
 
 		if (![ret.firstObject isEqual: @"/"])
@@ -1106,7 +1104,7 @@ merge(OFString *base, OFString *path)
 #ifdef OF_HAVE_FILES
 		if (isFile)
 			component =
-			    [component of_pathComponentToURIPathComponent];
+			    [component of_pathComponentToIRIPathComponent];
 #endif
 
 		component = component.stringByRemovingPercentEncoding;
@@ -1222,7 +1220,7 @@ merge(OFString *base, OFString *path)
 
 - (id)mutableCopy
 {
-	OFURI *copy = [[OFMutableURI alloc] initWithScheme: _scheme];
+	OFIRI *copy = [[OFMutableIRI alloc] initWithScheme: _scheme];
 
 	@try {
 		copy->_percentEncodedHost = [_percentEncodedHost copy];
@@ -1288,7 +1286,7 @@ merge(OFString *base, OFString *path)
 		@throw [OFInvalidFormatException exception];
 
 	path = [self.path
-	    of_URIPathToPathWithPercentEncodedHost: _percentEncodedHost];
+	    of_IRIPathToPathWithPercentEncodedHost: _percentEncodedHost];
 
 	[path retain];
 
@@ -1298,29 +1296,29 @@ merge(OFString *base, OFString *path)
 }
 #endif
 
-- (OFURI *)URIByAppendingPathComponent: (OFString *)component
+- (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 {
-	OFMutableURI *URI = [[self mutableCopy] autorelease];
-	[URI appendPathComponent: component];
-	[URI makeImmutable];
-	return URI;
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI appendPathComponent: component];
+	[IRI makeImmutable];
+	return IRI;
 }
 
-- (OFURI *)URIByAppendingPathComponent: (OFString *)component
+- (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableURI *URI = [[self mutableCopy] autorelease];
-	[URI appendPathComponent: component isDirectory: isDirectory];
-	[URI makeImmutable];
-	return URI;
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI appendPathComponent: component isDirectory: isDirectory];
+	[IRI makeImmutable];
+	return IRI;
 }
 
-- (OFURI *)URIByStandardizingPath
+- (OFIRI *)IRIByStandardizingPath
 {
-	OFMutableURI *URI = [[self mutableCopy] autorelease];
-	[URI standardizePath];
-	[URI makeImmutable];
-	return URI;
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI standardizePath];
+	[IRI makeImmutable];
+	return IRI;
 }
 
 - (OFString *)description

@@ -20,9 +20,9 @@
 #import "OFLocale.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -362,9 +362,9 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.decimalSeparator;
 }
 
-+ (void)addLocalizationDirectoryURI: (OFURI *)URI
++ (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
-	[currentLocale addLocalizationDirectoryURI: URI];
+	[currentLocale addLocalizationDirectoryIRI: IRI];
 }
 
 - (instancetype)init
@@ -493,10 +493,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	[super dealloc];
 }
 
-- (void)addLocalizationDirectoryURI: (OFURI *)URI
+- (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
 	void *pool;
-	OFURI *mapURI, *localizationURI;
+	OFIRI *mapIRI, *localizationIRI;
 	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
@@ -505,9 +505,9 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	pool = objc_autoreleasePoolPush();
 
-	mapURI = [URI URIByAppendingPathComponent: @"localizations.json"];
+	mapIRI = [IRI IRIByAppendingPathComponent: @"localizations.json"];
 	@try {
-		map = [[OFString stringWithContentsOfURI: mapURI]
+		map = [[OFString stringWithContentsOfIRI: mapIRI]
 		     objectByParsingJSON];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
@@ -531,11 +531,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		return;
 	}
 
-	localizationURI = [URI URIByAppendingPathComponent:
+	localizationIRI = [IRI IRIByAppendingPathComponent:
 	    [localizationFile stringByAppendingString: @".json"]];
 
-	[_localizedStrings addObject: [[OFString stringWithContentsOfURI:
-	    localizationURI] objectByParsingJSON]];
+	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:
+	    localizationIRI] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }

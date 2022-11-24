@@ -13,18 +13,18 @@
  * file.
  */
 
-#import "OFURIHandler.h"
+#import "OFIRIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFEmbeddedURIHandler: OFURIHandler
+@interface OFEmbeddedIRIHandler: OFIRIHandler
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /**
- * @brief Register a file for the `embedded:` URI scheme.
+ * @brief Register a file for the `embedded:` IRI scheme.
  *
  * Usually, you should not use the directly, but rather generate a source file
  * for a file to be embedded using the `objfw-embed` tool.

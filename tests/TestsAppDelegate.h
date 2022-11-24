@@ -111,6 +111,10 @@
 - (void)INIFileTests;
 @end
 
+@interface TestsAppDelegate (OFIRITests)
+- (void)IRITests;
+@end
+
 @interface TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests;
 @end
@@ -261,10 +265,6 @@
 
 @interface TestsAppDelegate (OFUNIXStreamSocketTests)
 - (void)UNIXStreamSocketTests;
-@end
-
-@interface TestsAppDelegate (OFURITests)
-- (void)URITests;
 @end
 
 @interface TestsAppDelegate (OFValueTests)

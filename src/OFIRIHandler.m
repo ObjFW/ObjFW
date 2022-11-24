@@ -15,27 +15,27 @@
 
 #include "config.h"
 
-#import "OFURIHandler.h"
+#import "OFIRIHandler.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
-#import "OFURI.h"
 
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
 
-#import "OFArchiveURIHandler.h"
-#import "OFEmbeddedURIHandler.h"
+#import "OFArchiveIRIHandler.h"
+#import "OFEmbeddedIRIHandler.h"
 #ifdef OF_HAVE_FILES
-# import "OFFileURIHandler.h"
+# import "OFFileIRIHandler.h"
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-# import "OFHTTPURIHandler.h"
+# import "OFHTTPIRIHandler.h"
 #endif
 
 #import "OFUnsupportedProtocolException.h"
 
-static OFMutableDictionary OF_GENERIC(OFString *, OFURIHandler *) *handlers;
+static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
 
@@ -46,12 +46,12 @@ releaseMutex(void)
 }
 #endif
 
-@implementation OFURIHandler
+@implementation OFIRIHandler
 @synthesize scheme = _scheme;
 
 + (void)initialize
 {
-	if (self != [OFURIHandler class])
+	if (self != [OFIRIHandler class])
 		return;
 
 	handlers = [[OFMutableDictionary alloc] init];
@@ -60,19 +60,19 @@ releaseMutex(void)
 	atexit(releaseMutex);
 #endif
 
-	[self registerClass: [OFEmbeddedURIHandler class]
+	[self registerClass: [OFEmbeddedIRIHandler class]
 		  forScheme: @"embedded"];
 #ifdef OF_HAVE_FILES
-	[self registerClass: [OFFileURIHandler class] forScheme: @"file"];
+	[self registerClass: [OFFileIRIHandler class] forScheme: @"file"];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-	[self registerClass: [OFHTTPURIHandler class] forScheme: @"http"];
-	[self registerClass: [OFHTTPURIHandler class] forScheme: @"https"];
+	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"http"];
+	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"https"];
 #endif
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"gzip"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"lha"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"tar"];
-	[self registerClass: [OFArchiveURIHandler class] forScheme: @"zip"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"gzip"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"lha"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"tar"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zip"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme
@@ -81,7 +81,7 @@ releaseMutex(void)
 	[mutex lock];
 	@try {
 #endif
-		OFURIHandler *handler;
+		OFIRIHandler *handler;
 
 		if ([handlers objectForKey: scheme] != nil)
 			return false;
@@ -101,15 +101,15 @@ releaseMutex(void)
 	return true;
 }
 
-+ (OFURIHandler *)handlerForURI: (OFURI *)URI
++ (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI
 {
-	OF_KINDOF(OFURIHandler *) handler;
+	OF_KINDOF(OFIRIHandler *) handler;
 
 #ifdef OF_HAVE_THREADS
 	[mutex lock];
 	@try {
 #endif
-		handler = [handlers objectForKey: URI.scheme];
+		handler = [handlers objectForKey: IRI.scheme];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
@@ -117,14 +117,14 @@ releaseMutex(void)
 #endif
 
 	if (handler == nil)
-		@throw [OFUnsupportedProtocolException exceptionWithURI: URI];
+		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	return handler;
 }
 
-+ (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
++ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[self handlerForURI: URI] openItemAtURI: URI mode: mode];
+	return [[self handlerForIRI: IRI] openItemAtIRI: IRI mode: mode];
 }
 
 - (instancetype)init
@@ -153,63 +153,63 @@ releaseMutex(void)
 	[super dealloc];
 }
 
-- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
+- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI
+- (OFFileAttributes)attributesOfItemAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)fileExistsAtURI: (OFURI *)URI
+- (bool)fileExistsAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)directoryExistsAtURI: (OFURI *)URI
+- (bool)directoryExistsAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)createDirectoryAtURI: (OFURI *)URI
+- (void)createDirectoryAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI
+- (OFArray OF_GENERIC(OFIRI *) *)contentsOfDirectoryAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)removeItemAtURI: (OFURI *)URI
+- (void)removeItemAtIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination
+- (void)linkItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)createSymbolicLinkAtURI: (OFURI *)destination
+- (void)createSymbolicLinkAtIRI: (OFIRI *)destination
 	    withDestinationPath: (OFString *)source
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)copyItemAtURI: (OFURI *)source toURI: (OFURI *)destination
+- (bool)copyItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination
 {
 	return false;
 }
 
-- (bool)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination
+- (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination
 {
 	return false;
 }

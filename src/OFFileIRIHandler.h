@@ -13,25 +13,12 @@
  * file.
  */
 
-#include "config.h"
+#import "OFIRIHandler.h"
 
-#import "OFHTTPURIHandler.h"
-#import "OFHTTPClient.h"
-#import "OFHTTPRequest.h"
-#import "OFHTTPResponse.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OFHTTPURIHandler
-- (OFStream *)openItemAtURI: (OFURI *)URI mode: (OFString *)mode
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClient *client = [OFHTTPClient client];
-	OFHTTPRequest *request = [OFHTTPRequest requestWithURI: URI];
-	OFHTTPResponse *response = [client performRequest: request];
-
-	[response retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [response autorelease];
-}
+@interface OFFileIRIHandler: OFIRIHandler
++ (bool)of_directoryExistsAtPath: (OFString *)path OF_DIRECT;
 @end
+
+OF_ASSUME_NONNULL_END

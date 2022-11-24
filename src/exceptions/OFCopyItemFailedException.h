@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFCopyItemFailedException \
@@ -27,20 +27,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCopyItemFailedException: OFException
 {
-	OFURI *_sourceURI, *_destinationURI;
+	OFIRI *_sourceIRI, *_destinationIRI;
 	int _errNo;
 	OF_RESERVE_IVARS(OFCopyItemFailedException, 4)
 }
 
 /**
- * @brief The URI of the source item.
+ * @brief The IRI of the source item.
  */
-@property (readonly, nonatomic) OFURI *sourceURI;
+@property (readonly, nonatomic) OFIRI *sourceIRI;
 
 /**
- * @brief The destination URI.
+ * @brief The destination IRI.
  */
-@property (readonly, nonatomic) OFURI *destinationURI;
+@property (readonly, nonatomic) OFIRI *destinationIRI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -50,13 +50,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased copy item failed exception.
  *
- * @param sourceURI The URI of the source item
- * @param destinationURI The destination URI
+ * @param sourceIRI The IRI of the source item
+ * @param destinationIRI The destination IRI
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased copy item failed exception
  */
-+ (instancetype)exceptionWithSourceURI: (OFURI *)sourceURI
-			destinationURI: (OFURI *)destinationURI
++ (instancetype)exceptionWithSourceIRI: (OFIRI *)sourceIRI
+			destinationIRI: (OFIRI *)destinationIRI
 				 errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
@@ -64,13 +64,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an already allocated copy item failed exception.
  *
- * @param sourceURI The URI of the source item
- * @param destinationURI The destination URI
+ * @param sourceIRI The IRI of the source item
+ * @param destinationIRI The destination IRI
  * @param errNo The errno of the error that occurred
  * @return An initialized copy item failed exception
  */
-- (instancetype)initWithSourceURI: (OFURI *)sourceURI
-		   destinationURI: (OFURI *)destinationURI
+- (instancetype)initWithSourceIRI: (OFIRI *)sourceIRI
+		   destinationIRI: (OFIRI *)destinationIRI
 			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

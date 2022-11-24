@@ -85,25 +85,25 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates a URI for accessing a the specified file within the specified
- *	  ZIP archive.
+ * @brief Creates an IRI for accessing a the specified file within the
+ *	  specified ZIP archive.
  *
  * @param path The path of the file within the archive
- * @param URI The URI of the archive
- * @return A URI for accessing the specified file within the specified ZIP
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified ZIP
  *	   archive
  */
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -126,14 +126,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.

@@ -51,10 +51,10 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOnce.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
@@ -246,13 +246,13 @@ initOperatingSystemVersion(void)
 }
 
 #ifdef OF_NINTENDO_SWITCH
-static OFURI *tmpFSURI = nil;
+static OFIRI *tmpFSIRI = nil;
 
 static void
 mountTmpFS(void)
 {
 	if (R_SUCCEEDED(fsdevMountTemporaryStorage("tmpfs")))
-		tmpFSURI = [[OFURI alloc] initFileURIWithPath: @"tmpfs:/"
+		tmpFSIRI = [[OFIRI alloc] initFileIRIWithPath: @"tmpfs:/"
 						  isDirectory: true];
 }
 #endif
@@ -368,7 +368,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return operatingSystemVersion;
 }
 
-+ (OFURI *)userDataURI
++ (OFIRI *)userDataIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -410,7 +410,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	[path makeImmutable];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -418,7 +418,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: appData isDirectory: true];
+	return [OFIRI fileIRIWithPath: appData isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -426,19 +426,19 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"PROGDIR:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
-	OFURI *URI;
+	OFIRI *IRI;
 	void *pool;
 
 	if ((var = [env objectForKey: @"XDG_DATA_HOME"]) != nil &&
 	    var.length > 0)
-		return [OFURI fileURIWithPath: var isDirectory: true];
+		return [OFIRI fileIRIWithPath: var isDirectory: true];
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		return nil;
@@ -447,18 +447,18 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	var = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    var, @".local", @"share", nil]];
-	URI = [[OFURI alloc] initFileURIWithPath: var isDirectory: true];
+	IRI = [[OFIRI alloc] initFileIRIWithPath: var isDirectory: true];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [URI autorelease];
+	return [IRI autorelease];
 # endif
 #else
 	return nil;
 #endif
 }
 
-+ (OFURI *)userConfigURI
++ (OFIRI *)userConfigIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -500,7 +500,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	[path appendString: @"/Preferences"];
 	[path makeImmutable];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -508,7 +508,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: appData isDirectory: true];
+	return [OFIRI fileIRIWithPath: appData isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -516,31 +516,31 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"PROGDIR:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
 
 	if ((var = [env objectForKey: @"XDG_CONFIG_HOME"]) != nil &&
 	    var.length > 0)
-		return [OFURI fileURIWithPath: var isDirectory: true];
+		return [OFIRI fileIRIWithPath: var isDirectory: true];
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		return nil;
 
 	var = [var stringByAppendingPathComponent: @".config"];
 
-	return [OFURI fileURIWithPath: var isDirectory: true];
+	return [OFIRI fileIRIWithPath: var isDirectory: true];
 # endif
 #else
 	return nil;
 #endif
 }
 
-+ (OFURI *)temporaryDirectoryURI
++ (OFIRI *)temporaryDirectoryIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -549,13 +549,13 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFString *path;
 
 	if ((length = confstr(_CS_DARWIN_USER_TEMP_DIR, buffer, PATH_MAX)) == 0)
-		return [OFURI fileURIWithPath: @"/tmp" isDirectory: true];
+		return [OFIRI fileIRIWithPath: @"/tmp" isDirectory: true];
 
 	path = [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]
 				    length: length - 1];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFString *path;
 
@@ -576,7 +576,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 					  encoding: [OFLocale encoding]];
 	}
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -584,32 +584,32 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"T:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"T:" isDirectory: true];
 # elif defined(OF_MSDOS)
 	OFString *path = [[OFApplication environment] objectForKey: @"TEMP"];
 
 	if (path == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_MINT)
-	return [OFURI fileURIWithPath: @"u:\\tmp" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"u:\\tmp" isDirectory: true];
 # elif defined(OF_NINTENDO_SWITCH)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, mountTmpFS);
 
-	return tmpFSURI;
+	return tmpFSIRI;
 # else
 	OFString *path =
 	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
 
 	if (path != nil)
-		return [OFURI fileURIWithPath: path];
+		return [OFIRI fileIRIWithPath: path];
 
-	return [OFURI fileURIWithPath: @"/tmp"];
+	return [OFIRI fileIRIWithPath: @"/tmp"];
 # endif
 #else
 	return nil;

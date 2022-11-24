@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFOpenItemFailedException \
@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFOpenItemFailedException: OFException
 {
-	OFURI *_Nullable _URI;
+	OFIRI *_Nullable _IRI;
 	OFString *_Nullable _path;
 	OFString *_mode;
 	int _errNo;
@@ -35,9 +35,9 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The URI of the item which could not be opened.
+ * @brief The IRI of the item which could not be opened.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFURI *URI;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The path of the item which could not be opened.
@@ -57,12 +57,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased open item failed exception.
  *
- * @param URI The URI of the item which could not be opened
+ * @param IRI The IRI of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
  */
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 			    mode: (nullable OFString *)mode
 			   errNo: (int)errNo;
 
@@ -83,12 +83,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param URI The URI of the item which could not be opened
+ * @param IRI The IRI of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		       mode: (nullable OFString *)mode
 		      errNo: (int)errNo;
 

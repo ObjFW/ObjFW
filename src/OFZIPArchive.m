@@ -22,17 +22,17 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
-#import "OFArchiveURIHandler.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFArray.h"
 #import "OFCRC32.h"
 #import "OFData.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFInflate64Stream.h"
 #import "OFInflateStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -169,14 +169,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"zip", path, URI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"zip", path, IRI);
 }
 
 - (instancetype)init
@@ -231,16 +231,16 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return self;
 }
 
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
 	@try {
 		if ([mode isEqual: @"a"])
-			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
 		else
-			stream = [OFURIHandler openItemAtURI: URI mode: mode];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;

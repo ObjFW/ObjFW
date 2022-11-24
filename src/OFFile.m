@@ -32,7 +32,6 @@
 #import "OFLocale.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"

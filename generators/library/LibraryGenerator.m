@@ -18,7 +18,7 @@
 #import "OFApplication.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFURI.h"
+#import "OFIRI.h"
 #import "OFXMLElement.h"
 
 #import "FuncArrayGenerator.h"
@@ -33,32 +33,32 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 @implementation LibraryGenerator
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFURI *sourcesURI = [[OFFileManager defaultManager].currentDirectoryURI
-	    URIByAppendingPathComponent: @"../../src"];
-	OFURI *runtimeLibraryURI = [sourcesURI
-	    URIByAppendingPathComponent: @"runtime/amiga-library.xml"];
-	OFURI *runtimeLinkLibURI = [sourcesURI
-	    URIByAppendingPathComponent: @"runtime/linklib/linklib.m"];
-	OFURI *runtimeGlueHeaderURI = [sourcesURI
-	    URIByAppendingPathComponent: @"runtime/amiga-glue.h"];
-	OFURI *runtimeGlueURI = [sourcesURI
-	    URIByAppendingPathComponent: @"runtime/amiga-glue.m"];
-	OFURI *runtimeFuncArrayURI = [sourcesURI
-	    URIByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
+	OFIRI *sourcesIRI = [[OFFileManager defaultManager].currentDirectoryIRI
+	    IRIByAppendingPathComponent: @"../../src"];
+	OFIRI *runtimeLibraryIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"runtime/amiga-library.xml"];
+	OFIRI *runtimeLinkLibIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"runtime/linklib/linklib.m"];
+	OFIRI *runtimeGlueHeaderIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"runtime/amiga-glue.h"];
+	OFIRI *runtimeGlueIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"runtime/amiga-glue.m"];
+	OFIRI *runtimeFuncArrayIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"runtime/amiga-funcarray.inc"];
 	OFXMLElement *runtimeLibrary = [OFXMLElement elementWithStream:
-	    [OFFile fileWithPath: runtimeLibraryURI.fileSystemRepresentation
+	    [OFFile fileWithPath: runtimeLibraryIRI.fileSystemRepresentation
 			    mode: @"r"]];
 	OFFile *runtimeLinkLib =
-	    [OFFile fileWithPath: runtimeLinkLibURI.fileSystemRepresentation
+	    [OFFile fileWithPath: runtimeLinkLibIRI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *runtimeGlueHeader =
-	    [OFFile fileWithPath: runtimeGlueHeaderURI.fileSystemRepresentation
+	    [OFFile fileWithPath: runtimeGlueHeaderIRI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *runtimeGlue =
-	    [OFFile fileWithPath: runtimeGlueURI.fileSystemRepresentation
+	    [OFFile fileWithPath: runtimeGlueIRI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *runtimeFuncArray =
-	    [OFFile fileWithPath: runtimeFuncArrayURI.fileSystemRepresentation
+	    [OFFile fileWithPath: runtimeFuncArrayIRI.fileSystemRepresentation
 			    mode: @"w"];
 	LinkLibGenerator *runtimeLinkLibGenerator = [[[LinkLibGenerator alloc]
 	    initWithLibrary: runtimeLibrary

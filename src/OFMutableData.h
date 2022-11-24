@@ -18,7 +18,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURI;
 
 /**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h

@@ -18,11 +18,11 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
-#import "OFURI.h"
 
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
 {
@@ -100,11 +100,11 @@ help(OFStream *stream, bool full, int status)
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectoryURI:
-	    [OFURI fileURIWithPath: @LOCALIZATION_DIR]];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 # else
-	[OFLocale addLocalizationDirectoryURI:
-	    [OFURI fileURIWithPath: @"PROGDIR:/share/ofdns/localization"]];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofdns/localization"]];
 # endif
 #endif
 
