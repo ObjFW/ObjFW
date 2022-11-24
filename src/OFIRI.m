@@ -138,6 +138,47 @@ OFIRIIsIPv6Host(OFString *host)
 }
 
 static bool
+isUnicode(OFUnichar character)
+{
+	if (character >= 0xA0 && character <= 0xD7FF)
+		return true;
+	if (character >= 0xF900 && character <= 0xFDCF)
+		return true;
+	if (character >= 0xFDF0 && character <= 0xFFEF)
+		return true;
+	if (character >= 0x10000 && character <= 0x1FFFD)
+		return true;
+	if (character >= 0x20000 && character <= 0x2FFFD)
+		return true;
+	if (character >= 0x30000 && character <= 0x3FFFD)
+		return true;
+	if (character >= 0x40000 && character <= 0x4FFFD)
+		return true;
+	if (character >= 0x50000 && character <= 0x5FFFD)
+		return true;
+	if (character >= 0x60000 && character <= 0x6FFFD)
+		return true;
+	if (character >= 0x70000 && character <= 0x7FFFD)
+		return true;
+	if (character >= 0x80000 && character <= 0x8FFFD)
+		return true;
+	if (character >= 0x90000 && character <= 0x9FFFD)
+		return true;
+	if (character >= 0xA0000 && character <= 0xAFFFD)
+		return true;
+	if (character >= 0xB0000 && character <= 0xBFFFD)
+		return true;
+	if (character >= 0xC0000 && character <= 0xCFFFD)
+		return true;
+	if (character >= 0xD0000 && character <= 0xDFFFD)
+		return true;
+	if (character >= 0xE0000 && character <= 0xEFFFD)
+		return true;
+
+	return false;
+}
+
+static bool
 isUnicodePrivate(OFUnichar character)
 {
 	if (character >= 0xE00 && character <= 0xF8FF)
@@ -177,8 +218,8 @@ isUnicodePrivate(OFUnichar character)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
-	if (character > 0x7F)
-		return !isUnicodePrivate(character);
+	if (isUnicode(character))
+		return true;
 
 	switch (character) {
 	case '-':
@@ -226,8 +267,8 @@ isUnicodePrivate(OFUnichar character)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
-	if (character > 0x7F)
-		return !isUnicodePrivate(character);
+	if (isUnicode(character))
+		return true;
 
 	switch (character) {
 	case '-':
@@ -261,7 +302,7 @@ isUnicodePrivate(OFUnichar character)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
-	if (character > 0x7F)
+	if (isUnicode(character) || isUnicodePrivate(character))
 		return true;
 
 	switch (character) {
@@ -297,7 +338,7 @@ isUnicodePrivate(OFUnichar character)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
-	if (character > 0x7F)
+	if (isUnicode(character) || isUnicodePrivate(character))
 		return true;
 
 	switch (character) {
@@ -331,8 +372,8 @@ isUnicodePrivate(OFUnichar character)
 	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
 		return true;
 
-	if (character > 0x7F)
-		return !isUnicodePrivate(character);
+	if (isUnicode(character))
+		return true;
 
 	switch (character) {
 	case '-':
