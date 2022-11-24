@@ -34,8 +34,6 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFCharacterSet *IRIQueryPartAllowedCharacterSet = nil;
-
 @interface OFDictionary ()
 - (OFString *)
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
@@ -53,11 +51,6 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
-@end
-
-OF_DIRECT_MEMBERS
-@interface OFIRIQueryPartAllowedCharacterSet: OFCharacterSet
-+ (OFCharacterSet *)IRIQueryPartAllowedCharacterSet;
 @end
 
 @implementation OFDictionaryPlaceholder
@@ -136,66 +129,6 @@ OF_DIRECT_MEMBERS
 - (void)dealloc
 {
 	OF_DEALLOC_UNSUPPORTED
-}
-@end
-
-@implementation OFIRIQueryPartAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFIRIQueryPartAllowedCharacterSet class])
-		return;
-
-	IRIQueryPartAllowedCharacterSet =
-	    [[OFIRIQueryPartAllowedCharacterSet alloc] init];
-}
-
-+ (OFCharacterSet *)IRIQueryPartAllowedCharacterSet
-{
-	return IRIQueryPartAllowedCharacterSet;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (bool)characterIsMember: (OFUnichar)character
-{
-	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
-		return true;
-
-	switch (character) {
-	case '-':
-	case '.':
-	case '_':
-	case '~':
-	case '!':
-	case '$':
-	case '\'':
-	case '(':
-	case ')':
-	case '*':
-	case '+':
-	case ',':
-	case ';':
-		return true;
-	default:
-		return false;
-	}
 }
 @end
 
