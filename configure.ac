@@ -144,6 +144,14 @@ hppa*-*-hpux*)
 	enable_threads="no"	# TODO
 	with_tls="no"
 	;;
+*-apple-macos*)
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_CLASSIC_MACOS, 1,
+		[Whether we are compiling for classic macOS])
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
