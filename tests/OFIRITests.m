@@ -223,6 +223,10 @@ static OFString *IRIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	EXPECT_EXCEPTION(@"Detection of invalid format",
 	    OFInvalidFormatException, [OFIRI IRIWithString: @"http"])
 
+	TEST(@"-[IRIByAddingPercentEncodingForUnicodeCharacters]",
+	    [IRI11.IRIByAddingPercentEncodingForUnicodeCharacters
+	    isEqual: [OFIRI IRIWithString: @"http://%C3%A4/%C3%B6?%C3%BC"]])
+
 	mutableIRI = [OFMutableIRI IRIWithScheme: @"dummy"];
 
 	EXPECT_EXCEPTION(

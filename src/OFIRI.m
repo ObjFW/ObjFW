@@ -1362,6 +1362,33 @@ merge(OFString *base, OFString *path)
 	return IRI;
 }
 
+- (OFIRI *)IRIByAddingPercentEncodingForUnicodeCharacters
+{
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	void *pool = objc_autoreleasePoolPush();
+	OFCharacterSet *ASCII =
+	    [OFCharacterSet characterSetWithRange: OFMakeRange(0, 0x80)];
+
+	IRI.percentEncodedHost = [_percentEncodedHost
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+	IRI.percentEncodedUser = [_percentEncodedUser
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+	IRI.percentEncodedPassword = [_percentEncodedPassword
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+	IRI.percentEncodedPath = [_percentEncodedPath
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+	IRI.percentEncodedQuery = [_percentEncodedQuery
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+	IRI.percentEncodedFragment = [_percentEncodedFragment
+	    stringByAddingPercentEncodingWithAllowedCharacters: ASCII];
+
+	[IRI makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return IRI;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",

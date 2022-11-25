@@ -159,6 +159,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFIRI *IRIByStandardizingPath;
 
+/**
+ * @brief The IRI with percent-encoding applied to all Unicode characters.
+ */
+@property (readonly, nonatomic)
+    OFIRI *IRIByAddingPercentEncodingForUnicodeCharacters;
+
 #ifdef OF_HAVE_FILES
 /**
  * @brief The local file system representation for a file IRI.
