@@ -67,7 +67,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
-	OFString *domain = IRI.host;
+	OFString *domain = IRI.IRIByAddingPercentEncodingForUnicodeCharacters
+	    .host;
 	const OFUnichar *characters = string.characters;
 	size_t length = string.length, last = 0;
 	enum {

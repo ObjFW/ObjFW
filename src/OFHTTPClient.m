@@ -117,7 +117,7 @@ constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequestMethod method = request.method;
-	OFIRI *IRI = request.IRI;
+	OFIRI *IRI = request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 	OFString *path;
 	OFString *user = IRI.user, *password = IRI.password;
 	OFMutableString *requestString;
@@ -667,7 +667,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 					   request: _request];
 
 		stream.delegate = self;
-		[stream asyncPerformClientHandshakeWithHost: _request.IRI.host];
+		[stream asyncPerformClientHandshakeWithHost: _request.IRI
+		    .IRIByAddingPercentEncodingForUnicodeCharacters.host];
 	} else {
 		sock.delegate = self;
 		[self performSelector: @selector(handleStream:)
@@ -728,7 +729,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)closeAndReconnect
 {
 	@try {
-		OFIRI *IRI = _request.IRI;
+		OFIRI *IRI =
+		    _request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 		OFTCPSocket *sock;
 		uint16_t port;
 		OFNumber *IRIPort;

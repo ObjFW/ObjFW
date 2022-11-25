@@ -59,6 +59,8 @@
 	OFString *cookieDomain, *IRIHost;
 	size_t i;
 
+	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
+
 	if (![cookie.path hasPrefix: @"/"])
 		cookie.path = @"/";
 
@@ -109,9 +111,12 @@
 - (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForIRI: (OFIRI *)IRI
 {
 	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+
+	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
 	for (OFHTTPCookie *cookie in _cookies) {
-		void *pool;
+		void *pool2;
 		OFDate *expires;
 		OFString *cookieDomain, *IRIHost, *cookiePath, *IRIPath;
 		bool match;
@@ -124,7 +129,7 @@
 		    @"https"] != OFOrderedSame)
 			continue;
 
-		pool = objc_autoreleasePoolPush();
+		pool2 = objc_autoreleasePoolPush();
 
 		cookieDomain = cookie.domain.lowercaseString;
 		IRIHost = IRI.host.lowercaseString;
@@ -141,7 +146,7 @@
 			match = [cookieDomain isEqual: IRIHost];
 
 		if (!match) {
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 			continue;
 		}
 
@@ -159,7 +164,7 @@
 			}
 
 			if (!match) {
-				objc_autoreleasePoolPop(pool);
+				objc_autoreleasePoolPop(pool2);
 				continue;
 			}
 		}
@@ -168,6 +173,8 @@
 	}
 
 	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
