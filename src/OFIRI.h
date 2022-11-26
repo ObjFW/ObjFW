@@ -28,8 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFIRI OFIRI.h ObjFW/OFIRI.h
  *
- * @brief A class for parsing Internationalized Resource Identifiers as per
- *	  RFC 3987 and accessing parts of it.
+ * @brief A class for representing IRIs, URIs, URLs and URNs, for parsing them
+ *	  as well as accessing parts of them.
+ *
+ * This class follows RFC 3976 and RFC 3987.
  */
 @interface OFIRI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
@@ -161,7 +163,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFIRI *IRIByStandardizingPath;
 
 /**
- * @brief The IRI with percent-encoding applied to all Unicode characters.
+ * @brief The IRI with percent-encoding added for all Unicode characters.
  */
 @property (readonly, nonatomic)
     OFIRI *IRIByAddingPercentEncodingForUnicodeCharacters;
