@@ -20,8 +20,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFMutableIRI OFMutableIRI.h ObjFW/OFMutableIRI.h
  *
- * @brief A class for parsing IRIs as per RFC 3987 and accessing and modifying
- *	  parts of it.
+ * @brief A class for parsing Internationalized Resource Identifiers as per
+ *	  RFC 3987 and accessing and modifying parts of it.
  */
 @interface OFMutableIRI: OFIRI
 {

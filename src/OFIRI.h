@@ -28,7 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFIRI OFIRI.h ObjFW/OFIRI.h
  *
- * @brief A class for parsing IRIs as per RFC 3987 and accessing parts of it.
+ * @brief A class for parsing Internationalized Resource Identifiers as per
+ *	  RFC 3987 and accessing parts of it.
  */
 @interface OFIRI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
