@@ -65,6 +65,12 @@
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
 	    [OFSystemInfo supportsMMX]];
 
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports 3DNow!: %d\n",
+	    [OFSystemInfo supports3DNow]];
+
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports enhanced 3DNow!: %d\n",
+	    [OFSystemInfo supportsEnhanced3DNow]];
+
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE: %d\n",
 	    [OFSystemInfo supportsSSE]];
 

@@ -706,6 +706,16 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return (x86CPUID(1, 0).edx & (1u << 23));
 }
 
++ (bool)supports3DNow
+{
+	return (x86CPUID(0x80000001, 0).edx & (1u << 31));
+}
+
++ (bool)supportsEnhanced3DNow
+{
+	return (x86CPUID(0x80000001, 0).edx & (1u << 30));
+}
+
 + (bool)supportsSSE
 {
 	return (x86CPUID(1, 0).edx & (1u << 25));

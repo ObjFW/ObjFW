@@ -43,6 +43,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFString *CPUModel;
 # if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsMMX;
+@property (class, readonly, nonatomic) bool supports3DNow;
+@property (class, readonly, nonatomic) bool supportsEnhanced3DNow;
 @property (class, readonly, nonatomic) bool supportsSSE;
 @property (class, readonly, nonatomic) bool supportsSSE2;
 @property (class, readonly, nonatomic) bool supportsSSE3;
@@ -188,6 +190,24 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU supports MMX
  */
 + (bool)supportsMMX;
+
+/**
+ * @brief Returns whether the CPU supports 3DNow!.
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
+ * @return Whether the CPU supports 3DNow!
+ */
++ (bool)supports3DNow;
+
+/**
+ * @brief Returns whether the CPU supports enhanced 3DNow!.
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
+ * @return Whether the CPU supports enhanced 3DNow!
+ */
++ (bool)supportsEnhanced3DNow;
 
 /**
  * @brief Returns whether the CPU supports SSE.
