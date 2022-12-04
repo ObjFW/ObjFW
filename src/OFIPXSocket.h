@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Addresses are of type @ref OFSocketAddress. You can use
  * @ref OFSocketAddressMakeIPX to create an address or
  * @ref OFSocketAddressIPXNetwork to get the IPX network,
- * @ref OFSocketAddressIPXNode to get the IPX node and
+ * @ref OFSocketAddressGetIPXNode to get the IPX node and
  * @ref OFSocketAddressIPXPort to get the port (sometimes also called
  * socket number).
  *

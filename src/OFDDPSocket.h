@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note On some systems, packets received with the wrong protocol type just
  *	 get filtered by the kernel, however, on other systems, the packet is
  *	 queued up and will raise an @ref OFReadFailedException with the
- *	 @ref errNo set to `ENOMSG` when being received.
+ *	 @ref OFReadFailedException#errNo set to `ENOMSG` when being received.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.

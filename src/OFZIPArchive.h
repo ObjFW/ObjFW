@@ -188,9 +188,11 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFNotOpenException The archive is not open
  * @throw OFInvalidArgumentException The archive is not in write mode
  * @throw OFOpenItemFailedException Opening the specified file within the
- *				    archive failed. If @ref errNo is `EEXIST`,
- *				    because there is already a file with the
- *				    same name in the archive.
+ *				    archive failed. If
+ *				    @ref OFOpenItemFailedException#errNo is
+ *				    `EEXIST`, it failed because there is
+ *				    already a file with the same name in the
+ *				    archive.
  * @throw OFNotImplementedException The desired compression method is not
  *				    implemented
  */
