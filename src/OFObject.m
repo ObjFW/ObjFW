@@ -437,11 +437,6 @@ _references_to_categories_of_OFObject(void)
 	return OFAllocObject(self, 0, 0, NULL);
 }
 
-+ (instancetype)new
-{
-	return [[self alloc] init];
-}
-
 + (Class)class
 {
 	return self;
