@@ -116,9 +116,11 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
-	writeIRI = [[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: @"objfw-tests.ini"
-			    isDirectory: false];
+	writeIRI = [OFSystemInfo temporaryDirectoryIRI];
+	if (writeIRI == nil)
+		writeIRI = [[OFFileManager defaultManager] currentDirectoryIRI];
+	writeIRI = [writeIRI IRIByAppendingPathComponent: @"objfw-tests.ini"
+					     isDirectory: false];
 	TEST(@"-[writeToFile:encoding:]",
 	    R([file writeToIRI: writeIRI
 		      encoding: OFStringEncodingCodepage437]) &&
