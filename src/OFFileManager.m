@@ -23,6 +23,9 @@
 
 #include "platform.h"
 
+#ifdef OF_DJGPP
+# include <syslimits.h>
+#endif
 #ifdef OF_PSP
 # include <sys/syslimits.h>
 #endif

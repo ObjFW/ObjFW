@@ -33,6 +33,9 @@
 #ifdef OF_WINDOWS
 # include <utime.h>
 #endif
+#ifdef OF_DJGPP
+# include <syslimits.h>
+#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
