@@ -379,7 +379,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
+# ifdef OF_MSDOS
+		_encoding = OFStringEncodingCodepage437;
+# else
 		_encoding = OFStringEncodingUTF8;
+# endif
 		_decimalSeparator = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
