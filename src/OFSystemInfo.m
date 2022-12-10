@@ -47,6 +47,10 @@
 # undef nx_id
 #endif
 
+#ifdef OF_DJGPP
+# include <dos.h>
+#endif
+
 #import "OFSystemInfo.h"
 #import "OFApplication.h"
 #import "OFArray.h"
@@ -137,8 +141,10 @@ initOperatingSystemName(void)
 	operatingSystemName = @"Nintendo DS";
 #elif defined(OF_PSP)
 	operatingSystemName = @"PlayStation Portable";
-#elif defined(OF_MSDOS)
-	operatingSystemName = @"MS-DOS";
+#elif defined(OF_DJGPP)
+	operatingSystemName = [[OFString alloc]
+	    initWithCString: _os_flavor
+		   encoding: OFStringEncodingASCII];
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname utsname;
 
@@ -230,8 +236,11 @@ initOperatingSystemVersion(void)
 	operatingSystemVersion = [[OFString alloc]
 	    initWithFormat: @"Kickstart %u.%u",
 			    SysBase->LibNode.lib_Version, SysBase->SoftVer];
+#elif defined(OF_DJGPP)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"%u.%u", _osmajor, _osminor];
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
-    defined(OF_PSP) || defined(OF_MSDOS)
+    defined(OF_PSP)
 	/* Intentionally nothing */
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname utsname;
