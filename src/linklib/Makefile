@@ -1,6 +1,7 @@
 include ../../extra.mk
 
 STATIC_LIB = libobjfw.library.a
+STATIC_AMIGA_LIB = libobjfw.library.amigalib.a
 SRCS = init.m		\
        linklib.m
 

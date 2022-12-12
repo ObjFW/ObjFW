@@ -259,8 +259,8 @@ FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
+AMIGA_LIB_LIBS := -Lruntime -Lruntime/linklib -lobjfwrt.library.amigalib ${LIBS}
 LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
-AMIGA_LIB_LIBS = ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
