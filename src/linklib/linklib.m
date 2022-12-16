@@ -44,19 +44,19 @@ extern struct Library *ObjFWBase;
 #endif
 
 bool
-OFInit(unsigned int version, struct OFLibC *_Nonnull libc)
+OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase)
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((bool (*)(unsigned int __asm__("d0"), struct OFLibC *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 30))(version, libc);
+	return ((bool (*)(unsigned int __asm__("d0"), struct OFLibC *_Nonnull __asm__("a0"), struct Library *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 30))(version, libc, RTBase);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(unsigned int, struct OFLibC *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 28))(version, libc);
+	return __extension__ ((bool (*)(unsigned int, struct OFLibC *_Nonnull, struct Library *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 28))(version, libc, RTBase);
 #endif
 }
 

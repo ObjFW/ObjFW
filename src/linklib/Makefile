@@ -10,3 +10,4 @@ include ../../buildsys.mk
 CPPFLAGS += -I.. -I../.. -I../exceptions -I../runtime	\
 	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
 	    -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}
+AMIGA_LIB_CFLAGS += -DOF_AMIGA_LIB

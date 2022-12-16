@@ -81,6 +81,7 @@ const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
 struct OFLibC libC;
+struct Library *ObjFWRTBase;
 
 #if defined(OF_AMIGAOS_M68K)
 __asm__ (
@@ -328,8 +329,23 @@ libNull(void)
 	return NULL;
 }
 
+static void __saveds
+OFInitPart2(uintptr_t *iter0, struct Library *RTBase)
+{
+	uintptr_t *iter;
+
+	ObjFWRTBase = RTBase;
+
+	for (iter = iter0; *iter != 0; iter++);
+
+	while (iter > iter0) {
+		void (*ctor)(void) = (void (*)(void))*--iter;
+		ctor();
+	}
+}
+
 bool
-OFInit(unsigned int version, struct OFLibC *libC_)
+OFInit(unsigned int version, struct OFLibC *libC_, struct Library *RTBase)
 {
 #ifdef OF_AMIGAOS_M68K
 	OF_M68K_ARG(struct ObjFWBase *, base, a6)
@@ -340,7 +356,7 @@ OFInit(unsigned int version, struct OFLibC *libC_)
 #ifdef OF_MORPHOS
 	void *frame;
 #endif
-	uintptr_t *iter, *iter0;
+	uintptr_t *iter0;
 
 	if (version > 1)
 		return false;
@@ -368,12 +384,7 @@ OFInit(unsigned int version, struct OFLibC *libC_)
 	libC.__register_frame(frame);
 #endif
 
-	for (iter = iter0; *iter != 0; iter++);
-
-	while (iter > iter0) {
-		void (*ctor)(void) = (void (*)(void))*--iter;
-		ctor();
-	}
+	OFInitPart2(iter0, RTBase);
 
 	base->initialized = true;
 

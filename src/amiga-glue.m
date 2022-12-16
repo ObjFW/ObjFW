@@ -31,12 +31,13 @@ __asm__ (
 #endif
 
 bool __saveds
-glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc)
+glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase)
 {
 	M68K_ARG(unsigned int, version, d0)
 	M68K_ARG(struct OFLibC *_Nonnull, libc, a0)
+	M68K_ARG(struct Library *_Nonnull, RTBase, a0)
 
-	return OFInit(version, libc);
+	return OFInit(version, libc, RTBase);
 }
 
 void *_Nullable __saveds

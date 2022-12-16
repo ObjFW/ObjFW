@@ -34,14 +34,13 @@
 #include <proto/exec.h>
 #include <proto/intuition.h>
 
-struct ObjFWBase;
-
 #if defined(OF_AMIGAOS_M68K)
 # include <stabs.h>
 #elif defined(OF_MORPHOS)
 # include <constructor.h>
 #endif
 
+extern struct Library *ObjFWRTBase;
 #ifdef HAVE_SJLJ_EXCEPTIONS
 extern int _Unwind_SjLj_RaiseException(void *);
 #else
@@ -275,6 +274,9 @@ void *__objc_class_name_OFRangeCharacterSet;
 void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
+#ifndef OF_AMIGA_LIB
+struct Library *ObjFWBase;
+
 static void
 error(const char *string, ULONG arg)
 {
@@ -370,7 +372,7 @@ ctor(void)
 		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
 		    OBJFW_LIB_MINOR);
 
-	if (!OFInit(1, &libC))
+	if (!OFInit(1, &libC, ObjFWRTBase))
 		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;
@@ -382,10 +384,10 @@ dtor(void)
 	CloseLibrary(ObjFWBase);
 }
 
-#if defined(OF_AMIGAOS_M68K)
+# if defined(OF_AMIGAOS_M68K)
 ADD2INIT(ctor, -2);
 ADD2EXIT(dtor, -2);
-#elif defined(OF_MORPHOS)
+# elif defined(OF_MORPHOS)
 CONSTRUCTOR_P(ObjFW, 5000)
 {
 	ctor();
@@ -397,6 +399,7 @@ DESTRUCTOR_P(ObjFW, 5000)
 {
 	dtor();
 }
+# endif
 #endif
 
 extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters);

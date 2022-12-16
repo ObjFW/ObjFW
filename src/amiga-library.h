@@ -17,6 +17,8 @@
 #import "OFPBKDF2.h"
 #import "OFScrypt.h"
 
+#include <exec/libraries.h>
+
 #ifdef OF_MORPHOS
 # include <ppcinline/macros.h>
 # define OF_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
@@ -109,7 +111,8 @@ struct OFLibC {
 #endif
 };
 
-extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC);
+extern bool OFInit(unsigned int version, struct OFLibC *_Nonnull libC,
+    struct Library *_Nonnull RTBase);
 extern unsigned long *OFHashSeedRef(void);
 extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters);
 extern void OFScryptWrapper(const OFScryptParameters *_Nonnull parameters);

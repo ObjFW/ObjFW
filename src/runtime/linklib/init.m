@@ -23,8 +23,6 @@
 #include <proto/exec.h>
 #include <proto/intuition.h>
 
-struct ObjFWRTBase;
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,10 +60,12 @@ extern void __register_frame(void *);
 extern void __deregister_frame(void *);
 #endif
 
-struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
+#ifndef OBJC_AMIGA_LIB
 extern bool objc_init(unsigned int version, struct objc_libC *libC);
+
+struct Library *ObjFWRTBase;
 
 static void
 error(const char *string, ULONG arg)
@@ -153,10 +153,10 @@ dtor(void)
 	CloseLibrary(ObjFWRTBase);
 }
 
-#if defined(OF_AMIGAOS_M68K)
+# if defined(OF_AMIGAOS_M68K)
 ADD2INIT(ctor, -5)
 ADD2EXIT(dtor, -5)
-#elif defined(OF_MORPHOS)
+# elif defined(OF_MORPHOS)
 CONSTRUCTOR_P(ObjFWRT, 4000)
 {
 	ctor();
@@ -168,6 +168,7 @@ DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
 }
+# endif
 #endif
 
 extern int __gnu_objc_personality(int version, int actions, uint64_t *exClass,
