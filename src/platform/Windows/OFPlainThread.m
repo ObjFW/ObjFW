@@ -18,8 +18,7 @@
 #include <errno.h>
 
 #import "OFPlainThread.h"
-
-#import "macros.h"
+#import "OFConstantString.h"
 
 #include <windows.h>
 

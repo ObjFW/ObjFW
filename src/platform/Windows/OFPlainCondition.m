@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #import "OFPlainCondition.h"
+#import "OFConstantString.h"
 
 #include <windows.h>
 

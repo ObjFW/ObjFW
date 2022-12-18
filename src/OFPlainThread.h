@@ -22,7 +22,7 @@
 # error No threads available!
 #endif
 
-#import "macros.h"
+#import "OFObject.h"
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
