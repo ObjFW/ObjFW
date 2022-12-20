@@ -1730,9 +1730,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			LIBS="-framework Security -framework Foundation $LIBS"
 
 			AC_CHECK_FUNC(SSLHandshake, [
-				AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
-					[Whether we have Secure Transport])
-
 				tls_support="Secure Transport"
 				TLS_LIBS="-framework Foundation $TLS_LIBS"
 				TLS_LIBS="-framework Security $TLS_LIBS"
@@ -1750,8 +1747,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AS_IF([test x"$with_tls" = x"gnutls" \
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
-			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
-
 			tls_support="GnuTLS"
 			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
 			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
@@ -1779,9 +1774,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
-				AC_DEFINE(HAVE_OPENSSL, 1,
-					[Whether we have OpenSSL])
-
 				tls_support="OpenSSL"
 				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
 
