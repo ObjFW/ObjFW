@@ -482,9 +482,15 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 static OF_INLINE void
 OFMemoryBarrier(void)
 {
+#ifdef OF_X86_64
 	__asm__ __volatile__ (
-	    "mfence" ::: "memory"
+	    "lock orq	$0, (%%rsp)" ::: "memory", "cc"
 	);
+#else
+	__asm__ __volatile__ (
+	    "lock orl	$0, (%%esp)" ::: "memory", "cc"
+	);
+#endif
 }
 
 static OF_INLINE void
