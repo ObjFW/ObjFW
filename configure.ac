@@ -1724,7 +1724,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	tls_support="no"
 
 	AS_IF([test x"$with_tls" = x"securetransport" \
-		-o x"$with_tls" = x"yes"], [
+	    -o x"$with_tls" = x"yes"], [
 		AC_CHECK_HEADERS(Security/SecureTransport.h, [
 			old_LIBS="$LIBS"
 			LIBS="-framework Security -framework Foundation $LIBS"
@@ -1748,7 +1748,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 
 	AS_IF([test x"$with_tls" = x"gnutls" \
-		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
 			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
 
@@ -1765,7 +1765,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 
 	AS_IF([test x"$with_tls" = x"openssl" \
-		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
 		morphos*)
 			ssl="ssl_shared"
@@ -2235,10 +2235,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 		AC_CHECK_PROG(WINE, wine64, wine64)
 		;;
 	esac
-
-	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(WRAPPER, "$WINE")
-	])
+	AS_IF([test x"$WINE" != x""], [AC_SUBST(WRAPPER, "$WINE")])
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		dnl Keep this lowercase, as WIILOAD is a variable used by
