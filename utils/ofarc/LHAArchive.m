@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFApplication.h"
 #import "OFDate.h"
 #import "OFFileManager.h"
@@ -26,6 +28,8 @@
 
 #import "LHAArchive.h"
 #import "OFArc.h"
+
+#import "OFSetItemAttributesFailedException.h"
 
 static OFArc *app;
 
@@ -63,8 +67,13 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 	OFFileAttributes attributes = [OFDictionary
 	    dictionaryWithObject: entry.modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation LHAArchive
