@@ -670,12 +670,18 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			    (__time64_t)modificationDate.timeIntervalSince1970
 		};
 
-		if (_wutime64FuncPtr([path UTF16String], &times) != 0)
+		if (_wutime64FuncPtr([path UTF16String], &times) != 0) {
+			int errNo = errno;
+
+			if (errNo == EACCES && [self directoryExistsAtIRI: IRI])
+				errNo = EISDIR;
+
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithIRI: IRI
 				  attributes: attributes
 			     failedAttribute: attributeKey
-				       errNo: errno];
+				       errNo: errNo];
+		}
 	} else {
 		struct _utimbuf times = {
 			.actime = (time_t)lastAccessDate.timeIntervalSince1970,
@@ -691,12 +697,18 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 			    [path cStringWithEncoding: [OFLocale encoding]],
 			    &times);
 
-		if (status != 0)
+		if (status != 0) {
+			int errNo = errno;
+
+			if (errNo == EACCES && [self directoryExistsAtIRI: IRI])
+				errNo = EISDIR;
+
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithIRI: IRI
 				  attributes: attributes
 			     failedAttribute: attributeKey
-				       errNo: errno];
+				       errNo: errNo];
+		}
 	}
 #elif defined(OF_AMIGAOS)
 	/* AmigaOS does not support access time. */
