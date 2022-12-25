@@ -72,7 +72,7 @@ typedef enum {
  * @return The order of the objects
  */
 typedef OFComparisonResult (*OFCompareFunction)(id _Nonnull left,
-    id _Nonnull right, void *context);
+    id _Nonnull right, void *_Nullable context);
 
 #ifdef OF_HAVE_BLOCKS
 /**

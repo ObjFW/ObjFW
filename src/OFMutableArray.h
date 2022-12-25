@@ -210,7 +210,7 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  * @param options The options to use when sorting the array
  */
 - (void)sortUsingFunction: (OFCompareFunction)compare
-		  context: (void *)context
+		  context: (nullable void *)context
 		  options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS

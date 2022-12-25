@@ -416,7 +416,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  */
 - (OFArray OF_GENERIC(ObjectType) *)
     sortedArrayUsingFunction: (OFCompareFunction)compare
-		     context: (void *)context
+		     context: (nullable void *)context
 		     options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
