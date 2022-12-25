@@ -420,7 +420,7 @@ AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
-	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
@@ -585,7 +585,7 @@ case "$objc_runtime" in
 
 	AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFWRT_SHARED_LIB,
-			"${LIB_PREFIX}objfwrt${LIB_SUFFIX}")
+			'${LIB_PREFIX}objfwrt${LIB_SUFFIX}')
 	])
 
 	AS_IF([test x"$enable_static" = x"yes"], [
@@ -1795,7 +1795,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWTLS_SHARED_LIB,
-				"${LIB_PREFIX}objfwtls${LIB_SUFFIX}")
+				'${LIB_PREFIX}objfwtls${LIB_SUFFIX}')
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
@@ -1919,7 +1919,7 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWBRIDGE_SHARED_LIB,
-				"${LIB_PREFIX}objfwbridge${LIB_SUFFIX}")
+				'${LIB_PREFIX}objfwbridge${LIB_SUFFIX}')
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
