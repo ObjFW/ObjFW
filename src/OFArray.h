@@ -405,6 +405,20 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
     sortedArrayUsingSelector: (SEL)selector
 		     options: (OFArraySortOptions)options;
 
+/**
+ * @brief Returns a copy of the array sorted using the specified function and
+ *	  options.
+ *
+ * @param compare The function to use to sort the array
+ * @param context Context passed to the function to compare
+ * @param options The options to use when sorting the array
+ * @return A sorted copy of the array
+ */
+- (OFArray OF_GENERIC(ObjectType) *)
+    sortedArrayUsingFunction: (OFCompareFunction)compare
+		     context: (void *)context
+		     options: (OFArraySortOptions)options;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Returns a copy of the array sorted using the specified selector and

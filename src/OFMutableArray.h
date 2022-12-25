@@ -202,6 +202,17 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  */
 - (void)sortUsingSelector: (SEL)selector options: (OFArraySortOptions)options;
 
+/**
+ * @brief Sorts the array using the specified function and options.
+ *
+ * @param compare The function to use to sort the array
+ * @param context Context passed to the function to compare
+ * @param options The options to use when sorting the array
+ */
+- (void)sortUsingFunction: (OFCompareFunction)compare
+		  context: (void *)context
+		  options: (OFArraySortOptions)options;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Sorts the array using the specified comparator and options.

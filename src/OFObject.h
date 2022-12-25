@@ -63,6 +63,17 @@ typedef enum {
 	OFOrderedDescending = 1
 } OFComparisonResult;
 
+/**
+ * @brief A function to compare two objects.
+ *
+ * @param left The left object
+ * @param right The right object
+ * @param context Context passed along for comparing
+ * @return The order of the objects
+ */
+typedef OFComparisonResult (*OFCompareFunction)(id _Nonnull left,
+    id _Nonnull right, void *context);
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief A comparator to compare two objects.

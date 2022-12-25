@@ -726,6 +726,16 @@ static struct {
 	return new;
 }
 
+- (OFArray *)sortedArrayUsingFunction: (OFCompareFunction)compare
+			      context: (void *)context
+			      options: (OFArraySortOptions)options
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+	[new sortUsingFunction: compare context: context options: options];
+	[new makeImmutable];
+	return new;
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
 				options: (OFArraySortOptions)options
