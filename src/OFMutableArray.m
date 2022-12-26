@@ -377,7 +377,8 @@ selectorCompare(id left, id right, void *context)
 	if (count == 0 || count == 1)
 		return;
 
-	quicksort(self, 0, count - 1, selectorCompare, selector, options);
+	quicksort(self, 0, count - 1, selectorCompare, (void *)selector,
+	    options);
 }
 
 - (void)sortUsingFunction: (OFCompareFunction)compare
