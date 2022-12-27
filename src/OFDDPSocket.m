@@ -25,7 +25,7 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindDDPSocketFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
@@ -67,7 +67,7 @@ struct ATInterfaceConfig {
 		@throw [OFInvalidArgumentException exception];
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeAppleTalk(network, node, port);
 

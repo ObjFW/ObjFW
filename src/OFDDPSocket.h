@@ -81,7 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       it, use 11 for compatibility with Open Transport.
  * @return The address on which this socket can be reached
  * @throw OFBindDDPSockeFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node

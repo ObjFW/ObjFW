@@ -34,7 +34,7 @@
 #import "OFSocket+Private.h"
 #import "OFThread.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 
 @implementation OFUDPSocket
@@ -176,7 +176,7 @@
 	OFSocketAddress address;
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host

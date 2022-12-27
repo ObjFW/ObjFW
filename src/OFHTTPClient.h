@@ -186,7 +186,7 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidServerResponseException The server sent an invalid response
  * @throw OFUnsupportedVersionException The server responded in an unsupported
  *					version
- * @throw OFAlreadyConnectedException The client is already performing a request
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
 
@@ -206,7 +206,7 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidServerResponseException The server sent an invalid response
  * @throw OFUnsupportedVersionException The server responded in an unsupported
  *					version
- * @throw OFAlreadyConnectedException The client is already performing a request
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects;
@@ -215,7 +215,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
- * @throw OFAlreadyConnectedException The client is already performing a request
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
@@ -226,7 +226,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
- * @throw OFAlreadyConnectedException The client is already performing a request
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;

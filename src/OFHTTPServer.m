@@ -35,7 +35,7 @@
 #import "OFThread.h"
 #import "OFTimer.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -804,7 +804,7 @@ normalizedKey(OFString *key)
 	OFString *old;
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	old = _host;
 	_host = [host copy];
@@ -819,7 +819,7 @@ normalizedKey(OFString *key)
 - (void)setPort: (uint16_t)port
 {
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_port = port;
 }
@@ -836,7 +836,7 @@ normalizedKey(OFString *key)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_numberOfThreads = numberOfThreads;
 }
@@ -855,7 +855,7 @@ normalizedKey(OFString *key)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
 	_port = [_listeningSocket bindToHost: _host port: _port];

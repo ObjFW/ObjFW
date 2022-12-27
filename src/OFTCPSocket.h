@@ -157,7 +157,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  * @throw OFConnectIPSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
@@ -215,7 +215,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  * @throw OFBindIPSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
 @end

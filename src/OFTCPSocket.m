@@ -43,7 +43,7 @@
 #import "OFTCPSocketSOCKS5Connector.h"
 #import "OFThread.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotImplementedException.h"
@@ -141,7 +141,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
@@ -300,7 +300,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if (_SOCKS5Host != nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd

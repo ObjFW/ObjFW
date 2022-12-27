@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to connect to
  * @throw OFConnectUNIXSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToPath: (OFString *)path;
 
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to bind to
  * @throw OFBindUNIXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)bindToPath: (OFString *)path;
 @end

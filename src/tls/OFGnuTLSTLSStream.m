@@ -20,7 +20,7 @@
 #import "OFGnuTLSTLSStream.h"
 #import "OFData.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
@@ -202,7 +202,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	int status;
 
 	if (_initialized)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
 	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)

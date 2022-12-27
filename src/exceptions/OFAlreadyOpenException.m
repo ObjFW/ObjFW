@@ -15,46 +15,48 @@
 
 #include "config.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFString.h"
 
-@implementation OFAlreadyConnectedException
-@synthesize socket = _socket;
+@implementation OFAlreadyOpenException
+@synthesize object = _object;
 
-+ (instancetype)exceptionWithSocket: (id)sock
++ (instancetype)exceptionWithObject: (id)object
 {
-	return [[[self alloc] initWithSocket: sock] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	return [self initWithSocket: nil];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithSocket: (id)sock
+- (instancetype)initWithObject: (id)object
 {
 	self = [super init];
 
-	_socket = [sock retain];
+	_object = [object retain];
 
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
-	[_socket release];
+	[_object release];
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	if (_socket)
-		return [OFString stringWithFormat:
-		    @"The socket of type %@ is already connected or bound and "
-		    @"thus can't be connected or bound again!",
-		    [_socket class]];
-	else
-		return @"A connection has already been established!";
+	return [OFString stringWithFormat:
+	    @"An object of type %@ is already open and thus cannot be opened "
+	    @"again!",
+	    [_object class]];
 }
 @end

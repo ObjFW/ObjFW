@@ -129,7 +129,7 @@ typedef enum {
  *
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host;
 
@@ -140,7 +140,7 @@ typedef enum {
  * @param host The host to perform the handshake with
  * @param runLoopMode The run loop mode in which to perform the async handshake
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
 				runLoopMode: (OFRunLoopMode)runLoopMode;
@@ -150,7 +150,7 @@ typedef enum {
  *
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
 @end

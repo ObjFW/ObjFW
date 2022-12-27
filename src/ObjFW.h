@@ -143,6 +143,7 @@
 #endif
 
 #import "OFAllocFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFException.h"
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -193,7 +194,6 @@
 #import "OFWriteFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFAcceptSocketFailedException.h"
-# import "OFAlreadyConnectedException.h"
 # import "OFBindIPSocketFailedException.h"
 # import "OFBindSocketFailedException.h"
 # import "OFConnectIPSocketFailedException.h"

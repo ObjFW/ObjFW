@@ -24,7 +24,7 @@
 #import "OFSocket+Private.h"
 #import "OFString.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindUNIXSocketFailedException.h"
 
 @implementation OFUNIXDatagramSocket
@@ -38,7 +38,7 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeUNIX(path);
 

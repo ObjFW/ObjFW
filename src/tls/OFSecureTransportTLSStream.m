@@ -19,7 +19,7 @@
 
 #import "OFSecureTransportTLSStream.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
@@ -188,7 +188,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	OSStatus status;
 
 	if (_context != NULL)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 #ifdef HAVE_SSLCREATECONTEXT
 	if ((_context = SSLCreateContext(kCFAllocatorDefault, kSSLClientSide,

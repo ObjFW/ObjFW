@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
  * @throw OFBindIPXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)
     bindToNetwork: (uint32_t)network

@@ -33,7 +33,7 @@
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -1277,7 +1277,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	if (_inProgress)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_inProgress = true;
 
