@@ -612,13 +612,17 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	return tmpFSIRI;
 # else
-	OFString *path =
-	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
+	OFString *path;
 
+	path = [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
 	if (path != nil)
-		return [OFIRI fileIRIWithPath: path];
+		return [OFIRI fileIRIWithPath: path isDirectory: true];
 
-	return [OFIRI fileIRIWithPath: @"/tmp"];
+	path = [[OFApplication environment] objectForKey: @"TMPDIR"];
+	if (path != nil)
+		return [OFIRI fileIRIWithPath: path isDirectory: true];
+
+	return [OFIRI fileIRIWithPath: @"/tmp" isDirectory: true];
 # endif
 #else
 	return nil;
