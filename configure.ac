@@ -1043,12 +1043,15 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 		AC_CHECK_FUNCS(pthread_attr_getschedpolicy)
 
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -Werror"
 		AC_MSG_CHECKING(for pthread_attr_setinheritsched)
 		AC_COMPILE_IFELSE([
 			AC_LANG_PROGRAM([
-				#include <spawn.h>
+				#include <pthread.h>
 			], [
-				pthread_attr_setinheritsched(NULL, 0);
+				pthread_attr_setinheritsched(
+				    (pthread_attr_t *)-1, 0);
 			])
 		], [
 			AC_MSG_RESULT(yes)
@@ -1057,6 +1060,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		], [
 			AC_MSG_RESULT(no)
 		])
+		OBJCFLAGS="$old_OBJCFLAGS"
 
 		AC_CHECK_HEADERS(pthread_np.h, [], [], [#include <pthread.h>])
 		AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np, break)
