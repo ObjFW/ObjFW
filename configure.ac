@@ -1042,7 +1042,21 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		])
 
 		AC_CHECK_FUNCS(pthread_attr_getschedpolicy)
-		AC_CHECK_FUNCS(pthread_attr_setinheritsched)
+
+		AC_MSG_CHECKING(for pthread_attr_setinheritsched)
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <spawn.h>
+			], [
+				pthread_attr_setinheritsched(NULL, 0);
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			AC_DEFINE(HAVE_PTHREAD_ATTR_SETINHERITSCHED, 1,
+				[Whether we have pthread_attr_setinheritsched])
+		], [
+			AC_MSG_RESULT(no)
+		])
 
 		AC_CHECK_HEADERS(pthread_np.h, [], [], [#include <pthread.h>])
 		AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np, break)
