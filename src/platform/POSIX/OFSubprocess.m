@@ -41,7 +41,7 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifndef HAVE_POSIX_SPAWNP
+#if !defined(HAVE_POSIX_SPAWNP) || !defined(HAVE_SPAWN_H)
 extern char **environ;
 #endif
 
@@ -143,7 +143,7 @@ extern char **environ;
 
 		@try {
 			env = [self of_environmentForDictionary: environment];
-#ifdef HAVE_POSIX_SPAWNP
+#if defined(HAVE_POSIX_SPAWNP) && defined(HAVE_SPAWN_H)
 			posix_spawn_file_actions_t actions;
 			posix_spawnattr_t attr;
 

@@ -1857,13 +1857,7 @@ darwin*)
 		    (!defined(TARGET_OS_SIMULATOR) || !TARGET_OS_SIMULATOR)
 		egrep_cpp_yes
 		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		have_subprocesses="yes"
-
-		AC_CHECK_FUNCS(posix_spawnp)
-		AC_CHECK_HEADERS(spawn.h)
-	], [
+	], [], [
 		AC_MSG_RESULT(no)
 		have_subprocesses="no"
 	])
@@ -1874,17 +1868,18 @@ mingw*)
 msdosdjgpp*)
 	have_subprocesses="no"
 	;;
-*)
+esac
+AS_IF([test x"$have_subprocesses" = x""], [
 	AC_HEADER_SYS_WAIT
 	AC_CHECK_FUNCS(kill)
 
 	AC_CHECK_FUNCS(posix_spawnp, [
 		AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
-			have_subprocesses="yes"
-
-			AC_CHECK_HEADERS(spawn.h)
+			AC_CHECK_HEADERS(spawn.h, [have_subprocesses="yes"])
 		])
-	], [
+	])
+
+	AS_IF([test x"$have_subprocesses" = x""], [
 		AC_CHECK_FUNCS([vfork dup2 execvp _exit], [
 			AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
 			    -a x"$ac_cv_func_pipe" = x"yes" \
@@ -1898,8 +1893,7 @@ msdosdjgpp*)
 			break
 		])
 	])
-	;;
-esac
+])
 AS_IF([test x"$have_subprocesses" = x"yes"], [
 	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
 	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
