@@ -148,7 +148,7 @@ modern terminal-based UI, etc.
 ./autogen.sh
 
 %build
-%configure OBJC=clang --disable-rpath --with-fish-completions
+%configure OBJC=clang --disable-rpath
 %make_build
 
 %install
@@ -184,8 +184,6 @@ make -C tests run
 %{_bindir}/objfw-config
 %{_bindir}/objfw-embed
 %{_bindir}/objfw-new
-%{_datadir}/fish/vendor_completions.d/objfw-compile.fish
-%{_datadir}/fish/vendor_completions.d/objfw-config.fish
 %{_includedir}/ObjFW
 %{_libdir}/libobjfw.so
 
@@ -222,7 +220,6 @@ make -C tests run
 %license LICENSE.GPLv3
 %license LICENSE.QPL
 %{_bindir}/ofarc
-%{_datadir}/fish/vendor_completions.d/ofarc.fish
 %{_datadir}/ofarc
 
 %files -n ofdns
@@ -230,7 +227,6 @@ make -C tests run
 %license LICENSE.GPLv3
 %license LICENSE.QPL
 %{_bindir}/ofdns
-%{_datadir}/fish/vendor_completions.d/ofdns.fish
 %{_datadir}/ofdns
 
 %files -n ofhash
@@ -238,7 +234,6 @@ make -C tests run
 %license LICENSE.GPLv3
 %license LICENSE.QPL
 %{_bindir}/ofhash
-%{_datadir}/fish/vendor_completions.d/ofhash.fish
 %{_datadir}/ofhash
 
 %files -n ofhttp
@@ -246,5 +241,4 @@ make -C tests run
 %license LICENSE.GPLv3
 %license LICENSE.QPL
 %{_bindir}/ofhttp
-%{_datadir}/fish/vendor_completions.d/ofhttp.fish
 %{_datadir}/ofhttp

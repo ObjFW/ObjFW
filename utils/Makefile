@@ -4,8 +4,7 @@ SUBDIRS += ${OBJFW_NEW}	\
 	   ${OFARC}	\
 	   ${OFDNS}	\
 	   ${OFHASH}	\
-	   ${OFHTTP}	\
-	   completions
+	   ${OFHTTP}
 
 include ../buildsys.mk
 
