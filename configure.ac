@@ -99,7 +99,7 @@ powerpc-*-amigaos*)
 	enable_sockets="no"
 	;;
 *-*-mingw*)
-	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition -static-libgcc"
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
 	LIBS="$LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
