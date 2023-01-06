@@ -32,8 +32,12 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFOpenWindowsRegistryKeyFailedException.h"
+#endif
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUndefinedKeyException.h"
 
 #ifdef OF_WINDOWS
 # define interface struct
@@ -602,10 +606,10 @@ parseNetStackArray(OFString *string)
 
 - (void)reload
 {
-	void *pool;
 #ifdef OF_WINDOWS
-	OFString *path;
+	OFString *path = nil;
 #endif
+	void *pool;
 
 	/*
 	 * TODO: Rather than reparsing every time, check what actually changed
@@ -622,14 +626,22 @@ parseNetStackArray(OFString *string)
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
-	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
-		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-				     @"Tcpip\\Parameters"
-		       accessRights: KEY_QUERY_VALUE
-			    options: 0];
-	path = [[[key stringForValueNamed: @"DataBasePath"]
-	    stringByAppendingPathComponent: @"hosts"]
-	    stringByExpandingWindowsEnvironmentStrings];
+	@try {
+		OFWindowsRegistryKey *key;
+
+		key = [[OFWindowsRegistryKey localMachineKey]
+		    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				      @"Tcpip\\Parameters"
+			accessRights: KEY_QUERY_VALUE
+			     options: 0];
+		path = [[[key stringForValueNamed: @"DataBasePath"]
+		   stringByAppendingPathComponent: @"hosts"]
+		   stringByExpandingWindowsEnvironmentStrings];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		/* Ignore */
+	} @catch (OFUndefinedKeyException *e) {
+		/* Ignore */
+	}
 
 	if (path != nil)
 		[self parseHosts: path];
