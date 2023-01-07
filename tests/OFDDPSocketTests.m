@@ -40,6 +40,7 @@ static OFString *const module = @"OFDDPSocket";
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
+		case EPROTONOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
 			    @"\r[OFDDPSocket] -[bindToNetwork:node:port:"

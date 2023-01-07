@@ -74,8 +74,8 @@
 {
 	return [OFString stringWithFormat:
 	    @"Binding to port %" @PRIx8 @" of node %" @PRIx8 @" on network "
-	    @"%" PRIx16 @" with protocol type %" @PRIx8 @" failed in socket of "
-	    @"type %@: %@",
+	    @"%" PRIx16 @" with protocol type 0x%" @PRIX8 @" failed in socket "
+	    @"of type %@: %@",
 	    _port, _node, _network, _protocolType, [_socket class],
 	    OFStrError(_errNo)];
 }
