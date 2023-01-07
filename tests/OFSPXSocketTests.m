@@ -173,6 +173,13 @@ static OFString *const module = @"OFSPXSocket";
 		TEST(@"-[asyncAccept] & -[asyncConnectToNetwork:node:port:]",
 		    delegate->_accepted && delegate->_connected)
 	} @catch (OFObserveKernelEventsFailedException *e) {
+		/*
+		 * Make sure it doesn't stay in the run loop and throws again
+		 * next time we run the run loop.
+		 */
+		[sockClient cancelAsyncRequests];
+		[sockServer cancelAsyncRequests];
+
 		switch (e.errNo) {
 		case ENOTSOCK:
 			[OFStdOut setForegroundColor: [OFColor lime]];
