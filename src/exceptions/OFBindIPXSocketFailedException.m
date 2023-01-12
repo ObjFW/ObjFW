@@ -80,12 +80,11 @@
 
 - (OFString *)description
 {
-	OFData *node = [OFData dataWithItems: _node count: sizeof(_node)];
-
 	return [OFString stringWithFormat:
-	    @"Binding to network %" @PRIx16 " on node %@ with port %" @PRIx16
-	    @" failed for packet type %" @PRIx8 " in socket of type %@: %@",
-	    _network, node, _port, _packetType, [_socket class],
-	    OFStrError(_errNo)];
+	    @"Binding to network %" @PRIx16 " on node "
+	    @"%02X:%02X:%02X:%02X:%02X:%02X with port %" @PRIx16 @" failed for "
+	    @"packet type %" @PRIx8 " in socket of type %@: %@",
+	    _network, _node[0], _node[1], _node[2], _node[3], _node[4],
+	    _node[5], _port, _packetType, [_socket class], OFStrError(_errNo)];
 }
 @end
