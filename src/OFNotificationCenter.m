@@ -69,7 +69,7 @@ static OFNotificationCenter *defaultCenter;
 		void *pool = objc_autoreleasePoolPush();
 
 		_name = [name copy];
-		_observer = [observer retain];
+		_observer = observer;
 		_selector = selector;
 		_object = [object retain];
 
@@ -108,7 +108,6 @@ static OFNotificationCenter *defaultCenter;
 - (void)dealloc
 {
 	[_name release];
-	[_observer release];
 	[_object release];
 #ifdef OF_HAVE_BLOCKS
 	[_block release];
