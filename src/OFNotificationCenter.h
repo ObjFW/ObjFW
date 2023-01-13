@@ -22,7 +22,6 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
-@class OFNotificationCenterHandle;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -64,8 +63,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param observer The object that should receive notifications
  * @param selector The selector to call on the observer on notifications. The
- *		   method must take exactly one object of type @ref
- *		   OFNotification.
+ *		   method must take exactly one object of type
+ *		   @ref OFNotification.
  * @param name The name of the notification to observe
  * @param object The object that should be sending the notification, or `nil`
  *		 if the object should be ignored to determine what
@@ -103,10 +102,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param block The block to handle notifications
  * @return An opaque object to remove the observer again
  */
-- (OFNotificationCenterHandle *)
-    addObserverForName: (OFNotificationName)name
-		object: (nullable id)object
-	    usingBlock: (OFNotificationCenterBlock)block;
+- (id)addObserverForName: (OFNotificationName)name
+		  object: (nullable id)object
+	      usingBlock: (OFNotificationCenterBlock)block;
 
 /**
  * @brief Removes an observer. The specified observer must be one returned by
@@ -114,7 +112,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param observer The object that was returned when adding the observer
  */
-- (void)removeObserver: (OFNotificationCenterHandle *)observer;
+- (void)removeObserver: (id)observer;
 #endif
 
 /**

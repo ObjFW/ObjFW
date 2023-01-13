@@ -247,10 +247,9 @@ static OFNotificationCenter *defaultCenter;
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFNotificationCenterHandle *)
-    addObserverForName: (OFNotificationName)name
-		object: (id)object
-	    usingBlock: (OFNotificationCenterBlock)block
+- (id)addObserverForName: (OFNotificationName)name
+		  object: (id)object
+	      usingBlock: (OFNotificationCenterBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNotificationCenterHandle *handle =
@@ -269,9 +268,16 @@ static OFNotificationCenter *defaultCenter;
 }
 #endif
 
-- (void)removeObserver: (OFNotificationCenterHandle *)handle
+- (void)removeObserver: (id)handle_
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenterHandle *handle;
+	void *pool;
+
+	if (![handle_ isKindOfClass: [OFNotificationCenterHandle class]])
+		@throw [OFInvalidArgumentException exception];
+
+	handle = handle_;
+	pool = objc_autoreleasePoolPush();
 
 	/* {} required to avoid -Wmisleading-indentation false positive. */
 	if (![handle isKindOfClass: [OFNotificationCenterHandle class]]) {

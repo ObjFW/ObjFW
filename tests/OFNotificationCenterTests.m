@@ -109,7 +109,7 @@ static const OFNotificationName otherNotificationName =
 
 #ifdef OF_HAVE_BLOCKS
 	__block bool received = false;
-	OFNotificationCenterHandle *handle;
+	id handle;
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: self];
