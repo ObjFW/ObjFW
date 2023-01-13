@@ -153,8 +153,11 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	OFString *domainName;
 
 	if (!_isFQDN) {
-		OFString *searchDomain = [_settings->_searchDomains
-		    objectAtIndex: _searchDomainIndex];
+		OFString *searchDomain = @"";
+
+		if (_searchDomainIndex < _settings->_searchDomains.count)
+			searchDomain = [_settings->_searchDomains
+			    objectAtIndex: _searchDomainIndex];
 
 		domainName = [OFString stringWithFormat: @"%@.%@",
 							 _host, searchDomain];
