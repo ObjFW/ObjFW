@@ -451,10 +451,15 @@ parseNetStackArray(OFString *string)
 
 	nameServers = [OFMutableArray array];
 
-	for (iter = &fixedInfo->DnsServerList; iter != NULL; iter = iter->Next)
-		[nameServers addObject:
+	for (iter = &fixedInfo->DnsServerList; iter != NULL;
+	    iter = iter->Next) {
+		OFString *nameServer =
 		    [OFString stringWithCString: iter->IpAddress.String
-				       encoding: encoding]];
+				       encoding: encoding];
+
+		if (nameServer.length > 0)
+			[nameServers addObject: nameServer];
+	}
 
 	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
