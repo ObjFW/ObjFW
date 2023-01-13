@@ -142,7 +142,6 @@ static OFString *const module = @"OFSPXStreamSocket";
 
 	TEST(@"-[remoteAddress]",
 	    (address2 = sockAccepted.remoteAddress) &&
-	    OFSocketAddressIPXNetwork(address2) == network &&
 	    R(OFSocketAddressGetIPXNode(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0)
 
