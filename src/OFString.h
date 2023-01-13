@@ -157,7 +157,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  */
-@property (readonly, nonatomic) const char *UTF8String OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const char *UTF8String;
 
 /**
  * @brief The number of bytes the string needs in UTF-8 encoding.
@@ -234,8 +234,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is *not* null-terminated.
  */
-@property (readonly, nonatomic) const OFUnichar *characters
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFUnichar *characters;
 
 /**
  * @brief The string in UTF-16 encoding with native byte order.
@@ -246,8 +245,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar16 *UTF16String
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFChar16 *UTF16String;
 
 /**
  * @brief The length of the string in UTF-16 characters.
@@ -263,8 +261,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar32 *UTF32String
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFChar32 *UTF32String;
 
 /**
  * @brief The string with leading whitespaces deleted.
@@ -920,8 +917,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @throw OFInvalidEncodingException The string cannot be represented in the
  *				     specified encoding
  */
-- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
-    OF_RETURNS_INNER_POINTER;
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the OFString as a C string in the specified encoding,
@@ -935,8 +931,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
-    OF_RETURNS_INNER_POINTER;
+- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the number of bytes the string needs in the specified
@@ -1258,8 +1253,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @return The string in UTF-16 encoding with the specified byte order
  * @throw OFInvalidEncodingException The string cannot be represented in UTF-16
  */
-- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
-    OF_RETURNS_INNER_POINTER;
+- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Returns the string in UTF-32 encoding with the specified byte order.
@@ -1273,8 +1267,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
  */
-- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
-    OF_RETURNS_INNER_POINTER;
+- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Returns the string as OFData with the specified encoding.
