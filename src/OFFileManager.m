@@ -31,6 +31,7 @@
 #endif
 
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
