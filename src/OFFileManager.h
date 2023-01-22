@@ -686,20 +686,22 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 /**
- * @brief Returns the extended attribute with the specified name for the
+ * @brief Returns the extended attribute data for the specified name for the
  *	  specified path.
  *
  * @param name The name of the extended attribute
  * @param path The path of the item to return the extended attribute from
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
  *					     failed
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
  */
-- (OFData *)extendedAttributeForName: (OFString *)name
-			ofItemAtPath: (OFString *)path;
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			    ofItemAtPath: (OFString *)path;
 #endif
 
 /**
- * @brief Returns the extended attribute with the specified name for the
+ * @brief Returns the extended attribute data for the specified name for the
  *	  specified IRI.
  *
  * This method is not available for all IRIs.
@@ -710,9 +712,51 @@ OF_SUBCLASSING_RESTRICTED
  *					     failed
  * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
  */
-- (OFData *)extendedAttributeForName: (OFString *)name
-			 ofItemAtIRI: (OFIRI *)IRI;
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Sets the extended attribute data for the specified name for the
+ *	  specified IRI.
+ *
+ * This method is not available for all IRIS.
+ *
+ * @param data The data for the extended attribute
+ * @param name The name of the extended attribute
+ * @param path The path of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Sets the extended attribute data for the specified name for the
+ *	  specified IRI.
+ *
+ * This method is not available for all IRIS.
+ *
+ * @param data The data for the extended attribute
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 @interface OFDictionary (FileAttributes)

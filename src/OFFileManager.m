@@ -199,8 +199,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	OFIRI *ret;
 
 	ret = [OFIRI fileIRIWithPath: self.currentDirectoryPath];
+	ret = [ret retain];
 
-	[ret retain];
 	objc_autoreleasePoolPop(pool);
 	return [ret autorelease];
 }
@@ -226,8 +226,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	OFFileAttributes ret;
 
 	ret = [self attributesOfItemAtIRI: [OFIRI fileIRIWithPath: path]];
-
-	[ret retain];
+	ret = [ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -456,7 +455,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		[ret addObject: IRI.lastPathComponent];
 
 	[ret makeImmutable];
-	[ret retain];
+	ret = [ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -486,7 +485,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	}
 
 	[ret makeImmutable];
-	[ret retain];
+	ret = [ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -890,7 +889,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 }
 #endif
 
-- (OFData *)extendedAttributeForName: (OFString *)name ofItemAtIRI: (OFIRI *)IRI
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI
 {
 	OFIRIHandler *IRIHandler;
 
@@ -900,23 +900,54 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if ((IRIHandler = [OFIRIHandler handlerForIRI: IRI]) == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
-	return [IRIHandler extendedAttributeForName: name ofItemAtIRI: IRI];
+	return [IRIHandler extendedAttributeDataForName: name ofItemAtIRI: IRI];
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
-- (OFData *)extendedAttributeForName: (OFString *)name
-			ofItemAtPath: (OFString *)path
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			    ofItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *ret;
 
-	ret = [self extendedAttributeForName: name
-				 ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
-	[ret retain];
+	ret = [self
+	    extendedAttributeDataForName: name
+			     ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+	ret = [ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
+}
+#endif
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	OFIRIHandler *IRIHandler;
+
+	if (IRI == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((IRIHandler = [OFIRIHandler handlerForIRI: IRI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
+
+	[IRIHandler setExtendedAttributeData: data
+				     forName: name
+				 ofItemAtIRI: IRI];
+}
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	[self setExtendedAttributeData: data
+			       forName: name
+			   ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 @end

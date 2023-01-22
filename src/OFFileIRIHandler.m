@@ -1564,5 +1564,29 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	return [data autorelease];
 }
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path = IRI.fileSystemRepresentation;
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	if (lsetxattr([path cStringWithEncoding: encoding],
+	    [name cStringWithEncoding: encoding], data.items,
+	    data.count * data.itemSize, 0) != 0) {
+		int errNo = errno;
+
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errNo];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
 #endif
 @end

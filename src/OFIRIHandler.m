@@ -214,8 +214,16 @@ releaseMutex(void)
 	return false;
 }
 
-- (OFData *)extendedAttributeForName: (OFString *)name ofItemAtIRI: (OFIRI *)IRI
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI
 {
-	return nil;
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end

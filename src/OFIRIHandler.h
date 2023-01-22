@@ -150,7 +150,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
  *					 scheme
  * @throw OFNotImplementedException Setting one or more of the specified
- *				    attributes is not implpemented for the
+ *				    attributes is not implemented for the
  *				    specified item
  */
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI;
@@ -303,9 +303,31 @@ OF_ASSUME_NONNULL_BEGIN
  * @param IRI The IRI of the item to return the extended attribute from
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
  *					     failed
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
  */
-- (OFData *)extendedAttributeForName: (OFString *)name
-			 ofItemAtIRI: (OFIRI *)IRI;
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI;
+
+/**
+ * @brief Sets the extended attribute data for the specified name for the
+ *	  specified IRI.
+ *
+ * This method is not available for all IRIS.
+ *
+ * @param data The data for the extended attribute
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 OF_ASSUME_NONNULL_END
