@@ -33,6 +33,9 @@ OF_ASSUME_NONNULL_BEGIN
 # if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS)) || defined(OF_WINDOWS)
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 # endif
+# ifdef OF_LINUX
+#  define OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+# endif
 #endif
 
 @class OFArray OF_GENERIC(ObjectType);
@@ -58,6 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFFileStatusChangeDate
  *  * @ref OFFileCreationDate
  *  * @ref OFFileSymbolicLinkDestination
+ *  * @ref OFFileExtendedAttributesNames
  *
  * Other IRI schemes might not have all keys and might have keys not listed.
  */
@@ -188,12 +192,21 @@ extern const OFFileAttributeKey OFFileStatusChangeDate;
 extern const OFFileAttributeKey OFFileCreationDate;
 
 /**
- * @brief The destination of a symbolic link as an OFString.
+ * @brief The destination of a symbolic link as an @ref OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileSymbolicLinkDestination.
  */
 extern const OFFileAttributeKey OFFileSymbolicLinkDestination;
+
+/**
+ * @brief The names of the extended attributes as an @ref OFArray of
+ *	  @ref OFString.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref OFDictionary#fileExtendedAttributesNames.
+ */
+extern const OFFileAttributeKey OFFileExtendedAttributesNames;
 
 /**
  * @brief A regular file.
@@ -659,16 +672,47 @@ OF_SUBCLASSING_RESTRICTED
  *
  * This method is not available for all IRIs.
  *
- * @note On Windows, this requires at least Windows Vista and administrator
- *	 privileges!
+ * @note For file IRIs on Windows, this requires at least Windows Vista and
+ *	 administrator privileges!
  *
  * @param IRI The IRI to the item which should symbolically link to the target
  * @param target The target of the symbolic link
+ * @throw OFOFCreateSymbolicLinkFailedException Creating a symbolic link failed
  * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
 - (void)createSymbolicLinkAtIRI: (OFIRI *)IRI
 	    withDestinationPath: (OFString *)target;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Returns the extended attribute with the specified name for the
+ *	  specified path.
+ *
+ * @param name The name of the extended attribute
+ * @param path The path of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ */
+- (OFData *)extendedAttributeForName: (OFString *)name
+			ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Returns the extended attribute with the specified name for the
+ *	  specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ */
+- (OFData *)extendedAttributeForName: (OFString *)name
+			 ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 @interface OFDictionary (FileAttributes)
@@ -755,6 +799,14 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileSymbolicLinkDestination;
+
+/**
+ * @brief The @ref OFFileExtendedAttributesNames key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic)
+    OFArray OF_GENERIC(OFString *) *fileExtendedAttributesNames;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -213,4 +213,9 @@ releaseMutex(void)
 {
 	return false;
 }
+
+- (OFData *)extendedAttributeForName: (OFString *)name ofItemAtIRI: (OFIRI *)IRI
+{
+	return nil;
+}
 @end

@@ -30,6 +30,9 @@
 # include <sys/stat.h>
 #endif
 #include <sys/time.h>
+#ifdef OF_LINUX
+# include <sys/xattr.h>
+#endif
 #ifdef OF_WINDOWS
 # include <utime.h>
 #endif
@@ -46,6 +49,7 @@
 
 #import "OFFileIRIHandler.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
@@ -538,6 +542,44 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 #endif
 
+#ifdef OF_LINUX
+static void
+setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
+{
+	OFString *path = IRI.fileSystemRepresentation;
+	OFStringEncoding encoding = [OFLocale encoding];
+	const char *cPath = [path cStringWithEncoding: encoding];
+	ssize_t size = llistxattr(cPath, NULL, 0);
+	char *list = OFAllocMemory(1, size);
+	OFMutableArray *names = nil;
+
+	@try {
+		char *name;
+
+		if ((size = llistxattr(cPath, list, size)) < 0)
+			return;
+
+		names = [OFMutableArray array];
+		name = list;
+
+		while (size > 0) {
+			size_t length = strlen(name);
+
+			[names addObject: [OFString stringWithCString: name
+							     encoding: encoding
+							       length: length]];
+
+			name += length + 1;
+			size -= length + 1;
+		}
+	} @finally {
+		OFFreeMemory(list);
+	}
+
+	[attributes setObject: names forKey: OFFileExtendedAttributesNames];
+}
+#endif
+
 @implementation OFFileIRIHandler
 + (void)initialize
 {
@@ -640,6 +682,10 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	if (S_ISLNK(s.st_mode))
 		setSymbolicLinkDestinationAttribute(ret, IRI);
+#endif
+
+#ifdef OF_LINUX
+	setExtendedAttributes(ret, IRI);
 #endif
 
 	objc_autoreleasePoolPop(pool);
@@ -1488,4 +1534,35 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 
 	return true;
 }
+
+#ifdef OF_LINUX
+- (OFData *)extendedAttributeForName: (OFString *)name ofItemAtIRI: (OFIRI *)IRI
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path = IRI.fileSystemRepresentation;
+	OFStringEncoding encoding = [OFLocale encoding];
+	const char *cPath = [path cStringWithEncoding: encoding];
+	const char *cName = [name cStringWithEncoding: encoding];
+	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
+	void *value = OFAllocMemory(1, size);
+	OFData *data;
+
+	@try {
+		if ((size = lgetxattr(cPath, cName, value, size)) < 0)
+			@throw [OFGetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				       errNo: errno];
+
+		data = [OFData dataWithItems: value count: size];
+	} @finally {
+		OFFreeMemory(value);
+	}
+
+	[data retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [data autorelease];
+}
+#endif
 @end

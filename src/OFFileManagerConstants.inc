@@ -28,6 +28,8 @@ const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
 const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
 const OFFileAttributeKey OFFileSymbolicLinkDestination =
     @"OFFileSymbolicLinkDestination";
+const OFFileAttributeKey OFFileExtendedAttributesNames =
+    @"OFFileExtendedAttributesNames";
 
 const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
 const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";

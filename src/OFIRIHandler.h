@@ -20,6 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFData;
 @class OFDate;
 @class OFIRI;
 @class OFStream;
@@ -130,6 +131,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param IRI The IRI to return the attributes for
  * @return A dictionary of attributes for the specified IRI, with the keys of
  *	   type @ref OFFileAttributeKey
+ * @throw OFGetItemAttributesFailedException Failed to get the attributes of
+ *					     the item
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (OFFileAttributes)attributesOfItemAtIRI: (OFIRI *)IRI;
 
@@ -140,6 +145,13 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param attributes The attributes to set for the specified IRI
  * @param IRI The IRI of the item to set the attributes for
+ * @@throw OFSetItemAttributesFailedException Failed to set the attributes of
+ *					      the item
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting one or more of the specified
+ *				    attributes is not implpemented for the
+ *				    specified item
  */
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI;
 
@@ -148,6 +160,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param IRI The IRI to check
  * @return A boolean whether there is a file at the specified IRI
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (bool)fileExistsAtIRI: (OFIRI *)IRI;
 
@@ -156,6 +170,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param IRI The IRI to check
  * @return A boolean whether there is a directory at the specified IRI
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (bool)directoryExistsAtIRI: (OFIRI *)IRI;
 
@@ -163,6 +179,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a directory at the specified IRI.
  *
  * @param IRI The IRI of the directory to create
+ * @throw OFCreateDirectoryFailedException Creating the directory failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (void)createDirectoryAtIRI: (OFIRI *)IRI;
 
@@ -174,6 +193,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param IRI The IRI to the directory whose items should be returned
  * @return An array with the IRIs of the items in the specified directory
+ * @throw OFOpenItemFailedException Opening the directory failed
+ * @throw OFReadFailedException Reading from the directory failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (OFArray OF_GENERIC(OFIRI *) *)contentsOfDirectoryAtIRI: (OFIRI *)IRI;
 
@@ -183,6 +206,9 @@ OF_ASSUME_NONNULL_BEGIN
  * If the item at the specified IRI is a directory, it is removed recursively.
  *
  * @param IRI The IRI to the item which should be removed
+ * @throw OFRemoveItemFailedException Removing the item failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (void)removeItemAtIRI: (OFIRI *)IRI;
 
@@ -196,6 +222,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param source The IRI to the item for which a link should be created
  * @param destination The IRI to the item which should link to the source
+ * @throw OFLinkItemFailedException Linking the item failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the scheme
+ *					 of one of the IRIs
+ * @throw OFNotImplementedException Hardlinks are not implemented for the
+ *				    specified IRI
  */
 - (void)linkItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
@@ -212,6 +243,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param IRI The IRI to the item which should symbolically link to the target
  * @param target The target of the symbolic link
+ * @throw OFCreateSymbolicLinkFailed Creating a symbolic link failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (void)createSymbolicLinkAtIRI: (OFIRI *)IRI
 	    withDestinationPath: (OFString *)target;
@@ -232,6 +266,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return True if an efficient copy was performed, false if an efficient copy
  *	   was not possible. Note that errors while performing a copy are
  *	   reported via exceptions and not by returning false!
+ * @throw OFCopyItemFailedException Copying failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (bool)copyItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
@@ -250,8 +287,25 @@ OF_ASSUME_NONNULL_BEGIN
  * @return True if an efficient move was performed, false if an efficient move
  *	   was not possible. Note that errors while performing a move are
  *	   reported via exceptions and not by returning false!
+ * @throw OFMoveItemFailedException Moving failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  */
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
+
+/**
+ * @brief Returns the extended attribute with the specified name for the
+ *	  specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ */
+- (OFData *)extendedAttributeForName: (OFString *)name
+			 ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 OF_ASSUME_NONNULL_END
