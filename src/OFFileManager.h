@@ -686,8 +686,10 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 /**
- * @brief Returns the extended attribute data for the specified name for the
- *	  specified path.
+ * @brief Returns the extended attribute data for the specified name of the
+ *	  item at the specified path.
+ *
+ * This method is not available on some systems.
  *
  * @param name The name of the extended attribute
  * @param path The path of the item to return the extended attribute from
@@ -701,8 +703,8 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Returns the extended attribute data for the specified name for the
- *	  specified IRI.
+ * @brief Returns the extended attribute data for the specified name of the
+ *	  item at the specified IRI.
  *
  * This method is not available for all IRIs.
  *
@@ -720,10 +722,10 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 /**
- * @brief Sets the extended attribute data for the specified name for the
- *	  specified IRI.
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified path.
  *
- * This method is not available for all IRIS.
+ * This method is not available on some systems.
  *
  * @param data The data for the extended attribute
  * @param name The name of the extended attribute
@@ -739,10 +741,10 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Sets the extended attribute data for the specified name for the
- *	  specified IRI.
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified IRI.
  *
- * This method is not available for all IRIS.
+ * This method is not available for all IRIs.
  *
  * @param data The data for the extended attribute
  * @param name The name of the extended attribute
@@ -757,6 +759,42 @@ OF_SUBCLASSING_RESTRICTED
 - (void)setExtendedAttributeData: (OFData *)data
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Removes the extended attribute for the specified name wof the item at
+ *	  the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param name The name of the extended attribute to remove
+ * @param path The path of the item to remove the extended attribute from
+ * @throw OFSetItemAttributesFailedException Removing the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Removing extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)removeExtendedAttributeForName: (OFString *)name
+			  ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Removes the extended attribute for the specified name wof the item at
+ *	  the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute to remove
+ * @param IRI The IRI of the item to remove the extended attribute from
+ * @throw OFSetItemAttributesFailedException Removing the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Removing extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)removeExtendedAttributeForName: (OFString *)name
+			   ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 @interface OFDictionary (FileAttributes)

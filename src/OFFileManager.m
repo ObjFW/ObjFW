@@ -950,6 +950,31 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	objc_autoreleasePoolPop(pool);
 }
 #endif
+
+- (void)removeExtendedAttributeForName: (OFString *)name
+			   ofItemAtIRI: (OFIRI *)IRI
+{
+	OFIRIHandler *IRIHandler;
+
+	if (IRI == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((IRIHandler = [OFIRIHandler handlerForIRI: IRI]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
+
+	[IRIHandler removeExtendedAttributeForName: name ofItemAtIRI: IRI];
+}
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+- (void)removeExtendedAttributeForName: (OFString *)name
+			  ofItemAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	[self removeExtendedAttributeForName: name
+				 ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 @end
 
 @implementation OFDefaultFileManager

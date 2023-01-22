@@ -226,4 +226,10 @@ releaseMutex(void)
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
+
+- (void)removeExtendedAttributeForName: (OFString *)name
+			   ofItemAtIRI: (OFIRI *)IRI
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
 @end

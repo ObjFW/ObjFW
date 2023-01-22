@@ -294,8 +294,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
 /**
- * @brief Returns the extended attribute with the specified name for the
- *	  specified IRI.
+ * @brief Returns the extended attribute data for the specified name of the
+ *	  item at the specified IRI.
  *
  * This method is not available for all IRIs.
  *
@@ -303,6 +303,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param IRI The IRI of the item to return the extended attribute from
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
  *					     failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
  * @throw OFNotImplementedException Getting extended attributes is not
  *				    implemented for the specified item
  */
@@ -310,17 +312,17 @@ OF_ASSUME_NONNULL_BEGIN
 			     ofItemAtIRI: (OFIRI *)IRI;
 
 /**
- * @brief Sets the extended attribute data for the specified name for the
- *	  specified IRI.
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified IRI.
  *
- * This method is not available for all IRIS.
+ * This method is not available for all IRIs.
  *
  * @param data The data for the extended attribute
  * @param name The name of the extended attribute
  * @param IRI The IRI of the item to set the extended attribute on
  * @throw OFSetItemAttributesFailedException Setting the extended attribute
  *					     failed
- * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
  *					 scheme
  * @throw OFNotImplementedException Setting extended attributes is not
  *				    implemented for the specified item
@@ -328,6 +330,24 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setExtendedAttributeData: (OFData *)data
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI;
+
+/**
+ * @brief Removes the extended attribute for the specified name wof the item at
+ *	  the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute to remove
+ * @param IRI The IRI of the item to remove the extended attribute from
+ * @throw OFSetItemAttributesFailedException Removing the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Removing extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)removeExtendedAttributeForName: (OFString *)name
+			   ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 OF_ASSUME_NONNULL_END
