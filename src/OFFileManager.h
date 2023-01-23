@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 # if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS)) || defined(OF_WINDOWS)
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 # endif
-# ifdef OF_LINUX
+# if defined(OF_LINUX) || defined(OF_MACOS)
 #  define OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 # endif
 #endif

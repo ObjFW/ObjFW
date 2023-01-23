@@ -30,7 +30,7 @@
 # include <sys/stat.h>
 #endif
 #include <sys/time.h>
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_MACOS)
 # include <sys/xattr.h>
 #endif
 #ifdef OF_WINDOWS
@@ -542,21 +542,29 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 }
 #endif
 
-#ifdef OF_LINUX
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 static void
 setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 {
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
+# if defined(OF_LINUX)
 	ssize_t size = llistxattr(cPath, NULL, 0);
+# elif defined(OF_MACOS)
+	ssize_t size = listxattr(cPath, NULL, 0, XATTR_NOFOLLOW);
+# endif
 	char *list = OFAllocMemory(1, size);
 	OFMutableArray *names = nil;
 
 	@try {
 		char *name;
 
+# if defined(OF_LINUX)
 		if ((size = llistxattr(cPath, list, size)) < 0)
+# elif defined(OF_MACOS)
+		if ((size = listxattr(cPath, list, size, XATTR_NOFOLLOW)) < 0)
+# endif
 			return;
 
 		names = [OFMutableArray array];
@@ -684,7 +692,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		setSymbolicLinkDestinationAttribute(ret, IRI);
 #endif
 
-#ifdef OF_LINUX
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 	setExtendedAttributes(ret, IRI);
 #endif
 
@@ -1535,20 +1543,30 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	return true;
 }
 
-#ifdef OF_LINUX
-- (OFData *)extendedAttributeForName: (OFString *)name ofItemAtIRI: (OFIRI *)IRI
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
 	const char *cName = [name cStringWithEncoding: encoding];
+# if defined(OF_LINUX)
 	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
+# elif defined(OF_MACOS)
+	ssize_t size = getxattr(cPath, cName, NULL, 0, 0, XATTR_NOFOLLOW);
+# endif
 	void *value = OFAllocMemory(1, size);
 	OFData *data;
 
 	@try {
+# if defined(OF_LINUX)
 		if ((size = lgetxattr(cPath, cName, value, size)) < 0)
+# elif defined(OF_MACOS)
+		if ((size = getxattr(cPath, cName, value, size, 0,
+		    XATTR_NOFOLLOW)) < 0)
+# endif
 			@throw [OFGetItemAttributesFailedException
 			    exceptionWithIRI: IRI
 				       errNo: errno];
@@ -1573,9 +1591,15 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 
+# if defined(OF_LINUX)
 	if (lsetxattr([path cStringWithEncoding: encoding],
 	    [name cStringWithEncoding: encoding], data.items,
 	    data.count * data.itemSize, 0) != 0) {
+# elif defined(OF_MACOS)
+	if (setxattr([path cStringWithEncoding: encoding],
+	    [name cStringWithEncoding: encoding], data.items,
+	    data.count * data.itemSize, 0, XATTR_NOFOLLOW) != 0) {
+# endif
 		int errNo = errno;
 
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
@@ -1596,8 +1620,13 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 
+# if defined(OF_LINUX)
 	if (lremovexattr([path cStringWithEncoding: encoding],
 	    [name cStringWithEncoding: encoding]) != 0) {
+# elif defined(OF_MACOS)
+	if (removexattr([path cStringWithEncoding: encoding],
+	    [name cStringWithEncoding: encoding], XATTR_NOFOLLOW) != 0) {
+# endif
 		int errNo = errno;
 
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
