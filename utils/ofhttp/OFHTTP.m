@@ -18,6 +18,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
@@ -966,6 +967,23 @@ after_exception_handling:
 			_errorCode = 1;
 			goto next;
 		}
+
+#ifdef OF_MACOS
+		@try {
+			OFString *quarantine = [OFString stringWithFormat:
+			    @"0000;%08" @PRIx64 @";ofhttp;",
+			    (uint64_t)[[OFDate date] timeIntervalSince1970]];
+			OFData *quarantineData = [OFData
+			    dataWithItems: quarantine.UTF8String
+				    count: quarantine.UTF8StringLength];
+			[[OFFileManager defaultManager]
+			    setExtendedAttributeData: quarantineData
+					     forName: @"com.apple.quarantine"
+					ofItemAtPath: _currentFileName];
+		} @catch (OFGetItemAttributesFailedException *e) {
+			/* Ignore */
+		}
+#endif
 	}
 
 	if (!_quiet) {
