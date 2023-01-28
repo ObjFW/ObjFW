@@ -51,6 +51,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFResolveHostFailedException.h"
+#import "OFSetItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -968,6 +969,22 @@ after_exception_handling:
 			goto next;
 		}
 
+#ifdef OF_LINUX
+		@try {
+			OFString *IRIString = request.IRI.string;
+			OFData *downloadedFromData = [OFData
+			    dataWithItems: IRIString.UTF8String
+				    count: IRIString.UTF8StringLength + 1];
+			[[OFFileManager defaultManager]
+			    setExtendedAttributeData: downloadedFromData
+					     forName: @"user.ofhttp."
+						      @"downloaded_from"
+					ofItemAtPath: _currentFileName];
+		} @catch (OFSetItemAttributesFailedException *) {
+			/* Ignore */
+		}
+#endif
+
 #ifdef OF_MACOS
 		@try {
 			OFString *quarantine = [OFString stringWithFormat:
@@ -980,7 +997,7 @@ after_exception_handling:
 			    setExtendedAttributeData: quarantineData
 					     forName: @"com.apple.quarantine"
 					ofItemAtPath: _currentFileName];
-		} @catch (OFGetItemAttributesFailedException *e) {
+		} @catch (OFSetItemAttributesFailedException *e) {
 			/* Ignore */
 		}
 #endif
