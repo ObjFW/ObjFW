@@ -247,3 +247,11 @@ RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
 	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
 	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
+
+uninstall-extra:
+	for i in platform/GCC4 platform/GCC4.7 platform/PowerPC platform/macOS \
+	    platform/x86 platform ""; do \
+		if test -d ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			rmdir ${DESTDIR}${includedir}/${includesubdir}/$$i; \
+		fi; \
+	done
