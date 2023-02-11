@@ -763,7 +763,7 @@ install: all install-extra
 
 install-extra:
 
-uninstall: uninstall-extra
+uninstall:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
@@ -875,6 +875,8 @@ uninstall: uninstall-extra
 			fi \
 		fi \
 	done
+
+	${MAKE} -s uninstall-extra
 
 uninstall-extra:
 
