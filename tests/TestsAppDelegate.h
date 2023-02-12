@@ -147,6 +147,10 @@
 - (void)MD5HashTests;
 @end
 
+@interface TestsAppDelegate (OFMatrix4x4Tests)
+- (void)matrix4x4Tests;
+@end
+
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
 @end

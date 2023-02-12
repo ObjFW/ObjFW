@@ -40,6 +40,7 @@ SRCS = OFApplication.m			\
        OFLocale.m			\
        OFMD5Hash.m			\
        OFMapTable.m			\
+       OFMatrix4x4.m			\
        OFMemoryStream.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\

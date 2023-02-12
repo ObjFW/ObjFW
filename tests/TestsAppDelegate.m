@@ -442,6 +442,8 @@ main(int argc, char *argv[])
 	[self serializationTests];
 	[self JSONTests];
 	[self propertyListTests];
+	[self matrix4x4Tests];
+
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
