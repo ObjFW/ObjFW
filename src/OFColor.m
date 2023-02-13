@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #import "OFColor.h"
 #import "OFOnce.h"
 #import "OFString.h"
@@ -34,6 +36,8 @@
 #ifdef OF_OBJFW_RUNTIME
 @interface OFTaggedPointerColor: OFColorSingleton
 @end
+
+static const float allowedImprecision = 0.0000001;
 #endif
 
 static struct {
@@ -72,12 +76,13 @@ static int colorTag;
 		      alpha: (float)alpha
 {
 #ifdef OF_OBJFW_RUNTIME
-	uint8_t redInt = red * 255;
-	uint8_t greenInt = green * 255;
-	uint8_t blueInt = blue * 255;
+	uint8_t redInt = nearbyintf(red * 255);
+	uint8_t greenInt = nearbyintf(green * 255);
+	uint8_t blueInt = nearbyintf(blue * 255);
 
-	if (red * 255 == redInt && green * 255 == greenInt &&
-	    blue * 255 == blueInt && alpha == 1) {
+	if (fabsf(red * 255 - redInt) < allowedImprecision &&
+	    fabsf(green * 255 - greenInt) < allowedImprecision &&
+	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1) {
 		id ret = objc_createTaggedPointer(colorTag,
 		    (uintptr_t)redInt << 16 | (uintptr_t)greenInt << 8 |
 		    (uintptr_t)blueInt);
@@ -286,7 +291,7 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	[self getRed: &red green: &green blue: &blue alpha: &alpha];
 
 	return [OFString stringWithFormat:
-	    @"<OFColor red=%f green=%f blue=%f alpha=%f>",
-	    red, green, blue, alpha];
+	    @"<%@ red=%f green=%f blue=%f alpha=%f>",
+	    self.class, red, green, blue, alpha];
 }
 @end
