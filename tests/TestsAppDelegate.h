@@ -71,6 +71,10 @@
 - (void)characterSetTests;
 @end
 
+@interface TestsAppDelegate (OFColorTests)
+- (void)colorTests;
+@end
+
 @interface TestsAppDelegate (OFDDPSocketTests)
 - (void)DDPSocketTests;
 @end

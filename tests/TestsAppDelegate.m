@@ -391,6 +391,7 @@ main(int argc, char *argv[])
 	[self dateTests];
 	[self valueTests];
 	[self numberTests];
+	[self colorTests];
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];

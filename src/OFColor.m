@@ -17,20 +17,139 @@
 
 #import "OFColor.h"
 #import "OFOnce.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
+@interface OFColor ()
++ (instancetype)of_alloc;
+@end
+
+@interface OFColorSingleton: OFColor
+@end
+
+@interface OFColorPlaceholder: OFColorSingleton
+@end
+
+#ifdef OF_OBJFW_RUNTIME
+@interface OFTaggedPointerColor: OFColorSingleton
+@end
+#endif
+
+static struct {
+	Class isa;
+} placeholder;
+
+#ifdef OF_OBJFW_RUNTIME
+static int colorTag;
+#endif
+
+@implementation OFColorSingleton
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OFMaxRetainCount;
+}
+@end
+
+@implementation OFColorPlaceholder
+- (instancetype)initWithRed: (float)red
+		      green: (float)green
+		       blue: (float)blue
+		      alpha: (float)alpha
+{
+#ifdef OF_OBJFW_RUNTIME
+	uint8_t redInt = red * 255;
+	uint8_t greenInt = green * 255;
+	uint8_t blueInt = blue * 255;
+
+	if (red * 255 == redInt && green * 255 == greenInt &&
+	    blue * 255 == blueInt && alpha == 1) {
+		id ret = objc_createTaggedPointer(colorTag,
+		    (uintptr_t)redInt << 16 | (uintptr_t)greenInt << 8 |
+		    (uintptr_t)blueInt);
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
+
+	return (id)[[OFColor of_alloc] initWithRed: red
+					     green: green
+					      blue: blue
+					     alpha: alpha];
+}
+@end
+
+#ifdef OF_OBJFW_RUNTIME
+@implementation OFTaggedPointerColor
+- (void)getRed: (float *)red
+	 green: (float *)green
+	  blue: (float *)blue
+	 alpha: (float *)alpha
+{
+	uintptr_t value = object_getTaggedPointerValue(self);
+
+	*red = (float)(value >> 16) / 255;
+	*green = (float)((value >> 8) & 0xFF) / 255;
+	*blue = (float)(value & 0xFF) / 255;
+
+	if (alpha != NULL)
+		*alpha = 1;
+}
+@end
+#endif
+
 @implementation OFColor
++ (void)initialize
+{
+	if (self != [OFColor class])
+		return;
+
+	placeholder.isa = [OFColorPlaceholder class];
+#ifdef OF_OBJFW_RUNTIME
+	colorTag =
+	    objc_registerTaggedPointerClass([OFTaggedPointerColor class]);
+#endif
+}
+
++ (instancetype)of_alloc
+{
+	return [super alloc];
+}
+
++ (instancetype)alloc
+{
+	if (self == [OFColor class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 #define PREDEFINED_COLOR(name, redValue, greenValue, blueValue)		   \
 	static OFColor *name##Color = nil;				   \
 									   \
 	static void							   \
 	initPredefinedColor_##name(void)				   \
 	{								   \
-		name##Color = [[OFColor alloc] initWithRed: redValue	   \
-						     green: greenValue	   \
-						      blue: blueValue	   \
-						     alpha: 1];		   \
+		name##Color = [[OFColorSingleton alloc]			   \
+		    initWithRed: redValue				   \
+			  green: greenValue				   \
+			   blue: blueValue				   \
+			  alpha: 1];					   \
 	}								   \
 									   \
 	+ (OFColor *)name						   \
@@ -158,5 +277,16 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 	if (alpha != NULL)
 		*alpha = _alpha;
+}
+
+- (OFString *)description
+{
+	float red, green, blue, alpha;
+
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+
+	return [OFString stringWithFormat:
+	    @"<OFColor red=%f green=%f blue=%f alpha=%f>",
+	    red, green, blue, alpha];
 }
 @end

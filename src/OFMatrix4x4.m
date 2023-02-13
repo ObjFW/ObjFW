@@ -16,9 +16,8 @@
 #include "config.h"
 
 #import "OFMatrix4x4.h"
-#import "OFString.h"
-
 #import "OFOnce.h"
+#import "OFString.h"
 
 static const float identityValues[16] = {
 	1, 0, 0, 0,
