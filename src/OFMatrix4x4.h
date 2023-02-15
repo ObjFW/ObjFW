@@ -70,6 +70,20 @@ OF_SUBCLASSING_RESTRICTED
  * @param matrix The matrix to multiply the receiver with
  */
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix;
+
+/**
+ * @brief Transforms the specified 3D vector according to the matrix.
+ *
+ * As multiplying a 4x4 matrix with a 3D vector is not defined, this extends
+ * the 3D vector to a 4D vector with its `w` value being set to 0 and just
+ * discards the `w` value of the resulting 4D vector for the returned 3D
+ * vector. This allows reducing the number number of calculations performed and
+ * is mostly useful for 3D graphics.
+ *
+ * @param vector The 3D vector to transform
+ * @return The transformed 3D vector
+ */
+- (OFVector3D)transformedVector3D: (OFVector3D)vector;
 @end
 
 OF_ASSUME_NONNULL_END
