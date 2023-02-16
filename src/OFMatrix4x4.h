@@ -72,12 +72,26 @@ OF_SUBCLASSING_RESTRICTED
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix;
 
 /**
+ * @brief Translates the matrix with the specified 3D vector.
+ *
+ * @param vector The vector to translate the matrix with
+ */
+- (void)translateWithVector3D: (OFVector3D)vector;
+
+/**
+ * @brief Scales the matrix with the specified 3D vector.
+ *
+ * @param vector The vector to scale the matrix with
+ */
+- (void)scaleWithVector3D: (OFVector3D)vector;
+
+/**
  * @brief Transforms the specified point in 3D space according to the matrix.
  *
  * @param point The point to transform
  * @return The transformed point
  */
-- (OFPoint3D)transformedPoint3D: (OFPoint3D)point;
+- (OFVector3D)transformedPoint3D: (OFVector3D)point;
 @end
 
 OF_ASSUME_NONNULL_END

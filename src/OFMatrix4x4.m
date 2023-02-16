@@ -184,9 +184,35 @@ initIdentityMatrix(void)
 	    matrix->_values[15] * copy[15];
 }
 
-- (OFPoint3D)transformedPoint3D: (OFPoint3D)point
+- (void)translateWithVector3D: (OFVector3D)vector
 {
-	return OFMakePoint3D(
+	OFMatrix4x4 *translation = [[OFMatrix4x4 alloc] initWithValues:
+	    (float [16]){
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		vector.x, vector.y, vector.z, 1
+	    }];
+	[self multiplyWithMatrix: translation];
+	[translation release];
+}
+
+- (void)scaleWithVector3D: (OFVector3D)vector
+{
+	OFMatrix4x4 *scale = [[OFMatrix4x4 alloc] initWithValues:
+	    (float [16]){
+		vector.x, 0, 0, 0,
+		0, vector.y, 0, 0,
+		0, 0, vector.z, 0,
+		0, 0, 0, 1
+	    }];
+	[self multiplyWithMatrix: scale];
+	[scale release];
+}
+
+- (OFVector3D)transformedPoint3D: (OFVector3D)point
+{
+	return OFMakeVector3D(
 	    _values[0] * point.x + _values[4] * point.y +
 	    _values[8] * point.z + _values[12],
 	    _values[1] * point.x + _values[5] * point.y +
