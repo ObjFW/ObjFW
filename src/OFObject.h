@@ -155,7 +155,7 @@ typedef double OFTimeInterval;
 /**
  * @struct OFPoint OFObject.h ObjFW/OFObject.h
  *
- * @brief A point.
+ * @brief A point in 2D space.
  */
 typedef struct OF_BOXABLE {
 	/** The x coordinate of the point */
@@ -296,52 +296,52 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 }
 
 /**
- * @struct OFVector3D OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint3D OFObject.h ObjFW/OFObject.h
  *
- * @brief A vector in 3D space.
+ * @brief A point in 3D space.
  */
 typedef struct OF_BOXABLE {
-	/** The x coordinate of the vector */
+	/** The x coordinate of the point */
 	float x;
-	/** The y coordinate of the vector */
+	/** The y coordinate of the point */
 	float y;
-	/** The z coordinate of the vector */
+	/** The z coordinate of the point */
 	float z;
-} OFVector3D;
+} OFPoint3D;
 
 /**
- * @brief Creates a new OFVector3D.
+ * @brief Creates a new OFPoint3D.
  *
- * @param x The x coordinate of the vector
- * @param y The x coordinate of the vector
- * @param z The z coordinate of the vector
- * @return An OFVector3D with the specified coordinates
+ * @param x The x coordinate of the point
+ * @param y The x coordinate of the point
+ * @param z The z coordinate of the point
+ * @return An OFPoint3D with the specified coordinates
  */
-static OF_INLINE OFVector3D OF_CONST_FUNC
-OFMakeVector3D(float x, float y, float z)
+static OF_INLINE OFPoint3D OF_CONST_FUNC
+OFMakePoint3D(float x, float y, float z)
 {
-	OFVector3D vector = { x, y, z };
+	OFPoint3D point = { x, y, z };
 
-	return vector;
+	return point;
 }
 
 /**
- * @brief Returns whether the two vectors are equal.
+ * @brief Returns whether the two points are equal.
  *
- * @param vector1 The first vector for the comparison
- * @param vector2 The second vector for the comparison
- * @return Whether the two vectors are equal
+ * @param point1 The first point for the comparison
+ * @param point2 The second point for the comparison
+ * @return Whether the two points are equal
  */
 static OF_INLINE bool
-OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
+OFEqualPoints3D(OFPoint3D point1, OFPoint3D point2)
 {
-	if (vector1.x != vector2.x)
+	if (point1.x != point2.x)
 		return false;
 
-	if (vector1.y != vector2.y)
+	if (point1.y != point2.y)
 		return false;
 
-	if (vector1.z != vector2.z)
+	if (point1.z != point2.z)
 		return false;
 
 	return true;

@@ -184,15 +184,15 @@ initIdentityMatrix(void)
 	    matrix->_values[15] * copy[15];
 }
 
-- (OFVector3D)transformedVector3D: (OFVector3D)vector
+- (OFPoint3D)transformedPoint3D: (OFPoint3D)point
 {
-	return OFMakeVector3D(
-	    _values[0] * vector.x + _values[4] * vector.y +
-	    _values[8] * vector.z,
-	    _values[1] * vector.x + _values[5] * vector.y +
-	    _values[9] * vector.z,
-	    _values[2] * vector.x + _values[6] * vector.y +
-	    _values[10] * vector.z);
+	return OFMakePoint3D(
+	    _values[0] * point.x + _values[4] * point.y +
+	    _values[8] * point.z + _values[12],
+	    _values[1] * point.x + _values[5] * point.y +
+	    _values[9] * point.z + _values[13],
+	    _values[2] * point.x + _values[6] * point.y +
+	    _values[10] * point.z + _values[14]);
 }
 
 - (OFString *)description
