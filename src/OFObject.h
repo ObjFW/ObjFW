@@ -348,6 +348,64 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
 }
 
 /**
+ * @struct OFVector4D OFObject.h ObjFW/OFObject.h
+ *
+ * @brief A vector in 4D space.
+ */
+typedef struct OF_BOXABLE {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+	/** The w coordinate of the vector */
+	float w;
+} OFVector4D;
+
+/**
+ * @brief Creates a new OFVector4D.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @param w The w coordinate of the vector
+ * @return An OFVector4D with the specified coordinates
+ */
+static OF_INLINE OFVector4D OF_CONST_FUNC
+OFMakeVector4D(float x, float y, float z, float w)
+{
+	OFVector4D vector = { x, y, z, w };
+
+	return vector;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vector1 The first vector for the comparison
+ * @param vector2 The second vectors for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OFEqualVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	if (vector1.x != vector2.x)
+		return false;
+
+	if (vector1.y != vector2.y)
+		return false;
+
+	if (vector1.z != vector2.z)
+		return false;
+
+	if (vector1.w != vector2.w)
+		return false;
+
+	return true;
+}
+
+/**
  * @brief Adds the specified byte to the hash.
  *
  * @param hash A pointer to a hash to add the byte to

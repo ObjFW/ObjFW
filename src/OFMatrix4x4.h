@@ -59,11 +59,6 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithValues: (const float [_Nonnull 16])values;
 
 /**
- * @brief Transposes the matrix.
- */
-- (void)transpose;
-
-/**
  * @brief Mulitplies the receiver with the specified matrix on the left side
  *	  and the receiver on the right side.
  *
@@ -72,26 +67,26 @@ OF_SUBCLASSING_RESTRICTED
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix;
 
 /**
- * @brief Translates the matrix with the specified 3D vector.
+ * @brief Translates the matrix with the specified vector.
  *
  * @param vector The vector to translate the matrix with
  */
-- (void)translateWithVector3D: (OFVector3D)vector;
+- (void)translateWithVector: (OFVector3D)vector;
 
 /**
- * @brief Scales the matrix with the specified 3D vector.
+ * @brief Scales the matrix with the specified vector.
  *
  * @param vector The vector to scale the matrix with
  */
-- (void)scaleWithVector3D: (OFVector3D)vector;
+- (void)scaleWithVector: (OFVector3D)vector;
 
 /**
- * @brief Transforms the specified point in 3D space according to the matrix.
+ * @brief Transforms the specified vector according to the matrix.
  *
- * @param point The point to transform
- * @return The transformed point
+ * @param vector The vector to transform
+ * @return The transformed vector
  */
-- (OFVector3D)transformedPoint3D: (OFVector3D)point;
+- (OFVector4D)transformedVector: (OFVector4D)vector;
 @end
 
 OF_ASSUME_NONNULL_END

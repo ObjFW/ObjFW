@@ -94,97 +94,30 @@ initIdentityMatrix(void)
 	return hash;
 }
 
-- (void)transpose
-{
-	float copy[16];
-	memcpy(copy, _values, 16 * sizeof(float));
-
-	_values[1] = copy[4];
-	_values[2] = copy[8];
-	_values[3] = copy[12];
-	_values[4] = copy[1];
-	_values[6] = copy[9];
-	_values[7] = copy[13];
-	_values[8] = copy[2];
-	_values[9] = copy[6];
-	_values[11] = copy[14];
-	_values[12] = copy[3];
-	_values[13] = copy[7];
-	_values[14] = copy[11];
-}
-
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix
 {
-	float copy[16];
-	memcpy(copy, _values, 16 * sizeof(float));
+	float r[16], *m = _values, *l = matrix->_values;
+	memcpy(r, m, sizeof(r));
 
-	_values[0] = matrix->_values[0] * copy[0] +
-	    matrix->_values[4] * copy[1] +
-	    matrix->_values[8] * copy[2] +
-	    matrix->_values[12] * copy[3];
-	_values[1] = matrix->_values[1] * copy[0] +
-	    matrix->_values[5] * copy[1] +
-	    matrix->_values[9] * copy[2] +
-	    matrix->_values[13] * copy[3];
-	_values[2] = matrix->_values[2] * copy[0] +
-	    matrix->_values[6] * copy[1] +
-	    matrix->_values[10] * copy[2] +
-	    matrix->_values[14] * copy[3];
-	_values[3] = matrix->_values[3] * copy[0] +
-	    matrix->_values[7] * copy[1] +
-	    matrix->_values[11] * copy[2] +
-	    matrix->_values[15] * copy[3];
-	_values[4] = matrix->_values[0] * copy[4] +
-	    matrix->_values[4] * copy[5] +
-	    matrix->_values[8] * copy[6] +
-	    matrix->_values[12] * copy[7];
-	_values[5] = matrix->_values[1] * copy[4] +
-	    matrix->_values[5] * copy[5] +
-	    matrix->_values[9] * copy[6] +
-	    matrix->_values[13] * copy[7];
-	_values[6] = matrix->_values[2] * copy[4] +
-	    matrix->_values[6] * copy[5] +
-	    matrix->_values[10] * copy[6] +
-	    matrix->_values[14] * copy[7];
-	_values[7] = matrix->_values[3] * copy[4] +
-	    matrix->_values[7] * copy[5] +
-	    matrix->_values[11] * copy[6] +
-	    matrix->_values[15] * copy[7];
-	_values[8] = matrix->_values[0] * copy[8] +
-	    matrix->_values[4] * copy[9] +
-	    matrix->_values[8] * copy[10] +
-	    matrix->_values[12] * copy[11];
-	_values[9] = matrix->_values[1] * copy[8] +
-	    matrix->_values[5] * copy[9] +
-	    matrix->_values[9] * copy[10] +
-	    matrix->_values[13] * copy[11];
-	_values[10] = matrix->_values[2] * copy[8] +
-	    matrix->_values[6] * copy[9] +
-	    matrix->_values[10] * copy[10] +
-	    matrix->_values[14] * copy[11];
-	_values[11] = matrix->_values[3] * copy[8] +
-	    matrix->_values[7] * copy[9] +
-	    matrix->_values[11] * copy[10] +
-	    matrix->_values[15] * copy[11];
-	_values[12] = matrix->_values[0] * copy[12] +
-	    matrix->_values[4] * copy[13] +
-	    matrix->_values[8] * copy[14] +
-	    matrix->_values[12] * copy[15];
-	_values[13] = matrix->_values[1] * copy[12] +
-	    matrix->_values[5] * copy[13] +
-	    matrix->_values[9] * copy[14] +
-	    matrix->_values[13] * copy[15];
-	_values[14] = matrix->_values[2] * copy[12] +
-	    matrix->_values[6] * copy[13] +
-	    matrix->_values[10] * copy[14] +
-	    matrix->_values[14] * copy[15];
-	_values[15] = matrix->_values[3] * copy[12] +
-	    matrix->_values[7] * copy[13] +
-	    matrix->_values[11] * copy[14] +
-	    matrix->_values[15] * copy[15];
+	m[ 0] = l[0] * r[ 0] + l[4] * r[ 1] + l[ 8] * r[ 2] + l[12] * r[ 3];
+	m[ 1] = l[1] * r[ 0] + l[5] * r[ 1] + l[ 9] * r[ 2] + l[13] * r[ 3];
+	m[ 2] = l[2] * r[ 0] + l[6] * r[ 1] + l[10] * r[ 2] + l[14] * r[ 3];
+	m[ 3] = l[3] * r[ 0] + l[7] * r[ 1] + l[11] * r[ 2] + l[15] * r[ 3];
+	m[ 4] = l[0] * r[ 4] + l[4] * r[ 5] + l[ 8] * r[ 6] + l[12] * r[ 7];
+	m[ 5] = l[1] * r[ 4] + l[5] * r[ 5] + l[ 9] * r[ 6] + l[13] * r[ 7];
+	m[ 6] = l[2] * r[ 4] + l[6] * r[ 5] + l[10] * r[ 6] + l[14] * r[ 7];
+	m[ 7] = l[3] * r[ 4] + l[7] * r[ 5] + l[11] * r[ 6] + l[15] * r[ 7];
+	m[ 8] = l[0] * r[ 8] + l[4] * r[ 9] + l[ 8] * r[10] + l[12] * r[11];
+	m[ 9] = l[1] * r[ 8] + l[5] * r[ 9] + l[ 9] * r[10] + l[13] * r[11];
+	m[10] = l[2] * r[ 8] + l[6] * r[ 9] + l[10] * r[10] + l[14] * r[11];
+	m[11] = l[3] * r[ 8] + l[7] * r[ 9] + l[11] * r[10] + l[15] * r[11];
+	m[12] = l[0] * r[12] + l[4] * r[13] + l[ 8] * r[14] + l[12] * r[15];
+	m[13] = l[1] * r[12] + l[5] * r[13] + l[ 9] * r[14] + l[13] * r[15];
+	m[14] = l[2] * r[12] + l[6] * r[13] + l[10] * r[14] + l[14] * r[15];
+	m[15] = l[3] * r[12] + l[7] * r[13] + l[11] * r[14] + l[15] * r[15];
 }
 
-- (void)translateWithVector3D: (OFVector3D)vector
+- (void)translateWithVector: (OFVector3D)vector
 {
 	OFMatrix4x4 *translation = [[OFMatrix4x4 alloc] initWithValues:
 	    (float [16]){
@@ -197,7 +130,7 @@ initIdentityMatrix(void)
 	[translation release];
 }
 
-- (void)scaleWithVector3D: (OFVector3D)vector
+- (void)scaleWithVector: (OFVector3D)vector
 {
 	OFMatrix4x4 *scale = [[OFMatrix4x4 alloc] initWithValues:
 	    (float [16]){
@@ -210,15 +143,15 @@ initIdentityMatrix(void)
 	[scale release];
 }
 
-- (OFVector3D)transformedPoint3D: (OFVector3D)point
+- (OFVector4D)transformedVector: (OFVector4D)vec
 {
-	return OFMakeVector3D(
-	    _values[0] * point.x + _values[4] * point.y +
-	    _values[8] * point.z + _values[12],
-	    _values[1] * point.x + _values[5] * point.y +
-	    _values[9] * point.z + _values[13],
-	    _values[2] * point.x + _values[6] * point.y +
-	    _values[10] * point.z + _values[14]);
+	float *m = _values;
+
+	return OFMakeVector4D(
+	    m[0] * vec.x + m[4] * vec.y + m[ 8] * vec.z + m[12] * vec.w,
+	    m[1] * vec.x + m[5] * vec.y + m[ 9] * vec.z + m[13] * vec.w,
+	    m[2] * vec.x + m[6] * vec.y + m[10] * vec.z + m[14] * vec.w,
+	    m[3] * vec.x + m[7] * vec.y + m[11] * vec.z + m[15] * vec.w);
 }
 
 - (OFString *)description

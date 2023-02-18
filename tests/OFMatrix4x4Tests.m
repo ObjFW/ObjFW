@@ -24,7 +24,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMatrix4x4 *matrix, *matrix2;
-	OFVector3D point;
+	OFVector4D point;
 
 	TEST(@"+[identityMatrix]",
 	    memcmp([[OFMatrix4x4 identityMatrix] values], (float [16]){
@@ -36,27 +36,19 @@ static OFString *const module = @"OFMatrix4x4Tests";
 
 	TEST(@"+[matrixWithValues:]",
 	    (matrix = [OFMatrix4x4 matrixWithValues: (float [16]){
-		 1,  2,  3,  4,
-		 5,  6,  7,  8,
-		 9, 10, 11, 12,
-		13, 14, 15, 16
-	    }]))
-
-	TEST(@"-[description]",
-	    [matrix.description isEqual: @"<OFMatrix4x4: {\n"
-					 @"\t1 5 9 13\n"
-					 @"\t2 6 10 14\n"
-					 @"\t3 7 11 15\n"
-					 @"\t4 8 12 16\n"
-					 @"}>"])
-
-	TEST(@"-[transpose]",
-	    R([matrix transpose]) && memcmp(matrix.values, (float [16]){
 		1, 5,  9, 13,
 		2, 6, 10, 14,
 		3, 7, 11, 15,
 		4, 8, 12, 16
-	    }, 16 * sizeof(float)) == 0)
+	    }]))
+
+	TEST(@"-[description]",
+	    [matrix.description isEqual: @"<OFMatrix4x4: {\n"
+					 @"\t1 2 3 4\n"
+					 @"\t5 6 7 8\n"
+					 @"\t9 10 11 12\n"
+					 @"\t13 14 15 16\n"
+					 @"}>"])
 
 	TEST(@"-[isEqual:]", [[OFMatrix4x4 identityMatrix] isEqual:
 	    [OFMatrix4x4 matrixWithValues: (float [16]){
@@ -87,20 +79,23 @@ static OFString *const module = @"OFMatrix4x4Tests";
 		12000, 28000, 44000, 60000
 	    }]])
 
-	TEST(@"[-translateWithVector3D:]",
+	TEST(@"[-translateWithVector:]",
 	    R(matrix2 = [OFMatrix4x4 identityMatrix]) &&
-	    R([matrix2 translateWithVector3D: OFMakeVector3D(1, 2, 3)]) &&
-	    R(point = [matrix2 transformedPoint3D: OFMakeVector3D(2, 3, 4)]) &&
-	    point.x == 3 && point.y == 5 && point.z == 7)
+	    R([matrix2 translateWithVector: OFMakeVector3D(1, 2, 3)]) &&
+	    R(point =
+	    [matrix2 transformedVector: OFMakeVector4D(2, 3, 4, 1)]) &&
+	    point.x == 3 && point.y == 5 && point.z == 7 && point.w == 1)
 
-	TEST(@"-[scaleWithVector3D:]",
-	    R([matrix2 scaleWithVector3D: OFMakeVector3D(-1, 0.5, 2)]) &&
-	    R(point = [matrix2 transformedPoint3D: OFMakeVector3D(2, 3, 4)]) &&
-	    point.x == -3 && point.y == 2.5 && point.z == 14)
+	TEST(@"-[scaleWithVector:]",
+	    R([matrix2 scaleWithVector: OFMakeVector3D(-1, 0.5, 2)]) &&
+	    R(point =
+	    [matrix2 transformedVector: OFMakeVector4D(2, 3, 4, 1)]) &&
+	    point.x == -3 && point.y == 2.5 && point.z == 14 && point.w == 1)
 
-	TEST(@"-[transformedPoint3D:]",
-	    R((point = [matrix transformedPoint3D: OFMakeVector3D(1, 2, 3)])) &&
-	    point.x == 18 && point.y == 46 && point.z == 74)
+	TEST(@"-[transformedVector:]",
+	    R((point =
+	    [matrix transformedVector: OFMakeVector4D(1, 2, 3, 1)])) &&
+	    point.x == 18 && point.y == 46 && point.z == 74 && point.w == 102)
 
 	objc_autoreleasePoolPop(pool);
 }
