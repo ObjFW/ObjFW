@@ -25,27 +25,12 @@ static const float identityValues[16] = {
 	0, 0, 1, 0,
 	0, 0, 0, 1
 };
-static OFMatrix4x4 *identityMatrix;
-
-static void
-initIdentityMatrix(void)
-{
-	identityMatrix = [[OFMatrix4x4 alloc] initWithValues: identityValues];
-}
 
 @implementation OFMatrix4x4
-+ (void)initialize
-{
-	if (self != [OFMatrix4x4 class])
-		return;
-}
-
 + (OFMatrix4x4 *)identityMatrix
 {
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initIdentityMatrix);
-
-	return identityMatrix;
+	return [[[OFMatrix4x4 alloc]
+	    initWithValues: identityValues] autorelease];
 }
 
 + (instancetype)matrixWithValues: (const float [16])values
