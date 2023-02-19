@@ -47,14 +47,15 @@ static const float identityValues[4][4] = {
 	return self;
 }
 
-- (float (*)[4][4])values
+- (float (*)[4])values
 {
-	return &_values;
+	return _values;
 }
 
 - (instancetype)copy
 {
-	return [[OFMatrix4x4 alloc] initWithValues: _values];
+	return [[OFMatrix4x4 alloc]
+	    initWithValues: (const float (*)[4])_values];
 }
 
 - (bool)isEqual: (OFMatrix4x4 *)matrix
@@ -127,7 +128,7 @@ static const float identityValues[4][4] = {
 - (void)translateWithVector: (OFVector3D)vector
 {
 	OFMatrix4x4 *translation = [[OFMatrix4x4 alloc] initWithValues:
-	    (float [4][4]){
+	    (const float [4][4]){
 		{ 1, 0, 0, vector.x },
 		{ 0, 1, 0, vector.y },
 		{ 0, 0, 1, vector.z },
@@ -140,7 +141,7 @@ static const float identityValues[4][4] = {
 - (void)scaleWithVector: (OFVector3D)vector
 {
 	OFMatrix4x4 *scale = [[OFMatrix4x4 alloc] initWithValues:
-	    (float [4][4]){
+	    (const float [4][4]){
 		{ vector.x, 0, 0, 0 },
 		{ 0, vector.y, 0, 0 },
 		{ 0, 0, vector.z, 0 },

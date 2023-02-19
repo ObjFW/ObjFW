@@ -35,7 +35,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * These may be modified directly.
  */
-@property (readonly, nonatomic) float (*values)[4][4];
+@property (readonly, nonatomic) float (*values)[4];
 
 /**
  * @brief Returns the 4x4 identity matrix.

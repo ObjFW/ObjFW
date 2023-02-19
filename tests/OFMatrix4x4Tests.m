@@ -27,7 +27,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	OFVector4D point;
 
 	TEST(@"+[identityMatrix]",
-	    memcmp([[OFMatrix4x4 identityMatrix] values], (float [4][4]){
+	    memcmp([[OFMatrix4x4 identityMatrix] values], (const float [4][4]){
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
@@ -35,7 +35,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    }, 16 * sizeof(float)) == 0)
 
 	TEST(@"+[matrixWithValues:]",
-	    (matrix = [OFMatrix4x4 matrixWithValues: (float [4][4]){
+	    (matrix = [OFMatrix4x4 matrixWithValues: (const float [4][4]){
 		{  1,  2,  3,  4 },
 		{  5,  6,  7,  8 },
 		{  9, 10, 11, 12 },
@@ -51,7 +51,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 					 @"}>"])
 
 	TEST(@"-[isEqual:]", [[OFMatrix4x4 identityMatrix] isEqual:
-	    [OFMatrix4x4 matrixWithValues: (float [4][4]){
+	    [OFMatrix4x4 matrixWithValues: (const float [4][4]){
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
@@ -64,7 +64,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    R([matrix2 multiplyWithMatrix: [OFMatrix4x4 identityMatrix]]) &&
 	    [matrix2 isEqual: matrix])
 
-	matrix2 = [OFMatrix4x4 matrixWithValues: (float [4][4]){
+	matrix2 = [OFMatrix4x4 matrixWithValues: (const float [4][4]){
 		{  100,  200,  300,  400 },
 		{  500,  600,  700,  800 },
 		{  900, 1000, 1100, 1200 },
@@ -72,7 +72,8 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	}];
 	TEST(@"-[multiplyWithMatrix:] #2",
 	    R([matrix2 multiplyWithMatrix: matrix]) &&
-	    [matrix2 isEqual: [OFMatrix4x4 matrixWithValues: (float [4][4]){
+	    [matrix2 isEqual:
+	    [OFMatrix4x4 matrixWithValues: (const float [4][4]){
 		{  9000, 10000, 11000, 12000 },
 		{ 20200, 22800, 25400, 28000 },
 		{ 31400, 35600, 39800, 44000 },
