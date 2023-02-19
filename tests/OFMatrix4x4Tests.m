@@ -27,19 +27,19 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	OFVector4D point;
 
 	TEST(@"+[identityMatrix]",
-	    memcmp([[OFMatrix4x4 identityMatrix] values], (float [16]){
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
+	    memcmp([[OFMatrix4x4 identityMatrix] values], (float [4][4]){
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
 	    }, 16 * sizeof(float)) == 0)
 
 	TEST(@"+[matrixWithValues:]",
-	    (matrix = [OFMatrix4x4 matrixWithValues: (float [16]){
-		1, 5,  9, 13,
-		2, 6, 10, 14,
-		3, 7, 11, 15,
-		4, 8, 12, 16
+	    (matrix = [OFMatrix4x4 matrixWithValues: (float [4][4]){
+		{  1,  2,  3,  4 },
+		{  5,  6,  7,  8 },
+		{  9, 10, 11, 12 },
+		{ 13, 14, 15, 16 }
 	    }]))
 
 	TEST(@"-[description]",
@@ -51,11 +51,11 @@ static OFString *const module = @"OFMatrix4x4Tests";
 					 @"}>"])
 
 	TEST(@"-[isEqual:]", [[OFMatrix4x4 identityMatrix] isEqual:
-	    [OFMatrix4x4 matrixWithValues: (float [16]){
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
+	    [OFMatrix4x4 matrixWithValues: (float [4][4]){
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
 	    }]])
 
 	TEST(@"-[copy]", (matrix2 = [matrix copy]) && [matrix2 isEqual: matrix])
@@ -64,19 +64,19 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    R([matrix2 multiplyWithMatrix: [OFMatrix4x4 identityMatrix]]) &&
 	    [matrix2 isEqual: matrix])
 
-	matrix2 = [OFMatrix4x4 matrixWithValues: (float [16]){
-		100, 500,  900, 1300,
-		200, 600, 1000, 1400,
-		300, 700, 1100, 1500,
-		400, 800, 1200, 1600
+	matrix2 = [OFMatrix4x4 matrixWithValues: (float [4][4]){
+		{  100,  200,  300,  400 },
+		{  500,  600,  700,  800 },
+		{  900, 1000, 1100, 1200 },
+		{ 1300, 1400, 1500, 1600 }
 	}];
 	TEST(@"-[multiplyWithMatrix:] #2",
 	    R([matrix2 multiplyWithMatrix: matrix]) &&
-	    [matrix2 isEqual: [OFMatrix4x4 matrixWithValues: (float [16]){
-		 9000, 20200, 31400, 42600,
-		10000, 22800, 35600, 48400,
-		11000, 25400, 39800, 54200,
-		12000, 28000, 44000, 60000
+	    [matrix2 isEqual: [OFMatrix4x4 matrixWithValues: (float [4][4]){
+		{  9000, 10000, 11000, 12000 },
+		{ 20200, 22800, 25400, 28000 },
+		{ 31400, 35600, 39800, 44000 },
+		{ 42600, 48400, 54200, 60000 }
 	    }]])
 
 	TEST(@"[-translateWithVector:]",

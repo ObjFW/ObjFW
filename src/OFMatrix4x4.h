@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFMatrix4x4: OFObject <OFCopying>
 {
-	float _values[16];
+	float _values[4][4];
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -31,11 +31,11 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief An array of the 16 floats of the 4x4 matrix in column-major format.
+ * @brief A 2D array of the 4x4 floats of the matrix in row-major format.
  *
  * These may be modified directly.
  */
-@property (readonly, nonatomic) float *values;
+@property (readonly, nonatomic) float (*values)[4][4];
 
 /**
  * @brief Returns the 4x4 identity matrix.
@@ -45,18 +45,18 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new 4x4 matrix with the specified values.
  *
- * @param values An array of 16 floats in column-major format
+ * @param values A 2D array of 4x4 floats in row-major format
  * @return A new, autoreleased OFMatrix4x4
  */
-+ (instancetype)matrixWithValues: (const float [_Nonnull 16])values;
++ (instancetype)matrixWithValues: (const float [_Nonnull 4][4])values;
 
 /**
  * @brief Initializes an already allocated 4x4 matrix with the specified values.
  *
- * @param values An array of 16 floats in column-major format
+ * @param values A 2D array of 4x4 floats in row-major format
  * @return An initialized OFMatrix4x4
  */
-- (instancetype)initWithValues: (const float [_Nonnull 16])values;
+- (instancetype)initWithValues: (const float [_Nonnull 4][4])values;
 
 /**
  * @brief Mulitplies the receiver with the specified matrix on the left side
