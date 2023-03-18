@@ -101,8 +101,9 @@ OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileWriteStream: OFStream
 {
 	OFZIPArchive *_archive;
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	uint32_t _CRC32;
+	OFStreamOffset _CRC32Offset, _size64Offset;
 @public
 	unsigned long long _bytesWritten;
 	OFMutableZIPArchiveEntry *_entry;
@@ -110,7 +111,9 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)of_initWithArchive: (OFZIPArchive *)archive
 			    stream: (OFStream *)stream
-			     entry: (OFMutableZIPArchiveEntry *)entry;
+			     entry: (OFMutableZIPArchiveEntry *)entry
+		       CRC32Offset: (OFStreamOffset)CRC32Offset
+		      size64Offset: (OFStreamOffset)size64Offset;
 @end
 
 uint32_t
@@ -212,7 +215,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 		if (_mode == modeAppend) {
 			_offset = _centralDirectoryOffset;
-			seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
+			seekOrThrowInvalidFormat(_stream,
 			    (OFStreamOffset)_offset, OFSeekSet);
 		}
 	} @catch (id e) {
@@ -274,8 +277,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	bool valid = false;
 
 	do {
-		seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-		    offset, OFSeekEnd);
+		seekOrThrowInvalidFormat(_stream, offset, OFSeekEnd);
 
 		if ([_stream readLittleEndianInt32] == 0x06054B50) {
 			valid = true;
@@ -307,8 +309,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		int64_t offset64;
 		uint64_t size;
 
-		seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-		    offset - 20, OFSeekEnd);
+		seekOrThrowInvalidFormat(_stream, offset - 20, OFSeekEnd);
 
 		if ([_stream readLittleEndianInt32] != 0x07064B50) {
 			objc_autoreleasePoolPop(pool);
@@ -325,7 +326,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
-		seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
+		seekOrThrowInvalidFormat(_stream,
 		    (OFStreamOffset)offset64, OFSeekSet);
 
 		if ([_stream readLittleEndianInt32] != 0x06064B50)
@@ -365,7 +366,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    (OFStreamOffset)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
+	seekOrThrowInvalidFormat(_stream,
 	    (OFStreamOffset)_centralDirectoryOffset, OFSeekSet);
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
@@ -436,8 +437,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
-	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
-	    (OFStreamOffset)offset64, OFSeekSet);
+	seekOrThrowInvalidFormat(_stream, (OFStreamOffset)offset64, OFSeekSet);
 	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 
@@ -465,11 +465,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
 {
-	/* TODO: Avoid data descriptor when _stream is an OFSeekableStream */
 	int64_t offsetAdd = 0;
 	void *pool;
 	OFMutableZIPArchiveEntry *entry;
 	OFString *fileName;
+	bool seekable;
+	OFStreamOffset CRC32Offset = 0, size64Offset = 0;
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
 
@@ -507,12 +508,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (UINT16_MAX - extraFieldLength < 20)
 		@throw [OFOutOfRangeException exception];
 
+	seekable = [_stream isKindOfClass: [OFSeekableStream class]];
+
 	entry.versionMadeBy = (entry.versionMadeBy & 0xFF00) | 45;
 	entry.minVersionNeeded = (entry.minVersionNeeded & 0xFF00) | 45;
 	entry.compressedSize = 0;
 	entry.uncompressedSize = 0;
 	entry.CRC32 = 0;
-	entry.generalPurposeBitFlag |= (1u << 3) | (1u << 11);
+	entry.generalPurposeBitFlag |= (seekable ? 0 : (1u << 3)) | (1u << 11);
 	entry.of_localFileHeaderOffset = _offset;
 
 	[_stream writeLittleEndianInt32: 0x04034B50];
@@ -521,7 +524,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeLittleEndianInt16: entry.compressionMethod];
 	[_stream writeLittleEndianInt16: entry.of_lastModifiedFileTime];
 	[_stream writeLittleEndianInt16: entry.of_lastModifiedFileDate];
-	/* We use the data descriptor */
+	/* Written later or data descriptor used instead */
+	if (seekable)
+		CRC32Offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 	[_stream writeLittleEndianInt32: 0];
 	/* We use ZIP64 */
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
@@ -535,7 +540,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[_stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
 	[_stream writeLittleEndianInt16: 16];
-	/* We use the data descriptor */
+	/* Written later or data descriptor used instead */
+	if (seekable)
+		size64Offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 	[_stream writeLittleEndianInt64: 0];
 	[_stream writeLittleEndianInt64: 0];
 	offsetAdd += (2 * 2) + (2 * 8);
@@ -552,7 +559,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_lastReturnedStream = [[OFZIPArchiveFileWriteStream alloc]
 	    of_initWithArchive: self
 			stream: _stream
-			 entry: entry];
+			 entry: entry
+		   CRC32Offset: CRC32Offset
+		  size64Offset: size64Offset];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -865,6 +874,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (instancetype)of_initWithArchive: (OFZIPArchive *)archive
 			    stream: (OFStream *)stream
 			     entry: (OFMutableZIPArchiveEntry *)entry
+		       CRC32Offset: (OFStreamOffset)CRC32Offset
+		      size64Offset: (OFStreamOffset)size64Offset
 {
 	self = [super init];
 
@@ -872,6 +883,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_stream = [stream retain];
 	_entry = [entry retain];
 	_CRC32 = ~0;
+	_CRC32Offset = CRC32Offset;
+	_size64Offset = size64Offset;
 
 	return self;
 }
@@ -923,16 +936,33 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)close
 {
+	bool seekable;
+
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_bytesWritten > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	[_stream writeLittleEndianInt32: 0x08074B50];
-	[_stream writeLittleEndianInt32: _CRC32];
-	[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
-	[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+	seekable = [_stream isKindOfClass: [OFSeekableStream class]];
+
+	if (seekable) {
+		OFStreamOffset offset = [_stream seekToOffset: 0
+						       whence: OFSeekCurrent];
+
+		[_stream seekToOffset: _CRC32Offset whence: OFSeekSet];
+		[_stream writeLittleEndianInt32: ~_CRC32];
+		[_stream seekToOffset: _size64Offset whence: OFSeekSet];
+		[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+		[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+
+		[_stream seekToOffset: offset whence: OFSeekSet];
+	} else {
+		[_stream writeLittleEndianInt32: 0x08074B50];
+		[_stream writeLittleEndianInt32: ~_CRC32];
+		[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+		[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
+	}
 
 	[_stream release];
 	_stream = nil;
@@ -942,7 +972,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_entry.uncompressedSize = _bytesWritten;
 	[_entry makeImmutable];
 
-	_bytesWritten += (2 * 4 + 2 * 8);
+	if (!seekable)
+		_bytesWritten += (2 * 4 + 2 * 8);
 
 	[_archive->_entries addObject: _entry];
 	[_archive->_pathToEntryMap setObject: _entry forKey: _entry.fileName];

@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 #ifdef OF_ZIP_ARCHIVE_M
 @public
 #endif
