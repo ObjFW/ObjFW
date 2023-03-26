@@ -39,9 +39,10 @@ struct EmbeddedFile {
 size_t numEmbeddedFiles = 0;
 #ifdef OF_HAVE_THREADS
 static OFPlainMutex mutex;
+static OFOnceControl mutexOnceControl = OFOnceControlInitValue;
 
 static void
-init(void)
+initMutex(void)
 {
 	OFEnsure(OFPlainMutexNew(&mutex) == 0);
 }
@@ -51,8 +52,7 @@ void
 OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 {
 #ifdef OF_HAVE_THREADS
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, init);
+	OFOnce(&mutexOnceControl, initMutex);
 
 	OFEnsure(OFPlainMutexLock(&mutex) == 0);
 #endif
@@ -72,6 +72,12 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 }
 
 @implementation OFEmbeddedIRIHandler
++ (void)initialize
+{
+	if (self == [OFEmbeddedIRIHandler class])
+		OFOnce(&mutexOnceControl, initMutex);
+}
+
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OFString *path;
