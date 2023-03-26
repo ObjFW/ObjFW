@@ -13,4 +13,4 @@
  * file.
  */
 
-#import <ObjFW/ObjFW.h>
+@import ObjFW;
