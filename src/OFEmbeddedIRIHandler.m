@@ -72,11 +72,13 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 }
 
 @implementation OFEmbeddedIRIHandler
+#ifdef OF_HAVE_THREADS
 + (void)initialize
 {
 	if (self == [OFEmbeddedIRIHandler class])
 		OFOnce(&mutexOnceControl, initMutex);
 }
+#endif
 
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
