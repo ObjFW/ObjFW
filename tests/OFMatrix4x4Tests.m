@@ -88,7 +88,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    point.x == 3 && point.y == 5 && point.z == 7 && point.w == 1)
 
 	TEST(@"-[scaleWithVector:]",
-	    R([matrix2 scaleWithVector: OFMakeVector3D(-1, 0.5, 2)]) &&
+	    R([matrix2 scaleWithVector: OFMakeVector3D(-1, 0.5f, 2)]) &&
 	    R(point =
 	    [matrix2 transformedVector: OFMakeVector4D(2, 3, 4, 1)]) &&
 	    point.x == -3 && point.y == 2.5 && point.z == 14 && point.w == 1)
