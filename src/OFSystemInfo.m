@@ -137,10 +137,14 @@ initOperatingSystemName(void)
 	operatingSystemName = @"AmigaOS 4";
 #elif defined(OF_WII)
 	operatingSystemName = @"Nintendo Wii";
+#elif defined(OF_WII_U)
+	operatingSystemName = @"Nintendo Wii U";
 #elif defined(NINTENDO_3DS)
 	operatingSystemName = @"Nintendo 3DS";
 #elif defined(OF_NINTENDO_DS)
 	operatingSystemName = @"Nintendo DS";
+#elif defined(OF_NINTENDO_SWITCH)
+	operatingSystemName = @"Nintendo Switch";
 #elif defined(OF_PSP)
 	operatingSystemName = @"PlayStation Portable";
 #elif defined(OF_DJGPP)
