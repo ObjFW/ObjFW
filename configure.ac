@@ -1337,7 +1337,7 @@ amigaos* | morphos*)
 esac
 
 AC_CHECK_HEADERS(xlocale.h)
-AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
+AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l uselocale])
 AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
