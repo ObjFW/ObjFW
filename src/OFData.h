@@ -14,7 +14,6 @@
  */
 
 #import "OFObject.h"
-#import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
 /*! @file */
@@ -38,12 +37,9 @@ typedef enum {
  * @class OFData OFData.h ObjFW/OFData.h
  *
  * @brief A class for storing arbitrary data in an array.
- *
- * For security reasons, serialization and deserialization is only implemented
- * for OFData with item size 1.
  */
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFMessagePackRepresentation>
+    OFMessagePackRepresentation>
 {
 	unsigned char *_Nullable _items;
 	size_t _count, _itemSize;

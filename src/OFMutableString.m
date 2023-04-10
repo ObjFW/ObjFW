@@ -187,11 +187,6 @@ static struct {
 			 encoding: encoding];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableUTF8String alloc] initWithSerialization: element];
-}
-
 - (instancetype)retain
 {
 	return self;

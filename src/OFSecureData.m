@@ -514,11 +514,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (void)dealloc
 {
 	[self zero];
@@ -632,11 +627,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 #endif
 
 - (void)writeToIRI: (OFIRI *)IRI
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (OFXMLElement *)XMLElementBySerializing
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

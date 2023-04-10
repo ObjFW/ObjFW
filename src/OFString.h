@@ -37,7 +37,6 @@
 
 #include "OFObject.h"
 #ifdef __OBJC__
-# import "OFSerialization.h"
 # import "OFJSONRepresentation.h"
 # import "OFMessagePackRepresentation.h"
 #endif
@@ -144,7 +143,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief A class for handling strings.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
+    OFJSONRepresentation, OFMessagePackRepresentation>
 /**
  * @brief The length of the string in Unicode codepoints.
  */
@@ -1371,7 +1370,6 @@ OF_ASSUME_NONNULL_END
 # endif
 # import "OFString+PercentEncoding.h"
 # import "OFString+PropertyListParsing.h"
-# import "OFString+Serialization.h"
 # import "OFString+XMLEscaping.h"
 # import "OFString+XMLUnescaping.h"
 #endif

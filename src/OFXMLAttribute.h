@@ -92,8 +92,6 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (OFString *)stringValue OF_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

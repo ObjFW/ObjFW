@@ -434,5 +434,3 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 OF_ASSUME_NONNULL_END
-
-#import "OFXMLElement+Serialization.h"

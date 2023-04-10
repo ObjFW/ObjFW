@@ -28,7 +28,6 @@
 
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 #import "OFValue.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -43,8 +42,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifndef OF_NUMBER_M
 OF_SUBCLASSING_RESTRICTED
 #endif
-@interface OFNumber: OFValue <OFComparing, OFSerialization,
-    OFJSONRepresentation, OFMessagePackRepresentation>
+@interface OFNumber: OFValue <OFComparing, OFJSONRepresentation,
+    OFMessagePackRepresentation>
 {
 	union {
 		double float_;

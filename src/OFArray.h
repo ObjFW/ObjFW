@@ -25,7 +25,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -102,7 +101,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @note Subclasses must implement @ref count and @ref objectAtIndex:.
  */
 @interface OFArray OF_GENERIC(ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id

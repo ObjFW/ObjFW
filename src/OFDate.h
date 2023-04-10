@@ -15,7 +15,6 @@
 
 #import "OFObject.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifndef OF_DATE_M
 OF_SUBCLASSING_RESTRICTED
 #endif
-@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
+@interface OFDate: OFObject <OFCopying, OFComparing,
     OFMessagePackRepresentation>
 {
 	OFTimeInterval _seconds;

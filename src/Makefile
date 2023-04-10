@@ -60,7 +60,6 @@ SRCS = OFApplication.m			\
        OFNumber.m			\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
-       OFObject+Serialization.m		\
        OFOnce.m				\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
@@ -77,7 +76,6 @@ SRCS = OFApplication.m			\
        OFScrypt.m			\
        OFSecureData.m			\
        OFSeekableStream.m		\
-       OFSerialization.m		\
        OFSet.m				\
        OFSortedList.m			\
        OFStdIOStream.m			\
@@ -87,7 +85,6 @@ SRCS = OFApplication.m			\
        OFString+JSONParsing.m		\
        OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
-       OFString+Serialization.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
@@ -105,7 +102,6 @@ SRCS = OFApplication.m			\
        OFXMLCharacters.m		\
        OFXMLComment.m			\
        OFXMLElement.m			\
-       OFXMLElement+Serialization.m	\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\

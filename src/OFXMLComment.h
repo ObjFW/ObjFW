@@ -49,8 +49,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFXMLComment
  */
 - (instancetype)initWithText: (OFString *)text;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

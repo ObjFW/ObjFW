@@ -34,7 +34,6 @@
 #import "OFString.h"
 #import "OFSystemInfo.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -496,39 +495,6 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return [self initWithTimeIntervalSince1970: seconds];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OFTimeInterval seconds;
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		unsigned long long value;
-
-		if (![element.name isEqual: @"OFDate"] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		if (![[element attributeForName: @"encoding"].stringValue
-		    isEqual: @"hex"])
-			@throw [OFInvalidFormatException exception];
-
-		value = [element unsignedLongLongValueWithBase: 16];
-
-		if (value > UINT64_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		seconds = OFFromBigEndianDouble(OFRawUInt64ToDouble(
-		    OFToBigEndian64(value)));
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return [self initWithTimeIntervalSince1970: seconds];
-}
-
 - (bool)isEqual: (id)object
 {
 	OFDate *otherDate;
@@ -585,26 +551,6 @@ tmAndTzToTime(const struct tm *tm, short tz)
 - (OFString *)description
 {
 	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: @"OFDate"
-				      namespace: OFSerializationNS];
-
-	[element addAttributeWithName: @"encoding" stringValue: @"hex"];
-	element.stringValue = [OFString stringWithFormat: @"%016" PRIx64,
-	    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
-	    self.timeIntervalSince1970)))];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFData *)messagePackRepresentation

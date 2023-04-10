@@ -19,7 +19,6 @@
 #import "OFXMLNode+Private.h"
 #import "OFString.h"
 #import "OFDictionary.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -60,42 +59,6 @@
 		_name = [name copy];
 		_namespace = [namespace copy];
 		_stringValue = [stringValue copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool;
-	OFString *name, *namespace, *stringValue;
-
-	@try {
-		pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		name = [element attributeForName: @"name"].stringValue;
-		namespace = [element attributeForName: @"namespace"]
-		    .stringValue;
-		stringValue = [element attributeForName: @"stringValue"]
-		    .stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithName: name
-			namespace: namespace
-		      stringValue: stringValue];
-
-	@try {
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -161,29 +124,6 @@
 	OFHashFinalize(&hash);
 
 	return hash;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: self.className
-				      namespace: OFSerializationNS];
-	[element addAttributeWithName: @"name" stringValue: _name];
-
-	if (_namespace != nil)
-		[element addAttributeWithName: @"namespace"
-				  stringValue: _namespace];
-
-	[element addAttributeWithName: @"stringValue"
-			  stringValue: _stringValue];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)description

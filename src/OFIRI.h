@@ -15,7 +15,6 @@
 
 #import "OFObject.h"
 #import "OFCharacterSet.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This class follows RFC 3976 and RFC 3987.
  */
-@interface OFIRI: OFObject <OFCopying, OFMutableCopying, OFSerialization>
+@interface OFIRI: OFObject <OFCopying, OFMutableCopying>
 {
 	OFString *_scheme;
 	OFString *_Nullable _percentEncodedHost;

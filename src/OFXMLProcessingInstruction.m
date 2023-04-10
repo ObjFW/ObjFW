@@ -20,7 +20,6 @@
 #import "OFXMLProcessingInstruction.h"
 #import "OFString.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLElement.h"
 #import "OFXMLNode+Private.h"
 
 #import "OFInvalidArgumentException.h"
@@ -43,33 +42,6 @@
 	@try {
 		_target = [target copy];
 		_text = [text copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFXMLAttribute *targetAttr;
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		targetAttr = [element attributeForName: @"target"
-					     namespace: OFSerializationNS];
-		if (targetAttr.stringValue.length == 0)
-			@throw [OFInvalidArgumentException exception];
-
-		self = [self initWithTarget: targetAttr.stringValue
-				       text: element.stringValue];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -137,20 +109,5 @@
 - (OFString *)description
 {
 	return self.XMLString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OFXMLElement *ret = [OFXMLElement elementWithName: self.className
-						namespace: OFSerializationNS
-					      stringValue: _text];
-	void *pool = objc_autoreleasePoolPush();
-
-	[ret addAttribute: [OFXMLAttribute attributeWithName: @"target"
-						 stringValue: _target]];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
 }
 @end

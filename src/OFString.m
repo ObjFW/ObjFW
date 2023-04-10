@@ -46,7 +46,6 @@
 #import "OFSystemInfo.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
-#import "OFXMLElement.h"
 
 #import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -135,7 +134,6 @@ _references_to_categories_of_OFString(void)
 #endif
 	_OFString_PercentEncoding_reference = 1;
 	_OFString_PropertyListParsing_reference = 1;
-	_OFString_Serialization_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
 }
@@ -592,11 +590,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI
 						      encoding: encoding];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFUTF8String alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -1075,36 +1068,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	self = [self initWithCString: data.items
 			    encoding: encoding
 			      length: data.count * data.itemSize];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		if ([self isKindOfClass: [OFMutableString class]]) {
-			if (![element.name isEqual: @"OFMutableString"])
-				@throw [OFInvalidArgumentException exception];
-		} else {
-			if (![element.name isEqual: @"OFString"])
-				@throw [OFInvalidArgumentException exception];
-		}
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithString: stringValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1680,28 +1643,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (OFString *)description
 {
 	return [[self copy] autorelease];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFString *className;
-
-	if ([self isKindOfClass: [OFMutableString class]])
-		className = @"OFMutableString";
-	else
-		className = @"OFString";
-
-	element = [OFXMLElement elementWithName: className
-				      namespace: OFSerializationNS
-				    stringValue: self];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation

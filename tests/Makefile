@@ -10,7 +10,6 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx	\
-	serialization_xml.m	\
 	testfile_bin.m		\
 	testfile_ini.m
 DISTCLEAN = Info.plist
@@ -48,7 +47,6 @@ SRCS = ForwardingTests.m		\
        OFSHA384HashTests.m		\
        OFSHA512HashTests.m		\
        OFScryptTests.m			\
-       OFSerializationTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -65,7 +63,6 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
-       serialization_xml.m		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
@@ -94,8 +91,6 @@ IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
-serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini

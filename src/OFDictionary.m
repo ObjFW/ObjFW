@@ -24,7 +24,6 @@
 #import "OFEnumerator.h"
 #import "OFMapTableDictionary.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -104,12 +103,6 @@ OF_DIRECT_MEMBERS
 {
 	return (id)[[OFMapTableDictionary alloc] initWithKey: firstKey
 						   arguments: arguments];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMapTableDictionary alloc]
-	    initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -262,11 +255,6 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -568,50 +556,6 @@ OF_DIRECT_MEMBERS
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id <OFSerialization> key, object;
-
-	if ([self isKindOfClass: [OFMutableDictionary class]])
-		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFDictionary"
-					      namespace: OFSerializationNS];
-
-	keyEnumerator = [self keyEnumerator];
-	objectEnumerator = [self objectEnumerator];
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	       (object = [objectEnumerator nextObject]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
-		OFXMLElement *keyElement, *objectElement;
-
-		keyElement = [OFXMLElement
-		    elementWithName: @"key"
-			  namespace: OFSerializationNS];
-		[keyElement addChild: key.XMLElementBySerializing];
-
-		objectElement = [OFXMLElement
-		    elementWithName: @"object"
-			  namespace: OFSerializationNS];
-		[objectElement addChild: object.XMLElementBySerializing];
-
-		[element addChild: keyElement];
-		[element addChild: objectElement];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation

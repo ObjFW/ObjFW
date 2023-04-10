@@ -29,7 +29,6 @@
 #import "OFOnce.h"
 #import "OFPair.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -957,29 +956,6 @@ merge(OFString *base, OFString *path)
 	return [super init];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithString: stringValue];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
 - (void)dealloc
 {
 	[_scheme release];
@@ -1393,21 +1369,5 @@ merge(OFString *base, OFString *path)
 {
 	return [OFString stringWithFormat: @"<%@: %@>",
 					   self.class, self.string];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: self.className
-				      namespace: OFSerializationNS
-				    stringValue: self.string];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 @end

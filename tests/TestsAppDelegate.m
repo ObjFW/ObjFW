@@ -440,7 +440,6 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-	[self serializationTests];
 	[self JSONTests];
 	[self propertyListTests];
 	[self matrix4x4Tests];

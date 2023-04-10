@@ -22,7 +22,6 @@
 #import "OFMapTable+Private.h"
 #import "OFMutableMapTableSet.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFEnumerationMutationException.h"
@@ -173,37 +172,6 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 
 		while ((object = va_arg(arguments, id)) != nil)
 			[_mapTable setObject: (void *)1 forKey: object];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [self init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if ((![element.name isEqual: @"OFSet"] &&
-		    ![element.name isEqual: @"OFMutableSet"]) ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLElement *child in
-		    [element elementsForNamespace: OFSerializationNS]) {
-			void *pool2  = objc_autoreleasePoolPush();
-
-			[_mapTable setObject: (void *)1
-				      forKey: [child objectByDeserializing]];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

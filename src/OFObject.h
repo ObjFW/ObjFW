@@ -1516,7 +1516,6 @@ OF_ASSUME_NONNULL_END
 
 #ifdef __OBJC__
 # import "OFObject+KeyValueCoding.h"
-# import "OFObject+Serialization.h"
 #endif
 
 #endif

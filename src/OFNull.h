@@ -16,7 +16,6 @@
 #import "OFObject.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for representing null values in collections.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
+@interface OFNull: OFObject <OFCopying, OFJSONRepresentation,
     OFMessagePackRepresentation>
 /**
  * @brief Returns an OFNull singleton.

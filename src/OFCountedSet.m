@@ -21,7 +21,6 @@
 #import "OFCountedMapTableSet.h"
 #import "OFNumber.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 static struct {
 	Class isa;
@@ -69,12 +68,6 @@ static struct {
 {
 	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFCountedMapTableSet alloc]
-	    initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -175,42 +168,6 @@ static struct {
 - (id)mutableCopy
 {
 	return [[OFCountedSet alloc] initWithSet: self];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: @"OFCountedSet"
-				      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-
-		OFXMLElement *objectElement;
-		OFString *count;
-
-		count =
-		    [OFString stringWithFormat: @"%zu",
-						[self countForObject: object]];
-
-		objectElement = [OFXMLElement
-		    elementWithName: @"object"
-			  namespace: OFSerializationNS];
-		[objectElement addAttributeWithName: @"count"
-					stringValue: count];
-		[objectElement addChild: object.XMLElementBySerializing];
-		[element addChild: objectElement];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS

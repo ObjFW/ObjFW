@@ -20,10 +20,8 @@
 #include <math.h>
 
 #import "OFNumber.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
-#import "OFXMLAttribute.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -376,11 +374,6 @@ isFloat(OFNumber *number)
 	}
 
 	return (id)[[OFNumber of_alloc] initWithDouble: value];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFNumber of_alloc] initWithSerialization: element];
 }
 #ifdef __clang__
 # pragma clang diagnostic pop
@@ -784,54 +777,6 @@ isFloat(OFNumber *number)
 	return self;
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFString *typeString;
-
-		if (![element.name isEqual: @"OFNumber"] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		typeString = [element attributeForName: @"type"].stringValue;
-
-		if ([typeString isEqual: @"bool"]) {
-			OFString *stringValue = element.stringValue;
-			if ([stringValue isEqual: @"true"])
-				self = [self initWithBool: true];
-			else if ([stringValue isEqual: @"false"])
-				self = [self initWithBool: false];
-			else
-				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"float"]) {
-			unsigned long long value =
-			    [element unsignedLongLongValueWithBase: 16];
-
-			if (value > UINT64_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			self = [self initWithDouble: OFFromBigEndianDouble(
-			    OFRawUInt64ToDouble(OFToBigEndian64(value)))];
-		} else if ([typeString isEqual: @"signed"])
-			self = [self initWithLongLong: element.longLongValue];
-		else if ([typeString isEqual: @"unsigned"])
-			self = [self initWithUnsignedLongLong:
-			    element.unsignedLongLongValue];
-		else
-			@throw [OFInvalidArgumentException exception];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - (const char *)objCType
 {
 	return _typeEncoding;
@@ -1077,38 +1022,6 @@ isFloat(OFNumber *number)
 						   self.unsignedLongLongValue];
 
 	@throw [OFInvalidFormatException exception];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: @"OFNumber"
-				      namespace: OFSerializationNS
-				    stringValue: self.description];
-
-	if (*self.objCType == 'B')
-		[element addAttributeWithName: @"type" stringValue: @"bool"];
-	else if (isFloat(self)) {
-		[element addAttributeWithName: @"type" stringValue: @"float"];
-		element.stringValue = [OFString
-		    stringWithFormat: @"%016" PRIx64,
-		    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
-		    self.doubleValue)))];
-	} else if (isSigned(self))
-		[element addAttributeWithName: @"type" stringValue: @"signed"];
-	else if (isUnsigned(self))
-		[element addAttributeWithName: @"type"
-				  stringValue: @"unsigned"];
-	else
-		@throw [OFInvalidFormatException exception];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation

@@ -231,10 +231,6 @@
 - (void)SPXStreamSocketTests;
 @end
 
-@interface TestsAppDelegate (OFSerializationTests)
-- (void)serializationTests;
-@end
-
 @interface TestsAppDelegate (OFSetTests)
 - (void)setTests;
 @end

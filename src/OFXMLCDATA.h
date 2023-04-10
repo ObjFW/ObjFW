@@ -43,8 +43,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFXMLCDATA
  */
 - (instancetype)initWithString: (OFString *)string;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

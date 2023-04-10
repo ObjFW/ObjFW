@@ -25,7 +25,6 @@
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFSubarray.h"
-#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -85,11 +84,6 @@ static struct {
 {
 	return (id)[[OFAdjacentArray alloc] initWithObjects: objects
 						      count: count];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFAdjacentArray alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -213,11 +207,6 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -546,33 +535,6 @@ static struct {
 	[ret makeImmutable];
 
 	return [ret autorelease];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	if ([self isKindOfClass: [OFMutableArray class]])
-		element = [OFXMLElement elementWithName: @"OFMutableArray"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFArray"
-					      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-
-		[element addChild: object.XMLElementBySerializing];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation

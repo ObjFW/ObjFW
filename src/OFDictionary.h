@@ -25,7 +25,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -77,7 +76,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  *	 @ref keyEnumerator.
  */
 @interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define KeyType id

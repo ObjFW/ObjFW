@@ -29,11 +29,6 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (OFString *)stringValue
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -82,11 +77,6 @@
 - (OFString *)description
 {
 	return self.XMLString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (id)copy

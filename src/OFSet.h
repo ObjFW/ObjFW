@@ -24,7 +24,6 @@
 
 #import "OFObject.h"
 #import "OFCollection.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -63,7 +62,7 @@ typedef bool (^OFSetFilterBlock)(id object);
  *	 @ref objectEnumerator.
  */
 @interface OFSet OF_GENERIC(ObjectType): OFObject <OFCollection, OFCopying,
-    OFMutableCopying, OFSerialization>
+    OFMutableCopying>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif

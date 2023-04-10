@@ -153,7 +153,6 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 - (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
-- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /**
  * @brief Returns a specific item of the OFSecureData.
@@ -188,7 +187,6 @@ OF_SUBCLASSING_RESTRICTED
 - (void)writeToFile: (OFString *)path OF_UNAVAILABLE;
 #endif
 - (void)writeToIRI: (OFIRI *)IRI OF_UNAVAILABLE;
-- (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
 @end
 

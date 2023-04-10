@@ -31,7 +31,6 @@
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -337,29 +336,6 @@ _references_to_categories_of_OFData(void)
 	return self;
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithBase64EncodedString: stringValue];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
 - (void)dealloc
 {
 	if (_freeWhenDone)
@@ -594,28 +570,6 @@ _references_to_categories_of_OFData(void)
 	[[OFIRIHandler openItemAtIRI: IRI mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool;
-	OFXMLElement *element;
-
-	if (_itemSize != 1)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-
-	pool = objc_autoreleasePoolPush();
-	element = [OFXMLElement
-	    elementWithName: self.className
-		  namespace: OFSerializationNS
-		stringValue: OFBase64Encode(_items, _count * _itemSize)];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFData *)messagePackRepresentation

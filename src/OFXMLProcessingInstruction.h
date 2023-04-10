@@ -60,8 +60,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithTarget: (OFString *)target
 			  text: (OFString *)text OF_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

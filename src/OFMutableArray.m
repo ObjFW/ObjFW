@@ -124,12 +124,6 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 							     count: count];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableAdjacentArray alloc]
-	    initWithSerialization: element];
-}
-
 - (instancetype)retain
 {
 	return self;

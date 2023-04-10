@@ -21,7 +21,6 @@
 #import "OFMapTable.h"
 #import "OFMutableMapTableDictionary.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -222,59 +221,6 @@ static const OFMapTableFunctions objectFunctions = {
 
 			[_mapTable setObject: object forKey: key];
 		}
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFArray *keys, *objects;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFXMLElement *keyElement, *objectElement;
-
-		keys = [element elementsForName: @"key"
-				      namespace: OFSerializationNS];
-		objects = [element elementsForName: @"object"
-					 namespace: OFSerializationNS];
-
-		if (keys.count != objects.count)
-			@throw [OFInvalidFormatException exception];
-
-		_mapTable = [[OFMapTable alloc]
-		    initWithKeyFunctions: keyFunctions
-			 objectFunctions: objectFunctions
-				capacity: keys.count];
-
-		keyEnumerator = [keys objectEnumerator];
-		objectEnumerator = [objects objectEnumerator];
-		while ((keyElement = [keyEnumerator nextObject]) != nil &&
-		    (objectElement = [objectEnumerator nextObject]) != nil) {
-			void *pool2 = objc_autoreleasePoolPush();
-			OFXMLElement *key, *object;
-
-			key = [keyElement elementsForNamespace:
-			    OFSerializationNS].firstObject;
-			object = [objectElement elementsForNamespace:
-			    OFSerializationNS].firstObject;
-
-			if (key == nil || object == nil)
-				@throw [OFInvalidFormatException exception];
-
-			[_mapTable setObject: object.objectByDeserializing
-				      forKey: key.objectByDeserializing];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

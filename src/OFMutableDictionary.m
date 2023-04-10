@@ -80,12 +80,6 @@ static struct {
 							  arguments: arguments];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableMapTableDictionary alloc]
-	    initWithSerialization: element];
-}
-
 - (instancetype)initWithCapacity: (size_t)capacity
 {
 	return (id)[[OFMutableMapTableDictionary alloc]
