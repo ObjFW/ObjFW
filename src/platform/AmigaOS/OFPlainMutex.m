@@ -19,7 +19,9 @@
 
 #import "OFPlainMutex.h"
 
+#define Class IntuitionClass
 #include <proto/exec.h>
+#undef Class
 
 int
 OFPlainMutexNew(OFPlainMutex *mutex)

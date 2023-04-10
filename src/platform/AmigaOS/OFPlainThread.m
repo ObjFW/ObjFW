@@ -22,9 +22,11 @@
 #import "OFString.h"
 #import "OFTLSKey.h"
 
+#define Class IntuitionClass
 #include <dos/dostags.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
+#undef Class
 
 #ifndef OF_MORPHOS
 extern void OFTLSKeyThreadExited(void);

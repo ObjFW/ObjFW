@@ -20,10 +20,12 @@
 
 #import "amiga-glue.h"
 
+#define Class IntuitionClass
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
 #include <proto/exec.h>
+#undef Class
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)

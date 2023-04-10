@@ -30,9 +30,11 @@
 #import "OFOpenItemFailedException.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/dos.h>
 # include <proto/exec.h>
 # include <proto/locale.h>
+# undef Class
 #endif
 
 static OFLocale *currentLocale = nil;

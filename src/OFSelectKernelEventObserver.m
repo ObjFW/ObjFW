@@ -38,7 +38,9 @@
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #ifdef OF_HPUX

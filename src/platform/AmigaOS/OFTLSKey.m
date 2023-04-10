@@ -17,8 +17,10 @@
 
 #import "OFTLSKey.h"
 
+#define Class IntuitionClass
 #include <exec/semaphores.h>
 #include <proto/exec.h>
+#undef Class
 
 /*
  * As we use this file in both the runtime and ObjFW, and since AmigaOS always

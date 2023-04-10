@@ -84,9 +84,11 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>
+# undef Class
 # ifdef OF_AMIGAOS4
 #  define DeleteFile(path) Delete(path)
 # endif

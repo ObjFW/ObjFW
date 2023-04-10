@@ -19,8 +19,10 @@
 #import "private.h"
 #import "macros.h"
 
+#define Class IntuitionClass
 #include <proto/exec.h>
 #include <proto/intuition.h>
+#undef Class
 
 struct ObjFWRTBase;
 

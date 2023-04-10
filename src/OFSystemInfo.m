@@ -31,8 +31,10 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <exec/execbase.h>
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #if defined(OF_AMIGAOS4)

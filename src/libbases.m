@@ -15,7 +15,9 @@
 
 #include "config.h"
 
+#define Class IntuitionClass
 #include <proto/exec.h>
+#undef Class
 
 #import "OFInitializationFailedException.h"
 
