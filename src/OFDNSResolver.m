@@ -678,14 +678,14 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	    minNumberOfDotsInAbsoluteName;
 }
 
-- (bool)usesTCP
+- (bool)forcesTCP
 {
-	return _settings->_usesTCP;
+	return _settings->_forcesTCP;
 }
 
-- (void)setUsesTCP: (bool)usesTCP
+- (void)setForcesTCP: (bool)forcesTCP
 {
-	_settings->_usesTCP = usesTCP;
+	_settings->_forcesTCP = forcesTCP;
 }
 
 - (OFTimeInterval)configReloadInterval
@@ -723,7 +723,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	nameServer = [context->_settings->_nameServers
 	    objectAtIndex: context->_nameServersIndex];
 
-	if (context->_settings->_usesTCP) {
+	if (context->_settings->_forcesTCP) {
 		OFEnsure(context->_TCPSocket == nil);
 
 		context->_TCPSocket = [[OFTCPSocket alloc] init];
@@ -948,10 +948,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (buffer[2] & 0x02) {
 			OFRunLoopMode runLoopMode;
 
-			if (context->_settings->_usesTCP)
+			if (context->_settings->_forcesTCP)
 				@throw [OFTruncatedDataException exception];
 
-			context->_settings->_usesTCP = true;
+			context->_settings->_forcesTCP = true;
 			runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 			[self of_sendQueryForContext: context
 					 runLoopMode: runLoopMode];

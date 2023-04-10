@@ -217,7 +217,7 @@ parseNetStackArray(OFString *string)
 		copy->_maxAttempts = _maxAttempts;
 		copy->_minNumberOfDotsInAbsoluteName =
 		    _minNumberOfDotsInAbsoluteName;
-		copy->_usesTCP = _usesTCP;
+		copy->_forcesTCP = _forcesTCP;
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
 	} @catch (id e) {
@@ -245,7 +245,7 @@ parseNetStackArray(OFString *string)
 	_timeout = 2;
 	_maxAttempts = 3;
 	_minNumberOfDotsInAbsoluteName = 1;
-	_usesTCP = false;
+	_forcesTCP = false;
 #ifndef OF_NINTENDO_3DS
 	_configReloadInterval = 2;
 #else
@@ -347,7 +347,7 @@ parseNetStackArray(OFString *string)
 
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
-			_usesTCP = true;
+			_forcesTCP = true;
 	} @catch (OFInvalidFormatException *e) {
 	}
 }

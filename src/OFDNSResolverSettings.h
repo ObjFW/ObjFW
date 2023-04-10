@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	OFTimeInterval _timeout;
 	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
-	bool _usesTCP;
+	bool _forcesTCP;
 	OFTimeInterval _configReloadInterval;
 @protected
 	OFDate *_lastConfigReload;

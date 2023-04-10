@@ -180,9 +180,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (nonatomic) unsigned int minNumberOfDotsInAbsoluteName;
 
 /**
- * @brief Whether the resolver uses TCP to talk to a name server.
+ * @brief Whether the resolver forces TCP to talk to a name server.
  */
-@property (nonatomic) bool usesTCP;
+@property (nonatomic) bool forcesTCP;
 
 /**
  * @brief The interval in seconds in which the config should be reloaded.

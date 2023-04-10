@@ -59,8 +59,8 @@
 	    @"[OFDNSResolver] Min number of dots in absolute name: %u\n",
 	    resolver.minNumberOfDotsInAbsoluteName];
 
-	[OFStdOut writeFormat: @"[OFDNSResolver] Uses TCP: %u\n",
-	    resolver.usesTCP];
+	[OFStdOut writeFormat: @"[OFDNSResolver] Forces TCP: %u\n",
+	    resolver.forcesTCP];
 
 	[OFStdOut writeFormat:
 	    @"[OFDNSResolver] Config reload interval: %lf\n",
