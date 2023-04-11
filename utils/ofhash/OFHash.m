@@ -114,7 +114,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString stringWithFormat:
-				    @"%c", optionsParser.lastOption];
+				    @"%C", optionsParser.lastOption];
 				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",

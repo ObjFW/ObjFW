@@ -488,7 +488,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString
-				    stringWithFormat: @"%c",
+				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
 				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"argument_missing",
@@ -518,7 +518,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString
-				    stringWithFormat: @"%c",
+				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
 				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
