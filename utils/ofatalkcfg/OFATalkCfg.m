@@ -192,49 +192,53 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	if (phaseString == nil) {
-		[OFStdErr writeFormat: @"%@: --phase not specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	@try {
-		phase = [phaseString unsignedLongLongValueWithBase: 0];
-	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeFormat: @"%@: Invalid format for --phase!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	if (phase > 2) {
-		[OFStdErr writeFormat: @"%@: --phase out of range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
+	if (phaseString != nil) {
+		@try {
+			phase = [phaseString unsignedLongLongValueWithBase: 0];
+		} @catch (OFInvalidFormatException *e) {
+			[OFStdErr writeFormat:
+			    @"%@: Invalid format for "@"--phase!\n",
+			    [OFApplication programName]];
+			[OFApplication terminateWithStatus: 1];
+		}
 
-	if (rangeString == nil) {
-		[OFStdErr writeFormat: @"%@: --range not specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	rangeArray = [rangeString componentsSeparatedByString: @"-"];
-	if (rangeArray.count != 2) {
-		[OFStdErr writeFormat: @"%@: Invalid format for --range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	@try {
-		rangeStart = [[rangeArray objectAtIndex: 0]
-		    unsignedLongLongValueWithBase: 0];
-		rangeEnd = [[rangeArray objectAtIndex: 1]
-		    unsignedLongLongValueWithBase: 0];
-	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeFormat: @"%@: Invalid format for --range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	if (rangeStart > UINT16_MAX || rangeEnd > UINT16_MAX) {
-		[OFStdErr writeFormat: @"%@: --range out of range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
+		if (phase > 2) {
+			[OFStdErr writeFormat: @"%@: --phase out of range!\n",
+					       [OFApplication programName]];
+			[OFApplication terminateWithStatus: 1];
+		}
+	} else
+		phase = 2;
+
+	if (rangeString != nil) {
+		rangeArray = [rangeString componentsSeparatedByString: @"-"];
+		if (rangeArray.count != 2) {
+			[OFStdErr writeFormat:
+			    @"%@: Invalid format for --range!\n",
+			    [OFApplication programName]];
+			[OFApplication terminateWithStatus: 1];
+		}
+
+		@try {
+			rangeStart = [[rangeArray objectAtIndex: 0]
+			    unsignedLongLongValueWithBase: 0];
+			rangeEnd = [[rangeArray objectAtIndex: 1]
+			    unsignedLongLongValueWithBase: 0];
+		} @catch (OFInvalidFormatException *e) {
+			[OFStdErr writeFormat:
+			    @"%@: Invalid format for --range!\n",
+			    [OFApplication programName]];
+			[OFApplication terminateWithStatus: 1];
+		}
+
+		if (rangeStart > UINT16_MAX || rangeEnd > UINT16_MAX) {
+			[OFStdErr writeFormat: @"%@: --range out of range!\n",
+					       [OFApplication programName]];
+			[OFApplication terminateWithStatus: 1];
+		}
+	} else {
+		rangeStart = network;
+		rangeEnd = network;
 	}
 
 	configureInterface(optionsParser.remainingArguments.firstObject,
