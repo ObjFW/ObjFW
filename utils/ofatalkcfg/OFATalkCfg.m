@@ -16,13 +16,6 @@
 #include "config.h"
 
 #include <errno.h>
-
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
-#endif
 #include "unistd.h"
 
 #import "OFApplication.h"
@@ -33,6 +26,13 @@
 
 #import "OFInvalidFormatException.h"
 
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
+
 @interface OFATalkCfg: OFObject <OFApplicationDelegate>
 @end
 
@@ -42,13 +42,8 @@ static void
 configureInterface(OFString *interface, uint16_t network, uint8_t node,
     uint8_t phase, uint16_t rangeStart, uint16_t rangeEnd)
 {
-	struct ifreq request = { 0 };
+	struct ifreq request;
 	struct sockaddr_at *sat;
-#ifdef OF_LINUX
-	struct atalk_netrange *nr;
-#else
-	struct netrange *nr;
-#endif
 	int sock;
 
 	if (interface.UTF8StringLength > IFNAMSIZ) {
@@ -57,17 +52,24 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 		[OFApplication terminateWithStatus: 1];
 	}
 
+	memset(&request, 0, sizeof(request));
 	strncpy(request.ifr_name, interface.UTF8String, IFNAMSIZ);
 	sat = (struct sockaddr_at *)&request.ifr_addr;
 	sat->sat_family = AF_APPLETALK;
 	sat->sat_net = OFToBigEndian16(network);
 	sat->sat_node = node;
-	nr = (__typeof__(nr))(void *)sat->sat_zero;
-	nr->nr_phase = phase;
-	nr->nr_firstnet = OFToBigEndian16(rangeStart);
-	nr->nr_lastnet = OFToBigEndian16(rangeEnd);
+	/*
+	 * The netrange is hidden in sat_zero and different OSes use different
+	 * struct names for it, so the portable way is setting sat_zero
+	 * directly.
+	 */
+	sat->sat_zero[0] = phase;
+	sat->sat_zero[2] = rangeStart >> 8;
+	sat->sat_zero[3] = rangeStart & 0xFF;
+	sat->sat_zero[4] = rangeEnd >> 8;
+	sat->sat_zero[5] = rangeEnd & 0xFF;
 
-	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0) {
+	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0) {
 		int errNo = OFSocketErrNo();
 
 		[OFStdErr writeFormat: @"%@: Failed to create socket: %@\n",
