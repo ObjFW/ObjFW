@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
@@ -66,9 +68,18 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	nr->nr_lastnet = OFToBigEndian16(rangeEnd);
 
 	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0) {
+		int errNo = OFSocketErrNo();
+
 		[OFStdErr writeFormat: @"%@: Failed to create socket: %@\n",
 				       [OFApplication programName],
-				       OFStrError(OFSocketErrNo())];
+				       OFStrError(errNo)];
+
+#ifdef OF_LINUX
+		if (errNo == EAFNOSUPPORT)
+			[OFStdErr writeLine: @"Did you forget to run "
+					     @"\"modprobe appletalk\"?"];
+#endif
+
 		[OFApplication terminateWithStatus: 1];
 	}
 
