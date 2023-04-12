@@ -1688,8 +1688,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			    [Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 
-			AS_IF([test x"ac_cv_header_net_if_h" = x"yes"] [
+			AC_CHECK_MEMBERS([struct ifreq.ifr_name], [
 				AC_SUBST(OFATALKCFG, ofatalkcfg)
+			], [], [
+				#ifdef OF_HAVE_SYS_SOCKET_H
+				# include <sys/socket.h>
+				#endif
+				#include <net/if.h>
 			])
 		])
 	])
