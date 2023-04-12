@@ -1687,6 +1687,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_APPLETALK, 1,
 			    [Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
+
+			AS_IF([test x"ac_cv_header_net_if_h" = x"yes"] [
+				AC_SUBST(OFATALKCFG, ofatalkcfg)
+			])
 		])
 	])
 

@@ -38,6 +38,7 @@ Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}-devel = %{version}-%{release}
 Requires:      ofarc%{_isa} = %{version}-%{release}
+Requires:      ofatalkcfg%{_isa} = %{version}-%{release}
 Requires:      ofdns%{_isa} = %{version}-%{release}
 Requires:      ofhash%{_isa} = %{version}-%{release}
 Requires:      ofhttp%{_isa} = %{version}-%{release}
@@ -111,6 +112,14 @@ Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 ofarc is a multi-format archive utility that allows creating, listing,
 extracting and modifying ZIP, Tar and LHA archives using ObjFW's classes for
 various archive types.
+
+%package -n ofatalkcfg
+Summary:       Utility to configure network interfaces for AppleTalk
+Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
+Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
+
+%description -n ofatalkcfg
+ofatalkcfg is a utility to configure network interfaces for AppleTalk.
 
 %package -n ofdns
 Summary:       Utility for performing DNS requests on the command line
@@ -221,6 +230,12 @@ make -C tests run
 %license LICENSE.QPL
 %{_bindir}/ofarc
 %{_datadir}/ofarc
+
+%files -n ofatalkcfg
+%license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_bindir}/ofatalkcfg
 
 %files -n ofdns
 %license LICENSE.GPLv2
