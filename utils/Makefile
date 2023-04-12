@@ -1,5 +1,5 @@
 include ../extra.mk
-	
+
 SUBDIRS += ${OBJFW_NEW}		\
 	   ${OFARC}		\
 	   ${OFATALKCFG}	\

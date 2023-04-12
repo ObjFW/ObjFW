@@ -21,6 +21,7 @@
 #ifdef HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>
 #endif
+#include "unistd.h"
 
 #import "OFApplication.h"
 #import "OFArray.h"
@@ -41,7 +42,11 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 {
 	struct ifreq request = { 0 };
 	struct sockaddr_at *sat;
+#ifdef OF_LINUX
 	struct atalk_netrange *nr;
+#else
+	struct netrange *nr;
+#endif
 	int sock;
 
 	if (interface.UTF8StringLength > IFNAMSIZ) {
@@ -55,7 +60,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	sat->sat_family = AF_APPLETALK;
 	sat->sat_net = OFToBigEndian16(network);
 	sat->sat_node = node;
-	nr = (struct atalk_netrange *)(void *)sat->sat_zero;
+	nr = (__typeof__(nr))(void *)sat->sat_zero;
 	nr->nr_phase = phase;
 	nr->nr_firstnet = OFToBigEndian16(rangeStart);
 	nr->nr_lastnet = OFToBigEndian16(rangeEnd);
@@ -141,7 +146,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	}
 
 	if (networkString == nil) {
-		[OFStdErr writeFormat: @"%@: --netwwork not specified!\n",
+		[OFStdErr writeFormat: @"%@: --network not specified!\n",
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
 	}
