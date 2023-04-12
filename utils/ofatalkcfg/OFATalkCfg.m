@@ -173,6 +173,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 		[OFStdErr writeFormat: @"%@: Invalid format for --network!\n",
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
+		return;
 	}
 	if (network > UINT16_MAX) {
 		[OFStdErr writeFormat: @"%@: --network out of range!\n",
@@ -191,6 +192,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 		[OFStdErr writeFormat: @"%@: Invalid format for --node!\n",
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
+		return;
 	}
 	if (node > UINT8_MAX) {
 		[OFStdErr writeFormat: @"%@: --node out of range!\n",
@@ -206,6 +208,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 			    @"%@: Invalid format for "@"--phase!\n",
 			    [OFApplication programName]];
 			[OFApplication terminateWithStatus: 1];
+			return;
 		}
 
 		if (phase > 2) {
@@ -235,6 +238,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 			    @"%@: Invalid format for --range!\n",
 			    [OFApplication programName]];
 			[OFApplication terminateWithStatus: 1];
+			return;
 		}
 
 		if (rangeStart > UINT16_MAX || rangeEnd > UINT16_MAX) {
