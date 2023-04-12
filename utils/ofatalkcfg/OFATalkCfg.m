@@ -42,13 +42,33 @@ static void
 configureInterface(OFString *interface, uint16_t network, uint8_t node,
     uint8_t phase, uint16_t rangeStart, uint16_t rangeEnd)
 {
+	int sock;
 	struct ifreq request;
 	struct sockaddr_at *sat;
-	int sock;
 
 	if (interface.UTF8StringLength > IFNAMSIZ) {
 		[OFStdErr writeFormat: @"%@: Interface name too long!\n",
 				       [OFApplication programName]];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+#ifdef OF_MACOS
+	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0) {
+#else
+	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0) {
+#endif
+		int errNo = OFSocketErrNo();
+
+		[OFStdErr writeFormat: @"%@: Failed to create socket: %@\n",
+				       [OFApplication programName],
+				       OFStrError(errNo)];
+
+#ifdef OF_LINUX
+		if (errNo == EAFNOSUPPORT)
+			[OFStdErr writeLine: @"Did you forget to run "
+					     @"\"modprobe appletalk\"?"];
+#endif
+
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -68,22 +88,6 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	sat->sat_zero[3] = rangeStart & 0xFF;
 	sat->sat_zero[4] = rangeEnd >> 8;
 	sat->sat_zero[5] = rangeEnd & 0xFF;
-
-	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0) {
-		int errNo = OFSocketErrNo();
-
-		[OFStdErr writeFormat: @"%@: Failed to create socket: %@\n",
-				       [OFApplication programName],
-				       OFStrError(errNo)];
-
-#ifdef OF_LINUX
-		if (errNo == EAFNOSUPPORT)
-			[OFStdErr writeLine: @"Did you forget to run "
-					     @"\"modprobe appletalk\"?"];
-#endif
-
-		[OFApplication terminateWithStatus: 1];
-	}
 
 	if (ioctl(sock, SIOCSIFADDR, &request) != 0) {
 		[OFStdErr writeFormat: @"%@: Failed to set address: %@\n",
