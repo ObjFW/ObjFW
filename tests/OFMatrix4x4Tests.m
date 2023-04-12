@@ -81,7 +81,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    }]])
 
 	TEST(@"[-translateWithVector:]",
-	    R(matrix2 = [OFMatrix4x4 identityMatrix]) &&
+	    (matrix2 = [OFMatrix4x4 identityMatrix]) &&
 	    R([matrix2 translateWithVector: OFMakeVector3D(1, 2, 3)]) &&
 	    R(point =
 	    [matrix2 transformedVector: OFMakeVector4D(2, 3, 4, 1)]) &&
