@@ -46,7 +46,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	struct ifreq request;
 	struct sockaddr_at *sat;
 
-	if (interface.UTF8StringLength > IFNAMSIZ) {
+	if (interface.UTF8StringLength > IFNAMSIZ - 1) {
 		[OFStdErr writeFormat: @"%@: Interface name too long!\n",
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
@@ -73,7 +73,7 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 	}
 
 	memset(&request, 0, sizeof(request));
-	strncpy(request.ifr_name, interface.UTF8String, IFNAMSIZ);
+	strncpy(request.ifr_name, interface.UTF8String, IFNAMSIZ - 1);
 	sat = (struct sockaddr_at *)&request.ifr_addr;
 	sat->sat_family = AF_APPLETALK;
 	sat->sat_net = OFToBigEndian16(network);
