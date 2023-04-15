@@ -61,8 +61,6 @@
 # endif
 #endif
 
-/** @file */
-
 #ifdef OF_WII
 # include <network.h>
 #endif
@@ -74,6 +72,8 @@
 #import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
 
 #ifndef OF_WINDOWS
 typedef int OFSocketHandle;

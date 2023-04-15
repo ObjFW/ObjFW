@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFGetOptionFailedException: OFException
 {
-	id _object;
+	id _Nullable _object;
 	int _errNo;
 	OF_RESERVE_IVARS(OFGetOptionFailedException, 4)
 }
@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The object for which the option could not be retrieved.
  */
-@property (readonly, nonatomic) id object;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id object;
 
 /**
  * @brief The errno of the error that occurred.
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased get option failed exception
  */
-+ (instancetype)exceptionWithObject: (id)object errNo: (int)errNo;
++ (instancetype)exceptionWithObject: (nullable id)object errNo: (int)errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized get option failed exception
  */
-- (instancetype)initWithObject: (id)object
+- (instancetype)initWithObject: (nullable id)object
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

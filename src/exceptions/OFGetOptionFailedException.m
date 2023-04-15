@@ -55,8 +55,12 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"Getting an option in an object of type %@ failed: %@",
-	    [_object class], OFStrError(_errNo)];
+	if (_object != nil)
+		return [OFString stringWithFormat:
+		    @"Getting an option in an object of type %@ failed: %@",
+		    [_object class], OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Getting an failed: %@", OFStrError(_errNo)];
 }
 @end

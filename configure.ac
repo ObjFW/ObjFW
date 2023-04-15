@@ -1689,6 +1689,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 
 			AC_CHECK_MEMBERS([struct ifreq.ifr_name], [
+				AC_DEFINE(OF_HAVE_APPLETALK_IFCONFIG, 1,
+				    m4_normalize([
+					Whether AppleTalk interfaces
+					can be configured
+				]))
 				AC_SUBST(OFATALKCFG, ofatalkcfg)
 			], [], [
 				#ifdef OF_HAVE_SYS_SOCKET_H

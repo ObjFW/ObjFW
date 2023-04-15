@@ -16,92 +16,27 @@
 #include "config.h"
 
 #include <errno.h>
-#include "unistd.h"
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFDDPSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
 #import "OFOptionsParser.h"
-#import "OFSocket.h"
+#import "OFPair.h"
 #import "OFStdIOStream.h"
 
 #import "OFInvalidFormatException.h"
-
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
-#endif
 
 @interface OFATalkCfg: OFObject <OFApplicationDelegate>
 @end
 
 OF_APPLICATION_DELEGATE(OFATalkCfg)
 
-static void
-configureInterface(OFString *interface, uint16_t network, uint8_t node,
-    uint8_t phase, uint16_t rangeStart, uint16_t rangeEnd)
-{
-	int sock;
-	struct ifreq request;
-	struct sockaddr_at *sat;
-
-	if (interface.UTF8StringLength > IFNAMSIZ - 1) {
-		[OFStdErr writeFormat: @"%@: Interface name too long!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-
-#ifdef OF_MACOS
-	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0) {
-#else
-	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0) {
-#endif
-		int errNo = OFSocketErrNo();
-
-		[OFStdErr writeFormat: @"%@: Failed to create socket: %@\n",
-				       [OFApplication programName],
-				       OFStrError(errNo)];
-
-#ifdef OF_LINUX
-		if (errNo == EAFNOSUPPORT)
-			[OFStdErr writeLine: @"Did you forget to run "
-					     @"\"modprobe appletalk\"?"];
-#endif
-
-		[OFApplication terminateWithStatus: 1];
-	}
-
-	memset(&request, 0, sizeof(request));
-	strncpy(request.ifr_name, interface.UTF8String, IFNAMSIZ - 1);
-	sat = (struct sockaddr_at *)&request.ifr_addr;
-	sat->sat_family = AF_APPLETALK;
-	sat->sat_net = OFToBigEndian16(network);
-	sat->sat_node = node;
-	/*
-	 * The netrange is hidden in sat_zero and different OSes use different
-	 * struct names for it, so the portable way is setting sat_zero
-	 * directly.
-	 */
-	sat->sat_zero[0] = phase;
-	sat->sat_zero[2] = rangeStart >> 8;
-	sat->sat_zero[3] = rangeStart & 0xFF;
-	sat->sat_zero[4] = rangeEnd >> 8;
-	sat->sat_zero[5] = rangeEnd & 0xFF;
-
-	if (ioctl(sock, SIOCSIFADDR, &request) != 0) {
-		[OFStdErr writeFormat: @"%@: Failed to set address: %@\n",
-				       [OFApplication programName],
-				       OFStrError(OFSocketErrNo())];
-		[OFApplication terminateWithStatus: 1];
-	}
-
-	close(sock);
-}
-
 @implementation OFATalkCfg
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+	OFMutableDictionary *config = [OFMutableDictionary dictionary];
 	OFString *nodeString = nil, *networkString = nil, *phaseString = nil;
 	OFString *rangeString = nil;
 	const OFOptionsParserOption options[] = {
@@ -180,6 +115,8 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
 	}
+	[config setObject: [OFNumber numberWithUnsignedShort: (uint16_t)network]
+		   forKey: OFAppleTalkInterfaceConfigurationNetwork];
 
 	if (nodeString == nil) {
 		[OFStdErr writeFormat: @"%@: --node not specified!\n",
@@ -199,6 +136,8 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 				       [OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
 	}
+	[config setObject: [OFNumber numberWithUnsignedChar: (uint8_t)node]
+		   forKey: OFAppleTalkInterfaceConfigurationNode];
 
 	if (phaseString != nil) {
 		@try {
@@ -216,10 +155,17 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 					       [OFApplication programName]];
 			[OFApplication terminateWithStatus: 1];
 		}
-	} else
-		phase = 2;
+
+		[config setObject: [OFNumber
+				       numberWithUnsignedChar: (uint8_t)phase]
+			   forKey: OFAppleTalkInterfaceConfigurationPhase];
+	}
 
 	if (rangeString != nil) {
+		const OFAppleTalkInterfaceConfigurationKey key =
+		    OFAppleTalkInterfaceConfigurationNetworkRange;
+		OFPair *range;
+
 		rangeArray = [rangeString componentsSeparatedByString: @"-"];
 		if (rangeArray.count != 2) {
 			[OFStdErr writeFormat:
@@ -246,14 +192,18 @@ configureInterface(OFString *interface, uint16_t network, uint8_t node,
 					       [OFApplication programName]];
 			[OFApplication terminateWithStatus: 1];
 		}
-	} else {
-		rangeStart = network;
-		rangeEnd = network;
+
+		range = [OFPair
+		    pairWithFirstObject: [OFNumber numberWithUnsignedShort:
+					     (uint16_t)rangeStart]
+			   secondObject: [OFNumber numberWithUnsignedShort:
+					     (uint16_t)rangeEnd]];
+		[config setObject: range forKey: key];
 	}
 
-	configureInterface(optionsParser.remainingArguments.firstObject,
-	    (uint16_t)network, (uint8_t)node, (uint8_t)phase,
-	    (uint16_t)rangeStart, (uint16_t)rangeEnd);
+	[OFDDPSocket setConfiguration: config
+			 forInterface: optionsParser.remainingArguments
+					   .firstObject];
 
 	[OFApplication terminate];
 }

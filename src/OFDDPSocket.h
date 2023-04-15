@@ -18,6 +18,60 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+
+#ifdef OF_HAVE_APPLETALK_IFCONFIG
+/**
+ * @brief A dictionary mapping keys of type @ref
+ *	  OFAppleTalkInterfaceConfigurationKey.
+ */
+typedef OFConstantString *OFAppleTalkInterfaceConfigurationKey;
+
+/**
+ * @brief A key for OFAppleTalkInterfaceConfiguration.
+ *
+ * Possible keys are:
+ *  * @ref OFAppleTalkInterfaceConfigurationNetwork
+ *  * @ref OFAppleTalkInterfaceConfigurationNode
+ *  * @ref OFAppleTalkInterfaceConfigurationPhase
+ *  * @ref OFAppleTalkInterfaceConfigurationNetworkRange
+ */
+typedef OFDictionary OF_GENERIC(OFAppleTalkInterfaceConfigurationKey, id)
+    *OFAppleTalkInterfaceConfiguration;
+
+/**
+ * @brief The AppleTalk network of an interface.
+ *
+ * The corresponding value is of type @ref OFNumber in the range 0 to 65535.
+ */
+extern const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNetwork;
+
+/**
+ * @brief The AppleTalk node of an interface.
+ *
+ * The corresponding value is of type @ref OFNumber in the range 0 to 255.
+ */
+extern const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNode;
+
+/**
+ * @brief The AppleTalk phase of an interface.
+ *
+ * The corresponding value is of type @ref OFNumber in the range 1 to 2.
+ */
+extern const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationPhase;
+
+/**
+ * @brief The AppleTalk network range of an interface.
+ *
+ * The corresponding value is of type @ref OFPair with two @ref OFNumber, both
+ * in the range 0 to 65535.
+ */
+extern const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNetworkRange;
+#endif
 
 /**
  * @protocol OFDDPSocketDelegate OFDDPSocket.h ObjFW/OFDDPSocket.h
@@ -68,6 +122,46 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFDDPSocketDelegate> delegate;
+
+#ifdef OF_HAVE_APPLETALK_IFCONFIG
+/**
+ * @brief Configures the specified interface with the specified AppleTalk
+ *	  configuration.
+ *
+ * @param configuration The AppleTalk configuration for the interface. See
+ *			@ref OFAppleTalkInterfaceConfiguration for more
+ *			details.
+ * @param interfaceName The name of the interface to configure for AppleTalk
+ * @throw OFSetOptionFailedException Setting the configuration failed. Consult
+ *				     errNo for details.
+ */
++ (void)setConfiguration: (OFAppleTalkInterfaceConfiguration)configuration
+	    forInterface: (OFString *)interfaceName;
+
+/**
+ * @brief Returns the AppleTalk configuration for the specified interface.
+ *
+ * @param interfaceName The name of the interface for which to return the
+ *			AppleTalk configuration
+ * @return The AppleTalk configuration for the specified interface, or `nil` if
+ *	   the specified interface is not configured for AppleTalk. See
+ *	   @ref OFAppleTalkInterfaceConfiguration for more details.
+ * @throw OFGetOptionFailedException Getting the configuration failed. Consult
+ *				     errNo for details.
+ */
++ (nullable OFAppleTalkInterfaceConfiguration)
+    configurationForInterface: (OFString *)interfaceName;
+
+/**
+ * @brief Removes the AppleTalk configuration for the specified interface.
+ *
+ * @param interfaceName The name of the interface for which to remove the
+ *			AppleTalk configuration
+ * @throw OFSetOptionFailedException Removing the configuration failed. Consult
+ *				     errNo for details.
+ */
++ (void)removeConfigurationForInterface: (OFString *)interfaceName;
+#endif
 
 /**
  * @brief Bind the socket to the specified network, node and port.

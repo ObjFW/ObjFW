@@ -22,15 +22,28 @@
 #endif
 
 #import "OFDDPSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFBindDDPSocketFailedException.h"
+#import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #ifdef OF_HAVE_NETAT_APPLETALK_H
 # include <netat/ddp.h>
@@ -46,8 +59,190 @@ struct ATInterfaceConfig {
 };
 #endif
 
+#ifdef OF_HAVE_APPLETALK_IFCONFIG
+const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNode =
+    @"OFAppleTalkInterfaceConfigurationNode";
+const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNetwork =
+    @"OFAppleTalkInterfaceConfigurationNetwork";
+const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationPhase =
+    @"OFAppleTalkInterfaceConfigurationPhase";
+const OFAppleTalkInterfaceConfigurationKey
+    OFAppleTalkInterfaceConfigurationNetworkRange =
+    @"OFAppleTalkInterfaceConfigurationNetworkRange";
+#endif
+
 @implementation OFDDPSocket
 @dynamic delegate;
+
+#ifdef OF_HAVE_APPLETALK_IFCONFIG
++ (void)setConfiguration: (OFAppleTalkInterfaceConfiguration)config
+	    forInterface: (OFString *)interfaceName
+{
+	OFNumber *network, *node, *phase;
+	OFPair OF_GENERIC(OFNumber *, OFNumber *) *range;
+	int sock;
+	struct ifreq request;
+	struct sockaddr_at *sat;
+	uint16_t rangeStart, rangeEnd;
+
+	if (interfaceName.UTF8StringLength > IFNAMSIZ - 1)
+		@throw [OFOutOfRangeException exception];
+
+	network = [config
+	    objectForKey: OFAppleTalkInterfaceConfigurationNetwork];
+	node = [config objectForKey: OFAppleTalkInterfaceConfigurationNode];
+	phase = [config objectForKey: OFAppleTalkInterfaceConfigurationPhase];
+	range = [config
+	    objectForKey: OFAppleTalkInterfaceConfigurationNetworkRange];
+
+	if (network == nil || node == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (phase != nil && phase.unsignedCharValue != 1 &&
+	    phase.unsignedCharValue != 2)
+		@throw [OFInvalidArgumentException exception];
+
+# ifdef OF_MACOS
+	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0)
+# else
+	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0)
+# endif
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: nil
+				  errNo: OFSocketErrNo()];
+
+	memset(&request, 0, sizeof(request));
+	strncpy(request.ifr_name, interfaceName.UTF8String, IFNAMSIZ - 1);
+	sat = (struct sockaddr_at *)&request.ifr_addr;
+	sat->sat_family = AF_APPLETALK;
+	sat->sat_net = OFToBigEndian16(network.unsignedShortValue);
+	sat->sat_node = node.unsignedCharValue;
+	/*
+	 * The netrange is hidden in sat_zero and different OSes use different
+	 * struct names for it, so the portable way is setting sat_zero
+	 * directly.
+	 */
+	sat->sat_zero[0] = (phase != nil ? phase.unsignedCharValue : 2);
+	if (range != nil) {
+		rangeStart = [range.firstObject unsignedShortValue];
+		rangeEnd = [range.secondObject unsignedShortValue];
+	} else {
+		rangeStart = rangeEnd = network.unsignedShortValue;
+	}
+	sat->sat_zero[2] = rangeStart >> 8;
+	sat->sat_zero[3] = rangeStart & 0xFF;
+	sat->sat_zero[4] = rangeEnd >> 8;
+	sat->sat_zero[5] = rangeEnd & 0xFF;
+
+	if (ioctl(sock, SIOCSIFADDR, &request) != 0)
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: nil
+				  errNo: OFSocketErrNo()];
+
+	close(sock);
+}
+
++ (OFAppleTalkInterfaceConfiguration)
+    configurationForInterface: (OFString *)interfaceName
+{
+	int sock;
+	struct ifreq request;
+	struct sockaddr_at *sat;
+# ifndef OF_LINUX
+	uint16_t rangeStart, rangeEnd;
+	OFPair *range;
+# endif
+
+	if (interfaceName.UTF8StringLength > IFNAMSIZ - 1)
+		@throw [OFOutOfRangeException exception];
+
+# ifdef OF_MACOS
+	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0)
+# else
+	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0)
+# endif
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: nil
+				  errNo: OFSocketErrNo()];
+
+	memset(&request, 0, sizeof(request));
+	strncpy(request.ifr_name, interfaceName.UTF8String, IFNAMSIZ - 1);
+
+	if (ioctl(sock, SIOCGIFADDR, &request) < 0) {
+		int errNo = OFSocketErrNo();
+
+		/* No AppleTalk configured on this interface. */
+		if (errNo == EADDRNOTAVAIL) {
+			close(sock);
+			return nil;
+		}
+
+		@throw [OFGetOptionFailedException exceptionWithObject: nil
+								 errNo: errNo];
+	}
+
+	sat = (struct sockaddr_at *)&request.ifr_addr;
+
+	close(sock);
+
+# ifndef OF_LINUX
+	/*
+	 * Linux currently doesn't fill out the phase or netrange.
+	 *
+	 * The netrange is hidden in sat_zero and different OSes use different
+	 * struct names for it, so the portable way is setting sat_zero
+	 * directly.
+	 */
+	rangeStart = sat->sat_zero[2] << 8 | sat->sat_zero[3];
+	rangeEnd = sat->sat_zero[4] << 8 | sat->sat_zero[5];
+	range = [OFPair
+	    pairWithFirstObject: [OFNumber numberWithUnsignedShort: rangeStart]
+		   secondObject: [OFNumber numberWithUnsignedShort: rangeEnd]];
+# endif
+
+	return [OFDictionary dictionaryWithKeysAndObjects:
+	    OFAppleTalkInterfaceConfigurationNode,
+	    [OFNumber numberWithUnsignedChar: sat->sat_node],
+	    OFAppleTalkInterfaceConfigurationNetwork,
+	    [OFNumber numberWithUnsignedShort: OFFromBigEndian16(sat->sat_net)],
+# ifndef OF_LINUX
+	    OFAppleTalkInterfaceConfigurationPhase,
+	    [OFNumber numberWithUnsignedChar: sat->sat_zero[0]],
+	    OFAppleTalkInterfaceConfigurationNetworkRange, range,
+# endif
+	    nil];
+}
+
++ (void)removeConfigurationForInterface: (OFString *)interfaceName
+{
+	int sock;
+	struct ifreq request;
+
+	if (interfaceName.UTF8StringLength > IFNAMSIZ - 1)
+		@throw [OFOutOfRangeException exception];
+
+# ifdef OF_MACOS
+	if ((sock = socket(AF_APPLETALK, SOCK_RAW, 0)) < 0)
+# else
+	if ((sock = socket(AF_APPLETALK, SOCK_DGRAM, 0)) < 0)
+# endif
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: nil
+				  errNo: OFSocketErrNo()];
+
+	memset(&request, 0, sizeof(request));
+	strncpy(request.ifr_name, interfaceName.UTF8String, IFNAMSIZ - 1);
+	request.ifr_addr.sa_family = AF_APPLETALK;
+
+	if (ioctl(sock, SIOCDIFADDR, &request) != 0)
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: nil
+				  errNo: OFSocketErrNo()];
+}
+#endif
 
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node
