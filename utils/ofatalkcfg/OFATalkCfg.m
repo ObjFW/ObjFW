@@ -26,17 +26,155 @@
 #import "OFPair.h"
 #import "OFStdIOStream.h"
 
+#import "OFGetOptionFailedException.h"
 #import "OFInvalidFormatException.h"
+#import "OFSetOptionFailedException.h"
 
 @interface OFATalkCfg: OFObject <OFApplicationDelegate>
 @end
 
 OF_APPLICATION_DELEGATE(OFATalkCfg)
 
+static void
+showError(OFString *error)
+{
+	[OFStdErr writeFormat: @"%@: %@\n", [OFApplication programName], error];
+	[OFApplication terminateWithStatus: 1];
+}
+
+static void
+showConfiguration(OFArray OF_GENERIC(OFString *) *arguments)
+{
+	OFAppleTalkInterfaceConfiguration config;
+	OFNumber *network, *node, *phase;
+	OFPair OF_GENERIC(OFNumber *, OFNumber *) *range;
+
+	if (arguments.count == 0)
+		showError(@"No interface specified!");
+	if (arguments.count > 1)
+		showError(@"More than one interface specified!");
+
+	config = [OFDDPSocket configurationForInterface: arguments.firstObject];
+	network = [config
+	    objectForKey: OFAppleTalkInterfaceConfigurationNetwork];
+	node = [config objectForKey: OFAppleTalkInterfaceConfigurationNode];
+	phase = [config objectForKey: OFAppleTalkInterfaceConfigurationPhase];
+	range = [config
+	    objectForKey: OFAppleTalkInterfaceConfigurationNetworkRange];
+
+	if (network == nil || node == nil)
+		[OFApplication terminateWithStatus: 1];
+
+	[OFStdOut writeLine: arguments.firstObject];
+	[OFStdOut writeFormat: @"\tNetwork:   %04X\n",
+			       network.unsignedShortValue];
+	[OFStdOut writeFormat: @"\tNode:      %02X\n", node.unsignedCharValue];
+	if (phase != nil)
+		[OFStdOut writeFormat: @"\tPhase:     %@\n", phase];
+	if (range != nil) {
+		unsigned short start = [range.firstObject unsignedShortValue];
+		unsigned short end = [range.secondObject unsignedShortValue];
+		[OFStdOut writeFormat: @"\tNet range: %04X-%04X", start, end];
+	}
+}
+
+static void
+setConfiguration(OFArray OF_GENERIC(OFString *) *arguments,
+    OFString *networkString, OFString *nodeString, OFString *phaseString,
+    OFString *rangeString)
+{
+	OFMutableDictionary *config = [OFMutableDictionary dictionary];
+	unsigned long long node, network, phase, rangeStart, rangeEnd;
+	OFArray OF_GENERIC(OFString *) *rangeArray;
+
+	if (arguments.count == 0)
+		showError(@"No interface specified!");
+	if (arguments.count > 1)
+		showError(@"More than one interface specified!");
+
+	if (networkString == nil)
+		showError(@"--network not specified!");
+	@try {
+		network = [networkString unsignedLongLongValueWithBase: 0];
+	} @catch (OFInvalidFormatException *e) {
+		showError(@"Invalid format for --network!");
+		return;
+	}
+	if (network > UINT16_MAX)
+		showError(@"--network out of range!");
+	[config setObject: [OFNumber numberWithUnsignedShort: (uint16_t)network]
+		   forKey: OFAppleTalkInterfaceConfigurationNetwork];
+
+	if (nodeString == nil)
+		showError(@"--node not specified!");
+	@try {
+		node = [nodeString unsignedLongLongValueWithBase: 0];
+	} @catch (OFInvalidFormatException *e) {
+		showError(@"Invalid format for --node!");
+		return;
+	}
+	if (node > UINT8_MAX)
+		showError(@"--node out of range!");
+	[config setObject: [OFNumber numberWithUnsignedChar: (uint8_t)node]
+		   forKey: OFAppleTalkInterfaceConfigurationNode];
+
+	if (phaseString != nil) {
+		@try {
+			phase = [phaseString unsignedLongLongValueWithBase: 0];
+		} @catch (OFInvalidFormatException *e) {
+			showError(@"Invalid format for "@"--phase!");
+			return;
+		}
+
+		if (phase > 2)
+			showError(@"--phase out of range!");
+
+		[config setObject: [OFNumber
+				       numberWithUnsignedChar: (uint8_t)phase]
+			   forKey: OFAppleTalkInterfaceConfigurationPhase];
+	}
+
+	if (rangeString != nil) {
+		const OFAppleTalkInterfaceConfigurationKey key =
+		    OFAppleTalkInterfaceConfigurationNetworkRange;
+		OFPair *range;
+
+		rangeArray = [rangeString componentsSeparatedByString: @"-"];
+		if (rangeArray.count != 2)
+			showError(@"Invalid format for --range!");
+
+		@try {
+			rangeStart = [[rangeArray objectAtIndex: 0]
+			    unsignedLongLongValueWithBase: 0];
+			rangeEnd = [[rangeArray objectAtIndex: 1]
+			    unsignedLongLongValueWithBase: 0];
+		} @catch (OFInvalidFormatException *e) {
+			showError(@"Invalid format for --range!");
+			return;
+		}
+		if (rangeStart > UINT16_MAX || rangeEnd > UINT16_MAX)
+			showError(@"--range out of range!");
+
+		range = [OFPair
+		    pairWithFirstObject: [OFNumber numberWithUnsignedShort:
+					     (uint16_t)rangeStart]
+			   secondObject: [OFNumber numberWithUnsignedShort:
+					     (uint16_t)rangeEnd]];
+		[config setObject: range forKey: key];
+	}
+
+	@try {
+		[OFDDPSocket setConfiguration: config
+				 forInterface: arguments.firstObject];
+	} @catch (OFSetOptionFailedException *e) {
+		showError([OFString stringWithFormat:
+		    @"Setting configuration failed: %@", e]);
+	}
+}
+
 @implementation OFATalkCfg
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFMutableDictionary *config = [OFMutableDictionary dictionary];
 	OFString *nodeString = nil, *networkString = nil, *phaseString = nil;
 	OFString *rangeString = nil;
 	const OFOptionsParserOption options[] = {
@@ -49,8 +187,6 @@ OF_APPLICATION_DELEGATE(OFATalkCfg)
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: options];
 	OFUnichar option;
-	unsigned long long node, network, phase, rangeStart, rangeEnd;
-	OFArray OF_GENERIC(OFString *) *rangeArray;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
@@ -85,125 +221,12 @@ OF_APPLICATION_DELEGATE(OFATalkCfg)
 		}
 	}
 
-	if (optionsParser.remainingArguments.count == 0) {
-		[OFStdErr writeFormat: @"%@: No interface specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	if (optionsParser.remainingArguments.count > 1) {
-		[OFStdErr writeFormat: @"%@: More than one interface "
-				       @"specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-
-	if (networkString == nil) {
-		[OFStdErr writeFormat: @"%@: --network not specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	@try {
-		network = [networkString unsignedLongLongValueWithBase: 0];
-	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeFormat: @"%@: Invalid format for --network!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-		return;
-	}
-	if (network > UINT16_MAX) {
-		[OFStdErr writeFormat: @"%@: --network out of range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	[config setObject: [OFNumber numberWithUnsignedShort: (uint16_t)network]
-		   forKey: OFAppleTalkInterfaceConfigurationNetwork];
-
-	if (nodeString == nil) {
-		[OFStdErr writeFormat: @"%@: --node not specified!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	@try {
-		node = [nodeString unsignedLongLongValueWithBase: 0];
-	} @catch (OFInvalidFormatException *e) {
-		[OFStdErr writeFormat: @"%@: Invalid format for --node!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-		return;
-	}
-	if (node > UINT8_MAX) {
-		[OFStdErr writeFormat: @"%@: --node out of range!\n",
-				       [OFApplication programName]];
-		[OFApplication terminateWithStatus: 1];
-	}
-	[config setObject: [OFNumber numberWithUnsignedChar: (uint8_t)node]
-		   forKey: OFAppleTalkInterfaceConfigurationNode];
-
-	if (phaseString != nil) {
-		@try {
-			phase = [phaseString unsignedLongLongValueWithBase: 0];
-		} @catch (OFInvalidFormatException *e) {
-			[OFStdErr writeFormat:
-			    @"%@: Invalid format for "@"--phase!\n",
-			    [OFApplication programName]];
-			[OFApplication terminateWithStatus: 1];
-			return;
-		}
-
-		if (phase > 2) {
-			[OFStdErr writeFormat: @"%@: --phase out of range!\n",
-					       [OFApplication programName]];
-			[OFApplication terminateWithStatus: 1];
-		}
-
-		[config setObject: [OFNumber
-				       numberWithUnsignedChar: (uint8_t)phase]
-			   forKey: OFAppleTalkInterfaceConfigurationPhase];
-	}
-
-	if (rangeString != nil) {
-		const OFAppleTalkInterfaceConfigurationKey key =
-		    OFAppleTalkInterfaceConfigurationNetworkRange;
-		OFPair *range;
-
-		rangeArray = [rangeString componentsSeparatedByString: @"-"];
-		if (rangeArray.count != 2) {
-			[OFStdErr writeFormat:
-			    @"%@: Invalid format for --range!\n",
-			    [OFApplication programName]];
-			[OFApplication terminateWithStatus: 1];
-		}
-
-		@try {
-			rangeStart = [[rangeArray objectAtIndex: 0]
-			    unsignedLongLongValueWithBase: 0];
-			rangeEnd = [[rangeArray objectAtIndex: 1]
-			    unsignedLongLongValueWithBase: 0];
-		} @catch (OFInvalidFormatException *e) {
-			[OFStdErr writeFormat:
-			    @"%@: Invalid format for --range!\n",
-			    [OFApplication programName]];
-			[OFApplication terminateWithStatus: 1];
-			return;
-		}
-
-		if (rangeStart > UINT16_MAX || rangeEnd > UINT16_MAX) {
-			[OFStdErr writeFormat: @"%@: --range out of range!\n",
-					       [OFApplication programName]];
-			[OFApplication terminateWithStatus: 1];
-		}
-
-		range = [OFPair
-		    pairWithFirstObject: [OFNumber numberWithUnsignedShort:
-					     (uint16_t)rangeStart]
-			   secondObject: [OFNumber numberWithUnsignedShort:
-					     (uint16_t)rangeEnd]];
-		[config setObject: range forKey: key];
-	}
-
-	[OFDDPSocket setConfiguration: config
-			 forInterface: optionsParser.remainingArguments
-					   .firstObject];
+	if (networkString == nil && nodeString == nil && phaseString == nil &&
+	    rangeString == nil)
+		showConfiguration(optionsParser.remainingArguments);
+	else
+		setConfiguration(optionsParser.remainingArguments,
+		    networkString, nodeString, phaseString, rangeString);
 
 	[OFApplication terminate];
 }
