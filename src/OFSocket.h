@@ -158,17 +158,16 @@ struct sockaddr_ipx {
 struct sockaddr_at {
 	sa_family_t sat_family;
 	uint8_t sat_port;
-	struct at_addr {
-		uint16_t s_net;
-		uint8_t s_node;
-	} sat_addr;
+	uint16_t sat_net;
+	uint8_t sat_node;
 };
-#endif
-#ifdef OF_WINDOWS
-# define sat_port sat_socket
 #else
-# define sat_net sat_addr.s_net
-# define sat_node sat_addr.s_node
+# ifdef OF_WINDOWS
+#  define sat_port sat_socket
+# else
+#  define sat_net sat_addr.s_net
+#  define sat_node sat_addr.s_node
+# endif
 #endif
 
 /**
