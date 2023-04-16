@@ -1,0 +1,37 @@
+name: dragonflybsd
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: macos-12
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --enable-seluid24
+          - --disable-compiler-tls
+          - --disable-threads
+          - --disable-threads --disable-sockets
+          - --disable-threads --disable-files
+          - --disable-threads --disable-sockets --disable-files
+          - --disable-sockets
+          - --disable-sockets --disable-files
+          - --disable-files
+          - --disable-shared
+          - --disable-shared --enable-seluid24
+          - --disable-compiler-tls --disable-threads
+          - --with-tls=gnutls
+          - --with-tls=gnutls --disable-shared
+    steps:
+    - uses: actions/checkout@v3
+    - uses: vmactions/dragonflybsd-vm@v0
+      with:
+        usesh: true
+        copyback: false
+        prepare: |
+          pkg install -y autoconf automake clang gnutls pkgconf
+        run: |
+          ./autogen.sh
+          ./configure OBJC=clang ${{ matrix.configure_flags }}
+          make -j4
+          make check
+          make install
