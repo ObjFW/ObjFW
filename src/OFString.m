@@ -2444,7 +2444,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	value = strtod_l(UTF8String, &endPtr, cLocale);
 #elif defined(HAVE_USELOCALE)
 	locale_t previousLocale = uselocale(cLocale);
-	value = strtod_l(UTF8String, &endPtr, cLocale);
+	value = strtod(UTF8String, &endPtr);
 	uselocale(previousLocale);
 #else
 	value = strtod(UTF8String, &endPtr);
