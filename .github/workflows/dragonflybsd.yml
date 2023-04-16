@@ -28,7 +28,7 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          pkg install -y autoconf automake clang gnutls pkgconf
+          pkg install -y autoconf automake gnutls llvm pkgconf
         run: |
           ./autogen.sh
           ./configure OBJC=clang ${{ matrix.configure_flags }}
