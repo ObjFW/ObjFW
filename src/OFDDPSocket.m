@@ -233,9 +233,19 @@ const OFAppleTalkInterfaceConfigurationKey
 		    exceptionWithObject: nil
 				  errNo: OFSocketErrNo()];
 
+	/*
+	 * NetBSD requires the address to be removed, while Linux ignores the
+	 * address entirely.
+	 */
+
 	memset(&request, 0, sizeof(request));
 	strncpy(request.ifr_name, interfaceName.UTF8String, IFNAMSIZ - 1);
-	request.ifr_addr.sa_family = AF_APPLETALK;
+
+	if (ioctl(sock, SIOCGIFADDR, &request) != 0)
+		if (errno != EADDRNOTAVAIL)
+			@throw [OFSetOptionFailedException
+			    exceptionWithObject: nil
+					  errNo: OFSocketErrNo()];
 
 	if (ioctl(sock, SIOCDIFADDR, &request) != 0)
 		@throw [OFSetOptionFailedException
