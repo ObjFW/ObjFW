@@ -28,7 +28,7 @@ jobs:
         usesh: true
         copyback: false
         prepare: |
-          /usr/sbin/pkg_add autoconf automake gnutls
+          pkg_add autoconf automake gnutls pkgconf
         run: |
           ./autogen.sh
           ./configure OBJC=gcc ${{ matrix.configure_flags }}
