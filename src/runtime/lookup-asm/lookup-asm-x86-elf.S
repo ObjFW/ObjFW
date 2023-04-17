@@ -55,19 +55,19 @@
 0:
 	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	lea	\notFound@GOTOFF(%eax), %eax
+	movl	\notFound@GOT(%eax), %eax
 	jmp	*%eax
 
 .LtaggedPointer_\name:
 	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	leal	objc_taggedPointerSecret@GOTOFF(%eax), %ecx
+	movl	objc_taggedPointerSecret@GOT(%eax), %ecx
 	xorl	(%ecx), %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	leal	objc_taggedPointerClasses@GOTOFF(%eax), %eax
+	movl	objc_taggedPointerClasses@GOT(%eax), %eax
 	movl	(%eax,%edx,2), %edx
 	movl	32(%edx), %edx
 
