@@ -294,8 +294,10 @@ parseNetStackArray(OFString *string)
 		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -502,8 +504,10 @@ parseNetStackArray(OFString *string)
 		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];

@@ -423,7 +423,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
-		    maxAllowedPointers);
+		    maxAllowedPointers).lowercaseString;
 		OFDNSClass DNSClass;
 		OFDNSRecordType recordType;
 		uint32_t TTL;

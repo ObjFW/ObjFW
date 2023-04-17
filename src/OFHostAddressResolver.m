@@ -291,7 +291,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	} @catch (OFInvalidFormatException *e) {
 	}
 
-	if ((aliases = [_settings->_staticHosts objectForKey: _host]) != nil) {
+	if ((aliases = [_settings->_staticHosts objectForKey:
+	    _host.lowercaseString]) != nil) {
 		OFMutableData *addresses = [OFMutableData
 		    dataWithItemSize: sizeof(OFSocketAddress)];
 		id exception = nil;

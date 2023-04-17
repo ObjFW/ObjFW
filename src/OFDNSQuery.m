@@ -43,7 +43,7 @@
 		if (![domainName hasSuffix: @"."])
 			domainName = [domainName stringByAppendingString: @"."];
 
-		_domainName = [domainName copy];
+		_domainName = [domainName.lowercaseString copy];
 		_DNSClass = DNSClass;
 		_recordType = recordType;
 
