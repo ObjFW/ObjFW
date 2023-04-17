@@ -7,20 +7,8 @@ jobs:
       matrix:
         configure_flags:
           -
-          - --enable-seluid24
-          - --disable-compiler-tls
-          - --disable-threads
-          - --disable-threads --disable-sockets
-          - --disable-threads --disable-files
-          - --disable-threads --disable-sockets --disable-files
-          - --disable-sockets
-          - --disable-sockets --disable-files
-          - --disable-files
           - --disable-shared
-          - --disable-shared --enable-seluid24
-          - --disable-compiler-tls --disable-threads
           - --with-tls=gnutls
-          - --with-tls=gnutls --disable-shared
     steps:
     - uses: actions/checkout@v3
     - uses: vmactions/dragonflybsd-vm@v0
