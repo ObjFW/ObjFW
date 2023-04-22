@@ -74,7 +74,7 @@ showConfiguration(OFArray OF_GENERIC(OFString *) *arguments)
 	if (range != nil) {
 		unsigned short start = [range.firstObject unsignedShortValue];
 		unsigned short end = [range.secondObject unsignedShortValue];
-		[OFStdOut writeFormat: @"\tNet range: %04X-%04X", start, end];
+		[OFStdOut writeFormat: @"\tNet range: %04X-%04X\n", start, end];
 	}
 }
 
