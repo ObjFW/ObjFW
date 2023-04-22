@@ -187,6 +187,13 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
 		struct sockaddr_at at;
+#ifdef OF_HAVE_SOCKADDR_STORAGE
+		/*
+		 * Required to make the ABI stable in case we want to add more
+		 * address types later.
+		 */
+		struct sockaddr_storage storage;
+#endif
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
