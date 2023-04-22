@@ -1423,7 +1423,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
-	AC_CHECK_MEMBER([struct sockaddr_storage.ss_family], [
+	AC_CHECK_TYPE([struct sockaddr_storage], [
 		AC_DEFINE(OF_HAVE_SOCKADDR_STORAGE, 1,
 			[Whether we have struct sockaddr_storage])
 	], [], [
@@ -1702,7 +1702,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			    [Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 
-			AC_CHECK_MEMBERS([struct ifreq.ifr_name], [
+			AC_CHECK_TYPE([struct ifreq], [
 				AC_DEFINE(OF_HAVE_APPLETALK_IFCONFIG, 1,
 				    m4_normalize([
 					Whether AppleTalk interfaces
@@ -1763,9 +1763,14 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
-	AC_CHECK_HEADERS(ifaddrs.h)
+	AC_CHECK_HEADERS(ifaddrs.h netpacket/packet.h)
 	AC_CHECK_FUNC(getifaddrs, [
 		AC_DEFINE(OF_HAVE_GETIFADDRS, 1, [Whether we have getifaddrs()])
+	])
+	AC_CHECK_TYPES([struct sockaddr_ll], [], [], [
+		#ifdef HAVE_NETPACKET_PACKET_H
+		# include <netpacket/packet.h>
+		#endif
 	])
 
 	AC_ARG_WITH(tls,

@@ -88,6 +88,9 @@
 #ifdef HAVE_IFADDRS_H
 # include <ifaddrs.h>
 #endif
+#ifdef HAVE_NETPACKET_PACKET_H
+# include <netpacket/packet.h>
+#endif
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 /*
@@ -124,6 +127,8 @@ struct X86Regs {
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
 OFConstantString *const OFNetworkInterfaceAddresses =
     @"OFNetworkInterfaceAddresses";
+OFConstantString *const OFNetworkInterfaceEthernetAddress =
+    @"OFNetworkInterfaceEthernetAddress";
 #endif
 
 static size_t pageSize = 4096;
@@ -905,6 +910,25 @@ wrapSockaddr(struct sockaddr *sa)
 
 			if (iter->ifa_addr == NULL)
 				continue;
+
+# if defined(HAVE_STRUCT_SOCKADDR_LL) && defined(AF_PACKET)
+			if (iter->ifa_addr->sa_family == AF_PACKET) {
+				const OFNetworkInterfaceInfoKey key =
+				    OFNetworkInterfaceEthernetAddress;
+				struct sockaddr_ll *sll = (struct sockaddr_ll *)
+				    (void *)iter->ifa_addr;
+				OFData *addr;
+
+				/* ARP hardware address type 1 is Ethernet. */
+				if (sll->sll_hatype != 1)
+					continue;
+
+				addr = [OFData dataWithItems: sll->sll_addr
+						       count: sll->sll_halen];
+				[interface setObject: addr forKey: key];
+				continue;
+			}
+# endif
 
 			addresses = [interface
 			    objectForKey: OFNetworkInterfaceAddresses];

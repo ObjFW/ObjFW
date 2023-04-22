@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Possible keys are:
  *
  *   * @ref OFNetworkInterfaceAddresses
+ *   * @ref OFNetworkInterfaceEthernetAddress
  */
 typedef OFConstantString *OFNetworkInterfaceInfoKey;
 
@@ -38,6 +39,13 @@ typedef OFConstantString *OFNetworkInterfaceInfoKey;
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
 extern OFConstantString *const OFNetworkInterfaceAddresses;
+
+/**
+ * @brief The Ethernet address of a network interface.
+ *
+ * This maps to an @ref OFData.
+ */
+extern OFConstantString *const OFNetworkInterfaceEthernetAddress;
 #endif
 
 /**
