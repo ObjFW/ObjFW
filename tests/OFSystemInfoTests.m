@@ -107,6 +107,12 @@
 	    [OFSystemInfo supportsAltiVec]];
 #endif
 
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
+	[OFStdOut writeFormat: @"[OFSystemInfo] Network interfaces: %@\n",
+			       [[[OFSystemInfo networkInterfaces] allKeys]
+			       componentsJoinedByString: @", "]];
+#endif
+
 	objc_autoreleasePoolPop(pool);
 }
 @end

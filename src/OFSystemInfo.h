@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
-#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
 /**
  * @brief A key in the per-interface dictionary returned by
  *	  @ref networkInterfaces.
@@ -90,7 +90,7 @@ OF_SUBCLASSING_RESTRICTED
 # ifdef OF_WINDOWS
 @property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
 # endif
-# if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+# ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
 @property (class, readonly, nonatomic) OFDictionary OF_GENERIC(OFString *,
     OFDictionary OF_GENERIC(OFNetworkInterfaceInfoKey, id) *)
     *networkInterfaces;
@@ -371,7 +371,7 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)isWindowsNT;
 #endif
 
-#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
 /**
  * @brief Returns the available (though not necessarily configured) network
  *	  interfaces and information about them.

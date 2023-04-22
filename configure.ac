@@ -1765,7 +1765,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AC_CHECK_HEADERS(ifaddrs.h netpacket/packet.h)
 	AC_CHECK_FUNC(getifaddrs, [
-		AC_DEFINE(OF_HAVE_GETIFADDRS, 1, [Whether we have getifaddrs()])
+		AC_DEFINE(OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES, 1,
+			[Whether OFSystemInfo has network interfaces])
 	])
 	AC_CHECK_TYPES([struct sockaddr_ll], [], [], [
 		#ifdef HAVE_NETPACKET_PACKET_H

@@ -124,7 +124,7 @@ struct X86Regs {
 };
 #endif
 
-#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
 OFConstantString *const OFNetworkInterfaceAddresses =
     @"OFNetworkInterfaceAddresses";
 OFConstantString *const OFNetworkInterfaceEthernetAddress =
@@ -838,7 +838,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 }
 #endif
 
-#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
 static OFSocketAddress
 wrapSockaddr(struct sockaddr *sa)
 {

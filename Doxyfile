@@ -23,7 +23,6 @@ PREDEFINED = __OBJC__						\
 	     OF_GENERIC(...)=					\
 	     OF_HAVE_BLOCKS					\
 	     OF_HAVE_FILES					\
-	     OF_HAVE_GETIFADDRS					\
 	     OF_HAVE_SANDBOX					\
 	     OF_HAVE_SOCKETS					\
 	     OF_HAVE_THREADS					\
@@ -38,6 +37,7 @@ PREDEFINED = __OBJC__						\
 	     OF_RETURNS_RETAINED=				\
 	     OF_ROOT_CLASS=					\
 	     OF_SENTINEL=					\
+	     OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES		\
 	     OF_WARN_UNUSED_RESULT=				\
 	     OF_WEAK_UNAVAILABLE=				\
 	     SIGHUP						\
