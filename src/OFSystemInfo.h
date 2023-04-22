@@ -69,7 +69,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFIRI *temporaryDirectoryIRI;
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
 @property (class, readonly, nullable, nonatomic) OFString *CPUModel;
-# if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
+# if defined(OF_AMD64) || defined(OF_X86) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsMMX;
 @property (class, readonly, nonatomic) bool supports3DNow;
 @property (class, readonly, nonatomic) bool supportsEnhanced3DNow;
@@ -214,11 +214,11 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)CPUModel;
 
-#if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
+#if defined(OF_AMD64) || defined(OF_X86) || defined(DOXYGEN)
 /**
  * @brief Returns whether the CPU supports MMX.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports MMX
  */
@@ -227,7 +227,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports 3DNow!.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports 3DNow!
  */
@@ -236,7 +236,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports enhanced 3DNow!.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports enhanced 3DNow!
  */
@@ -247,7 +247,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE
  */
@@ -258,7 +258,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE2
  */
@@ -269,7 +269,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE3
  */
@@ -280,7 +280,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSSE3
  */
@@ -291,7 +291,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE4.1
  */
@@ -302,7 +302,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE4.2
  */
@@ -313,7 +313,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AVX
  */
@@ -324,7 +324,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AVX2
  */
@@ -333,7 +333,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports AES-NI.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AES-NI
  */
@@ -342,7 +342,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports Intel SHA Extensions.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports Intel SHA Extensions
  */

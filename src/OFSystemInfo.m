@@ -118,7 +118,7 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
     NSSearchPathEnumerationState, char *);
 #endif
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
@@ -290,13 +290,13 @@ mountTmpFS(void)
 }
 #endif
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 static OF_INLINE struct X86Regs OF_CONST_FUNC
 x86CPUID(uint32_t eax, uint32_t ecx)
 {
 	struct X86Regs regs;
 
-# if defined(OF_X86_64) && defined(__GNUC__)
+# if defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
@@ -655,7 +655,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUVendor
 {
-#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	struct X86Regs regs = x86CPUID(0, 0);
 	uint32_t buffer[3];
 
@@ -678,7 +678,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	struct X86Regs regs = x86CPUID(0x80000000, 0);
 	uint32_t buffer[12];
 	size_t i;
@@ -737,7 +737,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 + (bool)supportsMMX
 {
 	return (x86CPUID(1, 0).edx & (1u << 23));

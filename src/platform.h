@@ -26,7 +26,7 @@
 #endif
 
 #if defined(__x86_64__) || defined(__amd64__)
-# define OF_X86_64
+# define OF_AMD64
 #elif defined(__i386__)
 # define OF_X86
 #elif defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__)

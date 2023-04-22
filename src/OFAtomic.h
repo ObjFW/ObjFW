@@ -169,7 +169,7 @@ OFReleaseMemoryBarrier(void)
 {
 	/* nop */
 }
-#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 # import "platform/x86/OFAtomic.h"
 #elif defined(OF_POWERPC) && defined(__GNUC__) && !defined(__APPLE_CC__) && \
     !defined(OF_AIX)

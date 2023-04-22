@@ -1156,7 +1156,7 @@ static const OFChar16 swappedChar16String[] = {
 #  define EXPECTED -0.123456789
 # else
 /*
- * Solaris' strtod() has weird rounding on x86, but not on x86_64.
+ * Solaris' strtod() has weird rounding on x86, but not on AMD64.
  * AmigaOS 3 with libnix has weird rounding as well.
  */
 #  define INPUT @"\t-0.125 "

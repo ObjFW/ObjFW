@@ -18,10 +18,10 @@
 #include "platform.h"
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(OF_X86_64)
-#  include "apple-forwarding-x86_64.S"
+# if defined(OF_AMD64)
+#  include "apple-forwarding-amd64.S"
 # elif defined(OF_X86)
-#  include "apple-forwarding-i386.S"
+#  include "apple-forwarding-x86.S"
 # elif defined(OF_ARM64)
 #  include "apple-forwarding-arm64.S"
 # elif defined(OF_ARM)
@@ -31,8 +31,8 @@
 # endif
 #else
 # if defined(OF_ELF)
-#  if defined(OF_X86_64)
-#   include "forwarding-x86_64-elf.S"
+#  if defined(OF_AMD64)
+#   include "forwarding-amd64-elf.S"
 #  elif defined(OF_X86)
 #   include "forwarding-x86-elf.S"
 #  elif defined(OF_ARM64)
@@ -49,12 +49,12 @@
 #   include "forwarding-sparc-elf.S"
 #  endif
 # elif defined(OF_MACH_O)
-#  if defined(OF_X86_64)
-#   include "forwarding-x86_64-macho.S"
+#  if defined(OF_AMD64)
+#   include "forwarding-amd64-macho.S"
 #  endif
 # elif defined(OF_WINDOWS)
-#  if defined(OF_X86_64)
-#   include "forwarding-x86_64-win64.S"
+#  if defined(OF_AMD64)
+#   include "forwarding-amd64-win64.S"
 #  elif defined(OF_X86)
 #   include "forwarding-x86-win32.S"
 #  endif

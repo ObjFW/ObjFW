@@ -26,7 +26,7 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 		    : "+&r"(i)
 		    : "r"(i), "m"(*p)
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "lock\n\t"
@@ -59,7 +59,7 @@ OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
 static OF_INLINE void *_Nullable
 OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
-#if defined(OF_X86_64)
+#if defined(OF_AMD64)
 	__asm__ __volatile__ (
 	    "lock\n\t"
 	    "xaddq	%0, %2\n\t"
@@ -94,7 +94,7 @@ OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 		    : "+&r"(i)
 		    : "r"(i), "m"(*p)
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "negq	%0\n\t"
@@ -129,7 +129,7 @@ OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 static OF_INLINE void *_Nullable
 OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
-#if defined(OF_X86_64)
+#if defined(OF_AMD64)
 	__asm__ __volatile__ (
 	    "negq	%0\n\t"
 	    "lock\n\t"
@@ -169,7 +169,7 @@ OFAtomicIntIncrease(volatile int *_Nonnull p)
 		    : "=&r"(i)
 		    : "m"(*p)
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
@@ -220,7 +220,7 @@ OFAtomicIntDecrease(volatile int *_Nonnull p)
 		    : "=&r"(i)
 		    : "m"(*p)
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
@@ -272,7 +272,7 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
@@ -328,7 +328,7 @@ OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
@@ -384,7 +384,7 @@ OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
 		);
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
@@ -482,7 +482,7 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 static OF_INLINE void
 OFMemoryBarrier(void)
 {
-#ifdef OF_X86_64
+#ifdef OF_AMD64
 	__asm__ __volatile__ (
 	    "lock orq	$0, (%%rsp)" ::: "memory", "cc"
 	);
