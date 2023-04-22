@@ -122,7 +122,7 @@ struct X86Regs {
 #endif
 
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
-const OFConstantString *OFNetworkInterfaceAddresses =
+OFConstantString *const OFNetworkInterfaceAddresses =
     @"OFNetworkInterfaceAddresses";
 #endif
 

@@ -30,14 +30,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  *   * @ref OFNetworkInterfaceAddresses
  */
-typedef OFString *OFNetworkInterfaceInfoKey;
+typedef OFConstantString *OFNetworkInterfaceInfoKey;
 
 /**
  * @brief The addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern const OFConstantString *OFNetworkInterfaceAddresses;
+extern OFConstantString *const OFNetworkInterfaceAddresses;
 #endif
 
 /**

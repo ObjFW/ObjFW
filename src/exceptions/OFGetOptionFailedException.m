@@ -61,6 +61,6 @@
 		    [_object class], OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:
-		    @"Getting an failed: %@", OFStrError(_errNo)];
+		    @"Getting an option failed: %@", OFStrError(_errNo)];
 }
 @end
