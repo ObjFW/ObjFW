@@ -1749,6 +1749,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
+	AC_CHECK_HEADERS(ifaddrs.h)
+	AC_CHECK_FUNC(getifaddrs, [
+		AC_DEFINE(OF_HAVE_GETIFADDRS, 1, [Whether we have getifaddrs()])
+	])
+
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library

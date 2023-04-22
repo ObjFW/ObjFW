@@ -23,6 +23,7 @@ PREDEFINED = __OBJC__						\
 	     OF_GENERIC(...)=					\
 	     OF_HAVE_BLOCKS					\
 	     OF_HAVE_FILES					\
+	     OF_HAVE_GETIFADDRS					\
 	     OF_HAVE_SANDBOX					\
 	     OF_HAVE_SOCKETS					\
 	     OF_HAVE_THREADS					\

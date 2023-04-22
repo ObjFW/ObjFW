@@ -56,10 +56,14 @@
 #import "OFSystemInfo.h"
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOnce.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFSocket.h"
+#endif
 #import "OFString.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
@@ -79,6 +83,10 @@
 
 #if !defined(PATH_MAX) && defined(MAX_PATH)
 # define PATH_MAX MAX_PATH
+#endif
+
+#ifdef HAVE_IFADDRS_H
+# include <ifaddrs.h>
 #endif
 
 #if defined(OF_MACOS) || defined(OF_IOS)
@@ -111,6 +119,11 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+#endif
+
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+const OFConstantString *OFNetworkInterfaceAddresses =
+    @"OFNetworkInterfaceAddresses";
 #endif
 
 static size_t pageSize = 4096;
@@ -817,6 +830,100 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 + (bool)isWindowsNT
 {
 	return !(GetVersion() & 0x80000000);
+}
+#endif
+
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_GETIFADDRS)
+static OFSocketAddress
+wrapSockaddr(struct sockaddr *sa)
+{
+	OFSocketAddress address;
+
+	switch (sa->sa_family) {
+	case AF_INET:
+		address.family = OFSocketAddressFamilyIPv4;
+		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_in));
+		address.length = (socklen_t)sizeof(struct sockaddr_in);
+		break;
+# ifdef AF_INET6
+	case AF_INET6:
+		address.family = OFSocketAddressFamilyIPv6;
+		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_in6));
+		address.length = (socklen_t)sizeof(struct sockaddr_in6);
+		break;
+# endif
+# ifdef AF_IPX
+	case AF_IPX:
+		address.family = OFSocketAddressFamilyIPX;
+		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_ipx));
+		address.length = (socklen_t)sizeof(struct sockaddr_ipx);
+		break;
+# endif
+# ifdef AF_APPLETALK
+	case AF_APPLETALK:
+		address.family = OFSocketAddressFamilyAppleTalk;
+		memcpy(&address.sockaddr.at, sa, sizeof(struct sockaddr_at));
+		address.length = (socklen_t)sizeof(struct sockaddr_at);
+		break;
+# endif
+	default:
+		address.family = OFSocketAddressFamilyUnknown;
+		memcpy(&address.sockaddr, sa, sizeof(struct sockaddr));
+		address.length = sizeof(struct sockaddr);
+		break;
+	}
+
+	return address;
+}
+
++ (OFDictionary OF_GENERIC(OFString *, OFDictionary
+    OF_GENERIC(OFNetworkInterfaceInfoKey, id) *) *)networkInterfaces
+{
+	OFMutableDictionary *interfaces = [OFMutableDictionary dictionary];
+	OFStringEncoding encoding = [OFLocale encoding];
+	struct ifaddrs *ifaddrs;
+
+	if (getifaddrs(&ifaddrs) != 0)
+		return nil;
+
+	@try {
+		for (struct ifaddrs *iter = ifaddrs; iter != NULL;
+		    iter = iter->ifa_next) {
+			OFString *interfaceName =
+			    [OFString stringWithCString: iter->ifa_name
+					       encoding: encoding];
+			OFMutableDictionary *interface;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			interface = [interfaces objectForKey: interfaceName];
+			if (interface == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[interfaces setObject: interface
+					       forKey: interfaceName];
+			}
+
+			if (iter->ifa_addr == NULL)
+				continue;
+
+			addresses = [interface
+			    objectForKey: OFNetworkInterfaceAddresses];
+			if (addresses == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface
+				    setObject: addresses
+				       forKey: OFNetworkInterfaceAddresses];
+			}
+
+			address = wrapSockaddr(iter->ifa_addr);
+			[addresses addItem: &address];
+		}
+	} @finally {
+		freeifaddrs(ifaddrs);
+	}
+
+	return interfaces;
 }
 #endif
 
