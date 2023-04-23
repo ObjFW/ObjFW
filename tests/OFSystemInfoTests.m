@@ -21,6 +21,10 @@
 - (void)systemInfoTests
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
+	OFDictionary *networkInterfaces;
+	bool firstInterface = true;
+#endif
 
 	[OFStdOut setForegroundColor: [OFColor lime]];
 
@@ -108,9 +112,51 @@
 #endif
 
 #ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
-	[OFStdOut writeFormat: @"[OFSystemInfo] Network interfaces: %@\n",
-			       [[[OFSystemInfo networkInterfaces] allKeys]
-			       componentsJoinedByString: @", "]];
+	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	for (OFString *name in networkInterfaces) {
+		OFDictionary *interface = [networkInterfaces
+		    objectForKey: name];
+		OFData *etherAddr = [interface
+		    objectForKey: OFNetworkInterfaceEthernetAddress];
+		bool firstAddress = true;
+		OFData *addrs;
+
+		if (!firstInterface)
+			[OFStdOut writeString: @"; "];
+		firstInterface = false;
+
+		[OFStdOut writeFormat: @"%@(", name];
+
+		if (etherAddr.itemSize == 1 && etherAddr.count == 6) {
+			const unsigned char *addr = etherAddr.items;
+			[OFStdOut writeFormat: @"%02X:%02X:%02X:%02X:%02X:%02X",
+					       addr[0], addr[1], addr[2],
+					       addr[3], addr[4], addr[5]];
+			firstAddress = false;
+		}
+
+		addrs = [interface objectForKey: OFNetworkInterfaceAddresses];
+		for (size_t i = 0; i < addrs.count; i++) {
+			const OFSocketAddress *addr = [addrs itemAtIndex: i];
+			OFString *string;
+
+			@try {
+				string = OFSocketAddressString(addr);
+			} @catch (OFInvalidArgumentException *e) {
+				continue;
+			}
+
+			if (!firstAddress)
+				[OFStdOut writeString: @", "];
+			firstAddress = nil;
+
+			[OFStdOut writeString: string];
+		}
+
+		[OFStdOut writeString: @")"];
+	}
+	[OFStdOut writeString: @"\n"];
 #endif
 
 	objc_autoreleasePoolPop(pool);
