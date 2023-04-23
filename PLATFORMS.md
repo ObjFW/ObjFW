@@ -195,9 +195,9 @@ QNX
 Solaris
 -------
 
-  * OS Versions: OpenIndiana 2015.03
+  * OS Versions: OpenIndiana 2015.03, OpenIndiana 2023.04
   * Architectures: AMD64, x86
-  * Compilers: Clang 3.4.2, GCC 4.8.3
+  * Compilers: Clang 3.4.2, Clang 13.0.1, GCC 4.8.3, GCC 10.4.0
   * Runtimes: ObjFW
 
 
