@@ -2250,6 +2250,20 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	])
 
+	AC_MSG_CHECKING(whether we need -Wno-strict-prototypes)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <signal.h>
+		], [
+			signal(SIGINT, SIG_DFL);
+		])
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$OBJCFLAGS -Wno-strict-prototypes"
+	])
+
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
 		AC_COMPILE_IFELSE([
