@@ -170,13 +170,13 @@ initOperatingSystemName(void)
 	    initWithCString: _os_flavor
 		   encoding: OFStringEncodingASCII];
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname utsname;
+	struct utsname name;
 
-	if (uname(&utsname) != 0)
+	if (uname(&name) != 0)
 		return;
 
 	operatingSystemName = [[OFString alloc]
-	    initWithCString: utsname.sysname
+	    initWithCString: name.sysname
 		   encoding: [OFLocale encoding]];
 #endif
 }
@@ -267,13 +267,13 @@ initOperatingSystemVersion(void)
     defined(OF_PSP)
 	/* Intentionally nothing */
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname utsname;
+	struct utsname name;
 
-	if (uname(&utsname) != 0)
+	if (uname(&name) != 0)
 		return;
 
 	operatingSystemVersion = [[OFString alloc]
-	    initWithCString: utsname.release
+	    initWithCString: name.release
 		   encoding: [OFLocale encoding]];
 #endif
 }
