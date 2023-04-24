@@ -1770,7 +1770,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether OFSystemInfo has network interfaces])
 	])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
-		#include <stdint.h>
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
 		#ifdef HAVE_NET_IF_DL_H
 		# include <net/if_dl.h>
 		#endif
