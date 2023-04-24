@@ -30,6 +30,19 @@
 # include <sys/sysctl.h>
 #endif
 
+#ifdef HAVE_IFADDRS_H
+# include <ifaddrs.h>
+#endif
+#ifdef HAVE_NET_IF_TYPES_H
+# include <net/if_types.h>
+#endif
+#ifdef HAVE_NET_IF_DL_H
+# include <net/if_dl.h>
+#endif
+#ifdef HAVE_NETPACKET_PACKET_H
+# include <netpacket/packet.h>
+#endif
+
 #ifdef OF_AMIGAOS
 # define Class IntuitionClass
 # include <exec/execbase.h>
@@ -83,13 +96,6 @@
 
 #if !defined(PATH_MAX) && defined(MAX_PATH)
 # define PATH_MAX MAX_PATH
-#endif
-
-#ifdef HAVE_IFADDRS_H
-# include <ifaddrs.h>
-#endif
-#ifdef HAVE_NETPACKET_PACKET_H
-# include <netpacket/packet.h>
 #endif
 
 #if defined(OF_MACOS) || defined(OF_IOS)
@@ -925,6 +931,24 @@ wrapSockaddr(struct sockaddr *sa)
 
 				addr = [OFData dataWithItems: sll->sll_addr
 						       count: sll->sll_halen];
+				[interface setObject: addr forKey: key];
+				continue;
+			}
+# endif
+# if defined(HAVE_STRUCT_SOCKADDR_DL) && defined(AF_LINK) && \
+    defined(IFT_ETHER) && defined(LLADDR)
+			if (iter->ifa_addr->sa_family == AF_LINK) {
+				const OFNetworkInterfaceInfoKey key =
+				    OFNetworkInterfaceEthernetAddress;
+				struct sockaddr_dl *sdl = (struct sockaddr_dl *)
+				    (void *)iter->ifa_addr;
+				OFData *addr;
+
+				if (sdl->sdl_type != IFT_ETHER)
+					continue;
+
+				addr = [OFData dataWithItems: LLADDR(sdl)
+						       count: sdl->sdl_alen];
 				[interface setObject: addr forKey: key];
 				continue;
 			}

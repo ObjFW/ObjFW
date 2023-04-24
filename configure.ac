@@ -1763,10 +1763,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
-	AC_CHECK_HEADERS(ifaddrs.h netpacket/packet.h)
+	AC_CHECK_HEADERS(ifaddrs.h net/if_types.h net/if_dl.h)
+	AC_CHECK_HEADERS(netpacket/packet.h)
 	AC_CHECK_FUNC(getifaddrs, [
 		AC_DEFINE(OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES, 1,
 			[Whether OFSystemInfo has network interfaces])
+	])
+	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
+		#include <stdint.h>
+		#ifdef HAVE_NET_IF_DL_H
+		# include <net/if_dl.h>
+		#endif
 	])
 	AC_CHECK_TYPES([struct sockaddr_ll], [], [], [
 		#ifdef HAVE_NETPACKET_PACKET_H
