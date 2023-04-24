@@ -15,7 +15,9 @@
 
 #include "config.h"
 
-#define _LARGEFILE64_SOURCE
+#ifndef _LARGEFILE64_SOURCE
+# define _LARGEFILE64_SOURCE
+#endif
 
 #include <errno.h>
 #include <math.h>
