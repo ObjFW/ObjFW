@@ -1924,7 +1924,9 @@ darwin*)
 		    (!defined(TARGET_OS_SIMULATOR) || !TARGET_OS_SIMULATOR)
 		egrep_cpp_yes
 		#endif
-	], [], [
+	], [
+		AC_MSG_RESULT(yes)
+	], [
 		AC_MSG_RESULT(no)
 		have_subprocesses="no"
 	])
