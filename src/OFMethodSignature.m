@@ -146,7 +146,8 @@ alignmentOfUnion(const char **type, size_t *length)
 }
 
 static size_t
-#if defined(__clang__) && __clang_major__ == 3 && __clang_minor__ <= 7
+#if defined(__clang__) && __has_attribute(__optnone__) && \
+    __clang_major__ == 3 && __clang_minor__ <= 7
 /* Work around an ICE in Clang 3.7.0 on Windows/x86 */
 __attribute__((__optnone__))
 #endif
@@ -440,7 +441,8 @@ sizeOfUnion(const char **type, size_t *length)
 }
 
 static size_t
-#if defined(__clang__) && __clang_major__ == 3 && __clang_minor__ <= 7
+#if defined(__clang__) && __has_attribute(__optnone__) && \
+    __clang_major__ == 3 && __clang_minor__ <= 7
 /* Work around an ICE in Clang 3.7.0 on Windows/x86 */
 __attribute__((__optnone__))
 #endif
