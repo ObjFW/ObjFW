@@ -1542,9 +1542,24 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netipx/ipx.h])
 	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
-		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [], [
+		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
+			], [], [
+				#ifdef HAVE_SYS_TYPES_H
+				# include <sys/types.h>
+				#endif
+
+				#ifdef OF_HAVE_NETIPX_IPX_H
+				# include <netipx/ipx.h>
+				#endif
+			])
+		], [
 			#ifdef _WIN32
 			typedef int BOOL;
+			#endif
+
+			#ifdef HAVE_SYS_TYPES_H
+			# include <sys/types.h>
 			#endif
 
 			#ifdef OF_HAVE_NETIPX_IPX_H
@@ -1567,6 +1582,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		typedef int BOOL;
 		#endif
 
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+
 		#ifdef OF_HAVE_NETIPX_IPX_H
 		# include <netipx/ipx.h>
 		#endif
@@ -1583,7 +1602,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 	])
 	AS_IF([test x"$ac_cv_member_struct_sockaddr_ipx_sipx_network" = x"yes" \
-	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes"], [
+	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes" -o \
+	    x"$ac_cv_member_struct_sockaddr_ipx_sipx_addr_x_port" = x"yes"], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#ifdef _WIN32
 			typedef int BOOL;

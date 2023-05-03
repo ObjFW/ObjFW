@@ -136,8 +136,10 @@ struct sockaddr_un {
 };
 #endif
 
-#ifndef OF_HAVE_IPX
+#ifndef IPX_NODE_LEN
 # define IPX_NODE_LEN 6
+#endif
+#ifndef OF_HAVE_IPX
 struct sockaddr_ipx {
 	sa_family_t sipx_family;
 	uint32_t sipx_network;
@@ -152,6 +154,10 @@ struct sockaddr_ipx {
 # define sipx_network sa_netnum
 # define sipx_node sa_nodenum
 # define sipx_port sa_socket
+#endif
+#ifdef OF_FREEBSD
+# define sipx_network sipx_addr.x_net.c_net
+# define sipx_node sipx_addr.x_host.c_host
 #endif
 
 #ifndef OF_HAVE_APPLETALK

@@ -28,6 +28,10 @@
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPXSocketFailedException.h"
 
+#ifndef NSPROTO_IPX
+# define NSPROTO_IPX 0
+#endif
+
 @implementation OFIPXSocket
 @dynamic delegate;
 
@@ -47,7 +51,7 @@
 
 	address = OFSocketAddressMakeIPX(network, node, port);
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(OF_FREEBSD)
 	protocol = NSPROTO_IPX + packetType;
 #else
 	_packetType = address.sockaddr.ipx.sipx_type = packetType;
@@ -122,7 +126,7 @@
 	return address;
 }
 
-#ifndef OF_WINDOWS
+#if !defined(OF_WINDOWS) && !defined(OF_FREEBSD)
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  receiver: (const OFSocketAddress *)receiver
