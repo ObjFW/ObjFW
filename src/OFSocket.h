@@ -139,7 +139,7 @@ struct sockaddr_un {
 #ifndef IPX_NODE_LEN
 # define IPX_NODE_LEN 6
 #endif
-#ifndef OF_HAVE_IPX
+#if !defined(OF_HAVE_IPX)
 struct sockaddr_ipx {
 	sa_family_t sipx_family;
 	uint32_t sipx_network;
@@ -147,15 +147,13 @@ struct sockaddr_ipx {
 	uint16_t sipx_port;
 	uint8_t sipx_type;
 };
-#endif
-#ifdef OF_WINDOWS
+#elif defined(OF_WINDOWS)
 # define IPX_NODE_LEN 6
 # define sipx_family sa_family
 # define sipx_network sa_netnum
 # define sipx_node sa_nodenum
 # define sipx_port sa_socket
-#endif
-#ifdef OF_FREEBSD
+#elif defined(OF_FREEBSD)
 # define sipx_network sipx_addr.x_net.c_net
 # define sipx_node sipx_addr.x_host.c_host
 #endif
