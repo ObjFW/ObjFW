@@ -116,7 +116,7 @@ const OFAppleTalkInterfaceConfigurationKey
 
 	memset(&request, 0, sizeof(request));
 	strncpy(request.ifr_name, interfaceName.UTF8String, IFNAMSIZ - 1);
-	sat = (struct sockaddr_at *)&request.ifr_addr;
+	sat = (struct sockaddr_at *)(void *)&request.ifr_addr;
 	sat->sat_family = AF_APPLETALK;
 	sat->sat_net = OFToBigEndian16(network.unsignedShortValue);
 	sat->sat_node = node.unsignedCharValue;
@@ -184,7 +184,7 @@ const OFAppleTalkInterfaceConfigurationKey
 								 errNo: errNo];
 	}
 
-	sat = (struct sockaddr_at *)&request.ifr_addr;
+	sat = (struct sockaddr_at *)(void *)&request.ifr_addr;
 
 	close(sock);
 
