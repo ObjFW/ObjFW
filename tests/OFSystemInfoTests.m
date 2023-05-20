@@ -130,9 +130,10 @@
 
 		if (etherAddr.itemSize == 1 && etherAddr.count == 6) {
 			const unsigned char *addr = etherAddr.items;
-			[OFStdOut writeFormat: @"%02X:%02X:%02X:%02X:%02X:%02X",
-					       addr[0], addr[1], addr[2],
-					       addr[3], addr[4], addr[5]];
+			[OFStdOut writeFormat:
+			    @"MAC=%02X:%02X:%02X:%02X:%02X:%02X",
+			    addr[0], addr[1], addr[2], addr[3], addr[4],
+			    addr[5]];
 			firstAddress = false;
 		}
 
@@ -150,6 +151,23 @@
 			if (!firstAddress)
 				[OFStdOut writeString: @", "];
 			firstAddress = nil;
+
+			switch (addr->family) {
+			case OFSocketAddressFamilyIPv4:
+				[OFStdOut writeString: @"IPv4="];
+				break;
+			case OFSocketAddressFamilyIPv6:
+				[OFStdOut writeString: @"IPv6="];
+				break;
+			case OFSocketAddressFamilyIPX:
+				[OFStdOut writeString: @"IPX="];
+				break;
+			case OFSocketAddressFamilyAppleTalk:
+				[OFStdOut writeString: @"AppleTalk="];
+				break;
+			default:
+				[OFStdOut writeString: @"unknown="];
+			}
 
 			[OFStdOut writeString: string];
 		}

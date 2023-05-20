@@ -909,6 +909,15 @@ IPv6String(const OFSocketAddress *address)
 	return string;
 }
 
+static OFString *
+appleTalkString(const OFSocketAddress *address)
+{
+	const struct sockaddr_at *addrAT = &address->sockaddr.at;
+
+	return [OFString stringWithFormat: @"%d.%d",
+	    OFFromBigEndian16(addrAT->sat_net), addrAT->sat_node];
+}
+
 OFString *
 OFSocketAddressString(const OFSocketAddress *address)
 {
@@ -917,6 +926,8 @@ OFSocketAddressString(const OFSocketAddress *address)
 		return IPv4String(address);
 	case OFSocketAddressFamilyIPv6:
 		return IPv6String(address);
+	case OFSocketAddressFamilyAppleTalk:
+		return appleTalkString(address);
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}
