@@ -910,6 +910,25 @@ IPv6String(const OFSocketAddress *address)
 }
 
 static OFString *
+IPXString(const OFSocketAddress *address)
+{
+	const struct sockaddr_ipx *addrIPX = &address->sockaddr.ipx;
+	uint32_t network;
+	uint64_t node;
+
+	memcpy(&network, &addrIPX->sipx_network, sizeof(addrIPX->sipx_network));
+	node = ((uint64_t)addrIPX->sipx_node[0] << 40) |
+	    ((uint64_t)addrIPX->sipx_node[1] << 32) |
+	    ((uint64_t)addrIPX->sipx_node[2] << 24) |
+	    ((uint64_t)addrIPX->sipx_node[3] << 16) |
+	    ((uint64_t)addrIPX->sipx_node[4] << 8) |
+	    (uint64_t)addrIPX->sipx_node[5];
+
+	return [OFString stringWithFormat: @"%X.%X",
+	    OFFromBigEndian32(network), node];
+}
+
+static OFString *
 appleTalkString(const OFSocketAddress *address)
 {
 	const struct sockaddr_at *addrAT = &address->sockaddr.at;
@@ -926,6 +945,8 @@ OFSocketAddressString(const OFSocketAddress *address)
 		return IPv4String(address);
 	case OFSocketAddressFamilyIPv6:
 		return IPv6String(address);
+	case OFSocketAddressFamilyIPX:
+		return IPXString(address);
 	case OFSocketAddressFamilyAppleTalk:
 		return appleTalkString(address);
 	default:
