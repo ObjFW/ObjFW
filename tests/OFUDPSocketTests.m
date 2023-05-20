@@ -48,10 +48,6 @@ static OFString *const module = @"OFUDPSocket";
 
 	addr3 = OFSocketAddressParseIP(@"127.0.0.1", port1 + 1);
 
-	/*
-	 * TODO: Move those tests elsewhere as soon as the DNS resolving part
-	 *	 is no longer in OFUDPSocket.
-	 */
 	TEST(@"OFSocketAddressEqual()",
 	    OFSocketAddressEqual(&addr1, &addr2) &&
 	    !OFSocketAddressEqual(&addr1, &addr3))
