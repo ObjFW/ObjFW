@@ -53,16 +53,17 @@ static OFString *module;
 	self = [super init];
 
 	@try {
-		uint16_t port;
+		OFSocketAddress address;
 
 		_testsAppDelegate = testsAppDelegate;
 
 		_server = [[OFTCPSocket alloc] init];
-		port = [_server bindToHost: @"127.0.0.1" port: 0];
+		address = [_server bindToHost: @"127.0.0.1" port: 0];
 		[_server listen];
 
 		_client = [[OFTCPSocket alloc] init];
-		[_client connectToHost: @"127.0.0.1" port: port];
+		[_client connectToHost: @"127.0.0.1"
+				  port: OFSocketAddressIPPort(&address)];
 		[_client writeBuffer: "0" length: 1];
 	} @catch (id e) {
 		[self release];

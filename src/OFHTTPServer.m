@@ -850,6 +850,7 @@ normalizedKey(OFString *key)
 - (void)start
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFSocketAddress address;
 
 	if (_host == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -858,7 +859,8 @@ normalizedKey(OFString *key)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
-	_port = [_listeningSocket bindToHost: _host port: _port];
+	address = [_listeningSocket bindToHost: _host port: _port];
+	_port = OFSocketAddressIPPort(&address);
 	[_listeningSocket listen];
 
 #ifdef OF_HAVE_THREADS

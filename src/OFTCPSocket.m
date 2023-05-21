@@ -289,7 +289,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
@@ -361,10 +361,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 			if ((ret = bind(_socket,
 			    (struct sockaddr *)&address.sockaddr,
-			    address.length)) == 0) {
-				port = rnd;
+			    address.length)) == 0)
 				break;
-			}
 
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
@@ -381,11 +379,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 		}
 	}
 #endif
-
-	objc_autoreleasePoolPop(pool);
-
-	if (port > 0)
-		return port;
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(&address, 0, sizeof(address));
@@ -406,10 +399,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
 	case AF_INET:
-		return OFFromBigEndian16(address.sockaddr.in.sin_port);
+		address.family = OFSocketAddressFamilyIPv4;
+		break;
 # ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
+		address.family = OFSocketAddressFamilyIPv6;
+		break;
 # endif
 	default:
 		closesocket(_socket);
@@ -421,14 +416,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
-#else
-	closesocket(_socket);
-	_socket = OFInvalidSocketHandle;
-	@throw [OFBindIPSocketFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EADDRNOTAVAIL];
 #endif
+
+	objc_autoreleasePoolPop(pool);
+
+	return address;
 }
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)

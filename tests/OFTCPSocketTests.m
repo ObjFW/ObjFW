@@ -26,19 +26,20 @@ static OFString *const module = @"OFTCPSocket";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTCPSocket *server, *client = nil, *accepted;
-	uint16_t port;
+	OFSocketAddress address;
 	char buffer[6];
 
 	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
 	    (client = [OFTCPSocket socket]))
 
 	TEST(@"-[bindToHost:port:]",
-	    (port = [server bindToHost: @"127.0.0.1" port: 0]))
+	    R(address = [server bindToHost: @"127.0.0.1" port: 0]))
 
 	TEST(@"-[listen]", R([server listen]))
 
 	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1" port: port]))
+	    R([client connectToHost: @"127.0.0.1"
+			       port: OFSocketAddressIPPort(&address)]))
 
 	TEST(@"-[accept]", (accepted = [server accept]))
 

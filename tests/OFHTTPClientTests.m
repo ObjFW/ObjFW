@@ -38,12 +38,14 @@ static OFHTTPResponse *response = nil;
 - (id)main
 {
 	OFTCPSocket *listener, *client;
+	OFSocketAddress address;
 	char buffer[5];
 
 	[condition lock];
 
 	listener = [OFTCPSocket socket];
-	_port = [listener bindToHost: @"127.0.0.1" port: 0];
+	address = [listener bindToHost: @"127.0.0.1" port: 0];
+	_port = OFSocketAddressIPPort(&address);
 	[listener listen];
 
 	[condition signal];
