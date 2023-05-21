@@ -53,7 +53,9 @@ help(OFStream *stream, bool full, int status)
 		    @"  The server to query\n    "
 		    @"-t  --type  "
 		    @"  The record type to query (defaults to ALL, can be "
-		    @"repeated)")];
+		    @"repeated)\n    "
+		    @"    --tcp   "
+		    @"  Force using TCP for the query")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -84,11 +86,13 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *DNSClassString, *server;
+	bool forceTCP;
 	const OFOptionsParserOption options[] = {
 		{ 'c', @"class", 1, NULL, &DNSClassString },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 's', @"server", 1, NULL, &server },
 		{ 't', @"type", 1, NULL, NULL },
+		{ '\0', @"tcp", 0, &forceTCP, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
@@ -182,16 +186,17 @@ help(OFStream *stream, bool full, int status)
 		help(OFStdErr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
+	resolver.configReloadInterval = 0;
+	resolver.forcesTCP = forceTCP;
+
 	DNSClass = (DNSClassString != nil
 	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
 	if (recordTypes.count == 0)
 		[recordTypes addObject: @"ALL"];
 
-	if (server != nil) {
-		resolver.configReloadInterval = 0;
+	if (server != nil)
 		resolver.nameServers = [OFArray arrayWithObject: server];
-	}
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {
