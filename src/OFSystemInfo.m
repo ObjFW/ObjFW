@@ -30,8 +30,8 @@
 # include <sys/sysctl.h>
 #endif
 
-#ifdef HAVE_IFADDRS_H
-# include <ifaddrs.h>
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
 #endif
 #ifdef HAVE_NET_IF_TYPES_H
 # include <net/if_types.h>
@@ -73,6 +73,7 @@
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFNumber.h"
 #import "OFOnce.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFSocket.h"
@@ -128,13 +129,6 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
-#endif
-
-#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
-OFConstantString *const OFNetworkInterfaceAddresses =
-    @"OFNetworkInterfaceAddresses";
-OFConstantString *const OFNetworkInterfaceEthernetAddress =
-    @"OFNetworkInterfaceEthernetAddress";
 #endif
 
 static size_t pageSize = 4096;
@@ -844,134 +838,37 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 }
 #endif
 
-#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
-static OFSocketAddress
-wrapSockaddr(struct sockaddr *sa)
+#ifdef OF_HAVE_SOCKETS
++ (OFArray OF_GENERIC(OFString *) *)networkInterfaces
 {
-	OFSocketAddress address;
-
-	switch (sa->sa_family) {
-	case AF_INET:
-		address.family = OFSocketAddressFamilyIPv4;
-		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_in));
-		address.length = (socklen_t)sizeof(struct sockaddr_in);
-		break;
-# ifdef AF_INET6
-	case AF_INET6:
-		address.family = OFSocketAddressFamilyIPv6;
-		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_in6));
-		address.length = (socklen_t)sizeof(struct sockaddr_in6);
-		break;
-# endif
-# ifdef AF_IPX
-	case AF_IPX:
-		address.family = OFSocketAddressFamilyIPX;
-		memcpy(&address.sockaddr.ipx, sa, sizeof(struct sockaddr_ipx));
-		address.length = (socklen_t)sizeof(struct sockaddr_ipx);
-		break;
-# endif
-# ifdef AF_APPLETALK
-	case AF_APPLETALK:
-		address.family = OFSocketAddressFamilyAppleTalk;
-		memcpy(&address.sockaddr.at, sa, sizeof(struct sockaddr_at));
-		address.length = (socklen_t)sizeof(struct sockaddr_at);
-		break;
-# endif
-	default:
-		address.family = OFSocketAddressFamilyUnknown;
-		memcpy(&address.sockaddr, sa, sizeof(struct sockaddr));
-		address.length = sizeof(struct sockaddr);
-		break;
-	}
-
-	return address;
-}
-
-+ (OFDictionary OF_GENERIC(OFString *, OFDictionary
-    OF_GENERIC(OFNetworkInterfaceInfoKey, id) *) *)networkInterfaces
-{
-	OFMutableDictionary *interfaces = [OFMutableDictionary dictionary];
+# ifdef HAVE_IF_NAMEINDEX
+	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
-	struct ifaddrs *ifaddrs;
+	struct if_nameindex *nameindex = if_nameindex();
 
-	if (getifaddrs(&ifaddrs) != 0)
+	if (nameindex == NULL) {
+		objc_autoreleasePoolPop(pool);
 		return nil;
+	}
 
 	@try {
-		for (struct ifaddrs *iter = ifaddrs; iter != NULL;
-		    iter = iter->ifa_next) {
-			OFString *interfaceName =
-			    [OFString stringWithCString: iter->ifa_name
-					       encoding: encoding];
-			OFMutableDictionary *interface;
-			OFMutableData *addresses;
-			OFSocketAddress address;
-
-			interface = [interfaces objectForKey: interfaceName];
-			if (interface == nil) {
-				interface = [OFMutableDictionary dictionary];
-				[interfaces setObject: interface
-					       forKey: interfaceName];
-			}
-
-			if (iter->ifa_addr == NULL)
-				continue;
-
-# if defined(HAVE_STRUCT_SOCKADDR_LL) && defined(AF_PACKET)
-			if (iter->ifa_addr->sa_family == AF_PACKET) {
-				const OFNetworkInterfaceInfoKey key =
-				    OFNetworkInterfaceEthernetAddress;
-				struct sockaddr_ll *sll = (struct sockaddr_ll *)
-				    (void *)iter->ifa_addr;
-				OFData *addr;
-
-				/* ARP hardware address type 1 is Ethernet. */
-				if (sll->sll_hatype != 1)
-					continue;
-
-				addr = [OFData dataWithItems: sll->sll_addr
-						       count: sll->sll_halen];
-				[interface setObject: addr forKey: key];
-				continue;
-			}
-# endif
-# if defined(HAVE_STRUCT_SOCKADDR_DL) && defined(AF_LINK) && \
-    defined(IFT_ETHER) && defined(LLADDR)
-			if (iter->ifa_addr->sa_family == AF_LINK) {
-				const OFNetworkInterfaceInfoKey key =
-				    OFNetworkInterfaceEthernetAddress;
-				struct sockaddr_dl *sdl = (struct sockaddr_dl *)
-				    (void *)iter->ifa_addr;
-				OFData *addr;
-
-				if (sdl->sdl_type != IFT_ETHER)
-					continue;
-
-				addr = [OFData dataWithItems: LLADDR(sdl)
-						       count: sdl->sdl_alen];
-				[interface setObject: addr forKey: key];
-				continue;
-			}
-# endif
-
-			addresses = [interface
-			    objectForKey: OFNetworkInterfaceAddresses];
-			if (addresses == nil) {
-				addresses = [OFMutableData
-				    dataWithItemSize: sizeof(OFSocketAddress)];
-				[interface
-				    setObject: addresses
-				       forKey: OFNetworkInterfaceAddresses];
-			}
-
-			address = wrapSockaddr(iter->ifa_addr);
-			[addresses addItem: &address];
-		}
+		for (size_t i = 0; nameindex[i].if_index != 0; i++)
+			[ret addObject: [OFString
+			    stringWithCString: nameindex[i].if_name
+				     encoding: encoding]];
 	} @finally {
-		freeifaddrs(ifaddrs);
+		if_freenameindex(nameindex);
 	}
 
-	return interfaces;
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+# else
+	return nil;
+# endif
 }
 #endif
 

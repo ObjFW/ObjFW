@@ -37,7 +37,6 @@ PREDEFINED = __OBJC__						\
 	     OF_RETURNS_RETAINED=				\
 	     OF_ROOT_CLASS=					\
 	     OF_SENTINEL=					\
-	     OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES		\
 	     OF_WARN_UNUSED_RESULT=				\
 	     OF_WEAK_UNAVAILABLE=				\
 	     SIGHUP						\

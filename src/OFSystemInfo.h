@@ -21,33 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
-#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
-/**
- * @brief A key in the per-interface dictionary returned by
- *	  @ref networkInterfaces.
- *
- * Possible keys are:
- *
- *   * @ref OFNetworkInterfaceAddresses
- *   * @ref OFNetworkInterfaceEthernetAddress
- */
-typedef OFConstantString *OFNetworkInterfaceInfoKey;
-
-/**
- * @brief The addresses of a network interface.
- *
- * This maps to an @ref OFData of @ref OFSocketAddress.
- */
-extern OFConstantString *const OFNetworkInterfaceAddresses;
-
-/**
- * @brief The Ethernet address of a network interface.
- *
- * This maps to an @ref OFData.
- */
-extern OFConstantString *const OFNetworkInterfaceEthernetAddress;
-#endif
-
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -90,10 +63,9 @@ OF_SUBCLASSING_RESTRICTED
 # ifdef OF_WINDOWS
 @property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
 # endif
-# ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
-@property (class, readonly, nonatomic) OFDictionary OF_GENERIC(OFString *,
-    OFDictionary OF_GENERIC(OFNetworkInterfaceInfoKey, id) *)
-    *networkInterfaces;
+# ifdef OF_HAVE_SOCKETS
+@property (class, readonly, nullable, nonatomic)
+    OFArray OF_GENERIC(OFString *) *networkInterfaces;
 # endif
 #endif
 
@@ -371,15 +343,14 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)isWindowsNT;
 #endif
 
-#ifdef OF_SYSTEM_INFO_HAS_NETWORK_INTERFACES
+#ifdef OF_HAVE_SOCKETS
 /**
  * @brief Returns the available (though not necessarily configured) network
- *	  interfaces and information about them.
+ *	  interfaces.
  *
- * @return The available network interfaces and information about them
+ * @return The available network interfaces
  */
-+ (OFDictionary OF_GENERIC(OFString *, OFDictionary
-    OF_GENERIC(OFNetworkInterfaceInfoKey, id) *) *)networkInterfaces;
++ (nullable OFArray OF_GENERIC(OFString *) *)networkInterfaces;
 #endif
 
 + (instancetype)alloc OF_UNAVAILABLE;
