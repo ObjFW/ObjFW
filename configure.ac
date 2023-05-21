@@ -1721,19 +1721,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_APPLETALK, 1,
 			    [Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
-
-			AC_CHECK_TYPE([struct ifreq], [
-				AC_DEFINE(OF_HAVE_APPLETALK_IFCONFIG, 1,
-				    m4_normalize([
-					Whether AppleTalk interfaces
-					can be configured
-				]))
-			], [], [
-				#ifdef OF_HAVE_SYS_SOCKET_H
-				# include <sys/socket.h>
-				#endif
-				#include <net/if.h>
-			])
 		])
 	])
 
