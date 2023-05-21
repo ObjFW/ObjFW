@@ -51,7 +51,6 @@ tests/tests.rpx
 utils/objfw-config
 utils/objfw-new/objfw-new
 utils/ofarc/ofarc
-utils/ofatalkcfg/ofatalkcfg
 utils/ofdns/ofdns
 utils/ofhash/ofhash
 utils/ofhttp/ofhttp

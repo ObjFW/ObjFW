@@ -1728,7 +1728,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					Whether AppleTalk interfaces
 					can be configured
 				]))
-				AC_SUBST(OFATALKCFG, ofatalkcfg)
 			], [], [
 				#ifdef OF_HAVE_SYS_SOCKET_H
 				# include <sys/socket.h>
