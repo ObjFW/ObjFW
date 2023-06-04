@@ -125,6 +125,10 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
     NSSearchPathEnumerationState, char *);
 #endif
 
+#ifdef OF_HAVE_SOCKETS
+OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+#endif
+
 #if defined(OF_AMD64) || defined(OF_X86)
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
@@ -839,10 +843,10 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 #endif
 
 #ifdef OF_HAVE_SOCKETS
-+ (OFArray OF_GENERIC(OFString *) *)networkInterfaces
++ (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
 {
 # ifdef HAVE_IF_NAMEINDEX
-	OFMutableArray *ret = [OFMutableArray array];
+	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
 	struct if_nameindex *nameindex = if_nameindex();
@@ -853,10 +857,18 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	}
 
 	@try {
-		for (size_t i = 0; nameindex[i].if_index != 0; i++)
-			[ret addObject: [OFString
+		for (size_t i = 0; nameindex[i].if_index != 0; i++) {
+			OFString *name = [OFString
 			    stringWithCString: nameindex[i].if_name
-				     encoding: encoding]];
+				     encoding: encoding];
+			OFNumber *index = [OFNumber
+			    numberWithUnsignedInt: nameindex[i].if_index];
+			OFDictionary *interface = [OFDictionary
+			    dictionaryWithObject: index
+					  forKey: OFNetworkInterfaceIndex];
+
+			[ret setObject: interface forKey: name];
+		}
 	} @finally {
 		if_freenameindex(nameindex);
 	}

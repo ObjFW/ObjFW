@@ -21,6 +21,32 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
+#ifdef OF_HAVE_SOCKETS
+/**
+ * @brief A dictionary describing a network interface, as returned by
+ *	  @ref networkInterfaces.
+ *
+ * Keys are of type @ref OFNetworkInterfaceKey.
+ */
+typedef OFDictionary OF_GENERIC(OFString *, id) *OFNetworkInterface;
+
+/**
+ * @brief A key of an @ref OFNetworkInterface.
+ *
+ * Possible values are:
+ *
+ *   * @ref OFNetworkInterfaceIndex
+ */
+typedef OFConstantString *OFNetworkInterfaceKey;
+
+/**
+ * @brief The index of a network interface.
+ *
+ * This maps to a @ref OFNumber.
+ */
+extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
+#endif
+
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -65,7 +91,7 @@ OF_SUBCLASSING_RESTRICTED
 # endif
 # ifdef OF_HAVE_SOCKETS
 @property (class, readonly, nullable, nonatomic)
-    OFArray OF_GENERIC(OFString *) *networkInterfaces;
+    OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *networkInterfaces;
 # endif
 #endif
 
@@ -350,7 +376,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The available network interfaces
  */
-+ (nullable OFArray OF_GENERIC(OFString *) *)networkInterfaces;
++ (nullable OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)
+    networkInterfaces;
 #endif
 
 + (instancetype)alloc OF_UNAVAILABLE;

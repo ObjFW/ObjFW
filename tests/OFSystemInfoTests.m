@@ -21,6 +21,10 @@
 - (void)systemInfoTests
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_HAVE_SOCKETS
+	OFDictionary *networkInterfaces;
+	bool firstInterface = true;
+#endif
 
 	[OFStdOut setForegroundColor: [OFColor lime]];
 
@@ -108,8 +112,17 @@
 #endif
 
 #ifdef OF_HAVE_SOCKETS
-	[OFStdOut writeFormat: @"[OFSystemInfo] Network interfaces: %@\n",
-	    [[OFSystemInfo networkInterfaces] componentsJoinedByString: @", "]];
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
+	for (OFString *name in networkInterfaces) {
+		if (!firstInterface)
+			[OFStdOut writeString: @"; "];
+
+		firstInterface = false;
+
+		[OFStdOut writeString: name];
+	}
+	[OFStdOut writeString: @"\n"];
 #endif
 
 	objc_autoreleasePoolPop(pool);
