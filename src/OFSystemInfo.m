@@ -42,6 +42,9 @@
 #ifdef HAVE_NETPACKET_PACKET_H
 # include <netpacket/packet.h>
 #endif
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #ifdef OF_AMIGAOS
 # define Class IntuitionClass
@@ -77,6 +80,7 @@
 #import "OFOnce.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFSocket.h"
+# import "OFSocket+Private.h"
 #endif
 #import "OFString.h"
 
@@ -127,6 +131,8 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 
 #ifdef OF_HAVE_SOCKETS
 OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+    @"OFNetworkInterfaceIPv4Addresses";
 #endif
 
 #if defined(OF_AMD64) || defined(OF_X86)
@@ -843,18 +849,15 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 #endif
 
 #ifdef OF_HAVE_SOCKETS
-+ (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
+static bool
+queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 {
 # ifdef HAVE_IF_NAMEINDEX
-	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
-	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
 	struct if_nameindex *nameindex = if_nameindex();
 
-	if (nameindex == NULL) {
-		objc_autoreleasePoolPop(pool);
-		return nil;
-	}
+	if (nameindex == NULL)
+		return false;
 
 	@try {
 		for (size_t i = 0; nameindex[i].if_index != 0; i++) {
@@ -863,24 +866,130 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 				     encoding: encoding];
 			OFNumber *index = [OFNumber
 			    numberWithUnsignedInt: nameindex[i].if_index];
-			OFDictionary *interface = [OFDictionary
-			    dictionaryWithObject: index
-					  forKey: OFNetworkInterfaceIndex];
+			OFMutableDictionary *interface =
+			    [ret objectForKey: name];
 
-			[ret setObject: interface forKey: name];
+			if (interface == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			[interface setObject: index
+				      forKey: OFNetworkInterfaceIndex];
 		}
 	} @finally {
 		if_freenameindex(nameindex);
 	}
 
+	return true;
+# else
+	return false;
+# endif
+}
+
+static bool
+queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
+{
+# if defined(HAVE_SYS_IOCTL_H) && defined(HAVE_NET_IF_H)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+	struct ifconf ifc;
+	struct ifreq *ifrs;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	if (sock < 0)
+		return false;
+
+	ifrs = malloc(128 * sizeof(struct ifreq));
+	if (ifrs == NULL) {
+		closesocket(sock);
+		return false;
+	}
+
+	@try {
+		memset(&ifc, 0, sizeof(ifc));
+		ifc.ifc_buf = (void *)ifrs;
+		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
+			return false;
+
+		for (size_t i = 0; i < ifc.ifc_len / sizeof(struct ifreq);
+		    i++) {
+			OFString *name;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			if (ifrs[i].ifr_addr.sa_family != AF_INET)
+				continue;
+
+			name = [OFString stringWithCString: ifrs[i].ifr_name
+						  encoding: encoding];
+			interface = [ret objectForKey: name];
+			if (interface == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			addresses = [interface
+			    objectForKey: OFNetworkInterfaceIPv4Addresses];
+			if (addresses == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface
+				    setObject: addresses
+				       forKey: OFNetworkInterfaceIPv4Addresses];
+			}
+
+			memset(&address, 0, sizeof(address));
+			address.family = OFSocketAddressFamilyIPv4;
+			memcpy(&address.sockaddr.in, &ifrs[i].ifr_addr,
+			    sizeof(struct sockaddr_in));
+
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(ifrs);
+		closesocket(sock);
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
+		    makeImmutable];
+
+	return true;
+# else
+	return false;
+# endif
+}
+
++ (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
+	bool success = false;
+	OFEnumerator *enumerator;
+	OFMutableDictionary *interface;
+
+	success |= queryNetworkInterfaceIndices(ret);
+	success |= queryNetworkInterfaceIPv4Addresses(ret);
+
+	if (!success) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[interface makeImmutable];
+
 	[ret makeImmutable];
+	[ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
-	return ret;
-# else
-	return nil;
-# endif
+	return [ret autorelease];
 }
 #endif
 

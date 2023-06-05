@@ -115,12 +115,31 @@
 	networkInterfaces = [OFSystemInfo networkInterfaces];
 	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
 	for (OFString *name in networkInterfaces) {
+		OFNetworkInterface interface;
+		OFData *IPv4Addresses;
+
 		if (!firstInterface)
 			[OFStdOut writeString: @"; "];
 
 		firstInterface = false;
 
-		[OFStdOut writeString: name];
+		[OFStdOut writeFormat: @"%@(", name];
+
+		interface = [networkInterfaces objectForKey: name];
+		IPv4Addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPv4Addresses];
+
+		for (size_t i = 0; i < IPv4Addresses.count; i++) {
+			const OFSocketAddress *address =
+			    [IPv4Addresses itemAtIndex: i];
+
+			if (i > 0)
+				[OFStdOut writeString: @", "];
+
+			[OFStdOut writeString: OFSocketAddressString(address)];
+		}
+
+		[OFStdOut writeString: @")"];
 	}
 	[OFStdOut writeString: @"\n"];
 #endif
