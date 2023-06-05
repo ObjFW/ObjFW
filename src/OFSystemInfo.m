@@ -74,6 +74,9 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
+#ifdef OF_HAVE_FILES
+ #import "OFFile.h"
+#endif
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
@@ -83,6 +86,9 @@
 # import "OFSocket+Private.h"
 #endif
 #import "OFString.h"
+
+#import "OFInvalidFormatException.h"
+#import "OFOpenItemFailedException.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
@@ -131,6 +137,8 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 
 #ifdef OF_HAVE_SOCKETS
 OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
+    @"OFNetworkInterfaceIPv6Addresses";
 OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
     @"OFNetworkInterfaceIPv4Addresses";
 #endif
@@ -888,6 +896,91 @@ queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 }
 
 static bool
+queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
+{
+# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	OFFile *file;
+	OFString *line;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	@try {
+		file = [OFFile fileWithPath: @"/proc/net/if_inet6" mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		return false;
+	}
+
+	while ((line = [file readLine]) != nil) {
+		OFArray *components = [line
+		    componentsSeparatedByString: @" "
+					options: OFStringSkipEmptyComponents];
+		OFString *addressString, *name;
+		OFSocketAddress address;
+		OFMutableData *addresses;
+
+		if (components.count < 6)
+			continue;
+
+		addressString = [components objectAtIndex: 0];
+		name = [components objectAtIndex: 5];
+
+		if (addressString.length != 32)
+			continue;
+
+		interface = [ret objectForKey: name];
+		if (interface == nil) {
+			interface = [OFMutableDictionary dictionary];
+			[ret setObject: interface forKey: name];
+		}
+
+		memset(&address, 0, sizeof(address));
+		address.family = OFSocketAddressFamilyIPv6;
+
+		for (size_t i = 0; i < 32; i += 2) {
+			unsigned long long byte;
+
+			@try {
+				byte = [[addressString
+				    substringWithRange: OFMakeRange(i, 2)]
+				    unsignedLongLongValueWithBase: 16];
+			} @catch (OFInvalidFormatException *e) {
+				goto next_line;
+			}
+
+			if (byte > 0xFF)
+				goto next_line;
+
+			address.sockaddr.in6.sin6_addr.s6_addr[i / 2] =
+			    (unsigned char)byte;
+		}
+
+		addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPv6Addresses];
+		if (addresses == nil) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(OFSocketAddress)];
+			[interface setObject: addresses
+				      forKey: OFNetworkInterfaceIPv6Addresses];
+		}
+
+		[addresses addItem: &address];
+
+next_line:
+		continue;
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
+		    makeImmutable];
+
+	return false;
+# else
+	return false;
+# endif
+}
+
+static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 {
 # if defined(HAVE_SYS_IOCTL_H) && defined(HAVE_NET_IF_H)
@@ -973,6 +1066,7 @@ queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 	OFMutableDictionary *interface;
 
 	success |= queryNetworkInterfaceIndices(ret);
+	success |= queryNetworkInterfaceIPv6Addresses(ret);
 	success |= queryNetworkInterfaceIPv4Addresses(ret);
 
 	if (!success) {

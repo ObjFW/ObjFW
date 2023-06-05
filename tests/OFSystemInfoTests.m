@@ -116,7 +116,7 @@
 	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
 	for (OFString *name in networkInterfaces) {
 		OFNetworkInterface interface;
-		OFData *IPv4Addresses;
+		OFData *IPv6Addresses, *IPv4Addresses;
 
 		if (!firstInterface)
 			[OFStdOut writeString: @"; "];
@@ -126,14 +126,26 @@
 		[OFStdOut writeFormat: @"%@(", name];
 
 		interface = [networkInterfaces objectForKey: name];
+		IPv6Addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPv6Addresses];
 		IPv4Addresses = [interface
 		    objectForKey: OFNetworkInterfaceIPv4Addresses];
+
+		for (size_t i = 0; i < IPv6Addresses.count; i++) {
+			const OFSocketAddress *address =
+			    [IPv6Addresses itemAtIndex: i];
+
+			if (i > 0)
+				[OFStdOut writeString: @", "];
+
+			[OFStdOut writeString: OFSocketAddressString(address)];
+		}
 
 		for (size_t i = 0; i < IPv4Addresses.count; i++) {
 			const OFSocketAddress *address =
 			    [IPv4Addresses itemAtIndex: i];
 
-			if (i > 0)
+			if (i > 0 || IPv6Addresses.count > 0)
 				[OFStdOut writeString: @", "];
 
 			[OFStdOut writeString: OFSocketAddressString(address)];
