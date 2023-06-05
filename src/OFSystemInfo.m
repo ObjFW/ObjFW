@@ -983,7 +983,7 @@ next_line:
 static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_SYS_IOCTL_H) && defined(HAVE_NET_IF_H)
+# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct ifconf ifc;

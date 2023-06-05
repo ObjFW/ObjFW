@@ -441,7 +441,7 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -456,7 +456,7 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
