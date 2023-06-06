@@ -97,6 +97,9 @@
 #endif
 #ifdef OF_WINDOWS
 # include <windows.h>
+# define interface struct
+# include <iphlpapi.h>
+# undef interface
 #endif
 #ifdef OF_HAIKU
 # include <FindDirectory.h>
@@ -941,8 +944,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 
 			name = [OFString stringWithCString: ifrs[i].ifr_name
 						  encoding: encoding];
-			interface = [ret objectForKey: name];
-			if (interface == nil) {
+			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
 				[ret setObject: interface forKey: name];
 			}
@@ -1007,8 +1009,7 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 		if (addressString.length != 32)
 			continue;
 
-		interface = [ret objectForKey: name];
-		if (interface == nil) {
+		if ((interface = [ret objectForKey: name]) == nil) {
 			interface = [OFMutableDictionary dictionary];
 			[ret setObject: interface forKey: name];
 		}
@@ -1034,9 +1035,8 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 			    (unsigned char)byte;
 		}
 
-		addresses = [interface
-		    objectForKey: OFNetworkInterfaceIPv6Addresses];
-		if (addresses == nil) {
+		if ((addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPv6Addresses]) == nil) {
 			addresses = [OFMutableData
 			    dataWithItemSize: sizeof(OFSocketAddress)];
 			[interface setObject: addresses
@@ -1068,7 +1068,78 @@ next_line:
 static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# if defined(OF_WINDOWS)
+	OFStringEncoding encoding = [OFLocale encoding];
+	ULONG adapterInfoSize = sizeof(IP_ADAPTER_INFO);
+	PIP_ADAPTER_INFO adapterInfo = malloc(adapterInfoSize);
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	if (adapterInfo == NULL)
+		return false;
+
+	@try {
+		ULONG error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+
+		if (error == ERROR_BUFFER_OVERFLOW) {
+			PIP_ADAPTER_INFO newAdapterInfo = realloc(
+			    adapterInfo, adapterInfoSize);
+
+			if (newAdapterInfo == NULL)
+				return false;
+
+			adapterInfo = newAdapterInfo;
+			error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+		}
+
+		if (error != ERROR_SUCCESS)
+			return false;
+
+		for (PIP_ADAPTER_INFO iter = adapterInfo; iter != NULL;
+		    iter = iter->Next) {
+			OFString *name, *IPString;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			name = [OFString stringWithCString: iter->AdapterName
+						  encoding: encoding];
+
+			if ((interface = [ret objectForKey: name]) == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			IPString = [OFString
+			    stringWithCString: iter->IpAddressList.IpAddress
+						   .String
+				     encoding: encoding];
+
+			if ([IPString isEqual: @"0.0.0.0"])
+				continue;
+
+			if ((addresses = [interface objectForKey:
+			    OFNetworkInterfaceIPv4Addresses]) == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface
+				    setObject: addresses
+				       forKey: OFNetworkInterfaceIPv4Addresses];
+			}
+
+			address = OFSocketAddressParseIPv4(IPString, 0);
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(adapterInfo);
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
+		    makeImmutable];
+
+	return true;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPv4Addresses, OFSocketAddressFamilyIPv4,
 	    AF_INET, sizeof(struct sockaddr_in));
