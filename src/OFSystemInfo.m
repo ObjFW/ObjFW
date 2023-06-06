@@ -137,10 +137,16 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 
 #ifdef OF_HAVE_SOCKETS
 OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+# ifdef OF_HAVE_IPV6
 OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
     @"OFNetworkInterfaceIPv6Addresses";
+# endif
 OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
     @"OFNetworkInterfaceIPv4Addresses";
+# ifdef OF_HAVE_APPLETALK
+OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
+    @"OFNetworkInterfaceAppleTalkAddresses";
+# endif
 #endif
 
 #if defined(OF_AMD64) || defined(OF_X86)
@@ -968,10 +974,11 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 }
 # endif
 
+# ifdef OF_HAVE_IPV6
 static bool
 queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 {
-# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+#  if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 	OFFile *file;
 	OFString *line;
 	OFMutableDictionary *interface;
@@ -1048,14 +1055,15 @@ next_line:
 		    makeImmutable];
 
 	return false;
-# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+#  elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPv6Addresses, OFSocketAddressFamilyIPv6,
 	    AF_INET6, sizeof(struct sockaddr_in6));
-# else
+#  else
 	return false;
-# endif
+#  endif
 }
+# endif
 
 static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
@@ -1069,6 +1077,21 @@ queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 # endif
 }
 
+# ifdef OF_HAVE_APPLETALK
+static bool
+queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
+{
+#  if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+	return queryNetworkInterfaceAddresses(ret,
+	    OFNetworkInterfaceAppleTalkAddresses,
+	    OFSocketAddressFamilyAppleTalk, AF_APPLETALK,
+	    sizeof(struct sockaddr_at));
+#  else
+	return false;
+#  endif
+}
+# endif
+
 + (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1078,8 +1101,13 @@ queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 	OFMutableDictionary *interface;
 
 	success |= queryNetworkInterfaceIndices(ret);
+# ifdef OF_HAVE_IPV6
 	success |= queryNetworkInterfaceIPv6Addresses(ret);
+# endif
 	success |= queryNetworkInterfaceIPv4Addresses(ret);
+# ifdef OF_HAVE_APPLETALK
+	success |= queryNetworkInterfaceAppleTalkAddresses(ret);
+# endif
 
 	if (!success) {
 		objc_autoreleasePoolPop(pool);

@@ -17,6 +17,25 @@
 
 #import "TestsAppDelegate.h"
 
+#ifdef OF_HAVE_SOCKETS
+static void
+printAddresses(OFData *addresses, bool *firstAddress)
+{
+	size_t count = addresses.count;
+
+	for (size_t i = 0; i < count; i++) {
+		const OFSocketAddress *address = [addresses itemAtIndex: i];
+
+		if (!*firstAddress)
+			[OFStdOut writeString: @", "];
+
+		*firstAddress = false;
+
+		[OFStdOut writeString: OFSocketAddressString(address)];
+	}
+}
+#endif
+
 @implementation TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests
 {
@@ -115,8 +134,8 @@
 	networkInterfaces = [OFSystemInfo networkInterfaces];
 	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
 	for (OFString *name in networkInterfaces) {
+		bool firstAddress = true;
 		OFNetworkInterface interface;
-		OFData *IPv6Addresses, *IPv4Addresses;
 
 		if (!firstInterface)
 			[OFStdOut writeString: @"; "];
@@ -126,30 +145,17 @@
 		[OFStdOut writeFormat: @"%@(", name];
 
 		interface = [networkInterfaces objectForKey: name];
-		IPv6Addresses = [interface
-		    objectForKey: OFNetworkInterfaceIPv6Addresses];
-		IPv4Addresses = [interface
-		    objectForKey: OFNetworkInterfaceIPv4Addresses];
 
-		for (size_t i = 0; i < IPv6Addresses.count; i++) {
-			const OFSocketAddress *address =
-			    [IPv6Addresses itemAtIndex: i];
-
-			if (i > 0)
-				[OFStdOut writeString: @", "];
-
-			[OFStdOut writeString: OFSocketAddressString(address)];
-		}
-
-		for (size_t i = 0; i < IPv4Addresses.count; i++) {
-			const OFSocketAddress *address =
-			    [IPv4Addresses itemAtIndex: i];
-
-			if (i > 0 || IPv6Addresses.count > 0)
-				[OFStdOut writeString: @", "];
-
-			[OFStdOut writeString: OFSocketAddressString(address)];
-		}
+# ifdef OF_HAVE_IPV6
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPv6Addresses], &firstAddress);
+# endif
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPv4Addresses], &firstAddress);
+# ifdef OF_HAVE_APPLETALK
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceAppleTalkAddresses], &firstAddress);
+# endif
 
 		[OFStdOut writeString: @")"];
 	}
