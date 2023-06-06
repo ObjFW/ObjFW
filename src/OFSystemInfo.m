@@ -895,6 +895,79 @@ queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 # endif
 }
 
+# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+static bool
+queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
+    OFNetworkInterfaceKey key, OFSocketAddressFamily addressFamily, int family,
+    size_t sockaddrSize)
+{
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(family, SOCK_DGRAM, 0);
+	struct ifconf ifc;
+	struct ifreq *ifrs;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	if (sock < 0)
+		return false;
+
+	ifrs = malloc(128 * sizeof(struct ifreq));
+	if (ifrs == NULL) {
+		closesocket(sock);
+		return false;
+	}
+
+	@try {
+		memset(&ifc, 0, sizeof(ifc));
+		ifc.ifc_buf = (void *)ifrs;
+		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
+			return false;
+
+		for (size_t i = 0; i < ifc.ifc_len / sizeof(struct ifreq);
+		    i++) {
+			OFString *name;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			if (ifrs[i].ifr_addr.sa_family != family)
+				continue;
+
+			name = [OFString stringWithCString: ifrs[i].ifr_name
+						  encoding: encoding];
+			interface = [ret objectForKey: name];
+			if (interface == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			addresses = [interface objectForKey: key];
+			if (addresses == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface setObject: addresses forKey: key];
+			}
+
+			memset(&address, 0, sizeof(address));
+			address.family = addressFamily;
+			memcpy(&address.sockaddr.in, &ifrs[i].ifr_addr,
+			    sockaddrSize);
+
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(ifrs);
+		closesocket(sock);
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: key] makeImmutable];
+
+	return true;
+}
+# endif
+
 static bool
 queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 {
@@ -975,6 +1048,10 @@ next_line:
 		    makeImmutable];
 
 	return false;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+	return queryNetworkInterfaceAddresses(ret,
+	    OFNetworkInterfaceIPv6Addresses, OFSocketAddressFamilyIPv6,
+	    AF_INET6, sizeof(struct sockaddr_in6));
 # else
 	return false;
 # endif
@@ -984,74 +1061,9 @@ static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 {
 # if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
-	OFStringEncoding encoding = [OFLocale encoding];
-	int sock = socket(AF_INET, SOCK_DGRAM, 0);
-	struct ifconf ifc;
-	struct ifreq *ifrs;
-	OFMutableDictionary *interface;
-	OFEnumerator *enumerator;
-
-	if (sock < 0)
-		return false;
-
-	ifrs = malloc(128 * sizeof(struct ifreq));
-	if (ifrs == NULL) {
-		closesocket(sock);
-		return false;
-	}
-
-	@try {
-		memset(&ifc, 0, sizeof(ifc));
-		ifc.ifc_buf = (void *)ifrs;
-		ifc.ifc_len = 128 * sizeof(struct ifreq);
-		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
-			return false;
-
-		for (size_t i = 0; i < ifc.ifc_len / sizeof(struct ifreq);
-		    i++) {
-			OFString *name;
-			OFMutableData *addresses;
-			OFSocketAddress address;
-
-			if (ifrs[i].ifr_addr.sa_family != AF_INET)
-				continue;
-
-			name = [OFString stringWithCString: ifrs[i].ifr_name
-						  encoding: encoding];
-			interface = [ret objectForKey: name];
-			if (interface == nil) {
-				interface = [OFMutableDictionary dictionary];
-				[ret setObject: interface forKey: name];
-			}
-
-			addresses = [interface
-			    objectForKey: OFNetworkInterfaceIPv4Addresses];
-			if (addresses == nil) {
-				addresses = [OFMutableData
-				    dataWithItemSize: sizeof(OFSocketAddress)];
-				[interface
-				    setObject: addresses
-				       forKey: OFNetworkInterfaceIPv4Addresses];
-			}
-
-			memset(&address, 0, sizeof(address));
-			address.family = OFSocketAddressFamilyIPv4;
-			memcpy(&address.sockaddr.in, &ifrs[i].ifr_addr,
-			    sizeof(struct sockaddr_in));
-
-			[addresses addItem: &address];
-		}
-	} @finally {
-		free(ifrs);
-		closesocket(sock);
-	}
-
-	enumerator = [ret objectEnumerator];
-	while ((interface = [enumerator nextObject]) != nil)
-		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
-		    makeImmutable];
-
-	return true;
+	return queryNetworkInterfaceAddresses(ret,
+	    OFNetworkInterfaceIPv4Addresses, OFSocketAddressFamilyIPv4,
+	    AF_INET, sizeof(struct sockaddr_in));
 # else
 	return false;
 # endif
