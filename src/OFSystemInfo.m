@@ -940,7 +940,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			return false;
 
 		buffer = ifc.ifc_buf;
-		while (buffer < ifc.ifc_buf + ifc.ifc_len) {
+		while (buffer < (char *)ifc.ifc_buf + ifc.ifc_len) {
 			struct ifreq *current = (struct ifreq *)(void *)buffer;
 			OFString *name;
 			OFMutableData *addresses;
