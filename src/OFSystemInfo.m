@@ -927,22 +927,25 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 	}
 
 	@try {
+		char *buffer;
+
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
 		ifc.ifc_len = 128 * sizeof(struct ifreq);
 		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
 			return false;
 
-		for (size_t i = 0; i < ifc.ifc_len / sizeof(struct ifreq);
-		    i++) {
+		buffer = ifc.ifc_buf;
+		while (buffer < ifc.ifc_buf + ifc.ifc_len) {
+			struct ifreq *current = (struct ifreq *)(void *)buffer;
 			OFString *name;
 			OFMutableData *addresses;
 			OFSocketAddress address;
 
-			if (ifrs[i].ifr_addr.sa_family != family)
-				continue;
+			if (current->ifr_addr.sa_family != family)
+				goto next;
 
-			name = [OFString stringWithCString: ifrs[i].ifr_name
+			name = [OFString stringWithCString: current->ifr_name
 						  encoding: encoding];
 			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
@@ -958,10 +961,17 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 
 			memset(&address, 0, sizeof(address));
 			address.family = addressFamily;
-			memcpy(&address.sockaddr.in, &ifrs[i].ifr_addr,
+			memcpy(&address.sockaddr.in, &current->ifr_addr,
 			    sockaddrSize);
 
 			[addresses addItem: &address];
+
+next:
+#  ifdef _SIZEOF_ADDR_IFREQ
+			buffer += _SIZEOF_ADDR_IFREQ(*current);
+#  else
+			buffer += sizeof(struct ifreq);
+#  endif
 		}
 	} @finally {
 		free(ifrs);
