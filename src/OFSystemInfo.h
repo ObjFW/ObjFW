@@ -46,6 +46,13 @@ typedef OFConstantString *OFNetworkInterfaceKey;
  */
 extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
 
+/**
+ * @brief The IPv4 addresses of a network interface.
+ *
+ * This maps to an @ref OFData of @ref OFSocketAddress.
+ */
+extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
+
 # ifdef OF_HAVE_IPV6
 /**
  * @brief The IPv6 addresses of a network interface.
@@ -55,12 +62,14 @@ extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
 extern OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
 # endif
 
+# ifdef OF_HAVE_IPX
 /**
- * @brief The IPv4 addresses of a network interface.
+ * @brief The IPX addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
+extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
+# endif
 
 # ifdef OF_HAVE_APPLETALK
 /**

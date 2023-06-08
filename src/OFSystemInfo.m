@@ -140,12 +140,16 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 
 #ifdef OF_HAVE_SOCKETS
 OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+    @"OFNetworkInterfaceIPv4Addresses";
 # ifdef OF_HAVE_IPV6
 OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
     @"OFNetworkInterfaceIPv6Addresses";
 # endif
-OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
-    @"OFNetworkInterfaceIPv4Addresses";
+# ifdef OF_HAVE_IPX
+OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
+    @"OFNetworkInterfaceIPXAddresses";
+# endif
 # ifdef OF_HAVE_APPLETALK
 OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
     @"OFNetworkInterfaceAppleTalkAddresses";
@@ -986,6 +990,89 @@ next:
 }
 # endif
 
+static bool
+queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
+{
+# if defined(OF_WINDOWS)
+	OFStringEncoding encoding = [OFLocale encoding];
+	ULONG adapterInfoSize = sizeof(IP_ADAPTER_INFO);
+	PIP_ADAPTER_INFO adapterInfo = malloc(adapterInfoSize);
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	if (adapterInfo == NULL)
+		return false;
+
+	@try {
+		ULONG error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+
+		if (error == ERROR_BUFFER_OVERFLOW) {
+			PIP_ADAPTER_INFO newAdapterInfo = realloc(
+			    adapterInfo, adapterInfoSize);
+
+			if (newAdapterInfo == NULL)
+				return false;
+
+			adapterInfo = newAdapterInfo;
+			error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+		}
+
+		if (error != ERROR_SUCCESS)
+			return false;
+
+		for (PIP_ADAPTER_INFO iter = adapterInfo; iter != NULL;
+		    iter = iter->Next) {
+			OFString *name, *IPString;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			name = [OFString stringWithCString: iter->AdapterName
+						  encoding: encoding];
+
+			if ((interface = [ret objectForKey: name]) == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			IPString = [OFString
+			    stringWithCString: iter->IpAddressList.IpAddress
+						   .String
+				     encoding: encoding];
+
+			if ([IPString isEqual: @"0.0.0.0"])
+				continue;
+
+			if ((addresses = [interface objectForKey:
+			    OFNetworkInterfaceIPv4Addresses]) == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface
+				    setObject: addresses
+				       forKey: OFNetworkInterfaceIPv4Addresses];
+			}
+
+			address = OFSocketAddressParseIPv4(IPString, 0);
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(adapterInfo);
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
+		    makeImmutable];
+
+	return true;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+	return queryNetworkInterfaceAddresses(ret,
+	    OFNetworkInterfaceIPv4Addresses, OFSocketAddressFamilyIPv4,
+	    AF_INET, sizeof(struct sockaddr_in));
+# else
+	return false;
+# endif
+}
+
 # ifdef OF_HAVE_IPV6
 static bool
 queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
@@ -1075,88 +1162,19 @@ next_line:
 }
 # endif
 
+# ifdef OF_HAVE_IPX
 static bool
-queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
+queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 {
-# if defined(OF_WINDOWS)
-	OFStringEncoding encoding = [OFLocale encoding];
-	ULONG adapterInfoSize = sizeof(IP_ADAPTER_INFO);
-	PIP_ADAPTER_INFO adapterInfo = malloc(adapterInfoSize);
-	OFMutableDictionary *interface;
-	OFEnumerator *enumerator;
-
-	if (adapterInfo == NULL)
-		return false;
-
-	@try {
-		ULONG error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
-
-		if (error == ERROR_BUFFER_OVERFLOW) {
-			PIP_ADAPTER_INFO newAdapterInfo = realloc(
-			    adapterInfo, adapterInfoSize);
-
-			if (newAdapterInfo == NULL)
-				return false;
-
-			adapterInfo = newAdapterInfo;
-			error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
-		}
-
-		if (error != ERROR_SUCCESS)
-			return false;
-
-		for (PIP_ADAPTER_INFO iter = adapterInfo; iter != NULL;
-		    iter = iter->Next) {
-			OFString *name, *IPString;
-			OFMutableData *addresses;
-			OFSocketAddress address;
-
-			name = [OFString stringWithCString: iter->AdapterName
-						  encoding: encoding];
-
-			if ((interface = [ret objectForKey: name]) == nil) {
-				interface = [OFMutableDictionary dictionary];
-				[ret setObject: interface forKey: name];
-			}
-
-			IPString = [OFString
-			    stringWithCString: iter->IpAddressList.IpAddress
-						   .String
-				     encoding: encoding];
-
-			if ([IPString isEqual: @"0.0.0.0"])
-				continue;
-
-			if ((addresses = [interface objectForKey:
-			    OFNetworkInterfaceIPv4Addresses]) == nil) {
-				addresses = [OFMutableData
-				    dataWithItemSize: sizeof(OFSocketAddress)];
-				[interface
-				    setObject: addresses
-				       forKey: OFNetworkInterfaceIPv4Addresses];
-			}
-
-			address = OFSocketAddressParseIPv4(IPString, 0);
-			[addresses addItem: &address];
-		}
-	} @finally {
-		free(adapterInfo);
-	}
-
-	enumerator = [ret objectEnumerator];
-	while ((interface = [enumerator nextObject]) != nil)
-		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
-		    makeImmutable];
-
-	return true;
-# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+#  if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
-	    OFNetworkInterfaceIPv4Addresses, OFSocketAddressFamilyIPv4,
-	    AF_INET, sizeof(struct sockaddr_in));
-# else
+	    OFNetworkInterfaceIPXAddresses, OFSocketAddressFamilyIPX,
+	    AF_IPX, sizeof(struct sockaddr_ipx));
+#  else
 	return false;
-# endif
+#  endif
 }
+# endif
 
 # ifdef OF_HAVE_APPLETALK
 static bool
@@ -1182,10 +1200,13 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 	OFMutableDictionary *interface;
 
 	success |= queryNetworkInterfaceIndices(ret);
+	success |= queryNetworkInterfaceIPv4Addresses(ret);
 # ifdef OF_HAVE_IPV6
 	success |= queryNetworkInterfaceIPv6Addresses(ret);
 # endif
-	success |= queryNetworkInterfaceIPv4Addresses(ret);
+# ifdef OF_HAVE_IPX
+	success |= queryNetworkInterfaceIPXAddresses(ret);
+# endif
 # ifdef OF_HAVE_APPLETALK
 	success |= queryNetworkInterfaceAppleTalkAddresses(ret);
 # endif

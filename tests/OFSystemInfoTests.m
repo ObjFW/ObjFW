@@ -146,12 +146,16 @@ printAddresses(OFData *addresses, bool *firstAddress)
 
 		interface = [networkInterfaces objectForKey: name];
 
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPv4Addresses], &firstAddress);
 # ifdef OF_HAVE_IPV6
 		printAddresses([interface objectForKey:
 		    OFNetworkInterfaceIPv6Addresses], &firstAddress);
 # endif
+# ifdef OF_HAVE_IPX
 		printAddresses([interface objectForKey:
-		    OFNetworkInterfaceIPv4Addresses], &firstAddress);
+		    OFNetworkInterfaceIPXAddresses], &firstAddress);
+# endif
 # ifdef OF_HAVE_APPLETALK
 		printAddresses([interface objectForKey:
 		    OFNetworkInterfaceAppleTalkAddresses], &firstAddress);
