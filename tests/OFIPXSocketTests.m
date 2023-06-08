@@ -28,6 +28,7 @@ static OFString *const module = @"OFIPXSocket";
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
 	OFSocketAddress address1, address2;
+	OFDictionary *networkInterfaces;
 	char buffer[5];
 	unsigned char node1[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 
@@ -60,6 +61,27 @@ static OFString *const module = @"OFIPXSocket";
 
 		objc_autoreleasePoolPop(pool);
 		return;
+	}
+
+	/*
+	 * Find any network interface with IPX and send to it. Any should be
+	 * fine since we bound to 0.0.
+	 */
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	for (OFString *name in networkInterfaces) {
+		OFNetworkInterface interface = [networkInterfaces
+		    objectForKey: name];
+		OFData *addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPXAddresses];
+		unsigned char node[IPX_NODE_LEN];
+
+		if (addresses.count == 0)
+			continue;
+
+		OFSocketAddressSetIPXNetwork(&address1,
+		    OFSocketAddressIPXNetwork([addresses itemAtIndex: 0]));
+		OFSocketAddressGetIPXNode([addresses itemAtIndex: 0], node);
+		OFSocketAddressSetIPXNode(&address1, node);
 	}
 
 	TEST(@"-[sendBuffer:length:receiver:]",
