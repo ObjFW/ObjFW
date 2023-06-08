@@ -1148,7 +1148,7 @@ next_line:
 
 	enumerator = [ret objectEnumerator];
 	while ((interface = [enumerator nextObject]) != nil)
-		[[interface objectForKey: OFNetworkInterfaceIPv4Addresses]
+		[[interface objectForKey: OFNetworkInterfaceIPv6Addresses]
 		    makeImmutable];
 
 	return false;
