@@ -33,6 +33,7 @@
 
 #import "OFSystemInfo.h"
 #import "OFSystemInfo+NetworkInterfaces.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
