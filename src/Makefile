@@ -130,6 +130,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
+	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\

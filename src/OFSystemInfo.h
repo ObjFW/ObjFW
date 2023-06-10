@@ -21,66 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
-#ifdef OF_HAVE_SOCKETS
-/**
- * @brief A dictionary describing a network interface, as returned by
- *	  @ref networkInterfaces.
- *
- * Keys are of type @ref OFNetworkInterfaceKey.
- */
-typedef OFDictionary OF_GENERIC(OFString *, id) *OFNetworkInterface;
-
-/**
- * @brief A key of an @ref OFNetworkInterface.
- *
- * Possible values are:
- *
- *   * @ref OFNetworkInterfaceIndex
- */
-typedef OFConstantString *OFNetworkInterfaceKey;
-
-/**
- * @brief The index of a network interface.
- *
- * This maps to an @ref OFNumber.
- */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
-
-/**
- * @brief The IPv4 addresses of a network interface.
- *
- * This maps to an @ref OFData of @ref OFSocketAddress.
- */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
-
-# ifdef OF_HAVE_IPV6
-/**
- * @brief The IPv6 addresses of a network interface.
- *
- * This maps to an @ref OFData of @ref OFSocketAddress.
- */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
-# endif
-
-# ifdef OF_HAVE_IPX
-/**
- * @brief The IPX addresses of a network interface.
- *
- * This maps to an @ref OFData of @ref OFSocketAddress.
- */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
-# endif
-
-# ifdef OF_HAVE_APPLETALK
-/**
- * @brief The AppleTalk addresses of a network interface.
- *
- * This maps to an @ref OFData of @ref OFSocketAddress.
- */
-extern OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
-# endif
-#endif
-
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -122,10 +62,6 @@ OF_SUBCLASSING_RESTRICTED
 # endif
 # ifdef OF_WINDOWS
 @property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
-# endif
-# ifdef OF_HAVE_SOCKETS
-@property (class, readonly, nullable, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *networkInterfaces;
 # endif
 #endif
 
@@ -403,19 +339,12 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)isWindowsNT;
 #endif
 
-#ifdef OF_HAVE_SOCKETS
-/**
- * @brief Returns the available (though not necessarily configured) network
- *	  interfaces.
- *
- * @return The available network interfaces
- */
-+ (nullable OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)
-    networkInterfaces;
-#endif
-
 + (instancetype)alloc OF_UNAVAILABLE;
 - (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
+
+#ifdef OF_HAVE_SOCKETS
+# import "OFSystemInfo+NetworkInterfaces.h"
+#endif
