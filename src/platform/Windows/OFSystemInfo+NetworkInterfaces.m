@@ -20,6 +20,7 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFNumber.h"
 #import "OFSocket.h"
 #import "OFString.h"
 
@@ -69,6 +70,7 @@
 		for (PIP_ADAPTER_INFO iter = adapterInfo; iter != NULL;
 		    iter = iter->Next) {
 			OFString *name, *IPString;
+			OFNumber *index;
 			OFMutableData *addresses;
 			OFSocketAddress address;
 
@@ -79,6 +81,10 @@
 				interface = [OFMutableDictionary dictionary];
 				[ret setObject: interface forKey: name];
 			}
+
+			index = [OFNumber numberWithUnsignedInt: iter->Index];
+			[interface setObject: index
+				      forKey: OFNetworkInterfaceIndex];
 
 			IPString = [OFString
 			    stringWithCString: iter->IpAddressList.IpAddress
