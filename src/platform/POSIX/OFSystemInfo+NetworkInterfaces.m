@@ -15,6 +15,12 @@
 
 #include "config.h"
 
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
+#ifdef OF_HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
@@ -26,9 +32,6 @@
 #endif
 #ifdef HAVE_NETPACKET_PACKET_H
 # include <netpacket/packet.h>
-#endif
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
 #endif
 
 #import "OFSystemInfo.h"
