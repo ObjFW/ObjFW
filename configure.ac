@@ -1769,22 +1769,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
-	AC_CHECK_HEADERS(net/if.h net/if_types.h net/if_dl.h)
-	AC_CHECK_HEADERS(netpacket/packet.h)
+	AC_CHECK_HEADERS(net/if.h)
 	AC_CHECK_FUNCS(if_nameindex)
-	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
-		#ifdef HAVE_SYS_TYPES_H
-		# include <sys/types.h>
-		#endif
-		#ifdef HAVE_NET_IF_DL_H
-		# include <net/if_dl.h>
-		#endif
-	])
-	AC_CHECK_TYPES([struct sockaddr_ll], [], [], [
-		#ifdef HAVE_NETPACKET_PACKET_H
-		# include <netpacket/packet.h>
-		#endif
-	])
 
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [

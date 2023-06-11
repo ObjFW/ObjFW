@@ -185,7 +185,7 @@ networkInterfacesFromGetAdaptersInfo(void)
 		}
 
 		if (error != ERROR_SUCCESS)
-				return nil;
+			return nil;
 
 		for (PIP_ADAPTER_INFO iter = adapterInfo; iter != NULL;
 		    iter = iter->Next) {

@@ -24,15 +24,6 @@
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
-#ifdef HAVE_NET_IF_TYPES_H
-# include <net/if_types.h>
-#endif
-#ifdef HAVE_NET_IF_DL_H
-# include <net/if_dl.h>
-#endif
-#ifdef HAVE_NETPACKET_PACKET_H
-# include <netpacket/packet.h>
-#endif
 
 #import "OFSystemInfo.h"
 #import "OFSystemInfo+NetworkInterfaces.h"
@@ -302,6 +293,47 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 }
 #endif
 
+static bool
+queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
+{
+#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (sock < 0)
+		return false;
+
+	for (OFString *name in ret) {
+		size_t nameLength = [name cStringLengthWithEncoding: encoding];
+		struct ifreq ifr;
+		OFData *hardwareAddress;
+
+		if (nameLength > IFNAMSIZ)
+			continue;
+
+		memset(&ifr, 0, sizeof(ifr));
+		memcpy(&ifr.ifr_name, [name cStringWithEncoding: encoding],
+		    nameLength);
+
+		if (ioctl(sock, SIOCGIFHWADDR, &ifr) < 0)
+			continue;
+
+		if (ifr.ifr_hwaddr.sa_family != 1)
+			continue;
+
+		hardwareAddress = [OFData dataWithItems: ifr.ifr_hwaddr.sa_data
+						  count: 6];
+		[[ret objectForKey: name]
+		    setObject: hardwareAddress
+		       forKey: OFNetworkInterfaceHardwareAddress];
+	}
+
+	return true;
+#else
+	return false;
+#endif
+}
+
 + (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -321,6 +353,7 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 #ifdef OF_HAVE_APPLETALK
 	success |= queryNetworkInterfaceAppleTalkAddresses(ret);
 #endif
+	success |= queryNetworkInterfaceHardwareAddress(ret);
 
 	if (!success) {
 		objc_autoreleasePoolPop(pool);
