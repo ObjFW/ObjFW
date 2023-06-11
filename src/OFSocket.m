@@ -433,6 +433,34 @@ parseIPv6Component(OFString *component)
 	return (uint16_t)number;
 }
 
+static OFString *
+transformEmbeddedIPv4(OFString *IPv6)
+{
+	size_t lastColon = [IPv6
+	    rangeOfString: @":"
+		  options: OFStringSearchBackwards].location;
+	OFString *IPv4;
+	OFSocketAddress address;
+	const struct sockaddr_in *addrIn;
+	uint32_t addr;
+
+	if (lastColon == OFNotFound)
+		@throw [OFInvalidFormatException exception];
+
+	IPv4 = [IPv6 substringWithRange:
+	    OFMakeRange(lastColon + 1, IPv6.length - lastColon - 1)];
+	IPv6 = [IPv6 substringWithRange: OFMakeRange(0, lastColon + 1)];
+
+	address = OFSocketAddressParseIPv4(IPv4, 0);
+	addrIn = &address.sockaddr.in;
+	addr = OFFromBigEndian32(addrIn->sin_addr.s_addr);
+
+	return [IPv6 stringByAppendingString:
+	    [OFString stringWithFormat: @"%x%02x:%x%02x",
+	    (addr & 0xFF000000) >> 24, (addr & 0x00FF0000) >> 16,
+	    (addr & 0x0000FF00) >>  8, addr & 0x000000FF]];
+}
+
 OFSocketAddress
 OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 {
@@ -469,6 +497,9 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 		if (addrIn6->sin6_scope_id == 0)
 			@throw [OFInvalidArgumentException exception];
 	}
+
+	if ([IPv6 rangeOfString: @"."].location != OFNotFound)
+		IPv6 = transformEmbeddedIPv4(IPv6);
 
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
 	if (doubleColon != OFNotFound) {

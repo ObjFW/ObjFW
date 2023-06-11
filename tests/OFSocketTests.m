@@ -121,6 +121,16 @@ static OFString *const module = @"OFSocket";
 	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234 &&
 	    addr.sockaddr.in6.sin6_scope_id == 123)
 
+	TEST(@"Parsing an IPv6 #7",
+	    R(addr = OFSocketAddressParseIP(@"::ffff:127.0.0.1", 1234)) &&
+	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0xFFFF, 0x7F00, 1) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+
+	TEST(@"Parsing an IPv6 #8",
+	    R(addr = OFSocketAddressParseIP(@"64:ff9b::127.0.0.1", 1234)) &&
+	    COMPARE_V6(addr, 0x64, 0xFF9B, 0, 0, 0, 0, 0x7F00, 1) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"1:::2", 1234))
 
