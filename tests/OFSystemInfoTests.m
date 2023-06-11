@@ -136,6 +136,7 @@ printAddresses(OFData *addresses, bool *firstAddress)
 	for (OFString *name in networkInterfaces) {
 		bool firstAddress = true;
 		OFNetworkInterface interface;
+		OFData *hardwareAddress;
 
 		if (!firstInterface)
 			[OFStdOut writeString: @"; "];
@@ -160,6 +161,23 @@ printAddresses(OFData *addresses, bool *firstAddress)
 		printAddresses([interface objectForKey:
 		    OFNetworkInterfaceAppleTalkAddresses], &firstAddress);
 # endif
+
+		hardwareAddress = [interface
+		    objectForKey: OFNetworkInterfaceHardwareAddress];
+		if (hardwareAddress != nil) {
+			const unsigned char *bytes = hardwareAddress.items;
+			size_t length = hardwareAddress.count;
+
+			if (!firstAddress)
+				[OFStdOut writeString: @", "];
+
+			for (size_t i = 0; i < length; i++) {
+				if (i > 0)
+					[OFStdOut writeString: @":"];
+
+				[OFStdOut writeFormat: @"%02X", bytes[i]];
+			}
+		}
 
 		[OFStdOut writeString: @")"];
 	}

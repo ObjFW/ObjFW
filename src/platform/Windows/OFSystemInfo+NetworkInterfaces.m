@@ -93,6 +93,15 @@ networkInterfacesFromGetAdaptersAddresses(void)
 			[interface setObject: index
 				      forKey: OFNetworkInterfaceIndex];
 
+			if (iter->PhysicalAddressLength > 0) {
+				const OFNetworkInterfaceKey key =
+				    OFNetworkInterfaceHardwareAddress;
+				OFData *address = [OFData
+				    dataWithItems: iter->PhysicalAddress
+					    count: iter->PhysicalAddressLength];
+				[interface setObject: address forKey: key];
+			}
+
 			for (PIP_ADAPTER_UNICAST_ADDRESS_LH addrIter =
 			    iter->FirstUnicastAddress; addrIter != NULL;
 			    addrIter = addrIter->Next) {
@@ -183,7 +192,7 @@ networkInterfacesFromGetAdaptersInfo(void)
 			OFMutableDictionary *interface;
 			OFString *name, *IPString;
 			OFNumber *index;
-			OFSocketAddress address;
+			OFSocketAddress IPv4Address;
 			OFData *addresses;
 
 			name = [OFString stringWithCString: iter->AdapterName
@@ -198,6 +207,15 @@ networkInterfacesFromGetAdaptersInfo(void)
 			[interface setObject: index
 				      forKey: OFNetworkInterfaceIndex];
 
+			if (iter->AddressLength > 0) {
+				const OFNetworkInterfaceKey key =
+				    OFNetworkInterfaceHardwareAddress;
+				OFData *address = [OFData
+				    dataWithItems: iter->Address
+					    count: iter->AddressLength];
+				[interface setObject: address forKey: key];
+			}
+
 			IPString = [OFString
 			    stringWithCString: iter->IpAddressList.IpAddress
 						   .String
@@ -206,10 +224,10 @@ networkInterfacesFromGetAdaptersInfo(void)
 			if ([IPString isEqual: @"0.0.0.0"])
 				continue;
 
-			address = OFSocketAddressParseIPv4(IPString, 0);
-			addresses = [OFData dataWithItems: &address
+			IPv4Address = OFSocketAddressParseIPv4(IPString, 0);
+			addresses = [OFData dataWithItems: &IPv4Address
 						    count: 1
-						 itemSize: sizeof(address)];
+						 itemSize: sizeof(IPv4Address)];
 			[interface setObject: addresses
 				      forKey: OFNetworkInterfaceIPv4Addresses];
 		}

@@ -18,6 +18,8 @@
 #import "OFSystemInfo.h"
 
 OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
+OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
+    @"OFNetworkInterfaceHardwareAddress";
 OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
     @"OFNetworkInterfaceIPv4Addresses";
 #ifdef OF_HAVE_IPV6
