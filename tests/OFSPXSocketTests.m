@@ -79,6 +79,7 @@ static OFString *const module = @"OFSPXSocket";
 	uint32_t network;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 	uint16_t port;
+	OFDictionary *networkInterfaces;
 	char buffer[5];
 	SPXSocketDelegate *delegate;
 
@@ -123,6 +124,24 @@ static OFString *const module = @"OFSPXSocket";
 	port = OFSocketAddressIPXPort(&address1);
 
 	TEST(@"-[listen]", R([sockServer listen]))
+
+	/*
+	 * Find any network interface with IPX and send to it. Any should be
+	 * fine since we bound to 0.0.
+	 */
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	for (OFString *name in networkInterfaces) {
+		OFNetworkInterface interface = [networkInterfaces
+		    objectForKey: name];
+		OFData *addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPXAddresses];
+
+		if (addresses.count == 0)
+			continue;
+
+		network = OFSocketAddressIPXNetwork([addresses itemAtIndex: 0]);
+		OFSocketAddressGetIPXNode([addresses itemAtIndex: 0], node);
+	}
 
 	TEST(@"-[connectToNetwork:node:port:]",
 	    R([sockClient connectToNetwork: network node: node port: port]))
