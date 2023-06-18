@@ -24,6 +24,15 @@
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
+#ifdef HAVE_NET_IF_ARP_H
+# include <net/if_arp.h>
+#endif
+#ifdef HAVE_NET_IF_DL_H
+# include <net/if_dl.h>
+#endif
+#ifdef HAVE_NET_IF_TYPES_H
+# include <net/if_types.h>
+#endif
 
 #import "OFSystemInfo.h"
 #import "OFSystemInfo+NetworkInterfaces.h"
@@ -318,7 +327,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 		if (ioctl(sock, SIOCGIFHWADDR, &ifr) < 0)
 			continue;
 
-		if (ifr.ifr_hwaddr.sa_family != 1)
+		if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER)
 			continue;
 
 		hardwareAddress = [OFData dataWithItems: ifr.ifr_hwaddr.sa_data
@@ -326,6 +335,72 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 		[[ret objectForKey: name]
 		    setObject: hardwareAddress
 		       forKey: OFNetworkInterfaceHardwareAddress];
+	}
+
+	return true;
+#elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
+    defined(HAVE_STRUCT_SOCKADDR_DL)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+	struct ifconf ifc;
+	struct ifreq *ifrs;
+
+	if (sock < 0)
+		return false;
+
+	ifrs = malloc(128 * sizeof(struct ifreq));
+	if (ifrs == NULL) {
+		closesocket(sock);
+		return false;
+	}
+
+	@try {
+		char *buffer;
+
+		memset(&ifc, 0, sizeof(ifc));
+		ifc.ifc_buf = (void *)ifrs;
+		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
+			return false;
+
+		buffer = ifc.ifc_buf;
+		while (buffer < (char *)ifc.ifc_buf + ifc.ifc_len) {
+			struct ifreq *current = (struct ifreq *)(void *)buffer;
+			struct sockaddr_dl *sdl;
+			OFString *name;
+			OFMutableDictionary *interface;
+			OFData *hardwareAddress;
+
+			if (current->ifr_addr.sa_family != AF_LINK)
+				goto next;
+
+			sdl = (struct sockaddr_dl *)(void *)&current->ifr_addr;
+			if (sdl->sdl_type != IFT_ETHER)
+				goto next;
+
+			name = [OFString stringWithCString: current->ifr_name
+						  encoding: encoding];
+			if ((interface = [ret objectForKey: name]) == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			hardwareAddress = [OFData dataWithItems: LLADDR(sdl)
+							  count: sdl->sdl_alen];
+			[interface
+			    setObject: hardwareAddress
+			       forKey: OFNetworkInterfaceHardwareAddress];
+
+next:
+# ifdef _SIZEOF_ADDR_IFREQ
+			buffer += _SIZEOF_ADDR_IFREQ(*current);
+# else
+			buffer += sizeof(struct ifreq);
+# endif
+		}
+	} @finally {
+		free(ifrs);
+		closesocket(sock);
 	}
 
 	return true;
