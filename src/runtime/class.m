@@ -58,14 +58,14 @@ class_registerAlias_np(Class class, const char *name)
 	if (classes == NULL) {
 		objc_globalMutex_unlock();
 
-		return NO;
+		return false;
 	}
 
 	objc_hashtable_set(classes, name, (Class)((uintptr_t)class | 1));
 
 	objc_globalMutex_unlock();
 
-	return YES;
+	return true;
 }
 
 static void

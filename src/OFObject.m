@@ -470,10 +470,8 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)conformsToProtocol: (Protocol *)protocol
 {
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
+		if (class_conformsToProtocol(iter, protocol))
 			return true;
 
 	return false;
@@ -575,12 +573,12 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - (instancetype)init
