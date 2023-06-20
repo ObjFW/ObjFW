@@ -31,6 +31,7 @@ static OFString *const module = @"OFIPXSocket";
 	OFDictionary *networkInterfaces;
 	char buffer[5];
 	unsigned char node1[IPX_NODE_LEN], node2[IPX_NODE_LEN];
+	unsigned char node[IPX_NODE_LEN];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
@@ -73,7 +74,6 @@ static OFString *const module = @"OFIPXSocket";
 		    objectForKey: name];
 		OFData *addresses = [interface
 		    objectForKey: OFNetworkInterfaceIPXAddresses];
-		unsigned char node[IPX_NODE_LEN];
 
 		if (addresses.count == 0)
 			continue;
@@ -82,6 +82,17 @@ static OFString *const module = @"OFIPXSocket";
 		    OFSocketAddressIPXNetwork([addresses itemAtIndex: 0]));
 		OFSocketAddressGetIPXNode([addresses itemAtIndex: 0], node);
 		OFSocketAddressSetIPXNode(&address1, node);
+	}
+
+	OFSocketAddressGetIPXNode(&address1, node);
+	if (OFSocketAddressIPXNetwork(&address1) == 0 &&
+	    memcmp(node, zeroNode, 6) == 0) {
+		[OFStdOut setForegroundColor: [OFColor lime]];
+		[OFStdOut writeLine:
+		    @"[OFIPXSocket] -[sendBuffer:length:receiver:]: "
+		    @"Could not determine own address, skipping tests"];
+		objc_autoreleasePoolPop(pool);
+		return;
 	}
 
 	TEST(@"-[sendBuffer:length:receiver:]",
