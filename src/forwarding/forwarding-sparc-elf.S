@@ -190,6 +190,6 @@ symtab:
 module:
 	.word 8, 16, 0, symtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

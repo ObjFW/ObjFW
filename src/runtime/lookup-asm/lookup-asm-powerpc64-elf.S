@@ -158,6 +158,6 @@ nilMethod:
 .type nilMethod, @function
 .size nilMethod, .-.Lbegin_nilMethod
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif
