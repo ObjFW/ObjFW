@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -49,7 +49,7 @@ OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonn
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((bool (*)(unsigned int __asm__("d0"), struct OFLibC *_Nonnull __asm__("a0"), struct Library *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWBase) - 30))(version, libc, RTBase);
+	return ((bool (*)(unsigned int __asm__("d0"), struct OFLibC *_Nonnull __asm__("a0"), struct Library *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWBase) - 30))(version, libc, RTBase);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"

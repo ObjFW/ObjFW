@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,7 +35,7 @@ glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, struc
 {
 	M68K_ARG(unsigned int, version, d0)
 	M68K_ARG(struct OFLibC *_Nonnull, libc, a0)
-	M68K_ARG(struct Library *_Nonnull, RTBase, a0)
+	M68K_ARG(struct Library *_Nonnull, RTBase, a1)
 
 	return OFInit(version, libc, RTBase);
 }
