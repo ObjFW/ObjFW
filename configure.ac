@@ -1523,6 +1523,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
 			[Whether we have UNIX sockets])
 		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
+
+		AC_CHECK_MEMBERS(struct sockaddr_un.sun_len, [], [], [
+			#ifdef OF_HAVE_SYS_TYPES_H
+			# include <sys/types.h>
+			#endif
+			#ifdef OF_HAVE_SYS_UN_H
+			# include <sys/un.h>
+			#endif
+			#ifdef _WIN32
+			# include <winsock2.h>
+			#endif
+			#ifdef HAVE_AFUNIX_H
+			# include <afunix.h>
+			#endif
+		])
 	], [], [
 		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>

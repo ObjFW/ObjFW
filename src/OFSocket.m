@@ -590,6 +590,9 @@ OFSocketAddressMakeUNIX(OFString *path)
 	ret.length = (socklen_t)
 	    (offsetof(struct sockaddr_un, sun_path) + length);
 
+#ifdef HAVE_STRUCT_SOCKADDR_UN_SUN_LEN
+	ret.sockaddr.un.sun_len = (uint8_t)length;
+#endif
 #ifdef AF_UNIX
 	ret.sockaddr.un.sun_family = AF_UNIX;
 #else
