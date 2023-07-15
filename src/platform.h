@@ -151,7 +151,7 @@
 # define OF_ACORN_RISC_OS
 #elif defined(__MINT__)
 # define OF_MINT
-#elif defined(__gnu__)
+#elif defined(__gnu_hurd__)
 # define OF_HURD
 #endif
 
