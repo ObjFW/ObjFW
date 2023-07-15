@@ -4,17 +4,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: amigadev/crosstools:m68k-amigaos
-    strategy:
-      matrix:
-        configure_flags:
-          -
-          - --disable-amiga-lib
     steps:
     - uses: actions/checkout@v2
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
-      run: ./configure --host=m68k-amigaos ${{ matrix.configure_flags }}
+      run: ./configure --host=m68k-amigaos
     - name: make
       run: make -j$(nproc)
     - name: make install
