@@ -1480,6 +1480,13 @@ extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
 
 /**
+ * @brief Initializes the specified hash.
+ *
+ * @param hash A pointer to the hash to initialize
+ */
+extern void OFHashInit(unsigned long *_Nonnull hash);
+
+/**
  * @brief Returns 16 bit or non-cryptographical randomness.
  *
  * @return 16 bit or non-cryptographical randomness
@@ -1499,13 +1506,6 @@ extern uint32_t OFRandom32(void);
  * @return 64 bit or non-cryptographical randomness
  */
 extern uint64_t OFRandom64(void);
-
-/**
- * @brief Initializes the specified hash.
- *
- * @param hash A pointer to the hash to initialize
- */
-extern void OFHashInit(unsigned long *_Nonnull hash);
 #ifdef __cplusplus
 }
 #endif

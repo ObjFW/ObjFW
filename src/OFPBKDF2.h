@@ -66,9 +66,9 @@ extern "C" {
  *	 possible to reuse the `HMAC`, but also meaning all previous results
  *	 from the `HMAC` get invalidated if they have not been copied.
  *
- * @param param The parameters to use
+ * @param parameters The parameters to use
  */
-extern void OFPBKDF2(OFPBKDF2Parameters param);
+extern void OFPBKDF2(OFPBKDF2Parameters parameters);
 #ifdef __cplusplus
 }
 #endif

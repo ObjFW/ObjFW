@@ -70,9 +70,9 @@ extern void OFScryptROMix(uint32_t *buffer, size_t blockSize,
 /**
  * @brief Derives a key from a password and a salt using scrypt.
  *
- * @param param The parameters to use
+ * @param parameters The parameters to use
  */
-extern void OFScrypt(OFScryptParameters param);
+extern void OFScrypt(OFScryptParameters parameters);
 #ifdef __cplusplus
 }
 #endif
