@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFFile.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFMD5Hash.h"
 #import "OFOptionsParser.h"
@@ -95,10 +96,11 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	OFSHA512Hash *SHA512Hash = nil;
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofhash/localization"];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhash/localization"]];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -112,7 +114,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString stringWithFormat:
-				    @"%c", optionsParser.lastOption];
+				    @"%C", optionsParser.lastOption];
 				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",

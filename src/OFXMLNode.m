@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,11 +25,6 @@
 }
 
 - (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -82,11 +77,6 @@
 - (OFString *)description
 {
 	return self.XMLString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (id)copy

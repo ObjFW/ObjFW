@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -375,7 +375,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -499,7 +499,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -510,11 +510,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -631,12 +626,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (OFXMLElement *)XMLElementBySerializing
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

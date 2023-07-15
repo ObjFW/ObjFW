@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,7 +64,9 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -393,7 +395,6 @@ void
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;
-	_OFObject_Serialization_reference = 1;
 }
 
 @implementation OFObject
@@ -445,11 +446,6 @@ _references_to_categories_of_OFObject(void)
 	return OFAllocObject(self, 0, 0, NULL);
 }
 
-+ (instancetype)new
-{
-	return [[self alloc] init];
-}
-
 + (Class)class
 {
 	return self;
@@ -482,10 +478,8 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)conformsToProtocol: (Protocol *)protocol
 {
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
+		if (class_conformsToProtocol(iter, protocol))
 			return true;
 
 	return false;
@@ -587,12 +581,12 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - (instancetype)init

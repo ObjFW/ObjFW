@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,8 +43,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFXMLCDATA
  */
 - (instancetype)initWithString: (OFString *)string;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

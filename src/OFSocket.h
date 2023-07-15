@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,8 +61,6 @@
 # endif
 #endif
 
-/** @file */
-
 #ifdef OF_WII
 # include <network.h>
 #endif
@@ -74,6 +72,8 @@
 #import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
 
 #ifndef OF_WINDOWS
 typedef int OFSocketHandle;
@@ -136,8 +136,10 @@ struct sockaddr_un {
 };
 #endif
 
-#ifndef OF_HAVE_IPX
+#ifndef IPX_NODE_LEN
 # define IPX_NODE_LEN 6
+#endif
+#if !defined(OF_HAVE_IPX)
 struct sockaddr_ipx {
 	sa_family_t sipx_family;
 	uint32_t sipx_network;
@@ -145,30 +147,31 @@ struct sockaddr_ipx {
 	uint16_t sipx_port;
 	uint8_t sipx_type;
 };
-#endif
-#ifdef OF_WINDOWS
+#elif defined(OF_WINDOWS)
 # define IPX_NODE_LEN 6
 # define sipx_family sa_family
 # define sipx_network sa_netnum
 # define sipx_node sa_nodenum
 # define sipx_port sa_socket
+#elif defined(OF_FREEBSD)
+# define sipx_network sipx_addr.x_net.c_net
+# define sipx_node sipx_addr.x_host.c_host
 #endif
 
 #ifndef OF_HAVE_APPLETALK
 struct sockaddr_at {
 	sa_family_t sat_family;
 	uint8_t sat_port;
-	struct at_addr {
-		uint16_t s_net;
-		uint8_t s_node;
-	} sat_addr;
+	uint16_t sat_net;
+	uint8_t sat_node;
 };
-#endif
-#ifdef OF_WINDOWS
-# define sat_port sat_socket
 #else
-# define sat_net sat_addr.s_net
-# define sat_node sat_addr.s_node
+# ifdef OF_WINDOWS
+#  define sat_port sat_socket
+# else
+#  define sat_net sat_addr.s_net
+#  define sat_node sat_addr.s_node
+# endif
 #endif
 
 /**
@@ -188,6 +191,13 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
 		struct sockaddr_at at;
+#ifdef OF_HAVE_SOCKADDR_STORAGE
+		/*
+		 * Required to make the ABI stable in case we want to add more
+		 * address types later.
+		 */
+		struct sockaddr_storage storage;
+#endif
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -280,7 +290,7 @@ extern unsigned long OFSocketAddressHash(
  * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @return The address as an IP string
+ * @return The address as an IP string, without the port
  */
 extern OFString *_Nonnull OFSocketAddressString(
     const OFSocketAddress *_Nonnull address);

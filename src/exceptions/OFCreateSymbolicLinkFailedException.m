@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,22 +16,22 @@
 #include "config.h"
 
 #import "OFCreateSymbolicLinkFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFCreateSymbolicLinkFailedException
-@synthesize URI = _URI, target = _target, errNo = _errNo;
+@synthesize IRI = _IRI, target = _target, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 			  target: (OFString *)target
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURI: URI
+	return [[[self alloc] initWithIRI: IRI
 				   target: target
 				    errNo: errNo] autorelease];
 }
@@ -41,14 +41,14 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		     target: (OFString *)target
 		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URI = [URI copy];
+		_IRI = [IRI copy];
 		_target = [target copy];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -61,7 +61,7 @@
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 	[_target release];
 
 	[super dealloc];
@@ -71,6 +71,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to create symbolic link %@ with target %@: %@",
-	    _URI, _target, OFStrError(_errNo)];
+	    _IRI, _target, OFStrError(_errNo)];
 }
 @end

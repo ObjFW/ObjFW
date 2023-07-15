@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@
 #import "OFSocket+Private.h"
 #import "OFString.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindUNIXSocketFailedException.h"
 
 @implementation OFUNIXDatagramSocket
@@ -38,7 +38,7 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeUNIX(path);
 

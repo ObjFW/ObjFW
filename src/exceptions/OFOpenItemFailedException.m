@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,17 +16,17 @@
 #include "config.h"
 
 #import "OFOpenItemFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFOpenItemFailedException
-@synthesize URI = _URI, path = _path, mode = _mode, errNo = _errNo;
+@synthesize IRI = _IRI, path = _path, mode = _mode, errNo = _errNo;
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURI: URI
+	return [[[self alloc] initWithIRI: IRI
 				     mode: mode
 				    errNo: errNo] autorelease];
 }
@@ -45,14 +45,14 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		       mode: (OFString *)mode
 		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URI = [URI copy];
+		_IRI = [IRI copy];
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
@@ -88,7 +88,7 @@
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 	[_path release];
 	[_mode release];
 
@@ -99,8 +99,8 @@
 {
 	id item = nil;
 
-	if (_URI != nil)
-		item = _URI;
+	if (_IRI != nil)
+		item = _IRI;
 	else if (_path != nil)
 		item = _path;
 

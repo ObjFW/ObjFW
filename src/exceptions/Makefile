@@ -5,6 +5,7 @@ STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 STATIC_AMIGA_LIB_NOINST = ${EXCEPTIONS_AMIGALIB_A}
 
 SRCS = OFAllocFailedException.m				\
+       OFAlreadyOpenException.m				\
        OFChecksumMismatchException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
@@ -55,7 +56,6 @@ SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 	     OFGetCurrentDirectoryFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
-	       OFAlreadyConnectedException.m		\
 	       OFBindIPSocketFailedException.m		\
 	       OFBindSocketFailedException.m		\
 	       OFConnectIPSocketFailedException.m	\

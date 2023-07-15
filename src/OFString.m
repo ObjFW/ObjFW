@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -39,14 +39,13 @@
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
-#import "OFXMLElement.h"
 
 #import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -82,7 +81,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 static locale_t cLocale;
 #endif
 
@@ -135,7 +134,6 @@ _references_to_categories_of_OFString(void)
 #endif
 	_OFString_PercentEncoding_reference = 1;
 	_OFString_PropertyListParsing_reference = 1;
-	_OFString_Serialization_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
 }
@@ -582,21 +580,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI];
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI
 						      encoding: encoding];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFUTF8String alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -627,7 +620,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	placeholder.isa = [OFStringPlaceholder class];
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -796,15 +789,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
+	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfURI: URI
+	return [[[self alloc] initWithContentsOfIRI: IRI
 					   encoding: encoding] autorelease];
 }
 
@@ -1049,20 +1042,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [self initWithContentsOfURI: URI
+	return [self initWithContentsOfIRI: IRI
 				  encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	@try {
-		data = [OFData dataWithContentsOfURI: URI];
+		data = [OFData dataWithContentsOfIRI: IRI];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1075,36 +1068,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	self = [self initWithCString: data.items
 			    encoding: encoding
 			      length: data.count * data.itemSize];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		if ([self isKindOfClass: [OFMutableString class]]) {
-			if (![element.name isEqual: @"OFMutableString"])
-				@throw [OFInvalidArgumentException exception];
-		} else {
-			if (![element.name isEqual: @"OFString"])
-				@throw [OFInvalidArgumentException exception];
-		}
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithString: stringValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1680,28 +1643,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (OFString *)description
 {
 	return [[self copy] autorelease];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFString *className;
-
-	if ([self isKindOfClass: [OFMutableString class]])
-		className = @"OFMutableString";
-	else
-		className = @"OFString";
-
-	element = [OFXMLElement elementWithName: className
-				      namespace: OFSerializationNS
-				    stringValue: self];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -2426,7 +2367,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#ifdef HAVE_STRTOF_L
+#if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
@@ -2442,8 +2383,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	float value;
 
 	errno = 0;
-#ifdef HAVE_STRTOF_L
+#if defined(HAVE_STRTOF_L)
 	value = strtof_l(UTF8String, &endPtr, cLocale);
+#elif defined(HAVE_USELOCALE)
+	locale_t previousLocale = uselocale(cLocale);
+	value = strtof(UTF8String, &endPtr);
+	uselocale(previousLocale);
 #else
 	value = strtof(UTF8String, &endPtr);
 #endif
@@ -2479,7 +2424,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#ifdef HAVE_STRTOD_L
+#if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
@@ -2495,8 +2440,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	double value;
 
 	errno = 0;
-#ifdef HAVE_STRTOD_L
+#if defined(HAVE_STRTOD_L)
 	value = strtod_l(UTF8String, &endPtr, cLocale);
+#elif defined(HAVE_USELOCALE)
+	locale_t previousLocale = uselocale(cLocale);
+	value = strtod(UTF8String, &endPtr);
+	uselocale(previousLocale);
 #else
 	value = strtod(UTF8String, &endPtr);
 #endif
@@ -2724,17 +2673,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
-	[self writeToURI: URI encoding: OFStringEncodingUTF8];
+	[self writeToIRI: IRI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
-	stream = [OFURIHandler openItemAtURI: URI mode: @"w"];
+	stream = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);

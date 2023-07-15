@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,19 +32,9 @@ static struct {
 @interface OFMutableArrayPlaceholder: OFMutableArray
 @end
 
-static OFComparisonResult
-compare(id left, id right, SEL selector)
-{
-	OFComparisonResult (*comparator)(id, SEL, id) =
-	    (OFComparisonResult (*)(id, SEL, id))
-	    [left methodForSelector: selector];
-
-	return comparator(left, selector, right);
-}
-
 static void
-quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
-    OFArraySortOptions options)
+quicksort(OFMutableArray *array, size_t left, size_t right,
+    OFCompareFunction compare, void *context, OFArraySortOptions options)
 {
 	OFComparisonResult ascending, descending;
 
@@ -63,11 +53,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 
 		do {
 			while (compare([array objectAtIndex: i], pivot,
-			    selector) != descending && i < right)
+			    context) != descending && i < right)
 				i++;
 
 			while (compare([array objectAtIndex: j], pivot,
-			    selector) != ascending && j > left)
+			    context) != ascending && j > left)
 				j--;
 
 			if (i < j)
@@ -75,64 +65,18 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 					   withObjectAtIndex: j];
 		} while (i < j);
 
-		if (compare([array objectAtIndex: i], pivot, selector) ==
+		if (compare([array objectAtIndex: i], pivot, context) ==
 		    descending)
 			[array exchangeObjectAtIndex: i
 				   withObjectAtIndex: right];
 
 		if (i > 0)
-			quicksort(array, left, i - 1, selector, options);
-
-		left = i + 1;
-	}
-}
-
-#ifdef OF_HAVE_BLOCKS
-static void
-quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
-    OFComparator comparator, OFArraySortOptions options)
-{
-	OFComparisonResult ascending, descending;
-
-	if (options & OFArraySortDescending) {
-		ascending = OFOrderedDescending;
-		descending = OFOrderedAscending;
-	} else {
-		ascending = OFOrderedAscending;
-		descending = OFOrderedDescending;
-	}
-
-	while (left < right) {
-		size_t i = left;
-		size_t j = right - 1;
-		id pivot = [array objectAtIndex: right];
-
-		do {
-			while (comparator([array objectAtIndex: i], pivot) !=
-			    descending && i < right)
-				i++;
-
-			while (comparator([array objectAtIndex: j], pivot) !=
-			    ascending && j > left)
-				j--;
-
-			if (i < j)
-				[array exchangeObjectAtIndex: i
-					   withObjectAtIndex: j];
-		} while (i < j);
-
-		if (comparator([array objectAtIndex: i], pivot) == descending)
-			[array exchangeObjectAtIndex: i
-				   withObjectAtIndex: right];
-
-		if (i > 0)
-			quicksortWithBlock(array, left, i - 1, comparator,
+			quicksort(array, left, i - 1, compare, context,
 			    options);
 
 		left = i + 1;
 	}
 }
-#endif
 
 @implementation OFMutableArrayPlaceholder
 - (instancetype)init
@@ -178,12 +122,6 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 {
 	return (id)[[OFMutableAdjacentArray alloc] initWithObjects: objects
 							     count: count];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableAdjacentArray alloc]
-	    initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -414,6 +352,17 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	[self sortUsingSelector: @selector(compare:) options: 0];
 }
 
+static OFComparisonResult
+selectorCompare(id left, id right, void *context)
+{
+	SEL selector = context;
+	OFComparisonResult (*comparator)(id, SEL, id) =
+	    (OFComparisonResult (*)(id, SEL, id))
+	    [left methodForSelector: selector];
+
+	return comparator(left, selector, right);
+}
+
 - (void)sortUsingSelector: (SEL)selector
 		  options: (OFArraySortOptions)options
 {
@@ -422,10 +371,31 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (count == 0 || count == 1)
 		return;
 
-	quicksort(self, 0, count - 1, selector, options);
+	quicksort(self, 0, count - 1, selectorCompare, (void *)selector,
+	    options);
+}
+
+- (void)sortUsingFunction: (OFCompareFunction)compare
+		  context: (void *)context
+		  options: (OFArraySortOptions)options
+{
+	size_t count = self.count;
+
+	if (count == 0 || count == 1)
+		return;
+
+	quicksort(self, 0, count - 1, compare, context, options);
 }
 
 #ifdef OF_HAVE_BLOCKS
+static OFComparisonResult
+blockCompare(id left, id right, void *context)
+{
+	OFComparator block = (OFComparator)context;
+
+	return block(left, right);
+}
+
 - (void)sortUsingComparator: (OFComparator)comparator
 		    options: (OFArraySortOptions)options
 {
@@ -434,7 +404,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (count == 0 || count == 1)
 		return;
 
-	quicksortWithBlock(self, 0, count - 1, comparator, options);
+	quicksort(self, 0, count - 1, blockCompare, comparator, options);
 }
 #endif
 

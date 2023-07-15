@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,7 +28,7 @@ OFForward:
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
 	movl	8(%ebp), %eax
@@ -75,7 +75,7 @@ OFForward:
 	jmp	*%eax
 
 0:
-	leal	OFMethodNotFound@GOTOFF(%ebx), %eax
+	movl	OFMethodNotFound@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -92,7 +92,7 @@ OFForward_stret:
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
 	movl	12(%ebp), %eax
@@ -139,7 +139,7 @@ OFForward_stret:
 	jmp	*%eax
 
 0:
-	leal	OFMethodNotFound_stret@GOTOFF(%ebx), %eax
+	movl	OFMethodNotFound_stret@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -156,7 +156,7 @@ init:
 	pushl	%ebx
 	subl	$4, %esp
 
-	call	get_eip
+	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
 	leal	module@GOTOFF(%ebx), %eax
@@ -168,7 +168,7 @@ init:
 	popl	%ebp
 	ret
 
-get_eip:
+getEIP:
 	movl	(%esp), %ebx
 	ret
 
@@ -195,6 +195,6 @@ symtab:
 module:
 	.long 8, 16, 0, symtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +21,6 @@
 #import "OFMutableMapTableSet.h"
 #import "OFString.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -109,52 +108,6 @@
 
 		while ((object = va_arg(arguments, id)) != nil)
 			[self addObject: object];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [self init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: @"OFCountedSet"] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLElement *objectElement in
-		    [element elementsForName: @"object"
-				   namespace: OFSerializationNS]) {
-			void *pool2 = objc_autoreleasePoolPush();
-			OFXMLElement *object;
-			OFXMLAttribute *countAttribute;
-			unsigned long long count;
-
-			object = [objectElement elementsForNamespace:
-			    OFSerializationNS].firstObject;
-			countAttribute =
-			    [objectElement attributeForName: @"count"];
-
-			if (object == nil || countAttribute == nil)
-				@throw [OFInvalidFormatException exception];
-
-			count = countAttribute.unsignedLongLongValue;
-			if (count > SIZE_MAX || count > UINTPTR_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			[_mapTable setObject: (void *)(uintptr_t)count
-				      forKey: object.objectByDeserializing];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;

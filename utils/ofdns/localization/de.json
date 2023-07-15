@@ -6,7 +6,8 @@
         "    -h  --help    Diese Hilfe anzeigen\n",
         "    -s  --server  Der abzufragende Server\n",
         "    -t  --type    Der anzufragende Record-Typ (standardmäßig ALL,\n",
-        "                  kann wiederholt werden)"
+        "                  kann wiederholt werden)\n",
+        "        --tcp     Benutzung von TCP erzwingen"
     ],
     "long_option_requires_argument": [
         "%[prog]: Option --%[opt] benötigt ein Argument"

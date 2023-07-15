@@ -1,0 +1,225 @@
+/*
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ *
+ * All rights reserved.
+ *
+ * This file is part of ObjFW. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
+ * the packaging of this file.
+ *
+ * Alternatively, it may be distributed under the terms of the GNU General
+ * Public License, either version 2 or 3, which can be found in the file
+ * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
+ * file.
+ */
+
+#include "config.h"
+
+#include "platform.h"
+
+.globl OFForward
+.globl OFForward_stret
+
+.section .text
+OFForward:
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	/* Save all arguments */
+	subq	$0xC0, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x8(%rbp)
+	movq	%rdi, -0x10(%rbp)
+	movq	%rsi, -0x18(%rbp)
+	movq	%rdx, -0x20(%rbp)
+	movq	%rcx, -0x28(%rbp)
+	movq	%r8, -0x30(%rbp)
+	movq	%r9, -0x38(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
+
+	call	object_getClass@PLT
+
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	class_respondsToSelector@PLT
+
+	testq	%rax, %rax
+	jz	0f
+
+	movq	-0x10(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	objc_msg_lookup@PLT
+
+	movq	-0x10(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	-0x18(%rbp), %rdx
+	call	*%rax
+
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x10(%rbp), %rax
+	je	0f
+
+	movq	%rax, -0x10(%rbp)
+
+	movq	%rax, %rdi
+	movq	-0x18(%rbp), %rsi
+	call	objc_msg_lookup@PLT
+	movq	%rax, %r11
+
+	/* Restore all arguments */
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
+	movq	-0x38(%rbp), %r9
+	movq	-0x30(%rbp), %r8
+	movq	-0x28(%rbp), %rcx
+	movq	-0x20(%rbp), %rdx
+	movq	-0x18(%rbp), %rsi
+	movq	-0x10(%rbp), %rdi
+	movq	-0x8(%rbp), %rax
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmpq	*%r11
+
+0:
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	OFMethodNotFound@PLT
+.type OFForward, %function
+.size OFForward, .-OFForward
+
+OFForward_stret:
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	/* Save all arguments */
+	subq	$0xC0, %rsp	/* 16-byte alignment */
+	movq	%rax, -0x8(%rbp)
+	movq	%rdi, -0x10(%rbp)
+	movq	%rsi, -0x18(%rbp)
+	movq	%rdx, -0x20(%rbp)
+	movq	%rcx, -0x28(%rbp)
+	movq	%r8, -0x30(%rbp)
+	movq	%r9, -0x38(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
+
+	movq	%rsi, %rdi
+	call	object_getClass@PLT
+
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	class_respondsToSelector@PLT
+
+	testq	%rax, %rax
+	jz	0f
+
+	movq	-0x18(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	objc_msg_lookup@PLT
+
+	movq	-0x18(%rbp), %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	-0x20(%rbp), %rdx
+	call	*%rax
+
+	testq	%rax, %rax
+	jz	0f
+	cmpq	-0x18(%rbp), %rax
+	je	0f
+
+	movq	%rax, -0x18(%rbp)
+
+	movq	%rax, %rdi
+	movq	-0x20(%rbp), %rsi
+	call	objc_msg_lookup_stret@PLT
+	movq	%rax, %r11
+
+	/* Restore all arguments */
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
+	movq	-0x38(%rbp), %r9
+	movq	-0x30(%rbp), %r8
+	movq	-0x28(%rbp), %rcx
+	movq	-0x20(%rbp), %rdx
+	movq	-0x18(%rbp), %rsi
+	movq	-0x10(%rbp), %rdi
+	movq	-0x8(%rbp), %rax
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmpq	*%r11
+
+0:
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+	movq	-0x20(%rbp), %rdx
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	OFMethodNotFound_stret@PLT
+.type OFForward_stret, %function
+.size OFForward_stret, .-OFForward_stret
+
+init:
+	leaq	module(%rip), %rdi
+	jmp	__objc_exec_class@PLT
+
+#ifdef OF_SOLARIS
+.section .init_array, "aw"
+#else
+.section .ctors, "aw", %progbits
+#endif
+	.quad init
+
+.section .rodata
+str_forwardingTargetForSelector_:
+	.asciz "forwardingTargetForSelector:"
+
+.section .data
+sel_forwardingTargetForSelector_:
+	.quad str_forwardingTargetForSelector_, 0
+	.quad 0, 0
+symtab:
+	.quad 0, sel_forwardingTargetForSelector_
+	.short 0, 0
+	.long 0
+	.quad 0
+module:
+	.quad 8, 32, 0, symtab
+
+#if defined(OF_LINUX) || defined(OF_HURD)
+.section .note.GNU-stack, "", %progbits
+#endif

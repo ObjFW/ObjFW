@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,15 +31,15 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 	char buffer[5];
 
 #if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryURI]
-	    URIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
 	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectoryURI is
+	 * We also use this code path for iOS, as the temporaryDirectoryIRI is
 	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",

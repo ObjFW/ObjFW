@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -55,8 +55,10 @@
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif

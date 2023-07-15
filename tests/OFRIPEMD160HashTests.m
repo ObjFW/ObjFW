@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,8 +30,8 @@ const uint8_t testFileRIPEMD160[20] =
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRIPEMD160Hash *RIPEMD160, *RIPEMD160Copy;
-	OFURI *URI = [OFURI URIWithString: @"embedded:testfile.bin"];
-	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"r"];
+	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
+	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 
 	TEST(@"+[hashWithAllowsSwappableMemory:]",
 	    (RIPEMD160 = [OFRIPEMD160Hash hashWithAllowsSwappableMemory: true]))

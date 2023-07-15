@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -67,12 +67,6 @@ static struct {
 {
 	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableMapTableSet alloc]
-	    initWithSerialization: element];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity

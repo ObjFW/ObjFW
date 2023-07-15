@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,16 +26,13 @@ static OFString *const module = @"OFUDPSocket";
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFUDPSocket *sock;
-	uint16_t port1;
 	OFSocketAddress addr1, addr2, addr3;
 	char buf[6];
 
 	TEST(@"+[socket]", (sock = [OFUDPSocket socket]))
 
 	TEST(@"-[bindToHost:port:]",
-	    (port1 = [sock bindToHost: @"127.0.0.1" port: 0]))
-
-	addr1 = OFSocketAddressParseIP(@"127.0.0.1", port1);
+	    R(addr1 = [sock bindToHost: @"127.0.0.1" port: 0]))
 
 	TEST(@"-[sendBuffer:length:receiver:]",
 	    R([sock sendBuffer: "Hello" length: 6 receiver: &addr1]))
@@ -44,14 +41,11 @@ static OFString *const module = @"OFUDPSocket";
 	    [sock receiveIntoBuffer: buf length: 6 sender: &addr2] == 6 &&
 	    !memcmp(buf, "Hello", 6) &&
 	    [OFSocketAddressString(&addr2) isEqual: @"127.0.0.1"] &&
-	    OFSocketAddressIPPort(&addr2) == port1)
+	    OFSocketAddressIPPort(&addr2) == OFSocketAddressIPPort(&addr1))
 
-	addr3 = OFSocketAddressParseIP(@"127.0.0.1", port1 + 1);
+	addr3 = OFSocketAddressParseIP(@"127.0.0.1",
+	    OFSocketAddressIPPort(&addr1) + 1);
 
-	/*
-	 * TODO: Move those tests elsewhere as soon as the DNS resolving part
-	 *	 is no longer in OFUDPSocket.
-	 */
 	TEST(@"OFSocketAddressEqual()",
 	    OFSocketAddressEqual(&addr1, &addr2) &&
 	    !OFSocketAddressEqual(&addr1, &addr3))

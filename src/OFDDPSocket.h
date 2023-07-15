@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
  * @protocol OFDDPSocketDelegate OFDDPSocket.h ObjFW/OFDDPSocket.h
@@ -43,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note On some systems, packets received with the wrong protocol type just
  *	 get filtered by the kernel, however, on other systems, the packet is
  *	 queued up and will raise an @ref OFReadFailedException with the
- *	 @ref errNo set to `ENOMSG` when being received.
+ *	 @ref OFReadFailedException#errNo set to `ENOMSG` when being received.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
@@ -81,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       it, use 11 for compatibility with Open Transport.
  * @return The address on which this socket can be reached
  * @throw OFBindDDPSockeFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node

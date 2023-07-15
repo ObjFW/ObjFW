@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,10 +20,12 @@
 
 #import "amiga-glue.h"
 
+#define Class IntuitionClass
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
 #include <proto/exec.h>
+#undef Class
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
@@ -595,7 +597,7 @@ struct Resident resident = {
 	.rt_Pri = 0,
 	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
 	.rt_IdString = (char *)"ObjFWRT " VERSION_STRING
-	    " \xA9 2008-2022 Jonathan Schleifer",
+	    " \xA9 2008-2023 Jonathan Schleifer",
 	.rt_Init = &init_table,
 #ifdef OF_MORPHOS
 	.rt_Revision = OBJFWRT_LIB_MINOR,

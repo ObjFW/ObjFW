@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,6 +17,8 @@
 #import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+@class OFIRI;
 
 /** @file */
 
@@ -138,14 +140,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)decimalSeparator;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for localizations
+ * @param IRI The IRI to the directory to scan for localizations
  */
-+ (void)addLocalizationDirectory: (OFString *)path;
-#endif
++ (void)addLocalizationDirectoryIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes the current OFLocale.
@@ -159,14 +159,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)init;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Adds a directory to scan for localizations.
  *
- * @param path The path to the directory to scan for localizations 
+ * @param IRI The IRI to the directory to scan for localizations
  */
-- (void)addLocalizationDirectory: (OFString *)path;
-#endif
+- (void)addLocalizationDirectoryIRI: (OFIRI *)IRI;
 
 /**
  * @brief Returns the localized string for the specified ID, using the fallback

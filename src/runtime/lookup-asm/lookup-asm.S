@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,8 +18,8 @@
 #include "platform.h"
 
 #if defined(OF_ELF)
-# if defined(OF_X86_64)
-#  include "lookup-asm-x86_64-elf.S"
+# if defined(OF_AMD64)
+#  include "lookup-asm-amd64-elf.S"
 # elif defined(OF_X86)
 #  include "lookup-asm-x86-elf.S"
 # elif defined(OF_ARM64)
@@ -40,12 +40,12 @@
 #  include "lookup-asm-sparc-elf.S"
 # endif
 #elif defined(OF_MACH_O)
-# if defined(OF_X86_64)
-#  include "lookup-asm-x86_64-macho.S"
+# if defined(OF_AMD64)
+#  include "lookup-asm-amd64-macho.S"
 # endif
 #elif defined(OF_WINDOWS)
-# if defined(OF_X86_64)
-#  include "lookup-asm-x86_64-win64.S"
+# if defined(OF_AMD64)
+#  include "lookup-asm-amd64-win64.S"
 # elif defined(OF_X86)
 #  include "lookup-asm-x86-win32.S"
 # endif

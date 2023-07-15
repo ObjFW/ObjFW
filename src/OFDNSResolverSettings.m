@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,8 +32,12 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFOpenWindowsRegistryKeyFailedException.h"
+#endif
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUndefinedKeyException.h"
 
 #ifdef OF_WINDOWS
 # define interface struct
@@ -213,7 +217,7 @@ parseNetStackArray(OFString *string)
 		copy->_maxAttempts = _maxAttempts;
 		copy->_minNumberOfDotsInAbsoluteName =
 		    _minNumberOfDotsInAbsoluteName;
-		copy->_usesTCP = _usesTCP;
+		copy->_forcesTCP = _forcesTCP;
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
 	} @catch (id e) {
@@ -241,7 +245,7 @@ parseNetStackArray(OFString *string)
 	_timeout = 2;
 	_maxAttempts = 3;
 	_minNumberOfDotsInAbsoluteName = 1;
-	_usesTCP = false;
+	_forcesTCP = false;
 #ifndef OF_NINTENDO_3DS
 	_configReloadInterval = 2;
 #else
@@ -290,8 +294,10 @@ parseNetStackArray(OFString *string)
 		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -343,7 +349,7 @@ parseNetStackArray(OFString *string)
 
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
-			_usesTCP = true;
+			_forcesTCP = true;
 	} @catch (OFInvalidFormatException *e) {
 	}
 }
@@ -447,10 +453,15 @@ parseNetStackArray(OFString *string)
 
 	nameServers = [OFMutableArray array];
 
-	for (iter = &fixedInfo->DnsServerList; iter != NULL; iter = iter->Next)
-		[nameServers addObject:
+	for (iter = &fixedInfo->DnsServerList; iter != NULL;
+	    iter = iter->Next) {
+		OFString *nameServer =
 		    [OFString stringWithCString: iter->IpAddress.String
-				       encoding: encoding]];
+				       encoding: encoding];
+
+		if (nameServer.length > 0)
+			[nameServers addObject: nameServer];
+	}
 
 	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
@@ -493,8 +504,10 @@ parseNetStackArray(OFString *string)
 		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -602,10 +615,10 @@ parseNetStackArray(OFString *string)
 
 - (void)reload
 {
-	void *pool;
 #ifdef OF_WINDOWS
-	OFString *path;
+	OFString *path = nil;
 #endif
+	void *pool;
 
 	/*
 	 * TODO: Rather than reparsing every time, check what actually changed
@@ -622,14 +635,22 @@ parseNetStackArray(OFString *string)
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
-	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
-		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-				     @"Tcpip\\Parameters"
-		       accessRights: KEY_QUERY_VALUE
-			    options: 0];
-	path = [[[key stringForValueNamed: @"DataBasePath"]
-	    stringByAppendingPathComponent: @"hosts"]
-	    stringByExpandingWindowsEnvironmentStrings];
+	@try {
+		OFWindowsRegistryKey *key;
+
+		key = [[OFWindowsRegistryKey localMachineKey]
+		    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				      @"Tcpip\\Parameters"
+			accessRights: KEY_QUERY_VALUE
+			     options: 0];
+		path = [[[key stringForValueNamed: @"DataBasePath"]
+		   stringByAppendingPathComponent: @"hosts"]
+		   stringByExpandingWindowsEnvironmentStrings];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		/* Ignore */
+	} @catch (OFUndefinedKeyException *e) {
+		/* Ignore */
+	}
 
 	if (path != nil)
 		[self parseHosts: path];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -93,6 +93,6 @@ nilMethod:
 	mov	x0, #0
 	ret
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

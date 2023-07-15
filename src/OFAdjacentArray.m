@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,6 @@
 #import "OFData.h"
 #import "OFMutableAdjacentArray.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -146,39 +145,6 @@
 		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
 
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [self init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if ((![element.name isEqual: @"OFArray"] &&
-		    ![element.name isEqual: @"OFMutableArray"]) ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLElement *child in
-		    [element elementsForNamespace: OFSerializationNS]) {
-			void *pool2 = objc_autoreleasePoolPush();
-			id object;
-
-			object = child.objectByDeserializing;
-			[_array addItem: &object];
-			[object retain];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
 		[self release];
 		@throw e;
 	}

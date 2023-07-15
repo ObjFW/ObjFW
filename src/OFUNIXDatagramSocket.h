@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to bind to
  * @return The address on which this socket can be reached
  * @throw OFBindUNIXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)bindToPath: (OFString *)path;
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -242,13 +242,17 @@
 
 - (instancetype)accept
 {
-	OFStreamSocket *client = [[[[self class] alloc] init] autorelease];
+	OFStreamSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 

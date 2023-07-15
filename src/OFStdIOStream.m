@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -47,8 +47,10 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 # undef HAVE_ISATTY
 #endif
 
@@ -465,7 +467,7 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -480,7 +482,7 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 

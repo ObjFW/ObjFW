@@ -10,7 +10,6 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx	\
-	serialization_xml.m	\
 	testfile_bin.m		\
 	testfile_ini.m
 DISTCLEAN = Info.plist
@@ -21,16 +20,19 @@ SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
+       OFColorTests.m			\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFHMACTests.m			\
        OFINIFileTests.m			\
+       OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMD5HashTests.m			\
+       OFMatrix4x4Tests.m		\
        OFMemoryStreamTests.m		\
        OFMethodSignatureTests.m		\
        OFNotificationCenterTests.m	\
@@ -45,12 +47,10 @@ SRCS = ForwardingTests.m		\
        OFSHA384HashTests.m		\
        OFSHA512HashTests.m		\
        OFScryptTests.m			\
-       OFSerializationTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFSystemInfoTests.m		\
-       OFURITests.m			\
        OFValueTests.m			\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
@@ -63,7 +63,6 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
-       serialization_xml.m		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
@@ -92,8 +91,6 @@ IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
-serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini

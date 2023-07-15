@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -165,7 +165,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  *
  * When the application is about to be terminated,
- * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * @ref OFApplicationDelegate#applicationWillTerminate: will be called on the
  * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED

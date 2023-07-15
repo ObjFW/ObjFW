@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -55,19 +55,19 @@
 0:
 	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	lea	\notFound@GOTOFF(%eax), %eax
+	movl	\notFound@GOT(%eax), %eax
 	jmp	*%eax
 
 .LtaggedPointer_\name:
 	call	getEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	leal	objc_taggedPointerSecret@GOTOFF(%eax), %ecx
+	movl	objc_taggedPointerSecret@GOT(%eax), %ecx
 	xorl	(%ecx), %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	leal	objc_taggedPointerClasses@GOTOFF(%eax), %eax
+	movl	objc_taggedPointerClasses@GOT(%eax), %eax
 	movl	(%eax,%edx,2), %edx
 	movl	32(%edx), %edx
 
@@ -110,6 +110,6 @@ getEIP:
 	movl	(%esp), %eax
 	ret
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

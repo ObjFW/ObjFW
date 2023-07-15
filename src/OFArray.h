@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,7 +25,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -102,7 +101,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @note Subclasses must implement @ref count and @ref objectAtIndex:.
  */
 @interface OFArray OF_GENERIC(ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
@@ -403,6 +402,20 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  */
 - (OFArray OF_GENERIC(ObjectType) *)
     sortedArrayUsingSelector: (SEL)selector
+		     options: (OFArraySortOptions)options;
+
+/**
+ * @brief Returns a copy of the array sorted using the specified function and
+ *	  options.
+ *
+ * @param compare The function to use to sort the array
+ * @param context Context passed to the function to compare
+ * @param options The options to use when sorting the array
+ * @return A sorted copy of the array
+ */
+- (OFArray OF_GENERIC(ObjectType) *)
+    sortedArrayUsingFunction: (OFCompareFunction)compare
+		     context: (nullable void *)context
 		     options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
