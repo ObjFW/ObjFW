@@ -42,6 +42,9 @@
 # include <syslimits.h>
 #endif
 
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
@@ -471,27 +474,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
     OFIRI *IRI)
 {
 	OFString *path = IRI.fileSystemRepresentation;
-# ifndef OF_WINDOWS
-	OFStringEncoding encoding = [OFLocale encoding];
-	char destinationC[PATH_MAX];
-	ssize_t length;
-	OFString *destination;
-
-	length = readlink([path cStringWithEncoding: encoding], destinationC,
-	    PATH_MAX);
-
-	if (length < 0)
-		@throw [OFGetItemAttributesFailedException
-		    exceptionWithIRI: IRI
-			       errNo: errno];
-
-	destination = [OFString stringWithCString: destinationC
-					 encoding: encoding
-					   length: length];
-
-	[attributes setObject: destination
-		       forKey: OFFileSymbolicLinkDestination];
-# else
+# ifdef OF_WINDOWS
 	HANDLE handle;
 	OFString *destination;
 
@@ -542,6 +525,55 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	} @finally {
 		CloseHandle(handle);
 	}
+# elif defined(OF_HURD)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int fd;
+	OFMutableData *destinationData;
+	OFString *destination;
+
+	fd = open([path cStringWithEncoding: encoding], O_RDONLY | O_NOLINK);
+	if (fd == -1)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	@try {
+		char buffer[512];
+		ssize_t length;
+
+		destinationData = [OFMutableData data];
+		while ((length = read(fd, buffer, 512)) > 0)
+			[destinationData addItems: buffer count: length];
+	} @finally {
+		close(fd);
+	}
+
+	destination = [OFString stringWithCString: destinationData.items
+					 encoding: encoding
+					   length: destinationData.count];
+
+	[attributes setObject: destination
+		       forKey: OFFileSymbolicLinkDestination];
+# else
+	OFStringEncoding encoding = [OFLocale encoding];
+	char destinationC[PATH_MAX];
+	ssize_t length;
+	OFString *destination;
+
+	length = readlink([path cStringWithEncoding: encoding], destinationC,
+	    PATH_MAX);
+
+	if (length < 0)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	destination = [OFString stringWithCString: destinationC
+					 encoding: encoding
+					   length: length];
+
+	[attributes setObject: destination
+		       forKey: OFFileSymbolicLinkDestination];
 # endif
 }
 #endif

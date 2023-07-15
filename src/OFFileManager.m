@@ -173,6 +173,22 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]];
+# elif defined(OF_GLIBC)
+	char *buffer;
+	OFString *path;
+
+	if ((buffer = getcwd(NULL, 0)) == NULL)
+		@throw [OFGetCurrentDirectoryFailedException
+		    exceptionWithErrNo: errno];
+
+	@try {
+		path = [OFString stringWithCString: buffer
+					  encoding: [OFLocale encoding]];
+	} @finally {
+		free(buffer);
+	}
+
+	return path;
 # else
 	char buffer[PATH_MAX];
 

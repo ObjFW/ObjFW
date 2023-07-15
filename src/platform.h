@@ -155,6 +155,10 @@
 # define OF_HURD
 #endif
 
+#ifdef __GLIBC__
+# define OF_GLIBC
+#endif
+
 #if defined(__ELF__)
 # define OF_ELF
 #elif defined(__MACH__)
