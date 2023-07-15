@@ -234,6 +234,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -245,7 +246,7 @@ static struct {
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];

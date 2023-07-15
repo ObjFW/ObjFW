@@ -286,6 +286,7 @@
 			   objects: (id *)objects
 			     count: (int)count_
 {
+	static unsigned long dummyMutations;
 	size_t count = _array.count;
 
 	if (count > INT_MAX)
@@ -302,7 +303,7 @@
 
 	state->state = (unsigned long)count;
 	state->itemsPtr = (id *)_array.items;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	return (int)count;
 }

@@ -721,6 +721,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFRange range = OFMakeRange(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
@@ -736,7 +737,7 @@ static struct {
 
 	state->state = (unsigned long)(range.location + range.length);
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	return (int)range.length;
 }
