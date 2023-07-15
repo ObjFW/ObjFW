@@ -1,7 +1,6 @@
 include ../../extra.mk
 
 SUBDIRS = lookup-asm
-SUBDIRS_AFTER = ${LINKLIB}
 DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
