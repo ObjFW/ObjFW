@@ -93,6 +93,7 @@ Linux
   * Architectures: Alpha, AMD64, ARMv6, ARMv7, ARM64, Itanium, m68k, MIPS (O32),
                    MIPS64 (N64), RISC-V 64, PowerPC, S390x, SuperH-4, x86
   * Compilers: Clang 3.0-10.0, GCC 4.6-10.0
+  * C libraries: glibc, musl
   * Runtimes: ObjFW
 
 
