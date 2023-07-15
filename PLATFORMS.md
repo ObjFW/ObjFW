@@ -59,6 +59,17 @@ FreeBSD
   * Runtimes: ObjFW
 
 
+GNU/Hurd
+--------
+
+  * OS Versions: 0.9
+  * Architectures: i686
+  * Compilers: Clang 14.0.6
+  * Runtimes: ObjFW
+  * Limitations: No support for UNIX sockets (`AF_UNIX` with `SOCK_DGRAM` is
+                 currently broken in Hurd)
+
+
 Haiku
 -----
 
