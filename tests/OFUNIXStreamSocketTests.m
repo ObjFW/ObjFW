@@ -81,8 +81,8 @@ static OFString *const module = @"OFUNIXStreamSocket";
 		    [sockClient readIntoBuffer: buffer length: 5] == 5 &&
 		    memcmp(buffer, "Hello", 5) == 0)
 
-		TEST(@"-[remoteAddress]",
-		    OFSocketAddressUNIXPath(sockAccepted.remoteAddress) == nil)
+		TEST(@"-[remoteAddress]", OFSocketAddressUNIXPath(
+		    sockAccepted.remoteAddress).length == 0)
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];

@@ -979,6 +979,8 @@ OFSocketAddressString(const OFSocketAddress *address)
 		return IPv4String(address);
 	case OFSocketAddressFamilyIPv6:
 		return IPv6String(address);
+	case OFSocketAddressFamilyUNIX:
+		return OFSocketAddressUNIXPath(address);
 	case OFSocketAddressFamilyIPX:
 		return IPXString(address);
 	case OFSocketAddressFamilyAppleTalk:
@@ -1029,9 +1031,6 @@ OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 	for (socklen_t i = 0; i < length; i++)
 		if (address->sockaddr.un.sun_path[i] == 0)
 			length = i;
-
-	if (length <= 0)
-		return nil;
 
 	return [OFString stringWithCString: address->sockaddr.un.sun_path
 				  encoding: [OFLocale encoding]

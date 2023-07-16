@@ -198,34 +198,39 @@
 #endif
 
 	if (sender != NULL) {
-		switch (((struct sockaddr *)&sender->sockaddr)->sa_family) {
-		case AF_INET:
-			sender->family = OFSocketAddressFamilyIPv4;
-			break;
+		struct sockaddr *sa = (struct sockaddr *)&sender->sockaddr;
+
+		if (sender->length >= sizeof(sa->sa_family)) {
+			switch (sa->sa_family) {
+			case AF_INET:
+				sender->family = OFSocketAddressFamilyIPv4;
+				break;
 #ifdef OF_HAVE_IPV6
-		case AF_INET6:
-			sender->family = OFSocketAddressFamilyIPv6;
-			break;
+			case AF_INET6:
+				sender->family = OFSocketAddressFamilyIPv6;
+				break;
 #endif
 #ifdef OF_HAVE_UNIX_SOCKETS
-		case AF_UNIX:
-			sender->family = OFSocketAddressFamilyUNIX;
-			break;
+			case AF_UNIX:
+				sender->family = OFSocketAddressFamilyUNIX;
+				break;
 #endif
 #ifdef OF_HAVE_IPX
-		case AF_IPX:
-			sender->family = OFSocketAddressFamilyIPX;
-			break;
+			case AF_IPX:
+				sender->family = OFSocketAddressFamilyIPX;
+				break;
 #endif
 #ifdef OF_HAVE_APPLETALK
-		case AF_APPLETALK:
-			sender->family = OFSocketAddressFamilyAppleTalk;
-			break;
+			case AF_APPLETALK:
+				sender->family = OFSocketAddressFamilyAppleTalk;
+				break;
 #endif
-		default:
+			default:
+				sender->family = OFSocketAddressFamilyUnknown;
+				break;
+			}
+		} else
 			sender->family = OFSocketAddressFamilyUnknown;
-			break;
-		}
 	}
 
 	return ret;

@@ -318,7 +318,7 @@ extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
  * @param address The address on which to get the UNIX socket path
  * @return The UNIX socket path
  */
-extern OFString *_Nullable OFSocketAddressUNIXPath(
+extern OFString *OFSocketAddressUNIXPath(
     const OFSocketAddress *_Nonnull address);
 
 /**
