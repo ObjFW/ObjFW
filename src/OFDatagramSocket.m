@@ -200,7 +200,7 @@
 	if (sender != NULL) {
 		struct sockaddr *sa = (struct sockaddr *)&sender->sockaddr;
 
-		if (sender->length >= sizeof(sa->sa_family)) {
+		if (sender->length >= (socklen_t)sizeof(sa->sa_family)) {
 			switch (sa->sa_family) {
 			case AF_INET:
 				sender->family = OFSocketAddressFamilyIPv4;
