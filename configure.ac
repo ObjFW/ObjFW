@@ -1992,7 +1992,13 @@ AC_COMPILE_IFELSE([
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
+
+	AC_ARG_ENABLE(werror,
+		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
+	AS_IF([test x"$enable_werror" != x"no"], [
+		OBJCFLAGS="$OBJCFLAGS -Werror"
+	])
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_COMPILE_IFELSE([
