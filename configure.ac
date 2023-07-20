@@ -1991,7 +1991,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_ARG_ENABLE(werror,
 		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
-	AS_IF([test x"$enable_werror" != x"no"], [
+	AS_IF([test x"$enable_werror" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -Werror"
 	])
 
