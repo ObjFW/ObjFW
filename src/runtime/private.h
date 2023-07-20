@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,7 +16,6 @@
 #include "config.h"
 
 #import "macros.h"
-#import "platform.h"
 
 #if !defined(__has_feature) || !__has_feature(nullability)
 # ifndef _Nonnull
@@ -216,71 +215,6 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
-#if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
-    defined(OBJC_COMPILING_AMIGA_LINKLIB)
-struct objc_libc {
-	void *_Nullable (*_Nonnull malloc)(size_t);
-	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
-	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
-	void (*_Nonnull free)(void *_Nullable);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
-# else
-	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
-# endif
-	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
-	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
-	    void *_Nonnull);
-	uintptr_t (*_Nonnull _Unwind_GetRegionStart)(void *_Nonnull);
-	uintptr_t (*_Nonnull _Unwind_GetDataRelBase)(void *_Nonnull);
-	uintptr_t (*_Nonnull _Unwind_GetTextRelBase)(void *_Nonnull);
-	uintptr_t (*_Nonnull _Unwind_GetIP)(void *_Nonnull);
-	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
-	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
-	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
-# else
-	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
-# endif
-# ifdef OF_AMIGAOS_M68K
-	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
-	    void *_Nonnull);
-	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
-# endif
-# ifdef OF_MORPHOS
-	void (*_Nonnull __register_frame)(void *_Nonnull);
-	void (*_Nonnull __deregister_frame)(void *_Nonnull);
-# endif
-# ifdef OF_AMIGAOS_M68K
-	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
-	    const char *_Nonnull restrict fmt, va_list args);
-# endif
-	int (*_Nonnull atexit)(void (*_Nonnull)(void));
-	void (*_Nonnull exit)(int);
-};
-#endif
-
-#ifdef OBJC_COMPILING_AMIGA_LIBRARY
-# if defined(__MORPHOS__)
-#  include <ppcinline/macros.h>
-#  define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
-# else
-#  define OBJC_M68K_ARG(type, name, reg)	\
-	register type reg_##name __asm__(#reg);	\
-	type name = reg_##name;
-# endif
-
-extern bool objc_init(unsigned int, struct objc_libc *);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
-	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)
-# else
-#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
-	__gnu_objc_personality_v0(version, actions, *exClass, ex, ctx)
-# endif
-#endif
-
 extern void objc_registerAllCategories(struct objc_symtab *_Nonnull);
 extern struct objc_category *_Nullable *_Nullable
     objc_categoriesForClass(Class _Nonnull);
@@ -358,7 +292,7 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 	    __VA_ARGS__)
 
 #if defined(OF_ELF)
-# if defined(OF_X86_64) || defined(OF_X86) || \
+# if defined(OF_AMD64) || defined(OF_X86) || \
     defined(OF_POWERPC64) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
@@ -366,7 +300,7 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(OF_WINDOWS)
-# if defined(OF_X86_64) || defined(OF_X86)
+# if defined(OF_AMD64) || defined(OF_X86)
 #  define OF_ASM_LOOKUP
 # endif
 #endif

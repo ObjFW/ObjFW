@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,24 +17,24 @@
 
 #include <string.h>
 
-#import "OFString.h"
-#import "OFArray.h"
 #import "OFApplication.h"
-#import "OFURI.h"
+#import "OFArray.h"
+#import "OFFile.h"
+#import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
-#import "OFHTTPClient.h"
-#import "OFFile.h"
+#import "OFIRI.h"
 #import "OFStdIOStream.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
 #import "TableGenerator.h"
 #import "copyright.h"
 
-static OFString *const unicodeDataURI =
+static OFString *const unicodeDataIRI =
     @"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
-static OFString *const caseFoldingURI =
+static OFString *const caseFoldingIRI =
     @"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
 
 OF_APPLICATION_DELEGATE(TableGenerator)
@@ -62,14 +62,14 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	return self;
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFHTTPRequest *request;
 
 	[OFStdOut writeString: @"Downloading UnicodeData.txt…"];
 	_state = stateUnicodeData;
-	request = [OFHTTPRequest requestWithURI:
-	    [OFURI URIWithString: unicodeDataURI]];
+	request = [OFHTTPRequest requestWithIRI:
+	    [OFIRI IRIWithString: unicodeDataIRI]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
@@ -168,8 +168,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[OFStdOut writeString: @"Downloading CaseFolding.txt…"];
 	_state = stateCaseFolding;
-	request = [OFHTTPRequest requestWithURI:
-	    [OFURI URIWithString: caseFoldingURI]];
+	request = [OFHTTPRequest requestWithIRI:
+	    [OFIRI IRIWithString: caseFoldingIRI]];
 	[_HTTPClient asyncPerformRequest: request];
 }
 
@@ -270,15 +270,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)writeFiles
 {
-	OFURI *URI;
+	OFIRI *IRI;
 
 	[OFStdOut writeString: @"Writing files…"];
 
-	URI = [OFURI fileURIWithPath: @"../../src/unicode.m"];
-	[self writeTablesToFile: URI.fileSystemRepresentation];
+	IRI = [OFIRI fileIRIWithPath: @"../../src/unicode.m"];
+	[self writeTablesToFile: IRI.fileSystemRepresentation];
 
-	URI = [OFURI fileURIWithPath: @"../../src/unicode.h"];
-	[self writeHeaderToFile: URI.fileSystemRepresentation];
+	IRI = [OFIRI fileIRIWithPath: @"../../src/unicode.h"];
+	[self writeHeaderToFile: IRI.fileSystemRepresentation];
 
 	[OFStdOut writeLine: @" done"];
 

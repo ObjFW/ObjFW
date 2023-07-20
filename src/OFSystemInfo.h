@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,7 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFIRI;
 
 /**
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
@@ -36,13 +37,15 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
-@property (class, readonly, nullable, nonatomic) OFURI *userDataURI;
-@property (class, readonly, nullable, nonatomic) OFURI *userConfigURI;
-@property (class, readonly, nullable, nonatomic) OFURI *temporaryDirectoryURI;
+@property (class, readonly, nullable, nonatomic) OFIRI *userDataIRI;
+@property (class, readonly, nullable, nonatomic) OFIRI *userConfigIRI;
+@property (class, readonly, nullable, nonatomic) OFIRI *temporaryDirectoryIRI;
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
 @property (class, readonly, nullable, nonatomic) OFString *CPUModel;
-# if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
+# if defined(OF_AMD64) || defined(OF_X86) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsMMX;
+@property (class, readonly, nonatomic) bool supports3DNow;
+@property (class, readonly, nonatomic) bool supportsEnhanced3DNow;
 @property (class, readonly, nonatomic) bool supportsSSE;
 @property (class, readonly, nonatomic) bool supportsSSE2;
 @property (class, readonly, nonatomic) bool supportsSSE3;
@@ -126,7 +129,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user data for the application can be stored
  */
-+ (nullable OFURI *)userDataURI;
++ (nullable OFIRI *)userDataIRI;
 
 /**
  * @brief Returns the path where user configuration for the application can be
@@ -141,7 +144,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return The path where user configuration for the application can be stored
  */
-+ (nullable OFURI *)userConfigURI;
++ (nullable OFIRI *)userConfigIRI;
 
 /**
  * @brief Returns a path where temporary files for can be stored.
@@ -159,7 +162,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return A path where temporary files can be stored
  */
-+ (nullable OFURI *)temporaryDirectoryURI;
++ (nullable OFIRI *)temporaryDirectoryIRI;
 
 /**
  * @brief Returns the vendor of the CPU.
@@ -179,22 +182,40 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)CPUModel;
 
-#if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
+#if defined(OF_AMD64) || defined(OF_X86) || defined(DOXYGEN)
 /**
  * @brief Returns whether the CPU supports MMX.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports MMX
  */
 + (bool)supportsMMX;
 
 /**
+ * @brief Returns whether the CPU supports 3DNow!.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports 3DNow!
+ */
++ (bool)supports3DNow;
+
+/**
+ * @brief Returns whether the CPU supports enhanced 3DNow!.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports enhanced 3DNow!
+ */
++ (bool)supportsEnhanced3DNow;
+
+/**
  * @brief Returns whether the CPU supports SSE.
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE
  */
@@ -205,7 +226,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE2
  */
@@ -216,7 +237,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE3
  */
@@ -227,7 +248,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSSE3
  */
@@ -238,7 +259,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE4.1
  */
@@ -249,7 +270,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE4.2
  */
@@ -260,7 +281,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AVX
  */
@@ -271,7 +292,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @warning This method only checks CPU support and assumes OS support!
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AVX2
  */
@@ -280,7 +301,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports AES-NI.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports AES-NI
  */
@@ -289,7 +310,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports Intel SHA Extensions.
  *
- * @note This method is only available on x86 and x86_64.
+ * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports Intel SHA Extensions
  */
@@ -323,3 +344,7 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 OF_ASSUME_NONNULL_END
+
+#ifdef OF_HAVE_SOCKETS
+# import "OFSystemInfo+NetworkInterfaces.h"
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -201,6 +201,17 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  * @param options The options to use when sorting the array
  */
 - (void)sortUsingSelector: (SEL)selector options: (OFArraySortOptions)options;
+
+/**
+ * @brief Sorts the array using the specified function and options.
+ *
+ * @param compare The function to use to sort the array
+ * @param context Context passed to the function to compare
+ * @param options The options to use when sorting the array
+ */
+- (void)sortUsingFunction: (OFCompareFunction)compare
+		  context: (nullable void *)context
+		  options: (OFArraySortOptions)options;
 
 #ifdef OF_HAVE_BLOCKS
 /**

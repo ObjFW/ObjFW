@@ -32,7 +32,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: clang
 BuildRequires: make
-BuildRequires: pkgconfig(openssl)
+BuildRequires: pkgconfig(gnutls)
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
@@ -89,7 +89,7 @@ ObjFW's Objective-C runtime library.
 
 %package -n %{libobjfwtls_pkgname}
 Summary:       TLS support for ObjFW
-Requires:      openssl%{_isa} >= 1.1.1
+Requires:      gnutls%{_isa} >= 3.0.5
 
 %description -n %{libobjfwtls_pkgname}
 The %{libobjfwtls_pkgname} package contains TLS support for ObjFW
@@ -138,10 +138,10 @@ Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfwtls_pkgname}%{_isa} = %{version}-%{release}
 
 %description -n ofhttp
-ofhttp is a command line downloader for HTTP and HTTPS (via ObjOpenSSL) using
-ObjFW's OFHTTPClient class. It supports all features one would expect from a
-modern command line downloader such as resuming of downloads, using a SOCKS5
-proxy, a modern terminal-based UI, etc.
+ofhttp is a command line downloader for HTTP and HTTPS using ObjFW's
+OFHTTPClient class. It supports all features one would expect from a modern
+command line downloader such as resuming of downloads, using a SOCKS5 proxy, a
+modern terminal-based UI, etc.
 
 %prep
 %autosetup
@@ -165,84 +165,80 @@ make -C tests run
 %endif
 
 %files
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
 
 %files -n %{libobjfw_pkgname}
+%license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
 %{_libdir}/libobjfw.so.%{libobjfw_major}
 %{_libdir}/libobjfw.so.%{libobjfw_major}.%{libobjfw_minor}.0
-%license LICENSE.QPL
-%license LICENSE.GPLv3
-%license LICENSE.GPLv2
 
 %files -n %{libobjfw_pkgname}-devel
-%{_libdir}/libobjfw.so
-%dir %{_includedir}/ObjFW
-%{_includedir}/ObjFW
+%license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
 %{_bindir}/objfw-compile
 %{_bindir}/objfw-config
+%{_bindir}/objfw-embed
 %{_bindir}/objfw-new
-%license LICENSE.QPL
-%license LICENSE.GPLv3
-%license LICENSE.GPLv2
+%{_includedir}/ObjFW
+%{_libdir}/libobjfw.so
 
 %files -n %{libobjfwrt_pkgname}
+%license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
 %{_libdir}/libobjfwrt.so.%{libobjfwrt_major}
 %{_libdir}/libobjfwrt.so.%{libobjfwrt_major}.%{libobjfwrt_minor}.0
-%license LICENSE.QPL
-%license LICENSE.GPLv3
-%license LICENSE.GPLv2
 
 %files -n %{libobjfwrt_pkgname}-devel
-%{_libdir}/libobjfwrt.so
-%{_includedir}/ObjFWRT/ObjFWRT.h
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_includedir}/ObjFWRT
+%{_libdir}/libobjfwrt.so
 
 %files -n %{libobjfwtls_pkgname}
+%license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
 %{_libdir}/libobjfwtls.so.%{libobjfwtls_major}
 %{_libdir}/libobjfwtls.so.%{libobjfwtls_major}.%{libobjfwtls_minor}.0
-%license LICENSE.QPL
-%license LICENSE.GPLv3
-%license LICENSE.GPLv2
 
 %files -n %{libobjfwtls_pkgname}-devel
-%{_libdir}/libobjfwtls.so
-%{_includedir}/ObjFWTLS/ObjFWTLS.h
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_includedir}/ObjFWTLS
+%{_libdir}/libobjfwtls.so
 
 %files -n ofarc
-%{_bindir}/ofarc
-%{_datadir}/ofarc/lang/de.json
-%{_datadir}/ofarc/lang/languages.json
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_bindir}/ofarc
+%{_datadir}/ofarc
 
 %files -n ofdns
-%{_bindir}/ofdns
-%{_datadir}/ofdns/lang/de.json
-%{_datadir}/ofdns/lang/languages.json
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_bindir}/ofdns
+%{_datadir}/ofdns
 
 %files -n ofhash
-%{_bindir}/ofhash
-%{_datadir}/ofhash/lang/de.json
-%{_datadir}/ofhash/lang/languages.json
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_bindir}/ofhash
+%{_datadir}/ofhash
 
 %files -n ofhttp
-%{_bindir}/ofhttp
-%{_datadir}/ofhttp/lang/de.json
-%{_datadir}/ofhttp/lang/languages.json
-%license LICENSE.QPL
-%license LICENSE.GPLv3
 %license LICENSE.GPLv2
+%license LICENSE.GPLv3
+%license LICENSE.QPL
+%{_bindir}/ofhttp
+%{_datadir}/ofhttp

@@ -1,11 +1,10 @@
 include ../extra.mk
 
-SUBDIRS += ${OBJFW_NEW}	\
-	   ${OFARC}	\
-	   ${OFDNS}	\
-	   ${OFHASH}	\
-	   ${OFHTTP}	\
-	   completions
+SUBDIRS += ${OBJFW_NEW}		\
+	   ${OFARC}		\
+	   ${OFDNS}		\
+	   ${OFHASH}		\
+	   ${OFHTTP}
 
 include ../buildsys.mk
 

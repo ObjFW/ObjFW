@@ -10,7 +10,6 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx	\
-	serialization_xml.m	\
 	testfile_bin.m		\
 	testfile_ini.m
 DISTCLEAN = Info.plist
@@ -21,16 +20,19 @@ SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
        OFCharacterSetTests.m		\
+       OFColorTests.m			\
        OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFHMACTests.m			\
        OFINIFileTests.m			\
+       OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMD5HashTests.m			\
+       OFMatrix4x4Tests.m		\
        OFMemoryStreamTests.m		\
        OFMethodSignatureTests.m		\
        OFNotificationCenterTests.m	\
@@ -45,12 +47,10 @@ SRCS = ForwardingTests.m		\
        OFSHA384HashTests.m		\
        OFSHA512HashTests.m		\
        OFScryptTests.m			\
-       OFSerializationTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFSystemInfoTests.m		\
-       OFURITests.m			\
        OFValueTests.m			\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
@@ -63,7 +63,6 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
-       serialization_xml.m		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
@@ -75,8 +74,10 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
@@ -90,8 +91,6 @@ IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
-serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini
@@ -106,7 +105,6 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
-	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -138,10 +136,6 @@ run:
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
 		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
-	fi
-	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
-		${LN_S} ../src/runtime/${OBJFWRT_AMIGA_LIB} \
-		    ${OBJFWRT_AMIGA_LIB}; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \

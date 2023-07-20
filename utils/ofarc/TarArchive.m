@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFApplication.h"
 #import "OFDate.h"
 #import "OFFileManager.h"
@@ -26,6 +28,8 @@
 
 #import "TarArchive.h"
 #import "OFArc.h"
+
+#import "OFSetItemAttributesFailedException.h"
 
 static OFArc *app;
 
@@ -56,8 +60,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation TarArchive

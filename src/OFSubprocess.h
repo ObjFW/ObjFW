@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -194,6 +194,8 @@ OF_SUBCLASSING_RESTRICTED
  * This method needs to be called for some programs before data can be read,
  * since some programs don't start processing before the write direction is
  * closed.
+ *
+ * @throw OFNotOpenException The subprocess was already closed
  */
 - (void)closeForWriting;
 
@@ -202,6 +204,9 @@ OF_SUBCLASSING_RESTRICTED
  *
  * If the subprocess has already exited, this returns the exit status
  * immediately.
+ *
+ * @return The status code of the subprocess
+ * @throw OFNotOpenException The subprocess was already closed
  */
 - (int)waitForTermination;
 @end

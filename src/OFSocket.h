@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,14 +35,19 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
-#ifdef OF_HAVE_NETIPX_IPX_H
-# include <netipx/ipx.h>
-#endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
 #ifdef OF_HAVE_AFUNIX_H
 # include <afunix.h>
+#endif
+#ifdef OF_HAVE_NETIPX_IPX_H
+# include <netipx/ipx.h>
+#endif
+#if defined(OF_HAVE_NETAT_APPLETALK_H)
+# include <netat/appletalk.h>
+#elif defined(OF_HAVE_NETATALK_AT_H)
+# include <netatalk/at.h>
 #endif
 
 #ifdef OF_WINDOWS
@@ -51,9 +56,10 @@
 # ifdef OF_HAVE_IPX
 #  include <wsipx.h>
 # endif
+# ifdef OF_HAVE_APPLETALK
+#  include <atalkwsh.h>
+# endif
 #endif
-
-/** @file */
 
 #ifdef OF_WII
 # include <network.h>
@@ -66,6 +72,8 @@
 #import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
 
 #ifndef OF_WINDOWS
 typedef int OFSocketHandle;
@@ -103,6 +111,8 @@ typedef enum {
 	OFSocketAddressFamilyUNIX,
 	/** IPX */
 	OFSocketAddressFamilyIPX,
+	/** AppleTalk */
+	OFSocketAddressFamilyAppleTalk,
 	/** Any address family */
 	OFSocketAddressFamilyAny = 255
 } OFSocketAddressFamily;
@@ -126,8 +136,10 @@ struct sockaddr_un {
 };
 #endif
 
-#ifndef OF_HAVE_IPX
+#ifndef IPX_NODE_LEN
 # define IPX_NODE_LEN 6
+#endif
+#if !defined(OF_HAVE_IPX)
 struct sockaddr_ipx {
 	sa_family_t sipx_family;
 	uint32_t sipx_network;
@@ -135,13 +147,31 @@ struct sockaddr_ipx {
 	uint16_t sipx_port;
 	uint8_t sipx_type;
 };
-#endif
-#ifdef OF_WINDOWS
+#elif defined(OF_WINDOWS)
 # define IPX_NODE_LEN 6
 # define sipx_family sa_family
 # define sipx_network sa_netnum
 # define sipx_node sa_nodenum
 # define sipx_port sa_socket
+#elif defined(OF_FREEBSD)
+# define sipx_network sipx_addr.x_net.c_net
+# define sipx_node sipx_addr.x_host.c_host
+#endif
+
+#ifndef OF_HAVE_APPLETALK
+struct sockaddr_at {
+	sa_family_t sat_family;
+	uint8_t sat_port;
+	uint16_t sat_net;
+	uint8_t sat_node;
+};
+#else
+# ifdef OF_WINDOWS
+#  define sat_port sat_socket
+# else
+#  define sat_net sat_addr.s_net
+#  define sat_node sat_addr.s_node
+# endif
 #endif
 
 /**
@@ -160,6 +190,14 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_in6 in6;
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
+		struct sockaddr_at at;
+#ifdef OF_HAVE_SOCKADDR_STORAGE
+		/*
+		 * Required to make the ABI stable in case we want to add more
+		 * address types later.
+		 */
+		struct sockaddr_storage storage;
+#endif
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -207,7 +245,7 @@ extern OFSocketAddress OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
 extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
 
 /**
- * @brief Creates an IPX address for the specified node, network and port.
+ * @brief Creates an IPX address for the specified network, node and port.
  *
  * @param network The IPX network
  * @param node The node in the IPX network
@@ -216,6 +254,18 @@ extern OFSocketAddress OFSocketAddressMakeUNIX(OFString *path);
  */
 extern OFSocketAddress OFSocketAddressMakeIPX(uint32_t network,
     const unsigned char node[_Nonnull IPX_NODE_LEN], uint16_t port);
+
+/**
+ * @brief Creates an AppleTalk address for the specified network, node and port.
+ *
+ * @param network The AppleTalk network
+ * @param node The node in the AppleTalk network
+ * @param port The AppleTalk (sometimes called socket number) on the node
+ * @return An AppleTalk socket address with the specified node, network and
+ *	   port.
+ */
+extern OFSocketAddress OFSocketAddressMakeAppleTalk(uint16_t network,
+    uint8_t node, uint8_t port);
 
 /**
  * @brief Compares two OFSocketAddress for equality.
@@ -240,29 +290,27 @@ extern unsigned long OFSocketAddressHash(
  * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @return The address as an IP string
+ * @return The address as an IP string, without the port
  */
 extern OFString *_Nonnull OFSocketAddressString(
     const OFSocketAddress *_Nonnull address);
 
 /**
- * @brief Sets the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Sets the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to set the port
  * @param port The port to set on the address
  */
-extern void OFSocketAddressSetPort(OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressSetIPPort(OFSocketAddress *_Nonnull address,
     uint16_t port);
 
 /**
- * @brief Returns the port of the specified @ref OFSocketAddress, independent of
- *	  the address family used.
+ * @brief Returns the IP port of the specified @ref OFSocketAddress.
  *
  * @param address The address on which to get the port
  * @return The port of the address
  */
-extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
+extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
 
 /**
  * @brief Gets the UNIX socket path of the specified @ref OFSocketAddress.
@@ -270,7 +318,7 @@ extern uint16_t OFSocketAddressPort(const OFSocketAddress *_Nonnull address);
  * @param address The address on which to get the UNIX socket path
  * @return The UNIX socket path
  */
-extern OFString *_Nullable OFSocketAddressUNIXPath(
+extern OFString *OFSocketAddressUNIXPath(
     const OFSocketAddress *_Nonnull address);
 
 /**
@@ -306,8 +354,79 @@ extern void OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address,
  * @param address The address on which to get the IPX node
  * @param node A byte array to store the IPX node of the address
  */
-extern void OFSocketAddressIPXNode(const OFSocketAddress *_Nonnull address,
+extern void OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address,
     unsigned char node[_Nonnull IPX_NODE_LEN]);
+
+/**
+ * @brief Sets the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetIPXPort(OFSocketAddress *_Nonnull address,
+    uint16_t port);
+
+/**
+ * @brief Returns the IPX port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint16_t OFSocketAddressIPXPort(const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk network
+ * @param network The AppleTalk network to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNetwork(
+    OFSocketAddress *_Nonnull address, uint16_t network);
+
+/**
+ * @brief Returns the AppleTalk network of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk network
+ * @return The AppleTalk network of the address
+ */
+extern uint16_t OFSocketAddressAppleTalkNetwork(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the AppleTalk node
+ * @param node The AppleTalk node to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address,
+    uint8_t node);
+
+/**
+ * @brief Gets the AppleTalk node of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the AppleTalk node
+ * @return The AppleTalk node of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkNode(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Sets the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
+    uint8_t port);
+
+/**
+ * @brief Returns the AppleTalk port of the specified @ref OFSocketAddress.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint8_t OFSocketAddressAppleTalkPort(
+    const OFSocketAddress *_Nonnull address);
 
 extern bool OFSocketInit(void);
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)

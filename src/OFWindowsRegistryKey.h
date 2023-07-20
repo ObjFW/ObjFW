@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -79,6 +79,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param options Please refer to the `RegOpenKeyEx()` documentation for
  *		  `ulOptions`. Usually 0.
  * @return The subkey with the specified path
+ * @throw OFOpenWindowsRegistryKeyFailedException Opening the key failed
  */
 - (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
 			      accessRights: (REGSAM)accessRights
@@ -100,6 +101,7 @@ OF_SUBCLASSING_RESTRICTED
  *		      refer to the `RegCreateKeyEx()` documentation for
  *		      `lpdwDisposition`.
  * @return The subkey with the specified path
+ * @throw OFCreateWindowsRegistryKeyFailedException Creating the key failed
  */
 - (OFWindowsRegistryKey *)
     createSubkeyAtPath: (OFString *)path
@@ -114,6 +116,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The data for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
  */
 - (nullable OFData *)dataForValueNamed: (nullable OFString *)name
 				  type: (nullable DWORD *)type;
@@ -124,6 +127,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param data The data to set the value to
  * @param name The name of the value to set
  * @param type The type for the value
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setData: (nullable OFData *)data
   forValueNamed: (nullable OFString *)name
@@ -134,6 +138,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the value to return
  * @return The string for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFInvalidEncodingException The encoding of the value is invalid
  */
 - (nullable OFString *)stringForValueNamed: (nullable OFString *)name;
 
@@ -143,6 +149,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFInvalidEncodingException The encoding of the value is invalid
  */
 - (nullable OFString *)stringForValueNamed: (nullable OFString *)name
 				      type: (nullable DWORD *)type;
@@ -152,6 +160,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param string The string to set the value to
  * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name;
@@ -162,6 +171,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string to set the value to
  * @param name The name of the value to set
  * @param type The type for the value
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name
@@ -172,6 +182,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the value to return
  * @return The DWORD for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFUndefinedKeyException There is no value with the specified key
  */
 - (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
 
@@ -180,6 +192,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param dword The DWORD to set the value to
  * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
 
@@ -188,6 +201,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the value to return
  * @return The QWORD for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFUndefinedKeyException There is no value with the specified key
  */
 - (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
 
@@ -196,6 +211,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param qword The QWORD to set the value to
  * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
 
@@ -203,6 +219,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Deletes the specified value.
  *
  * @param name The value to delete
+ * @throw OFDeleteWindowsRegistryValueFailedException Deleting the value failed
  */
 - (void)deleteValueNamed: (nullable OFString *)name;
 
@@ -210,6 +227,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Deletes the specified subkey.
  *
  * @param subkeyPath The path of the subkey to delete
+ * @throw OFDeleteWindowsRegistryKeyFailedException Deleting the key failed
  */
 - (void)deleteSubkeyAtPath: (OFString *)subkeyPath;
 @end

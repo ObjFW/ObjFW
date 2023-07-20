@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -585,16 +585,16 @@ struct {
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	[self finishInitialization];
-	[self writeToURI: URI];
+	[self writeToIRI: IRI];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
-	[self writeToURI: URI encoding: encoding];
+	[self writeToIRI: IRI encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

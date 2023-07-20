@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,7 +18,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFURI;
 
 /**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h

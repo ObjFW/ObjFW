@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_POLL_H
@@ -192,7 +191,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 				    errNo: errno];
 
 	for (size_t i = 0; i < nFDs; i++) {
-		assert(FDs[i].fd <= _maxFD);
+		OFAssert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
 			void *pool2;

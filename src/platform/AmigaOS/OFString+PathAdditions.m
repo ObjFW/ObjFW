@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
-#import "OFFileURIHandler.h"
+#import "OFFileIRIHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -293,10 +293,10 @@ int _OFString_PathAdditions_reference;
 - (bool)of_isDirectoryPath
 {
 	return ([self hasSuffix: @"/"] || [self hasSuffix: @":"] ||
-	    [OFFileURIHandler of_directoryExistsAtPath: self]);
+	    [OFFileIRIHandler of_directoryExistsAtPath: self]);
 }
 
-- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+- (OFString *)of_pathToIRIPathWithPercentEncodedHost:
     (OFString **)percentEncodedHost
 {
 	OFArray OF_GENERIC(OFString *) *components = self.pathComponents;
@@ -319,7 +319,7 @@ int _OFString_PathAdditions_reference;
 	return ret;
 }
 
-- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+- (OFString *)of_IRIPathToPathWithPercentEncodedHost:
     (OFString *)percentEncodedHost
 {
 	OFString *path = self;
@@ -353,7 +353,7 @@ int _OFString_PathAdditions_reference;
 	return [OFString pathWithComponents: components];
 }
 
-- (OFString *)of_pathComponentToURIPathComponent
+- (OFString *)of_pathComponentToIRIPathComponent
 {
 	return self;
 }

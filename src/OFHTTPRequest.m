@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,11 +18,11 @@
 #include <string.h>
 
 #import "OFHTTPRequest.h"
-#import "OFString.h"
-#import "OFURI.h"
-#import "OFDictionary.h"
-#import "OFData.h"
 #import "OFArray.h"
+#import "OFData.h"
+#import "OFDictionary.h"
+#import "OFIRI.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -78,19 +78,19 @@ OFHTTPRequestMethodParseName(OFString *string)
 }
 
 @implementation OFHTTPRequest
-@synthesize URI = _URI, method = _method, headers = _headers;
+@synthesize IRI = _IRI, method = _method, headers = _headers;
 
-+ (instancetype)requestWithURI: (OFURI *)URI
++ (instancetype)requestWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithURI: URI] autorelease];
+	return [[[self alloc] initWithIRI: IRI] autorelease];
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
 	@try {
-		_URI = [URI copy];
+		_IRI = [IRI copy];
 		_method = OFHTTPRequestMethodGet;
 		_protocolVersion.major = 1;
 		_protocolVersion.minor = 1;
@@ -109,7 +109,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 	[_headers release];
 
 	[super dealloc];
@@ -133,7 +133,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (id)copy
 {
-	OFHTTPRequest *copy = [[OFHTTPRequest alloc] initWithURI: _URI];
+	OFHTTPRequest *copy = [[OFHTTPRequest alloc] initWithIRI: _IRI];
 
 	@try {
 		copy->_method = _method;
@@ -163,7 +163,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 	if (request->_method != _method ||
 	    request->_protocolVersion.major != _protocolVersion.major ||
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
-	    ![request->_URI isEqual: _URI] ||
+	    ![request->_IRI isEqual: _IRI] ||
 	    ![request->_headers isEqual: _headers])
 		return false;
 
@@ -183,7 +183,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 	OFHashAddByte(&hash, _method);
 	OFHashAddByte(&hash, _protocolVersion.major);
 	OFHashAddByte(&hash, _protocolVersion.minor);
-	OFHashAddHash(&hash, _URI.hash);
+	OFHashAddHash(&hash, _IRI.hash);
 	OFHashAddHash(&hash, _headers.hash);
 	if (_hasRemoteAddress)
 		OFHashAddHash(&hash, OFSocketAddressHash(&_remoteAddress));
@@ -256,12 +256,12 @@ OFHTTPRequestMethodParseName(OFString *string)
 		remoteAddress = nil;
 
 	ret = [[OFString alloc] initWithFormat:
-	    @"<%@:\n\tURI = %@\n"
+	    @"<%@:\n\tIRI = %@\n"
 	    @"\tMethod = %s\n"
 	    @"\tHeaders = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    self.class, _URI, method, indentedHeaders, remoteAddress];
+	    self.class, _IRI, method, indentedHeaders, remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

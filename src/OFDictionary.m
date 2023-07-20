@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +17,6 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
@@ -26,7 +24,6 @@
 #import "OFEnumerator.h"
 #import "OFMapTableDictionary.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -35,8 +32,6 @@
 static struct {
 	Class isa;
 } placeholder;
-
-static OFCharacterSet *URIQueryPartAllowedCharacterSet = nil;
 
 @interface OFDictionary ()
 - (OFString *)
@@ -55,11 +50,6 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
-@end
-
-OF_DIRECT_MEMBERS
-@interface OFURIQueryPartAllowedCharacterSet: OFCharacterSet
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet;
 @end
 
 @implementation OFDictionaryPlaceholder
@@ -115,12 +105,6 @@ OF_DIRECT_MEMBERS
 						   arguments: arguments];
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMapTableDictionary alloc]
-	    initWithSerialization: element];
-}
-
 - (instancetype)retain
 {
 	return self;
@@ -138,66 +122,6 @@ OF_DIRECT_MEMBERS
 - (void)dealloc
 {
 	OF_DEALLOC_UNSUPPORTED
-}
-@end
-
-@implementation OFURIQueryPartAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURIQueryPartAllowedCharacterSet class])
-		return;
-
-	URIQueryPartAllowedCharacterSet =
-	    [[OFURIQueryPartAllowedCharacterSet alloc] init];
-}
-
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet
-{
-	return URIQueryPartAllowedCharacterSet;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (bool)characterIsMember: (OFUnichar)character
-{
-	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
-		return true;
-
-	switch (character) {
-	case '-':
-	case '.':
-	case '_':
-	case '~':
-	case '!':
-	case '$':
-	case '\'':
-	case '(':
-	case ')':
-	case '*':
-	case '+':
-	case ',':
-	case ';':
-		return true;
-	default:
-		return false;
-	}
 }
 @end
 
@@ -331,11 +255,6 @@ OF_DIRECT_MEMBERS
 }
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -512,6 +431,7 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -523,7 +443,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];
@@ -637,50 +557,6 @@ OF_DIRECT_MEMBERS
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id <OFSerialization> key, object;
-
-	if ([self isKindOfClass: [OFMutableDictionary class]])
-		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFDictionary"
-					      namespace: OFSerializationNS];
-
-	keyEnumerator = [self keyEnumerator];
-	objectEnumerator = [self objectEnumerator];
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	       (object = [objectEnumerator nextObject]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
-		OFXMLElement *keyElement, *objectElement;
-
-		keyElement = [OFXMLElement
-		    elementWithName: @"key"
-			  namespace: OFSerializationNS];
-		[keyElement addChild: key.XMLElementBySerializing];
-
-		objectElement = [OFXMLElement
-		    elementWithName: @"object"
-			  namespace: OFSerializationNS];
-		[objectElement addChild: object.XMLElementBySerializing];
-
-		[element addChild: keyElement];
-		[element addChild: objectElement];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -826,7 +702,7 @@ OF_DIRECT_MEMBERS
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	assert(i == count);
+	OFAssert(i == count);
 
 	[data makeImmutable];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,15 +15,12 @@
 
 #include "config.h"
 
-#include <assert.h>
-
 #import "OFMapTableDictionary.h"
 #import "OFArray.h"
 #import "OFMapTable+Private.h"
 #import "OFMapTable.h"
 #import "OFMutableMapTableDictionary.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -232,59 +229,6 @@ static const OFMapTableFunctions objectFunctions = {
 	return self;
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFArray *keys, *objects;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFXMLElement *keyElement, *objectElement;
-
-		keys = [element elementsForName: @"key"
-				      namespace: OFSerializationNS];
-		objects = [element elementsForName: @"object"
-					 namespace: OFSerializationNS];
-
-		if (keys.count != objects.count)
-			@throw [OFInvalidFormatException exception];
-
-		_mapTable = [[OFMapTable alloc]
-		    initWithKeyFunctions: keyFunctions
-			 objectFunctions: objectFunctions
-				capacity: keys.count];
-
-		keyEnumerator = [keys objectEnumerator];
-		objectEnumerator = [objects objectEnumerator];
-		while ((keyElement = [keyEnumerator nextObject]) != nil &&
-		    (objectElement = [objectEnumerator nextObject]) != nil) {
-			void *pool2 = objc_autoreleasePoolPush();
-			OFXMLElement *key, *object;
-
-			key = [keyElement elementsForNamespace:
-			    OFSerializationNS].firstObject;
-			object = [objectElement elementsForNamespace:
-			    OFSerializationNS].firstObject;
-
-			if (key == nil || object == nil)
-				@throw [OFInvalidFormatException exception];
-
-			[_mapTable setObject: object.objectByDeserializing
-				      forKey: key.objectByDeserializing];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - (void)dealloc
 {
 	[_mapTable release];
@@ -346,7 +290,7 @@ static const OFMapTableFunctions objectFunctions = {
 		i = 0;
 		enumerator = [_mapTable keyEnumerator];
 		while ((keyPtr = [enumerator nextObject]) != NULL) {
-			assert(i < count);
+			OFAssert(i < count);
 
 			keys[i++] = (id)*keyPtr;
 		}
@@ -379,7 +323,7 @@ static const OFMapTableFunctions objectFunctions = {
 		i = 0;
 		enumerator = [_mapTable objectEnumerator];
 		while ((objectPtr = [enumerator nextObject]) != NULL) {
-			assert(i < count);
+			OFAssert(i < count);
 
 			objects[i++] = (id)*objectPtr;
 		}

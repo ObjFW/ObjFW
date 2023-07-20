@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,9 +24,9 @@
 #import "OFSocket+Private.h"
 #import "OFString.h"
 
-#import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
-#import "OFConnectionFailedException.h"
+#import "OFAlreadyOpenException.h"
+#import "OFBindUNIXSocketFailedException.h"
+#import "OFConnectUNIXSocketFailedException.h"
 
 @implementation OFUNIXStreamSocket
 @dynamic delegate;
@@ -39,13 +39,13 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeUNIX(path);
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFConnectionFailedException
+		@throw [OFConnectUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -64,9 +64,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFConnectionFailedException exceptionWithPath: path
-							       socket: self
-								errNo: errNo];
+		@throw [OFConnectUNIXSocketFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: errNo];
 	}
 }
 
@@ -78,13 +79,13 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeUNIX(path);
 
 	if ((_socket = socket(address.sockaddr.un.sun_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
+		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
 				errNo: OFSocketErrNo()];
@@ -103,9 +104,10 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPath: path
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindUNIXSocketFailedException
+		    exceptionWithPath: path
+			       socket: self
+				errNo: errNo];
 	}
 }
 @end

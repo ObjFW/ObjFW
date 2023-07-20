@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,6 @@
 #import "OFMapTableSet.h"
 #import "OFNull.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 static struct {
 	Class isa;
@@ -70,11 +69,6 @@ static struct {
 {
 	return (id)[[OFMapTableSet alloc] initWithObject: firstObject
 					       arguments: arguments];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMapTableSet alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -194,11 +188,6 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -245,6 +234,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -256,7 +246,7 @@ static struct {
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];
@@ -360,31 +350,6 @@ static struct {
 			return true;
 
 	return false;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	if ([self isKindOfClass: [OFMutableSet class]])
-		element = [OFXMLElement elementWithName: @"OFMutableSet"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFSet"
-					      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-		[element addChild: object.XMLElementBySerializing];
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFSet *)setByAddingObjectsFromSet: (OFSet *)set

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +21,6 @@
 #define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
-#include <assert.h>
 #include <errno.h>
 #include <string.h>
 
@@ -31,10 +30,10 @@
 #import "OFRunLoop+Private.h"
 #import "OFSocket+Private.h"
 
-#import "OFAcceptFailedException.h"
+#import "OFAcceptSocketFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFListenFailedException.h"
+#import "OFListenOnSocketFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
@@ -233,7 +232,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backlog) == -1)
-		@throw [OFListenFailedException
+		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
 				  errNo: OFSocketErrNo()];
@@ -243,13 +242,17 @@
 
 - (instancetype)accept
 {
-	OFStreamSocket *client = [[[[self class] alloc] init] autorelease];
+	OFStreamSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
@@ -258,7 +261,7 @@
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
@@ -266,14 +269,14 @@
 	    (struct sockaddr * )&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length, SOCK_CLOEXEC)) ==
 	    OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
-		@throw [OFAcceptFailedException
+		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: OFSocketErrNo()];
 
@@ -283,7 +286,7 @@
 # endif
 #endif
 
-	assert(client->_remoteAddress.length <=
+	OFAssert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
 	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)

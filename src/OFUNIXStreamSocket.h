@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -54,8 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Connects the OFUNIXStreamSocket to the specified destination.
  *
  * @param path The path to connect to
- * @throw OFConnectionFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFConnectUNIXSocketFailedException Connecting failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToPath: (OFString *)path;
 
@@ -63,8 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Binds the socket to the specified host and port.
  *
  * @param path The path to bind to
- * @throw OFBindFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFBindUNIXSocketFailedException Binding failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)bindToPath: (OFString *)path;
 @end

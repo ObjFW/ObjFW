@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,7 +26,7 @@
 #endif
 
 #if defined(__x86_64__) || defined(__amd64__)
-# define OF_X86_64
+# define OF_AMD64
 #elif defined(__i386__)
 # define OF_X86
 #elif defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__)
@@ -151,6 +151,12 @@
 # define OF_ACORN_RISC_OS
 #elif defined(__MINT__)
 # define OF_MINT
+#elif defined(__gnu_hurd__)
+# define OF_HURD
+#endif
+
+#ifdef __GLIBC__
+# define OF_GLIBC
 #endif
 
 #if defined(__ELF__)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,6 +29,12 @@
 @dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
 @dynamic of_localFileHeaderOffset;
+/*
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {

@@ -1,5 +1,5 @@
 {
-    "usage": "Benutzung: %[prog] -[cehHmoOPqv] uri1 [uri2 ...]",
+    "usage": "Benutzung: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
     "full_usage": [
         "Optionen:\n",
         "    -b  --body             Angegebene Datei als Body übergeben\n",
@@ -36,20 +36,20 @@
         "%[prog]: -o / --output und -O / --detect-filename schließen sich ",
         "gegenseitig aus!"
     ],
-    "output_only_with_one_uri": [
-        "%[prog]: -o / --output kann nicht mit mehr als einer URI benutzt ",
+    "output_only_with_one_iri": [
+        "%[prog]: -o / --output kann nicht mit mehr als einer IRI benutzt ",
         "werden!"
     ],
     "download_resolve_host_failed": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Host auflösen fehlgeschlagen: %[exception]"
     ],
     "download_failed_connection_failed": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Verbindung fehlgeschlagen: %[exception]"
     ],
     "download_failed_invalid_server_response": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Ungültige Antwort vom Server!"
     ],
     "no_tls_support": [
@@ -64,21 +64,21 @@
     "download_failed_read_or_write_failed_read": "Lesen",
     "download_failed_read_or_write_failed_write": "Schreiben",
     "download_failed_read_or_write_failed": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  %[error]: %[exception]"
     ],
     "download_failed": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  HTTP Status-Code: %[code]"
     ],
     "download_error": "Fehler!",
     "download_failed_exception": [
-        "%[prog]: Fehler beim Download von <%[uri]>!\n",
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  %[exception]"
     ],
     "download_done": "Fertig!",
-    "invalid_uri": "%[prog]: Ungültige URI: <%[uri]>!",
-    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[uri]>!",
+    "invalid_iri": "%[prog]: Ungültige IRI: <%[iri]>!",
+    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[iri]>!",
     "type_unknown": "unbekannt",
     "size_gib": "%[num] GiB",
     "size_mib": "%[num] MiB",

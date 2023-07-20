@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -431,16 +431,16 @@ static OFString *const cArray[] = {
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
 
 	mutableArray1 = [mutableArrayClass arrayWithObjects:
-	    [OFMutableURI URIWithString: @"http://foo.bar/"],
-	    [OFMutableURI URIWithString: @"http://bar.qux/"],
-	    [OFMutableURI URIWithString: @"http://qux.quxqux/"], nil];
+	    [OFMutableIRI IRIWithString: @"http://foo.bar/"],
+	    [OFMutableIRI IRIWithString: @"http://bar.qux/"],
+	    [OFMutableIRI IRIWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
 	    R([mutableArray1 setValue: [OFNumber numberWithShort: 1234]
 			       forKey: @"port"]) &&
 	    [mutableArray1 isEqual: [arrayClass arrayWithObjects:
-	    [OFURI URIWithString: @"http://foo.bar:1234/"],
-	    [OFURI URIWithString: @"http://bar.qux:1234/"],
-	    [OFURI URIWithString: @"http://qux.quxqux:1234/"], nil]])
+	    [OFIRI IRIWithString: @"http://foo.bar:1234/"],
+	    [OFIRI IRIWithString: @"http://bar.qux:1234/"],
+	    [OFIRI IRIWithString: @"http://qux.quxqux:1234/"], nil]])
 
 	objc_autoreleasePoolPop(pool);
 }

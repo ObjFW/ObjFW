@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,10 +17,33 @@
 
 #import "TestsAppDelegate.h"
 
+#ifdef OF_HAVE_SOCKETS
+static void
+printAddresses(OFData *addresses, bool *firstAddress)
+{
+	size_t count = addresses.count;
+
+	for (size_t i = 0; i < count; i++) {
+		const OFSocketAddress *address = [addresses itemAtIndex: i];
+
+		if (!*firstAddress)
+			[OFStdOut writeString: @", "];
+
+		*firstAddress = false;
+
+		[OFStdOut writeString: OFSocketAddressString(address)];
+	}
+}
+#endif
+
 @implementation TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_HAVE_SOCKETS
+	OFDictionary *networkInterfaces;
+	bool firstInterface = true;
+#endif
 
 	[OFStdOut setForegroundColor: [OFColor lime]];
 
@@ -46,14 +69,14 @@
 	    @"[OFSystemInfo] Operating system version: %@\n",
 	    [OFSystemInfo operatingSystemVersion]];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] User config URI: %@\n",
-	    [OFSystemInfo userConfigURI].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] User config IRI: %@\n",
+	    [OFSystemInfo userConfigIRI].string];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] User data URI: %@\n",
-	    [OFSystemInfo userDataURI].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] User data IRI: %@\n",
+	    [OFSystemInfo userDataIRI].string];
 
-	[OFStdOut writeFormat: @"[OFSystemInfo] Temporary directory URI: %@\n",
-	    [OFSystemInfo temporaryDirectoryURI].string];
+	[OFStdOut writeFormat: @"[OFSystemInfo] Temporary directory IRI: %@\n",
+	    [OFSystemInfo temporaryDirectoryIRI].string];
 
 	[OFStdOut writeFormat: @"[OFSystemInfo] CPU vendor: %@\n",
 	    [OFSystemInfo CPUVendor]];
@@ -61,9 +84,15 @@
 	[OFStdOut writeFormat: @"[OFSystemInfo] CPU model: %@\n",
 	    [OFSystemInfo CPUModel]];
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
 	    [OFSystemInfo supportsMMX]];
+
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports 3DNow!: %d\n",
+	    [OFSystemInfo supports3DNow]];
+
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports enhanced 3DNow!: %d\n",
+	    [OFSystemInfo supportsEnhanced3DNow]];
 
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SSE: %d\n",
 	    [OFSystemInfo supportsSSE]];
@@ -99,6 +128,60 @@
 #ifdef OF_POWERPC
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports AltiVec: %d\n",
 	    [OFSystemInfo supportsAltiVec]];
+#endif
+
+#ifdef OF_HAVE_SOCKETS
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	[OFStdOut writeString: @"[OFSystemInfo] Network interfaces: "];
+	for (OFString *name in networkInterfaces) {
+		bool firstAddress = true;
+		OFNetworkInterface interface;
+		OFData *hardwareAddress;
+
+		if (!firstInterface)
+			[OFStdOut writeString: @"; "];
+
+		firstInterface = false;
+
+		[OFStdOut writeFormat: @"%@(", name];
+
+		interface = [networkInterfaces objectForKey: name];
+
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPv4Addresses], &firstAddress);
+# ifdef OF_HAVE_IPV6
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPv6Addresses], &firstAddress);
+# endif
+# ifdef OF_HAVE_IPX
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceIPXAddresses], &firstAddress);
+# endif
+# ifdef OF_HAVE_APPLETALK
+		printAddresses([interface objectForKey:
+		    OFNetworkInterfaceAppleTalkAddresses], &firstAddress);
+# endif
+
+		hardwareAddress = [interface
+		    objectForKey: OFNetworkInterfaceHardwareAddress];
+		if (hardwareAddress != nil) {
+			const unsigned char *bytes = hardwareAddress.items;
+			size_t length = hardwareAddress.count;
+
+			if (!firstAddress)
+				[OFStdOut writeString: @", "];
+
+			for (size_t i = 0; i < length; i++) {
+				if (i > 0)
+					[OFStdOut writeString: @":"];
+
+				[OFStdOut writeFormat: @"%02X", bytes[i]];
+			}
+		}
+
+		[OFStdOut writeString: @")"];
+	}
+	[OFStdOut writeString: @"\n"];
 #endif
 
 	objc_autoreleasePoolPop(pool);

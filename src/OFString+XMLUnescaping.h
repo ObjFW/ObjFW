@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -74,6 +74,8 @@ typedef OFString *_Nullable (^OFStringXMLUnescapingBlock)(OFString *string,
  *	  unknown entities.
  *
  * @param delegate An OFXMLUnescapingDelegate as a handler for unknown entities
+ * @throw OFInvalidFormatException The string is not a valid XML string
+ * @throw OFUnknownXMLEntityException The string contains unknown XML entities
  */
 - (OFString *)stringByXMLUnescapingWithDelegate:
     (nullable id <OFStringXMLUnescapingDelegate>)delegate;
@@ -84,6 +86,8 @@ typedef OFString *_Nullable (^OFStringXMLUnescapingBlock)(OFString *string,
  *	  entities.
  *
  * @param block A block which handles unknown entities
+ * @throw OFInvalidFormatException The string is not a valid XML string
+ * @throw OFUnknownXMLEntityException The string contains unknown XML entities
  */
 - (OFString *)stringByXMLUnescapingWithBlock: (OFStringXMLUnescapingBlock)block;
 #endif

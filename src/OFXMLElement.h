@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -121,6 +121,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string The string to parse
  * @return A new autoreleased OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithXMLString: (OFString *)string;
 
@@ -130,6 +134,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream to parse
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithStream: (OFStream *)stream;
 
@@ -188,6 +196,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string The string to parse
  * @return An initialized OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithXMLString: (OFString *)string;
 
@@ -197,6 +209,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param stream The stream to parse
  * @return An initialized OFXMLElement with the contents of the specified stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithStream: (OFStream *)stream;
 
@@ -395,6 +411,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param indentation The indentation per level
  * @return An OFString representing the OFXMLNode as an XML string with
  *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
  */
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
 
@@ -406,11 +425,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param indentation The indentation per level
  * @return An OFString representing the OFXMLNode as an XML string with
  *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
  */
 - (OFString *)XMLStringWithDefaultNamespace: (OFString *)defaultNS
 				indentation: (unsigned int)indentation;
 @end
 
 OF_ASSUME_NONNULL_END
-
-#import "OFXMLElement+Serialization.h"

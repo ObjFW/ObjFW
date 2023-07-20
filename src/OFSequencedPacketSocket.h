@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -305,7 +305,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Listen on the socket.
  *
  * @param backlog Maximum length for the queue of pending connections.
- * @throw OFListenFailedException Listening failed
+ * @throw OFListenOnSocketFailedException Listening failed
  * @throw OFNotOpenException The socket is not open
  */
 - (void)listenWithBacklog: (int)backlog;
@@ -313,7 +313,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Listen on the socket.
  *
- * @throw OFListenFailedException Listening failed
+ * @throw OFListenOnSocketFailedException Listening failed
  * @throw OFNotOpenException The socket is not open
  */
 - (void)listen;
@@ -322,7 +322,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Accept an incoming connection.
  *
  * @return An autoreleased sequenced packet socket for the accepted connection.
- * @throw OFAcceptFailedException Accepting failed
+ * @throw OFAcceptSocketFailedException Accepting failed
  * @throw OFNotOpenException The socket is not open
  */
 - (instancetype)accept;

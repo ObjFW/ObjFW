@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,34 +24,73 @@ static OFString *const module = @"OFIPXSocket";
 @implementation TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests
 {
+	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	void *pool = objc_autoreleasePoolPush();
 	OFIPXSocket *sock;
 	OFSocketAddress address1, address2;
+	OFDictionary *networkInterfaces;
 	char buffer[5];
+	unsigned char node1[IPX_NODE_LEN], node2[IPX_NODE_LEN];
+	unsigned char node[IPX_NODE_LEN];
 
 	TEST(@"+[socket]", (sock = [OFIPXSocket socket]))
 
 	@try {
-		TEST(@"-[bindToPort:packetType:]",
-		    R(address1 = [sock bindToPort: 0 packetType: 0]))
-	} @catch (OFBindFailedException *e) {
+		TEST(@"-[bindToNetwork:node:port:packetType:]",
+		R(address1 = [sock bindToNetwork: 0
+					    node: zeroNode
+					    port: 0
+				      packetType: 0]))
+	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX unsupported, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX unsupported, skipping tests"];
 			break;
 		case EADDRNOTAVAIL:
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeLine:
-			    @"\r[OFIPXSocket] -[bindToPort:packetType:]: "
-			    @"IPX not configured, skipping tests"];
+			    @"\r[OFIPXSocket] -[bindToNetwork:node:port:"
+			    @"packetType:]: IPX not configured, skipping "
+			    @"tests"];
 			break;
 		default:
 			@throw e;
 		}
 
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	/*
+	 * Find any network interface with IPX and send to it. Any should be
+	 * fine since we bound to 0.0.
+	 */
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	for (OFString *name in networkInterfaces) {
+		OFNetworkInterface interface = [networkInterfaces
+		    objectForKey: name];
+		OFData *addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPXAddresses];
+
+		if (addresses.count == 0)
+			continue;
+
+		OFSocketAddressSetIPXNetwork(&address1,
+		    OFSocketAddressIPXNetwork([addresses itemAtIndex: 0]));
+		OFSocketAddressGetIPXNode([addresses itemAtIndex: 0], node);
+		OFSocketAddressSetIPXNode(&address1, node);
+	}
+
+	OFSocketAddressGetIPXNode(&address1, node);
+	if (OFSocketAddressIPXNetwork(&address1) == 0 &&
+	    memcmp(node, zeroNode, 6) == 0) {
+		[OFStdOut setForegroundColor: [OFColor lime]];
+		[OFStdOut writeLine:
+		    @"[OFIPXSocket] -[sendBuffer:length:receiver:]: "
+		    @"Could not determine own address, skipping tests"];
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -62,8 +101,11 @@ static OFString *const module = @"OFIPXSocket";
 	TEST(@"-[receiveIntoBuffer:length:sender:]",
 	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
 	    memcmp(buffer, "Hello", 5) == 0 &&
-	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
+	    R(OFSocketAddressGetIPXNode(&address1, node1)) &&
+	    R(OFSocketAddressGetIPXNode(&address2, node2)) &&
+	    memcmp(node1, node2, IPX_NODE_LEN) == 0 &&
+	    OFSocketAddressIPXPort(&address1) ==
+	    OFSocketAddressIPXPort(&address2))
 
 	objc_autoreleasePoolPop(pool);
 }

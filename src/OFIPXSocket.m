@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,15 +25,21 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
-#import "OFBindFailedException.h"
+#import "OFAlreadyOpenException.h"
+#import "OFBindIPXSocketFailedException.h"
+
+#ifndef NSPROTO_IPX
+# define NSPROTO_IPX 0
+#endif
 
 @implementation OFIPXSocket
 @dynamic delegate;
 
-- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType
+- (OFSocketAddress)bindToNetwork: (uint32_t)network
+			    node: (const unsigned char [IPX_NODE_LEN])node
+			    port: (uint16_t)port
+		      packetType: (uint8_t)packetType
 {
-	const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
 	OFSocketAddress address;
 	int protocol = 0;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
@@ -41,11 +47,11 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	address = OFSocketAddressMakeIPX(0, zeroNode, port);
+	address = OFSocketAddressMakeIPX(network, node, port);
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(OF_FREEBSD)
 	protocol = NSPROTO_IPX + packetType;
 #else
 	_packetType = address.sockaddr.ipx.sipx_type = packetType;
@@ -53,11 +59,13 @@
 
 	if ((_socket = socket(address.sockaddr.ipx.sipx_family,
 	    SOCK_DGRAM | SOCK_CLOEXEC, protocol)) == OFInvalidSocketHandle)
-		@throw [OFBindFailedException
-		    exceptionWithPort: port
-			   packetType: packetType
-			       socket: self
-				errNo: OFSocketErrNo()];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -73,10 +81,13 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	memset(&address, 0, sizeof(address));
@@ -90,26 +101,32 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: errNo];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: errNo];
 	}
 
 	if (address.sockaddr.ipx.sipx_family != AF_IPX) {
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindFailedException exceptionWithPort: port
-						     packetType: packetType
-							 socket: self
-							  errNo: EAFNOSUPPORT];
+		@throw [OFBindIPXSocketFailedException
+		    exceptionWithNetwork: network
+				    node: node
+				    port: port
+			      packetType: packetType
+				  socket: self
+				   errNo: EAFNOSUPPORT];
 	}
 
 	return address;
 }
 
-#ifndef OF_WINDOWS
+#if !defined(OF_WINDOWS) && !defined(OF_FREEBSD)
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  receiver: (const OFSocketAddress *)receiver

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,16 +15,18 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFPlainThread.h"
 #import "OFData.h"
+#import "OFString.h"
 #import "OFTLSKey.h"
 
+#define Class IntuitionClass
 #include <dos/dostags.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
+#undef Class
 
 #ifndef OF_MORPHOS
 extern void OFTLSKeyThreadExited(void);
@@ -193,7 +195,7 @@ OFPlainThreadJoin(OFPlainThread thread)
 	Wait(1ul << thread->joinSigBit);
 	FreeSignal(thread->joinSigBit);
 
-	assert(thread->done);
+	OFAssert(thread->done);
 	free(thread);
 
 	return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -188,7 +187,7 @@
 		if (eventList[i].ident == (uintptr_t)_cancelFD[0]) {
 			char buffer;
 
-			assert(eventList[i].filter == EVFILT_READ);
+			OFAssert(eventList[i].filter == EVFILT_READ);
 			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
@@ -210,7 +209,7 @@
 				    (id)eventList[i].udata];
 			break;
 		default:
-			assert(0);
+			OFAssert(0);
 		}
 
 		objc_autoreleasePoolPop(pool);

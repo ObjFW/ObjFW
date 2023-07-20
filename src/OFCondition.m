@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +19,13 @@
 
 #import "OFCondition.h"
 #import "OFDate.h"
+#import "OFString.h"
 
-#import "OFConditionBroadcastFailedException.h"
-#import "OFConditionSignalFailedException.h"
+#import "OFBroadcastConditionFailedException.h"
 #import "OFConditionStillWaitingException.h"
-#import "OFConditionWaitFailedException.h"
 #import "OFInitializationFailedException.h"
+#import "OFSignalConditionFailedException.h"
+#import "OFWaitForConditionFailedException.h"
 
 @implementation OFCondition
 + (instancetype)condition
@@ -68,7 +69,7 @@
 	int error = OFPlainConditionWait(&_condition, &_mutex);
 
 	if (error != 0)
-		@throw [OFConditionWaitFailedException
+		@throw [OFWaitForConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 }
@@ -80,7 +81,7 @@
 	    signalMask);
 
 	if (error != 0)
-		@throw [OFConditionWaitFailedException
+		@throw [OFWaitForConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 }
@@ -95,7 +96,7 @@
 		return false;
 
 	if (error != 0)
-		@throw [OFConditionWaitFailedException
+		@throw [OFWaitForConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 
@@ -113,7 +114,7 @@
 		return false;
 
 	if (error != 0)
-		@throw [OFConditionWaitFailedException
+		@throw [OFWaitForConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 
@@ -139,7 +140,7 @@
 	int error = OFPlainConditionSignal(&_condition);
 
 	if (error != 0)
-		@throw [OFConditionSignalFailedException
+		@throw [OFSignalConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 }
@@ -149,7 +150,7 @@
 	int error = OFPlainConditionBroadcast(&_condition);
 
 	if (error != 0)
-		@throw [OFConditionBroadcastFailedException
+		@throw [OFBroadcastConditionFailedException
 		    exceptionWithCondition: self
 				     errNo: error];
 }

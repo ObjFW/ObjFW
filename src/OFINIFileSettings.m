@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,9 +18,9 @@
 #import "OFINIFileSettings.h"
 #import "OFArray.h"
 #import "OFINIFile.h"
+#import "OFIRI.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
 
 @implementation OFINIFileSettings
 - (instancetype)initWithApplicationName: (OFString *)applicationName
@@ -32,9 +32,9 @@
 		OFString *fileName;
 
 		fileName = [applicationName stringByAppendingString: @".ini"];
-		_fileURI = [[[OFSystemInfo userConfigURI]
-		    URIByAppendingPathComponent: fileName] copy];
-		_INIFile = [[OFINIFile alloc] initWithURI: _fileURI];
+		_fileIRI = [[[OFSystemInfo userConfigIRI]
+		    IRIByAppendingPathComponent: fileName] copy];
+		_INIFile = [[OFINIFile alloc] initWithIRI: _fileIRI];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -47,7 +47,7 @@
 
 - (void)dealloc
 {
-	[_fileURI release];
+	[_fileIRI release];
 	[_INIFile release];
 
 	[super dealloc];
@@ -243,6 +243,6 @@
 
 - (void)save
 {
-	[_INIFile writeToURI: _fileURI];
+	[_INIFile writeToIRI: _fileIRI];
 }
 @end

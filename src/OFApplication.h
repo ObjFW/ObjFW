@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,6 +30,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
+ * @brief A notification that will be sent when the application did finish
+ *	  launching.
+ */
+extern const OFNotificationName OFApplicationDidFinishLaunchingNotification;
+
+/**
  * @brief A notification that will be sent when the application will terminate.
  */
 extern const OFNotificationName OFApplicationWillTerminateNotification;
@@ -51,7 +57,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * OF_APPLICATION_DELEGATE(MyAppDelegate)
  *
  * @implementation MyAppDelegate
- * - (void)applicationDidFinishLaunching
+ * - (void)applicationDidFinishLaunching: (OFNotification *)notification
  * {
  *         [OFApplication terminate];
  * }
@@ -81,14 +87,20 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 /**
  * @brief A method which is called when the application was initialized and is
  *	  running now.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationDidFinishLaunchingNotification
  */
-- (void)applicationDidFinishLaunching;
+- (void)applicationDidFinishLaunching: (OFNotification *)notification;
 
 @optional
 /**
  * @brief A method which is called when the application will terminate.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationWillTerminateNotification
  */
-- (void)applicationWillTerminate;
+- (void)applicationWillTerminate: (OFNotification *)notification;
 
 /**
  * @brief A method which is called when the application received a SIGINT.
@@ -153,7 +165,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  *
  * When the application is about to be terminated,
- * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * @ref OFApplicationDelegate#applicationWillTerminate: will be called on the
  * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED

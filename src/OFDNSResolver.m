@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -423,7 +423,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
-		    maxAllowedPointers);
+		    maxAllowedPointers).lowercaseString;
 		OFDNSClass DNSClass;
 		OFDNSRecordType recordType;
 		uint32_t TTL;
@@ -678,14 +678,14 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	    minNumberOfDotsInAbsoluteName;
 }
 
-- (bool)usesTCP
+- (bool)forcesTCP
 {
-	return _settings->_usesTCP;
+	return _settings->_forcesTCP;
 }
 
-- (void)setUsesTCP: (bool)usesTCP
+- (void)setForcesTCP: (bool)forcesTCP
 {
-	_settings->_usesTCP = usesTCP;
+	_settings->_forcesTCP = forcesTCP;
 }
 
 - (OFTimeInterval)configReloadInterval
@@ -723,7 +723,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	nameServer = [context->_settings->_nameServers
 	    objectAtIndex: context->_nameServersIndex];
 
-	if (context->_settings->_usesTCP) {
+	if (context->_settings->_forcesTCP) {
 		OFEnsure(context->_TCPSocket == nil);
 
 		context->_TCPSocket = [[OFTCPSocket alloc] init];
@@ -910,7 +910,8 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	if (context->_TCPSocket != nil) {
 		if ([_TCPQueries objectForKey: context->_TCPSocket] != context)
 			return true;
-	} else if (!OFSocketAddressEqual(sender, &context->_usedNameServer))
+	} else if (sender == NULL ||
+	    !OFSocketAddressEqual(sender, &context->_usedNameServer))
 		return true;
 
 	[context->_cancelTimer invalidate];
@@ -947,10 +948,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (buffer[2] & 0x02) {
 			OFRunLoopMode runLoopMode;
 
-			if (context->_settings->_usesTCP)
+			if (context->_settings->_forcesTCP)
 				@throw [OFTruncatedDataException exception];
 
-			context->_settings->_usesTCP = true;
+			context->_settings->_forcesTCP = true;
 			runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 			[self of_sendQueryForContext: context
 					 runLoopMode: runLoopMode];

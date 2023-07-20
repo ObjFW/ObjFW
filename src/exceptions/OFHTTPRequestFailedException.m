@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,7 +64,7 @@
 	const char *method = OFHTTPRequestMethodName(_request.method);
 
 	return [OFString stringWithFormat:
-	    @"An HTTP %s request with URI %@ failed with code %hd!", method,
-	    _request.URI, _response.statusCode];
+	    @"An HTTP %s request with IRI %@ failed with code %hd!", method,
+	    _request.IRI, _response.statusCode];
 }
 @end

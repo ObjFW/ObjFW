@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,11 +16,9 @@
 #include "config.h"
 
 #include <string.h>
-#include <assert.h>
 
 #import "OFList.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 #import "OFArray.h"
 
 #import "OFEnumerationMutationException.h"
@@ -68,35 +66,6 @@ OFListItemObject(OFListItem listItem)
 + (instancetype)list
 {
 	return [[[self alloc] init] autorelease];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [self init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLElement *child in
-		    [element elementsForNamespace: OFSerializationNS]) {
-			void *pool2 = objc_autoreleasePoolPush();
-
-			[self appendObject: child.objectByDeserializing];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
 }
 
 - (void)dealloc
@@ -256,7 +225,7 @@ OFListItemObject(OFListItem listItem)
 			return false;
 
 	/* One is bigger than the other even though we checked the count */
-	assert(iter == NULL && iter2 == NULL);
+	OFAssert(iter == NULL && iter2 == NULL);
 
 	return true;
 }
@@ -372,24 +341,6 @@ OFListItemObject(OFListItem listItem)
 	[ret makeImmutable];
 
 	return ret;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OFXMLElement *element =
-	    [OFXMLElement elementWithName: self.className
-				namespace: OFSerializationNS];
-
-	for (OFListItem iter = _firstListItem;
-	    iter != NULL; iter = iter->next) {
-		void *pool = objc_autoreleasePoolPush();
-
-		[element addChild: [iter->object XMLElementBySerializing]];
-
-		objc_autoreleasePoolPop(pool);
-	}
-
-	return element;
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -174,22 +174,17 @@ static struct {
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURI: URI];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
-	    initWithContentsOfURI: URI
+	    initWithContentsOfIRI: IRI
 			 encoding: encoding];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableUTF8String alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain

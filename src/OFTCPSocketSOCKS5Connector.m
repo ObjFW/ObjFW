@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFTCPSocketSOCKS5Connector.h"
@@ -23,7 +22,7 @@
 #import "OFRunLoop.h"
 #import "OFString.h"
 
-#import "OFConnectionFailedException.h"
+#import "OFConnectIPSocketFailedException.h"
 
 enum {
 	stateSendAuthentication = 1,
@@ -144,7 +143,7 @@ enum {
 		SOCKSVersion = buffer;
 
 		if (SOCKSVersion[0] != 5 || SOCKSVersion[1] != 0) {
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -173,7 +172,7 @@ enum {
 		response = buffer;
 
 		if (response[0] != 5 || response[2] != 0) {
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -216,7 +215,7 @@ enum {
 				break;
 			}
 
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: _socket
@@ -246,7 +245,7 @@ enum {
 					 runLoopMode: runLoopMode];
 			return false;
 		default:
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -268,7 +267,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return false;
 	default:
-		assert(0);
+		OFAssert(0);
 		return false;
 	}
 }
@@ -305,7 +304,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return nil;
 	default:
-		assert(0);
+		OFAssert(0);
 		return nil;
 	}
 }

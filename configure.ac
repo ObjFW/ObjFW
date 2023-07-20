@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.0dev, js@nil.im)
+AC_INIT(ObjFW, 1.0dev, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
@@ -46,18 +46,6 @@ m68k-*-amigaos*)
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
 	with_tls="no"
-	supports_amiga_lib="yes"
-
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
-		dnl For 68000, GCC emits calls to helper functions that
-		dnl do not work properly in a library.
-		t="-mcpu=68020 -fbaserel -noixemul -ffreestanding"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-		t="$t -resident -nostartfiles -nodefaultlibs -ldebug -lc"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -79,16 +67,6 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
-	supports_amiga_lib="yes"
-
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFW_LIB_MAJOR}ppc.library'])
-		t="-mresident32 -ffreestanding -noixemul"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul -ldebug"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, "$t -lc")
-	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -98,7 +76,7 @@ powerpc-*-amigaos*)
 	enable_sockets="no"
 	;;
 *-*-mingw*)
-	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition -static-libgcc"
+	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
 	LIBS="$LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
@@ -143,6 +121,14 @@ hppa*-*-hpux*)
 	enable_threads="no"	# TODO
 	with_tls="no"
 	;;
+*-apple-macos*)
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_CLASSIC_MACOS, 1,
+		[Whether we are compiling for classic macOS])
+	;;
 esac
 
 AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
@@ -166,7 +152,6 @@ esac
 AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_LN_S
-AC_PROG_EGREP
 
 BUILDSYS_CHECK_IOS
 
@@ -411,7 +396,9 @@ AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
-	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
+	BUILDSYS_PLUGIN
+
+	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
@@ -435,18 +422,8 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
 ])
 
-AC_ARG_ENABLE(amiga-lib,
-	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
-AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
-AS_IF([test x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
-	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
-	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
-])
-
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+AS_IF([test x"$enable_shared" = x"no"], [
 	enable_static="yes"
 ])
 AS_IF([test x"$enable_static" = x"yes"], [
@@ -572,7 +549,7 @@ case "$objc_runtime" in
 
 	AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFWRT_SHARED_LIB,
-			"${LIB_PREFIX}objfwrt${LIB_SUFFIX}")
+			'${LIB_PREFIX}objfwrt${LIB_SUFFIX}')
 	])
 
 	AS_IF([test x"$enable_static" = x"yes"], [
@@ -584,18 +561,9 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
 	])
 
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
-		AC_SUBST(LINKLIB, linklib)
-		tmp="../src/runtime/linklib/libobjfwrt.library.a"
-		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
-		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
-	], [
-		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
-	])
+	AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
 
-	AS_IF([test x"$enable_shared" = x"no" \
-	    -a x"$enable_amiga_lib" = x"no"], [
+	AS_IF([test x"$enable_shared" = x"no"], [
 		AC_SUBST(LIBOBJFWRT_DEP, "../src/runtime/libobjfwrt.a")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../../src/runtime/libobjfwrt.a")
 	])
@@ -1029,7 +997,25 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		])
 
 		AC_CHECK_FUNCS(pthread_attr_getschedpolicy)
-		AC_CHECK_FUNCS(pthread_attr_setinheritsched)
+
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -Werror"
+		AC_MSG_CHECKING(for pthread_attr_setinheritsched)
+		AC_COMPILE_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <pthread.h>
+			], [
+				pthread_attr_setinheritsched(
+				    (pthread_attr_t *)-1, 0);
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			AC_DEFINE(HAVE_PTHREAD_ATTR_SETINHERITSCHED, 1,
+				[Whether we have pthread_attr_setinheritsched])
+		], [
+			AC_MSG_RESULT(no)
+		])
+		OBJCFLAGS="$old_OBJCFLAGS"
 
 		AC_CHECK_HEADERS(pthread_np.h, [], [], [#include <pthread.h>])
 		AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np, break)
@@ -1305,7 +1291,7 @@ amigaos* | morphos*)
 esac
 
 AC_CHECK_HEADERS(xlocale.h)
-AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
+AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l uselocale])
 AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
@@ -1391,6 +1377,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
+	AC_CHECK_TYPE([struct sockaddr_storage], [
+		AC_DEFINE(OF_HAVE_SOCKADDR_STORAGE, 1,
+			[Whether we have struct sockaddr_storage])
+	], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
+
 	AC_CHECK_HEADER(netinet/in.h, [
 		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
 			[Whether we have netinet/in.h])
@@ -1400,14 +1401,19 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
+	AC_CHECK_FUNCS([if_indextoname if_nametoindex])
+	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
+		#ifdef HAVAE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef HAVE_NET_IF_DL_H
+		# include <net/if_dl.h>
+		#endif
+	])
 	AC_CHECK_HEADER(sys/un.h, [
 		AC_DEFINE(OF_HAVE_SYS_UN_H, 1, [Whether we have sys/un.h])
 	])
-	AC_CHECK_HEADER(netipx/ipx.h, [
-		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
-			[Whether we have netipx/ipx.h])
-	])
-
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#ifdef _WIN32
@@ -1471,6 +1477,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_UNIX_SOCKETS, 1,
 			[Whether we have UNIX sockets])
 		AC_SUBST(USE_SRCS_UNIX_SOCKETS, '${SRCS_UNIX_SOCKETS}')
+
+		AC_CHECK_MEMBERS(struct sockaddr_un.sun_len, [], [], [
+			#ifdef OF_HAVE_SYS_TYPES_H
+			# include <sys/types.h>
+			#endif
+			#ifdef OF_HAVE_SYS_UN_H
+			# include <sys/un.h>
+			#endif
+			#ifdef _WIN32
+			# include <winsock2.h>
+			#endif
+			#ifdef HAVE_AFUNIX_H
+			# include <afunix.h>
+			#endif
+		])
 	], [], [
 		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>
@@ -1492,12 +1513,35 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#ifdef __MINT__
 		# error Gives invalid argument at runtime
 		#endif
+
+		#ifdef __gnu_hurd__
+		# error Empty sun_path in the source given by recvfrom()
+		#endif
 	])
 
+	AC_CHECK_HEADER(netipx/ipx.h, [
+		AC_DEFINE(OF_HAVE_NETIPX_IPX_H, 1,
+			[Whether we have netipx/ipx.h])
+	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
-		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [], [
+		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
+			], [], [
+				#ifdef HAVE_SYS_TYPES_H
+				# include <sys/types.h>
+				#endif
+
+				#ifdef OF_HAVE_NETIPX_IPX_H
+				# include <netipx/ipx.h>
+				#endif
+			])
+		], [
 			#ifdef _WIN32
 			typedef int BOOL;
+			#endif
+
+			#ifdef HAVE_SYS_TYPES_H
+			# include <sys/types.h>
 			#endif
 
 			#ifdef OF_HAVE_NETIPX_IPX_H
@@ -1520,6 +1564,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		typedef int BOOL;
 		#endif
 
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+
 		#ifdef OF_HAVE_NETIPX_IPX_H
 		# include <netipx/ipx.h>
 		#endif
@@ -1536,7 +1584,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 	])
 	AS_IF([test x"$ac_cv_member_struct_sockaddr_ipx_sipx_network" = x"yes" \
-	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes"], [
+	    -o x"$ac_cv_member_struct_sockaddr_ipx_sa_netnum" = x"yes" -o \
+	    x"$ac_cv_member_struct_sockaddr_ipx_sipx_addr_x_port" = x"yes"], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#ifdef _WIN32
 			typedef int BOOL;
@@ -1563,6 +1612,97 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		], [
 			AC_DEFINE(OF_HAVE_IPX, 1, [Whether we have IPX/SPX])
 			AC_SUBST(USE_SRCS_IPX, '${SRCS_IPX}')
+		])
+	])
+
+	AC_CHECK_HEADER(netat/appletalk.h, [
+		AC_DEFINE(OF_HAVE_NETAT_APPLETALK_H, 1,
+			[Whether we have netat/appletalk.h])
+	])
+	AC_CHECK_HEADER(netatalk/at.h, [
+		AC_DEFINE(OF_HAVE_NETATALK_AT_H, 1,
+			[Whether we have netatalk/at.h])
+	])
+	AC_CHECK_MEMBER(struct sockaddr_at.sat_addr, [], [
+		AC_CHECK_MEMBER(struct sockaddr_at.sat_net, [], [], [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_TYPES_H
+			# include <sys/types.h>
+			#endif
+			#if defined(OF_HAVE_NETAT_APPLETALK_H)
+			# include <netat/appletalk.h>
+			#elif defined(OF_HAVE_NETATALK_AT_H)
+			# include <netatalk/at.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <atalkwsh.h>
+			#endif
+		])
+	], [
+		#ifdef _WIN32
+		typedef int BOOL;
+		#endif
+
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#if defined(OF_HAVE_NETAT_APPLETALK_H)
+		# include <netat/appletalk.h>
+		#elif defined(OF_HAVE_NETATALK_AT_H)
+		# include <netatalk/at.h>
+		#endif
+
+		#ifdef _WIN32
+		# ifdef __MINGW32__
+		#  include <_mingw.h>
+		#  ifdef __MINGW64_VERSION_MAJOR
+		#   include <winsock2.h>
+		#  endif
+		# endif
+		# include <windows.h>
+		# include <atalkwsh.h>
+		#endif
+	])
+	AS_IF([test x"$ac_cv_member_struct_sockaddr_at_sat_addr" = x"yes" \
+	    -o x"$ac_cv_member_struct_sockaddr_at_sat_net" = x"yes"], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef _WIN32
+			typedef int BOOL;
+			#endif
+
+			#ifdef OF_HAVE_SYS_SOCKET_H
+			# include <sys/socket.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <atalkwsh.h>
+			#endif
+
+			#ifdef AF_APPLETALK
+			egrep_cpp_yes
+			#endif
+		], [
+			AC_DEFINE(OF_HAVE_APPLETALK, 1,
+			    [Whether we have AppleTalk])
+			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 		])
 	])
 
@@ -1611,6 +1751,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
+	AC_CHECK_HEADERS(net/if.h)
+	AC_CHECK_FUNCS(if_nameindex)
+
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
@@ -1619,15 +1762,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	tls_support="no"
 
 	AS_IF([test x"$with_tls" = x"securetransport" \
-		-o x"$with_tls" = x"yes"], [
+	    -o x"$with_tls" = x"yes"], [
 		AC_CHECK_HEADERS(Security/SecureTransport.h, [
 			old_LIBS="$LIBS"
 			LIBS="-framework Security -framework Foundation $LIBS"
 
 			AC_CHECK_FUNC(SSLHandshake, [
-				AC_DEFINE(HAVE_SECURE_TRANSPORT, 1,
-					[Whether we have Secure Transport])
-
 				tls_support="Secure Transport"
 				TLS_LIBS="-framework Foundation $TLS_LIBS"
 				TLS_LIBS="-framework Security $TLS_LIBS"
@@ -1642,8 +1782,23 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
+	AS_IF([test x"$with_tls" = x"gnutls" \
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
+	])
+
 	AS_IF([test x"$with_tls" = x"openssl" \
-		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
 		morphos*)
 			ssl="ssl_shared"
@@ -1657,9 +1812,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
-				AC_DEFINE(HAVE_OPENSSL, 1,
-					[Whether we have OpenSSL])
-
 				tls_support="OpenSSL"
 				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
 
@@ -1667,23 +1819,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					"OFOpenSSLTLSStream.m")
 			])
 		], [], [-l$crypto])
-	])
-
-	AS_IF([test x"$with_tls" = x"gnutls" \
-		-o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
-		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
-			AC_DEFINE(HAVE_GNUTLS, 1, [Whether we have GnuTLS])
-
-			tls_support="GnuTLS"
-			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
-			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
-
-			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
-		], [
-			dnl Disable default action-if-not-found, which exits
-			dnl configure with an error.
-			:
-		])
 	])
 
 	AS_IF([test x"$tls_support" != x"no"], [
@@ -1698,7 +1833,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWTLS_SHARED_LIB,
-				"${LIB_PREFIX}objfwtls${LIB_SUFFIX}")
+				'${LIB_PREFIX}objfwtls${LIB_SUFFIX}')
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
@@ -1762,10 +1897,6 @@ darwin*)
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
-		have_subprocesses="yes"
-
-		AC_CHECK_FUNCS(posix_spawnp)
-		AC_CHECK_HEADERS(spawn.h)
 	], [
 		AC_MSG_RESULT(no)
 		have_subprocesses="no"
@@ -1777,17 +1908,18 @@ mingw*)
 msdosdjgpp*)
 	have_subprocesses="no"
 	;;
-*)
+esac
+AS_IF([test x"$have_subprocesses" = x""], [
 	AC_HEADER_SYS_WAIT
 	AC_CHECK_FUNCS(kill)
 
 	AC_CHECK_FUNCS(posix_spawnp, [
 		AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
-			have_subprocesses="yes"
-
-			AC_CHECK_HEADERS(spawn.h)
+			AC_CHECK_HEADERS(spawn.h, [have_subprocesses="yes"])
 		])
-	], [
+	])
+
+	AS_IF([test x"$have_subprocesses" = x""], [
 		AC_CHECK_FUNCS([vfork dup2 execvp _exit], [
 			AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
 			    -a x"$ac_cv_func_pipe" = x"yes" \
@@ -1801,15 +1933,14 @@ msdosdjgpp*)
 			break
 		])
 	])
-	;;
-esac
+])
 AS_IF([test x"$have_subprocesses" = x"yes"], [
 	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
 	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])
 
 AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])
-AC_CHECK_FUNCS(isatty)
+AC_CHECK_FUNCS(ioctl isatty)
 
 AC_CHECK_FUNC(pledge, [
 	AC_DEFINE(OF_HAVE_PLEDGE, 1, [Whether we have pledge()])
@@ -1822,7 +1953,7 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWBRIDGE_SHARED_LIB,
-				"${LIB_PREFIX}objfwbridge${LIB_SUFFIX}")
+				'${LIB_PREFIX}objfwbridge${LIB_SUFFIX}')
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
@@ -1856,7 +1987,13 @@ AC_COMPILE_IFELSE([
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
+
+	AC_ARG_ENABLE(werror,
+		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
+	AS_IF([test x"$enable_werror" != x"no"], [
+		OBJCFLAGS="$OBJCFLAGS -Werror"
+	])
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_COMPILE_IFELSE([
@@ -2001,7 +2138,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 									\
 				abort();				\
 									\
-				_Pragma("clang diagnostic push ignore	\
+				_Pragma("clang diagnostic push");	\
+			       	_Pragma("clang diagnostic ignored	\
 				    \"-Wunreachable-code\"");		\
 				[super dealloc];			\
 				_Pragma("clang diagnostic pop");
@@ -2100,6 +2238,20 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	])
 
+	AC_MSG_CHECKING(whether we need -Wno-strict-prototypes)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <signal.h>
+		], [
+			signal(SIGINT, SIG_DFL);
+		])
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$OBJCFLAGS -Wno-strict-prototypes"
+	])
+
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
 		AC_COMPILE_IFELSE([
@@ -2129,10 +2281,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 		AC_CHECK_PROG(WINE, wine64, wine64)
 		;;
 	esac
-
-	AS_IF([test x"$WINE" != x""], [
-		AC_SUBST(WRAPPER, "$WINE")
-	])
+	AS_IF([test x"$WINE" != x""], [AC_SUBST(WRAPPER, "$WINE")])
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		dnl Keep this lowercase, as WIILOAD is a variable used by
@@ -2144,17 +2293,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
-])
-
-AC_ARG_WITH(fish_completions,
-	AS_HELP_STRING([--with-fish-completions],
-		[install completions for the fish shell]))
-AS_IF([test x"$with_fish_completions" = x""], [
-	AC_CHECK_PROG(FISH, fish, fish)
-	AS_IF([test x"$FISH" != x""], [with_fish_completions="yes"])
-])
-AS_IF([test x"$with_fish_completions" = x"yes"], [
-	AC_SUBST(FISH_COMPLETIONS, fish)
 ])
 
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP

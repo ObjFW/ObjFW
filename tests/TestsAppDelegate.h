@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -71,6 +71,14 @@
 - (void)characterSetTests;
 @end
 
+@interface TestsAppDelegate (OFColorTests)
+- (void)colorTests;
+@end
+
+@interface TestsAppDelegate (OFDDPSocketTests)
+- (void)DDPSocketTests;
+@end
+
 @interface TestsAppDelegate (OFDNSResolverTests)
 - (void)DNSResolverTests;
 @end
@@ -107,6 +115,10 @@
 - (void)INIFileTests;
 @end
 
+@interface TestsAppDelegate (OFIRITests)
+- (void)IRITests;
+@end
+
 @interface TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests;
 @end
@@ -137,6 +149,10 @@
 
 @interface TestsAppDelegate (OFMD5HashTests)
 - (void)MD5HashTests;
+@end
+
+@interface TestsAppDelegate (OFMatrix4x4Tests)
+- (void)matrix4x4Tests;
 @end
 
 @interface TestsAppDelegate  (OFMemoryStreamTests)
@@ -215,10 +231,6 @@
 - (void)SPXStreamSocketTests;
 @end
 
-@interface TestsAppDelegate (OFSerializationTests)
-- (void)serializationTests;
-@end
-
 @interface TestsAppDelegate (OFSetTests)
 - (void)setTests;
 @end
@@ -257,10 +269,6 @@
 
 @interface TestsAppDelegate (OFUNIXStreamSocketTests)
 - (void)UNIXStreamSocketTests;
-@end
-
-@interface TestsAppDelegate (OFURITests)
-- (void)URITests;
 @end
 
 @interface TestsAppDelegate (OFValueTests)

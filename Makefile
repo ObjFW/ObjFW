@@ -12,7 +12,7 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-.PHONY: docs release
+.PHONY: check docs release
 
 utils tests: src
 

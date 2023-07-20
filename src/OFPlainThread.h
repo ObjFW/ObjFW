@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 # error No threads available!
 #endif
 
-#import "macros.h"
+#import "OFObject.h"
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>

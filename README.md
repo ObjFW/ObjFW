@@ -169,20 +169,19 @@ other place, you are most likely using a mirror.
   To build for iOS, follow the regular instructions, but instead of
   `./configure` do something like this:
 
-    $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-    $ export OBJC="$clang -arch armv7 -arch arm64"
-    $ export OBJCPP="$clang -arch armv7 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
+    $ clang="xcrun --sdk iphoneos clang"
+    $ export OBJC="$clang -arch arm64e -arch arm64"
+    $ export OBJCPP="$clang -arch arm64e -E"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
     $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
   To build for the iOS simulator, follow the regular instructions, but instead
   of `./configure` use something like this:
 
-    $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-    $ export OBJC="$clang -arch arm64 -arch x86_64"
-    $ export OBJCPP="$clang -arch arm64 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/iossim --host=arm64-apple-darwin
+    $ clang="xcrun --sdk iphonesimulator clang"
+    $ export OBJC="$clang -arch $(uname -m)"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    $ ./configure --prefix=/usr/local/iossim --host=$(uname -m)-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
@@ -323,7 +322,7 @@ other place, you are most likely using a mirror.
 
     $ objfw-new --app MyFirstApp
 
-  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
+  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching:]`
   method is called as soon as ObjFW finished all initialization. Use this as
   the entry point to your own code. For example, you could add the following
   line there to create a "Hello World":

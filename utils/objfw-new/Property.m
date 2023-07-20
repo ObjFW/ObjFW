@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,7 +53,8 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = string.UTF8String;
-	size_t length = string.UTF8StringLength, nameIdx = -1;
+	size_t length = string.UTF8StringLength;
+	ssize_t nameIdx = -1;
 	OFMutableArray *attributes = nil;
 
 	if (length > SSIZE_MAX)

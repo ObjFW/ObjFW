@@ -14,7 +14,7 @@
 			VALUE "FileVersion", OBJFWRT_LIB_VERSION
 			VALUE "FileDescription", "Objective-C runtime"
 			VALUE "LegalCopyright",
-			    "(c) 2008-2022 Jonathan Schleifer"
+			    "(c) 2008-2023 Jonathan Schleifer"
 			VALUE "InternalName", "ObjFWRT"
 			VALUE "OriginalFilename", OBJFWRT_SHARED_LIB
 		}

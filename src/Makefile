@@ -28,6 +28,8 @@ SRCS = OFApplication.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFIRI.m				\
+       OFIRIHandler.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -37,19 +39,20 @@ SRCS = OFApplication.m			\
        OFLocale.m			\
        OFMD5Hash.m			\
        OFMapTable.m			\
+       OFMatrix4x4.m			\
        OFMemoryStream.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
+       OFMutableIRI.m			\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -57,7 +60,6 @@ SRCS = OFApplication.m			\
        OFNumber.m			\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
-       OFObject+Serialization.m		\
        OFOnce.m				\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
@@ -74,8 +76,8 @@ SRCS = OFApplication.m			\
        OFScrypt.m			\
        OFSecureData.m			\
        OFSeekableStream.m		\
-       OFSerialization.m		\
        OFSet.m				\
+       OFSettings.m			\
        OFSortedList.m			\
        OFStdIOStream.m			\
        OFStream.m			\
@@ -84,19 +86,15 @@ SRCS = OFApplication.m			\
        OFString+JSONParsing.m		\
        OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
-       OFString+Serialization.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
-       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURI.m				\
-       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -104,7 +102,6 @@ SRCS = OFApplication.m			\
        OFXMLCharacters.m		\
        OFXMLComment.m			\
        OFXMLElement.m			\
-       OFXMLElement+Serialization.m	\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
@@ -133,11 +130,14 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
+	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_APPLETALK = OFDDPSocket.m
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
@@ -177,14 +177,14 @@ INCLUDES := ${SRCS:.m=.h}			\
 SRCS += OFASPrintF.m			\
 	OFAdjacentArray.m		\
 	OFAdjacentSubarray.m		\
-	OFArchiveURIHandler.m		\
+	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFCountedMapTableSet.m		\
-	OFEmbeddedURIHandler.m		\
+	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
@@ -210,12 +210,12 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
 	${UNICODE_M}
-SRCS_FILES += OFFileURIHandler.m
-SRCS_SOCKETS += OFDNSResolverSettings.m			\
+SRCS_FILES += OFFileIRIHandler.m
+SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
+		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURIHandler.m			\
+		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
-		OFIPSocketAsyncConnector.m		\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
@@ -245,3 +245,11 @@ RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
 	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
 	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
+
+uninstall-extra:
+	for i in platform/GCC4 platform/GCC4.7 platform/PowerPC platform/macOS \
+	    platform/x86 platform ""; do \
+		if test -d ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			rmdir ${DESTDIR}${includedir}/${includesubdir}/$$i; \
+		fi; \
+	done

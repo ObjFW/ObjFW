@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,12 +26,11 @@
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -93,9 +92,9 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
+	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
 }
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
@@ -175,26 +174,22 @@ _references_to_categories_of_OFData(void)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	char *buffer = NULL;
-	unsigned long long size;
+	OFStreamOffset fileSize;
 
 	@try {
-		OFFile *file;
+		void *pool = objc_autoreleasePoolPush();
+		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
 
-		size = [[OFFileManager defaultManager]
-		    attributesOfItemAtPath: path].fileSize;
-
-# if ULLONG_MAX > SIZE_MAX
-		if (size > SIZE_MAX)
+		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
-# endif
 
-		buffer = OFAllocMemory((size_t)size, 1);
-		file = [[OFFile alloc] initWithPath: path mode: @"r"];
-		@try {
-			[file readIntoBuffer: buffer exactLength: (size_t)size];
-		} @finally {
-			[file release];
-		}
+		[file seekToOffset: 0 whence: OFSeekSet];
+
+		buffer = OFAllocMemory((size_t)fileSize, 1);
+		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		OFFreeMemory(buffer);
 		[self release];
@@ -204,7 +199,7 @@ _references_to_categories_of_OFData(void)
 
 	@try {
 		self = [self initWithItemsNoCopy: buffer
-					   count: (size_t)size
+					   count: (size_t)fileSize
 				    freeWhenDone: true];
 	} @catch (id e) {
 		OFFreeMemory(buffer);
@@ -215,13 +210,13 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFStream *stream = [OFURIHandler openItemAtURI: URI mode: @"r"];
+		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 		size_t pageSize;
 		unsigned char *buffer;
 
@@ -337,29 +332,6 @@ _references_to_categories_of_OFData(void)
 
 	if (!mutable)
 		[(OFMutableData *)self makeImmutable];
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithBase64EncodedString: stringValue];
-
-	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -591,35 +563,13 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[OFURIHandler openItemAtURI: URI mode: @"w"] writeData: self];
+	[[OFIRIHandler openItemAtIRI: IRI mode: @"w"] writeData: self];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool;
-	OFXMLElement *element;
-
-	if (_itemSize != 1)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-
-	pool = objc_autoreleasePoolPush();
-	element = [OFXMLElement
-	    elementWithName: self.className
-		  namespace: OFSerializationNS
-		stringValue: OFBase64Encode(_items, _count * _itemSize)];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFData *)messagePackRepresentation

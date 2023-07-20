@@ -1,0 +1,25 @@
+name: netbsd-gcc
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: macos-12
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-shared
+          - --with-tls=gnutls
+    steps:
+    - uses: actions/checkout@v3
+    - uses: vmactions/netbsd-vm@v0
+      with:
+        usesh: true
+        copyback: false
+        prepare: |
+          pkg_add autoconf automake gnutls pkgconf
+        run: |
+          ./autogen.sh
+          ./configure OBJC=gcc ${{ matrix.configure_flags }}
+          make -j4
+          make check
+          make install

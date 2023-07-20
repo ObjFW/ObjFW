@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,8 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFIRI;
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFURI;
 
 /**
  * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
@@ -80,18 +80,18 @@ OF_SUBCLASSING_RESTRICTED
     OFMutableArray OF_GENERIC(OFString *) *extensions;
 
 /**
- * @brief Parses the specified response header fields for the specified URI and
+ * @brief Parses the specified response header fields for the specified IRI and
  *	  returns an array of cookies.
  *
  * @param headerFields The response header fields to parse
- * @param URI The URI for the response header fields to parse
+ * @param IRI The IRI for the response header fields to parse
  * @return An array of cookies
  * @throw OFInvalidFormatException The specified response header has an invalid
  *				   format
  */
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
-    forURI: (OFURI *)URI;
+    forIRI: (OFIRI *)IRI;
 
 /**
  * @brief Returns the request header fields for the specified cookies.

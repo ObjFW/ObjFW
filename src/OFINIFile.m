@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,17 +21,17 @@
 #import "OFArray.h"
 #import "OFINICategory+Private.h"
 #import "OFINICategory.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFStream.h"
 #import "OFString.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
+- (void)of_parseIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 @end
 
 static bool
@@ -50,14 +50,14 @@ isWhitespaceLine(OFString *line)
 @implementation OFINIFile
 @synthesize categories = _categories;
 
-+ (instancetype)fileWithURI: (OFURI *)URI
++ (instancetype)fileWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithURI: URI] autorelease];
+	return [[[self alloc] initWithIRI: IRI] autorelease];
 }
 
-+ (instancetype)fileWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
++ (instancetype)fileWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithURI: URI encoding: encoding] autorelease];
+	return [[[self alloc] initWithIRI: IRI encoding: encoding] autorelease];
 }
 
 - (instancetype)init
@@ -65,19 +65,19 @@ isWhitespaceLine(OFString *line)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 {
-	return [self initWithURI: URI encoding: OFStringEncodingAutodetect];
+	return [self initWithIRI: IRI encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self of_parseURI: URI encoding: encoding];
+		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -110,7 +110,7 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)of_parseURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)of_parseIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *file;
@@ -121,7 +121,7 @@ isWhitespaceLine(OFString *line)
 		encoding = OFStringEncodingUTF8;
 
 	@try {
-		file = [OFURIHandler openItemAtURI: URI mode: @"r"];
+		file = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -156,15 +156,15 @@ isWhitespaceLine(OFString *line)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
-	[self writeToURI: URI encoding: OFStringEncodingUTF8];
+	[self writeToIRI: IRI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFStream *file = [OFURIHandler openItemAtURI: URI mode: @"w"];
+	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	bool first = true;
 
 	for (OFINICategory *category in _categories)

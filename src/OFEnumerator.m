@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -61,10 +61,11 @@
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	int i;
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [self nextObject];

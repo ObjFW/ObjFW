@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,8 +19,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
 
 #import "OFMapTable.h"
 #import "OFMapTable+Private.h"
@@ -159,7 +157,7 @@ OF_DIRECT_MEMBERS
 		_buckets = OFAllocZeroedMemory(_capacity, sizeof(*_buckets));
 
 		if (OFHashSeed != 0)
-			_rotate = OFRandom16() & 31;
+			_rotation = OFRandom16() & 31;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -189,6 +187,7 @@ resizeForCount(OFMapTable *self, uint32_t count)
 {
 	uint32_t fullness, capacity;
 	struct OFMapTableBucket **buckets;
+	unsigned char newRotation;
 
 	if (count > UINT32_MAX / sizeof(*self->_buckets) ||
 	    count > UINT32_MAX / 8)
@@ -215,20 +214,23 @@ resizeForCount(OFMapTable *self, uint32_t count)
 		return;
 
 	buckets = OFAllocZeroedMemory(capacity, sizeof(*buckets));
+	newRotation = (OFHashSeed != 0 ? OFRandom16() & 31 : 0);
 
 	for (uint32_t i = 0; i < self->_capacity; i++) {
 		if (self->_buckets[i] != NULL &&
 		    self->_buckets[i] != &deletedBucket) {
-			uint32_t j, last;
+			uint32_t rotatedHash, j, last;
 
+			rotatedHash = OFRotateLeft(self->_buckets[i]->hash,
+			    newRotation);
 			last = capacity;
 
-			for (j = self->_buckets[i]->hash & (capacity - 1);
+			for (j = rotatedHash & (capacity - 1);
 			    j < last && buckets[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
-				last = self->_buckets[i]->hash & (capacity - 1);
+				last = rotatedHash & (capacity - 1);
 
 				for (j = 0; j < last &&
 				    buckets[j] != NULL; j++);
@@ -244,21 +246,22 @@ resizeForCount(OFMapTable *self, uint32_t count)
 	OFFreeMemory(self->_buckets);
 	self->_buckets = buckets;
 	self->_capacity = capacity;
+	self->_rotation = newRotation;
 }
 
 static void
 setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
-	uint32_t i, last;
+	uint32_t rotatedHash, i, last;
 	void *old;
 
 	if (key == NULL || object == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OFRotateLeft(hash, self->_rotate);
+	rotatedHash = OFRotateLeft(hash, self->_rotation);
 	last = self->_capacity;
 
-	for (i = hash & (self->_capacity - 1);
+	for (i = rotatedHash & (self->_capacity - 1);
 	    i < last && self->_buckets[i] != NULL; i++) {
 		if (self->_buckets[i] == &deletedBucket)
 			continue;
@@ -269,7 +272,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 	/* In case the last bucket is already used */
 	if (i >= last) {
-		last = hash & (self->_capacity - 1);
+		last = rotatedHash & (self->_capacity - 1);
 
 		for (i = 0; i < last && self->_buckets[i] != NULL; i++) {
 			if (self->_buckets[i] == &deletedBucket)
@@ -288,17 +291,19 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 		struct OFMapTableBucket *bucket;
 
 		resizeForCount(self, self->_count + 1);
+		/* Resizing can change the rotation */
+		rotatedHash = OFRotateLeft(hash, self->_rotation);
 
 		self->_mutations++;
 		last = self->_capacity;
 
-		for (i = hash & (self->_capacity - 1); i < last &&
+		for (i = rotatedHash & (self->_capacity - 1); i < last &&
 		    self->_buckets[i] != NULL &&
 		    self->_buckets[i] != &deletedBucket; i++);
 
 		/* In case the last bucket is already used */
 		if (i >= last) {
-			last = hash & (self->_capacity - 1);
+			last = rotatedHash & (self->_capacity - 1);
 
 			for (i = 0; i < last && self->_buckets[i] != NULL &&
 			    self->_buckets[i] != &deletedBucket; i++);
@@ -374,7 +379,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 	for (unsigned long i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket) {
-			hash ^= OFRotateRight(_buckets[i]->hash, _rotate);
+			hash ^= _buckets[i]->hash;
 			hash ^= _objectFunctions.hash(_buckets[i]->object);
 		}
 	}
@@ -394,8 +399,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 			if (_buckets[i] != NULL &&
 			    _buckets[i] != &deletedBucket)
 				setObject(copy, _buckets[i]->key,
-				    _buckets[i]->object,
-				    OFRotateRight(_buckets[i]->hash, _rotate));
+				    _buckets[i]->object, _buckets[i]->hash);
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -411,15 +415,17 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (void *)objectForKey: (void *)key
 {
-	uint32_t i, hash, last;
+	uint32_t i, rotatedHash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OFRotateLeft((uint32_t)_keyFunctions.hash(key), _rotate);
+	rotatedHash = OFRotateLeft((uint32_t)_keyFunctions.hash(key),
+	    _rotation);
 	last = _capacity;
 
-	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
+	for (i = rotatedHash & (_capacity - 1);
+	    i < last && _buckets[i] != NULL; i++) {
 		if (_buckets[i] == &deletedBucket)
 			continue;
 
@@ -431,7 +437,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 		return nil;
 
 	/* In case the last bucket is already used */
-	last = hash & (_capacity - 1);
+	last = rotatedHash & (_capacity - 1);
 
 	for (i = 0; i < last && _buckets[i] != NULL; i++) {
 		if (_buckets[i] == &deletedBucket)
@@ -451,15 +457,17 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (void)removeObjectForKey: (void *)key
 {
-	uint32_t i, hash, last;
+	uint32_t i, rotatedHash, last;
 
 	if (key == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	hash = OFRotateLeft((uint32_t)_keyFunctions.hash(key), _rotate);
+	rotatedHash = OFRotateLeft((uint32_t)_keyFunctions.hash(key),
+	    _rotation);
 	last = _capacity;
 
-	for (i = hash & (_capacity - 1); i < last && _buckets[i] != NULL; i++) {
+	for (i = rotatedHash & (_capacity - 1);
+	    i < last && _buckets[i] != NULL; i++) {
 		if (_buckets[i] == &deletedBucket)
 			continue;
 
@@ -483,7 +491,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 		return;
 
 	/* In case the last bucket is already used */
-	last = hash & (_capacity - 1);
+	last = rotatedHash & (_capacity - 1);
 
 	for (i = 0; i < last && _buckets[i] != NULL; i++) {
 		if (_buckets[i] == &deletedBucket)
@@ -527,11 +535,11 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 	_buckets = OFResizeMemory(_buckets, _capacity, sizeof(*_buckets));
 
 	/*
-	 * Get a new random value for _rotate, so that it is not less secure
+	 * Get a new random value for _rotation, so that it is not less secure
 	 * than creating a new hash map.
 	 */
 	if (OFHashSeed != 0)
-		_rotate = OFRandom16() & 31;
+		_rotation = OFRandom16() & 31;
 }
 
 - (bool)containsObject: (void *)object

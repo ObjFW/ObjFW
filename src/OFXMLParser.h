@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -187,6 +187,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param buffer The buffer to parse
  * @param length The length of the buffer
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseBuffer: (const char *)buffer length: (size_t)length;
 
@@ -194,6 +198,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified string.
  *
  * @param string The string to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseString: (OFString *)string;
 
@@ -201,6 +209,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified stream.
  *
  * @param stream The stream to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseStream: (OFStream *)stream;
 @end

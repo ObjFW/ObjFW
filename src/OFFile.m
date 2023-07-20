@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,9 +15,10 @@
 
 #include "config.h"
 
-#define _LARGEFILE64_SOURCE
+#ifndef _LARGEFILE64_SOURCE
+# define _LARGEFILE64_SOURCE
+#endif
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -33,7 +34,6 @@
 #import "OFLocale.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -50,8 +50,10 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 #endif
 
 #ifdef OF_WII

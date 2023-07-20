@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -83,7 +83,7 @@ static OFString *const module = @"OFSocket";
 	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #6", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"127.0..1", 1234))
 
-	TEST(@"Port of an IPv4 address", OFSocketAddressPort(&addr) == 1234)
+	TEST(@"Port of an IPv4 address", OFSocketAddressIPPort(&addr) == 1234)
 
 	TEST(@"Converting an IPv4 to a string",
 	    [OFSocketAddressString(&addr) isEqual: @"127.0.0.1"])
@@ -113,6 +113,22 @@ static OFString *const module = @"OFSocket";
 	TEST(@"Parsing an IPv6 #5",
 	    R(addr = OFSocketAddressParseIP(@"::aaAa", 1234)) &&
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0xAAAA) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+
+	TEST(@"Parsing an IPv6 #6",
+	    R(addr = OFSocketAddressParseIP(@"fd00::1%123", 1234)) &&
+	    COMPARE_V6(addr, 0xFD00, 0, 0, 0, 0, 0, 0, 1) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234 &&
+	    addr.sockaddr.in6.sin6_scope_id == 123)
+
+	TEST(@"Parsing an IPv6 #7",
+	    R(addr = OFSocketAddressParseIP(@"::ffff:127.0.0.1", 1234)) &&
+	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0xFFFF, 0x7F00, 1) &&
+	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+
+	TEST(@"Parsing an IPv6 #8",
+	    R(addr = OFSocketAddressParseIP(@"64:ff9b::127.0.0.1", 1234)) &&
+	    COMPARE_V6(addr, 0x64, 0xFF9B, 0, 0, 0, 0, 0x7F00, 1) &&
 	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
 
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1", OFInvalidFormatException,
@@ -145,7 +161,9 @@ static OFString *const module = @"OFSocket";
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #10", OFInvalidFormatException,
 	    OFSocketAddressParseIP(@"1:2", 1234))
 
-	TEST(@"Port of an IPv6 address", OFSocketAddressPort(&addr) == 1234)
+	TEST(@"Port of an IPv6 address", OFSocketAddressIPPort(&addr) == 1234)
+
+	addr.sockaddr.in6.sin6_scope_id = 0;
 
 	SET_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0)
 	TEST(@"Converting an IPv6 to a string #1",

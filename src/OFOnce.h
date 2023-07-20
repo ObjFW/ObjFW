@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,7 @@
 
 #include "objfw-defs.h"
 
-#include "platform.h"
+#import "macros.h"
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
@@ -29,6 +29,12 @@ typedef int OFOnceControl;
 # define OFOnceControlInitValue 0
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
+
+typedef void (*OFOnceFunction)(void);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,7 +46,9 @@ extern "C" {
  *		  preinitialized to `OFOnceControlInitValue`.
  * @param function The function to execute once
  */
-extern void OFOnce(OFOnceControl *control, void (*function)(void));
+extern void OFOnce(OFOnceControl *control, OFOnceFunction function);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

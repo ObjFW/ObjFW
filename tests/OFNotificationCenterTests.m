@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -109,7 +109,7 @@ static const OFNotificationName otherNotificationName =
 
 #ifdef OF_HAVE_BLOCKS
 	__block bool received = false;
-	OFNotificationCenterHandle *handle;
+	id handle;
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: self];

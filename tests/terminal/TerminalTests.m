@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,7 +27,7 @@
 OF_APPLICATION_DELEGATE(TerminalTests)
 
 @implementation TerminalTests
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFArray *colors = [OFArray arrayWithObjects:
 	    [OFColor black], [OFColor silver], [OFColor grey], [OFColor white],

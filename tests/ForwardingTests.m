@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -208,8 +208,8 @@ test(id self, SEL _cmd)
 	 * Don't try fpret on Win64 if we don't have stret forwarding, as
 	 * long double is handled as a struct there.
 	 */
-# if !defined(OF_WINDOWS) || !defined(OF_X86_64) || \
-	defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
+# if !defined(OF_WINDOWS) || !defined(OF_AMD64) || \
+    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
 	TEST(@"-[forwardingTargetForSelector:] fp return",
 	    [testObject forwardingTargetFPRetTest] == 12345678.00006103515625)
 # endif

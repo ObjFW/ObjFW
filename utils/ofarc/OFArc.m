@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,11 +21,11 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
-#import "OFURI.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
@@ -167,7 +167,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 }
 
 @implementation OFArc
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *outputDir, *encodingString, *type;
 	const OFOptionsParserOption options[] = {
@@ -207,10 +207,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofarc/localization"];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofarc/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -462,7 +463,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", e.URI.fileSystemRepresentation,
+			    @"dir", e.IRI.fileSystemRepresentation,
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {

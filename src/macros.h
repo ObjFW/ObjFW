@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -316,14 +316,14 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(OF_X86_64) || defined(OF_X86) || defined(OF_ARM64) || \
+# if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64) || \
     defined(OF_ARM) || defined(OF_POWERPC)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
 # if defined(OF_ELF)
-#  if defined(OF_X86_64) || defined(OF_X86) || \
+#  if defined(OF_AMD64) || defined(OF_X86) || \
     defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
     defined(OF_MIPS) || defined(OF_SPARC64) || defined(OF_SPARC)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
@@ -332,14 +332,14 @@
 #   endif
 #  endif
 # elif defined(OF_MACH_O)
-#  if defined(OF_X86_64)
+#  if defined(OF_AMD64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
 # elif defined(OF_WINDOWS)
-#  if defined(OF_X86_64) || defined(OF_X86)
+#  if defined(OF_AMD64) || defined(OF_X86)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -359,15 +359,22 @@
 			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
+@class OFConstantString;
+extern void OFLog(OFConstantString *_Nonnull, ...);
 # define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\
-			fprintf(stderr, "Failed to ensure condition "	\
-			    "in " __FILE__ ":%d:\n" #cond "\n",		\
-			    __LINE__);					\
+			OFLog(@"Failed to ensure condition in "		\
+			    @__FILE__ ":%d: " @#cond, __LINE__);	\
 			abort();					\
 		}							\
 	} while (0)
+#endif
+
+#ifndef NDEBUG
+# define OFAssert(...) OFEnsure(__VA_ARGS__)
+#else
+# define OFAssert(...)
 #endif
 
 #define OF_UNRECOGNIZED_SELECTOR OFMethodNotFound(self, _cmd);
@@ -385,13 +392,14 @@
 	abort();
 #endif
 #ifdef __clang__
-# define OF_DEALLOC_UNSUPPORTED						 \
-	[self doesNotRecognizeSelector: _cmd];				 \
-									 \
-	abort();							 \
-									 \
-	_Pragma("clang diagnostic push ignored \"-Wunreachable-code\""); \
-	[super dealloc];	/* Get rid of a stupid warning */	 \
+# define OF_DEALLOC_UNSUPPORTED						\
+	[self doesNotRecognizeSelector: _cmd];				\
+									\
+	abort();							\
+									\
+	_Pragma("clang diagnostic push");				\
+	_Pragma("clang diagnostic ignored \"-Wunreachable-code\"");	\
+	[super dealloc];	/* Get rid of a stupid warning */	\
 	_Pragma("clang diagnostic pop");
 #else
 # define OF_DEALLOC_UNSUPPORTED						\
@@ -442,7 +450,7 @@ OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
-#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "xchgb	%h0, %b0"
 	    : "=Q"(i)
@@ -472,7 +480,7 @@ OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
-#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
 	    : "=q"(i)
@@ -504,7 +512,7 @@ OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
-#elif defined(OF_X86_64) && defined(__GNUC__)
+#elif defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
 	    : "=r"(i)

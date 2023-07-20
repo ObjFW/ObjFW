@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,6 +62,17 @@ typedef enum {
 	/** The left object is bigger than the right */
 	OFOrderedDescending = 1
 } OFComparisonResult;
+
+/**
+ * @brief A function to compare two objects.
+ *
+ * @param left The left object
+ * @param right The right object
+ * @param context Context passed along for comparing
+ * @return The order of the objects
+ */
+typedef OFComparisonResult (*OFCompareFunction)(id _Nonnull left,
+    id _Nonnull right, void *_Nullable context);
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -144,7 +155,7 @@ typedef double OFTimeInterval;
 /**
  * @struct OFPoint OFObject.h ObjFW/OFObject.h
  *
- * @brief A point.
+ * @brief A point in 2D space.
  */
 typedef struct OF_BOXABLE {
 	/** The x coordinate of the point */
@@ -279,6 +290,116 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 		return false;
 
 	if (!OFEqualSizes(rect1.size, rect2.size))
+		return false;
+
+	return true;
+}
+
+/**
+ * @struct OFVector3D OFObject.h ObjFW/OFObject.h
+ *
+ * @brief A vector in 3D space.
+ */
+typedef struct OF_BOXABLE {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+} OFVector3D;
+
+/**
+ * @brief Creates a new OFVector3D.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @return An OFVector3D with the specified coordinates
+ */
+static OF_INLINE OFVector3D OF_CONST_FUNC
+OFMakeVector3D(float x, float y, float z)
+{
+	OFVector3D vector = { x, y, z };
+
+	return vector;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vector1 The first vector for the comparison
+ * @param vector2 The second vectors for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	if (vector1.x != vector2.x)
+		return false;
+
+	if (vector1.y != vector2.y)
+		return false;
+
+	if (vector1.z != vector2.z)
+		return false;
+
+	return true;
+}
+
+/**
+ * @struct OFVector4D OFObject.h ObjFW/OFObject.h
+ *
+ * @brief A vector in 4D space.
+ */
+typedef struct OF_BOXABLE {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+	/** The w coordinate of the vector */
+	float w;
+} OFVector4D;
+
+/**
+ * @brief Creates a new OFVector4D.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @param w The w coordinate of the vector
+ * @return An OFVector4D with the specified coordinates
+ */
+static OF_INLINE OFVector4D OF_CONST_FUNC
+OFMakeVector4D(float x, float y, float z, float w)
+{
+	OFVector4D vector = { x, y, z, w };
+
+	return vector;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vector1 The first vector for the comparison
+ * @param vector2 The second vectors for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OFEqualVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	if (vector1.x != vector2.x)
+		return false;
+
+	if (vector1.y != vector2.y)
+		return false;
+
+	if (vector1.z != vector2.z)
+		return false;
+
+	if (vector1.w != vector2.w)
 		return false;
 
 	return true;
@@ -658,13 +779,6 @@ OF_ROOT_CLASS
  * @throw OFInitializationFailedException The instance could not be constructed
  */
 + (instancetype)alloc;
-
-/**
- * @brief Calls @ref alloc on `self` and then `init` on the returned object.
- *
- * @return An allocated and initialized object
- */
-+ (instancetype)new;
 
 /**
  * @brief Returns the class.
@@ -1366,6 +1480,13 @@ extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
 
 /**
+ * @brief Initializes the specified hash.
+ *
+ * @param hash A pointer to the hash to initialize
+ */
+extern void OFHashInit(unsigned long *_Nonnull hash);
+
+/**
  * @brief Returns 16 bit or non-cryptographical randomness.
  *
  * @return 16 bit or non-cryptographical randomness
@@ -1385,13 +1506,6 @@ extern uint32_t OFRandom32(void);
  * @return 64 bit or non-cryptographical randomness
  */
 extern uint64_t OFRandom64(void);
-
-/**
- * @brief Initializes the specified hash.
- *
- * @param hash A pointer to the hash to initialize
- */
-extern void OFHashInit(unsigned long *_Nonnull hash);
 #ifdef __cplusplus
 }
 #endif
@@ -1402,7 +1516,6 @@ OF_ASSUME_NONNULL_END
 
 #ifdef __OBJC__
 # import "OFObject+KeyValueCoding.h"
-# import "OFObject+Serialization.h"
 #endif
 
 #endif

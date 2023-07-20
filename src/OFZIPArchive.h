@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 #ifdef OF_ZIP_ARCHIVE_M
 @public
 #endif
@@ -78,30 +78,32 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates a URI for accessing a the specified file within the specified
- *	  ZIP archive.
+ * @brief Creates an IRI for accessing a the specified file within the
+ *	  specified ZIP archive.
  *
  * @param path The path of the file within the archive
- * @param URI The URI of the archive
- * @return A URI for accessing the specified file within the specified ZIP
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified ZIP
  *	   archive
  */
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -115,6 +117,7 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
@@ -123,13 +126,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.
@@ -147,6 +151,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in read mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed
+ * @throw OFInvalidFormatException The local header and the header in the
+ *				   central directory do not match enough
+ * @throw OFUnsupportedVersionException The file uses a version of the ZIP
+ *					format that is not supported
  */
 - (OFStream *)streamForReadingFile: (OFString *)path;
 
@@ -173,11 +185,23 @@ OF_SUBCLASSING_RESTRICTED
  *		  * The CRC32.
  *		  * Bit 3 and 11 of the general purpose bit flag.
  * @return A stream for writing the specified entry to the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in write mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed. If
+ *				    @ref OFOpenItemFailedException#errNo is
+ *				    `EEXIST`, it failed because there is
+ *				    already a file with the same name in the
+ *				    archive.
+ * @throw OFNotImplementedException The desired compression method is not
+ *				    implemented
  */
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry;
 
 /**
  * @brief Closes the OFZIPArchive.
+ *
+ * @throw OFNotOpenException The archive is not open
  */
 - (void)close;
 @end
