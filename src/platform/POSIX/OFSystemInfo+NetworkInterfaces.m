@@ -312,7 +312,83 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	OFFile *file;
+	OFString *line;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	@try {
+		file = [OFFile fileWithPath: @"/proc/net/atalk/interface"
+				       mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		return false;
+	}
+
+	/* First line is "Interface Address Networks Status" */
+	if (![[file readLine] hasPrefix: @"Interface "])
+		return false;
+
+	while ((line = [file readLine]) != nil) {
+		OFArray *components = [line
+		    componentsSeparatedByString: @" "
+					options: OFStringSkipEmptyComponents];
+		OFString *addressString, *name;
+		unsigned long long network, node;
+		OFSocketAddress address;
+		OFMutableData *addresses;
+
+		if (components.count < 4)
+			continue;
+
+		name = [components objectAtIndex: 0];
+		addressString = [components objectAtIndex: 1];
+
+		if (addressString.length != 7 ||
+		    [addressString characterAtIndex: 4] != ':')
+			continue;
+
+		if ((interface = [ret objectForKey: name]) == nil) {
+			interface = [OFMutableDictionary dictionary];
+			[ret setObject: interface forKey: name];
+		}
+
+		@try {
+			network = [[addressString
+			    substringWithRange: OFMakeRange(0, 4)]
+			    unsignedLongLongValueWithBase: 16];
+			node = [[addressString
+			    substringWithRange: OFMakeRange(5, 2)]
+			    unsignedLongLongValueWithBase: 16];
+		} @catch (OFInvalidFormatException *e) {
+			continue;
+		}
+
+		if (network > 0xFFFF || node > 0xFF)
+			continue;
+
+		address = OFSocketAddressMakeAppleTalk(
+		    (uint16_t)network, (uint8_t)node, 0);
+
+		if ((addresses = [interface objectForKey:
+		    OFNetworkInterfaceAppleTalkAddresses]) == nil) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(OFSocketAddress)];
+			[interface
+			    setObject: addresses
+			       forKey: OFNetworkInterfaceAppleTalkAddresses];
+		}
+
+		[addresses addItem: &address];
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceAppleTalkAddresses]
+		    makeImmutable];
+
+	return false;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceAppleTalkAddresses,
 	    OFSocketAddressFamilyAppleTalk, AF_APPLETALK,
