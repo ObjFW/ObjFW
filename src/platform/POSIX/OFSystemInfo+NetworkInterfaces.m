@@ -150,6 +150,16 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			memcpy(&address.sockaddr.in, &current->ifr_addr,
 			    sockaddrSize);
 
+#  if defined(OF_HAVE_IPV6) && defined(HAVE_IF_NAMETOINDEX)
+			if (address.sockaddr.in6.sin6_family == AF_INET6 &&
+			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
+			    == 0x80)
+				address.sockaddr.in6.sin6_scope_id =
+				    if_nametoindex(
+				    [name cStringWithEncoding: encoding]);
+#  endif
+
 			[addresses addItem: &address];
 
 next:
@@ -189,6 +199,9 @@ static bool
 queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 {
 # if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+#  ifdef HAVE_IF_NAMETOINDEX
+	OFStringEncoding encoding = [OFLocale encoding];
+#  endif
 	OFFile *file;
 	OFString *line;
 	OFMutableDictionary *interface;
@@ -224,6 +237,7 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv6;
+		address.sockaddr.in6.sin6_family = AF_INET6;
 
 		for (size_t i = 0; i < 32; i += 2) {
 			unsigned long long byte;
@@ -242,6 +256,13 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 			address.sockaddr.in6.sin6_addr.s6_addr[i / 2] =
 			    (unsigned char)byte;
 		}
+
+#  ifdef HAVE_IF_NAMETOINDEX
+		if (address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+		    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0) == 0x80)
+			address.sockaddr.in6.sin6_scope_id = if_nametoindex(
+			    [name cStringWithEncoding: encoding]);
+#  endif
 
 		if ((addresses = [interface
 		    objectForKey: OFNetworkInterfaceIPv6Addresses]) == nil) {
