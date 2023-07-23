@@ -150,22 +150,8 @@ OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 	return field;
 }
 
-static void
-seekOrThrowInvalidFormat(OFSeekableStream *stream,
-    OFStreamOffset offset, OFSeekWhence whence)
-{
-	@try {
-		[stream seekToOffset: offset whence: whence];
-	} @catch (OFSeekFailedException *e) {
-		if (e.errNo == EINVAL)
-			@throw [OFInvalidFormatException exception];
-
-		@throw e;
-	}
-}
-
 @implementation OFZIPArchive
-@synthesize archiveComment = _archiveComment;
+@synthesize delegate = _delegate, archiveComment = _archiveComment;
 
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
@@ -215,7 +201,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 		if (_mode == modeAppend) {
 			_offset = _centralDirectoryOffset;
-			seekOrThrowInvalidFormat(_stream,
+			seekOrThrowInvalidFormat(self, NULL,
 			    (OFStreamOffset)_offset, OFSeekSet);
 		}
 	} @catch (id e) {
@@ -269,6 +255,35 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[super dealloc];
 }
 
+static void
+seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
+    OFStreamOffset offset, OFSeekWhence whence)
+{
+	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
+		OFStream *oldStream = archive->_stream;
+		OFSeekableStream *stream =
+		    [archive->_delegate archive: archive
+			      wantsPartNumbered: *diskNumber
+			     totalNumberOfParts: archive->_numDisks];
+
+		if (stream == nil)
+			@throw [OFInvalidFormatException exception];
+
+		archive->_diskNumber = *diskNumber;
+		archive->_stream = [stream retain];
+		[oldStream release];
+	}
+
+	@try {
+		[archive->_stream seekToOffset: offset whence: whence];
+	} @catch (OFSeekFailedException *e) {
+		if (e.errNo == EINVAL)
+			@throw [OFInvalidFormatException exception];
+
+		@throw e;
+	}
+}
+
 - (void)of_readZIPInfo
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -277,7 +292,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	bool valid = false;
 
 	do {
-		seekOrThrowInvalidFormat(_stream, offset, OFSeekEnd);
+		seekOrThrowInvalidFormat(self, NULL, offset, OFSeekEnd);
 
 		if ([_stream readLittleEndianInt32] == 0x06054B50) {
 			valid = true;
@@ -288,7 +303,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (!valid)
 		@throw [OFInvalidFormatException exception];
 
-	_diskNumber = [_stream readLittleEndianInt16];
+	_diskNumber = _numDisks = [_stream readLittleEndianInt16];
 	_centralDirectoryDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntriesInDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntries = [_stream readLittleEndianInt16];
@@ -300,16 +315,17 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    readStringWithLength: commentLength
 			encoding: OFStringEncodingCodepage437] copy];
 
-	if (_diskNumber == 0xFFFF ||
+	if (_numDisks == 0xFFFF ||
 	    _centralDirectoryDisk == 0xFFFF ||
 	    _centralDirectoryEntriesInDisk == 0xFFFF ||
 	    _centralDirectoryEntries == 0xFFFF ||
 	    _centralDirectorySize == 0xFFFFFFFF ||
 	    _centralDirectoryOffset == 0xFFFFFFFF) {
+		uint32_t diskNumber;
 		int64_t offset64;
 		uint64_t size;
 
-		seekOrThrowInvalidFormat(_stream, offset - 20, OFSeekEnd);
+		seekOrThrowInvalidFormat(self, NULL, offset - 20, OFSeekEnd);
 
 		if ([_stream readLittleEndianInt32] != 0x07064B50) {
 			objc_autoreleasePoolPop(pool);
@@ -320,13 +336,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		 * FIXME: Handle number of the disk containing ZIP64 end of
 		 * central directory record.
 		 */
-		[_stream readLittleEndianInt32];
+		diskNumber = [_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
+		_numDisks = [_stream readLittleEndianInt32];
 
 		if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
-		seekOrThrowInvalidFormat(_stream,
+		seekOrThrowInvalidFormat(self, &diskNumber,
 		    (OFStreamOffset)offset64, OFSeekSet);
 
 		if ([_stream readLittleEndianInt32] != 0x06064B50)
@@ -341,7 +358,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		/* version needed to extract */
 		[_stream readLittleEndianInt16];
 
-		_diskNumber = [_stream readLittleEndianInt32];
+		if ([_stream readLittleEndianInt32] != _diskNumber)
+			@throw [OFInvalidFormatException exception];
+
 		_centralDirectoryDisk = [_stream readLittleEndianInt32];
 		_centralDirectoryEntriesInDisk =
 		    [_stream readLittleEndianInt64];
@@ -366,7 +385,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    (OFStreamOffset)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	seekOrThrowInvalidFormat(_stream,
+	seekOrThrowInvalidFormat(self, &_centralDirectoryDisk,
 	    (OFStreamOffset)_centralDirectoryOffset, OFSeekSet);
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
@@ -413,6 +432,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry;
 	OFZIPArchiveLocalFileHeader *localFileHeader;
+	uint32_t startDiskNumber;
 	int64_t offset64;
 
 	if (_stream == nil)
@@ -433,11 +453,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	}
 	_lastReturnedStream = nil;
 
+	startDiskNumber = entry.of_startDiskNumber;
 	offset64 = entry.of_localFileHeaderOffset;
 	if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
-	seekOrThrowInvalidFormat(_stream, (OFStreamOffset)offset64, OFSeekSet);
+	seekOrThrowInvalidFormat(self, &startDiskNumber,
+	    (OFStreamOffset)offset64, OFSeekSet);
 	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 

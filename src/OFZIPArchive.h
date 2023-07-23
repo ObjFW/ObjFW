@@ -22,7 +22,30 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFSeekableStream;
 @class OFStream;
+@class OFZIPArchive;
+
+/**
+ * @protocol OFZIPArchiveDelegate OFZIPArchive.h ObjFW/OFZIPArchive.h
+ *
+ * @brief A delegate for OFZIPArchive.
+ */
+@protocol OFZIPArchiveDelegate <OFObject>
+@optional
+/**
+ * @brief A callback that is called when an @ref OFZIPArchive wants to read a
+ *	  different archive part.
+ *
+ * @param archive The archive that wants to read another part
+ * @param partNumber The number of the part the archive wants to read
+ * @param totalNumber The total number of parts of the archive
+ * @return The stream to read the needed part, or `nil` if no such part exists
+ */
+- (nullable OFSeekableStream *)archive: (OFZIPArchive *)archive
+		     wantsPartNumbered: (unsigned int)partNumber
+		    totalNumberOfParts: (unsigned int)totalNumber;
+@end
 
 /**
  * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
@@ -32,6 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
+	OFObject <OFZIPArchiveDelegate> *_Nullable _delegate;
 	OF_KINDOF(OFStream *) _stream;
 #ifdef OF_ZIP_ARCHIVE_M
 @public
@@ -39,7 +63,7 @@ OF_SUBCLASSING_RESTRICTED
 	int64_t _offset;
 @protected
 	uint_least8_t _mode;
-	uint32_t _diskNumber, _centralDirectoryDisk;
+	uint32_t _diskNumber, _numDisks, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
@@ -52,6 +76,12 @@ OF_SUBCLASSING_RESTRICTED
 	    *_pathToEntryMap;
 	OFStream *_Nullable _lastReturnedStream;
 }
+
+/**
+ * @brief The delegate of the ZIP archive.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    OFObject <OFZIPArchiveDelegate> *delegate;
 
 /**
  * @brief The archive comment.

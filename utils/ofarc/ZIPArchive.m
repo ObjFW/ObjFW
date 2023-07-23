@@ -102,8 +102,10 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	self = [super init];
 
 	@try {
+		_path = [path copy];
 		_archive = [[OFZIPArchive alloc] initWithStream: stream
 							   mode: mode];
+		_archive.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -114,9 +116,39 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
+	[_path release];
 	[_archive release];
 
 	[super dealloc];
+}
+
+- (OFSeekableStream *)archive: (OFZIPArchive *)archive
+	    wantsPartNumbered: (unsigned int)partNumber
+	   totalNumberOfParts: (unsigned int)totalNumber
+{
+	OFString *path;
+
+	if ([_path.pathExtension caseInsensitiveCompare: @"zip"] !=
+	    OFOrderedSame)
+		return nil;
+
+	if (partNumber > 98)
+		return nil;
+
+	if (partNumber == totalNumber)
+		path = _path;
+	else
+		path = [_path.stringByDeletingPathExtension
+		    stringByAppendingFormat: @".z%02u", partNumber + 1];
+
+	@try {
+		return [OFFile fileWithPath: path mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		if (e.errNo != ENOENT)
+			@throw e;
+
+		return nil;
+	}
 }
 
 - (void)listFiles
