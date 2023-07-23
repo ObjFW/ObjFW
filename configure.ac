@@ -1409,7 +1409,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
 	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
-		#ifdef HAVAE_SYS_TYPES_H
+		#ifdef HAVE_SYS_TYPES_H
 		# include <sys/types.h>
 		#endif
 		#ifdef HAVE_NET_IF_DL_H
