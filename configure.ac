@@ -1405,7 +1405,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
 	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
 	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
@@ -1414,6 +1414,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 		#ifdef HAVE_NET_IF_DL_H
 		# include <net/if_dl.h>
+		#endif
+	])
+	AC_CHECK_MEMBERS([struct ifreq.ifr_hwaddr], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
 		#endif
 	])
 	AC_CHECK_HEADER(sys/un.h, [

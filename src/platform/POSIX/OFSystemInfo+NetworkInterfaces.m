@@ -21,6 +21,9 @@
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
+#ifdef HAVE_SYS_SOCKIO_H
+# include <sys/sockio.h>
+#endif
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
@@ -402,7 +405,8 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 {
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR)
+#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR) && \
+    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
