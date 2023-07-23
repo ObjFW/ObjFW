@@ -1407,7 +1407,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
-	AC_CHECK_FUNCS([if_indextoname if_nametoindex])
+	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
 		#ifdef HAVAE_SYS_TYPES_H
 		# include <sys/types.h>
@@ -1755,9 +1755,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 		;;
 	esac
-
-	AC_CHECK_HEADERS(net/if.h)
-	AC_CHECK_FUNCS(if_nameindex)
 
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
