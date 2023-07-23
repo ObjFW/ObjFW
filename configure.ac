@@ -1416,6 +1416,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		# include <net/if_dl.h>
 		#endif
 	])
+	AC_CHECK_TYPES([struct lifconf], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
+		#endif
+	])
 	AC_CHECK_MEMBERS([struct ifreq.ifr_hwaddr], [], [], [
 		#ifdef HAVE_NET_IF_H
 		# include <net/if.h>

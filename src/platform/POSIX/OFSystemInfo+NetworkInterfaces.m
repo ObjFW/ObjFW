@@ -101,16 +101,85 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 {
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(family, SOCK_DGRAM, 0);
-	struct ifconf ifc;
-	struct ifreq *ifrs;
 	OFMutableDictionary *interface;
 	OFEnumerator *enumerator;
 
 	if (sock < 0)
 		return false;
 
-	ifrs = malloc(128 * sizeof(struct ifreq));
-	if (ifrs == NULL) {
+# if defined(HAVE_STRUCT_LIFCONF) && defined(SIOCGLIFCONF)
+	struct lifconf lifc;
+	struct lifreq *lifrs;
+
+	if ((lifrs = malloc(128 * sizeof(struct lifreq))) == NULL) {
+		closesocket(sock);
+		return false;
+	}
+
+	@try {
+		char *buffer;
+
+		memset(&lifc, 0, sizeof(lifc));
+		lifc.lifc_buf = (void *)lifrs;
+		lifc.lifc_len = 128 * sizeof(struct lifreq);
+		if (ioctl(sock, SIOCGLIFCONF, &lifc) < 0)
+			return false;
+
+		for (buffer = lifc.lifc_buf;
+		    buffer < (char *)lifc.lifc_buf + lifc.lifc_len;
+		    buffer += sizeof(struct lifreq)) {
+			struct lifreq *current =
+			    (struct lifreq *)(void *)buffer;
+			OFString *name;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			if (current->lifr_addr.ss_family != family)
+				continue;
+
+			name = [OFString stringWithCString: current->lifr_name
+						  encoding: encoding];
+			if ((interface = [ret objectForKey: name]) == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			addresses = [interface objectForKey: key];
+			if (addresses == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface setObject: addresses forKey: key];
+			}
+
+			memset(&address, 0, sizeof(address));
+			address.family = addressFamily;
+			memcpy(&address.sockaddr.in, &current->lifr_addr,
+			    sockaddrSize);
+
+#  if defined(OF_HAVE_IPV6) && defined(HAVE_IF_NAMETOINDEX)
+			if (address.sockaddr.in6.sin6_family == AF_INET6 &&
+			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
+			    == 0x80)
+				address.sockaddr.in6.sin6_scope_id =
+				    if_nametoindex(
+				    [name cStringWithEncoding: encoding]);
+#  endif
+
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(lifrs);
+		closesocket(sock);
+	}
+# else
+	struct ifconf ifc;
+	struct ifreq *ifrs;
+
+	if (sock < 0)
+		return false;
+
+	if ((ifrs = malloc(128 * sizeof(struct ifreq))) == NULL) {
 		closesocket(sock);
 		return false;
 	}
@@ -176,6 +245,7 @@ next:
 		free(ifrs);
 		closesocket(sock);
 	}
+# endif
 
 	enumerator = [ret objectEnumerator];
 	while ((interface = [enumerator nextObject]) != nil)
