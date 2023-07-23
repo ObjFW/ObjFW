@@ -475,8 +475,43 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 {
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR) && \
-    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
+#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGLIFHWADDR)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (sock < 0)
+		return false;
+
+	for (OFString *name in ret) {
+		size_t nameLength = [name cStringLengthWithEncoding: encoding];
+		struct lifreq lifr;
+		struct sockaddr_dl *sdl;
+		OFData *hardwareAddress;
+
+		if (nameLength > IFNAMSIZ)
+			continue;
+
+		memset(&lifr, 0, sizeof(lifr));
+		memcpy(&lifr.lifr_name, [name cStringWithEncoding: encoding],
+		    nameLength);
+
+		if (ioctl(sock, SIOCGLIFHWADDR, &lifr) < 0)
+			continue;
+
+		if (lifr.lifr_addr.ss_family != AF_LINK)
+			continue;
+
+		sdl = (struct sockaddr_dl *)(void *)&lifr.lifr_addr;
+		hardwareAddress = [OFData dataWithItems: LLADDR(sdl)
+						  count: sdl->sdl_alen];
+		[[ret objectForKey: name]
+		    setObject: hardwareAddress
+		       forKey: OFNetworkInterfaceHardwareAddress];
+	}
+
+	return true;
+#elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
+    defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
