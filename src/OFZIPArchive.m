@@ -158,11 +158,16 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
     OFStreamOffset offset, OFSeekWhence whence)
 {
 	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
-		OFStream *oldStream = archive->_stream;
-		OFSeekableStream *stream =
-		    [archive->_delegate archive: archive
-			      wantsPartNumbered: *diskNumber
-			     totalNumberOfParts: archive->_numDisks];
+		OFStream *oldStream;
+		OFSeekableStream *stream;
+
+		if (archive->_mode != modeRead)
+			@throw [OFInvalidFormatException exception];
+
+		oldStream = archive->_stream;
+		stream = [archive->_delegate archive: archive
+				   wantsPartNumbered: *diskNumber
+				  totalNumberOfParts: archive->_numDisks];
 
 		if (stream == nil)
 			@throw [OFInvalidFormatException exception];
