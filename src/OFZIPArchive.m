@@ -153,6 +153,35 @@ OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 @implementation OFZIPArchive
 @synthesize delegate = _delegate, archiveComment = _archiveComment;
 
+static void
+seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
+    OFStreamOffset offset, OFSeekWhence whence)
+{
+	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
+		OFStream *oldStream = archive->_stream;
+		OFSeekableStream *stream =
+		    [archive->_delegate archive: archive
+			      wantsPartNumbered: *diskNumber
+			     totalNumberOfParts: archive->_numDisks];
+
+		if (stream == nil)
+			@throw [OFInvalidFormatException exception];
+
+		archive->_diskNumber = *diskNumber;
+		archive->_stream = [stream retain];
+		[oldStream release];
+	}
+
+	@try {
+		[archive->_stream seekToOffset: offset whence: whence];
+	} @catch (OFSeekFailedException *e) {
+		if (e.errNo == EINVAL)
+			@throw [OFInvalidFormatException exception];
+
+		@throw e;
+	}
+}
+
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
@@ -253,35 +282,6 @@ OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 	[_pathToEntryMap release];
 
 	[super dealloc];
-}
-
-static void
-seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
-    OFStreamOffset offset, OFSeekWhence whence)
-{
-	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
-		OFStream *oldStream = archive->_stream;
-		OFSeekableStream *stream =
-		    [archive->_delegate archive: archive
-			      wantsPartNumbered: *diskNumber
-			     totalNumberOfParts: archive->_numDisks];
-
-		if (stream == nil)
-			@throw [OFInvalidFormatException exception];
-
-		archive->_diskNumber = *diskNumber;
-		archive->_stream = [stream retain];
-		[oldStream release];
-	}
-
-	@try {
-		[archive->_stream seekToOffset: offset whence: whence];
-	} @catch (OFSeekFailedException *e) {
-		if (e.errNo == EINVAL)
-			@throw [OFInvalidFormatException exception];
-
-		@throw e;
-	}
 }
 
 - (void)of_readZIPInfo
