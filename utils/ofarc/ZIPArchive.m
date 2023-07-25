@@ -124,7 +124,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (OFSeekableStream *)archive: (OFZIPArchive *)archive
 	    wantsPartNumbered: (unsigned int)partNumber
-	   totalNumberOfParts: (unsigned int)totalNumber
+	       lastPartNumber: (unsigned int)lastPartNumber
 {
 	OFString *path;
 
@@ -135,7 +135,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	if (partNumber > 98)
 		return nil;
 
-	if (partNumber == totalNumber)
+	if (partNumber == lastPartNumber)
 		path = _path;
 	else
 		path = [_path.stringByDeletingPathExtension

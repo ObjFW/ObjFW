@@ -39,12 +39,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param archive The archive that wants to read another part
  * @param partNumber The number of the part the archive wants to read
- * @param totalNumber The total number of parts of the archive
+ * @param lastPartNumber The number of the last archive part
  * @return The stream to read the needed part, or `nil` if no such part exists
  */
 - (nullable OFSeekableStream *)archive: (OFZIPArchive *)archive
 		     wantsPartNumbered: (unsigned int)partNumber
-		    totalNumberOfParts: (unsigned int)totalNumber;
+			lastPartNumber: (unsigned int)lastPartNumber;
 @end
 
 /**
@@ -55,15 +55,16 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
-	OFObject <OFZIPArchiveDelegate> *_Nullable _delegate;
-	OF_KINDOF(OFStream *) _stream;
 #ifdef OF_ZIP_ARCHIVE_M
 @public
 #endif
+	OFObject <OFZIPArchiveDelegate> *_Nullable _delegate;
+	OF_KINDOF(OFStream *) _stream;
 	int64_t _offset;
-@protected
 	uint_least8_t _mode;
-	uint32_t _diskNumber, _numDisks, _centralDirectoryDisk;
+	uint32_t _diskNumber, _lastDiskNumber;
+@protected
+	uint32_t _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;

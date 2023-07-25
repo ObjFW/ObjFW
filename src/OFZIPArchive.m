@@ -85,7 +85,8 @@ OF_DIRECT_MEMBERS
 @interface OFZIPArchiveFileReadStream: OFStream
 {
 	OFZIPArchive *_archive;
-	OFStream *_stream, *_decompressedStream;
+	OFZIPArchiveEntryCompressionMethod _compressionMethod;
+	OF_KINDOF(OFStream *) _decompressedStream;
 	OFZIPArchiveEntry *_entry;
 	unsigned long long _toRead;
 	uint32_t _CRC32;
@@ -161,13 +162,14 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		OFStream *oldStream;
 		OFSeekableStream *stream;
 
-		if (archive->_mode != modeRead)
+		if (archive->_mode != modeRead ||
+		    *diskNumber > archive->_lastDiskNumber)
 			@throw [OFInvalidFormatException exception];
 
 		oldStream = archive->_stream;
 		stream = [archive->_delegate archive: archive
 				   wantsPartNumbered: *diskNumber
-				  totalNumberOfParts: archive->_numDisks];
+				      lastPartNumber: archive->_lastDiskNumber];
 
 		if (stream == nil)
 			@throw [OFInvalidFormatException exception];
@@ -308,7 +310,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (!valid)
 		@throw [OFInvalidFormatException exception];
 
-	_diskNumber = _numDisks = [_stream readLittleEndianInt16];
+	_diskNumber = _lastDiskNumber = [_stream readLittleEndianInt16];
 	_centralDirectoryDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntriesInDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntries = [_stream readLittleEndianInt16];
@@ -320,7 +322,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	    readStringWithLength: commentLength
 			encoding: OFStringEncodingCodepage437] copy];
 
-	if (_numDisks == 0xFFFF ||
+	if (_lastDiskNumber == 0xFFFF ||
 	    _centralDirectoryDisk == 0xFFFF ||
 	    _centralDirectoryEntriesInDisk == 0xFFFF ||
 	    _centralDirectoryEntries == 0xFFFF ||
@@ -343,7 +345,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		 */
 		diskNumber = [_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
-		_numDisks = [_stream readLittleEndianInt32];
+		_lastDiskNumber = [_stream readLittleEndianInt32];
+		if (_lastDiskNumber == 0)
+			@throw [OFInvalidFormatException exception];
+		_lastDiskNumber--;
 
 		if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
@@ -772,19 +777,19 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	@try {
 		_archive = [archive retain];
-		_stream = [stream retain];
+		_compressionMethod = entry.compressionMethod;
 
-		switch (entry.compressionMethod) {
+		switch (_compressionMethod) {
 		case OFZIPArchiveEntryCompressionMethodNone:
-			_decompressedStream = [stream retain];
+			_decompressedStream = [_archive->_stream retain];
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate:
 			_decompressedStream = [[OFInflateStream alloc]
-			    initWithStream: stream];
+			    initWithStream: _archive->_stream];
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate64:
 			_decompressedStream = [[OFInflate64Stream alloc]
-			    initWithStream: stream];
+			    initWithStream: _archive->_stream];
 			break;
 		default:
 			@throw [OFNotImplementedException
@@ -805,7 +810,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (void)dealloc
 {
-	if (_stream != nil || _decompressedStream != nil)
+	if (_decompressedStream != nil)
 		[self close];
 
 	[_entry release];
@@ -820,7 +825,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_stream == nil)
+	if (_decompressedStream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
@@ -830,14 +835,50 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 {
 	size_t ret;
 
-	if (_stream == nil)
+	if (_decompressedStream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_atEndOfStream)
 		return 0;
 
-	if (_stream.atEndOfStream && !_decompressedStream.hasDataInReadBuffer)
-		@throw [OFTruncatedDataException exception];
+	if (_archive->_stream.atEndOfStream &&
+	    !_decompressedStream.hasDataInReadBuffer) {
+		OFStream *oldStream, *oldDecompressedStream;
+		OFSeekableStream *stream;
+
+		if (_archive->_diskNumber >= _archive->_lastDiskNumber)
+			@throw [OFTruncatedDataException exception];
+
+		oldStream = _archive->_stream;
+		stream = [_archive->_delegate
+			      archive: _archive
+		    wantsPartNumbered: _archive->_diskNumber + 1
+		       lastPartNumber: _archive->_lastDiskNumber];
+
+		if (stream == nil)
+			@throw [OFInvalidFormatException exception];
+
+		_archive->_diskNumber++;
+		_archive->_stream = [stream retain];
+		[oldStream release];
+
+		switch (_compressionMethod) {
+		case OFZIPArchiveEntryCompressionMethodNone:
+			oldDecompressedStream = _decompressedStream;
+			_decompressedStream = [_archive->_stream retain];
+			[oldDecompressedStream release];
+			break;
+		case OFZIPArchiveEntryCompressionMethodDeflate:
+		case OFZIPArchiveEntryCompressionMethodDeflate64:
+			[_decompressedStream
+			    setUnderlyingStream: _archive->_stream];
+			break;
+		default:
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: nil];
+		}
+	}
 
 #if SIZE_MAX >= UINT64_MAX
 	if (length > UINT64_MAX)
@@ -884,11 +925,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (void)close
 {
-	if (_stream == nil || _decompressedStream == nil)
+	if (_decompressedStream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
-
-	[_stream release];
-	_stream = nil;
 
 	[_decompressedStream release];
 	_decompressedStream = nil;
