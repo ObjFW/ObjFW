@@ -841,8 +841,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_atEndOfStream)
 		return 0;
 
-	if (_archive->_stream.atEndOfStream &&
-	    !_decompressedStream.hasDataInReadBuffer) {
+	if ([_archive->_stream isAtEndOfStream] &&
+	    ![_decompressedStream hasDataInReadBuffer]) {
 		OFStream *oldStream, *oldDecompressedStream;
 		OFSeekableStream *stream;
 
@@ -914,7 +914,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 - (bool)hasDataInReadBuffer
 {
 	return (super.hasDataInReadBuffer ||
-	    _decompressedStream.hasDataInReadBuffer);
+	    [_decompressedStream hasDataInReadBuffer]);
 }
 
 - (int)fileDescriptorForReading
