@@ -47,8 +47,7 @@
 #import "OFWriteFailedException.h"
 
 /*
- * FIXME: Current limitations:
- *  - Split archives are not supported.
+ * TODO: Current limitations:
  *  - Encrypted files cannot be read.
  */
 
@@ -159,14 +158,13 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
     OFStreamOffset offset, OFSeekWhence whence)
 {
 	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
-		OFStream *oldStream;
+		OFStream *oldStream = archive->_stream;
 		OFSeekableStream *stream;
 
 		if (archive->_mode != modeRead ||
 		    *diskNumber > archive->_lastDiskNumber)
 			@throw [OFInvalidFormatException exception];
 
-		oldStream = archive->_stream;
 		stream = [archive->_delegate archive: archive
 				   wantsPartNumbered: *diskNumber
 				      lastPartNumber: archive->_lastDiskNumber];
@@ -399,7 +397,40 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	    (OFStreamOffset)_centralDirectoryOffset, OFSeekSet);
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
-		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
+		OFZIPArchiveEntry *entry;
+		char buffer;
+
+		/*
+		 * The stream might have 0 bytes left to read, but might not
+		 * realize that before a read is attempted, where it will then
+		 * return a length of 0. But OFZIPArchiveEntry expects to be
+		 * able to read the entire entry and will then throw an
+		 * OFTruncatedDataException. Therefore, try to peek one byte to
+		 * make sure the stream realizes that it's at the end.
+		 */
+		if ([_stream readIntoBuffer: &buffer length: 1] == 1)
+			[_stream unreadFromBuffer: &buffer length: 1];
+
+		if ([_stream isAtEndOfStream]) {
+			OFStream *oldStream = _stream;
+			OFSeekableStream *stream;
+
+			if (_diskNumber >= _lastDiskNumber)
+				@throw [OFTruncatedDataException exception];
+
+			stream = [_delegate archive: self
+				  wantsPartNumbered: _diskNumber + 1
+				     lastPartNumber: _lastDiskNumber];
+
+			if (stream == nil)
+				@throw [OFInvalidFormatException exception];
+
+			_diskNumber++;
+			_stream = [stream retain];
+			[oldStream release];
+		}
+
+		entry = [[[OFZIPArchiveEntry alloc]
 		    of_initWithStream: _stream] autorelease];
 
 		if ([_pathToEntryMap objectForKey: entry.fileName] != nil)
@@ -843,13 +874,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	if ([_archive->_stream isAtEndOfStream] &&
 	    ![_decompressedStream hasDataInReadBuffer]) {
-		OFStream *oldStream, *oldDecompressedStream;
+		OFStream *oldStream = _archive->_stream, *oldDecompressedStream;
 		OFSeekableStream *stream;
 
 		if (_archive->_diskNumber >= _archive->_lastDiskNumber)
 			@throw [OFTruncatedDataException exception];
 
-		oldStream = _archive->_stream;
 		stream = [_archive->_delegate
 			      archive: _archive
 		    wantsPartNumbered: _archive->_diskNumber + 1
