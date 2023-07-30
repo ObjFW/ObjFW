@@ -259,6 +259,8 @@ parseNetStackArray(OFString *string)
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
+	OFCharacterSet *commentCharacterSet =
+	    [OFCharacterSet characterSetWithCharactersInString: @"#;"];
 	OFMutableDictionary *staticHosts;
 	OFFile *file;
 	OFString *line;
@@ -278,7 +280,7 @@ parseNetStackArray(OFString *string)
 		size_t pos;
 		OFString *address;
 
-		pos = [line rangeOfString: @"#"].location;
+		pos = [line indexOfCharacterFromSet: commentCharacterSet];
 		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
