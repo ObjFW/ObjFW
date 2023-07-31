@@ -65,7 +65,11 @@
 # define HOSTS_PATH @"DEVS:Internet/hosts"
 #elif defined(OF_AMIGAOS)
 # define HOSTS_PATH @"AmiTCP:db/hosts"
-# define RESOLV_CONF_PATH @"AmiTCP:db/resolv.conf"
+/*
+ * FIXME: The installer puts it there, but theoretically it could also be in
+ *	  AmiTCP:db/netdb or any of the files included there.
+ */
+# define RESOLV_CONF_PATH @"AmiTCP:db/netdb-myhost"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
@@ -259,7 +263,7 @@ parseNetStackArray(OFString *string)
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
-	OFCharacterSet *commentCharacterSet =
+	OFCharacterSet *commentCharacters =
 	    [OFCharacterSet characterSetWithCharactersInString: @"#;"];
 	OFMutableDictionary *staticHosts;
 	OFFile *file;
@@ -280,7 +284,7 @@ parseNetStackArray(OFString *string)
 		size_t pos;
 		OFString *address;
 
-		pos = [line indexOfCharacterFromSet: commentCharacterSet];
+		pos = [line indexOfCharacterFromSet: commentCharacters];
 		if (pos != OFNotFound)
 			line = [line substringToIndex: pos];
 
@@ -397,7 +401,7 @@ parseNetStackArray(OFString *string)
 			continue;
 		}
 
-		option = components.firstObject;
+		option = [components.firstObject lowercaseString];
 		arguments = [components objectsInRange:
 		    OFMakeRange(1, components.count - 1)];
 
