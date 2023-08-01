@@ -37,7 +37,7 @@ arm-*-riscos*)
 	enable_files="no"
 	;;
 m68k-*-amigaos*)
-	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0"])
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
