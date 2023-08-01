@@ -371,7 +371,82 @@ next_line:
 static bool
 queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	OFFile *file;
+	OFString *line;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	@try {
+		file = [OFFile fileWithPath: @"/proc/net/ipx/interface"
+				       mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		return false;
+	}
+
+	/* First line is "Network Node_Address Primary Device Frame_Type" */
+	if (![[file readLine] hasPrefix: @"Network "])
+		return false;
+
+	while ((line = [file readLine]) != nil) {
+		OFArray *components = [line
+		    componentsSeparatedByString: @" "
+					options: OFStringSkipEmptyComponents];
+		OFString *name;
+		unsigned long long network, nodeLong;
+		unsigned char node[IPX_NODE_LEN];
+		OFSocketAddress address;
+		OFMutableData *addresses;
+
+		if (components.count < 5)
+			continue;
+
+		name = [components objectAtIndex: 3];
+
+		if ((interface = [ret objectForKey: name]) == nil) {
+			interface = [OFMutableDictionary dictionary];
+			[ret setObject: interface forKey: name];
+		}
+
+		@try {
+			network = [[components objectAtIndex: 0]
+			    unsignedLongLongValueWithBase: 16];
+			nodeLong = [[components objectAtIndex: 1]
+			    unsignedLongLongValueWithBase: 16];
+		} @catch (OFInvalidFormatException *e) {
+			continue;
+		}
+
+		if (network > 0xFFFFFFFF || nodeLong > 0xFFFFFFFFFFFF)
+			continue;
+
+		node[0] = (nodeLong >> 40) & 0xFF;
+		node[1] = (nodeLong >> 32) & 0xFF;
+		node[2] = (nodeLong >> 24) & 0xFF;
+		node[3] = (nodeLong >> 16) & 0xFF;
+		node[4] = (nodeLong >> 8) & 0xFF;
+		node[5] = nodeLong & 0xFF;
+
+		address = OFSocketAddressMakeIPX((uint32_t)network, node, 0);
+
+		if ((addresses = [interface objectForKey:
+		    OFNetworkInterfaceIPXAddresses]) == nil) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(OFSocketAddress)];
+			[interface setObject: addresses
+				      forKey: OFNetworkInterfaceIPXAddresses];
+		}
+
+		[addresses addItem: &address];
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPXAddresses]
+		    makeImmutable];
+
+	return false;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPXAddresses, OFSocketAddressFamilyIPX,
 	    AF_IPX, sizeof(struct sockaddr_ipx));
