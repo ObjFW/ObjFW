@@ -958,7 +958,7 @@ IPXString(const OFSocketAddress *address)
 	    ((uint64_t)addrIPX->sipx_node[4] << 8) |
 	    (uint64_t)addrIPX->sipx_node[5];
 
-	return [OFString stringWithFormat: @"%X.%X",
+	return [OFString stringWithFormat: @"%" PRIX32 ".%" PRIX64,
 	    OFFromBigEndian32(network), node];
 }
 
