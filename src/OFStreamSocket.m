@@ -43,6 +43,10 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
+#if defined(OF_AMIGAOS) && !defined(UNIQUE_ID)
+# define UNIQUE_ID -1
+#endif
+
 @implementation OFStreamSocket
 @dynamic delegate;
 @synthesize listening = _listening;

@@ -44,6 +44,10 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
+#if defined(OF_AMIGAOS) && !defined(UNIQUE_ID)
+# define UNIQUE_ID -1
+#endif
+
 @implementation OFDatagramSocket
 @synthesize delegate = _delegate;
 
