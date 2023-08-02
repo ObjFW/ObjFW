@@ -467,6 +467,22 @@
 #endif
 }
 
+- (void)releaseSocketFromCurrentThread
+{
+	/*
+	 * Currently a nop, as all supported OSes that have SOCK_SEQPACKET do
+	 * not need anything to move sockets between threads.
+	 */
+}
+
+- (void)obtainSocketForCurrentThread
+{
+	/*
+	 * Currently a nop, as all supported OSes that have SOCK_SEQPACKET do
+	 * not need anything to move sockets between threads.
+	 */
+}
+
 - (void)close
 {
 	if (_socket == OFInvalidSocketHandle)

@@ -31,11 +31,13 @@
 #import "OFSocket+Private.h"
 
 #import "OFAcceptSocketFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenOnSocketFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
@@ -71,6 +73,9 @@
 		}
 
 		_socket = OFInvalidSocketHandle;
+#ifdef OF_AMIGAOS
+		_socketID = -1;
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -358,6 +363,51 @@
 		@throw [OFOutOfRangeException exception];
 
 	return &_remoteAddress;
+}
+
+- (void)releaseSocketFromCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if ((_socketID = ReleaseSocket(_socket, UNIQUE_ID)) == -1) {
+		switch (Errno()) {
+		case ENOMEM:
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: 0];
+		case EBADF:
+			@throw [OFNotOpenException exceptionWithObject: self];
+		default:
+			OFEnsure(0);
+		}
+	}
+
+	_socket = OFInvalidSocketHandle;
+#endif
+}
+
+- (void)obtainSocketForCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket != OFInvalidSocketHandle)
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
+
+	if (_socketID == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	/*
+	 * FIXME: We should store these, but that requires changing all
+	 *	  subclasses. This only becomes a problem if IPv6 support ever
+	 *	  gets added.
+	 */
+	_socket = ObtainSocket(_socketID, AF_INET, SOCK_STREAM, 0);
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self.class];
+
+	_socketID = -1;
+#endif
 }
 
 - (void)close
