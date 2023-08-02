@@ -22,7 +22,10 @@
 #import "OFCharacterSet.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFFile.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+# import "OFFileManager.h"
+#endif
 #import "OFLocale.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
@@ -52,6 +55,11 @@
 # undef id
 #endif
 
+#if defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+# define Class IntuitionClass
+# include <proto/dos.h>
+# undef Class
+#endif
 #ifdef OF_MORPHOS
 # include <proto/rexxsyslib.h>
 # include <rexx/errors.h>
@@ -61,15 +69,6 @@
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
-#elif defined(OF_AMIGAOS4)
-# define HOSTS_PATH @"DEVS:Internet/hosts"
-#elif defined(OF_AMIGAOS)
-# define HOSTS_PATH @"AmiTCP:db/hosts"
-/*
- * FIXME: The installer puts it there, but theoretically it could also be in
- *	  AmiTCP:db/netdb or any of the files included there.
- */
-# define RESOLV_CONF_PATH @"AmiTCP:db/netdb-myhost"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
@@ -121,6 +120,17 @@ obtainHostname(void)
 
 	return [OFString stringWithCString: hostname
 				  encoding: [OFLocale encoding]];
+}
+#endif
+
+#ifdef OF_AMIGAOS_M68K
+static bool
+assignExists(const char *assign)
+{
+	struct DosList *list = LockDosList(LDF_ASSIGNS | LDF_READ);
+	bool found = (FindDosEntry(list, assign, LDF_ASSIGNS) != NULL);
+	UnLockDosList(LDF_ASSIGNS | LDF_READ);
+	return found;
 }
 #endif
 
@@ -322,7 +332,7 @@ parseNetStackArray(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-# if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
+# ifndef OF_WINDOWS
 - (void)parseResolvConfOption: (OFString *)option
 {
 	@try {
@@ -533,13 +543,22 @@ parseNetStackArray(OFString *string)
 }
 #endif
 
-#ifdef OF_AMIGAOS4
-- (void)obtainAmigaOS4SystemConfig
+#if defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+- (bool)obtainRoadshowSystemConfig
 {
-	OFMutableArray *nameServers = [OFMutableArray array];
-	OFStringEncoding encoding = [OFLocale encoding];
-	struct List *nameServerList = ObtainDomainNameServerList();
+	OFMutableArray *nameServers;
+	OFStringEncoding encoding;
+	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
+	LONG hasDNSAPI;
+
+	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_DNS_API), (ULONG)&hasDNSAPI,
+	    TAG_END) != 0 || !hasDNSAPI)
+		return false;
+
+	nameServers = [OFMutableArray array];
+	encoding = [OFLocale encoding];
+	nameServerList = ObtainDomainNameServerList();
 
 	if (nameServerList == NULL)
 		@throw [OFOutOfMemoryException exception];
@@ -573,6 +592,8 @@ parseNetStackArray(OFString *string)
 	if (GetDefaultDomainName(buffer, sizeof(buffer)))
 		_localDomain = [[OFString alloc] initWithCString: buffer
 							encoding: encoding];
+
+	return true;
 }
 #endif
 
@@ -624,6 +645,9 @@ parseNetStackArray(OFString *string)
 #ifdef OF_WINDOWS
 	OFString *path = nil;
 #endif
+#if (defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)) && defined(OF_HAVE_FILES)
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+#endif
 	void *pool;
 
 	/*
@@ -665,9 +689,25 @@ parseNetStackArray(OFString *string)
 	[self obtainWindowsSystemConfig];
 #elif defined(OF_MORPHOS)
 	[self obtainMorphOSSystemConfig];
-#elif defined(OF_AMIGAOS4)
-	[self parseHosts: HOSTS_PATH];
-	[self obtainAmigaOS4SystemConfig];
+#elif defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+# ifdef OF_HAVE_FILES
+	if (![self obtainRoadshowSystemConfig]) {
+		if (assignExists("AmiTCP"))
+			/*
+			 * FIXME: The installer puts it there, but theoretically
+			 *	  it could also be in AmiTCP:db/netdb or any of
+			 *	  the files included there.
+			 */
+			[self parseResolvConf: @"AmiTCP:db/netdb-myhost"];
+	}
+
+	if ([fileManager fileExistsAtPath: @"DEVS:Internet/hosts"])
+		[self parseHosts: @"DEVS:Internet/hosts"];
+	else if (assignExists("AmiTCP"))
+		[self parseHosts: @"AmiTCP:db/hosts"];
+# else
+	[self obtainRoadshowSystemConfig];
+# endif
 #elif defined(OF_NINTENDO_3DS)
 	[self obtainNintendo3DSSytemConfig];
 #elif defined(OF_HAVE_FILES)
