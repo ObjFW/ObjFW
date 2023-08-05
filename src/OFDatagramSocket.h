@@ -307,8 +307,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * use the socket, e.g. on AmigaOS, but you should call it on all operating
  * systems before using the socket from a different thread.
  *
- * After calling this method, you must no longer use the socket until @ref
- * obtainSocketForThread has been called.
+ * After calling this method, you must no longer use the socket until
+ * @ref obtainSocketForCurrentThread has been called.
  */
 - (void)releaseSocketFromCurrentThread;
 
