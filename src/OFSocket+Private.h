@@ -24,7 +24,7 @@
 # include <netdb.h>
 #endif
 
-#include "OFSocket.h"
+#import "OFSocket.h"
 
 #ifndef INADDR_NONE
 # define INADDR_NONE ((in_addr_t)-1)
