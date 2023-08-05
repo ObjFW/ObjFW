@@ -25,9 +25,11 @@ PREDEFINED = _Nonnull=						\
 	     OF_HAVE_FILES					\
 	     OF_HAVE_IPV6					\
 	     OF_HAVE_IPX					\
+	     OF_HAVE_PLUGINS					\
 	     OF_HAVE_SANDBOX					\
 	     OF_HAVE_SOCKETS					\
 	     OF_HAVE_THREADS					\
+	     OF_HAVE_UNICODE_TABLES				\
 	     OF_KINDOF(...)=					\
 	     OF_NO_RETURN=					\
 	     OF_NO_RETURN_FUNC=					\

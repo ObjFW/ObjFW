@@ -279,7 +279,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
     OFString *decomposedStringWithCompatibilityMapping;
 #endif
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
  * @brief The string with the Windows Environment Strings expanded.
  */

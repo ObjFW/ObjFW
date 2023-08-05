@@ -56,7 +56,7 @@ extern int OFPlainConditionWait(OFPlainCondition *condition,
     OFPlainMutex *mutex);
 extern int OFPlainConditionTimedWait(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout);
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 extern int OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, ULONG *signalMask);
 extern int OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
