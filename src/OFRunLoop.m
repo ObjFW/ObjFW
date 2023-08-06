@@ -1614,6 +1614,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 #endif
 
 			if (timer.valid) {
+				[timer of_reschedule];
 				[timer fire];
 				return;
 			}
