@@ -340,6 +340,55 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	    autorelease];
 }
 
++ (instancetype)dataWithItems: (const void *)items count: (size_t)count
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+#ifdef OF_HAVE_FILES
++ (instancetype)dataWithContentsOfFile: (OFString *)path
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+#endif
+
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithStringRepresentation: (OFString *)string
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithBase64EncodedString: (OFString *)string
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (instancetype)initWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
@@ -420,6 +469,33 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItems: (const void *)items count: (size_t)count
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
 {
 	OF_INVALID_INIT_METHOD
 }
