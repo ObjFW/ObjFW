@@ -340,57 +340,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	    autorelease];
 }
 
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count
-		     itemSize: (size_t)itemSize
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithItemsNoCopy: (void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithItemsNoCopy: (void *)items
-			      count: (size_t)count
-			   itemSize: (size_t)itemSize
-		       freeWhenDone: (bool)freeWhenDone
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-#ifdef OF_HAVE_FILES
-+ (instancetype)dataWithContentsOfFile: (OFString *)path
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-#endif
-
-+ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithStringRepresentation: (OFString *)string
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithBase64EncodedString: (OFString *)string
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-
 - (instancetype)initWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
@@ -465,29 +414,12 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	return self;
 }
 
-- (instancetype)initWithItems: (const void *)items count: (size_t)count
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithItems: (const void *)items
-			count: (size_t)count
-		     itemSize: (size_t)itemSize
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithItemsNoCopy: (void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithItemsNoCopy: (void *)items
-			      count: (size_t)count
-			   itemSize: (size_t)itemSize
-		       freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithItemSize: (size_t)itemSize
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -535,7 +467,25 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	}
 #endif
 
+	if (_freeWhenDone)
+		OFFreeMemory(_items);
+
 	[super dealloc];
+}
+
+- (size_t)count
+{
+	return _count;
+}
+
+- (size_t)itemSize
+{
+	return _itemSize;
+}
+
+- (const void *)items
+{
+	return _items;
 }
 
 - (void *)mutableItems
@@ -583,6 +533,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 - (bool)isEqual: (id)object
 {
 	OFData *otherData;
+	const unsigned char *otherDataItems;
 	unsigned char diff;
 
 	if (object == self)
@@ -592,14 +543,15 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		return false;
 
 	otherData = object;
+	otherDataItems = otherData.items;
 
-	if (otherData->_count != _count || otherData->_itemSize != _itemSize)
+	if (otherData.count != _count || otherData.itemSize != _itemSize)
 		return false;
 
 	diff = 0;
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		diff |= otherData->_items[i] ^ _items[i];
+		diff |= otherDataItems[i] ^ _items[i];
 
 	return (diff == 0);
 }

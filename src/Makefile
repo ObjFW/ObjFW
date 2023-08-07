@@ -183,6 +183,7 @@ SRCS += OFASPrintF.m			\
 	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
+	OFConcreteData.m		\
 	OFCountedMapTableSet.m		\
 	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
@@ -192,6 +193,7 @@ SRCS += OFASPrintF.m			\
 	OFMapTableDictionary.m		\
 	OFMapTableSet.m			\
 	OFMutableAdjacentArray.m	\
+	OFMutableConcreteData.m		\
 	OFMutableMapTableDictionary.m	\
 	OFMutableMapTableSet.m		\
 	OFMutableUTF8String.m		\

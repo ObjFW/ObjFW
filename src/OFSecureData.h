@@ -32,8 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
+	unsigned char *_Nullable _items;
+	size_t _count, _itemSize;
+	bool _freeWhenDone, _allowsSwappableMemory;
 	void *_page;
-	bool _allowsSwappableMemory;
 }
 
 /**
@@ -135,6 +137,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)initWithItemSize: (size_t)itemSize OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
