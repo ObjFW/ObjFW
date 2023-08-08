@@ -19,6 +19,7 @@
 
 #import "OFSet.h"
 #import "OFArray.h"
+#import "OFCountedSet.h"
 #import "OFMapTableSet.h"
 #import "OFNull.h"
 #import "OFString.h"
@@ -95,7 +96,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFSet class])
-		placeholder.isa = [OFSetPlaceholder class];
+		object_setClass((id)&placeholder, [OFSetPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -142,7 +143,9 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFSet class]]) {
+	if ([self isMemberOfClass: [OFSet class]] ||
+	    [self isMemberOfClass: [OFMutableSet class]] ||
+	    [self isMemberOfClass: [OFCountedSet class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

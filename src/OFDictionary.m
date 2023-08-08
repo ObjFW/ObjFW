@@ -129,7 +129,8 @@ OF_DIRECT_MEMBERS
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		placeholder.isa = [OFDictionaryPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFDictionaryPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -187,7 +188,8 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFDictionary class]]) {
+	if ([self isMemberOfClass: [OFDictionary class]] ||
+	    [self isMemberOfClass: [OFMutableDictionary class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

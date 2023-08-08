@@ -211,7 +211,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableStringPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableStringPlaceholder class]);
 }
 
 + (instancetype)alloc

@@ -98,7 +98,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableSet class])
-		placeholder.isa = [OFMutableSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableSetPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -112,21 +113,6 @@ static struct {
 + (instancetype)setWithCapacity: (size_t)capacity
 {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFMutableSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
-	return [super init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity

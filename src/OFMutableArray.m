@@ -148,7 +148,8 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		placeholder.isa = [OFMutableArrayPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableArrayPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -162,21 +163,6 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 + (instancetype)arrayWithCapacity: (size_t)capacity
 {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFMutableArray class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
-	return [super init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity

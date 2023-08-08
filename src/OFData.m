@@ -129,7 +129,7 @@ _references_to_categories_of_OFData(void)
 + (void)initialize
 {
 	if (self == [OFData class])
-		placeholder.isa = [OFDataPlaceholder class];
+		object_setClass((id)&placeholder, [OFDataPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -209,7 +209,8 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFData class]]) {
+	if ([self isMemberOfClass: [OFData class]] ||
+	    [self isMemberOfClass: [OFMutableData class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

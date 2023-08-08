@@ -344,7 +344,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	if (self != [OFDate class])
 		return;
 
-	placeholder.isa = [OFDatePlaceholder class];
+	object_setClass((id)&placeholder, [OFDatePlaceholder class]);
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)

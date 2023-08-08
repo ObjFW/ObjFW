@@ -110,7 +110,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableDictionary class])
-		placeholder.isa = [OFMutableDictionaryPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFMutableDictionaryPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -124,22 +125,6 @@ static struct {
 + (instancetype)dictionaryWithCapacity: (size_t)capacity
 {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFMutableDictionary class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-
-		abort();
-	}
-
-	return [super init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity

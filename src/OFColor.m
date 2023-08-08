@@ -124,7 +124,7 @@ static int colorTag;
 	if (self != [OFColor class])
 		return;
 
-	placeholder.isa = [OFColorPlaceholder class];
+	object_setClass((id)&placeholder, [OFColorPlaceholder class]);
 #ifdef OF_OBJFW_RUNTIME
 	colorTag =
 	    objc_registerTaggedPointerClass([OFTaggedPointerColor class]);

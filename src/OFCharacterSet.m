@@ -79,10 +79,9 @@ initWhitespaceCharacterSet(void)
 @implementation OFCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet class])
-		return;
-
-	placeholder.isa = [OFPlaceholderCharacterSet class];
+	if (self == [OFCharacterSet class])
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderCharacterSet class]);
 }
 
 + (instancetype)alloc

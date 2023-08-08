@@ -94,7 +94,8 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFCountedSet class])
-		placeholder.isa = [OFCountedSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFCountedSetPlaceholder class]);
 }
 
 + (instancetype)alloc
@@ -103,22 +104,6 @@ static struct {
 		return (id)&placeholder;
 
 	return [super alloc];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFCountedSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-
-		abort();
-	}
-
-	return [super init];
 }
 
 - (size_t)countForObject: (id)object

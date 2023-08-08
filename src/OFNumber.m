@@ -484,7 +484,7 @@ isFloat(OFNumber *number)
 	if (self != [OFNumber class])
 		return;
 
-	placeholder.isa = [OFNumberPlaceholder class];
+	object_setClass((id)&placeholder, [OFNumberPlaceholder class]);
 
 #ifdef OF_OBJFW_RUNTIME
 	numberTag =

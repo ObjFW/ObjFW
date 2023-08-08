@@ -110,7 +110,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFArray class])
-		placeholder.isa = [OFPlaceholderArray class];
+		object_setClass((id)&placeholder, [OFPlaceholderArray class]);
 }
 
 + (instancetype)alloc
@@ -158,7 +158,8 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFArray class]]) {
+	if ([self isMemberOfClass: [OFArray class]] ||
+	    [self isMemberOfClass: [OFMutableArray class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

@@ -618,7 +618,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (self != [OFString class])
 		return;
 
-	placeholder.isa = [OFStringPlaceholder class];
+	object_setClass((id)&placeholder, [OFStringPlaceholder class]);
 
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
@@ -803,7 +803,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFString class]]) {
+	if ([self isMemberOfClass: [OFString class]] ||
+	    [self isMemberOfClass: [OFMutableString class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
