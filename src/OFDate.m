@@ -46,14 +46,16 @@
 # define trunc(x) ((int64_t)(x))
 #endif
 
-@interface OFDate ()
-+ (instancetype)of_alloc;
+@interface OFDatePlaceholder: OFDate
 @end
 
-@interface OFDateSingleton: OFDate
+@interface OFConcreteDate: OFDate
+{
+	OFTimeInterval _seconds;
+}
 @end
 
-@interface OFDatePlaceholder: OFDateSingleton
+@interface OFDateSingleton: OFConcreteDate
 @end
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
@@ -313,11 +315,28 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	}
 #endif
 
-	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
+	return (id)[[OFConcreteDate alloc]
+	    initWithTimeIntervalSince1970: seconds];
 }
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+@end
+
+@implementation OFConcreteDate
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
+{
+	self = [super initWithTimeIntervalSince1970: seconds];
+
+	_seconds = seconds;
+
+	return self;
+}
+
+- (OFTimeInterval)timeIntervalSince1970
+{
+	return _seconds;
+}
 @end
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
@@ -361,11 +380,6 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
 	dateTag = objc_registerTaggedPointerClass([OFTaggedPointerDate class]);
 #endif
-}
-
-+ (instancetype)of_alloc
-{
-	return [super alloc];
 }
 
 + (instancetype)alloc
@@ -428,11 +442,18 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
-	self = [super init];
+	if ([self isMemberOfClass: [OFDate class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 
-	_seconds = seconds;
+		abort();
+	}
 
-	return self;
+	return [super init];
 }
 
 - (instancetype)initWithTimeIntervalSinceNow: (OFTimeInterval)seconds
@@ -833,7 +854,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (OFTimeInterval)timeIntervalSince1970
 {
-	return _seconds;
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFTimeInterval)timeIntervalSinceDate: (OFDate *)otherDate
