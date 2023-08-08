@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFConcreteData: OFData
+@interface OFAdjacentData: OFData
 {
 	unsigned char *_Nullable _items;
 	size_t _capacity, _count, _itemSize;

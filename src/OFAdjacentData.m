@@ -18,12 +18,12 @@
 #include <limits.h>
 #include <string.h>
 
-#import "OFConcreteData.h"
+#import "OFAdjacentData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFConcreteData
+@implementation OFAdjacentData
 - (instancetype)init
 {
 	return [self initWithItemSize: 1];
@@ -120,13 +120,13 @@
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	OFConcreteData *ret;
+	OFAdjacentData *ret;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
 		@throw [OFOutOfRangeException exception];
 
-	ret = [OFConcreteData
+	ret = [OFAdjacentData
 	    dataWithItemsNoCopy: _items + (range.location * _itemSize)
 			  count: range.length
 		       itemSize: _itemSize
