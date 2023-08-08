@@ -209,7 +209,7 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFString class]]) {
+	if ([self isMemberOfClass: [OFData class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
