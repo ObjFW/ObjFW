@@ -23,11 +23,14 @@
 
 #import "OFInvalidArgumentException.h"
 
-@interface OFColor ()
-+ (instancetype)of_alloc;
+@interface OFConcreteColor: OFColor
+{
+	float _red, _green, _blue, _alpha;
+	OF_RESERVE_IVARS(OFColor, 4)
+}
 @end
 
-@interface OFColorSingleton: OFColor
+@interface OFColorSingleton: OFConcreteColor
 @end
 
 @interface OFColorPlaceholder: OFColorSingleton
@@ -47,27 +50,6 @@ static struct {
 #ifdef OF_OBJFW_RUNTIME
 static int colorTag;
 #endif
-
-@implementation OFColorSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-@end
 
 @implementation OFColorPlaceholder
 - (instancetype)initWithRed: (float)red
@@ -92,10 +74,72 @@ static int colorTag;
 	}
 #endif
 
-	return (id)[[OFColor of_alloc] initWithRed: red
-					     green: green
-					      blue: blue
-					     alpha: alpha];
+	return (id)[[OFConcreteColor alloc] initWithRed: red
+						  green: green
+						   blue: blue
+						  alpha: alpha];
+}
+@end
+
+@implementation OFColorSingleton
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OFMaxRetainCount;
+}
+@end
+
+@implementation OFConcreteColor
+- (instancetype)initWithRed: (float)red
+		      green: (float)green
+		       blue: (float)blue
+		      alpha: (float)alpha
+{
+	self = [super init];
+
+	@try {
+		if (red < 0.0 || red > 1.0 ||
+		    green < 0.0 || green > 1.0 ||
+		    blue < 0.0 || blue > 1.0 ||
+		    alpha < 0.0 || alpha > 1.0)
+			@throw [OFInvalidArgumentException exception];
+
+		_red = red;
+		_green = green;
+		_blue = blue;
+		_alpha = alpha;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)getRed: (float *)red
+	 green: (float *)green
+	  blue: (float *)blue
+	 alpha: (float *)alpha
+{
+	*red = _red;
+	*green = _green;
+	*blue = _blue;
+
+	if (alpha != NULL)
+		*alpha = _alpha;
 }
 @end
 
@@ -129,11 +173,6 @@ static int colorTag;
 	colorTag =
 	    objc_registerTaggedPointerClass([OFTaggedPointerColor class]);
 #endif
-}
-
-+ (instancetype)of_alloc
-{
-	return [super alloc];
 }
 
 + (instancetype)alloc
@@ -198,30 +237,25 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		       blue: (float)blue
 		      alpha: (float)alpha
 {
-	self = [super init];
+	if ([self isMemberOfClass: [OFColor class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 
-	@try {
-		if (red < 0.0 || red > 1.0 ||
-		    green < 0.0 || green > 1.0 ||
-		    blue < 0.0 || blue > 1.0 ||
-		    alpha < 0.0 || alpha > 1.0)
-			@throw [OFInvalidArgumentException exception];
-
-		_red = red;
-		_green = green;
-		_blue = blue;
-		_alpha = alpha;
-	} @catch (id e) {
-		[self release];
-		@throw e;
+		abort();
 	}
 
-	return self;
+	return [super init];
 }
 
 - (bool)isEqual: (id)object
 {
 	OFColor *other;
+	float red, green, blue, alpha;
+	float otherRed, otherGreen, otherBlue, otherAlpha;
 
 	if (object == self)
 		return true;
@@ -230,14 +264,19 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		return false;
 
 	other = object;
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+	[other getRed: &otherRed
+		green: &otherGreen
+		 blue: &otherBlue
+		alpha: &otherAlpha];
 
-	if (other->_red != _red)
+	if (otherRed != red)
 		return false;
-	if (other->_green != _green)
+	if (otherGreen != green)
 		return false;
-	if (other->_blue != _blue)
+	if (otherBlue != blue)
 		return false;
-	if (other->_alpha != _alpha)
+	if (otherAlpha != alpha)
 		return false;
 
 	return true;
@@ -245,24 +284,27 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 - (unsigned long)hash
 {
+	float red, green, blue, alpha;
 	unsigned long hash;
 	float tmp;
 
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+
 	OFHashInit(&hash);
 
-	tmp = OFToLittleEndianFloat(_red);
+	tmp = OFToLittleEndianFloat(red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_green);
+	tmp = OFToLittleEndianFloat(green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_blue);
+	tmp = OFToLittleEndianFloat(blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_alpha);
+	tmp = OFToLittleEndianFloat(alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
@@ -276,12 +318,7 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	  blue: (float *)blue
 	 alpha: (float *)alpha
 {
-	*red = _red;
-	*green = _green;
-	*blue = _blue;
-
-	if (alpha != NULL)
-		*alpha = _alpha;
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFString *)description
