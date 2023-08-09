@@ -233,7 +233,8 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [OFAdjacentSubarray arrayWithArray: self range: range];
+	return [[[OFAdjacentSubarray alloc] initWithArray: self
+						    range: range] autorelease];
 }
 
 - (bool)isEqual: (id)object

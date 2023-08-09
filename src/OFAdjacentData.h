@@ -22,7 +22,6 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned char *_Nullable _items;
 	size_t _capacity, _count, _itemSize;
 	bool _freeWhenDone;
-	OFData *_Nullable _parentData;
 }
 @end
 

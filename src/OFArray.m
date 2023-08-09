@@ -365,7 +365,8 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFSubarray arrayWithArray: self range: range];
+		return [[[OFSubarray alloc] initWithArray: self
+						    range: range] autorelease];
 
 	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {

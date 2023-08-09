@@ -207,6 +207,7 @@ SRCS += OFASPrintF.m			\
 	OFSizeValue.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
+	OFSubdata.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\

@@ -13,17 +13,17 @@
  * file.
  */
 
-#import "OFArray.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSubarray: OFArray
+@interface OFSubdata: OFData
 {
-	OFArray *_array;
+	OFData *_data;
 	OFRange _range;
 }
 
-- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
+- (instancetype)initWithData: (OFData *)data range: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

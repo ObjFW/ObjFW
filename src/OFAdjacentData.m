@@ -98,8 +98,6 @@
 	if (_freeWhenDone)
 		OFFreeMemory(_items);
 
-	[_parentData release];
-
 	[super dealloc];
 }
 
@@ -116,23 +114,5 @@
 - (const void *)items
 {
 	return _items;
-}
-
-- (OFData *)subdataWithRange: (OFRange)range
-{
-	OFAdjacentData *ret;
-
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
-		@throw [OFOutOfRangeException exception];
-
-	ret = [OFAdjacentData
-	    dataWithItemsNoCopy: _items + (range.location * _itemSize)
-			  count: range.length
-		       itemSize: _itemSize
-		   freeWhenDone: false];
-	ret->_parentData = [(_parentData != nil ? _parentData : self) copy];
-
-	return ret;
 }
 @end

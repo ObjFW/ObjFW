@@ -31,6 +31,7 @@
 #import "OFIRIHandler.h"
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFSubdata.h"
 #import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
@@ -563,17 +564,18 @@ _references_to_categories_of_OFData(void)
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	size_t itemSize;
-
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > self.count)
 		@throw [OFOutOfRangeException exception];
 
-	itemSize = self.itemSize;
+	if (![self isKindOfClass: [OFMutableData class]])
+		return [[[OFSubdata alloc] initWithData: self
+						  range: range] autorelease];
+
 	return [OFData dataWithItems: (const unsigned char *)self.items +
-				      (range.location * itemSize)
-			       count: range.length
-			    itemSize: itemSize];
+				      (range.location * self.itemSize)
+			       count: self.count
+			    itemSize: self.itemSize];
 }
 
 - (OFString *)description
