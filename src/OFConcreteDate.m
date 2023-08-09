@@ -13,16 +13,20 @@
  * file.
  */
 
-#import "OFColor.h"
+#import "OFConcreteDate.h"
 
-OF_ASSUME_NONNULL_BEGIN
+@implementation OFConcreteDate
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
+{
+	self = [super initWithTimeIntervalSince1970: seconds];
 
-#ifdef OF_OBJFW_RUNTIME
-@interface OFTaggedPointerColor: OFColor
-+ (OFTaggedPointerColor *)colorWithRed: (uint8_t)red
-				 green: (uint8_t)green
-				  blue: (uint8_t)blue;
+	_seconds = seconds;
+
+	return self;
+}
+
+- (OFTimeInterval)timeIntervalSince1970
+{
+	return _seconds;
+}
 @end
-#endif
-
-OF_ASSUME_NONNULL_END

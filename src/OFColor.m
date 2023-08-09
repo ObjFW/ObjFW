@@ -23,10 +23,10 @@
 #import "OFString.h"
 #import "OFTaggedPointerColor.h"
 
-@interface OFColorSingleton: OFConcreteColor
+@interface OFPlaceholderColor: OFColor
 @end
 
-@interface OFPlaceholderColor: OFColor
+@interface OFConcreteColorSingleton: OFConcreteColor
 @end
 
 static struct {
@@ -69,7 +69,7 @@ static const float allowedImprecision = 0.0000001;
 OF_SINGLETON_METHODS
 @end
 
-@implementation OFColorSingleton
+@implementation OFConcreteColorSingleton
 OF_SINGLETON_METHODS
 @end
 
@@ -94,7 +94,7 @@ OF_SINGLETON_METHODS
 	static void							   \
 	initPredefinedColor_##name(void)				   \
 	{								   \
-		name##Color = [[OFColorSingleton alloc]			   \
+		name##Color = [[OFConcreteColorSingleton alloc]		   \
 		    initWithRed: redValue				   \
 			  green: greenValue				   \
 			   blue: blueValue				   \
