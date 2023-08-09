@@ -190,6 +190,7 @@ SRCS += OFASPrintF.m			\
 	OFConcreteMutableData.m		\
 	OFConcreteMutableDictionary.m	\
 	OFConcreteMutableSet.m		\
+	OFConcreteNumber.m		\
 	OFConcreteSet.m			\
 	OFConcreteSubarray.m		\
 	OFConcreteValue.m		\
@@ -206,6 +207,7 @@ SRCS += OFASPrintF.m			\
 	OFSubdata.m			\
 	OFTaggedPointerColor.m		\
 	OFTaggedPointerDate.m		\
+	OFTaggedPointerNumber.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
