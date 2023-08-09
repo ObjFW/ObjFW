@@ -18,17 +18,10 @@
 #include <math.h>
 
 #import "OFColor.h"
+#import "OFConcreteColor.h"
 #import "OFOnce.h"
 #import "OFString.h"
-
-#import "OFInvalidArgumentException.h"
-
-@interface OFConcreteColor: OFColor
-{
-	float _red, _green, _blue, _alpha;
-	OF_RESERVE_IVARS(OFColor, 4)
-}
-@end
+#import "OFTaggedPointerColor.h"
 
 @interface OFColorSingleton: OFConcreteColor
 @end
@@ -36,19 +29,12 @@
 @interface OFColorPlaceholder: OFColorSingleton
 @end
 
-#ifdef OF_OBJFW_RUNTIME
-@interface OFTaggedPointerColor: OFColorSingleton
-@end
-
-static const float allowedImprecision = 0.0000001;
-#endif
-
 static struct {
 	Class isa;
 } placeholder;
 
 #ifdef OF_OBJFW_RUNTIME
-static int colorTag;
+static const float allowedImprecision = 0.0000001;
 #endif
 
 @implementation OFColorPlaceholder
@@ -65,9 +51,9 @@ static int colorTag;
 	if (fabsf(red * 255 - redInt) < allowedImprecision &&
 	    fabsf(green * 255 - greenInt) < allowedImprecision &&
 	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1) {
-		id ret = objc_createTaggedPointer(colorTag,
-		    (uintptr_t)redInt << 16 | (uintptr_t)greenInt << 8 |
-		    (uintptr_t)blueInt);
+		id ret = [OFTaggedPointerColor colorWithRed: redInt
+						      green: greenInt
+						       blue: blueInt];
 
 		if (ret != nil)
 			return ret;
@@ -102,77 +88,11 @@ static int colorTag;
 }
 @end
 
-@implementation OFConcreteColor
-- (instancetype)initWithRed: (float)red
-		      green: (float)green
-		       blue: (float)blue
-		      alpha: (float)alpha
-{
-	self = [super init];
-
-	@try {
-		if (red < 0.0 || red > 1.0 ||
-		    green < 0.0 || green > 1.0 ||
-		    blue < 0.0 || blue > 1.0 ||
-		    alpha < 0.0 || alpha > 1.0)
-			@throw [OFInvalidArgumentException exception];
-
-		_red = red;
-		_green = green;
-		_blue = blue;
-		_alpha = alpha;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)getRed: (float *)red
-	 green: (float *)green
-	  blue: (float *)blue
-	 alpha: (float *)alpha
-{
-	*red = _red;
-	*green = _green;
-	*blue = _blue;
-
-	if (alpha != NULL)
-		*alpha = _alpha;
-}
-@end
-
-#ifdef OF_OBJFW_RUNTIME
-@implementation OFTaggedPointerColor
-- (void)getRed: (float *)red
-	 green: (float *)green
-	  blue: (float *)blue
-	 alpha: (float *)alpha
-{
-	uintptr_t value = object_getTaggedPointerValue(self);
-
-	*red = (float)(value >> 16) / 255;
-	*green = (float)((value >> 8) & 0xFF) / 255;
-	*blue = (float)(value & 0xFF) / 255;
-
-	if (alpha != NULL)
-		*alpha = 1;
-}
-@end
-#endif
-
 @implementation OFColor
 + (void)initialize
 {
-	if (self != [OFColor class])
-		return;
-
-	object_setClass((id)&placeholder, [OFColorPlaceholder class]);
-#ifdef OF_OBJFW_RUNTIME
-	colorTag =
-	    objc_registerTaggedPointerClass([OFTaggedPointerColor class]);
-#endif
+	if (self == [OFColor class])
+		object_setClass((id)&placeholder, [OFColorPlaceholder class]);
 }
 
 + (instancetype)alloc

@@ -182,6 +182,7 @@ SRCS += OFASPrintF.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFConcreteArray.m		\
+	OFConcreteColor.m		\
 	OFConcreteData.m		\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
@@ -208,6 +209,7 @@ SRCS += OFASPrintF.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\
+	OFTaggedPointerColor.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
