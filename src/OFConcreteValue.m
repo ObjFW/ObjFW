@@ -20,8 +20,6 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFConcreteValue
-@synthesize objCType = _objCType;
-
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
@@ -46,6 +44,11 @@
 	OFFreeMemory(_objCType);
 
 	[super dealloc];
+}
+
+- (const char *)objCType
+{
+	return _objCType;
 }
 
 - (void)getValue: (void *)value size: (size_t)size
