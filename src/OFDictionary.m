@@ -20,9 +20,9 @@
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFConcreteDictionary.h"
 #import "OFData.h"
 #import "OFEnumerator.h"
-#import "OFMapTableDictionary.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -39,7 +39,7 @@ static struct {
 			       depth: (size_t)depth;
 @end
 
-@interface OFDictionaryPlaceholder: OFDictionary
+@interface OFPlaceholderDictionary: OFDictionary
 @end
 
 OF_DIRECT_MEMBERS
@@ -52,27 +52,27 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
-@implementation OFDictionaryPlaceholder
+@implementation OFPlaceholderDictionary
 - (instancetype)init
 {
-	return (id)[[OFMapTableDictionary alloc] init];
+	return (id)[[OFConcreteDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFMapTableDictionary alloc]
+	return (id)[[OFConcreteDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObject: object
+	return (id)[[OFConcreteDictionary alloc] initWithObject: object
 							 forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys];
 }
 
@@ -80,7 +80,7 @@ OF_DIRECT_MEMBERS
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys
 							   count: count];
 }
@@ -91,7 +91,7 @@ OF_DIRECT_MEMBERS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[OFMapTableDictionary alloc] initWithKey: firstKey
+	ret = [[OFConcreteDictionary alloc] initWithKey: firstKey
 					      arguments: arguments];
 	va_end(arguments);
 
@@ -101,7 +101,7 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithKey: (id <OFCopying>)firstKey
 		  arguments: (va_list)arguments
 {
-	return (id)[[OFMapTableDictionary alloc] initWithKey: firstKey
+	return (id)[[OFConcreteDictionary alloc] initWithKey: firstKey
 						   arguments: arguments];
 }
 
@@ -113,7 +113,7 @@ OF_SINGLETON_METHODS
 {
 	if (self == [OFDictionary class])
 		object_setClass((id)&placeholder,
-		    [OFDictionaryPlaceholder class]);
+		    [OFPlaceholderDictionary class]);
 }
 
 + (instancetype)alloc

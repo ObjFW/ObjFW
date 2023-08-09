@@ -15,12 +15,12 @@
 
 #include "config.h"
 
-#import "OFMapTableSet.h"
+#import "OFConcreteSet.h"
 #import "OFArray.h"
-#import "OFCountedMapTableSet.h"
-#import "OFMapTable.h"
+#import "OFConcreteCountedSet.h"
+#import "OFConcreteMutableSet.h"
 #import "OFMapTable+Private.h"
-#import "OFMutableMapTableSet.h"
+#import "OFMapTable.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -58,7 +58,7 @@ static const OFMapTableFunctions keyFunctions = {
 };
 static const OFMapTableFunctions objectFunctions = { NULL };
 
-@implementation OFMapTableSet
+@implementation OFConcreteSet
 - (instancetype)init
 {
 	return [self initWithCapacity: 0];
@@ -202,14 +202,14 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 
 - (bool)isEqual: (id)object
 {
-	OFMapTableSet *set;
+	OFConcreteSet *set;
 
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFMapTableSet class]] &&
-	    ![object isKindOfClass: [OFMutableMapTableSet class]] &&
-	    ![object isKindOfClass: [OFCountedMapTableSet class]])
+	if (![object isKindOfClass: [OFConcreteSet class]] &&
+	    ![object isKindOfClass: [OFConcreteMutableSet class]] &&
+	    ![object isKindOfClass: [OFConcreteCountedSet class]])
 		return [super isEqual: object];
 
 	set = object;

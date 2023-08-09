@@ -46,7 +46,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFDataPlaceholder: OFString
+@interface OFPlaceholderData: OFString
 @end
 
 /* References for static linking */
@@ -57,7 +57,7 @@ _references_to_categories_of_OFData(void)
 	_OFData_MessagePackParsing_reference = 1;
 }
 
-@implementation OFDataPlaceholder
+@implementation OFPlaceholderData
 - (instancetype)init
 {
 	return (id)[[OFConcreteData alloc] init];
@@ -132,7 +132,7 @@ OF_SINGLETON_METHODS
 + (void)initialize
 {
 	if (self == [OFData class])
-		object_setClass((id)&placeholder, [OFDataPlaceholder class]);
+		object_setClass((id)&placeholder, [OFPlaceholderData class]);
 }
 
 + (instancetype)alloc

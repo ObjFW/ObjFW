@@ -18,8 +18,8 @@
 #import "TestsAppDelegate.h"
 
 #import "OFSet.h"
-#import "OFMapTableSet.h"
-#import "OFMutableMapTableSet.h"
+#import "OFConcreteSet.h"
+#import "OFConcreteMutableSet.h"
 
 static OFString *module;
 
@@ -288,8 +288,8 @@ static OFString *module;
 	[self setTestsWithClass: [SimpleSet class]
 		   mutableClass: [SimpleMutableSet class]];
 
-	module = @"OFMapTableSet";
-	[self setTestsWithClass: [OFMapTableSet class]
-		   mutableClass: [OFMutableMapTableSet class]];
+	module = @"OFConcreteSet";
+	[self setTestsWithClass: [OFConcreteSet class]
+		   mutableClass: [OFConcreteMutableSet class]];
 }
 @end

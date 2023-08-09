@@ -19,8 +19,8 @@
 
 #import "OFSet.h"
 #import "OFArray.h"
+#import "OFConcreteSet.h"
 #import "OFCountedSet.h"
-#import "OFMapTableSet.h"
 #import "OFNull.h"
 #import "OFString.h"
 
@@ -28,23 +28,23 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFSetPlaceholder: OFSet
+@interface OFPlaceholderSet: OFSet
 @end
 
-@implementation OFSetPlaceholder
+@implementation OFPlaceholderSet
 - (instancetype)init
 {
-	return (id)[[OFMapTableSet alloc] init];
+	return (id)[[OFConcreteSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -53,7 +53,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteSet alloc] initWithObject: firstObject
 					  arguments: arguments];
 	va_end(arguments);
 
@@ -62,13 +62,13 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteSet alloc] initWithObjects: objects
 						    count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteSet alloc] initWithObject: firstObject
 					       arguments: arguments];
 }
 
@@ -79,7 +79,7 @@ OF_SINGLETON_METHODS
 + (void)initialize
 {
 	if (self == [OFSet class])
-		object_setClass((id)&placeholder, [OFSetPlaceholder class]);
+		object_setClass((id)&placeholder, [OFPlaceholderSet class]);
 }
 
 + (instancetype)alloc

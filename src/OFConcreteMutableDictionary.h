@@ -19,7 +19,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMapTable;
 
-@interface OFMutableMapTableDictionary: OFMutableDictionary
+@interface OFConcreteMutableDictionary: OFMutableDictionary
 {
 	OFMapTable *_mapTable;
 }

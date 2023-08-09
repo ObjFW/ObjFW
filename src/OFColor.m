@@ -26,7 +26,7 @@
 @interface OFColorSingleton: OFConcreteColor
 @end
 
-@interface OFColorPlaceholder: OFColor
+@interface OFPlaceholderColor: OFColor
 @end
 
 static struct {
@@ -37,7 +37,7 @@ static struct {
 static const float allowedImprecision = 0.0000001;
 #endif
 
-@implementation OFColorPlaceholder
+@implementation OFPlaceholderColor
 - (instancetype)initWithRed: (float)red
 		      green: (float)green
 		       blue: (float)blue
@@ -77,7 +77,7 @@ OF_SINGLETON_METHODS
 + (void)initialize
 {
 	if (self == [OFColor class])
-		object_setClass((id)&placeholder, [OFColorPlaceholder class]);
+		object_setClass((id)&placeholder, [OFPlaceholderColor class]);
 }
 
 + (instancetype)alloc

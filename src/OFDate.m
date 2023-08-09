@@ -46,7 +46,7 @@
 # define trunc(x) ((int64_t)(x))
 #endif
 
-@interface OFDatePlaceholder: OFDate
+@interface OFPlaceholderDate: OFDate
 @end
 
 @interface OFConcreteDate: OFDate
@@ -265,7 +265,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 OF_SINGLETON_METHODS
 @end
 
-@implementation OFDatePlaceholder
+@implementation OFPlaceholderDate
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
 # pragma clang diagnostic push
@@ -348,7 +348,7 @@ OF_SINGLETON_METHODS
 	if (self != [OFDate class])
 		return;
 
-	object_setClass((id)&placeholder, [OFDatePlaceholder class]);
+	object_setClass((id)&placeholder, [OFPlaceholderDate class]);
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)

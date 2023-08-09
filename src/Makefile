@@ -183,20 +183,20 @@ SRCS += OFASPrintF.m			\
 	OFCRC32.m			\
 	OFConcreteArray.m		\
 	OFConcreteColor.m		\
+	OFConcreteCountedSet.m		\
 	OFConcreteData.m		\
+	OFConcreteDictionary.m		\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
+	OFConcreteMutableDictionary.m	\
+	OFConcreteMutableSet.m		\
+	OFConcreteSet.m			\
 	OFConcreteSubarray.m		\
-	OFCountedMapTableSet.m		\
 	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
-	OFMapTableDictionary.m		\
-	OFMapTableSet.m			\
-	OFMutableMapTableDictionary.m	\
-	OFMutableMapTableSet.m		\
 	OFMutableUTF8String.m		\
 	OFNonretainedObjectValue.m	\
 	OFPointValue.m			\

@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 
-#import "OFMutableMapTableDictionary.h"
+#import "OFConcreteMutableDictionary.h"
 #import "OFArray.h"
 #import "OFString.h"
 
@@ -25,30 +25,30 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableDictionaryPlaceholder: OFDictionary
+@interface OFPlaceholderMutableDictionary: OFDictionary
 @end
 
-@implementation OFMutableDictionaryPlaceholder
+@implementation OFPlaceholderMutableDictionary
 - (instancetype)init
 {
-	return (id)[[OFMutableMapTableDictionary alloc] init];
+	return (id)[[OFConcreteMutableDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFMutableMapTableDictionary alloc]
+	return (id)[[OFConcreteMutableDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	return (id)[[OFMutableMapTableDictionary alloc] initWithObject: object
+	return (id)[[OFConcreteMutableDictionary alloc] initWithObject: object
 								forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
-	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableDictionary alloc] initWithObjects: objects
 								forKeys: keys];
 }
 
@@ -56,7 +56,7 @@ static struct {
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableDictionary alloc] initWithObjects: objects
 								forKeys: keys
 								  count: count];
 }
@@ -67,7 +67,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
+	ret = (id)[[OFConcreteMutableDictionary alloc] initWithKey: firstKey
 							 arguments: arguments];
 	va_end(arguments);
 
@@ -76,13 +76,13 @@ static struct {
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
-	return (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
+	return (id)[[OFConcreteMutableDictionary alloc] initWithKey: firstKey
 							  arguments: arguments];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableMapTableDictionary alloc]
+	return (id)[[OFConcreteMutableDictionary alloc]
 	    initWithCapacity: capacity];
 }
 
@@ -94,7 +94,7 @@ OF_SINGLETON_METHODS
 {
 	if (self == [OFMutableDictionary class])
 		object_setClass((id)&placeholder,
-		    [OFMutableDictionaryPlaceholder class]);
+		    [OFPlaceholderMutableDictionary class]);
 }
 
 + (instancetype)alloc

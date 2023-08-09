@@ -34,7 +34,7 @@
 			       depth: (size_t)depth;
 @end
 
-@interface OFNumberPlaceholder: OFNumber
+@interface OFPlaceholderNumber: OFNumber
 @end
 
 @interface OFNumberSingleton: OFNumber
@@ -145,7 +145,7 @@ isFloat(OFNumber *number)
 	}
 }
 
-@implementation OFNumberPlaceholder
+@implementation OFPlaceholderNumber
 - (instancetype)initWithBool: (bool)value
 {
 	if (value) {
@@ -469,7 +469,7 @@ OF_SINGLETON_METHODS
 	if (self != [OFNumber class])
 		return;
 
-	object_setClass((id)&placeholder, [OFNumberPlaceholder class]);
+	object_setClass((id)&placeholder, [OFPlaceholderNumber class]);
 
 #ifdef OF_OBJFW_RUNTIME
 	numberTag =

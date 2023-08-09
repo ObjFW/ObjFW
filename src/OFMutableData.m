@@ -28,10 +28,10 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableDataPlaceholder: OFMutableData
+@interface OFPlaceholderMutableData: OFMutableData
 @end
 
-@implementation OFMutableDataPlaceholder
+@implementation OFPlaceholderMutableData
 - (instancetype)init
 {
 	return (id)[[OFConcreteMutableData alloc] init];
@@ -122,7 +122,7 @@ OF_SINGLETON_METHODS
 {
 	if (self == [OFMutableData class])
 		object_setClass((id)&placeholder,
-		    [OFMutableDataPlaceholder class]);
+		    [OFPlaceholderMutableData class]);
 }
 
 + (instancetype)alloc

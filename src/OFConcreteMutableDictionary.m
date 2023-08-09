@@ -17,18 +17,18 @@
 
 #include <string.h>
 
-#import "OFMutableMapTableDictionary.h"
+#import "OFConcreteMutableDictionary.h"
+#import "OFConcreteDictionary.h"
 #import "OFMapTable.h"
-#import "OFMapTableDictionary.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFMutableMapTableDictionary
+@implementation OFConcreteMutableDictionary
 + (void)initialize
 {
-	if (self == [OFMutableMapTableDictionary class])
-		[self inheritMethodsFromClass: [OFMapTableDictionary class]];
+	if (self == [OFConcreteMutableDictionary class])
+		[self inheritMethodsFromClass: [OFConcreteDictionary class]];
 }
 
 - (void)setObject: (id)object forKey: (id)key
@@ -63,6 +63,6 @@
 
 - (void)makeImmutable
 {
-	object_setClass(self, [OFMapTableDictionary class]);
+	object_setClass(self, [OFConcreteDictionary class]);
 }
 @end

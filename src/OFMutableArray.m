@@ -29,7 +29,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableArrayPlaceholder: OFMutableArray
+@interface OFPlaceholderMutableArray: OFMutableArray
 @end
 
 static void
@@ -78,7 +78,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 	}
 }
 
-@implementation OFMutableArrayPlaceholder
+@implementation OFPlaceholderMutableArray
 - (instancetype)init
 {
 	return (id)[[OFConcreteMutableArray alloc] init];
@@ -132,7 +132,7 @@ OF_SINGLETON_METHODS
 {
 	if (self == [OFMutableArray class])
 		object_setClass((id)&placeholder,
-		    [OFMutableArrayPlaceholder class]);
+		    [OFPlaceholderMutableArray class]);
 }
 
 + (instancetype)alloc
