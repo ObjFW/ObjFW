@@ -64,11 +64,25 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFSize sizeValue;
 
 /**
- * @brief The value as a OFRect.
+ * @brief The value as an OFRect.
  *
  * @throw OFOutOfRangeException The value is not OFRect-sized
  */
 @property (readonly, nonatomic) OFRect rectValue;
+
+/**
+ * @brief The value as an OFVector3D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector3D-sized
+ */
+@property (readonly, nonatomic) OFVector3D vector3DValue;
+
+/**
+ * @brief The value as an OFVector4D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector4D-sized
+ */
+@property (readonly, nonatomic) OFVector4D vector4DValue;
 
 /**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -135,6 +149,24 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFValue
  */
 + (instancetype)valueWithRect: (OFRect)rect;
+
+/**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  3D vector.
+ *
+ * @param vector3D The 3D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector3D: (OFVector3D)vector3D;
+
+/**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  4D vector.
+ *
+ * @param vector4D The 4D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector4D: (OFVector4D)vector4D;
 
 /**
  * @brief Initializes an already allocated OFValue with the specified bytes of
