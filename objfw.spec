@@ -1,8 +1,8 @@
-%global libobjfw_major 0
+%global libobjfw_major 1
 %global libobjfw_minor 0
-%global libobjfwrt_major 0
+%global libobjfwrt_major 1
 %global libobjfwrt_minor 0
-%global libobjfwtls_major 0
+%global libobjfwtls_major 1
 %global libobjfwtls_minor 0
 %if 0%{?suse_version}
 %global libobjfw_pkgname libobjfw%{libobjfw_major}
@@ -15,7 +15,7 @@
 %endif
 
 Name:          objfw
-Version:       1.0dev
+Version:       1.0
 Release:       1%{?dist}
 Summary:       Portable, lightweight framework for the Objective-C language
 
