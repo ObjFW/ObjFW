@@ -98,7 +98,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(bool)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(bool);
+	_typeEncoding = *@encode(bool);
 
 	return self;
 }
@@ -108,7 +108,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(signed char)];
 
 	_value.signed_ = value;
-	_typeEncoding = @encode(signed char);
+	_typeEncoding = *@encode(signed char);
 
 	return self;
 }
@@ -118,7 +118,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(short)];
 
 	_value.signed_ = value;
-	_typeEncoding = @encode(short);
+	_typeEncoding = *@encode(short);
 
 	return self;
 }
@@ -128,7 +128,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(int)];
 
 	_value.signed_ = value;
-	_typeEncoding = @encode(int);
+	_typeEncoding = *@encode(int);
 
 	return self;
 }
@@ -138,7 +138,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(long)];
 
 	_value.signed_ = value;
-	_typeEncoding = @encode(long);
+	_typeEncoding = *@encode(long);
 
 	return self;
 }
@@ -148,7 +148,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(long long)];
 
 	_value.signed_ = value;
-	_typeEncoding = @encode(long long);
+	_typeEncoding = *@encode(long long);
 
 	return self;
 }
@@ -158,7 +158,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned char)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long);
+	_typeEncoding = *@encode(unsigned long);
 
 	return self;
 }
@@ -168,7 +168,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned short)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned short);
+	_typeEncoding = *@encode(unsigned short);
 
 	return self;
 }
@@ -178,7 +178,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned int)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned int);
+	_typeEncoding = *@encode(unsigned int);
 
 	return self;
 }
@@ -188,7 +188,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned long)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long);
+	_typeEncoding = *@encode(unsigned long);
 
 	return self;
 }
@@ -199,7 +199,7 @@ isFloat(OFNumber *number)
 			   objCType: @encode(unsigned long long)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long long);
+	_typeEncoding = *@encode(unsigned long long);
 
 	return self;
 }
@@ -209,7 +209,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(float)];
 
 	_value.float_ = value;
-	_typeEncoding = @encode(float);
+	_typeEncoding = *@encode(float);
 
 	return self;
 }
@@ -219,14 +219,14 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(double)];
 
 	_value.float_ = value;
-	_typeEncoding = @encode(double);
+	_typeEncoding = *@encode(double);
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return _typeEncoding;
+	return &_typeEncoding;
 }
 
 - (long long)longLongValue

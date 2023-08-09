@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	size_t _size;
 	void *_bytes;
-	const char *_objCType;
+	char *_objCType;
 }
 @end
 

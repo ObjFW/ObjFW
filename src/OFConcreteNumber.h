@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 		long long signed_;
 		unsigned long long unsigned_;
 	} _value;
-	const char *_typeEncoding;
+	char _typeEncoding;
 }
 @end
 

@@ -15,6 +15,7 @@
 
 #import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -28,9 +29,8 @@
 
 	@try {
 		_size = OFSizeOfTypeEncoding(objCType);
-		_objCType = objCType;
+		_objCType = OFStrDup(objCType);
 		_bytes = OFAllocMemory(1, _size);
-
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
 		[self release];
@@ -43,6 +43,7 @@
 - (void)dealloc
 {
 	OFFreeMemory(_bytes);
+	OFFreeMemory(_objCType);
 
 	[super dealloc];
 }
