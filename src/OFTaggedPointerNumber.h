@@ -18,7 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_OBJFW_RUNTIME
-static const uint_fast8_t OFTaggedPointerNumberTagBits = 4;
+# define OFTaggedPointerNumberTagBits 4
 
 @interface OFTaggedPointerNumber: OFNumber
 @end
