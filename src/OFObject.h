@@ -103,7 +103,7 @@ typedef enum {
  *
  * @brief A range.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFRange {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
@@ -154,7 +154,7 @@ typedef double OFTimeInterval;
  *
  * @brief A point in 2D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFPoint {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
@@ -200,7 +200,7 @@ OFEqualPoints(OFPoint point1, OFPoint point2)
  *
  * @brief A size.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFSize {
 	/** The width of the size */
 	float width;
 	/** The height of the size */
@@ -246,7 +246,7 @@ OFEqualSizes(OFSize size1, OFSize size2)
  *
  * @brief A rectangle.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFRect {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
@@ -297,7 +297,7 @@ OFEqualRects(OFRect rect1, OFRect rect2)
  *
  * @brief A vector in 3D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFVector3D {
 	/** The x coordinate of the vector */
 	float x;
 	/** The y coordinate of the vector */
@@ -349,7 +349,7 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
  *
  * @brief A vector in 4D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFVector4D {
 	/** The x coordinate of the vector */
 	float x;
 	/** The y coordinate of the vector */

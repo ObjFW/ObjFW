@@ -179,7 +179,7 @@ struct sockaddr_at {
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFSocketAddress {
 	OFSocketAddressFamily family;
 	/*
 	 * We can't use struct sockaddr as it can contain variable length

@@ -252,11 +252,44 @@ OF_SINGLETON_METHODS
 
 - (OFString *)description
 {
-	OFMutableString *ret =
-	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = OFSizeOfTypeEncoding(self.objCType);
+	const char *objCType = self.objCType;
+	OFMutableString *ret;
+	size_t size;
 	unsigned char *value;
 
+	if (strcmp(objCType, @encode(OFRange)) == 0 ||
+	    strcmp(objCType, @encode(const OFRange)) == 0) {
+		OFRange rangeValue;
+		[self getValue: &rangeValue size: sizeof(rangeValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFRange { %zd, %zd }>",
+		    rangeValue.location, rangeValue.length];
+	} else if (strcmp(objCType, @encode(OFPoint)) == 0 ||
+	    strcmp(objCType, @encode(const OFPoint)) == 0) {
+		OFPoint pointValue;
+		[self getValue: &pointValue size: sizeof(pointValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFPoint { %g, %g }>",
+		    pointValue.x, pointValue.y];
+	} else if (strcmp(objCType, @encode(OFSize)) == 0 ||
+	    strcmp(objCType, @encode(const OFSize)) == 0) {
+		OFSize sizeValue;
+		[self getValue: &sizeValue size: sizeof(sizeValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFSize { %g, %g }>",
+		    sizeValue.width, sizeValue.height];
+	} else if (strcmp(objCType, @encode(OFRect)) == 0 ||
+	    strcmp(objCType, @encode(const OFRect)) == 0) {
+		OFRect rectValue;
+		[self getValue: &rectValue size: sizeof(rectValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFRect { %g, %g, %g, %g }>",
+		    rectValue.origin.x, rectValue.origin.y,
+		    rectValue.size.width, rectValue.size.height];
+	}
+
+	ret = [OFMutableString stringWithString: @"<OFValue: "];
+	size = OFSizeOfTypeEncoding(objCType);
 	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];
