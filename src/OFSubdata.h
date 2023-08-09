@@ -13,16 +13,17 @@
  * file.
  */
 
-#import "OFCountedSet.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMapTable;
-
-@interface OFCountedMapTableSet: OFCountedSet
+@interface OFSubdata: OFData
 {
-	OFMapTable *_mapTable;
+	OFData *_data;
+	OFRange _range;
 }
+
+- (instancetype)initWithData: (OFData *)data range: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

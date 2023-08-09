@@ -13,15 +13,15 @@
  * file.
  */
 
-#import "OFArray.h"
+#import "OFMutableSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMutableData;
+@class OFMapTable;
 
-@interface OFAdjacentArray: OFArray
+@interface OFConcreteMutableSet: OFMutableSet
 {
-	OFMutableData *_array;
+	OFMapTable *_mapTable;
 }
 @end
 

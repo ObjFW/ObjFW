@@ -97,7 +97,7 @@ static locale_t cLocale;
 			       depth: (size_t)depth;
 @end
 
-@interface OFStringPlaceholder: OFString
+@interface OFPlaceholderString: OFString
 @end
 
 extern bool OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
@@ -377,7 +377,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-@implementation OFStringPlaceholder
+@implementation OFPlaceholderString
 - (instancetype)init
 {
 	return (id)[[OFUTF8String alloc] init];
@@ -592,24 +592,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						      encoding: encoding];
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFString
@@ -618,7 +601,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (self != [OFString class])
 		return;
 
-	placeholder.isa = [OFStringPlaceholder class];
+	object_setClass((id)&placeholder, [OFPlaceholderString class]);
 
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
@@ -803,7 +786,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFString class]]) {
+	if ([self isMemberOfClass: [OFString class]] ||
+	    [self isMemberOfClass: [OFMutableString class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

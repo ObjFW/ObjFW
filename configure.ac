@@ -36,7 +36,7 @@ arm-*-riscos*)
 	enable_files="no"
 	;;
 m68k-*-amigaos*)
-	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0"])
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
@@ -1400,15 +1400,25 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
 	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
-	AC_CHECK_FUNCS([if_indextoname if_nametoindex])
+	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
-		#ifdef HAVAE_SYS_TYPES_H
+		#ifdef HAVE_SYS_TYPES_H
 		# include <sys/types.h>
 		#endif
 		#ifdef HAVE_NET_IF_DL_H
 		# include <net/if_dl.h>
+		#endif
+	])
+	AC_CHECK_TYPES([struct lifconf], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
+		#endif
+	])
+	AC_CHECK_MEMBERS([struct ifreq.ifr_hwaddr], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
 		#endif
 	])
 	AC_CHECK_HEADER(sys/un.h, [
@@ -1750,9 +1760,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 		;;
 	esac
-
-	AC_CHECK_HEADERS(net/if.h)
-	AC_CHECK_FUNCS(if_nameindex)
 
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [

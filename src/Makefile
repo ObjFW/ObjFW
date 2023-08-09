@@ -175,25 +175,28 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    ${USE_INCLUDES_ATOMIC}
 
 SRCS += OFASPrintF.m			\
-	OFAdjacentArray.m		\
-	OFAdjacentSubarray.m		\
 	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
-	OFCountedMapTableSet.m		\
+	OFConcreteArray.m		\
+	OFConcreteColor.m		\
+	OFConcreteCountedSet.m		\
+	OFConcreteData.m		\
+	OFConcreteDictionary.m		\
+	OFConcreteMutableArray.m	\
+	OFConcreteMutableData.m		\
+	OFConcreteMutableDictionary.m	\
+	OFConcreteMutableSet.m		\
+	OFConcreteSet.m			\
+	OFConcreteSubarray.m		\
 	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
-	OFMapTableDictionary.m		\
-	OFMapTableSet.m			\
-	OFMutableAdjacentArray.m	\
-	OFMutableMapTableDictionary.m	\
-	OFMutableMapTableSet.m		\
 	OFMutableUTF8String.m		\
 	OFNonretainedObjectValue.m	\
 	OFPointValue.m			\
@@ -205,6 +208,8 @@ SRCS += OFASPrintF.m			\
 	OFSizeValue.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
+	OFSubdata.m			\
+	OFTaggedPointerColor.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\

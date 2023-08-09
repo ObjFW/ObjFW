@@ -17,17 +17,17 @@
 
 #include <stdarg.h>
 
-#import "OFAdjacentArray.h"
-#import "OFAdjacentSubarray.h"
+#import "OFConcreteArray.h"
+#import "OFConcreteMutableArray.h"
+#import "OFConcreteSubarray.h"
 #import "OFData.h"
-#import "OFMutableAdjacentArray.h"
 #import "OFString.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFAdjacentArray
+@implementation OFConcreteArray
 - (instancetype)init
 {
 	self = [super init];
@@ -233,7 +233,8 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [OFAdjacentSubarray arrayWithArray: self range: range];
+	return [[[OFConcreteSubarray alloc] initWithArray: self
+						    range: range] autorelease];
 }
 
 - (bool)isEqual: (id)object
@@ -245,8 +246,8 @@
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFAdjacentArray class]] &&
-	    ![object isKindOfClass: [OFMutableAdjacentArray class]])
+	if (![object isKindOfClass: [OFConcreteArray class]] &&
+	    ![object isKindOfClass: [OFConcreteMutableArray class]])
 		return [super isEqual: object];
 
 	otherArray = object;

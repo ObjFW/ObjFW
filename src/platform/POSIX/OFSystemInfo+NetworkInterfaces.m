@@ -21,6 +21,9 @@
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
+#ifdef HAVE_SYS_SOCKIO_H
+# include <sys/sockio.h>
+#endif
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
@@ -98,16 +101,85 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 {
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(family, SOCK_DGRAM, 0);
-	struct ifconf ifc;
-	struct ifreq *ifrs;
 	OFMutableDictionary *interface;
 	OFEnumerator *enumerator;
 
 	if (sock < 0)
 		return false;
 
-	ifrs = malloc(128 * sizeof(struct ifreq));
-	if (ifrs == NULL) {
+# if defined(HAVE_STRUCT_LIFCONF) && defined(SIOCGLIFCONF)
+	struct lifconf lifc;
+	struct lifreq *lifrs;
+
+	if ((lifrs = malloc(128 * sizeof(struct lifreq))) == NULL) {
+		closesocket(sock);
+		return false;
+	}
+
+	@try {
+		char *buffer;
+
+		memset(&lifc, 0, sizeof(lifc));
+		lifc.lifc_buf = (void *)lifrs;
+		lifc.lifc_len = 128 * sizeof(struct lifreq);
+		if (ioctl(sock, SIOCGLIFCONF, &lifc) < 0)
+			return false;
+
+		for (buffer = lifc.lifc_buf;
+		    buffer < (char *)lifc.lifc_buf + lifc.lifc_len;
+		    buffer += sizeof(struct lifreq)) {
+			struct lifreq *current =
+			    (struct lifreq *)(void *)buffer;
+			OFString *name;
+			OFMutableData *addresses;
+			OFSocketAddress address;
+
+			if (current->lifr_addr.ss_family != family)
+				continue;
+
+			name = [OFString stringWithCString: current->lifr_name
+						  encoding: encoding];
+			if ((interface = [ret objectForKey: name]) == nil) {
+				interface = [OFMutableDictionary dictionary];
+				[ret setObject: interface forKey: name];
+			}
+
+			addresses = [interface objectForKey: key];
+			if (addresses == nil) {
+				addresses = [OFMutableData
+				    dataWithItemSize: sizeof(OFSocketAddress)];
+				[interface setObject: addresses forKey: key];
+			}
+
+			memset(&address, 0, sizeof(address));
+			address.family = addressFamily;
+			memcpy(&address.sockaddr.in, &current->lifr_addr,
+			    sockaddrSize);
+
+#  if defined(OF_HAVE_IPV6) && defined(HAVE_IF_NAMETOINDEX)
+			if (address.sockaddr.in6.sin6_family == AF_INET6 &&
+			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
+			    == 0x80)
+				address.sockaddr.in6.sin6_scope_id =
+				    if_nametoindex(
+				    [name cStringWithEncoding: encoding]);
+#  endif
+
+			[addresses addItem: &address];
+		}
+	} @finally {
+		free(lifrs);
+		closesocket(sock);
+	}
+# else
+	struct ifconf ifc;
+	struct ifreq *ifrs;
+
+	if (sock < 0)
+		return false;
+
+	if ((ifrs = malloc(128 * sizeof(struct ifreq))) == NULL) {
 		closesocket(sock);
 		return false;
 	}
@@ -150,6 +222,16 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			memcpy(&address.sockaddr.in, &current->ifr_addr,
 			    sockaddrSize);
 
+#  if defined(OF_HAVE_IPV6) && defined(HAVE_IF_NAMETOINDEX)
+			if (address.sockaddr.in6.sin6_family == AF_INET6 &&
+			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
+			    == 0x80)
+				address.sockaddr.in6.sin6_scope_id =
+				    if_nametoindex(
+				    [name cStringWithEncoding: encoding]);
+#  endif
+
 			[addresses addItem: &address];
 
 next:
@@ -163,6 +245,7 @@ next:
 		free(ifrs);
 		closesocket(sock);
 	}
+# endif
 
 	enumerator = [ret objectEnumerator];
 	while ((interface = [enumerator nextObject]) != nil)
@@ -189,6 +272,9 @@ static bool
 queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 {
 # if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+#  ifdef HAVE_IF_NAMETOINDEX
+	OFStringEncoding encoding = [OFLocale encoding];
+#  endif
 	OFFile *file;
 	OFString *line;
 	OFMutableDictionary *interface;
@@ -224,6 +310,7 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv6;
+		address.sockaddr.in6.sin6_family = AF_INET6;
 
 		for (size_t i = 0; i < 32; i += 2) {
 			unsigned long long byte;
@@ -242,6 +329,13 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 			address.sockaddr.in6.sin6_addr.s6_addr[i / 2] =
 			    (unsigned char)byte;
 		}
+
+#  ifdef HAVE_IF_NAMETOINDEX
+		if (address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
+		    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0) == 0x80)
+			address.sockaddr.in6.sin6_scope_id = if_nametoindex(
+			    [name cStringWithEncoding: encoding]);
+#  endif
 
 		if ((addresses = [interface
 		    objectForKey: OFNetworkInterfaceIPv6Addresses]) == nil) {
@@ -277,7 +371,82 @@ next_line:
 static bool
 queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	OFFile *file;
+	OFString *line;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	@try {
+		file = [OFFile fileWithPath: @"/proc/net/ipx/interface"
+				       mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		return false;
+	}
+
+	/* First line is "Network Node_Address Primary Device Frame_Type" */
+	if (![[file readLine] hasPrefix: @"Network "])
+		return false;
+
+	while ((line = [file readLine]) != nil) {
+		OFArray *components = [line
+		    componentsSeparatedByString: @" "
+					options: OFStringSkipEmptyComponents];
+		OFString *name;
+		unsigned long long network, nodeLong;
+		unsigned char node[IPX_NODE_LEN];
+		OFSocketAddress address;
+		OFMutableData *addresses;
+
+		if (components.count < 5)
+			continue;
+
+		name = [components objectAtIndex: 3];
+
+		if ((interface = [ret objectForKey: name]) == nil) {
+			interface = [OFMutableDictionary dictionary];
+			[ret setObject: interface forKey: name];
+		}
+
+		@try {
+			network = [[components objectAtIndex: 0]
+			    unsignedLongLongValueWithBase: 16];
+			nodeLong = [[components objectAtIndex: 1]
+			    unsignedLongLongValueWithBase: 16];
+		} @catch (OFInvalidFormatException *e) {
+			continue;
+		}
+
+		if (network > 0xFFFFFFFF || nodeLong > 0xFFFFFFFFFFFF)
+			continue;
+
+		node[0] = (nodeLong >> 40) & 0xFF;
+		node[1] = (nodeLong >> 32) & 0xFF;
+		node[2] = (nodeLong >> 24) & 0xFF;
+		node[3] = (nodeLong >> 16) & 0xFF;
+		node[4] = (nodeLong >> 8) & 0xFF;
+		node[5] = nodeLong & 0xFF;
+
+		address = OFSocketAddressMakeIPX((uint32_t)network, node, 0);
+
+		if ((addresses = [interface objectForKey:
+		    OFNetworkInterfaceIPXAddresses]) == nil) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(OFSocketAddress)];
+			[interface setObject: addresses
+				      forKey: OFNetworkInterfaceIPXAddresses];
+		}
+
+		[addresses addItem: &address];
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceIPXAddresses]
+		    makeImmutable];
+
+	return false;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPXAddresses, OFSocketAddressFamilyIPX,
 	    AF_IPX, sizeof(struct sockaddr_ipx));
@@ -291,7 +460,83 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 {
-# if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	OFFile *file;
+	OFString *line;
+	OFMutableDictionary *interface;
+	OFEnumerator *enumerator;
+
+	@try {
+		file = [OFFile fileWithPath: @"/proc/net/atalk/interface"
+				       mode: @"r"];
+	} @catch (OFOpenItemFailedException *e) {
+		return false;
+	}
+
+	/* First line is "Interface Address Networks Status" */
+	if (![[file readLine] hasPrefix: @"Interface "])
+		return false;
+
+	while ((line = [file readLine]) != nil) {
+		OFArray *components = [line
+		    componentsSeparatedByString: @" "
+					options: OFStringSkipEmptyComponents];
+		OFString *addressString, *name;
+		unsigned long long network, node;
+		OFSocketAddress address;
+		OFMutableData *addresses;
+
+		if (components.count < 4)
+			continue;
+
+		name = [components objectAtIndex: 0];
+		addressString = [components objectAtIndex: 1];
+
+		if (addressString.length != 7 ||
+		    [addressString characterAtIndex: 4] != ':')
+			continue;
+
+		if ((interface = [ret objectForKey: name]) == nil) {
+			interface = [OFMutableDictionary dictionary];
+			[ret setObject: interface forKey: name];
+		}
+
+		@try {
+			network = [[addressString
+			    substringWithRange: OFMakeRange(0, 4)]
+			    unsignedLongLongValueWithBase: 16];
+			node = [[addressString
+			    substringWithRange: OFMakeRange(5, 2)]
+			    unsignedLongLongValueWithBase: 16];
+		} @catch (OFInvalidFormatException *e) {
+			continue;
+		}
+
+		if (network > 0xFFFF || node > 0xFF)
+			continue;
+
+		address = OFSocketAddressMakeAppleTalk(
+		    (uint16_t)network, (uint8_t)node, 0);
+
+		if ((addresses = [interface objectForKey:
+		    OFNetworkInterfaceAppleTalkAddresses]) == nil) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(OFSocketAddress)];
+			[interface
+			    setObject: addresses
+			       forKey: OFNetworkInterfaceAppleTalkAddresses];
+		}
+
+		[addresses addItem: &address];
+	}
+
+	enumerator = [ret objectEnumerator];
+	while ((interface = [enumerator nextObject]) != nil)
+		[[interface objectForKey: OFNetworkInterfaceAppleTalkAddresses]
+		    makeImmutable];
+
+	return false;
+# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceAppleTalkAddresses,
 	    OFSocketAddressFamilyAppleTalk, AF_APPLETALK,
@@ -305,7 +550,43 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 {
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR)
+#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGLIFHWADDR)
+	OFStringEncoding encoding = [OFLocale encoding];
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (sock < 0)
+		return false;
+
+	for (OFString *name in ret) {
+		size_t nameLength = [name cStringLengthWithEncoding: encoding];
+		struct lifreq lifr;
+		struct sockaddr_dl *sdl;
+		OFData *hardwareAddress;
+
+		if (nameLength > IFNAMSIZ)
+			continue;
+
+		memset(&lifr, 0, sizeof(lifr));
+		memcpy(&lifr.lifr_name, [name cStringWithEncoding: encoding],
+		    nameLength);
+
+		if (ioctl(sock, SIOCGLIFHWADDR, &lifr) < 0)
+			continue;
+
+		if (lifr.lifr_addr.ss_family != AF_LINK)
+			continue;
+
+		sdl = (struct sockaddr_dl *)(void *)&lifr.lifr_addr;
+		hardwareAddress = [OFData dataWithItems: LLADDR(sdl)
+						  count: sdl->sdl_alen];
+		[[ret objectForKey: name]
+		    setObject: hardwareAddress
+		       forKey: OFNetworkInterfaceHardwareAddress];
+	}
+
+	return true;
+#elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
+    defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 

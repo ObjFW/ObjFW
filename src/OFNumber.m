@@ -34,7 +34,7 @@
 			       depth: (size_t)depth;
 @end
 
-@interface OFNumberPlaceholder: OFNumber
+@interface OFPlaceholderNumber: OFNumber
 @end
 
 @interface OFNumberSingleton: OFNumber
@@ -145,7 +145,7 @@ isFloat(OFNumber *number)
 	}
 }
 
-@implementation OFNumberPlaceholder
+@implementation OFPlaceholderNumber
 - (instancetype)initWithBool: (bool)value
 {
 	if (value) {
@@ -378,27 +378,12 @@ isFloat(OFNumber *number)
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFNumberSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end
 
 #ifdef OF_OBJFW_RUNTIME
@@ -484,7 +469,7 @@ isFloat(OFNumber *number)
 	if (self != [OFNumber class])
 		return;
 
-	placeholder.isa = [OFNumberPlaceholder class];
+	object_setClass((id)&placeholder, [OFPlaceholderNumber class]);
 
 #ifdef OF_OBJFW_RUNTIME
 	numberTag =

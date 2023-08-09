@@ -13,17 +13,16 @@
  * file.
  */
 
-#import "OFArray.h"
+#import "OFColor.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSubarray: OFArray
-{
-	OFArray *_array;
-	OFRange _range;
-}
-
-- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
+#ifdef OF_OBJFW_RUNTIME
+@interface OFTaggedPointerColor: OFColor
++ (instancetype)colorWithRed: (uint8_t)red
+		       green: (uint8_t)green
+			blue: (uint8_t)blue;
 @end
+#endif
 
 OF_ASSUME_NONNULL_END

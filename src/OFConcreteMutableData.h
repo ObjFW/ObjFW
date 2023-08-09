@@ -13,18 +13,16 @@
  * file.
  */
 
-#import "OFSet.h"
+#import "OFMutableData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMapTable;
-
-@interface OFMapTableSet: OFSet
+@interface OFConcreteMutableData: OFMutableData
 {
-	OFMapTable *_mapTable;
+	unsigned char *_Nullable _items;
+	size_t _capacity, _count, _itemSize;
+	bool _freeWhenDone;
 }
-
-- (instancetype)initWithCapacity: (size_t)capacity;
 @end
 
 OF_ASSUME_NONNULL_END

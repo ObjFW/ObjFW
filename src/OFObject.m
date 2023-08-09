@@ -343,7 +343,8 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
-		allocFailedException.isa = [OFAllocFailedException class];
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
 		@throw (id)&allocFailedException;
 	}
 

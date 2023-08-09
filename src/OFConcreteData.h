@@ -13,19 +13,16 @@
  * file.
  */
 
-#import "OFDictionary.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMapTable;
-@class OFMapTableEnumerator;
-
-@interface OFMapTableDictionary: OFDictionary
+@interface OFConcreteData: OFData
 {
-	OFMapTable *_mapTable;
+	unsigned char *_Nullable _items;
+	size_t _capacity, _count, _itemSize;
+	bool _freeWhenDone;
 }
-
-- (instancetype)initWithCapacity: (size_t)capacity;
 @end
 
 OF_ASSUME_NONNULL_END

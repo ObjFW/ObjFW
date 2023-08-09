@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #import "OFCountedSet.h"
-#import "OFCountedMapTableSet.h"
+#import "OFConcreteCountedSet.h"
 #import "OFNumber.h"
 #import "OFString.h"
 
@@ -26,23 +26,23 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFCountedSetPlaceholder: OFCountedSet
+@interface OFPlaceholderCountedSet: OFCountedSet
 @end
 
-@implementation OFCountedSetPlaceholder
+@implementation OFPlaceholderCountedSet
 - (instancetype)init
 {
-	return (id)[[OFCountedMapTableSet alloc] init];
+	return (id)[[OFConcreteCountedSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteCountedSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteCountedSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -51,7 +51,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFCountedMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteCountedSet alloc] initWithObject: firstObject
 						 arguments: arguments];
 	va_end(arguments);
 
@@ -60,41 +60,25 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteCountedSet alloc] initWithObjects: objects
 							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteCountedSet alloc] initWithObject: firstObject
 						      arguments: arguments];
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFCountedSet
 + (void)initialize
 {
 	if (self == [OFCountedSet class])
-		placeholder.isa = [OFCountedSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderCountedSet class]);
 }
 
 + (instancetype)alloc
@@ -103,22 +87,6 @@ static struct {
 		return (id)&placeholder;
 
 	return [super alloc];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFCountedSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-
-		abort();
-	}
-
-	return [super init];
 }
 
 - (size_t)countForObject: (id)object

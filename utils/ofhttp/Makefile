@@ -17,9 +17,7 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../../src/tls						\
 	    -I../..							\
-	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'	\
-	    -DLIB_PREFIX='"${LIB_PREFIX}"'				\
-	    -DLIB_SUFFIX='"${LIB_SUFFIX}"'
+	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
 LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}

@@ -21,6 +21,7 @@
 
 #import "OFData.h"
 #import "OFBase64.h"
+#import "OFConcreteData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -30,6 +31,7 @@
 #import "OFIRIHandler.h"
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFSubdata.h"
 #import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
@@ -40,6 +42,13 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
+static struct {
+	Class isa;
+} placeholder;
+
+@interface OFPlaceholderData: OFString
+@end
+
 /* References for static linking */
 void
 _references_to_categories_of_OFData(void)
@@ -48,8 +57,101 @@ _references_to_categories_of_OFData(void)
 	_OFData_MessagePackParsing_reference = 1;
 }
 
+@implementation OFPlaceholderData
+- (instancetype)init
+{
+	return (id)[[OFConcreteData alloc] init];
+}
+
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	return (id)[[OFConcreteData alloc] initWithItemSize: itemSize];
+}
+
+- (instancetype)initWithItems: (const void *)items count: (size_t)count
+{
+	return (id)[[OFConcreteData alloc] initWithItems: items count: count];
+}
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	return (id)[[OFConcreteData alloc] initWithItems: items
+						   count: count
+						itemSize: itemSize];
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	return (id)[[OFConcreteData alloc] initWithItemsNoCopy: items
+							 count: count
+						  freeWhenDone: freeWhenDone];
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
+{
+	return (id)[[OFConcreteData alloc] initWithItemsNoCopy: items
+							 count: count
+						      itemSize: itemSize
+						  freeWhenDone: freeWhenDone];
+}
+
+#ifdef OF_HAVE_FILES
+- (instancetype)initWithContentsOfFile: (OFString *)path
+{
+	return (id)[[OFConcreteData alloc] initWithContentsOfFile: path];
+}
+#endif
+
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
+{
+	return (id)[[OFConcreteData alloc] initWithContentsOfIRI: IRI];
+}
+
+- (instancetype)initWithStringRepresentation: (OFString *)string
+{
+	return (id)[[OFConcreteData alloc]
+	    initWithStringRepresentation: string];
+}
+
+- (instancetype)initWithBase64EncodedString: (OFString *)string
+{
+	return (id)[[OFConcreteData alloc] initWithBase64EncodedString: string];
+}
+
+OF_SINGLETON_METHODS
+@end
+
 @implementation OFData
-@synthesize itemSize = _itemSize;
++ (void)initialize
+{
+	if (self == [OFData class])
+		object_setClass((id)&placeholder, [OFPlaceholderData class]);
+}
+
++ (instancetype)alloc
+{
+	if (self == [OFData class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
++ (instancetype)data
+{
+	return [[[self alloc] init] autorelease];
+}
+
++ (instancetype)dataWithItemSize: (size_t)itemSize
+{
+	return [[[self alloc] initWithItemSize: itemSize] autorelease];
+}
 
 + (instancetype)dataWithItems: (const void *)items count: (size_t)count
 {
@@ -108,6 +210,28 @@ _references_to_categories_of_OFData(void)
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
 
+- (instancetype)init
+{
+	if ([self isMemberOfClass: [OFData class]] ||
+	    [self isMemberOfClass: [OFMutableData class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+
+		abort();
+	}
+
+	return [super init];
+}
+
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
 	return [self initWithItems: items count: count itemSize: 1];
@@ -117,24 +241,7 @@ _references_to_categories_of_OFData(void)
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	self = [super init];
-
-	@try {
-		if (itemSize == 0)
-			@throw [OFInvalidArgumentException exception];
-
-		_items = OFAllocMemory(count, itemSize);
-		_count = count;
-		_itemSize = itemSize;
-		_freeWhenDone = true;
-
-		memcpy(_items, items, count * itemSize);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
@@ -152,22 +259,7 @@ _references_to_categories_of_OFData(void)
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	self = [super init];
-
-	@try {
-		if (itemSize == 0)
-			@throw [OFInvalidArgumentException exception];
-
-		_items = (unsigned char *)items;
-		_count = count;
-		_itemSize = itemSize;
-		_freeWhenDone = freeWhenDone;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	OF_INVALID_INIT_METHOD
 }
 
 #ifdef OF_HAVE_FILES
@@ -212,43 +304,44 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	self = [super init];
+	char *items = NULL, *buffer = NULL;
+	size_t count = 0;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 		size_t pageSize;
-		unsigned char *buffer;
-
-		_count = 0;
-		_itemSize = 1;
-		_freeWhenDone = true;
 
 		pageSize = [OFSystemInfo pageSize];
 		buffer = OFAllocMemory(1, pageSize);
 
-		@try {
-			while (!stream.atEndOfStream) {
-				size_t length = [stream
-				    readIntoBuffer: buffer
-					    length: pageSize];
+		while (!stream.atEndOfStream) {
+			size_t length = [stream readIntoBuffer: buffer
+							length: pageSize];
 
-				if (SIZE_MAX - _count < length)
-					@throw [OFOutOfRangeException
-					    exception];
+			if (SIZE_MAX - count < length)
+				@throw [OFOutOfRangeException exception];
 
-				_items = OFResizeMemory(_items,
-				    _count + length, 1);
-				memcpy(_items + _count, buffer, length);
-				_count += length;
-			}
-		} @finally {
-			OFFreeMemory(buffer);
+			items = OFResizeMemory(items, count + length, 1);
+			memcpy(items + count, buffer, length);
+			count += length;
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
+		OFFreeMemory(buffer);
+		OFFreeMemory(items);
 		[self release];
+
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithItemsNoCopy: items
+					   count: count
+				    freeWhenDone: true];
+	} @catch (id e) {
+		OFFreeMemory(items);
 		@throw e;
 	}
 
@@ -257,22 +350,20 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)initWithStringRepresentation: (OFString *)string
 {
-	self = [super init];
+	char *items = NULL;
+	size_t count = 0;
 
 	@try {
-		size_t count = [string
-		    cStringLengthWithEncoding: OFStringEncodingASCII];
 		const char *cString;
+
+		count = [string
+		    cStringLengthWithEncoding: OFStringEncodingASCII];
 
 		if (count % 2 != 0)
 			@throw [OFInvalidFormatException exception];
 
 		count /= 2;
-
-		_items = OFAllocMemory(count, 1);
-		_count = count;
-		_itemSize = 1;
-		_freeWhenDone = true;
+		items = OFAllocMemory(count, 1);
 
 		cString = [string cStringWithEncoding: OFStringEncodingASCII];
 
@@ -299,10 +390,21 @@ _references_to_categories_of_OFData(void)
 			else
 				@throw [OFInvalidFormatException exception];
 
-			_items[i] = byte;
+			items[i] = byte;
 		}
 	} @catch (id e) {
+		OFFreeMemory(items);
 		[self release];
+
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithItemsNoCopy: items
+					   count: count
+				    freeWhenDone: true];
+	} @catch (id e) {
+		OFFreeMemory(items);
 		@throw e;
 	}
 
@@ -311,17 +413,13 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
 {
-	bool mutable = [self isKindOfClass: [OFMutableData class]];
-
-	if (!mutable) {
-		[self release];
-		self = [OFMutableData alloc];
-	}
-
-	self = [(OFMutableData *)self initWithCapacity: string.length / 3];
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableData *data;
 
 	@try {
-		if (!OFBase64Decode((OFMutableData *)self,
+		data = [OFMutableData data];
+
+		if (!OFBase64Decode(data,
 		    [string cStringWithEncoding: OFStringEncodingASCII],
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
@@ -330,54 +428,81 @@ _references_to_categories_of_OFData(void)
 		@throw e;
 	}
 
-	if (!mutable)
-		[(OFMutableData *)self makeImmutable];
+	/* Avoid copying if the class already matches. */
+	if (data.class == self.class) {
+		[self release];
+		self = [data retain];
+		objc_autoreleasePoolPop(pool);
+		return self;
+	}
+
+	/*
+	 * Make it immutable and avoid copying if the class already matches
+	 * after that.
+	 */
+	@try {
+		[data makeImmutable];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	if (data.class == self.class) {
+		[self release];
+		self = [data retain];
+		objc_autoreleasePoolPop(pool);
+		return self;
+	}
+
+	self = [self initWithItems: data.items count: data.count];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (void)dealloc
-{
-	if (_freeWhenDone)
-		OFFreeMemory(_items);
-
-	[_parentData release];
-
-	[super dealloc];
-}
-
 - (size_t)count
 {
-	return _count;
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (size_t)itemSize
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (const void *)items
 {
-	return _items;
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (const void *)itemAtIndex: (size_t)idx
 {
-	if (idx >= _count)
+	if (idx >= self.count)
 		@throw [OFOutOfRangeException exception];
 
-	return _items + idx * _itemSize;
+	return (const unsigned char *)self.items + idx * self.itemSize;
 }
 
 - (const void *)firstItem
 {
-	if (_items == NULL || _count == 0)
+	const void *items = self.items;
+
+	if (items == NULL || self.count == 0)
 		return NULL;
 
-	return _items;
+	return items;
 }
 
 - (const void *)lastItem
 {
-	if (_items == NULL || _count == 0)
+	const unsigned char *items = self.items;
+	size_t count = self.count;
+
+	if (items == NULL || count == 0)
 		return NULL;
 
-	return _items + (_count - 1) * _itemSize;
+	return items + (count - 1) * self.itemSize;
 }
 
 - (id)copy
@@ -387,13 +512,14 @@ _references_to_categories_of_OFData(void)
 
 - (id)mutableCopy
 {
-	return [[OFMutableData alloc] initWithItems: _items
-					      count: _count
-					   itemSize: _itemSize];
+	return [[OFMutableData alloc] initWithItems: self.items
+					      count: self.count
+					   itemSize: self.itemSize];
 }
 
 - (bool)isEqual: (id)object
 {
+	size_t count, itemSize;
 	OFData *data;
 
 	if (object == self)
@@ -402,11 +528,13 @@ _references_to_categories_of_OFData(void)
 	if (![object isKindOfClass: [OFData class]])
 		return false;
 
+	count = self.count;
+	itemSize = self.itemSize;
 	data = object;
 
-	if (data.count != _count || data.itemSize != _itemSize)
+	if (data.count != count || data.itemSize != itemSize)
 		return false;
-	if (memcmp(data.items, _items, _count * _itemSize) != 0)
+	if (memcmp(data.items, self.items, count * itemSize) != 0)
 		return false;
 
 	return true;
@@ -415,22 +543,23 @@ _references_to_categories_of_OFData(void)
 - (OFComparisonResult)compare: (OFData *)data
 {
 	int comparison;
-	size_t count, minCount;
+	size_t count, dataCount, minCount;
 
 	if (![data isKindOfClass: [OFData class]])
 		@throw [OFInvalidArgumentException exception];
 
-	if (data.itemSize != _itemSize)
+	if (data.itemSize != self.itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	count = data.count;
-	minCount = (_count > count ? count : _count);
+	count = self.count;
+	dataCount = data.count;
+	minCount = (count > dataCount ? dataCount : count);
 
-	if ((comparison = memcmp(_items, data.items,
-	    minCount * _itemSize)) == 0) {
-		if (_count > count)
+	if ((comparison = memcmp(self.items, data.items,
+	    minCount * self.itemSize)) == 0) {
+		if (count > dataCount)
 			return OFOrderedDescending;
-		if (_count < count)
+		if (count < dataCount)
 			return OFOrderedAscending;
 
 		return OFOrderedSame;
@@ -444,12 +573,14 @@ _references_to_categories_of_OFData(void)
 
 - (unsigned long)hash
 {
+	const unsigned char *items = self.items;
+	size_t count = self.count, itemSize = self.itemSize;
 	unsigned long hash;
 
 	OFHashInit(&hash);
 
-	for (size_t i = 0; i < _count * _itemSize; i++)
-		OFHashAddByte(&hash, ((uint8_t *)_items)[i]);
+	for (size_t i = 0; i < count * itemSize; i++)
+		OFHashAddByte(&hash, items[i]);
 
 	OFHashFinalize(&hash);
 
@@ -458,31 +589,32 @@ _references_to_categories_of_OFData(void)
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	OFData *ret;
-
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
+	    range.location + range.length > self.count)
 		@throw [OFOutOfRangeException exception];
 
-	ret = [OFData dataWithItemsNoCopy: _items + (range.location * _itemSize)
-				    count: range.length
-				 itemSize: _itemSize
-			     freeWhenDone: false];
-	ret->_parentData = [(_parentData != nil ? _parentData : self) copy];
+	if (![self isKindOfClass: [OFMutableData class]])
+		return [[[OFSubdata alloc] initWithData: self
+						  range: range] autorelease];
 
-	return ret;
+	return [OFData dataWithItems: (const unsigned char *)self.items +
+				      (range.location * self.itemSize)
+			       count: self.count
+			    itemSize: self.itemSize];
 }
 
 - (OFString *)description
 {
 	OFMutableString *ret = [OFMutableString stringWithString: @"<"];
+	const unsigned char *items = self.items;
+	size_t count = self.count, itemSize = self.itemSize;
 
-	for (size_t i = 0; i < _count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if (i > 0)
 			[ret appendString: @" "];
 
-		for (size_t j = 0; j < _itemSize; j++)
-			[ret appendFormat: @"%02x", _items[i * _itemSize + j]];
+		for (size_t j = 0; j < itemSize; j++)
+			[ret appendFormat: @"%02x", items[i * itemSize + j]];
 	}
 
 	[ret appendString: @">"];
@@ -494,10 +626,12 @@ _references_to_categories_of_OFData(void)
 - (OFString *)stringRepresentation
 {
 	OFMutableString *ret = [OFMutableString string];
+	const unsigned char *items = self.items;
+	size_t count = self.count, itemSize = self.itemSize;
 
-	for (size_t i = 0; i < _count; i++)
-		for (size_t j = 0; j < _itemSize; j++)
-			[ret appendFormat: @"%02x", _items[i * _itemSize + j]];
+	for (size_t i = 0; i < count; i++)
+		for (size_t j = 0; j < itemSize; j++)
+			[ret appendFormat: @"%02x", items[i * itemSize + j]];
 
 	[ret makeImmutable];
 	return ret;
@@ -505,21 +639,23 @@ _references_to_categories_of_OFData(void)
 
 - (OFString *)stringByBase64Encoding
 {
-	return OFBase64Encode(_items, _count * _itemSize);
+	return OFBase64Encode(self.items, self.count * self.itemSize);
 }
 
 - (OFRange)rangeOfData: (OFData *)data
 	       options: (OFDataSearchOptions)options
 		 range: (OFRange)range
 {
+	const unsigned char *items = self.items;
+	size_t count = self.count, itemSize = self.itemSize;
 	const char *search;
 	size_t searchLength;
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
+	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exception];
 
-	if (data == nil || data.itemSize != _itemSize)
+	if (data == nil || data.itemSize != itemSize)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((searchLength = data.count) == 0)
@@ -532,8 +668,8 @@ _references_to_categories_of_OFData(void)
 
 	if (options & OFDataSearchBackwards) {
 		for (size_t i = range.length - searchLength;; i--) {
-			if (memcmp(_items + i * _itemSize, search,
-			    searchLength * _itemSize) == 0)
+			if (memcmp(items + i * itemSize, search,
+			    searchLength * itemSize) == 0)
 				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
@@ -543,8 +679,8 @@ _references_to_categories_of_OFData(void)
 	} else {
 		for (size_t i = range.location;
 		    i <= range.length - searchLength; i++)
-			if (memcmp(_items + i * _itemSize, search,
-			    searchLength * _itemSize) == 0)
+			if (memcmp(items + i * itemSize, search,
+			    searchLength * itemSize) == 0)
 				return OFMakeRange(i, searchLength);
 	}
 
@@ -556,7 +692,8 @@ _references_to_categories_of_OFData(void)
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path mode: @"w"];
 	@try {
-		[file writeBuffer: _items length: _count * _itemSize];
+		[file writeBuffer: self.items
+			   length: self.count * self.itemSize];
 	} @finally {
 		[file release];
 	}
@@ -575,36 +712,39 @@ _references_to_categories_of_OFData(void)
 - (OFData *)messagePackRepresentation
 {
 	OFMutableData *data;
+	size_t count;
 
-	if (_itemSize != 1)
+	if (self.itemSize != 1)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	if (_count <= UINT8_MAX) {
-		uint8_t type = 0xC4;
-		uint8_t tmp = (uint8_t)_count;
+	count = self.count;
 
-		data = [OFMutableData dataWithCapacity: _count + 2];
+	if (count <= UINT8_MAX) {
+		uint8_t type = 0xC4;
+		uint8_t tmp = (uint8_t)count;
+
+		data = [OFMutableData dataWithCapacity: count + 2];
 		[data addItem: &type];
 		[data addItem: &tmp];
-	} else if (_count <= UINT16_MAX) {
+	} else if (count <= UINT16_MAX) {
 		uint8_t type = 0xC5;
-		uint16_t tmp = OFToBigEndian16((uint16_t)_count);
+		uint16_t tmp = OFToBigEndian16((uint16_t)count);
 
-		data = [OFMutableData dataWithCapacity: _count + 3];
+		data = [OFMutableData dataWithCapacity: count + 3];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
-	} else if (_count <= UINT32_MAX) {
+	} else if (count <= UINT32_MAX) {
 		uint8_t type = 0xC6;
-		uint32_t tmp = OFToBigEndian32((uint32_t)_count);
+		uint32_t tmp = OFToBigEndian32((uint32_t)count);
 
-		data = [OFMutableData dataWithCapacity: _count + 5];
+		data = [OFMutableData dataWithCapacity: count + 5];
 		[data addItem: &type];
 		[data addItems: &tmp count: sizeof(tmp)];
 	} else
 		@throw [OFOutOfRangeException exception];
 
-	[data addItems: _items count: _count];
+	[data addItems: self.items count: count];
 	[data makeImmutable];
 
 	return data;

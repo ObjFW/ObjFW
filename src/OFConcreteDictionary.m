@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#import "OFMapTableDictionary.h"
+#import "OFConcreteDictionary.h"
 #import "OFArray.h"
+#import "OFConcreteMutableDictionary.h"
 #import "OFMapTable+Private.h"
 #import "OFMapTable.h"
-#import "OFMutableMapTableDictionary.h"
 #import "OFString.h"
 
 #import "OFEnumerationMutationException.h"
@@ -69,7 +69,7 @@ static const OFMapTableFunctions objectFunctions = {
 	.equal = equal
 };
 
-@implementation OFMapTableDictionary
+@implementation OFConcreteDictionary
 - (instancetype)init
 {
 	return [self initWithCapacity: 0];
@@ -99,13 +99,13 @@ static const OFMapTableFunctions objectFunctions = {
 	if (dictionary == nil)
 		return [self init];
 
-	if ([dictionary isKindOfClass: [OFMapTableDictionary class]] ||
-	    [dictionary isKindOfClass: [OFMutableMapTableDictionary class]]) {
+	if ([dictionary isKindOfClass: [OFConcreteDictionary class]] ||
+	    [dictionary isKindOfClass: [OFConcreteMutableDictionary class]]) {
 		self = [super init];
 
 		@try {
-			OFMapTableDictionary *dictionary_ =
-			    (OFMapTableDictionary *)dictionary;
+			OFConcreteDictionary *dictionary_ =
+			    (OFConcreteDictionary *)dictionary;
 
 			_mapTable = [dictionary_->_mapTable copy];
 		} @catch (id e) {
@@ -248,16 +248,16 @@ static const OFMapTableFunctions objectFunctions = {
 
 - (bool)isEqual: (id)object
 {
-	OFMapTableDictionary *dictionary;
+	OFConcreteDictionary *dictionary;
 
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFMapTableDictionary class]] &&
-	    ![object isKindOfClass: [OFMutableMapTableDictionary class]])
+	if (![object isKindOfClass: [OFConcreteDictionary class]] &&
+	    ![object isKindOfClass: [OFConcreteMutableDictionary class]])
 		return [super isEqual: object];
 
-	dictionary = (OFMapTableDictionary *)object;
+	dictionary = (OFConcreteDictionary *)object;
 
 	return [dictionary->_mapTable isEqual: _mapTable];
 }

@@ -15,29 +15,45 @@
 
 #include "config.h"
 
-#import "OFAllocFailedException.h"
-#import "OFString.h"
+#import "OFSubdata.h"
 
-@implementation OFAllocFailedException
-+ (instancetype)exception
+@implementation OFSubdata
+- (instancetype)initWithData: (OFData *)data range: (OFRange)range
 {
-	OF_UNRECOGNIZED_SELECTOR
+	self = [super init];
+
+	@try {
+		/* Should usually be retain, as it's useless with a copy */
+		_data = [data copy];
+		_range = range;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
-+ (instancetype)alloc
+- (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[_data release];
+
+	[super dealloc];
 }
 
-- (instancetype)init
+- (size_t)count
 {
-	OF_INVALID_INIT_METHOD
+	return _range.length;
 }
 
-OF_SINGLETON_METHODS
-
-- (OFString *)description
+- (size_t)itemSize
 {
-	return @"Allocating an object failed!";
+	return _data.itemSize;
+}
+
+- (const void *)items
+{
+	return (const unsigned char *)_data.items +
+	    (_range.location * _data.itemSize);
 }
 @end

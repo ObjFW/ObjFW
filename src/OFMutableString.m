@@ -33,10 +33,10 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableStringPlaceholder: OFMutableString
+@interface OFPlaceholderMutableString: OFMutableString
 @end
 
-@implementation OFMutableStringPlaceholder
+@implementation OFPlaceholderMutableString
 - (instancetype)init
 {
 	return (id)[[OFMutableUTF8String alloc] init];
@@ -187,31 +187,15 @@ static struct {
 			 encoding: encoding];
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableString
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableStringPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableString class]);
 }
 
 + (instancetype)alloc

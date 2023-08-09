@@ -13,17 +13,14 @@
  * file.
  */
 
-#import "OFArray.h"
+#import "OFColor.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSubarray: OFArray
+@interface OFConcreteColor: OFColor
 {
-	OFArray *_array;
-	OFRange _range;
+	float _red, _green, _blue, _alpha;
 }
-
-- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

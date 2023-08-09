@@ -13,16 +13,19 @@
  * file.
  */
 
-#import "OFMutableSet.h"
+#import "OFDictionary.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMapTable;
+@class OFMapTableEnumerator;
 
-@interface OFMutableMapTableSet: OFMutableSet
+@interface OFConcreteDictionary: OFDictionary
 {
 	OFMapTable *_mapTable;
 }
+
+- (instancetype)initWithCapacity: (size_t)capacity;
 @end
 
 OF_ASSUME_NONNULL_END

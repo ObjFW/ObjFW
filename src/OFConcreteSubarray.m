@@ -15,11 +15,11 @@
 
 #include "config.h"
 
-#import "OFAdjacentSubarray.h"
-#import "OFAdjacentArray.h"
-#import "OFMutableAdjacentArray.h"
+#import "OFConcreteSubarray.h"
+#import "OFConcreteArray.h"
+#import "OFConcreteMutableArray.h"
 
-@implementation OFAdjacentSubarray
+@implementation OFConcreteSubarray
 - (const id *)objects
 {
 	return _array.objects + _range.location;
@@ -33,8 +33,8 @@
 	if (object == self)
 		return true;
 
-	if (![object isKindOfClass: [OFAdjacentArray class]] &&
-	    ![object isKindOfClass: [OFMutableAdjacentArray class]])
+	if (![object isKindOfClass: [OFConcreteArray class]] &&
+	    ![object isKindOfClass: [OFConcreteMutableArray class]])
 		return [super isEqual: object];
 
 	otherArray = object;

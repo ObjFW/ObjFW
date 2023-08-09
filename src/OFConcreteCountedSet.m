@@ -15,10 +15,10 @@
 
 #include "config.h"
 
-#import "OFCountedMapTableSet.h"
+#import "OFConcreteCountedSet.h"
 #import "OFArray.h"
+#import "OFConcreteMutableSet.h"
 #import "OFMapTable.h"
-#import "OFMutableMapTableSet.h"
 #import "OFString.h"
 #import "OFXMLAttribute.h"
 
@@ -27,11 +27,11 @@
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFCountedMapTableSet
+@implementation OFConcreteCountedSet
 + (void)initialize
 {
-	if (self == [OFCountedMapTableSet class])
-		[self inheritMethodsFromClass: [OFMutableMapTableSet class]];
+	if (self == [OFConcreteCountedSet class])
+		[self inheritMethodsFromClass: [OFConcreteMutableSet class]];
 }
 
 - (instancetype)initWithSet: (OFSet *)set

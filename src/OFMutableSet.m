@@ -18,30 +18,30 @@
 #include <stdlib.h>
 
 #import "OFMutableSet.h"
-#import "OFMutableMapTableSet.h"
+#import "OFConcreteMutableSet.h"
 #import "OFString.h"
 
 static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableSetPlaceholder: OFMutableSet
+@interface OFPlaceholderMutableSet: OFMutableSet
 @end
 
-@implementation OFMutableSetPlaceholder
+@implementation OFPlaceholderMutableSet
 - (instancetype)init
 {
-	return (id)[[OFMutableMapTableSet alloc] init];
+	return (id)[[OFConcreteMutableSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteMutableSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteMutableSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -50,7 +50,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteMutableSet alloc] initWithObject: firstObject
 						 arguments: arguments];
 	va_end(arguments);
 
@@ -59,46 +59,30 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteMutableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithCapacity: capacity];
+	return (id)[[OFConcreteMutableSet alloc] initWithCapacity: capacity];
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableSet
 + (void)initialize
 {
 	if (self == [OFMutableSet class])
-		placeholder.isa = [OFMutableSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableSet class]);
 }
 
 + (instancetype)alloc
@@ -112,21 +96,6 @@ static struct {
 + (instancetype)setWithCapacity: (size_t)capacity
 {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFMutableSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
-	return [super init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity

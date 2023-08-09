@@ -15,15 +15,15 @@
 
 #include "config.h"
 
-#import "OFMutableMapTableSet.h"
-#import "OFMapTableSet.h"
+#import "OFConcreteMutableSet.h"
+#import "OFConcreteSet.h"
 #import "OFMapTable.h"
 
-@implementation OFMutableMapTableSet
+@implementation OFConcreteMutableSet
 + (void)initialize
 {
-	if (self == [OFMutableMapTableSet class])
-		[self inheritMethodsFromClass: [OFMapTableSet class]];
+	if (self == [OFConcreteMutableSet class])
+		[self inheritMethodsFromClass: [OFConcreteSet class]];
 }
 
 - (void)addObject: (id)object
@@ -43,6 +43,6 @@
 
 - (void)makeImmutable
 {
-	object_setClass(self, [OFMapTableSet class]);
+	object_setClass(self, [OFConcreteSet class]);
 }
 @end

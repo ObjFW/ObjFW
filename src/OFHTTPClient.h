@@ -37,7 +37,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFHTTPClientDelegate <OFObject>
 /**
- * @brief A callback which is called when an OFHTTPClient performed a request.
+ * @brief A callback which is called when an @ref OFHTTPClient performed a
+ *	  request.
  *
  * @param client The OFHTTPClient which performed the request
  * @param request The request the OFHTTPClient performed
@@ -51,7 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
- * @brief A callback which is called when an OFHTTPClient creates a TCP socket.
+ * @brief A callback which is called when an @ref OFHTTPClient creates a TCP
+ *	  socket.
  *
  * This can be used to tell the socket about a SOCKS5 proxy it should use for
  * this connection.
@@ -65,7 +67,8 @@ OF_ASSUME_NONNULL_BEGIN
 	     request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient creates a TLS stream.
+ * @brief A callback which is called when an @ref OFHTTPClient creates a TLS
+ *	  stream.
  *
  * This can be used to tell the TLS stream about a client certificate it should
  * use before performing the TLS handshake.
@@ -79,8 +82,8 @@ OF_ASSUME_NONNULL_BEGIN
 	     request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient wants to send the
- *	  body for a request.
+ * @brief A callback which is called when an @ref OFHTTPClient wants to send
+ *	  the body for a request.
  *
  * @param client The OFHTTPClient that wants to send the body
  * @param requestBody A stream into which the body of the request should be
@@ -92,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
 	   request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient received headers.
+ * @brief A callback which is called when an @ref OFHTTPClient received headers.
  *
  * @param client The OFHTTPClient which received the headers
  * @param headers The headers received
@@ -106,8 +109,8 @@ OF_ASSUME_NONNULL_BEGIN
 	    request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient wants to follow a
- *	  redirect.
+ * @brief A callback which is called when an @ref OFHTTPClient wants to follow
+ *	  a redirect.
  *
  * If you want to get the headers and data for each redirect, set the number of
  * redirects to 0 and perform a new OFHTTPClient for each redirect. However,

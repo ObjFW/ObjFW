@@ -17,8 +17,9 @@
 
 #import "Archive.h"
 
-@interface ZIPArchive: OFObject <Archive>
+@interface ZIPArchive: OFObject <OFZIPArchiveDelegate, Archive>
 {
+	OFString *_path;
 	OFZIPArchive *_archive;
 }
 @end

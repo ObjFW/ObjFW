@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFAdjacentSubarray: OFSubarray
+@interface OFConcreteSubarray: OFSubarray
 @end
 
 OF_ASSUME_NONNULL_END

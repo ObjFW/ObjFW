@@ -100,6 +100,8 @@ static const uint8_t codeLengthsOrder[19] = {
 static OFHuffmanTree fixedLitLenTree, fixedDistTree;
 
 @implementation OFInflateStream
+@synthesize underlyingStream = _stream;
+
 static OF_INLINE bool
 tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {

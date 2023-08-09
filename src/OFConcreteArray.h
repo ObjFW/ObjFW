@@ -17,13 +17,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSubarray: OFArray
-{
-	OFArray *_array;
-	OFRange _range;
-}
+@class OFMutableData;
 
-- (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
+@interface OFConcreteArray: OFArray
+{
+	OFMutableData *_array;
+}
 @end
 
 OF_ASSUME_NONNULL_END

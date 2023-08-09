@@ -39,8 +39,8 @@ stringByHashing(Class <OFCryptographicHash> class, OFData *self)
 	const unsigned char *digest;
 	char cString[digestSize * 2];
 
-	[hash updateWithBuffer: self->_items
-			length: self->_count * self->_itemSize];
+	[hash updateWithBuffer: self.items
+			length: self.count * self.itemSize];
 	[hash calculate];
 	digest = hash.digest;
 
