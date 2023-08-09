@@ -13,15 +13,15 @@
  * file.
  */
 
-#import "OFMutableData.h"
+#import "OFArray.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFMutableAdjacentData: OFMutableData
+@class OFMutableData;
+
+@interface OFConcreteArray: OFArray
 {
-	unsigned char *_Nullable _items;
-	size_t _capacity, _count, _itemSize;
-	bool _freeWhenDone;
+	OFMutableData *_array;
 }
 @end
 

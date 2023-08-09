@@ -17,8 +17,8 @@
 
 #include <string.h>
 
-#import "OFMutableAdjacentArray.h"
-#import "OFAdjacentArray.h"
+#import "OFConcreteMutableArray.h"
+#import "OFConcreteArray.h"
 #import "OFArray+Private.h"
 #import "OFData.h"
 
@@ -26,11 +26,11 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFMutableAdjacentArray
+@implementation OFConcreteMutableArray
 + (void)initialize
 {
-	if (self == [OFMutableAdjacentArray class])
-		[self inheritMethodsFromClass: [OFAdjacentArray class]];
+	if (self == [OFConcreteMutableArray class])
+		[self inheritMethodsFromClass: [OFConcreteArray class]];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
@@ -378,6 +378,6 @@
 
 - (void)makeImmutable
 {
-	object_setClass(self, [OFAdjacentArray class]);
+	object_setClass(self, [OFConcreteArray class]);
 }
 @end

@@ -18,12 +18,12 @@
 #include <limits.h>
 #include <string.h>
 
-#import "OFAdjacentData.h"
+#import "OFConcreteData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFAdjacentData
+@implementation OFConcreteData
 - (instancetype)init
 {
 	return [self initWithItemSize: 1];

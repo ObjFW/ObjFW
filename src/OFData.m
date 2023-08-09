@@ -20,8 +20,8 @@
 #include <limits.h>
 
 #import "OFData.h"
-#import "OFAdjacentData.h"
 #import "OFBase64.h"
+#import "OFConcreteData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -60,24 +60,24 @@ _references_to_categories_of_OFData(void)
 @implementation OFDataPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFAdjacentData alloc] init];
+	return (id)[[OFConcreteData alloc] init];
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize
 {
-	return (id)[[OFAdjacentData alloc] initWithItemSize: itemSize];
+	return (id)[[OFConcreteData alloc] initWithItemSize: itemSize];
 }
 
 - (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
-	return (id)[[OFAdjacentData alloc] initWithItems: items count: count];
+	return (id)[[OFConcreteData alloc] initWithItems: items count: count];
 }
 
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	return (id)[[OFAdjacentData alloc] initWithItems: items
+	return (id)[[OFConcreteData alloc] initWithItems: items
 						   count: count
 						itemSize: itemSize];
 }
@@ -86,7 +86,7 @@ _references_to_categories_of_OFData(void)
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFAdjacentData alloc] initWithItemsNoCopy: items
+	return (id)[[OFConcreteData alloc] initWithItemsNoCopy: items
 							 count: count
 						  freeWhenDone: freeWhenDone];
 }
@@ -96,7 +96,7 @@ _references_to_categories_of_OFData(void)
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFAdjacentData alloc] initWithItemsNoCopy: items
+	return (id)[[OFConcreteData alloc] initWithItemsNoCopy: items
 							 count: count
 						      itemSize: itemSize
 						  freeWhenDone: freeWhenDone];
@@ -105,24 +105,24 @@ _references_to_categories_of_OFData(void)
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
-	return (id)[[OFAdjacentData alloc] initWithContentsOfFile: path];
+	return (id)[[OFConcreteData alloc] initWithContentsOfFile: path];
 }
 #endif
 
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFAdjacentData alloc] initWithContentsOfIRI: IRI];
+	return (id)[[OFConcreteData alloc] initWithContentsOfIRI: IRI];
 }
 
 - (instancetype)initWithStringRepresentation: (OFString *)string
 {
-	return (id)[[OFAdjacentData alloc]
+	return (id)[[OFConcreteData alloc]
 	    initWithStringRepresentation: string];
 }
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
 {
-	return (id)[[OFAdjacentData alloc] initWithBase64EncodedString: string];
+	return (id)[[OFConcreteData alloc] initWithBase64EncodedString: string];
 }
 @end
 

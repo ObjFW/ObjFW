@@ -13,11 +13,17 @@
  * file.
  */
 
-#import "OFSubarray.h"
+#import "OFArray.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFAdjacentSubarray: OFSubarray
+@class OFMutableData;
+
+@interface OFConcreteMutableArray: OFMutableArray
+{
+	OFMutableData *_array;
+	unsigned long _mutations;
+}
 @end
 
 OF_ASSUME_NONNULL_END

@@ -20,7 +20,7 @@
 #include <limits.h>
 
 #import "OFMutableData.h"
-#import "OFMutableAdjacentData.h"
+#import "OFConcreteMutableData.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -34,17 +34,17 @@ static struct {
 @implementation OFMutableDataPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableAdjacentData alloc] init];
+	return (id)[[OFConcreteMutableData alloc] init];
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithItemSize: itemSize];
+	return (id)[[OFConcreteMutableData alloc] initWithItemSize: itemSize];
 }
 
 - (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithItems: items
+	return (id)[[OFConcreteMutableData alloc] initWithItems: items
 							  count: count];
 }
 
@@ -52,7 +52,7 @@ static struct {
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithItems: items
+	return (id)[[OFConcreteMutableData alloc] initWithItems: items
 							  count: count
 						       itemSize: itemSize];
 }
@@ -61,7 +61,7 @@ static struct {
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFMutableAdjacentData alloc]
+	return (id)[[OFConcreteMutableData alloc]
 	    initWithItemsNoCopy: items
 			  count: count
 		   freeWhenDone: freeWhenDone];
@@ -72,7 +72,7 @@ static struct {
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFMutableAdjacentData alloc]
+	return (id)[[OFConcreteMutableData alloc]
 	    initWithItemsNoCopy: items
 			  count: count
 		       itemSize: itemSize
@@ -82,35 +82,35 @@ static struct {
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithContentsOfFile: path];
+	return (id)[[OFConcreteMutableData alloc] initWithContentsOfFile: path];
 }
 #endif
 
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithContentsOfIRI: IRI];
+	return (id)[[OFConcreteMutableData alloc] initWithContentsOfIRI: IRI];
 }
 
 - (instancetype)initWithStringRepresentation: (OFString *)string
 {
-	return (id)[[OFMutableAdjacentData alloc]
+	return (id)[[OFConcreteMutableData alloc]
 	    initWithStringRepresentation: string];
 }
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
 {
-	return (id)[[OFMutableAdjacentData alloc]
+	return (id)[[OFConcreteMutableData alloc]
 	    initWithBase64EncodedString: string];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithCapacity: capacity];
+	return (id)[[OFConcreteMutableData alloc] initWithCapacity: capacity];
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
-	return (id)[[OFMutableAdjacentData alloc] initWithItemSize: itemSize
+	return (id)[[OFConcreteMutableData alloc] initWithItemSize: itemSize
 							  capacity: capacity];
 }
 @end

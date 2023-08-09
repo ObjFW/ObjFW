@@ -20,7 +20,7 @@
 
 #import "OFArray.h"
 #import "OFArray+Private.h"
-#import "OFAdjacentArray.h"
+#import "OFConcreteArray.h"
 #import "OFData.h"
 #import "OFNull.h"
 #import "OFString.h"
@@ -46,12 +46,12 @@ static struct {
 @implementation OFPlaceholderArray
 - (instancetype)init
 {
-	return (id)[[OFAdjacentArray alloc] init];
+	return (id)[[OFConcreteArray alloc] init];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: object];
+	return (id)[[OFConcreteArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -60,7 +60,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFAdjacentArray alloc] initWithObject: firstObject
+	ret = [[OFConcreteArray alloc] initWithObject: firstObject
 					    arguments: arguments];
 	va_end(arguments);
 
@@ -70,19 +70,19 @@ static struct {
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: firstObject
+	return (id)[[OFConcreteArray alloc] initWithObject: firstObject
 						 arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFAdjacentArray alloc] initWithArray: array];
+	return (id)[[OFConcreteArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFAdjacentArray alloc] initWithObjects: objects
+	return (id)[[OFConcreteArray alloc] initWithObjects: objects
 						      count: count];
 }
 

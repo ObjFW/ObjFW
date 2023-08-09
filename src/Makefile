@@ -175,15 +175,17 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    ${USE_INCLUDES_ATOMIC}
 
 SRCS += OFASPrintF.m			\
-	OFAdjacentArray.m		\
-	OFAdjacentData.m		\
-	OFAdjacentSubarray.m		\
 	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
+	OFConcreteArray.m		\
+	OFConcreteData.m		\
+	OFConcreteMutableArray.m	\
+	OFConcreteMutableData.m		\
+	OFConcreteSubarray.m		\
 	OFCountedMapTableSet.m		\
 	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
@@ -192,8 +194,6 @@ SRCS += OFASPrintF.m			\
 	OFLHADecompressingStream.m	\
 	OFMapTableDictionary.m		\
 	OFMapTableSet.m			\
-	OFMutableAdjacentArray.m	\
-	OFMutableAdjacentData.m		\
 	OFMutableMapTableDictionary.m	\
 	OFMutableMapTableSet.m		\
 	OFMutableUTF8String.m		\

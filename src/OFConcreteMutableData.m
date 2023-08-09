@@ -18,18 +18,18 @@
 #include <limits.h>
 #include <string.h>
 
-#import "OFMutableAdjacentData.h"
-#import "OFAdjacentData.h"
+#import "OFConcreteMutableData.h"
+#import "OFConcreteData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFMutableAdjacentData
+@implementation OFConcreteMutableData
 + (void)initialize
 {
-	if (self == [OFMutableAdjacentData class])
-		[self inheritMethodsFromClass: [OFAdjacentData class]];
+	if (self == [OFConcreteMutableData class])
+		[self inheritMethodsFromClass: [OFConcreteData class]];
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize capacity: (size_t)capacity
@@ -184,6 +184,6 @@
 		}
 	}
 
-	object_setClass(self, [OFAdjacentData class]);
+	object_setClass(self, [OFConcreteData class]);
 }
 @end

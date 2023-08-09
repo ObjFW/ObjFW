@@ -19,7 +19,7 @@
 #include <string.h>
 
 #import "OFMutableArray.h"
-#import "OFMutableAdjacentArray.h"
+#import "OFConcreteMutableArray.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -81,17 +81,17 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 @implementation OFMutableArrayPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableAdjacentArray alloc] init];
+	return (id)[[OFConcreteMutableArray alloc] init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithCapacity: capacity];
+	return (id)[[OFConcreteMutableArray alloc] initWithCapacity: capacity];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObject: object];
+	return (id)[[OFConcreteMutableArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -100,7 +100,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableAdjacentArray alloc] initWithObject: firstObject
+	ret = [[OFConcreteMutableArray alloc] initWithObject: firstObject
 						   arguments: arguments];
 	va_end(arguments);
 
@@ -109,18 +109,18 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObject: firstObject
+	return (id)[[OFConcreteMutableArray alloc] initWithObject: firstObject
 							arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithArray: array];
+	return (id)[[OFConcreteMutableArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableArray alloc] initWithObjects: objects
 							     count: count];
 }
 
