@@ -13,38 +13,45 @@
  * file.
  */
 
-#import "OFPointerValue.h"
+#import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFPointerValue
-@synthesize pointerValue = _pointer;
+@implementation OFConcreteValue
+@synthesize objCType = _objCType;
 
-- (instancetype)initWithPointer: (const void *)pointer
+- (instancetype)initWithBytes: (const void *)bytes
+		     objCType: (const char *)objCType
 {
-	self = [super init];
+	self = [super initWithBytes: bytes objCType: objCType];
 
-	_pointer = (void *)pointer;
+	@try {
+		_size = OFSizeOfTypeEncoding(objCType);
+		_objCType = objCType;
+		_bytes = OFAllocMemory(1, _size);
+
+		memcpy(_bytes, bytes, _size);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
 
-- (const char *)objCType
+- (void)dealloc
 {
-	return @encode(void *);
+	OFFreeMemory(_bytes);
+
+	[super dealloc];
 }
 
 - (void)getValue: (void *)value size: (size_t)size
 {
-	if (size != sizeof(_pointer))
+	if (size != _size)
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_pointer, sizeof(_pointer));
-}
-
-- (id)nonretainedObjectValue
-{
-	return _pointer;
+	memcpy(value, _bytes, _size);
 }
 @end

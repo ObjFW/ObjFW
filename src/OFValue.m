@@ -16,23 +16,50 @@
 #include "config.h"
 
 #import "OFValue.h"
-#import "OFBytesValue.h"
+#import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
-#import "OFNonretainedObjectValue.h"
-#import "OFPointValue.h"
-#import "OFPointerValue.h"
-#import "OFRangeValue.h"
-#import "OFRectValue.h"
-#import "OFSizeValue.h"
 #import "OFString.h"
 
 #import "OFOutOfMemoryException.h"
 
+static struct {
+	Class isa;
+} placeholder;
+
+@interface OFPlaceholderValue: OFValue
+@end
+
+@implementation OFPlaceholderValue
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithBytes: (const void *)bytes
+		     objCType: (const char *)objCType
+{
+	return (id)[[OFConcreteValue alloc] initWithBytes: bytes
+						 objCType: objCType];
+}
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+
+OF_SINGLETON_METHODS
+@end
+
 @implementation OFValue
++ (void)initialize
+{
+	if (self == [OFValue class])
+		object_setClass((id)&placeholder, [OFPlaceholderValue class]);
+}
+
 + (instancetype)alloc
 {
 	if (self == [OFValue class])
-		return [OFBytesValue alloc];
+		return (id)&placeholder;
 
 	return [super alloc];
 }
@@ -40,43 +67,65 @@
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType
 {
-	return [[[OFBytesValue alloc] initWithBytes: bytes
-					   objCType: objCType] autorelease];
+	return [[[OFValue alloc] initWithBytes: bytes
+				      objCType: objCType] autorelease];
 }
 
 + (instancetype)valueWithPointer: (const void *)pointer
 {
-	return [[[OFPointerValue alloc] initWithPointer: pointer] autorelease];
+	return [[[OFValue alloc]
+	    initWithBytes: &pointer
+		 objCType: @encode(const void *)] autorelease];
 }
 
 + (instancetype)valueWithNonretainedObject: (id)object
 {
-	return [[[OFNonretainedObjectValue alloc]
-	    initWithNonretainedObject: object] autorelease];
+	return [[[OFValue alloc] initWithBytes: &object
+				      objCType: @encode(id)] autorelease];
 }
 
 + (instancetype)valueWithRange: (OFRange)range
 {
-	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
+	return [[[OFValue alloc] initWithBytes: &range
+				      objCType: @encode(OFRange)] autorelease];
 }
 
 + (instancetype)valueWithPoint: (OFPoint)point
 {
-	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
+	return [[[OFValue alloc] initWithBytes: &point
+				      objCType: @encode(OFPoint)] autorelease];
 }
 
 + (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
+	return [[[OFValue alloc] initWithBytes: &size
+				      objCType: @encode(OFSize)] autorelease];
 }
 
 + (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[OFRectValue alloc] initWithRect: rect] autorelease];
+	return [[[OFValue alloc] initWithBytes: &rect
+				      objCType: @encode(OFRect)] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
+{
+	if ([self isMemberOfClass: [OFValue class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+
+		abort();
+	}
+
+	return [super init];
+}
+
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }

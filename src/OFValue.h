@@ -23,10 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for storing arbitrary values in an object.
  */
 @interface OFValue: OFObject <OFCopying>
-{
-	OF_RESERVE_IVARS(OFValue, 4)
-}
-
 /**
  * @brief The ObjC type encoding of the value.
  */
@@ -149,7 +145,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFValue
  */
 - (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType;
+		     objCType: (const char *)objCType OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Gets the value.

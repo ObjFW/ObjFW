@@ -178,7 +178,6 @@ SRCS += OFASPrintF.m			\
 	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
-	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
 	OFConcreteArray.m		\
@@ -193,20 +192,15 @@ SRCS += OFASPrintF.m			\
 	OFConcreteMutableSet.m		\
 	OFConcreteSet.m			\
 	OFConcreteSubarray.m		\
+	OFConcreteValue.m		\
 	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMutableUTF8String.m		\
-	OFNonretainedObjectValue.m	\
-	OFPointValue.m			\
-	OFPointerValue.m		\
 	OFRangeCharacterSet.m		\
-	OFRangeValue.m			\
-	OFRectValue.m			\
 	OFSandbox.m			\
-	OFSizeValue.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\

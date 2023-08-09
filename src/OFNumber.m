@@ -604,7 +604,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithBool: (bool)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(bool)];
 
 	_value.unsigned_ = value;
 	_typeEncoding = @encode(bool);
@@ -614,7 +614,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithChar: (signed char)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(signed char)];
 
 	_value.signed_ = value;
 	_typeEncoding = @encode(signed char);
@@ -624,7 +624,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithShort: (short)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(short)];
 
 	_value.signed_ = value;
 	_typeEncoding = @encode(short);
@@ -634,7 +634,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithInt: (int)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(int)];
 
 	_value.signed_ = value;
 	_typeEncoding = @encode(int);
@@ -644,7 +644,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithLong: (long)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(long)];
 
 	_value.signed_ = value;
 	_typeEncoding = @encode(long);
@@ -654,7 +654,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithLongLong: (long long)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(long long)];
 
 	_value.signed_ = value;
 	_typeEncoding = @encode(long long);
@@ -664,17 +664,17 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithUnsignedChar: (unsigned char)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(unsigned char)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long);
+	_typeEncoding = @encode(unsigned char);
 
 	return self;
 }
 
 - (instancetype)initWithUnsignedShort: (unsigned short)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(unsigned short)];
 
 	_value.unsigned_ = value;
 	_typeEncoding = @encode(unsigned short);
@@ -684,7 +684,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithUnsignedInt: (unsigned int)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(unsigned int)];
 
 	_value.unsigned_ = value;
 	_typeEncoding = @encode(unsigned int);
@@ -694,7 +694,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithUnsignedLong: (unsigned long)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(unsigned long)];
 
 	_value.unsigned_ = value;
 	_typeEncoding = @encode(unsigned long);
@@ -704,7 +704,8 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value
+			   objCType: @encode(unsigned long long)];
 
 	_value.unsigned_ = value;
 	_typeEncoding = @encode(unsigned long long);
@@ -712,39 +713,9 @@ OF_SINGLETON_METHODS
 	return self;
 }
 
-- (instancetype)initWithPtrDiff: (ptrdiff_t)value
-{
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(ptrdiff_t);
-
-	return self;
-}
-
-- (instancetype)initWithIntPtr: (intptr_t)value
-{
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(intptr_t);
-
-	return self;
-}
-
-- (instancetype)initWithUIntPtr: (uintptr_t)value
-{
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(uintptr_t);
-
-	return self;
-}
-
 - (instancetype)initWithFloat: (float)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(float)];
 
 	_value.float_ = value;
 	_typeEncoding = @encode(float);
@@ -754,7 +725,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithDouble: (double)value
 {
-	self = [super init];
+	self = [super initWithBytes: &value objCType: @encode(double)];
 
 	_value.float_ = value;
 	_typeEncoding = @encode(double);
