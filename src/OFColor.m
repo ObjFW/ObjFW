@@ -26,7 +26,7 @@
 @interface OFColorSingleton: OFConcreteColor
 @end
 
-@interface OFColorPlaceholder: OFColorSingleton
+@interface OFColorPlaceholder: OFColor
 @end
 
 static struct {
@@ -65,27 +65,12 @@ static const float allowedImprecision = 0.0000001;
 						   blue: blue
 						  alpha: alpha];
 }
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFColorSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFColor

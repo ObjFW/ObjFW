@@ -124,6 +124,8 @@ _references_to_categories_of_OFData(void)
 {
 	return (id)[[OFConcreteData alloc] initWithBase64EncodedString: string];
 }
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFData

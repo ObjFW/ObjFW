@@ -113,6 +113,8 @@ static struct {
 	return (id)[[OFConcreteMutableData alloc] initWithItemSize: itemSize
 							  capacity: capacity];
 }
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableData

@@ -378,27 +378,12 @@ isFloat(OFNumber *number)
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFNumberSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end
 
 #ifdef OF_OBJFW_RUNTIME

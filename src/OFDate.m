@@ -262,24 +262,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 }
 
 @implementation OFDateSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFDatePlaceholder
@@ -321,6 +304,8 @@ tmAndTzToTime(const struct tm *tm, short tz)
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFConcreteDate
