@@ -413,17 +413,13 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
 {
-	bool mutable = [self isKindOfClass: [OFMutableData class]];
-
-	if (!mutable) {
-		[self release];
-		self = [OFMutableData alloc];
-	}
-
-	self = [(OFMutableData *)self initWithCapacity: string.length / 3];
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableData *data;
 
 	@try {
-		if (!OFBase64Decode((OFMutableData *)self,
+		data = [OFMutableData data];
+
+		if (!OFBase64Decode(data,
 		    [string cStringWithEncoding: OFStringEncodingASCII],
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
@@ -432,8 +428,35 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	if (!mutable)
-		[(OFMutableData *)self makeImmutable];
+	/* Avoid copying if the class already matches. */
+	if (data.class == self.class) {
+		[self release];
+		self = [data retain];
+		objc_autoreleasePoolPop(pool);
+		return self;
+	}
+
+	/*
+	 * Make it immutable and avoid copying if the class already matches
+	 * after that.
+	 */
+	@try {
+		[data makeImmutable];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	if (data.class == self.class) {
+		[self release];
+		self = [data retain];
+		objc_autoreleasePoolPop(pool);
+		return self;
+	}
+
+	self = [self initWithItems: data.items count: data.count];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
