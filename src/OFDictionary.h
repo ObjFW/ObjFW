@@ -150,6 +150,13 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
     OF_SENTINEL;
 
 /**
+ * @brief Initializes an already allocated OFDictionary to be empty.
+ *
+ * @return An initialized OFDictionary
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFDictionary with the specified
  *	  OFDictionary.
  *
@@ -191,7 +198,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			forKeys: (KeyType const _Nonnull *_Nonnull)keys
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys

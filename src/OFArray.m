@@ -182,8 +182,7 @@ OF_SINGLETON_METHODS
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
 	size_t count = 1;
 	va_list argumentsCopy;

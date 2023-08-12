@@ -53,6 +53,12 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFPlaceholderDictionary
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFConcreteDictionary alloc] init];
@@ -104,6 +110,9 @@ OF_DIRECT_MEMBERS
 	return (id)[[OFConcreteDictionary alloc] initWithKey: firstKey
 						   arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end
@@ -188,19 +197,51 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	OF_INVALID_INIT_METHOD
+	void *pool = objc_autoreleasePoolPush();
+	id const *objects, *keys;
+	size_t count;
+
+	@try {
+		OFArray *objects_ = [dictionary.objectEnumerator allObjects];
+		OFArray *keys_ = [dictionary.keyEnumerator allObjects];
+
+		count = dictionary.count;
+
+		if (count != keys_.count || count != objects_.count)
+			@throw [OFInvalidArgumentException exception];
+
+		objects = objects_.objects;
+		keys = keys_.objects;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		return [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException exception];
+	@try {
+		if (key == nil || object == nil)
+			@throw [OFInvalidArgumentException exception];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-	return [self initWithKeysAndObjects: key, object, nil];
+	return [self initWithObjects: &object forKeys: &key count: 1];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects_ forKeys: (OFArray *)keys_
 {
+	void *pool = objc_autoreleasePoolPush();
 	id const *objects, *keys;
 	size_t count;
 
@@ -217,15 +258,30 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	return [self initWithObjects: objects forKeys: keys count: count];
+	@try {
+		return [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithKeysAndObjects: (id)firstKey, ...
 {
@@ -241,7 +297,51 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	id *objects = NULL, *keys = NULL;
+	va_list argumentsCopy;
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		size_t i = 0;
+		id key, object;
+
+		if (firstKey == nil || count % 2 != 0)
+			@throw [OFInvalidArgumentException exception];
+
+		count /= 2;
+
+		objects = OFAllocMemory(count, sizeof(id));
+		keys = OFAllocMemory(count, sizeof(id));
+
+		while ((key = va_arg(arguments, id)) != nil &&
+		    (object = va_arg(arguments, id)) != nil) {
+			OFEnsure(i < count);
+
+			objects[i] = object;
+			keys[i] = key;
+
+			i++;
+		}
+	} @catch (id e) {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		return [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+	}
 }
 
 - (id)objectForKey: (id)key
