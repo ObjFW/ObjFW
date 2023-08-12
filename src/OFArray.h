@@ -185,6 +185,13 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 			   count: (size_t)count;
 
 /**
+ * @brief Initializes an OFArray with no objects.
+ *
+ * @return An initialized OFArray
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an OFArray with the specified object.
  *
  * @param object An object
@@ -227,7 +234,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @return An initialized OFArray
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Returns an OFEnumerator to enumerate through all objects of the array.

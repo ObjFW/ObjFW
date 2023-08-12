@@ -79,6 +79,12 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 }
 
 @implementation OFPlaceholderMutableArray
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFConcreteMutableArray alloc] init];
@@ -123,6 +129,9 @@ quicksort(OFMutableArray *array, size_t left, size_t right,
 	return (id)[[OFConcreteMutableArray alloc] initWithObjects: objects
 							     count: count];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end
@@ -148,10 +157,30 @@ OF_SINGLETON_METHODS
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
+- (instancetype)init
+{
+	return [super init];
+}
+
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (id)copy
 {

@@ -125,7 +125,7 @@
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	self = [self init];
+	self = [super init];
 
 	@try {
 		bool ok = true;
@@ -140,6 +140,8 @@
 		if (!ok)
 			@throw [OFInvalidArgumentException exception];
 
+		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
+							capacity: count];
 		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
