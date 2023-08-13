@@ -258,13 +258,11 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	@try {
-		return [self initWithObjects: objects
-				     forKeys: keys
-				       count: count];
-	} @finally {
-		objc_autoreleasePoolPop(pool);
-	}
+	self = [self initWithObjects: objects forKeys: keys count: count];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
 #ifdef __clang__
@@ -301,6 +299,9 @@ OF_SINGLETON_METHODS
 	id *objects = NULL, *keys = NULL;
 	va_list argumentsCopy;
 
+	if (firstKey == nil)
+		return [self init];
+
 	va_copy(argumentsCopy, arguments);
 	while (va_arg(argumentsCopy, id) != nil)
 		count++;
@@ -309,7 +310,7 @@ OF_SINGLETON_METHODS
 		size_t i = 0;
 		id key, object;
 
-		if (firstKey == nil || count % 2 != 0)
+		if (count % 2 != 0)
 			@throw [OFInvalidArgumentException exception];
 
 		count /= 2;

@@ -30,6 +30,12 @@ static struct {
 @end
 
 @implementation OFPlaceholderCountedSet
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFConcreteCountedSet alloc] init];
@@ -69,6 +75,9 @@ static struct {
 	return (id)[[OFConcreteCountedSet alloc] initWithObject: firstObject
 						      arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end

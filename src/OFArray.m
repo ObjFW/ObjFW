@@ -188,14 +188,14 @@ OF_SINGLETON_METHODS
 	va_list argumentsCopy;
 	id *objects;
 
+	if (firstObject == nil)
+		return [self init];
+
 	va_copy(argumentsCopy, arguments);
 	while (va_arg(argumentsCopy, id) != nil)
 		count++;
 
 	@try {
-		if (firstObject == nil)
-			@throw [OFInvalidArgumentException exception];
-
 		objects = OFAllocMemory(count, sizeof(id));
 	} @catch (id e) {
 		[self release];
