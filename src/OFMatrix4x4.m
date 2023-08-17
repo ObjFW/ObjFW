@@ -38,6 +38,11 @@ static const float identityValues[4][4] = {
 	return [[[self alloc] initWithValues: values] autorelease];
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithValues: (const float [4][4])values
 {
 	self = [super init];

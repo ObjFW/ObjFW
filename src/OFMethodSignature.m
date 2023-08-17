@@ -592,6 +592,11 @@ OFAlignmentOfTypeEncoding(const char *type)
 	return [[[self alloc] initWithObjCTypes: types] autorelease];
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithObjCTypes: (const char *)types
 {
 	self = [super init];
