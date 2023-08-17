@@ -567,6 +567,13 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 			       encoding: (OFStringEncoding)encoding;
 
 /**
+ * @brief Initializes an already allocated OFString to be empty.
+ *
+ * @return An initialized OFString
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
  *	  string.
  *
