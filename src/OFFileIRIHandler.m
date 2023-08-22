@@ -1025,12 +1025,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (![IRI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (statWrapper(IRI.fileSystemRepresentation, &s) != 0) {
-		objc_autoreleasePoolPop(pool);
-		return false;
-	}
-
-	ret = S_ISREG(s.st_mode);
+	ret = (statWrapper(IRI.fileSystemRepresentation, &s) == 0);
 
 	objc_autoreleasePoolPop(pool);
 
