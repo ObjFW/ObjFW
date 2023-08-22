@@ -1528,10 +1528,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#ifdef __MINT__
 		# error Gives invalid argument at runtime
 		#endif
-
-		#ifdef __gnu_hurd__
-		# error Empty sun_path in the source given by recvfrom()
-		#endif
 	])
 
 	AC_CHECK_HEADER(netipx/ipx.h, [
