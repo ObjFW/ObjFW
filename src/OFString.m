@@ -1025,56 +1025,19 @@ OF_SINGLETON_METHODS
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding
 {
-	char *buffer = NULL;
-	OFStreamOffset fileSize;
+	void *pool = objc_autoreleasePoolPush();
+	OFIRI *IRI;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
-		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
-
-		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		/*
-		 * We need one extra byte for the terminating zero if we want
-		 * to use -[initWithUTF8StringNoCopy:length:freeWhenDone:].
-		 */
-		if (SIZE_MAX - (size_t)fileSize < 1)
-			@throw [OFOutOfRangeException exception];
-
-		[file seekToOffset: 0 whence: OFSeekSet];
-
-		buffer = OFAllocMemory((size_t)fileSize + 1, 1);
-		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
-		buffer[(size_t)fileSize] = '\0';
-
-		objc_autoreleasePoolPop(pool);
+		IRI = [OFIRI fileIRIWithPath: path];
 	} @catch (id e) {
-		OFFreeMemory(buffer);
 		[self release];
-
 		@throw e;
 	}
 
-	if (encoding == OFStringEncodingUTF8) {
-		@try {
-			self = [self initWithUTF8StringNoCopy: buffer
-						       length: (size_t)fileSize
-						 freeWhenDone: true];
-		} @catch (id e) {
-			OFFreeMemory(buffer);
-			@throw e;
-		}
-	} else {
-		@try {
-			self = [self initWithCString: buffer
-					    encoding: encoding
-					      length: (size_t)fileSize];
-		} @finally {
-			OFFreeMemory(buffer);
-		}
-	}
+	self = [self initWithContentsOfIRI: IRI encoding: encoding];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
