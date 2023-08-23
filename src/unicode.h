@@ -19,8 +19,6 @@
 #define OFUnicodeLowercaseTableSize 0x1EA
 #define OFUnicodeTitlecaseTableSize 0x1EA
 #define OFUnicodeCaseFoldingTableSize 0x1EA
-#define OFUnicodeDecompositionTableSize 0x2FB
-#define OFUnicodeDecompositionCompatTableSize 0x2FB
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,10 +31,6 @@ extern const OFUnichar *const _Nonnull
     OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];
 extern const OFUnichar *const _Nonnull
     OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];
-extern const char *const _Nullable *const _Nonnull
-    OFUnicodeDecompositionTable[OFUnicodeDecompositionTableSize];
-extern const char *const _Nullable *const _Nonnull
-    OFUnicodeDecompositionCompatTable[OFUnicodeDecompositionCompatTableSize];
 #ifdef __cplusplus
 }
 #endif

@@ -266,19 +266,6 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
-#ifdef OF_HAVE_UNICODE_TABLES
-/**
- * @brief The string in Unicode Normalization Form D (NFD).
- */
-@property (readonly, nonatomic) OFString *decomposedStringWithCanonicalMapping;
-
-/**
- * @brief The string in Unicode Normalization Form KD (NFKD).
- */
-@property (readonly, nonatomic)
-    OFString *decomposedStringWithCompatibilityMapping;
-#endif
-
 #if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
  * @brief The string with the Windows Environment Strings expanded.

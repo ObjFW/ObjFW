@@ -346,37 +346,6 @@ OFStrDup(const char *string)
 	return copy;
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-static OFString *
-decomposedString(OFString *self, const char *const *const *table, size_t size)
-{
-	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	const OFUnichar *characters = self.characters;
-	size_t length = self.length;
-
-	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = characters[i];
-		const char *const *page;
-
-		if (c >= size) {
-			[ret appendCharacters: &c length: 1];
-			continue;
-		}
-
-		page = table[c >> 8];
-		if (page != NULL && page[c & 0xFF] != NULL)
-			[ret appendUTF8String: page[c & 0xFF]];
-		else
-			[ret appendCharacters: &c length: 1];
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-#endif
-
 @implementation OFPlaceholderString
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
@@ -2614,20 +2583,6 @@ OF_SINGLETON_METHODS
 
 	return [data autorelease];
 }
-
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionTable,
-	    OFUnicodeDecompositionTableSize);
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionCompatTable,
-	    OFUnicodeDecompositionCompatTableSize);
-}
-#endif
 
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings

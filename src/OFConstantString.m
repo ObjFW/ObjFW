@@ -505,20 +505,6 @@ OF_SINGLETON_METHODS
 	return [self dataWithEncoding: encoding];
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCanonicalMapping;
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCompatibilityMapping;
-}
-#endif
-
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
