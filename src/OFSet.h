@@ -118,6 +118,13 @@ typedef bool (^OFSetFilterBlock)(id object);
 			 count: (size_t)count;
 
 /**
+ * @brief Initializes an already allocated set to be empty.
+ *
+ * @return An initialized set
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated set with the specified set.
  *
  * @param set The set to initialize the set with
@@ -160,7 +167,7 @@ typedef bool (^OFSetFilterBlock)(id object);
  * @return An initialized set with the specified objects
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.

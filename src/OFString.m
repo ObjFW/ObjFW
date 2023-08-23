@@ -346,38 +346,13 @@ OFStrDup(const char *string)
 	return copy;
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-static OFString *
-decomposedString(OFString *self, const char *const *const *table, size_t size)
-{
-	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	const OFUnichar *characters = self.characters;
-	size_t length = self.length;
-
-	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = characters[i];
-		const char *const *page;
-
-		if (c >= size) {
-			[ret appendCharacters: &c length: 1];
-			continue;
-		}
-
-		page = table[c >> 8];
-		if (page != NULL && page[c & 0xFF] != NULL)
-			[ret appendUTF8String: page[c & 0xFF]];
-		else
-			[ret appendCharacters: &c length: 1];
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-#endif
-
 @implementation OFPlaceholderString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFUTF8String alloc] init];
@@ -591,6 +566,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI
 						      encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end
@@ -847,12 +825,21 @@ OF_SINGLETON_METHODS
 			      length: strlen(cString)];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithData: (OFData *)data
 		    encoding: (OFStringEncoding)encoding
@@ -872,6 +859,12 @@ OF_SINGLETON_METHODS
 	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithString: (OFString *)string
 {
 	OF_INVALID_INIT_METHOD
@@ -882,6 +875,9 @@ OF_SINGLETON_METHODS
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
@@ -906,12 +902,21 @@ OF_SINGLETON_METHODS
 			       byteOrder: byteOrder];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
@@ -936,12 +941,21 @@ OF_SINGLETON_METHODS
 			       byteOrder: byteOrder];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithFormat: (OFConstantString *)format, ...
 {
@@ -955,11 +969,20 @@ OF_SINGLETON_METHODS
 	return ret;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
@@ -971,56 +994,19 @@ OF_SINGLETON_METHODS
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding
 {
-	char *buffer = NULL;
-	OFStreamOffset fileSize;
+	void *pool = objc_autoreleasePoolPush();
+	OFIRI *IRI;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
-		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
-
-		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		/*
-		 * We need one extra byte for the terminating zero if we want
-		 * to use -[initWithUTF8StringNoCopy:length:freeWhenDone:].
-		 */
-		if (SIZE_MAX - (size_t)fileSize < 1)
-			@throw [OFOutOfRangeException exception];
-
-		[file seekToOffset: 0 whence: OFSeekSet];
-
-		buffer = OFAllocMemory((size_t)fileSize + 1, 1);
-		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
-		buffer[(size_t)fileSize] = '\0';
-
-		objc_autoreleasePoolPop(pool);
+		IRI = [OFIRI fileIRIWithPath: path];
 	} @catch (id e) {
-		OFFreeMemory(buffer);
 		[self release];
-
 		@throw e;
 	}
 
-	if (encoding == OFStringEncodingUTF8) {
-		@try {
-			self = [self initWithUTF8StringNoCopy: buffer
-						       length: (size_t)fileSize
-						 freeWhenDone: true];
-		} @catch (id e) {
-			OFFreeMemory(buffer);
-			@throw e;
-		}
-	} else {
-		@try {
-			self = [self initWithCString: buffer
-					    encoding: encoding
-					      length: (size_t)fileSize];
-		} @finally {
-			OFFreeMemory(buffer);
-		}
-	}
+	self = [self initWithContentsOfIRI: IRI encoding: encoding];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -2597,20 +2583,6 @@ OF_SINGLETON_METHODS
 
 	return [data autorelease];
 }
-
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionTable,
-	    OFUnicodeDecompositionTableSize);
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionCompatTable,
-	    OFUnicodeDecompositionCompatTableSize);
-}
-#endif
 
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings

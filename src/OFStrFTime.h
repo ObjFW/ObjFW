@@ -13,16 +13,26 @@
  * file.
  */
 
-#import "OFValue.h"
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#include <time.h>
+
+#import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFNonretainedObjectValue: OFValue
-{
-	id _object;
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern size_t OFStrFTime(char *buffer, size_t bufferLen, const char *format,
+    struct tm *tm, short tz);
+#ifdef __cplusplus
 }
-
-- (instancetype)initWithNonretainedObject: (id)object;
-@end
+#endif
 
 OF_ASSUME_NONNULL_END

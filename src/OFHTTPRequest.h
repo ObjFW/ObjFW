@@ -53,7 +53,7 @@ typedef enum {
  *
  * @brief The HTTP version of the HTTP request.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFHTTPRequestProtocolVersion {
 	/** The major of the HTTP version */
 	unsigned char major;
 	/** The minor of the HTTP version */

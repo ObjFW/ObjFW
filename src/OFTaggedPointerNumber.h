@@ -13,16 +13,15 @@
  * file.
  */
 
-#import "OFValue.h"
+#import "OFNumber.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSizeValue: OFValue
-{
-	OFSize _size;
-}
+#ifdef OF_OBJFW_RUNTIME
+# define OFTaggedPointerNumberTagBits 4
 
-- (instancetype)initWithSize: (OFSize)size;
+@interface OFTaggedPointerNumber: OFNumber
 @end
+#endif
 
 OF_ASSUME_NONNULL_END

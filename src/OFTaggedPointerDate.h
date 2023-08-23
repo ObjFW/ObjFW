@@ -13,16 +13,14 @@
  * file.
  */
 
-#import "OFValue.h"
+#import "OFDate.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFRangeValue: OFValue
-{
-	OFRange _range;
-}
-
-- (instancetype)initWithRange: (OFRange)range;
+#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+@interface OFTaggedPointerDate: OFDate
++ (OFTaggedPointerDate *)dateWithUInt64TimeIntervalSince1970: (uint64_t)value;
 @end
+#endif
 
 OF_ASSUME_NONNULL_END

@@ -13,24 +13,22 @@
  * file.
  */
 
-#import "OFBytesValue.h"
+#import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFBytesValue
-@synthesize objCType = _objCType;
-
+@implementation OFConcreteValue
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
-	self = [super init];
+	self = [super initWithBytes: bytes objCType: objCType];
 
 	@try {
 		_size = OFSizeOfTypeEncoding(objCType);
-		_objCType = objCType;
+		_objCType = OFStrDup(objCType);
 		_bytes = OFAllocMemory(1, _size);
-
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
 		[self release];
@@ -43,8 +41,14 @@
 - (void)dealloc
 {
 	OFFreeMemory(_bytes);
+	OFFreeMemory(_objCType);
 
 	[super dealloc];
+}
+
+- (const char *)objCType
+{
+	return _objCType;
 }
 
 - (void)getValue: (void *)value size: (size_t)size

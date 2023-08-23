@@ -266,19 +266,6 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
-#ifdef OF_HAVE_UNICODE_TABLES
-/**
- * @brief The string in Unicode Normalization Form D (NFD).
- */
-@property (readonly, nonatomic) OFString *decomposedStringWithCanonicalMapping;
-
-/**
- * @brief The string in Unicode Normalization Form KD (NFKD).
- */
-@property (readonly, nonatomic)
-    OFString *decomposedStringWithCompatibilityMapping;
-#endif
-
 #if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
  * @brief The string with the Windows Environment Strings expanded.
@@ -565,6 +552,13 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding;
+
+/**
+ * @brief Initializes an already allocated OFString to be empty.
+ *
+ * @return An initialized OFString
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C

@@ -13,15 +13,18 @@
  * file.
  */
 
-#import "OFValue.h"
+#import "OFNumber.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFBytesValue: OFValue
+@interface OFConcreteNumber: OFNumber
 {
-	size_t _size;
-	void *_bytes;
-	const char *_objCType;
+	union {
+		double float_;
+		long long signed_;
+		unsigned long long unsigned_;
+	} _value;
+	char _typeEncoding;
 }
 @end
 

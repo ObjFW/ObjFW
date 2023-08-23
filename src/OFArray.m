@@ -44,6 +44,12 @@ static struct {
 @end
 
 @implementation OFPlaceholderArray
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFConcreteArray alloc] init];
@@ -85,6 +91,9 @@ static struct {
 	return (id)[[OFConcreteArray alloc] initWithObjects: objects
 						      count: count];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end
@@ -158,12 +167,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithObject: (id)object
 {
-	if (object == nil) {
-		[self release];
-		@throw [OFInvalidArgumentException exception];
-	}
-
-	return [self initWithObjects: object, nil];
+	return [self initWithObjects: &object count: 1];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -178,22 +182,77 @@ OF_SINGLETON_METHODS
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	va_list argumentsCopy;
+	id *objects;
+
+	if (firstObject == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		objects = OFAllocMemory(count, sizeof(id));
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		objects[0] = firstObject;
+
+		for (size_t i = 1; i < count; i++) {
+			objects[i] = va_arg(arguments, id);
+			OFEnsure(objects[i] != nil);
+		}
+
+		return [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	OF_INVALID_INIT_METHOD
+	id *objects;
+	size_t count;
+
+	@try {
+		count = array.count;
+		objects = OFAllocMemory(count, sizeof(id));
+
+		[array getObjects: objects
+			  inRange: OFMakeRange(0, count)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		return [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (size_t)count
 {

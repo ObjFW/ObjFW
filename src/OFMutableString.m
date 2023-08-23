@@ -37,6 +37,12 @@ static struct {
 @end
 
 @implementation OFPlaceholderMutableString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFMutableUTF8String alloc] init];
@@ -186,6 +192,9 @@ static struct {
 	    initWithContentsOfIRI: IRI
 			 encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end

@@ -17,12 +17,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFPointerValue: OFValue
+@interface OFConcreteValue: OFValue
 {
-	void *_pointer;
+	size_t _size;
+	void *_bytes;
+	char *_objCType;
 }
-
-- (instancetype)initWithPointer: (const void *)pointer;
 @end
 
 OF_ASSUME_NONNULL_END

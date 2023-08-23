@@ -13,38 +13,20 @@
  * file.
  */
 
-#import "OFPointerValue.h"
-#import "OFMethodSignature.h"
+#import "OFConcreteDate.h"
 
-#import "OFOutOfRangeException.h"
-
-@implementation OFPointerValue
-@synthesize pointerValue = _pointer;
-
-- (instancetype)initWithPointer: (const void *)pointer
+@implementation OFConcreteDate
+- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
-	self = [super init];
+	self = [super initWithTimeIntervalSince1970: seconds];
 
-	_pointer = (void *)pointer;
+	_seconds = seconds;
 
 	return self;
 }
 
-- (const char *)objCType
+- (OFTimeInterval)timeIntervalSince1970
 {
-	return @encode(void *);
-}
-
-- (void)getValue: (void *)value size: (size_t)size
-{
-	if (size != sizeof(_pointer))
-		@throw [OFOutOfRangeException exception];
-
-	memcpy(value, &_pointer, sizeof(_pointer));
-}
-
-- (id)nonretainedObjectValue
-{
-	return _pointer;
+	return _seconds;
 }
 @end

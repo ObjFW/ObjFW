@@ -19,9 +19,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_OBJFW_RUNTIME
 @interface OFTaggedPointerColor: OFColor
-+ (instancetype)colorWithRed: (uint8_t)red
-		       green: (uint8_t)green
-			blue: (uint8_t)blue;
++ (OFTaggedPointerColor *)colorWithRed: (uint8_t)red
+				 green: (uint8_t)green
+				  blue: (uint8_t)blue;
 @end
 #endif
 

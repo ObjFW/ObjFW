@@ -36,6 +36,7 @@
 # include <sys/types.h>
 #endif
 
+#import "OFASPrintF.h"
 #import "OFString.h"
 #import "OFLocale.h"
 

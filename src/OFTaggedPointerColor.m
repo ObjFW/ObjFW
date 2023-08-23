@@ -27,9 +27,9 @@ static int colorTag;
 		colorTag = objc_registerTaggedPointerClass(self);
 }
 
-+ (instancetype)colorWithRed: (uint8_t)red
-		       green: (uint8_t)green
-			blue: (uint8_t)blue
++ (OFTaggedPointerColor *)colorWithRed: (uint8_t)red
+				 green: (uint8_t)green
+				  blue: (uint8_t)blue
 {
 	return objc_createTaggedPointer(colorTag,
 	    (uintptr_t)red << 16 | (uintptr_t)green << 8 | (uintptr_t)blue);

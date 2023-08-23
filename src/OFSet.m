@@ -32,6 +32,12 @@ static struct {
 @end
 
 @implementation OFPlaceholderSet
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFConcreteSet alloc] init];
@@ -71,6 +77,9 @@ static struct {
 	return (id)[[OFConcreteSet alloc] initWithObject: firstObject
 					       arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_SINGLETON_METHODS
 @end
@@ -144,18 +153,70 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	OF_INVALID_INIT_METHOD
+	id *objects = NULL;
+	size_t count;
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		size_t i = 0;
+
+		count = set.count;
+		objects = OFAllocMemory(count, sizeof(id));
+
+		for (id object in set) {
+			OFEnsure(i < count);
+			objects[i++] = object;
+		}
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		OFFreeMemory(objects);
+
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		return [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	OF_INVALID_INIT_METHOD
+	void *pool = objc_autoreleasePoolPush();
+	size_t count;
+	const id *objects;
+
+	@try {
+		count = array.count;
+		objects = array.objects;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithObjects: objects count: count];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithObjects: (id)firstObject, ...
 {
@@ -171,7 +232,36 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	va_list argumentsCopy;
+	id *objects;
+
+	if (firstObject == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		objects = OFAllocMemory(count, sizeof(id));
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		objects[0] = firstObject;
+
+		for (size_t i = 1; i < count; i++) {
+			objects[i] = va_arg(arguments, id);
+			OFEnsure(objects[i] != nil);
+		}
+
+		return [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
 }
 
 - (size_t)count

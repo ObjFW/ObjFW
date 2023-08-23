@@ -13,16 +13,14 @@
  * file.
  */
 
-#import "OFValue.h"
+#import "OFDate.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFPointValue: OFValue
+@interface OFConcreteDate: OFDate
 {
-	OFPoint _point;
+	OFTimeInterval _seconds;
 }
-
-- (instancetype)initWithPoint: (OFPoint)point;
 @end
 
 OF_ASSUME_NONNULL_END

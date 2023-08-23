@@ -24,15 +24,18 @@
 #include <sys/time.h>
 
 #import "OFDate.h"
+#import "OFConcreteDate.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFMessagePackExtension.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFStrFTime.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFTaggedPointerDate.h"
 #import "OFXMLAttribute.h"
 
 #import "OFInitializationFailedException.h"
@@ -49,46 +52,33 @@
 @interface OFPlaceholderDate: OFDate
 @end
 
-@interface OFConcreteDate: OFDate
-{
-	OFTimeInterval _seconds;
-}
+@interface OFConcreteDateSingleton: OFConcreteDate
 @end
-
-@interface OFDateSingleton: OFConcreteDate
-@end
-
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-@interface OFTaggedPointerDate: OFDateSingleton
-@end
-#endif
 
 static struct {
 	Class isa;
 } placeholder;
 
-static OFDateSingleton *zeroDate, *distantFuture, *distantPast;
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-static int dateTag;
-#endif
+static OFConcreteDateSingleton *zeroDate, *distantFuture, *distantPast;
 
 static void
 initZeroDate(void)
 {
-	zeroDate = [[OFDateSingleton alloc] initWithTimeIntervalSince1970: 0];
+	zeroDate = [[OFConcreteDateSingleton alloc]
+	    initWithTimeIntervalSince1970: 0];
 }
 
 static void
 initDistantFuture(void)
 {
-	distantFuture = [[OFDateSingleton alloc]
+	distantFuture = [[OFConcreteDateSingleton alloc]
 	    initWithTimeIntervalSince1970: 64060588800.0];
 }
 
 static void
 initDistantPast(void)
 {
-	distantPast = [[OFDateSingleton alloc]
+	distantPast = [[OFConcreteDateSingleton alloc]
 	    initWithTimeIntervalSince1970: -62167219200.0];
 }
 
@@ -261,7 +251,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return seconds;
 }
 
-@implementation OFDateSingleton
+@implementation OFConcreteDateSingleton
 OF_SINGLETON_METHODS
 @end
 
@@ -290,8 +280,8 @@ OF_SINGLETON_METHODS
 
 	/* Almost all dates fall into this range. */
 	if (value & (UINT64_C(4) << 60)) {
-		id ret = objc_createTaggedPointer(dateTag,
-		    value & ~(UINT64_C(4) << 60));
+		id ret = [OFTaggedPointerDate
+		    dateWithUInt64TimeIntervalSince1970: value];
 
 		if (ret != nil)
 			return ret;
@@ -308,35 +298,6 @@ OF_SINGLETON_METHODS
 OF_SINGLETON_METHODS
 @end
 
-@implementation OFConcreteDate
-- (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
-{
-	self = [super initWithTimeIntervalSince1970: seconds];
-
-	_seconds = seconds;
-
-	return self;
-}
-
-- (OFTimeInterval)timeIntervalSince1970
-{
-	return _seconds;
-}
-@end
-
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-@implementation OFTaggedPointerDate
-- (OFTimeInterval)timeIntervalSince1970
-{
-	uint64_t value = (uint64_t)object_getTaggedPointerValue(self);
-
-	value |= UINT64_C(4) << 60;
-
-	return OFFromBigEndianDouble(OFRawUInt64ToDouble(OFToBigEndian64(
-	    value)));
-}
-@end
-#endif
 
 @implementation OFDate
 + (void)initialize
@@ -360,10 +321,6 @@ OF_SINGLETON_METHODS
 	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
 		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
-#endif
-
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-	dateTag = objc_registerTaggedPointerClass([OFTaggedPointerDate class]);
 #endif
 }
 
@@ -556,7 +513,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)description
 {
-	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S%z"];
 }
 
 - (OFData *)messagePackRepresentation
@@ -736,18 +693,11 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}
@@ -796,18 +746,11 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}

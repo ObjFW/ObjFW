@@ -265,38 +265,19 @@ OF_SINGLETON_METHODS
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
-	char *buffer = NULL;
-	OFStreamOffset fileSize;
+	void *pool = objc_autoreleasePoolPush();
+	OFIRI *IRI;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
-		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
-
-		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		[file seekToOffset: 0 whence: OFSeekSet];
-
-		buffer = OFAllocMemory((size_t)fileSize, 1);
-		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
-
-		objc_autoreleasePoolPop(pool);
+		IRI = [OFIRI fileIRIWithPath: path];
 	} @catch (id e) {
-		OFFreeMemory(buffer);
 		[self release];
-
 		@throw e;
 	}
 
-	@try {
-		self = [self initWithItemsNoCopy: buffer
-					   count: (size_t)fileSize
-				    freeWhenDone: true];
-	} @catch (id e) {
-		OFFreeMemory(buffer);
-		@throw e;
-	}
+	self = [self initWithContentsOfIRI: IRI];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
