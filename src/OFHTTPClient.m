@@ -640,8 +640,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		return;
 	}
 
-	sock.canBlock = false;
-
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateTCPSocket:request:)])
 		[_client->_delegate client: _client
