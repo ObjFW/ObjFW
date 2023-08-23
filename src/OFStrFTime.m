@@ -15,12 +15,10 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #import "OFStrFTime.h"
-#import "OFASPrintF.h"
 #import "macros.h"
 
 static const char weekDays[7][4] = {
@@ -63,7 +61,7 @@ OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 		case stateInConversionSpecifier:;
 			const char *appendFormat;
 			unsigned int value = 0;
-			char *append;
+			char append[5];
 			int appendLen;
 
 			switch (format[i]) {
@@ -141,19 +139,18 @@ OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 				return 0;
 			}
 
-			appendLen = OFASPrintF(&append, appendFormat, value);
-			if (appendLen < 0)
+			appendLen = snprintf(append, sizeof(append),
+			    appendFormat, value);
+			if (appendLen < 0 ||
+			    (size_t)appendLen >= sizeof(append))
 				return 0;
 
-			if (bufferLen - j < (size_t)appendLen) {
-				free(append);
+			if (bufferLen - j < (size_t)appendLen)
 				return 0;
-			}
 
 			memcpy(buffer + j, append, appendLen);
 			j += appendLen;
 
-			free(append);
 			state = stateSearchConversionSpecifier;
 		}
 	}

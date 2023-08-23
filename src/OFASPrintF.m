@@ -755,19 +755,6 @@ static bool (*states[])(struct Context *) = {
 };
 
 int
-OFASPrintF(char **string, const char *format, ...)
-{
-	int ret;
-	va_list arguments;
-
-	va_start(arguments, format);
-	ret = OFVASPrintF(string, format, arguments);
-	va_end(arguments);
-
-	return ret;
-}
-
-int
 OFVASPrintF(char **string, const char *format, va_list arguments)
 {
 	struct Context ctx;
