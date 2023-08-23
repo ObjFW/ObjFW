@@ -202,6 +202,7 @@ SRCS += OFASPrintF.m			\
 	OFMutableUTF8String.m		\
 	OFRangeCharacterSet.m		\
 	OFSandbox.m			\
+	OFStrFTime.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\

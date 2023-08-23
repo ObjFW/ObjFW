@@ -31,6 +31,7 @@
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFStrFTime.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
@@ -512,7 +513,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)description
 {
-	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S%z"];
 }
 
 - (OFData *)messagePackRepresentation
@@ -692,18 +693,11 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}
@@ -752,18 +746,11 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}

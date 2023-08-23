@@ -20,7 +20,7 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#include <stdarg.h>
+#include <time.h>
 
 #import "macros.h"
 
@@ -29,9 +29,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int OFASPrintF(char *_Nullable *_Nonnull, const char *_Nonnull, ...);
-extern int OFVASPrintF(
-    char *_Nullable *_Nonnull, const char *_Nonnull, va_list);
+extern size_t OFStrFTime(char *buffer, size_t bufferLen, const char *format,
+    struct tm *tm, short tz);
 #ifdef __cplusplus
 }
 #endif
