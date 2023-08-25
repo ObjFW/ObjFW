@@ -121,6 +121,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  *
  * By default, a socket can block.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -128,6 +129,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 /**
  * @brief Whether the socket can send to broadcast addresses.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canSendToBroadcastAddresses;
