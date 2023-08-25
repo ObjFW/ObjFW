@@ -107,6 +107,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 	OFSocketHandle _socket;
 #ifdef OF_AMIGAOS
 	LONG _socketID;
+	int _family;	/* unused, reserved for ABI stability */
 #endif
 	bool _canBlock;
 #ifdef OF_WII
