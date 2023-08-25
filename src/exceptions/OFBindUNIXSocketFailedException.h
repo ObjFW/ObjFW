@@ -43,7 +43,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased bind UNIX socket failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
++ (instancetype)exceptionWithPath: (nullable OFString *)path
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
@@ -58,7 +58,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param errNo The errno of the error that occurred
  * @return An initialized bind UNIX socket failed exception
  */
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithPath: (nullable OFString *)path
 		      socket: (id)socket
 		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 
