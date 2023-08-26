@@ -226,10 +226,16 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			if (address.sockaddr.in6.sin6_family == AF_INET6 &&
 			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
 			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
-			    == 0x80)
+			    == 0x80) {
+#   if defined(HAVE_INET6_GETSCOPEID)
+				inet6_getscopeid(&address.sockaddr.in6,
+				    INET6_IS_ADDR_LINKLOCAL);
+#   elif defined(HAVE_IF_NAMETOINDEX)
 				address.sockaddr.in6.sin6_scope_id =
 				    if_nametoindex(
 				    [name cStringWithEncoding: encoding]);
+#   endif
+			}
 #  endif
 
 			[addresses addItem: &address];
