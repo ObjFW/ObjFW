@@ -52,6 +52,7 @@
 #import "OFReadFailedException.h"
 #import "OFResolveHostFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
+#import "OFTLSHandshakeFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -860,6 +861,22 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"  support or preload a library adding TLS "
 			    @"support to ObjFW!",
 			    @"prog", [OFApplication programName])];
+		} else if ([exception isKindOfClass:
+		    [OFTLSHandshakeFailedException class]]) {
+			OFString *error = OFTLSStreamErrorCodeDescription(
+			    ((OFTLSHandshakeFailedException *)exception)
+			    .errorCode);
+
+			if (!_quiet)
+				[OFStdOut writeString: @"\n"];
+
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"download_failed_tls_handshake_failed",
+			    @"%[prog]: Failed to download <%[iri]>!\n"
+			    @"  TLS handshake failed: %[error]",
+			    @"prog", [OFApplication programName],
+			    @"iri", request.IRI.string,
+			    @"error", error)];
 		} else if ([exception isKindOfClass:
 		    [OFReadOrWriteFailedException class]]) {
 			OFString *error = OF_LOCALIZED(
