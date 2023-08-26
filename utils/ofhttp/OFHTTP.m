@@ -1113,7 +1113,7 @@ next:
 	if (_currentFileName == nil)
 		_currentFileName = [IRI.path.lastPathComponent copy];
 
-	if ([_currentFileName isEqual: @"/"]) {
+	if ([_currentFileName isEqual: @"/"] || _currentFileName.length == 0) {
 		[_currentFileName release];
 		_currentFileName = nil;
 	}
