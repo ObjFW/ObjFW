@@ -41,7 +41,7 @@ m68k-*-amigaos*)
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
-	LDFLAGS="$LDFLAGS -noixemul -Wl,-u,___init_eh"
+	LDFLAGS="$LDFLAGS -noixemul"
 	LIBS="$LIBS -ldebug"
 
 	enable_files="yes"	# Required for reading ENV:
