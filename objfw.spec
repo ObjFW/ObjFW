@@ -32,7 +32,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: clang
 BuildRequires: make
-BuildRequires: pkgconfig(gnutls)
+BuildRequires: pkgconfig(openssl)
 Requires:      %{libobjfw_pkgname}%{_isa} = %{version}-%{release}
 Requires:      %{libobjfw_pkgname}-devel = %{version}-%{release}
 Requires:      %{libobjfwrt_pkgname}%{_isa} = %{version}-%{release}
@@ -89,7 +89,7 @@ ObjFW's Objective-C runtime library.
 
 %package -n %{libobjfwtls_pkgname}
 Summary:       TLS support for ObjFW
-Requires:      gnutls%{_isa} >= 3.0.5
+Requires:      openssl%{_isa} >= 1.1.1
 
 %description -n %{libobjfwtls_pkgname}
 The %{libobjfwtls_pkgname} package contains TLS support for ObjFW
