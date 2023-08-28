@@ -141,14 +141,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		path = [_path.stringByDeletingPathExtension
 		    stringByAppendingFormat: @".z%02u", partNumber + 1];
 
-	@try {
-		return [OFFile fileWithPath: path mode: @"r"];
-	} @catch (OFOpenItemFailedException *e) {
-		if (e.errNo != ENOENT)
-			@throw e;
-
-		return nil;
-	}
+	return [OFFile fileWithPath: path mode: @"r"];
 }
 
 - (void)listFiles
