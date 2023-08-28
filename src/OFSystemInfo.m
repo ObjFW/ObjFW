@@ -59,7 +59,8 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
- #import "OFFile.h"
+# import "OFFile.h"
+# import "OFFileManager.h"
 #endif
 #import "OFIRI.h"
 #import "OFLocale.h"
@@ -450,6 +451,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
 	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -540,6 +543,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
 	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -617,6 +622,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_MINT)
 	return [OFIRI fileIRIWithPath: @"u:\\tmp" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # elif defined(OF_NINTENDO_SWITCH)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, mountTmpFS);
