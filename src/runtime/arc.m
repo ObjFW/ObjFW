@@ -188,15 +188,13 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
 		OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
-	if (*object != nil &&
-	    (ref = objc_hashtable_get(hashtable, *object)) != NULL)
+	if (*object != nil && objc_hashtable_get(hashtable, *object) != NULL)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS

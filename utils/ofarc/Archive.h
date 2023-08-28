@@ -20,11 +20,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @protocol Archive <OFObject>
-+ (instancetype)archiveWithPath: (OFString *)path
++ (instancetype)archiveWithPath: (nullable OFString *)path
 			 stream: (OF_KINDOF(OFStream *))stream
 			   mode: (OFString *)mode
 		       encoding: (OFStringEncoding)encoding;
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithPath: (nullable OFString *)path
 		      stream: (OF_KINDOF(OFStream *))stream
 			mode: (OFString *)mode
 		    encoding: (OFStringEncoding)encoding;

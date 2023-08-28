@@ -659,11 +659,7 @@ OF_SINGLETON_METHODS
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
-#ifndef OF_WINDOWS
 	char *buffer;
-#else
-	wchar_t *buffer;
-#endif
 
 	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
@@ -712,11 +708,7 @@ OF_SINGLETON_METHODS
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
-#ifndef OF_WINDOWS
 	char *buffer;
-#else
-	wchar_t *buffer;
-#endif
 
 	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];

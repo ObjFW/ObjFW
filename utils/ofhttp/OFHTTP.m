@@ -52,6 +52,7 @@
 #import "OFReadFailedException.h"
 #import "OFResolveHostFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
+#import "OFTLSHandshakeFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -861,6 +862,22 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"support to ObjFW!",
 			    @"prog", [OFApplication programName])];
 		} else if ([exception isKindOfClass:
+		    [OFTLSHandshakeFailedException class]]) {
+			OFString *error = OFTLSStreamErrorCodeDescription(
+			    ((OFTLSHandshakeFailedException *)exception)
+			    .errorCode);
+
+			if (!_quiet)
+				[OFStdOut writeString: @"\n"];
+
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"download_failed_tls_handshake_failed",
+			    @"%[prog]: Failed to download <%[iri]>!\n"
+			    @"  TLS handshake failed: %[error]",
+			    @"prog", [OFApplication programName],
+			    @"iri", request.IRI.string,
+			    @"error", error)];
+		} else if ([exception isKindOfClass:
 		    [OFReadOrWriteFailedException class]]) {
 			OFString *error = OF_LOCALIZED(
 			    @"download_failed_read_or_write_failed_any",
@@ -1096,7 +1113,7 @@ next:
 	if (_currentFileName == nil)
 		_currentFileName = [IRI.path.lastPathComponent copy];
 
-	if ([_currentFileName isEqual: @"/"]) {
+	if ([_currentFileName isEqual: @"/"] || _currentFileName.length == 0) {
 		[_currentFileName release];
 		_currentFileName = nil;
 	}

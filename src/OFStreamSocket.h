@@ -68,6 +68,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 	OFSocketHandle _socket;
 #ifdef OF_AMIGAOS
 	LONG _socketID;
+	int _family;	/* unused, reserved for ABI stability */
 #endif
 	bool _atEndOfStream, _listening;
 	OFSocketAddress _remoteAddress;

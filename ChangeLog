@@ -4,7 +4,12 @@ Legend:
 
 This file only contains the most significant changes.
 
-ObjFW 0.90.1 -> ObjFW 0.90.2, 23.10.2017
+ObjFW 0.90.2 -> ObjFW 1.0, 08.2023-08-29
+ + First stable release with stable API and ABI
+ * Too many changes to list, as it has been almost 6 years since the last
+   release. See commits in the repository for details.
+
+ObjFW 0.90.1 -> ObjFW 0.90.2, 2017-10-23
  * Fix shadowed variables which caused many bugs (e.g. using the wrong object)
  * Many, many nullability fixes
  * OFTCPSocket: Fix exception not being retained for async connect
@@ -15,7 +20,7 @@ ObjFW 0.90.1 -> ObjFW 0.90.2, 23.10.2017
  * Better check for iOS
  * tests: Fix testing the wrong OFKernelEventObserver
 
-ObjFW 0.90 -> ObjFW 0.90.1, 20.08.2017
+ObjFW 0.90 -> ObjFW 0.90.1, 2017-08-20
  * OFData: Fix -[description]
  * OFFileManager: Set errno to 0 before readdir()
  * OFDate: Add -[localMinute]
@@ -28,7 +33,7 @@ ObjFW 0.90 -> ObjFW 0.90.1, 20.08.2017
  * Remove the OFFile b modes from MorphOS
    (they were already removed for all other OSes)
 
-ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
+ObjFW 0.8.1 -> ObjFW 0.90, 2017-08-01
  + New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry
 		OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager,
 		OFLocalization
@@ -60,7 +65,7 @@ ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
  + String decomposition to NFD
  * OFFile modes simplified ('b' removed)
 
-ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
+ObjFW 0.8 -> ObjFW 0.8.1, 2015-10-04
  * Adjust to __nullable / __nonnull being changed to _Nullable / _Nonnull in
    Clang 3.7 (this fixes compilation with Clang 3.7)
  * Blocks: Proper handling when called from a byref handler
@@ -74,7 +79,7 @@ ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
  * Don't use -pedantic on platforms where it's broken by the system headers
  * Documentation fixes
 
-ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
+ObjFW 0.7.1 -> ObjFW 0.8, 2015-08-14
 
  + An insanely huge amount of new APIs
  + New classes: OFHTTPServer, OFINICategory, OFINIFile, OFInflate64Stream,
@@ -123,7 +128,7 @@ ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
  * Unicode support updated to Unicode 8.0
  * OFURL: Proper escaping and unescaping
 
-ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
+ObjFW 0.7 -> ObjFW 0.7.1, 2012-11-12
  + Support for Haiku
  * Autorelease pools now work properly without __thread
  * Incorrect framework version in Xcode project fixed
@@ -132,7 +137,7 @@ ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
    problems with newer Clang versions
  * More use of OF_SENTINEL
 
-ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
+ObjFW 0.6 -> ObjFW 0.7, 2012-10-27
  Again, the differences are more than in any release before, thus listing them
  all would be too much. The major differences are:
  + ObjFW now comes with its own runtime, which greatly increases performance
@@ -156,7 +161,7 @@ ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
  * Most ObjC compiler feature checks are not part of configure anymore, making
    it possible to use the same installation with different compilers
 
-ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
+ObjFW 0.5.4 -> ObjFW 0.6, 2012-02-27
  The differences between 0.5.4 and 0.6 are too big to list them all. However,
  the major new features are:
  * OFString, OFArray, OFDictionary, OFSet and OFCountedSet are now class
@@ -172,17 +177,17 @@ ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
  + SOCKS5 support for OFTCPSockets (client only)
  * Several API changes
 
-ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
+ObjFW 0.5.3 -> ObjFW 0.5.4, 2011-08-30
  * The blocks runtime is now working correctly
  * Documentation fixes
  * -framework works with objfw-compile now
  + Support for QNX
  * Various small fixes
 
-ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
+ObjFW 0.5.2 -> ObjFW 0.5.3, 2011-07-01
  * Lots of bugfixes, see Git log for details
 
-ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
+ObjFW 0.5.1 -> ObjFW 0.5.2, 2011-04-25
  * Fix double-retain in OFList
  * Don't ignore the timeout in OFStreamObserver when using select()
  * Do -[OFURL copy] in a try block to prevent a leak when an exception occurs
@@ -191,7 +196,7 @@ ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
  * Fix a warning when sizeof(size_t) < sizeof(long long)
  * Skip possible BOMs when appending strings
 
-ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
+ObjFW 0.5 -> ObjFW 0.5.1, 2011-04-21
  * Work around a wrong warning produced by Apple GCC 4.0.1 which would cause
    the build to fail due to -Werror
  * Call objc_thread_{add,remove} when using the GNU runtime to make sure the
@@ -199,7 +204,7 @@ ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
  * Detach a thread before restarting if it was never joined
  * Release the old return value when restarting a thread
 
-ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
+ObjFW 0.4-alpha1 -> 0.5, 2011-04-09
  + %@ is now allowed in format strings
  + Added of_log for easy logging
  * Exceptions have one header per exception now
@@ -219,7 +224,7 @@ ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
  + Add Haiku to the list of supported platforms
  * Lots of small bugfixes and countless small changes. Read the commits!
 
-ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
+ObjFW 0.3.1 -> 0.4-alpha1, 2011-01-03
  * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3
  + Support for blocks was added, including a blocks runtime
  + Added support for the new GNU runtime, introduced in GCC 4.6
@@ -238,7 +243,7 @@ ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
  * Many small changes and new features that would be too much to list here
    The diff between 0.3.1 and 0.4-alpha1 has almost 24000 lines!
 
-ObjFW 0.3 -> 0.3.1, 19.06.2010
+ObjFW 0.3 -> 0.3.1, 2010-06-19
  * Fix a typo in OFMutableDictionary that prevented termination in case
    the last bucket is already used when the dictionary is resized
  * The mutations pointer is now correctly initialized in enumerators for
@@ -247,7 +252,7 @@ ObjFW 0.3 -> 0.3.1, 19.06.2010
    updated to use the new one now
  * PLATFORMS has been updated to be more specific
 
-ObjFW 0.2.1 -> 0.3, 09.05.2010
+ObjFW 0.2.1 -> 0.3, 2010-05-09
  + Many new methods were added to different classes
  + A huge amount of methods was added to OFStream, allowing easy binary
    stream handling and even mixing string-based and binary operations
@@ -288,7 +293,7 @@ ObjFW 0.2.1 -> 0.3, 09.05.2010
    reexported now. Additionally, objfw-config offers --reexport now to produce
    libraries that link against ObjFW and reexport it
 
-ObjFW 0.2 -> 0.2.1, 14.03.2010
+ObjFW 0.2 -> 0.2.1, 2010-03-14
  * Fix for OFNumbers not doing calculations
  * Improved -[hash] for OFNumbers with floats and doubles
  + Tests for OFNumber
@@ -296,7 +301,7 @@ ObjFW 0.2 -> 0.2.1, 14.03.2010
  * Documentation improvements
  * Updated copyright
 
-ObjFW 0.1.2 -> 0.2, 01.02.2010
+ObjFW 0.1.2 -> 0.2, 2010-02-01
  + Support for ObjC 2 Fast Enumerations on every platform which has
    compiler support for fast enumerations
  + Support for ObjC 2 properties on every platform with compiler support
@@ -325,13 +330,13 @@ ObjFW 0.1.2 -> 0.2, 01.02.2010
    Windows. This way, it is a compile time error instead of a runtime
    error
 
-ObjFW 0.1.1 -> 0.1.2, 15.01.2010
+ObjFW 0.1.1 -> 0.1.2, 2010-01-15
  * Fix a bug in OFMutableArray's -[removeObject:] and
    -[removeObjectIdenticalTo:] that could lead to not removing all
    occurrences of the object from the array and to out of bounds reads
  * Change the URL in the framework plist to the homepage
 
-ObjFW 0.1 -> 0.1.1, 04.01.2010
+ObjFW 0.1 -> 0.1.1, 2010-01-04
  * Fix a missing out of range check for -[removeNItems:atIndex:] that
    allowed the programmer to specify too big ranges so it would crash
    instead of throwing an exception
@@ -346,5 +351,5 @@ ObjFW 0.1 -> 0.1.1, 04.01.2010
    lose data when it stumbles upon invalid encoding. Instead, it allows
    recalling with the correct encoding now
 
-ObjFW 0.1, 24.12.2009
+ObjFW 0.1, 2009-12-24
  + Initial release

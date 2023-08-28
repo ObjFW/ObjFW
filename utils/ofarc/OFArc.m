@@ -488,11 +488,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	[OFApplication terminateWithStatus: _exitStatus];
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString *)path
+- (id <Archive>)openArchiveWithPath: (OFString *)path_
 			       type: (OFString *)type
 			       mode: (char)mode
 			   encoding: (OFStringEncoding)encoding
 {
+	/* To make clang-analyzer happy about assigning nil to path later. */
+	OFString *path = path_;
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;
 	id <Archive> archive = nil;
@@ -647,11 +649,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	return archive;
 
 error:
-	if (mode == 'c')
+	if (mode == 'c' && path != nil)
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 
 	[OFApplication terminateWithStatus: 1];
-	return nil;
+	abort();
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName

@@ -126,6 +126,10 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
     OFReadyForReadingObserving, OFReadyForWritingObserving>
 {
 	OFSocketHandle _socket;
+#ifdef OF_AMIGAOS
+	LONG _socketID;	/* unused, reserved for ABI stability */
+	int _family;	/* unused, reserved for ABI stability */
+#endif
 	bool _canBlock, _listening;
 	OFSocketAddress _remoteAddress;
 	id _Nullable _delegate;
@@ -137,6 +141,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * By default, a socket can block.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;

@@ -313,7 +313,7 @@ other place, you are most likely using a mirror.
   Install [amiga-gcc](https://github.com/bebbo/amiga-gcc). Then follow the
   normal process, but instead of `./configure` run:
 
-    $ ./configure --host=m68k-amigaos OBJC=m68k-amigaos-g++
+    $ ./configure --host=m68k-amigaos
 
 
 <h1 id="first-app">Writing your first application with ObjFW</h1>

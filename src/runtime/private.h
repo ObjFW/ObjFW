@@ -39,7 +39,7 @@ struct objc_class {
 	long instanceSize;
 	struct objc_ivar_list *_Nullable ivars;
 	struct objc_method_list *_Nullable methodList;
-	struct objc_dtable *_Nonnull dTable;
+	struct objc_dtable *_Nullable dTable;
 	Class _Nullable *_Nullable subclassList;
 	void *_Nullable siblingClass;
 	struct objc_protocol_list *_Nullable protocols;
