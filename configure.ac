@@ -418,7 +418,7 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
 	TESTS_LIBS="\${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src/runtime $TESTS_LIBS"
 	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
 ])
 

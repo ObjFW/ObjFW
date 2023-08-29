@@ -19,7 +19,7 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
 LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+	-L../../src/runtime ${RUNTIME_LIBS}				\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}
