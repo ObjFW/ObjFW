@@ -4,7 +4,7 @@ Legend:
 
 This file only contains the most significant changes.
 
-ObjFW 0.90.2 -> ObjFW 1.0, 08.2023-08-29
+ObjFW 0.90.2 -> ObjFW 1.0, 2023-08-29
  + First stable release with stable API and ABI
  * Too many changes to list, as it has been almost 6 years since the last
    release. See commits in the repository for details.
