@@ -2005,6 +2005,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -Werror"
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2028,11 +2030,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-aliasing"
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(
 	    whether we need -Wno-unused-property-ivar due to Clang bugs)
 	AC_COMPILE_IFELSE([
@@ -2064,13 +2069,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-unused-property-ivar"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-unused-property-ivar"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
+	OBJCFLAGS="$OBJCFLAGS -Wcast-align -Werror"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2095,13 +2101,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS -Wcast-align"
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
+	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code -Werror"
 	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
@@ -2171,13 +2178,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		]])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wunreachable-code"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
+	OBJCFLAGS="$OBJCFLAGS -Wdocumentation -Werror"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2199,6 +2207,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wdocumentation"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
@@ -2206,7 +2215,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AS_IF([test x"$check_pedantic" = x"yes"], [
 		old_OBJCFLAGS="$OBJCFLAGS"
-		OBJCFLAGS="$OBJCFLAGS -pedantic"
+		OBJCFLAGS="$OBJCFLAGS -pedantic -Werror"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
 		AC_COMPILE_IFELSE([
 			AC_LANG_SOURCE([
@@ -2242,12 +2251,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS -pedantic"
 		], [
 			AC_MSG_RESULT(yes)
 			OBJCFLAGS="$old_OBJCFLAGS"
 		])
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-prototypes)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2257,12 +2269,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-prototypes"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-prototypes"
 	])
 
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -Werror"
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
 		AC_COMPILE_IFELSE([
 			AC_LANG_PROGRAM([
@@ -2273,9 +2288,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS"
 		], [
 			AC_MSG_RESULT(yes)
-			OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+			OBJCFLAGS="$old_OBJCFLAGS -Wno-gnu-imaginary-constant"
 		])
 	])
 ])
