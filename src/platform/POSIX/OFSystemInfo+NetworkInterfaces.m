@@ -70,7 +70,7 @@ queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 			OFString *name = [OFString
 			    stringWithCString: nameindex[i].if_name
 				     encoding: encoding];
-			OFNumber *index = [OFNumber
+			OFNumber *idx = [OFNumber
 			    numberWithUnsignedInt: nameindex[i].if_index];
 			OFMutableDictionary *interface =
 			    [ret objectForKey: name];
@@ -80,7 +80,7 @@ queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 				[ret setObject: interface forKey: name];
 			}
 
-			[interface setObject: index
+			[interface setObject: idx
 				      forKey: OFNetworkInterfaceIndex];
 		}
 	} @finally {

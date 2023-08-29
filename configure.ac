@@ -1401,7 +1401,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
-	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
+	AC_CHECK_HEADERS([net/if.h], [], [], [
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+	])
+	AC_CHECK_HEADERS([net/if_arp.h net/if_dl.h net/if_types.h])
 	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
 		#ifdef HAVE_SYS_TYPES_H
@@ -1533,8 +1538,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
 		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
-			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
-			], [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port,
+			[], [], [
 				#ifdef HAVE_SYS_TYPES_H
 				# include <sys/types.h>
 				#endif
