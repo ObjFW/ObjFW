@@ -1538,8 +1538,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
 		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
-			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
-			], [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port,
+			[], [], [
 				#ifdef HAVE_SYS_TYPES_H
 				# include <sys/types.h>
 				#endif
