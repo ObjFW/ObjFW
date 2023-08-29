@@ -210,10 +210,12 @@ OF_SINGLETON_METHODS
 			OFEnsure(objects[i] != nil);
 		}
 
-		return [self initWithObjects: objects count: count];
+		self = [self initWithObjects: objects count: count];
 	} @finally {
 		OFFreeMemory(objects);
 	}
+
+	return self;
 }
 
 - (instancetype)initWithArray: (OFArray *)array
@@ -233,10 +235,12 @@ OF_SINGLETON_METHODS
 	}
 
 	@try {
-		return [self initWithObjects: objects count: count];
+		self = [self initWithObjects: objects count: count];
 	} @finally {
 		OFFreeMemory(objects);
 	}
+
+	return self;
 }
 
 #ifdef __clang__

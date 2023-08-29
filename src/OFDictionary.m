@@ -218,12 +218,14 @@ OF_SINGLETON_METHODS
 	}
 
 	@try {
-		return [self initWithObjects: objects
+		self = [self initWithObjects: objects
 				     forKeys: keys
 				       count: count];
 	} @finally {
 		objc_autoreleasePoolPop(pool);
 	}
+
+	return self;
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
@@ -336,13 +338,15 @@ OF_SINGLETON_METHODS
 	}
 
 	@try {
-		return [self initWithObjects: objects
+		self = [self initWithObjects: objects
 				     forKeys: keys
 				       count: count];
 	} @finally {
 		OFFreeMemory(objects);
 		OFFreeMemory(keys);
 	}
+
+	return self;
 }
 
 - (id)objectForKey: (id)key
