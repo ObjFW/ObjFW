@@ -23,7 +23,7 @@
 #import "OFApplication.h"
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
-#import "OFEmbeddedURIHandler.h"
+#import "OFEmbeddedIRIHandler.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFList.h"

@@ -73,6 +73,7 @@ extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
 struct Library *ObjFWBase;
 void *__objc_class_name_OFApplication;
 void *__objc_class_name_OFArray;
+void *__objc_class_name_OFBlock;
 void *__objc_class_name_OFCharacterSet;
 void *__objc_class_name_OFColor;
 void *__objc_class_name_OFConstantString;
@@ -86,6 +87,8 @@ void *__objc_class_name_OFGZIPStream;
 void *__objc_class_name_OFHMAC;
 void *__objc_class_name_OFINICategory;
 void *__objc_class_name_OFINIFile;
+void *__objc_class_name_OFIRI;
+void *__objc_class_name_OFIRIHandler;
 void *__objc_class_name_OFInflate64Stream;
 void *__objc_class_name_OFInflateStream;
 void *__objc_class_name_OFInvocation;
@@ -96,19 +99,20 @@ void *__objc_class_name_OFLocale;
 void *__objc_class_name_OFMD5Hash;
 void *__objc_class_name_OFMapTable;
 void *__objc_class_name_OFMapTableEnumerator;
+void *__objc_class_name_OFMatrix4x4;
 void *__objc_class_name_OFMemoryStream;
 void *__objc_class_name_OFMessagePackExtension;
 void *__objc_class_name_OFMethodSignature;
 void *__objc_class_name_OFMutableArray;
 void *__objc_class_name_OFMutableData;
 void *__objc_class_name_OFMutableDictionary;
+void *__objc_class_name_OFMutableIRI;
 void *__objc_class_name_OFMutableLHAArchiveEntry;
 void *__objc_class_name_OFMutablePair;
 void *__objc_class_name_OFMutableSet;
 void *__objc_class_name_OFMutableString;
 void *__objc_class_name_OFMutableTarArchiveEntry;
 void *__objc_class_name_OFMutableTriple;
-void *__objc_class_name_OFMutableURI;
 void *__objc_class_name_OFMutableZIPArchiveEntry;
 void *__objc_class_name_OFNotification;
 void *__objc_class_name_OFNotificationCenter;
@@ -126,7 +130,6 @@ void *__objc_class_name_OFSHA256Hash;
 void *__objc_class_name_OFSHA384Hash;
 void *__objc_class_name_OFSHA384Or512Hash;
 void *__objc_class_name_OFSHA512Hash;
-void *__objc_class_name_OFSandbox;
 void *__objc_class_name_OFSecureData;
 void *__objc_class_name_OFSeekableStream;
 void *__objc_class_name_OFSet;
@@ -141,8 +144,6 @@ void *__objc_class_name_OFTarArchiveEntry;
 void *__objc_class_name_OFThread;
 void *__objc_class_name_OFTimer;
 void *__objc_class_name_OFTriple;
-void *__objc_class_name_OFURI;
-void *__objc_class_name_OFURIHandler;
 void *__objc_class_name_OFUUID;
 void *__objc_class_name_OFValue;
 void *__objc_class_name_OFXMLAttribute;
@@ -195,6 +196,7 @@ void *__objc_class_name_OFMutex;
 void *__objc_class_name_OFRecursiveMutex;
 #endif
 void *__objc_class_name_OFAllocFailedException;
+void *__objc_class_name_OFAlreadyOpenException;
 void *__objc_class_name_OFChecksumMismatchException;
 void *__objc_class_name_OFCopyItemFailedException;
 void *__objc_class_name_OFCreateDirectoryFailedException;
@@ -242,7 +244,6 @@ void *__objc_class_name_OFGetCurrentDirectoryFailedException;
 #endif
 #ifdef OF_HAVE_SOCKETS
 void *__objc_class_name_OFAcceptSocketFailedException;
-void *__objc_class_name_OFAlreadyConnectedException;
 void *__objc_class_name_OFBindIPSocketFailedException;
 void *__objc_class_name_OFBindSocketFailedException;
 void *__objc_class_name_OFConnectIPSocketFailedException;
@@ -265,10 +266,10 @@ void *__objc_class_name_OFWaitForConditionFailedException;
 #endif
 #include "OFFileManagerConstants.inc"
 #include "OFRunLoopConstants.inc"
-/* The following __objc_class_name_* are only required for the tests. */
+/* The following __objc_class_name_* are only for the tests. */
 void *__objc_class_name_OFBitSetCharacterSet;
-void *__objc_class_name_OFMapTableSet;
-void *__objc_class_name_OFMutableMapTableSet;
+void *__objc_class_name_OFConcreteMutableSet;
+void *__objc_class_name_OFConcreteSet;
 void *__objc_class_name_OFMutableUTF8String;
 void *__objc_class_name_OFRangeCharacterSet;
 void *__objc_class_name_OFSelectKernelEventObserver;

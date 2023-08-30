@@ -68,7 +68,7 @@
   <function name='OFDNSRecordTypeParseName' return-type='OFDNSRecordType'>
     <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
   </function>
-  <include>OFEmbeddedURIHandler.h</include>
+  <include>OFEmbeddedIRIHandler.h</include>
   <function name='OFRegisterEmbeddedFile'>
     <argument name='name' type='OFString *_Nonnull' m68k-reg='a0'/>
     <argument name='bytes' type='const uint8_t *_Nonnull' m68k-reg='a1'/>
