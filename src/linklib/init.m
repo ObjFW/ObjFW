@@ -266,6 +266,9 @@ void *__objc_class_name_OFWaitForConditionFailedException;
 #endif
 #include "OFFileManagerConstants.inc"
 #include "OFRunLoopConstants.inc"
+#ifdef OF_HAVE_SOCKETS
+# include "OFSystemInfo+NetworkInterfacesConstants.inc"
+#endif
 /* The following __objc_class_name_* are only for the tests. */
 void *__objc_class_name_OFBitSetCharacterSet;
 void *__objc_class_name_OFConcreteMutableSet;
