@@ -537,6 +537,12 @@ glue_OFTLSStreamErrorCodeDescription PPC_PARAMS(OFTLSStreamErrorCode errorCode)
 	return OFTLSStreamErrorCodeDescription(errorCode);
 }
 
+Class _Nonnull *_Nullable __saveds
+glue_OFTLSStreamImplementationRef(void)
+{
+	return OFTLSStreamImplementationRef();
+}
+
 const char *_Nullable __saveds
 glue_OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz)
 {

@@ -1080,20 +1080,37 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 #endif
 }
 
-const char *_Nullable
-OFStrPTime(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz)
+Class _Nonnull *_Nullable
+OFTLSStreamImplementationRef()
 {
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((const char *_Nullable (*)(const char *__asm__("a0"), const char *__asm__("a1"), struct tm *__asm__("a2"), int16_t *_Nullable __asm__("a3")))(((uintptr_t)ObjFWBase) - 396))(buffer, format, tm, tz);
+	return ((Class _Nonnull *_Nullable (*)())(((uintptr_t)ObjFWBase) - 396))();
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 394))(buffer, format, tm, tz);
+	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 394))();
+#endif
+}
+
+const char *_Nullable
+OFStrPTime(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz)
+{
+#if defined(OF_AMIGAOS_M68K)
+	register struct Library *a6 __asm__("a6") = ObjFWBase;
+	(void)a6;
+	return ((const char *_Nullable (*)(const char *__asm__("a0"), const char *__asm__("a1"), struct tm *__asm__("a2"), int16_t *_Nullable __asm__("a3")))(((uintptr_t)ObjFWBase) - 402))(buffer, format, tm, tz);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 400))(buffer, format, tm, tz);
 #endif
 }
 
@@ -1103,14 +1120,14 @@ OFStringEncodingParseName(OFString *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFStringEncoding (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 402))(string);
+	return ((OFStringEncoding (*)(OFString *__asm__("a0")))(((uintptr_t)ObjFWBase) - 408))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStringEncoding (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 400))(string);
+	return __extension__ ((OFStringEncoding (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 406))(string);
 #endif
 }
 
@@ -1120,14 +1137,14 @@ OFStringEncodingName(OFStringEncoding encoding)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nullable (*)(OFStringEncoding __asm__("d0")))(((uintptr_t)ObjFWBase) - 408))(encoding);
+	return ((OFString *_Nullable (*)(OFStringEncoding __asm__("d0")))(((uintptr_t)ObjFWBase) - 414))(encoding);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 406))(encoding);
+	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 412))(encoding);
 #endif
 }
 
@@ -1137,14 +1154,14 @@ OFUTF16StringLength(const OFChar16 *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(const OFChar16 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 414))(string);
+	return ((size_t (*)(const OFChar16 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 420))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar16 *))*(void **)(((uintptr_t)ObjFWBase) - 412))(string);
+	return __extension__ ((size_t (*)(const OFChar16 *))*(void **)(((uintptr_t)ObjFWBase) - 418))(string);
 #endif
 }
 
@@ -1154,14 +1171,14 @@ OFUTF32StringLength(const OFChar32 *string)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(const OFChar32 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 420))(string);
+	return ((size_t (*)(const OFChar32 *__asm__("a0")))(((uintptr_t)ObjFWBase) - 426))(string);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar32 *))*(void **)(((uintptr_t)ObjFWBase) - 418))(string);
+	return __extension__ ((size_t (*)(const OFChar32 *))*(void **)(((uintptr_t)ObjFWBase) - 424))(string);
 #endif
 }
 
@@ -1171,14 +1188,14 @@ OFZIPArchiveEntryVersionToString(uint16_t version)
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 426))(version);
+	return ((OFString *_Nonnull (*)(uint16_t __asm__("d0")))(((uintptr_t)ObjFWBase) - 432))(version);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 424))(version);
+	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 430))(version);
 #endif
 }
 
@@ -1188,14 +1205,14 @@ OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compre
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 432))(compressionMethod);
+	return ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod __asm__("d0")))(((uintptr_t)ObjFWBase) - 438))(compressionMethod);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 430))(compressionMethod);
+	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 436))(compressionMethod);
 #endif
 }
 
@@ -1205,13 +1222,13 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField, OFZIPArchiveEntryExtraFieldT
 #if defined(OF_AMIGAOS_M68K)
 	register struct Library *a6 __asm__("a6") = ObjFWBase;
 	(void)a6;
-	return ((size_t (*)(OFData *__asm__("a0"), OFZIPArchiveEntryExtraFieldTag __asm__("d0"), uint16_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 438))(extraField, tag, size);
+	return ((size_t (*)(OFData *__asm__("a0"), OFZIPArchiveEntryExtraFieldTag __asm__("d0"), uint16_t *__asm__("a1")))(((uintptr_t)ObjFWBase) - 444))(extraField, tag, size);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(OFData *, OFZIPArchiveEntryExtraFieldTag, uint16_t *))*(void **)(((uintptr_t)ObjFWBase) - 436))(extraField, tag, size);
+	return __extension__ ((size_t (*)(OFData *, OFZIPArchiveEntryExtraFieldTag, uint16_t *))*(void **)(((uintptr_t)ObjFWBase) - 442))(extraField, tag, size);
 #endif
 }

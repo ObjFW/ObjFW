@@ -226,6 +226,8 @@
   <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
     <argument name='errorCode' type='OFTLSStreamErrorCode' m68k-reg='d0'/>
   </function>
+  <function name='OFTLSStreamImplementationRef'
+            return-type='Class _Nonnull *_Nullable'/>
   <!-- Only for tests. -->
   <include>OFStrPTime.h</include>
   <function name='OFStrPTime' return-type='const char *_Nullable'>

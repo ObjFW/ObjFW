@@ -165,7 +165,12 @@ extern "C" {
  * useful to either force a specific implementation or use one that ObjFW does
  * not know about.
  */
+#ifndef OF_AMIGAOS
 extern Class OFTLSStreamImplementation;
+#else
+extern Class _Nonnull *_Nullable OFTLSStreamImplementationRef(void);
+# define OFTLSStreamImplementation (*OFTLSStreamImplementationRef())
+#endif
 
 /**
  * @brief Returns a string description for the TLS stream error code.

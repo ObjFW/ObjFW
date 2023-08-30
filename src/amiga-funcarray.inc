@@ -76,6 +76,7 @@
 (CONST_APTR)glue_OFSocketAddressSetAppleTalkPort,
 (CONST_APTR)glue_OFSocketAddressAppleTalkPort,
 (CONST_APTR)glue_OFTLSStreamErrorCodeDescription,
+(CONST_APTR)glue_OFTLSStreamImplementationRef,
 (CONST_APTR)glue_OFStrPTime,
 (CONST_APTR)glue_OFStringEncodingParseName,
 (CONST_APTR)glue_OFStringEncodingName,

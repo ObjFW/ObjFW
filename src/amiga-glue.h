@@ -106,6 +106,7 @@ extern uint8_t glue_OFSocketAddressAppleTalkNode PPC_PARAMS(const OFSocketAddres
 extern void glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_t port);
 extern uint8_t glue_OFSocketAddressAppleTalkPort PPC_PARAMS(const OFSocketAddress *address);
 extern OFString *glue_OFTLSStreamErrorCodeDescription PPC_PARAMS(OFTLSStreamErrorCode errorCode);
+extern Class _Nonnull *_Nullable glue_OFTLSStreamImplementationRef(void);
 extern const char *_Nullable glue_OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz);
 extern OFStringEncoding glue_OFStringEncodingParseName PPC_PARAMS(OFString *string);
 extern OFString *_Nullable glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding);
