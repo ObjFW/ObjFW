@@ -40,15 +40,6 @@ typedef enum {
  */
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFMessagePackRepresentation>
-{
-	unsigned char *_Nullable _items;
-	size_t _count, _itemSize;
-	bool _freeWhenDone;
-@private
-	OFData *_Nullable _parentData;
-	OF_RESERVE_IVARS(OFData, 4)
-}
-
 /**
  * @brief The size of a single item in the OFData in bytes.
  */
@@ -91,6 +82,21 @@ typedef enum {
  * @brief A string containing the data in Base64 encoding.
  */
 @property (readonly, nonatomic) OFString *stringByBase64Encoding;
+
+/**
+ * @brief Creates a new OFData that is empty with an item size of 1.
+ *
+ * @return A new autoreleased OFData
+ */
++ (instancetype)data;
+
+/**
+ * @brief Creates a new OFData that is empty with the specified item size.
+ *
+ * @param itemSize The size of a single element in the OFData
+ * @return A new autoreleased OFData
+ */
++ (instancetype)dataWithItemSize: (size_t)itemSize;
 
 /**
  * @brief Creates a new OFData with the specified `count` items of size 1.
@@ -191,6 +197,23 @@ typedef enum {
  *				   formatted
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
+
+/**
+ * @brief Initializes an already allocated OFData to be empty with an item size
+ *	  of 1.
+ *
+ * @return An initialized OFData
+ */
+- (instancetype)init;
+
+/**
+ * @brief Initializes an already allocated OFData to be empty with the
+ *	  specified item size.
+ *
+ * @param itemSize The size of a single element in the OFData
+ * @return An initialized OFData
+ */
+- (instancetype)initWithItemSize: (size_t)itemSize;
 
 /**
  * @brief Initializes an already allocated OFData with the specified `count`

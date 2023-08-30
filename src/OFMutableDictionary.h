@@ -55,13 +55,20 @@ typedef id _Nonnull (^OFDictionaryReplaceBlock)(id key, id object);
 + (instancetype)dictionaryWithCapacity: (size_t)capacity;
 
 /**
+ * @brief Initializes an already allocated OFMutableDictionary to be empty.
+ *
+ * @return An initialized OFMutableDictionary
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFMutableDictionary with enough
  *	  memory to hold the specified number of objects.
  *
  * @param capacity The initial capacity for the OFMutableDictionary
  * @return An initialized OFMutableDictionary
  */
-- (instancetype)initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Sets an object for a key.

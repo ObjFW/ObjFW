@@ -71,6 +71,14 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
+ * @brief The underlying stream of the inflate stream.
+ *
+ * Setting this can be useful if the the data to be inflated is coming from
+ * multiple streams, such as split across multiple files.
+ */
+@property (retain, nonatomic) OFStream *underlyingStream;
+
+/**
  * @brief Creates a new OFInflateStream with the specified underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or

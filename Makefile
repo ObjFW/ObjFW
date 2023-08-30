@@ -28,16 +28,13 @@ release: docs
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil*,.git*' | ofarc -ttgz -xq -
+		--exclude '.fossil*,.git*,objfw.spec' | ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
 	gzip -9 objfw-${PACKAGE_VERSION}.tar
 	rm -f objfw-${PACKAGE_VERSION}.tar
 	gpg -b objfw-${PACKAGE_VERSION}.tar.gz || true
-	echo "Generating documentation..."
-	rm -fr docs
-	doxygen >/dev/null
 	rm -fr objfw-docs-${PACKAGE_VERSION} objfw-docs-${PACKAGE_VERSION}.tar \
 		objfw-docs-${PACKAGE_VERSION}.tar.gz
 	mv docs objfw-docs-${PACKAGE_VERSION}

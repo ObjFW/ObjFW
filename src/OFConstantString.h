@@ -13,10 +13,7 @@
  * file.
  */
 
-#ifndef OBJFW_OF_CONSTANT_STRING_H
-#define OBJFW_OF_CONSTANT_STRING_H
-
-#include "OFString.h"
+#import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +28,6 @@ extern void *_OFConstantStringClassReference;
 # endif
 #endif
 
-#ifdef __OBJC__
 /**
  * @class OFConstantString OFConstantString.h ObjFW/OFConstantString.h
  *
@@ -44,8 +40,5 @@ OF_SUBCLASSING_RESTRICTED
 	unsigned int _cStringLength;
 }
 @end
-#endif
 
 OF_ASSUME_NONNULL_END
-
-#endif

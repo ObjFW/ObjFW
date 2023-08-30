@@ -60,6 +60,10 @@
         "TLS-Support\n",
         "  zu ObjFW hinzufügt!"
     ],
+    "download_failed_tls_handshake_failed": [
+        "%[prog]: Fehler beim Download von <%[iri]>!\n",
+        "  TLS-Handshake fehlgeschlagen: %[error]"
+    ],
     "download_failed_read_or_write_failed_any": "Lesen oder Schreiben",
     "download_failed_read_or_write_failed_read": "Lesen",
     "download_failed_read_or_write_failed_write": "Schreiben",

@@ -1407,16 +1407,6 @@ static const OFChar16 swappedChar16String[] = {
 	    R([mutableString1 deleteEnclosingWhitespaces]) &&
 	    [mutableString1 isEqual: @""])
 
-#ifdef OF_HAVE_UNICODE_TABLES
-	TEST(@"-[decomposedStringWithCanonicalMapping]",
-	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCanonicalMapping
-	    isEqual: @"H\x61\xCC\x88lǉ\x6F\xCC\x88"]);
-
-	TEST(@"-[decomposedStringWithCompatibilityMapping]",
-	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCompatibilityMapping
-	    isEqual: @"H\x61\xCC\x88llj\x6F\xCC\x88"]);
-#endif
-
 	TEST(@"-[stringByXMLEscaping]",
 	    (string = C(@"<hello> &world'\"!&").stringByXMLEscaping) &&
 	    [string isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])

@@ -20,6 +20,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFZIPArchiveEntry ()
 @property (readonly, nonatomic)
     uint16_t of_lastModifiedFileTime, of_lastModifiedFileDate;
+@property (readonly, nonatomic) uint32_t of_startDiskNumber;
 @property (readonly, nonatomic) int64_t of_localFileHeaderOffset;
 
 - (instancetype)of_init OF_METHOD_FAMILY(init);

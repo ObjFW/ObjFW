@@ -33,10 +33,16 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableStringPlaceholder: OFMutableString
+@interface OFPlaceholderMutableString: OFMutableString
 @end
 
-@implementation OFMutableStringPlaceholder
+@implementation OFPlaceholderMutableString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFMutableUTF8String alloc] init];
@@ -186,32 +192,19 @@ static struct {
 	    initWithContentsOfIRI: IRI
 			 encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableString
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableStringPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableString class]);
 }
 
 + (instancetype)alloc

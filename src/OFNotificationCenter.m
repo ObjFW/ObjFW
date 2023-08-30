@@ -383,22 +383,5 @@ static OFNotificationCenter *defaultCenter;
 @end
 
 @implementation OFDefaultNotificationCenter
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end

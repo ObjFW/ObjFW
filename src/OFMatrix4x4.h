@@ -50,13 +50,16 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)matrixWithValues: (const float [_Nonnull 4][4])values;
 
+- (instancetype)init OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated 4x4 matrix with the specified values.
  *
  * @param values A 2D array of 4x4 floats in row-major format
  * @return An initialized OFMatrix4x4
  */
-- (instancetype)initWithValues: (const float [_Nonnull 4][4])values;
+- (instancetype)initWithValues: (const float [_Nonnull 4][4])values
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Mulitplies the receiver with the specified matrix on the left side

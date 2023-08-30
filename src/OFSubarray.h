@@ -23,7 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
 	OFRange _range;
 }
 
-+ (instancetype)arrayWithArray: (OFArray *)array range: (OFRange)range;
 - (instancetype)initWithArray: (OFArray *)array range: (OFRange)range;
 @end
 

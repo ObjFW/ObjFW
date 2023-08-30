@@ -50,7 +50,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)wait;
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or an Exec Signal is received.
@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (bool)waitForTimeInterval: (OFTimeInterval)timeInterval;
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast, the timeout is reached or an Exec Signal is received.
@@ -107,7 +107,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (bool)waitUntilDate: (OFDate *)date;
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast, the timeout is reached or an Exec Signal is received.

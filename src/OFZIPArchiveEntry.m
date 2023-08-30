@@ -408,6 +408,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _lastModifiedFileDate;
 }
 
+- (uint32_t)of_startDiskNumber
+{
+	return _startDiskNumber;
+}
+
 - (int64_t)of_localFileHeaderOffset
 {
 	return _localFileHeaderOffset;

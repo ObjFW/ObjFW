@@ -20,7 +20,7 @@
 
 #import "OFArray.h"
 #import "OFArray+Private.h"
-#import "OFAdjacentArray.h"
+#import "OFConcreteArray.h"
 #import "OFData.h"
 #import "OFNull.h"
 #import "OFString.h"
@@ -44,14 +44,20 @@ static struct {
 @end
 
 @implementation OFPlaceholderArray
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFAdjacentArray alloc] init];
+	return (id)[[OFConcreteArray alloc] init];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: object];
+	return (id)[[OFConcreteArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -60,7 +66,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFAdjacentArray alloc] initWithObject: firstObject
+	ret = [[OFConcreteArray alloc] initWithObject: firstObject
 					    arguments: arguments];
 	va_end(arguments);
 
@@ -70,47 +76,33 @@ static struct {
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: firstObject
+	return (id)[[OFConcreteArray alloc] initWithObject: firstObject
 						 arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFAdjacentArray alloc] initWithArray: array];
+	return (id)[[OFConcreteArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFAdjacentArray alloc] initWithObjects: objects
+	return (id)[[OFConcreteArray alloc] initWithObjects: objects
 						      count: count];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFArray
 + (void)initialize
 {
 	if (self == [OFArray class])
-		placeholder.isa = [OFPlaceholderArray class];
+		object_setClass((id)&placeholder, [OFPlaceholderArray class]);
 }
 
 + (instancetype)alloc
@@ -158,7 +150,8 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFArray class]]) {
+	if ([self isMemberOfClass: [OFArray class]] ||
+	    [self isMemberOfClass: [OFMutableArray class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -174,12 +167,7 @@ static struct {
 
 - (instancetype)initWithObject: (id)object
 {
-	if (object == nil) {
-		[self release];
-		@throw [OFInvalidArgumentException exception];
-	}
-
-	return [self initWithObjects: object, nil];
+	return [self initWithObjects: &object count: 1];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -194,22 +182,81 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	va_list argumentsCopy;
+	id *objects;
+
+	if (firstObject == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		objects = OFAllocMemory(count, sizeof(id));
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		objects[0] = firstObject;
+
+		for (size_t i = 1; i < count; i++) {
+			objects[i] = va_arg(arguments, id);
+			OFEnsure(objects[i] != nil);
+		}
+
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	OF_INVALID_INIT_METHOD
+	id *objects;
+	size_t count;
+
+	@try {
+		count = array.count;
+		objects = OFAllocMemory(count, sizeof(id));
+
+		[array getObjects: objects
+			  inRange: OFMakeRange(0, count)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (size_t)count
 {
@@ -364,7 +411,8 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFSubarray arrayWithArray: self range: range];
+		return [[[OFSubarray alloc] initWithArray: self
+						    range: range] autorelease];
 
 	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {
@@ -721,6 +769,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFRange range = OFMakeRange(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
@@ -736,7 +785,7 @@ static struct {
 
 	state->state = (unsigned long)(range.location + range.length);
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	return (int)range.length;
 }

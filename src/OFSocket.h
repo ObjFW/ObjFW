@@ -179,7 +179,7 @@ struct sockaddr_at {
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFSocketAddress {
 	OFSocketAddressFamily family;
 	/*
 	 * We can't use struct sockaddr as it can contain variable length
@@ -318,7 +318,7 @@ extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
  * @param address The address on which to get the UNIX socket path
  * @return The UNIX socket path
  */
-extern OFString *_Nullable OFSocketAddressUNIXPath(
+extern OFString *OFSocketAddressUNIXPath(
     const OFSocketAddress *_Nonnull address);
 
 /**

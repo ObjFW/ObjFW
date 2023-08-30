@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  text: (OFString *)text;
+				  text: (nullable OFString *)text;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new

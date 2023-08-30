@@ -117,18 +117,17 @@ atexitHandler(void)
 int
 OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
-#ifdef OF_WINDOWS
-	wchar_t **wargv, **wenvp;
-	int wargc, si = 0;
-#endif
-
 	[[OFLocale alloc] init];
 
 	app = [[OFApplication alloc] of_init];
 
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
+		wchar_t **wargv, **wenvp;
+		int wargc, si = 0;
+
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
+
 		[app of_setArgumentCount: argc
 		       andArgumentValues: argv
 		    andWideArgumentCount: wargc

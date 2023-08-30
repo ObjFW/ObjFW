@@ -17,16 +17,22 @@
 #import "OFFile.h"
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @protocol Archive <OFObject>
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding;
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
-			  mode: (OFString *)mode
-		      encoding: (OFStringEncoding)encoding;
++ (instancetype)archiveWithPath: (nullable OFString *)path
+			 stream: (OF_KINDOF(OFStream *))stream
+			   mode: (OFString *)mode
+		       encoding: (OFStringEncoding)encoding;
+- (instancetype)initWithPath: (nullable OFString *)path
+		      stream: (OF_KINDOF(OFStream *))stream
+			mode: (OFString *)mode
+		    encoding: (OFStringEncoding)encoding;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;
 @optional
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files;
 @end
+
+OF_ASSUME_NONNULL_END

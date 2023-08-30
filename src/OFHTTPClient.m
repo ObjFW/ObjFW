@@ -387,15 +387,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			 * the entity of the request.
 			 */
 			if (_status == 303) {
-				OFEnumerator *keyEnumerator, *objectEnumerator;
-				OFString *key, *object;
-
-				keyEnumerator = [headers keyEnumerator];
-				objectEnumerator = [headers objectEnumerator];
-				while ((key = [keyEnumerator nextObject]) !=
-				    nil &&
-				    (object = [objectEnumerator nextObject]) !=
-				    nil)
+				for (OFString *key in headers)
 					if ([key hasPrefix: @"Content-"] ||
 					    [key hasPrefix: @"Transfer-"])
 						[newHeaders
@@ -639,8 +631,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		[self raiseException: exception];
 		return;
 	}
-
-	sock.canBlock = false;
 
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateTCPSocket:request:)])

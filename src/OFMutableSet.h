@@ -39,13 +39,20 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)setWithCapacity: (size_t)capacity;
 
 /**
+ * @brief Initializes an already allocated OFMutableSet to be empty.
+ *
+ * @return An initialized OFMutableSet
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFMutableSet with enough memory to
  *	  hold the specified number of objects.
  *
  * @param capacity The initial capacity for the OFMutableSet
  * @return An initialized OFMutableSet
  */
-- (instancetype)initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Adds the specified object to the set.

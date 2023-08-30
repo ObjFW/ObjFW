@@ -37,7 +37,7 @@ arm-*-riscos*)
 	enable_files="no"
 	;;
 m68k-*-amigaos*)
-	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0"])
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
@@ -1470,15 +1470,30 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
-	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
-	AC_CHECK_FUNCS([if_indextoname if_nametoindex])
+	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
+	AC_CHECK_HEADERS([net/if.h], [], [], [
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+	])
+	AC_CHECK_HEADERS([net/if_arp.h net/if_dl.h net/if_types.h])
+	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
-		#ifdef HAVAE_SYS_TYPES_H
+		#ifdef HAVE_SYS_TYPES_H
 		# include <sys/types.h>
 		#endif
 		#ifdef HAVE_NET_IF_DL_H
 		# include <net/if_dl.h>
+		#endif
+	])
+	AC_CHECK_TYPES([struct lifconf], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
+		#endif
+	])
+	AC_CHECK_MEMBERS([struct ifreq.ifr_hwaddr], [], [], [
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
 		#endif
 	])
 	AC_CHECK_HEADER(sys/un.h, [
@@ -1510,6 +1525,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
+
+			AC_CHECK_FUNCS(inet6_getscopeid)
 		])
 	], [
 		dnl Work around a bug in autoconf 2.61 that creates a broken
@@ -1583,10 +1600,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#ifdef __MINT__
 		# error Gives invalid argument at runtime
 		#endif
-
-		#ifdef __gnu_hurd__
-		# error Empty sun_path in the source given by recvfrom()
-		#endif
 	])
 
 	AC_CHECK_HEADER(netipx/ipx.h, [
@@ -1595,8 +1608,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
 		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
-			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
-			], [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port,
+			[], [], [
 				#ifdef HAVE_SYS_TYPES_H
 				# include <sys/types.h>
 				#endif
@@ -1821,9 +1834,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	esac
 
-	AC_CHECK_HEADERS(net/if.h)
-	AC_CHECK_FUNCS(if_nameindex)
-
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
@@ -1852,21 +1862,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
-	AS_IF([test x"$with_tls" = x"gnutls" \
-	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
-		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
-			tls_support="GnuTLS"
-			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
-			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
-
-			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
-		], [
-			dnl Disable default action-if-not-found, which exits
-			dnl configure with an error.
-			:
-		])
-	])
-
 	AS_IF([test x"$with_tls" = x"openssl" \
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
@@ -1889,6 +1884,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					"OFOpenSSLTLSStream.m")
 			])
 		], [], [-l$crypto])
+	])
+
+	AS_IF([test x"$with_tls" = x"gnutls" \
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		PKG_CHECK_MODULES(gnutls, [gnutls >= 3.5.0], [
+			tls_support="GnuTLS"
+			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
+			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+
+			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+		], [
+			dnl Disable default action-if-not-found, which exits
+			dnl configure with an error.
+			:
+		])
 	])
 
 	AS_IF([test x"$tls_support" != x"no"], [
@@ -2057,8 +2067,16 @@ AC_COMPILE_IFELSE([
 ])
 
 AS_IF([test x"$GOBJC" = x"yes"], [
-	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
+	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
 
+	AC_ARG_ENABLE(werror,
+		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
+	AS_IF([test x"$enable_werror" != x"no"], [
+		OBJCFLAGS="$OBJCFLAGS -Werror"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2082,11 +2100,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-aliasing"
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(
 	    whether we need -Wno-unused-property-ivar due to Clang bugs)
 	AC_COMPILE_IFELSE([
@@ -2118,13 +2139,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-unused-property-ivar"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-unused-property-ivar"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
+	OBJCFLAGS="$OBJCFLAGS -Wcast-align -Werror"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2149,13 +2171,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS -Wcast-align"
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
+	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code -Werror"
 	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
@@ -2225,13 +2248,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		]])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wunreachable-code"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
+	OBJCFLAGS="$OBJCFLAGS -Wdocumentation -Werror"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2253,6 +2277,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wdocumentation"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
@@ -2260,7 +2285,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AS_IF([test x"$check_pedantic" = x"yes"], [
 		old_OBJCFLAGS="$OBJCFLAGS"
-		OBJCFLAGS="$OBJCFLAGS -pedantic"
+		OBJCFLAGS="$OBJCFLAGS -pedantic -Werror"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
 		AC_COMPILE_IFELSE([
 			AC_LANG_SOURCE([
@@ -2296,12 +2321,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS -pedantic"
 		], [
 			AC_MSG_RESULT(yes)
 			OBJCFLAGS="$old_OBJCFLAGS"
 		])
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-prototypes)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2311,12 +2339,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-prototypes"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-prototypes"
 	])
 
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -Werror"
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
 		AC_COMPILE_IFELSE([
 			AC_LANG_PROGRAM([
@@ -2327,9 +2358,10 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS"
 		], [
 			AC_MSG_RESULT(yes)
-			OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+			OBJCFLAGS="$old_OBJCFLAGS -Wno-gnu-imaginary-constant"
 		])
 	])
 ])

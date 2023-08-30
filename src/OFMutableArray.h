@@ -54,13 +54,20 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 + (instancetype)arrayWithCapacity: (size_t)capacity;
 
 /**
+ * @brief Initializes an OFMutableArray with no objects.
+ *
+ * @return An initialized OFMutableArray
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFMutableArray with enough memory to
  *	  hold the specified number of objects.
  *
  * @param capacity The initial capacity for the OFMutableArray
  * @return An initialized OFMutableArray
  */
-- (instancetype)initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Adds an object to the end of the array.

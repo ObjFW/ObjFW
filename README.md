@@ -393,7 +393,7 @@ other place, you are most likely using a mirror.
     reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in
     2017!
   * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
-    Mini to the project!
+    Mini to the project in 2022!
 
 
 <h1 id="commercial-use">Commercial use</h1>

@@ -17,8 +17,7 @@
 
 #include <string.h>
 
-#include <time.h>
-
+#import "OFStrPTime.h"
 #import "macros.h"
 
 const char *

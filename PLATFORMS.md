@@ -66,8 +66,6 @@ GNU/Hurd
   * Architectures: i686
   * Compilers: Clang 14.0.6
   * Runtimes: ObjFW
-  * Limitations: No support for UNIX sockets (`AF_UNIX` with `SOCK_DGRAM` is
-                 currently broken in Hurd)
 
 
 Haiku
@@ -82,7 +80,7 @@ Haiku
 HP-UX
 -----
 
-  * OS versions: 11i v1 (PA-RISC 2.0), 11i v3 (Itanium)
+  * OS versions: 11i v1, 11i v3
   * Architectures: Itanium, PA-RISC 2.0
   * Compilers: GCC 4.7.2, GCC 7.5.0
   * Runtimes: ObjFW
@@ -237,8 +235,7 @@ Wii U
 Windows
 -------
 
-  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
-                 Wine (x86 & x64)
+  * OS Versions: 98 SE, NT 4.0, XP, 7, 8, 8.1, 10, 11, Wine
   * Architectures: AArch64, AMD64, x86
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (AMD64 & x86),
                Clang 3.9.0 from msys2 (x86),

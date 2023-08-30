@@ -76,7 +76,8 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setString: string forKey: key];
+	[[_INIFile categoryForName: category] setStringValue: string
+						      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -87,8 +88,8 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setLongLong: longLong
-						   forKey: key];
+	[[_INIFile categoryForName: category] setLongLongValue: longLong
+							forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -99,7 +100,7 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setBool: bool_ forKey: key];
+	[[_INIFile categoryForName: category] setBoolValue: bool_ forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -110,7 +111,8 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setFloat: float_ forKey: key];
+	[[_INIFile categoryForName: category] setFloatValue: float_
+						     forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -121,7 +123,8 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setDouble: double_ forKey: key];
+	[[_INIFile categoryForName: category] setDoubleValue: double_
+						      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -133,8 +136,8 @@
 	OFString *category, *key;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	[[_INIFile categoryForName: category] setStringArray: array
-						      forKey: key];
+	[[_INIFile categoryForName: category] setArrayValue: array
+						     forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -146,8 +149,9 @@
 	OFString *category, *key, *ret;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	ret = [[_INIFile categoryForName: category] stringForKey: key
-						    defaultValue: defaultValue];
+	ret = [[_INIFile categoryForName: category]
+	    stringValueForKey: key
+		 defaultValue: defaultValue];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -163,8 +167,8 @@
 
 	[self of_getCategory: &category andKey: &key forPath: path];
 	ret = [[_INIFile categoryForName: category]
-	    longLongForKey: key
-	      defaultValue: defaultValue];
+	    longLongValueForKey: key
+		   defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -178,8 +182,9 @@
 	bool ret;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	ret = [[_INIFile categoryForName: category] boolForKey: key
-						  defaultValue: defaultValue];
+	ret = [[_INIFile categoryForName: category]
+	    boolValueForKey: key
+	       defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -193,8 +198,9 @@
 	float ret;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	ret = [[_INIFile categoryForName: category] floatForKey: key
-						   defaultValue: defaultValue];
+	ret = [[_INIFile categoryForName: category]
+	    floatValueForKey: key
+		defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -208,8 +214,9 @@
 	double ret;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	ret = [[_INIFile categoryForName: category] doubleForKey: key
-						    defaultValue: defaultValue];
+	ret = [[_INIFile categoryForName: category]
+	    doubleValueForKey: key
+		 defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -223,7 +230,7 @@
 	OFArray *ret;
 
 	[self of_getCategory: &category andKey: &key forPath: path];
-	ret = [[_INIFile categoryForName: category] stringArrayForKey: key];
+	ret = [[_INIFile categoryForName: category] arrayValueForKey: key];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);

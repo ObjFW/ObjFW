@@ -214,10 +214,12 @@ encodingForContentType(OFString *contentType)
 			charset = value;
 	}
 
-	@try {
-		ret = OFStringEncodingParseName(charset);
-	} @catch (OFInvalidArgumentException *e) {
-		ret = OFStringEncodingAutodetect;
+	ret = OFStringEncodingAutodetect;
+	if (charset != nil) {
+		@try {
+			ret = OFStringEncodingParseName(charset);
+		} @catch (OFInvalidArgumentException *e) {
+		}
 	}
 
 	return ret;

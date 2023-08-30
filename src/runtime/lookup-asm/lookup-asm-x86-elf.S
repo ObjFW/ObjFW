@@ -110,6 +110,6 @@ getEIP:
 	movl	(%esp), %eax
 	ret
 
-#if defined(OF_LINUX) || defined(OF_HURD)
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

@@ -24,15 +24,18 @@
 #include <sys/time.h>
 
 #import "OFDate.h"
+#import "OFConcreteDate.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFMessagePackExtension.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFStrFTime.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFTaggedPointerDate.h"
 #import "OFXMLAttribute.h"
 
 #import "OFInitializationFailedException.h"
@@ -46,47 +49,36 @@
 # define trunc(x) ((int64_t)(x))
 #endif
 
-@interface OFDate ()
-+ (instancetype)of_alloc;
+@interface OFPlaceholderDate: OFDate
 @end
 
-@interface OFDateSingleton: OFDate
+@interface OFConcreteDateSingleton: OFConcreteDate
 @end
-
-@interface OFDatePlaceholder: OFDateSingleton
-@end
-
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-@interface OFTaggedPointerDate: OFDateSingleton
-@end
-#endif
 
 static struct {
 	Class isa;
 } placeholder;
 
-static OFDateSingleton *zeroDate, *distantFuture, *distantPast;
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-static int dateTag;
-#endif
+static OFConcreteDateSingleton *zeroDate, *distantFuture, *distantPast;
 
 static void
 initZeroDate(void)
 {
-	zeroDate = [[OFDateSingleton alloc] initWithTimeIntervalSince1970: 0];
+	zeroDate = [[OFConcreteDateSingleton alloc]
+	    initWithTimeIntervalSince1970: 0];
 }
 
 static void
 initDistantFuture(void)
 {
-	distantFuture = [[OFDateSingleton alloc]
+	distantFuture = [[OFConcreteDateSingleton alloc]
 	    initWithTimeIntervalSince1970: 64060588800.0];
 }
 
 static void
 initDistantPast(void)
 {
-	distantPast = [[OFDateSingleton alloc]
+	distantPast = [[OFConcreteDateSingleton alloc]
 	    initWithTimeIntervalSince1970: -62167219200.0];
 }
 
@@ -259,28 +251,11 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	return seconds;
 }
 
-@implementation OFDateSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+@implementation OFConcreteDateSingleton
+OF_SINGLETON_METHODS
 @end
 
-@implementation OFDatePlaceholder
+@implementation OFPlaceholderDate
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
 # pragma clang diagnostic push
@@ -305,34 +280,24 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 	/* Almost all dates fall into this range. */
 	if (value & (UINT64_C(4) << 60)) {
-		id ret = objc_createTaggedPointer(dateTag,
-		    value & ~(UINT64_C(4) << 60));
+		id ret = [OFTaggedPointerDate
+		    dateWithUInt64TimeIntervalSince1970: value];
 
 		if (ret != nil)
 			return ret;
 	}
 #endif
 
-	return (id)[[OFDate of_alloc] initWithTimeIntervalSince1970: seconds];
+	return (id)[[OFConcreteDate alloc]
+	    initWithTimeIntervalSince1970: seconds];
 }
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+
+OF_SINGLETON_METHODS
 @end
 
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-@implementation OFTaggedPointerDate
-- (OFTimeInterval)timeIntervalSince1970
-{
-	uint64_t value = (uint64_t)object_getTaggedPointerValue(self);
-
-	value |= UINT64_C(4) << 60;
-
-	return OFFromBigEndianDouble(OFRawUInt64ToDouble(OFToBigEndian64(
-	    value)));
-}
-@end
-#endif
 
 @implementation OFDate
 + (void)initialize
@@ -344,7 +309,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	if (self != [OFDate class])
 		return;
 
-	placeholder.isa = [OFDatePlaceholder class];
+	object_setClass((id)&placeholder, [OFPlaceholderDate class]);
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
@@ -357,15 +322,6 @@ tmAndTzToTime(const struct tm *tm, short tz)
 		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
 #endif
-
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-	dateTag = objc_registerTaggedPointerClass([OFTaggedPointerDate class]);
-#endif
-}
-
-+ (instancetype)of_alloc
-{
-	return [super alloc];
 }
 
 + (instancetype)alloc
@@ -428,11 +384,18 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (instancetype)initWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
-	self = [super init];
+	if ([self isMemberOfClass: [OFDate class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 
-	_seconds = seconds;
+		abort();
+	}
 
-	return self;
+	return [super init];
 }
 
 - (instancetype)initWithTimeIntervalSinceNow: (OFTimeInterval)seconds
@@ -550,7 +513,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (OFString *)description
 {
-	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S%z"];
 }
 
 - (OFData *)messagePackRepresentation
@@ -696,11 +659,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
-#ifndef OF_WINDOWS
 	char *buffer;
-#else
-	wchar_t *buffer;
-#endif
 
 	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
@@ -730,18 +689,11 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}
@@ -756,11 +708,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	time_t seconds = (time_t)timeInterval;
 	struct tm tm;
 	size_t pageSize;
-#ifndef OF_WINDOWS
 	char *buffer;
-#else
-	wchar_t *buffer;
-#endif
 
 	if (seconds != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
@@ -790,18 +738,11 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-#ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
+		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
-#else
-		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    format.UTF16String, &tm) == 0)
-			@throw [OFOutOfRangeException exception];
-
-		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		OFFreeMemory(buffer);
 	}
@@ -833,7 +774,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 
 - (OFTimeInterval)timeIntervalSince1970
 {
-	return _seconds;
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (OFTimeInterval)timeIntervalSinceDate: (OFDate *)otherDate

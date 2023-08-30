@@ -220,6 +220,6 @@ symtab:
 module:
 	.quad 8, 32, 0, symtab
 
-#if defined(OF_LINUX) || defined(OF_HURD)
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

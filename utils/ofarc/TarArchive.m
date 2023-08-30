@@ -76,18 +76,21 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithPath: (OFString *)path
+			 stream: (OF_KINDOF(OFStream *))stream
+			   mode: (OFString *)mode
+		       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
+	return [[[self alloc] initWithPath: path
+				    stream: stream
+				      mode: mode
+				  encoding: encoding] autorelease];
 }
 
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
-			  mode: (OFString *)mode
-		      encoding: (OFStringEncoding)encoding
+- (instancetype)initWithPath: (OFString *)path
+		      stream: (OF_KINDOF(OFStream *))stream
+			mode: (OFString *)mode
+		    encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 

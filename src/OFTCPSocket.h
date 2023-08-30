@@ -84,8 +84,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool sendsKeepAlives;
 #endif
@@ -97,8 +97,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @warning This is not available on the Wii!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool canDelaySendingSegments;
 #endif

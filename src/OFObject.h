@@ -13,9 +13,6 @@
  * file.
  */
 
-#ifndef OBJFW_OF_OBJECT_H
-#define OBJFW_OF_OBJECT_H
-
 #include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
@@ -32,7 +29,7 @@
 
 #include "macros.h"
 
-#include "OFOnce.h"
+#import "OFOnce.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -106,7 +103,7 @@ typedef enum {
  *
  * @brief A range.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFRange {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
@@ -157,7 +154,7 @@ typedef double OFTimeInterval;
  *
  * @brief A point in 2D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFPoint {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
@@ -203,7 +200,7 @@ OFEqualPoints(OFPoint point1, OFPoint point2)
  *
  * @brief A size.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFSize {
 	/** The width of the size */
 	float width;
 	/** The height of the size */
@@ -249,7 +246,7 @@ OFEqualSizes(OFSize size1, OFSize size2)
  *
  * @brief A rectangle.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFRect {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
@@ -300,7 +297,7 @@ OFEqualRects(OFRect rect1, OFRect rect2)
  *
  * @brief A vector in 3D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFVector3D {
 	/** The x coordinate of the vector */
 	float x;
 	/** The y coordinate of the vector */
@@ -352,7 +349,7 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
  *
  * @brief A vector in 4D space.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFVector4D {
 	/** The x coordinate of the vector */
 	float x;
 	/** The y coordinate of the vector */
@@ -457,7 +454,6 @@ OFHashFinalize(unsigned long *_Nonnull hash)
 
 static const size_t OFNotFound = SIZE_MAX;
 
-#ifdef __OBJC__
 @class OFMethodSignature;
 @class OFString;
 @class OFThread;
@@ -680,39 +676,37 @@ static const size_t OFNotFound = SIZE_MAX;
  */
 - (bool)retainWeakReference;
 @end
-#endif
 
 /**
  * @class OFObject OFObject.h ObjFW/OFObject.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
-#ifdef __OBJC__
 OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @private
-# ifndef __clang_analyzer__
+#ifndef __clang_analyzer__
 	Class _isa;
-# else
+#else
 	Class _isa __attribute__((__unused__));
-# endif
+#endif
 }
 
-# ifdef OF_HAVE_CLASS_PROPERTIES
-#  ifndef __cplusplus
+#ifdef OF_HAVE_CLASS_PROPERTIES
+# ifndef __cplusplus
 @property (class, readonly, nonatomic) Class class;
-#  else
+# else
 @property (class, readonly, nonatomic, getter=class) Class class_;
-#  endif
+# endif
 @property (class, readonly, nonatomic) OFString *className;
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
-# endif
+#endif
 
-# ifndef __cplusplus
+#ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
-# else
+#else
 @property (readonly, nonatomic, getter=class) Class class_;
 #endif
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
@@ -1058,7 +1052,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object4
 	     afterDelay: (OFTimeInterval)delay;
 
-# ifdef OF_HAVE_THREADS
+#ifdef OF_HAVE_THREADS
 /**
  * @brief Performs the specified selector on the specified thread.
  *
@@ -1316,7 +1310,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
 	     afterDelay: (OFTimeInterval)delay;
-# endif
+#endif
 
 /**
  * @brief This method is called when @ref resolveClassMethod: or
@@ -1342,11 +1336,7 @@ OF_ROOT_CLASS
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
-#else
-typedef void OFObject;
-#endif
 
-#ifdef __OBJC__
 /**
  * @protocol OFCopying OFObject.h ObjFW/OFObject.h
  *
@@ -1398,7 +1388,6 @@ typedef void OFObject;
  */
 - (OFComparisonResult)compare: (id <OFComparing>)object;
 @end
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1512,10 +1501,5 @@ extern uint64_t OFRandom64(void);
 
 OF_ASSUME_NONNULL_END
 
-#include "OFBlock.h"
-
-#ifdef __OBJC__
-# import "OFObject+KeyValueCoding.h"
-#endif
-
-#endif
+#import "OFBlock.h"
+#import "OFObject+KeyValueCoding.h"

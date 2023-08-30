@@ -415,6 +415,30 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 									\
 	[super dealloc];	/* Get rid of a stupid warning */
 #endif
+#define OF_SINGLETON_METHODS			\
+	- (instancetype)autorelease		\
+	{					\
+		return self;			\
+	}					\
+						\
+	- (instancetype)retain			\
+	{					\
+		return self;			\
+	}					\
+						\
+	- (void)release				\
+	{					\
+	}					\
+						\
+	- (unsigned int)retainCount		\
+	{					\
+		return OFMaxRetainCount;	\
+	}					\
+						\
+	- (void)dealloc				\
+	{					\
+		OF_DEALLOC_UNSUPPORTED		\
+	}
 
 #define OF_CONSTRUCTOR(prio)					\
 	static void __attribute__((__constructor__(prio)))	\

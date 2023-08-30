@@ -40,10 +40,15 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	address = OFSocketAddressMakeUNIX(path);
+	if (path != nil)
+		address = OFSocketAddressMakeUNIX(path);
+	else {
+		address.family = OFSocketAddressFamilyUnknown;
+		address.length = 0;
+	}
 
-	if ((_socket = socket(address.sockaddr.un.sun_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+	if ((_socket = socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0)) ==
+	    OFInvalidSocketHandle)
 		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
@@ -56,17 +61,19 @@
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
-	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+	if (path != nil) {
+		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+		    address.length) != 0) {
+			int errNo = OFSocketErrNo();
 
-		closesocket(_socket);
-		_socket = OFInvalidSocketHandle;
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindUNIXSocketFailedException
-		    exceptionWithPath: path
-			       socket: self
-				errNo: errNo];
+			@throw [OFBindUNIXSocketFailedException
+			    exceptionWithPath: path
+				       socket: self
+					errNo: errNo];
+		}
 	}
 
 	return address;

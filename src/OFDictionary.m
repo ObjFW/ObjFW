@@ -20,9 +20,9 @@
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFConcreteDictionary.h"
 #import "OFData.h"
 #import "OFEnumerator.h"
-#import "OFMapTableDictionary.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -39,7 +39,7 @@ static struct {
 			       depth: (size_t)depth;
 @end
 
-@interface OFDictionaryPlaceholder: OFDictionary
+@interface OFPlaceholderDictionary: OFDictionary
 @end
 
 OF_DIRECT_MEMBERS
@@ -52,27 +52,33 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
-@implementation OFDictionaryPlaceholder
+@implementation OFPlaceholderDictionary
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFMapTableDictionary alloc] init];
+	return (id)[[OFConcreteDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFMapTableDictionary alloc]
+	return (id)[[OFConcreteDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObject: object
+	return (id)[[OFConcreteDictionary alloc] initWithObject: object
 							 forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys];
 }
 
@@ -80,7 +86,7 @@ OF_DIRECT_MEMBERS
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys
 							   count: count];
 }
@@ -91,7 +97,7 @@ OF_DIRECT_MEMBERS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[OFMapTableDictionary alloc] initWithKey: firstKey
+	ret = [[OFConcreteDictionary alloc] initWithKey: firstKey
 					      arguments: arguments];
 	va_end(arguments);
 
@@ -101,35 +107,22 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithKey: (id <OFCopying>)firstKey
 		  arguments: (va_list)arguments
 {
-	return (id)[[OFMapTableDictionary alloc] initWithKey: firstKey
+	return (id)[[OFConcreteDictionary alloc] initWithKey: firstKey
 						   arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFDictionary
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		placeholder.isa = [OFDictionaryPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderDictionary class]);
 }
 
 + (instancetype)alloc
@@ -187,7 +180,8 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFDictionary class]]) {
+	if ([self isMemberOfClass: [OFDictionary class]] ||
+	    [self isMemberOfClass: [OFMutableDictionary class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -203,19 +197,53 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	OF_INVALID_INIT_METHOD
+	void *pool = objc_autoreleasePoolPush();
+	id const *objects, *keys;
+	size_t count;
+
+	@try {
+		OFArray *objects_ = [dictionary.objectEnumerator allObjects];
+		OFArray *keys_ = [dictionary.keyEnumerator allObjects];
+
+		count = dictionary.count;
+
+		if (count != keys_.count || count != objects_.count)
+			@throw [OFInvalidArgumentException exception];
+
+		objects = objects_.objects;
+		keys = keys_.objects;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
+
+	return self;
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException exception];
+	@try {
+		if (key == nil || object == nil)
+			@throw [OFInvalidArgumentException exception];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-	return [self initWithKeysAndObjects: key, object, nil];
+	return [self initWithObjects: &object forKeys: &key count: 1];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects_ forKeys: (OFArray *)keys_
 {
+	void *pool = objc_autoreleasePoolPush();
 	id const *objects, *keys;
 	size_t count;
 
@@ -232,15 +260,28 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	return [self initWithObjects: objects forKeys: keys count: count];
+	self = [self initWithObjects: objects forKeys: keys count: count];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithKeysAndObjects: (id)firstKey, ...
 {
@@ -256,7 +297,56 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	id *objects = NULL, *keys = NULL;
+	va_list argumentsCopy;
+
+	if (firstKey == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		size_t i = 0;
+		id key, object;
+
+		if (count % 2 != 0)
+			@throw [OFInvalidArgumentException exception];
+
+		count /= 2;
+
+		objects = OFAllocMemory(count, sizeof(id));
+		keys = OFAllocMemory(count, sizeof(id));
+
+		while ((key = va_arg(arguments, id)) != nil &&
+		    (object = va_arg(arguments, id)) != nil) {
+			OFEnsure(i < count);
+
+			objects[i] = object;
+			keys[i] = key;
+
+			i++;
+		}
+	} @catch (id e) {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+	}
+
+	return self;
 }
 
 - (id)objectForKey: (id)key
@@ -431,6 +521,7 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -442,7 +533,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];

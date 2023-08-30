@@ -218,6 +218,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;

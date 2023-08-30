@@ -84,7 +84,7 @@ printAddresses(OFData *addresses, bool *firstAddress)
 	[OFStdOut writeFormat: @"[OFSystemInfo] CPU model: %@\n",
 	    [OFSystemInfo CPUModel]];
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports MMX: %d\n",
 	    [OFSystemInfo supportsMMX]];
 

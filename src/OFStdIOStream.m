@@ -32,7 +32,7 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
-# include "OFWin32ConsoleStdIOStream.h"
+# import "OFWin32ConsoleStdIOStream.h"
 #endif
 
 #import "OFInitializationFailedException.h"

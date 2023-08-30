@@ -488,11 +488,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	[OFApplication terminateWithStatus: _exitStatus];
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString *)path
+- (id <Archive>)openArchiveWithPath: (OFString *)path_
 			       type: (OFString *)type
 			       mode: (char)mode
 			   encoding: (OFStringEncoding)encoding
 {
+	/* To make clang-analyzer happy about assigning nil to path later. */
+	OFString *path = path_;
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;
 	id <Archive> archive = nil;
@@ -534,6 +536,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		default:
 			@throw [OFInvalidArgumentException exception];
 		}
+
+		path = nil;
 	} else {
 		@try {
 			file = [OFFile fileWithPath: path mode: fileModeString];
@@ -568,28 +572,33 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 	@try {
 		if ([type isEqual: @"gz"])
-			archive = [GZIPArchive archiveWithStream: file
-							    mode: modeString
-							encoding: encoding];
+			archive = [GZIPArchive archiveWithPath: path
+							stream: file
+							  mode: modeString
+						      encoding: encoding];
 		else if ([type isEqual: @"lha"])
-			archive = [LHAArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			 archive = [LHAArchive archiveWithPath: path
+							stream: file
+							  mode: modeString
+						      encoding: encoding];
 		else if ([type isEqual: @"tar"])
-			archive = [TarArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			archive = [TarArchive archiveWithPath: path
+						       stream: file
+							 mode: modeString
+						     encoding: encoding];
 		else if ([type isEqual: @"tgz"]) {
 			OFStream *GZIPStream = [OFGZIPStream
 			    streamWithStream: file
 					mode: modeString];
-			archive = [TarArchive archiveWithStream: GZIPStream
-							   mode: modeString
-						       encoding: encoding];
+			archive = [TarArchive archiveWithPath: path
+						       stream: GZIPStream
+							 mode: modeString
+						     encoding: encoding];
 		} else if ([type isEqual: @"zip"])
-			archive = [ZIPArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			archive = [ZIPArchive archiveWithPath: path
+						       stream: file
+							 mode: modeString
+						     encoding: encoding];
 		else {
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",
@@ -640,11 +649,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	return archive;
 
 error:
-	if (mode == 'c')
+	if (mode == 'c' && path != nil)
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 
 	[OFApplication terminateWithStatus: 1];
-	return nil;
+	abort();
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName

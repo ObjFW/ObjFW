@@ -56,33 +56,15 @@ initWhitespaceCharacterSet(void)
 	return (id)[[OFRangeCharacterSet alloc] initWithRange: range];
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet class])
-		return;
-
-	placeholder.isa = [OFPlaceholderCharacterSet class];
+	if (self == [OFCharacterSet class])
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderCharacterSet class]);
 }
 
 + (instancetype)alloc
@@ -151,25 +133,6 @@ initWhitespaceCharacterSet(void)
 @end
 
 @implementation OFWhitespaceCharacterSet
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
 - (bool)characterIsMember: (OFUnichar)character
 {
 	switch (character) {
@@ -196,4 +159,6 @@ initWhitespaceCharacterSet(void)
 		return false;
 	}
 }
+
+OF_SINGLETON_METHODS
 @end

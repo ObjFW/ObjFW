@@ -52,8 +52,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		_lowercaseTableSize           = SIZE_MAX;
 		_titlecaseTableSize           = SIZE_MAX;
 		_caseFoldingTableSize         = SIZE_MAX;
-		_decompositionTableSize       = SIZE_MAX;
-		_decompositionCompatTableSize = SIZE_MAX;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -129,40 +127,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		_titlecaseTable[codePoint] = (OFUnichar)[[components
 		    objectAtIndex: 14] unsignedLongLongValueWithBase: 16];
 
-		if ([[components objectAtIndex: 5] length] > 0) {
-			OFArray *decomposed = [[components objectAtIndex: 5]
-			    componentsSeparatedByString: @" "];
-			bool compat = false;
-			OFMutableString *string;
-
-			if ([decomposed.firstObject hasPrefix: @"<"]) {
-				decomposed = [decomposed objectsInRange:
-				    OFMakeRange(1, decomposed.count - 1)];
-				compat = true;
-			}
-
-			string = [OFMutableString string];
-
-			for (OFString *character in decomposed) {
-				OFUnichar unichar = (OFUnichar)[character
-				    unsignedLongLongValueWithBase: 16];
-
-				[string appendCharacters: &unichar
-						  length: 1];
-			}
-
-			[string makeImmutable];
-
-			if (!compat)
-				_decompositionTable[codePoint] = [string copy];
-			_decompositionCompatTable[codePoint] = [string copy];
-		}
-
 		objc_autoreleasePoolPop(pool2);
 	}
-
-	[self applyDecompositionRecursivelyForTable: _decompositionTable];
-	[self applyDecompositionRecursivelyForTable: _decompositionCompatTable];
 
 	[OFStdOut writeLine: @" done"];
 
@@ -216,58 +182,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[self writeFiles];
 }
 
-- (void)applyDecompositionRecursivelyForTable: (OFString *[0x110000])table
-{
-	bool done;
-
-	do {
-		done = true;
-
-		for (OFUnichar i = 0; i < 0x110000; i++) {
-			void *pool;
-			const OFUnichar *characters;
-			size_t length;
-			OFMutableString *replacement;
-			bool changed = false;
-
-			if (table[i] == nil)
-				continue;
-
-			pool = objc_autoreleasePoolPush();
-			characters = table[i].characters;
-			length = table[i].length;
-			replacement = [OFMutableString string];
-
-			for (size_t j = 0; j < length; j++) {
-				if (characters[j] > 0x10FFFF)
-					@throw [OFOutOfRangeException
-					    exception];
-
-				if (table[characters[j]] == nil)
-					[replacement
-					    appendCharacters: &characters[j]
-						      length: 1];
-				else {
-					[replacement
-					    appendString: table[characters[j]]];
-					changed = true;
-				}
-			}
-
-			[replacement makeImmutable];
-
-			if (changed) {
-				[table[i] release];
-				table[i] = [replacement copy];
-
-				done = false;
-			}
-
-			objc_autoreleasePoolPop(pool);
-		}
-	} while (!done);
-}
-
 - (void)writeFiles
 {
 	OFIRI *IRI;
@@ -296,7 +210,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
 	    @"static const OFUnichar emptyPage[0x100] = { 0 };\n"
-	    @"static const char *emptyDecompositionPage[0x100] = { NULL };\n"
 	    @"\n"];
 
 	/* Write uppercasePage%u */
@@ -457,125 +370,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 	}
 
-	/* Write decompositionPage%u */
-	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
-		bool isEmpty = true;
-
-		for (OFUnichar j = i; j < i + 0x100; j++) {
-			if (_decompositionTable[j] != nil) {
-				isEmpty = false;
-				_decompositionTableSize = i >> 8;
-				_decompositionTableUsed[
-				    _decompositionTableSize] = 1;
-				break;
-			}
-		}
-
-		if (!isEmpty) {
-			void *pool2 = objc_autoreleasePoolPush();
-
-			[file writeFormat: @"static const char *const "
-					   @"decompositionPage%u[0x100] = {\n",
-					   i >> 8];
-
-			for (OFUnichar j = i; j < i + 0x100; j++) {
-				if ((j - i) % 2 == 0)
-					[file writeString: @"\t"];
-				else
-					[file writeString: @" "];
-
-				if (_decompositionTable[j] != nil) {
-					const char *UTF8String =
-					    _decompositionTable[j].UTF8String;
-					size_t length = _decompositionTable[j]
-					    .UTF8StringLength;
-
-					[file writeString: @"\""];
-
-					for (size_t k = 0; k < length; k++)
-						[file writeFormat:
-						    @"\\x%02X",
-						    (uint8_t)UTF8String[k]];
-
-					[file writeString: @"\","];
-				} else
-					[file writeString: @"NULL,"];
-
-				if ((j - i) % 2 == 1)
-					[file writeString: @"\n"];
-			}
-
-			[file writeString: @"};\n\n"];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-	}
-
-	/* Write decompCompatPage%u if it does NOT match decompositionPage%u */
-	for (OFUnichar i = 0; i < 0x110000; i += 0x100) {
-		bool isEmpty = true;
-
-		for (OFUnichar j = i; j < i + 0x100; j++) {
-			if (_decompositionCompatTable[j] != 0) {
-				/*
-				 * We bulk-compare pointers via memcmp here.
-				 * This is safe, as we always set the same
-				 * pointer in both tables if both are the same.
-				 */
-				isEmpty = !memcmp(_decompositionTable + i,
-				    _decompositionCompatTable + i,
-				    256 * sizeof(const char *));
-				_decompositionCompatTableSize = i >> 8;
-				_decompositionCompatTableUsed[
-				    _decompositionCompatTableSize] =
-				    (isEmpty ? 2 : 1);
-
-				break;
-			}
-		}
-
-		if (!isEmpty) {
-			void *pool2 = objc_autoreleasePoolPush();
-
-			[file writeFormat: @"static const char *const "
-					   @"decompCompatPage%u[0x100] = {\n",
-					   i >> 8];
-
-			for (OFUnichar j = i; j < i + 0x100; j++) {
-				if ((j - i) % 2 == 0)
-					[file writeString: @"\t"];
-				else
-					[file writeString: @" "];
-
-				if (_decompositionCompatTable[j] != nil) {
-					const char *UTF8String =
-					    _decompositionCompatTable[j]
-					    .UTF8String;
-					size_t length =
-					    _decompositionCompatTable[j]
-					    .UTF8StringLength;
-
-					[file writeString: @"\""];
-
-					for (size_t k = 0; k < length; k++)
-						[file writeFormat:
-						    @"\\x%02X",
-						    (uint8_t)UTF8String[k]];
-
-					[file writeString: @"\","];
-				} else
-					[file writeString: @"NULL,"];
-
-				if ((j - i) % 2 == 1)
-					[file writeString: @"\n"];
-			}
-
-			[file writeString: @"};\n\n"];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-	}
-
 	/*
 	 * Those are currently set to the last index.
 	 * But from now on, we need the size.
@@ -584,8 +378,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	_lowercaseTableSize++;
 	_titlecaseTableSize++;
 	_caseFoldingTableSize++;
-	_decompositionTableSize++;
-	_decompositionCompatTableSize++;
 
 	/* Write OFUnicodeUppercaseTable */
 	[file writeFormat: @"const OFUnichar *const "
@@ -675,51 +467,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeDecompositionTable */
-	[file writeFormat: @"const char *const "
-			   @"*OFUnicodeDecompositionTable[0x%X] = {\n\t",
-			   _decompositionTableSize];
-
-	for (OFUnichar i = 0; i < _decompositionTableSize; i++) {
-		if (_decompositionTableUsed[i])
-			[file writeFormat: @"decompositionPage%u", i];
-		else
-			[file writeString: @"emptyDecompositionPage"];
-
-		if (i + 1 < _decompositionTableSize) {
-			if ((i + 1) % 3 == 0)
-				[file writeString: @",\n\t"];
-			else
-				[file writeString: @", "];
-		}
-	}
-
-	[file writeString: @"\n};\n\n"];
-
-	/* Write OFUnicodeDecompositionCompatTable */
-	[file writeFormat: @"const char *const "
-			   @"*OFUnicodeDecompositionCompatTable[0x%X] = {"
-			   @"\n\t",
-			   _decompositionCompatTableSize];
-
-	for (OFUnichar i = 0; i < _decompositionCompatTableSize; i++) {
-		if (_decompositionCompatTableUsed[i] == 1)
-			[file writeFormat: @"decompCompatPage%u", i];
-		else if (_decompositionCompatTableUsed[i] == 2)
-			[file writeFormat: @"decompositionPage%u", i];
-		else
-			[file writeString: @"emptyDecompositionPage"];
-
-		if (i + 1 < _decompositionCompatTableSize) {
-			if ((i + 1) % 3 == 0)
-				[file writeString: @",\n\t"];
-			else
-				[file writeString: @", "];
-		}
-	}
-
-	[file writeString: @"\n};\n"];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -736,12 +483,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#define OFUnicodeUppercaseTableSize 0x%X\n"
 	    @"#define OFUnicodeLowercaseTableSize 0x%X\n"
 	    @"#define OFUnicodeTitlecaseTableSize 0x%X\n"
-	    @"#define OFUnicodeCaseFoldingTableSize 0x%X\n"
-	    @"#define OFUnicodeDecompositionTableSize 0x%X\n"
-	    @"#define OFUnicodeDecompositionCompatTableSize 0x%X\n\n",
+	    @"#define OFUnicodeCaseFoldingTableSize 0x%X\n\n",
 	    _uppercaseTableSize, _lowercaseTableSize, _titlecaseTableSize,
-	    _caseFoldingTableSize, _decompositionTableSize,
-	    _decompositionCompatTableSize];
+	    _caseFoldingTableSize];
 
 	[file writeString:
 	    @"#ifdef __cplusplus\n"
@@ -755,12 +499,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"    OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
 	    @"    OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];\n"
-	    @"extern const char *const _Nullable *const _Nonnull\n"
-	    @"    OFUnicodeDecompositionTable["
-	    @"OFUnicodeDecompositionTableSize];\n"
-	    @"extern const char *const _Nullable *const _Nonnull\n"
-	    @"    OFUnicodeDecompositionCompatTable["
-	    @"OFUnicodeDecompositionCompatTableSize];\n"
 	    @"#ifdef __cplusplus\n"
 	    @"}\n"
 	    @"#endif\n"];

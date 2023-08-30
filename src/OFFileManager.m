@@ -332,6 +332,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 - (void)createDirectoryAtIRI: (OFIRI *)IRI
 {
+	void *pool = objc_autoreleasePoolPush();
 	OFIRIHandler *IRIHandler;
 
 	if (IRI == nil)
@@ -341,6 +342,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	[IRIHandler createDirectoryAtIRI: IRI];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)createDirectoryAtIRI: (OFIRI *)IRI createParents: (bool)createParents
@@ -357,6 +360,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	if (!createParents) {
 		[self createDirectoryAtIRI: IRI];
+
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -367,11 +372,16 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	 * create any of the parent directories will fail, while creating the
 	 * directory itself will work.
 	 */
-	if ([self directoryExistsAtIRI: IRI])
+
+	if ([self directoryExistsAtIRI: IRI]) {
+		objc_autoreleasePoolPop(pool);
 		return;
+	}
 
 	@try {
 		[self createDirectoryAtIRI: IRI];
+
+		objc_autoreleasePoolPop(pool);
 		return;
 	} @catch (OFCreateDirectoryFailedException *e) {
 		/*
@@ -996,24 +1006,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 @end
 
 @implementation OFDefaultFileManager
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFDictionary (FileAttributes)

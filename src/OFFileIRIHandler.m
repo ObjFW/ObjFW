@@ -844,13 +844,13 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	struct timeval times[2] = {
 		{
 			.tv_sec = (time_t)lastAccessTime,
-			.tv_usec =
-			    (int)((lastAccessTime - times[0].tv_sec) * 1000000)
+			.tv_usec = (int)((lastAccessTime -
+			    (time_t)lastAccessTime) * 1000000)
 		},
 		{
 			.tv_sec = (time_t)modificationTime,
-			.tv_usec = (int)((modificationTime - times[1].tv_sec) *
-			    1000000)
+			.tv_usec = (int)((modificationTime -
+			    (time_t)modificationTime) * 1000000)
 		},
 	};
 
@@ -1025,12 +1025,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (![IRI.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (statWrapper(IRI.fileSystemRepresentation, &s) != 0) {
-		objc_autoreleasePoolPop(pool);
-		return false;
-	}
-
-	ret = S_ISREG(s.st_mode);
+	ret = (statWrapper(IRI.fileSystemRepresentation, &s) == 0);
 
 	objc_autoreleasePoolPop(pool);
 

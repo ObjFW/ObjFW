@@ -17,19 +17,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-
 /**
  * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
  *
  * @brief A class for storing and manipulating arbitrary data in an array.
  */
 @interface OFMutableData: OFData
-{
-	size_t _capacity;
-	OF_RESERVE_IVARS(OFMutableData, 4)
-}
-
 /**
  * @brief All items of the OFMutableData as a C array.
  *
@@ -54,22 +47,6 @@ OF_ASSUME_NONNULL_BEGIN
     OF_RETURNS_INNER_POINTER;
 
 /**
- * @brief Creates a new OFMutableData with an item size of 1.
- *
- * @return A new autoreleased OFMutableData
- */
-+ (instancetype)data;
-
-/**
- * @brief Creates a new OFMutableData whose items all have the same specified
- *	  size.
- *
- * @param itemSize The size of a single element in the OFMutableData
- * @return A new autoreleased OFMutableData
- */
-+ (instancetype)dataWithItemSize: (size_t)itemSize;
-
-/**
  * @brief Creates a new OFMutableData with enough memory to hold the specified
  *	  number of items which all have an item size of 1.
  *
@@ -87,22 +64,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFMutableData
  */
 + (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity;
-
-/**
- * @brief Initializes an already allocated OFMutableData with an item size of 1.
- *
- * @return An initialized OFMutableData
- */
-- (instancetype)init;
-
-/**
- * @brief Initializes an already allocated OFMutableData whose items all have
- *	  the same size.
- *
- * @param itemSize The size of a single element in the OFMutableData
- * @return An initialized OFMutableData
- */
-- (instancetype)initWithItemSize: (size_t)itemSize;
 
 /**
  * @brief Initializes an already allocated OFMutableData with enough memory to
