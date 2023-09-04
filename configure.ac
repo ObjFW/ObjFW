@@ -504,6 +504,7 @@ AC_MSG_RESULT($objc_runtime)
 case "$objc_runtime" in
 "ObjFW runtime")
 	AC_DEFINE(OF_OBJFW_RUNTIME, 1, [Whether we use the ObjFW runtime])
+	AC_SUBST(USE_SRCS_TAGGED_POINTER, '${SRCS_TAGGED_POINTER}')
 
 	AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
 

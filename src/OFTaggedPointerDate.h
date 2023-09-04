@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+#if UINTPTR_MAX == UINT64_MAX
 @interface OFTaggedPointerDate: OFDate
 + (OFTaggedPointerDate *)dateWithUInt64TimeIntervalSince1970: (uint64_t)value;
 @end

@@ -19,7 +19,6 @@
 
 #import "OFInvalidFormatException.h"
 
-#ifdef OF_OBJFW_RUNTIME
 enum Tag {
 	tagChar,
 	tagShort,
@@ -142,7 +141,7 @@ static int numberTag;
 	}
 }
 
-# define RETURN_VALUE						\
+#define RETURN_VALUE						\
 	uintptr_t value = object_getTaggedPointerValue(self);	\
 								\
 	switch (value & tagMask) {				\
@@ -193,8 +192,7 @@ static int numberTag;
 {
 	RETURN_VALUE
 }
-# undef RETURN_VALUE
+#undef RETURN_VALUE
 
 OF_SINGLETON_METHODS
 @end
-#endif

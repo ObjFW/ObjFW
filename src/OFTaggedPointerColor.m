@@ -17,7 +17,6 @@
 
 #import "OFTaggedPointerColor.h"
 
-#ifdef OF_OBJFW_RUNTIME
 static int colorTag;
 
 @implementation OFTaggedPointerColor
@@ -52,4 +51,3 @@ static int colorTag;
 
 OF_SINGLETON_METHODS
 @end
-#endif

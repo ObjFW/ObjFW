@@ -17,12 +17,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef OF_OBJFW_RUNTIME
 @interface OFTaggedPointerColor: OFColor
 + (OFTaggedPointerColor *)colorWithRed: (uint8_t)red
 				 green: (uint8_t)green
 				  blue: (uint8_t)blue;
 @end
-#endif
 
 OF_ASSUME_NONNULL_END

@@ -17,11 +17,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef OF_OBJFW_RUNTIME
-# define OFTaggedPointerNumberTagBits 4
+#define OFTaggedPointerNumberTagBits 4
 
 @interface OFTaggedPointerNumber: OFNumber
 @end
-#endif
 
 OF_ASSUME_NONNULL_END
