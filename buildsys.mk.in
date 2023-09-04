@@ -73,6 +73,7 @@ DEP_CFLAGS = @DEP_CFLAGS@
 DEP_CXXFLAGS = @DEP_CXXFLAGS@
 DEP_OBJCFLAGS = @DEP_OBJCFLAGS@
 DEP_OBJCXXFLAGS = @DEP_OBJCXXFLAGS@
+MAKE_S = @MAKE_S@
 LN_S = @LN_S@
 MKDIR_P = mkdir -p
 INSTALL = @INSTALL@
@@ -123,18 +124,18 @@ DEPS = ${OBJS:.o=.dep}			\
 
 MO_FILES = ${LOCALES:.po=.mo}
 
-.SILENT:
+@SILENT@
 .SUFFIXES:
 .SUFFIXES: .amigalib.o .beam .c .cc .class .cxx .d .erl .lib.o .java .mo .m .mm .o .plugin.o .po .py .pyc .rc .S .xpm
 .PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
-	${MAKE} -s pre-all
-	${MAKE} -s subdirs
-	${MAKE} -s depend
-	${MAKE} -s ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${STATIC_AMIGA_LIB} ${STATIC_AMIGA_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
-	${MAKE} -s subdirs-after
-	${MAKE} -s post-all
+	${MAKE_S} pre-all
+	${MAKE_S} subdirs
+	${MAKE_S} depend
+	${MAKE_S} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${STATIC_AMIGA_LIB} ${STATIC_AMIGA_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
+	${MAKE_S} subdirs-after
+	${MAKE_S} post-all
 
 pre-all post-all:
 
@@ -144,7 +145,7 @@ subdirs-after: ${SUBDIRS_AFTER}
 ${SUBDIRS} ${SUBDIRS_AFTER}:
 	for i in $@; do \
 		${DIR_ENTER}; \
-		${MAKE} -s || exit $$?; \
+		${MAKE_S} || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -194,7 +195,7 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	out="$@"; \
-	if rm -fr $$out && ${MKDIR_P} $$out/Versions/${LIB_MAJOR} && ${LN_S} ${LIB_MAJOR} $@/Versions/Current && ${MAKE} -s COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Versions/${LIB_MAJOR}/Headers copy-headers-into-framework && ${LN_S} Versions/Current/Headers $@/Headers && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Versions/${LIB_MAJOR}/Modules && ${INSTALL} -m 644 module.modulemap $$out/Versions/${LIB_MAJOR}/Modules/module.modulemap && ${LN_S} Versions/Current/Modules $@/Modules; fi && ${LD} -o $$out/Versions/${LIB_MAJOR}/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} $$out/Versions/${LIB_MAJOR}/$${out%.framework} && ${LN_S} Versions/Current/$${out%.framework} $@/$${out%.framework}; then \
+	if rm -fr $$out && ${MKDIR_P} $$out/Versions/${LIB_MAJOR} && ${LN_S} ${LIB_MAJOR} $@/Versions/Current && ${MAKE_S} COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Versions/${LIB_MAJOR}/Headers copy-headers-into-framework && ${LN_S} Versions/Current/Headers $@/Headers && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Versions/${LIB_MAJOR}/Modules && ${INSTALL} -m 644 module.modulemap $$out/Versions/${LIB_MAJOR}/Modules/module.modulemap && ${LN_S} Versions/Current/Modules $@/Modules; fi && ${LD} -o $$out/Versions/${LIB_MAJOR}/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} $$out/Versions/${LIB_MAJOR}/$${out%.framework} && ${LN_S} Versions/Current/$${out%.framework} $@/$${out%.framework}; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; false; \
@@ -205,7 +206,7 @@ copy-headers-into-framework:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		cd $$i || exit 1; \
-		${MAKE} -s copy-headers-into-framework || exit $$?; \
+		${MAKE_S} copy-headers-into-framework || exit $$?; \
 		cd .. || exit 1; \
 	done
 
@@ -654,7 +655,7 @@ install: all install-extra
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} -s install || exit $$?; \
+		${MAKE_S} install || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -767,7 +768,7 @@ uninstall:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} -s uninstall || exit $$?; \
+		${MAKE_S} uninstall || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -876,7 +877,7 @@ uninstall:
 		fi \
 	done
 
-	${MAKE} -s uninstall-extra
+	${MAKE_S} uninstall-extra
 
 uninstall-extra:
 
@@ -884,7 +885,7 @@ clean:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} -s clean || exit $$?; \
+		${MAKE_S} clean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -905,7 +906,7 @@ distclean: clean
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} -s distclean || exit $$?; \
+		${MAKE_S} distclean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -925,7 +926,7 @@ print-hierarchy:
 		test x"$$i" = x"" && continue; \
 		echo ${PRINT_HIERARCHY_PREFIX}$$i; \
 		cd $$i || exit $$?; \
-		${MAKE} -s PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
+		${MAKE_S} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
 		cd .. || exit $$?; \
 	done
 

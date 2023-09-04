@@ -29,6 +29,10 @@ AC_DEFUN([BUILDSYS_INIT], [
 	AC_ARG_ENABLE(rpath,
 		AS_HELP_STRING([--disable-rpath], [do not use rpath]))
 
+	AC_ARG_ENABLE(silent-rules,
+		AS_HELP_STRING([--disable-silent-rules],
+			[print executed commands during build]))
+
 	case "$build_os" in
 	darwin*)
 		case "$host_os" in
@@ -126,6 +130,13 @@ AC_DEFUN([BUILDSYS_INIT], [
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT AF 6 2>/dev/null)")
 			fi
+		])
+
+		AS_IF([test x"$enable_silent_rules" != x"no"], [
+			AC_SUBST(SILENT, '.SILENT:')
+			AC_SUBST(MAKE_S, '${MAKE} -s')
+		], [
+			AC_SUBST(MAKE_S, '${MAKE}')
 		])
 	])
 ])
