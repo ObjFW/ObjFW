@@ -134,9 +134,7 @@ AC_DEFUN([BUILDSYS_INIT], [
 
 		AS_IF([test x"$enable_silent_rules" != x"no"], [
 			AC_SUBST(SILENT, '.SILENT:')
-			AC_SUBST(MAKE_S, '${MAKE} -s')
-		], [
-			AC_SUBST(MAKE_S, '${MAKE}')
+			AC_SUBST(MAKEFLAGS_SILENT, '-s')
 		])
 	])
 ])
