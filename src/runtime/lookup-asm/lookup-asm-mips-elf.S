@@ -154,6 +154,6 @@ nilMethod:
 	move	$v0, $zero
 	jr	$ra
 
-#if defined(OF_LINUX) || defined(OF_HURD)
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

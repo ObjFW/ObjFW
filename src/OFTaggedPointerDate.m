@@ -15,7 +15,7 @@
 
 #import "OFTaggedPointerDate.h"
 
-#if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
+#if UINTPTR_MAX == UINT64_MAX
 static int dateTag;
 
 @implementation OFTaggedPointerDate

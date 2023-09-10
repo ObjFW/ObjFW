@@ -19,6 +19,7 @@
 
 #import "OFOpenSSLTLSStream.h"
 #import "OFData.h"
+#import "OFStream+Private.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -202,6 +203,32 @@ static SSL_CTX *clientContext;
 		return true;
 
 	return super.hasDataInReadBuffer;
+}
+
+- (bool)of_isWaitingForDelimiter
+{
+	/* FIXME: There should be a non-private API for this. */
+
+	/*
+	 * If we still have pending data in the SSL connection, we haven't
+	 * processed it yet to see if our delimiter is in there. So return
+	 * false here, as that will signal the stream as ready for reading,
+	 * which in turn will cause a read and checking for the delimiter.
+	 */
+	if (SSL_pending(_SSL))
+		return false;
+
+	/*
+	 * If we still have data in our read BIO, it hasn't been processed by
+	 * OpenSSL yet. As we have no idea what's in there, return false to
+	 * signal the stream as ready for reading, which in turn will cause a
+	 * read to check for the delimiter and in turn make OpenSSL process the
+	 * data in the read BIO.
+	 */
+	if (BIO_ctrl_pending(_readBIO) > 0)
+		return false;
+
+	return super.of_waitingForDelimiter;
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host

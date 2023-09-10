@@ -360,7 +360,13 @@
 	} while(0)
 #else
 @class OFConstantString;
+# ifdef __cplusplus
+extern "C" {
+# endif
 extern void OFLog(OFConstantString *_Nonnull, ...);
+# ifdef __cplusplus
+}
+# endif
 # define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\

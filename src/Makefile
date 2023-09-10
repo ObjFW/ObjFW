@@ -9,6 +9,7 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
+LIB_PATCH = ${OBJFW_LIB_PATCH}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
@@ -206,14 +207,12 @@ SRCS += OFASPrintF.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\
-	OFTaggedPointerColor.m		\
-	OFTaggedPointerDate.m		\
-	OFTaggedPointerNumber.m		\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
-	${UNICODE_M}
+	${UNICODE_M}			\
+	${USE_SRCS_TAGGED_POINTERS}
 SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
@@ -225,6 +224,9 @@ SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
+		       OFTaggedPointerDate.m		\
+		       OFTaggedPointerNumber.m
 SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 

@@ -4,6 +4,16 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0 -> ObjFW 1.0.1, 2023-09-10
+ * Hanging connections with OFTLSStream have been fixed when using OpenSSL
+ * The same fix as for OpenSSL has been applied to GnuTLS and SecureTransport
+   out of caution, even though there have been no hangs in practice
+ * The build system has been updated to fix building .frameworks among other
+   minor changes
+ * Some headers have been changed to fix compatibility with ObjC++
+ * Warnings about empty .o files on x86_64 Darwin have been fixed
+ * The OFDate documentation has been improved to list supported formats
+
 ObjFW 0.90.2 -> ObjFW 1.0, 2023-08-29
  + First stable release with stable API and ABI
  * Too many changes to list, as it has been almost 6 years since the last

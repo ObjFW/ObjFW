@@ -29,6 +29,10 @@ AC_DEFUN([BUILDSYS_INIT], [
 	AC_ARG_ENABLE(rpath,
 		AS_HELP_STRING([--disable-rpath], [do not use rpath]))
 
+	AC_ARG_ENABLE(silent-rules,
+		AS_HELP_STRING([--disable-silent-rules],
+			[print executed commands during build]))
+
 	case "$build_os" in
 	darwin*)
 		case "$host_os" in
@@ -126,6 +130,11 @@ AC_DEFUN([BUILDSYS_INIT], [
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT AF 6 2>/dev/null)")
 			fi
+		])
+
+		AS_IF([test x"$enable_silent_rules" != x"no"], [
+			AC_SUBST(SILENT, '.SILENT:')
+			AC_SUBST(MAKEFLAGS_SILENT, '-s')
 		])
 	])
 ])
@@ -240,8 +249,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
-		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
-		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH}'
 		CLEAN_LIB=''
 		;;
 	hppa*-*-hpux*)
@@ -284,8 +293,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		AS_IF([test x"$enable_rpath" != x"no"], [
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 		])
-		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
-		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH}'
 		CLEAN_LIB=''
 		;;
 	esac
