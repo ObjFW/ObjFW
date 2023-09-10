@@ -212,7 +212,7 @@ SRCS += OFASPrintF.m			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
 	${UNICODE_M}			\
-	${USE_SRCS_TAGGED_POINTER}
+	${USE_SRCS_TAGGED_POINTERS}
 SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
@@ -224,9 +224,9 @@ SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
-SRCS_TAGGED_POINTER = OFTaggedPointerColor.m		\
-		      OFTaggedPointerDate.m		\
-		      OFTaggedPointerNumber.m
+SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
+		       OFTaggedPointerDate.m		\
+		       OFTaggedPointerNumber.m
 SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 
