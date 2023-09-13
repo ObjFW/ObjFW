@@ -38,6 +38,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		_itemSize = itemSize;
+		_freeWhenDone = true;
 	} @catch (id e) {
 		[self release];
 		@throw e;
