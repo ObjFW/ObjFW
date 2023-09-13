@@ -310,11 +310,12 @@ OF_SINGLETON_METHODS
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		OFFreeMemory(buffer);
 		OFFreeMemory(items);
 		[self release];
 
 		@throw e;
+	} @finally {
+		OFFreeMemory(buffer);
 	}
 
 	@try {
