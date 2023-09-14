@@ -4,11 +4,11 @@ Legend:
 
 This file only contains the most significant changes.
 
-ObjFW 1.0.2 -> ObjFW 1.0.3, 2023-09-16
+ObjFW 1.0.2 -> ObjFW 1.0.3, 2023-09-14
  * Fixes -[OFConcreteData initWithItemSize:] not setting freeWhenDone to true,
    which resulted in a memory leak
  * Fixes -[OFData initWithContentsOfIRI:] freeing the buffer in @catch instead
- of @finally, which resulted in a memory leak
+   of @finally, which resulted in a memory leak
 
 ObjFW 1.0.1 -> ObjFW 1.0.2, 2023-09-11
  * The build system has been updated to fix building .frameworks and to build
