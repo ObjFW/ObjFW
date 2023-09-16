@@ -11,10 +11,11 @@ other place, you are most likely using a mirror.
 <h1 id="table-of-contents">Table of Contents</h1>
 
  * [What is ObjFW?](#what)
+ * [Installation](#installation)
  * [License](#license)
  * [Releases](#releases)
  * [Cloning the repository](#cloning)
- * [Installation](#installation)
+ * [Building from source](#building-from-source)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
      * [Using the macOS or iOS framework in Xcode](#framework-in-xcode)
@@ -75,6 +76,25 @@ other place, you are most likely using a mirror.
   than both GNU's and Apple's runtime.
 
 
+<h1 id="installation">Installation</h1>
+
+  ObjFW packages are available for various operating systems and can be
+  installed as following:
+
+  Operating System  | Command
+  ------------------|---------------------------------------------
+  Alpine Linux Edge | `doas apk add objfw`
+  CRUX Linux        | `prt-get depinst objfw`
+  Fedora            | `sudo dnf install objfw`
+  macOS (Homebrew)  | `brew install objfw`
+  macOS (pkgsrc)    | `cd $PKGSRCDIR/devel/objfw && make install`
+  NetBSD            | `cd /usr/pkgsrc/devel/objfw && make install`
+  OpenBSD           | `doas pkg_add objfw`
+
+  If your operating system is not listed, you can
+  <a href="#building-from-source">build ObjFW from source</a>.  
+
+
 <h1 id="license">License</h1>
 
   ObjFW is released under three licenses:
@@ -93,7 +113,7 @@ other place, you are most likely using a mirror.
 
 <h1 id="releases">Releases</h1>
 
-  Releases of ObjFW, as well as changelogs and the accompanying documentation
+  Releases of ObjFW, as well as change logs and the accompanying documentation,
   can be found [here](https://objfw.nil.im/wiki?name=Releases).
 
 
@@ -141,9 +161,9 @@ other place, you are most likely using a mirror.
   Git commits are not signed, so if you want to check the signature of an
   individual commit, branch head or tag, please use Fossil.
 
-<h1 id="installation">Installation</h1>
+<h1 id="building-from-source">Building from source</h1>
 
-  To install ObjFW, just run the following commands:
+  To build ObjFW from source and install it, just run the following commands:
 
     $ ./configure
     $ make
@@ -164,7 +184,7 @@ other place, you are most likely using a mirror.
   frameworks will end up in `$PREFIX/Library/Frameworks`.
 
   To build for macOS, just follow the
-  <a href="#installation">regular instructions</a> above.
+  <a href="#building-from-source">regular instructions</a> above.
 
   To build for iOS, follow the regular instructions, but instead of
   `./configure` do something like this:
