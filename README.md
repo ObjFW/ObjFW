@@ -87,6 +87,7 @@ other place, you are most likely using a mirror.
   CRUX              | `sudo prt-get depinst objfw`
   Fedora            | `sudo dnf install objfw`
   FreeBSD           | `sudo pkg install objfw`
+  Haiku             | `pkgman install objfw`
   macOS (Homebrew)  | `brew install objfw`
   macOS (pkgsrc)    | `cd $PKGSRCDIR/devel/objfw && make install`
   NetBSD            | `cd /usr/pkgsrc/devel/objfw && make install`
