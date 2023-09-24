@@ -81,17 +81,18 @@ other place, you are most likely using a mirror.
   ObjFW packages are available for various operating systems and can be
   installed as following:
 
-  Operating System  | Command
-  ------------------|---------------------------------------------
-  Alpine Linux Edge | `doas apk add objfw`
-  CRUX              | `sudo prt-get depinst objfw`
-  Fedora            | `sudo dnf install objfw`
-  FreeBSD           | `sudo pkg install objfw`
-  Haiku             | `pkgman install objfw`
-  macOS (Homebrew)  | `brew install objfw`
-  macOS (pkgsrc)    | `cd $PKGSRCDIR/devel/objfw && make install`
-  NetBSD            | `cd /usr/pkgsrc/devel/objfw && make install`
-  OpenBSD           | `doas pkg_add objfw`
+  Operating System | Command
+  -----------------|---------------------------------------------
+  Alpine Linux     | `doas apk add objfw`
+  CRUX             | `sudo prt-get depinst objfw`
+  Fedora           | `sudo dnf install objfw`
+  FreeBSD          | `sudo pkg install objfw`
+  Haiku            | `pkgman install objfw`
+  Haiku (gcc2h)    | `pkgman install objfw_x86`
+  macOS (Homebrew) | `brew install objfw`
+  macOS (pkgsrc)   | `cd $PKGSRCDIR/devel/objfw && make install`
+  NetBSD           | `cd /usr/pkgsrc/devel/objfw && make install`
+  OpenBSD          | `doas pkg_add objfw`
 
   If your operating system is not listed, you can
   <a href="#building-from-source">build ObjFW from source</a>.  
