@@ -93,6 +93,7 @@ other place, you are most likely using a mirror.
   macOS (pkgsrc)   | `cd $PKGSRCDIR/devel/objfw && make install`
   NetBSD           | `cd /usr/pkgsrc/devel/objfw && make install`
   OpenBSD          | `doas pkg_add objfw`
+  OpenIndiana      | `sudo pkg install developer/objfw`
 
   If your operating system is not listed, you can
   <a href="#building-from-source">build ObjFW from source</a>.  
