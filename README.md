@@ -141,10 +141,6 @@ other place, you are most likely using a mirror.
     $ cd objfw
     $ fossil ui
 
-  It's also possible to open the same local repository multiple times, so that
-  you have multiple working directories all backed by the same local
-  repository.
-
   In order to verify the signature of the currently checked out checkin, you
   can use:
 
