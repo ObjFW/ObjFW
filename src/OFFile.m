@@ -341,6 +341,7 @@ parseMode(const char *mode, bool *append)
 	self = [super init];
 
 	_handle = handle;
+	_initialized = true;
 
 	return self;
 }
@@ -556,7 +557,7 @@ parseMode(const char *mode, bool *append)
 
 - (void)dealloc
 {
-	if (_handle != OFInvalidFileHandle)
+	if (_initialized && _handle != OFInvalidFileHandle)
 		[self close];
 
 	[super dealloc];
