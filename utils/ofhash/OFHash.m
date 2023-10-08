@@ -107,16 +107,16 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		switch (option) {
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_long_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString stringWithFormat:
 				    @"%C", optionsParser.lastOption];
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optStr)];

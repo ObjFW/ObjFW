@@ -114,8 +114,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	OFFile *output;
 
 	if (files.count != 0) {
-		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"cannot_extract_specific_file_from_gz",
 		    @"Cannot extract a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
 		return;

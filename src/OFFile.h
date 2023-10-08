@@ -39,7 +39,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 {
 	OFFileHandle _handle;
-	bool _atEndOfStream;
+	bool _initialized, _atEndOfStream;
 }
 
 /**
