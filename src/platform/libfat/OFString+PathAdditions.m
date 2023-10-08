@@ -301,6 +301,9 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
+	if (self.length == 0)
+		return component;
+
 	if ([self hasSuffix: @"/"])
 		return [self stringByAppendingString: component];
 	else {
