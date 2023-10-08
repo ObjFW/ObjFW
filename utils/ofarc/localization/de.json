@@ -1,3 +1,12 @@
+/*
+ * German localization for ofarc.
+ *
+ * Copyright (c) 2017-2023 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this localization for
+ * any purpose with or without fee is hereby granted.
+ */
+
 {
     "usage": [
         "Benutzung: %[prog] -[acCfhlnpqtvx] archiv.zip [datei1 datei2 ...]"

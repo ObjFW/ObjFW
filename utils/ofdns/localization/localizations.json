@@ -1,3 +1,12 @@
+/*
+ * Localization mapping for ofdns.
+ *
+ * Copyright (c) 2020-2023 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this mapping for any
+ * purpose with or without fee is hereby granted.
+ */
+
 {
     "de": {
         "": "de"

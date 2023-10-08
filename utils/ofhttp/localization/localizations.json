@@ -1,3 +1,12 @@
+/*
+ * Localization mapping for ofhttp.
+ *
+ * Copyright (c) 2017-2023 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this mapping for any
+ * purpose with or without fee is hereby granted.
+ */
+
 {
     "de": {
         "": "de"

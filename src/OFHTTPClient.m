@@ -178,8 +178,8 @@ constructRequestString(OFHTTPRequest *request)
 	}
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
-		[headers setObject: @"Something using ObjFW "
-				    @"<https://objfw.nil.im/>"
+		[headers setObject: @"OFHTTPClient (ObjFW's HTTP client class "
+				    @"<https://objfw.nil.im/>)"
 			    forKey: @"User-Agent"];
 
 	if (request.protocolVersion.major == 1 &&

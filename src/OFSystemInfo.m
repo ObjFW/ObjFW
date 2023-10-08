@@ -160,7 +160,7 @@ initOperatingSystemName(void)
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname name;
 
-	if (uname(&name) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemName = [[OFString alloc]
@@ -257,7 +257,7 @@ initOperatingSystemVersion(void)
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname name;
 
-	if (uname(&name) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemVersion = [[OFString alloc]
