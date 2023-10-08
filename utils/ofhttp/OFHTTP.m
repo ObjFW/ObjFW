@@ -484,7 +484,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[OFStdErr writeLine:
 				    OF_LOCALIZED(@"long_argument_missing",
 				    @"%[prog]: Argument for option --%[opt] "
-				    @"missing"
+				    @"missing",
 				    @"prog", [OFApplication programName],
 				    @"opt", optionsParser.lastLongOption)];
 			else {
