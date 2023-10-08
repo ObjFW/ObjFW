@@ -10,7 +10,7 @@ jobs:
           - --disable-shared
           - --with-tls=gnutls
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: vmactions/netbsd-vm@v0
       with:
         usesh: true
