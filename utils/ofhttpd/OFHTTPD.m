@@ -51,7 +51,7 @@ safeLocalPathForIRI(OFIRI *IRI)
 	path = [path substringWithRange: OFMakeRange(1, path.length - 1)];
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	if ([path containsString: @":"] || [path hasPrefix: @"\\"])
+	if ([path containsString: @":"] || [path containsString: @"\\"])
 #elif defined(OF_AMIGAOS)
 	if ([path containsString: @":"] || [path hasPrefix: @"/"])
 #else
