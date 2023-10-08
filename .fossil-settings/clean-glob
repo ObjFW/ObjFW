@@ -54,3 +54,4 @@ utils/ofarc/ofarc
 utils/ofdns/ofdns
 utils/ofhash/ofhash
 utils/ofhttp/ofhttp
+utils/ofhttpd/ofhttpd
