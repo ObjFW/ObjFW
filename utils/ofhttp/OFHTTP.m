@@ -98,8 +98,7 @@ OF_APPLICATION_DELEGATE(OFHTTP)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine:
-	    OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -481,8 +480,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"long_argument_missing",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"long_argument_missing",
 				    @"%[prog]: Argument for option --%[opt] "
 				    @"missing",
 				    @"prog", [OFApplication programName],
@@ -491,8 +490,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"argument_missing",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"argument_missing",
 				    @"%[prog]: Argument for option -%[opt] "
 				    @"missing",
 				    @"prog", [OFApplication programName],
@@ -502,8 +501,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '=':
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"option_takes_no_argument",
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"option_takes_no_argument",
 			    @"%[prog]: Option --%[opt] takes no argument",
 			    @"prog", [OFApplication programName],
 			    @"opt", optionsParser.lastLongOption)];
@@ -512,8 +511,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_long_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optionsParser.lastLongOption)];
@@ -521,8 +520,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optStr)];
@@ -573,8 +572,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	if (_outputPath != nil && _IRIs.count > 1) {
-		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"output_only_with_one_iri",
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"output_only_with_one_iri",
 		    @"%[prog]: Cannot use -o / --output when more than one IRI "
 		    @"has been specified!",
 		    @"prog", [OFApplication programName])];
@@ -819,8 +818,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"download_resolve_host_failed",
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"download_resolve_host_failed",
 			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  Failed to resolve host: %[exception]",
 			    @"prog", [OFApplication programName],
@@ -831,8 +830,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			if (!_quiet)
 				[OFStdOut writeString: @"\n"];
 
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"download_failed_connection_failed",
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"download_failed_connection_failed",
 			    @"%[prog]: Failed to download <%[iri]>!\n"
 			    @"  Connection failed: %[exception]",
 			    @"prog", [OFApplication programName],

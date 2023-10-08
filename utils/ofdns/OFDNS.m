@@ -36,8 +36,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine:
-	    OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -72,8 +71,7 @@ help(OFStream *stream, bool full, int status)
 	if (exception == nil)
 		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[OFStdErr writeLine: OF_LOCALIZED(
-		    @"failed_to_resolve",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
 		_errors++;
