@@ -29,6 +29,7 @@
 #import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
 
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
@@ -182,7 +183,14 @@ safeLocalPathForIRI(OFIRI *IRI)
 {
 	OFString *path;
 
-	OFLog(@"Handling request %@", request);
+	OFLog(@"Handling %s request %@",
+	    OFHTTPRequestMethodName(request.method), request);
+
+	if (request.method != OFHTTPRequestMethodGet &&
+	    request.method != OFHTTPRequestMethodHead) {
+		response.statusCode = 405;
+		return;
+	}
 
 	path = safeLocalPathForIRI(request.IRI);
 	if (path == nil) {
@@ -193,10 +201,43 @@ safeLocalPathForIRI(OFIRI *IRI)
 	if ([[OFFileManager defaultManager] directoryExistsAtPath: path])
 		path = [path stringByAppendingPathComponent: @"index.html"];
 
-	OFLog(@"Sending file %@", path);
+	if (request.method == OFHTTPRequestMethodHead) {
+		OFFileAttributes attributes;
+		OFNumber *size;
 
-	@try {
-		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
+		@try {
+			attributes = [[OFFileManager defaultManager]
+			    attributesOfItemAtPath: path];
+		} @catch (OFGetItemAttributesFailedException *e) {
+			if (e.errNo == EACCES)
+				response.statusCode = 403;
+			else
+				response.statusCode = 404;
+
+			return;
+		}
+
+		response.statusCode = 200;
+
+		if ((size = [attributes objectForKey: OFFileSize]) != nil)
+			response.headers = [OFDictionary
+			    dictionaryWithObject: size.description
+					  forKey: @"Content-Length"];
+	} else {
+		OFFile *file;
+
+		OFLog(@"Sending file %@", path);
+
+		@try {
+			file = [OFFile fileWithPath: path mode: @"r"];
+		} @catch (OFOpenItemFailedException *e) {
+			if (e.errNo == EACCES)
+				response.statusCode = 403;
+			else
+				response.statusCode = 404;
+
+			return;
+		}
 
 		response.statusCode = 200;
 
@@ -208,16 +249,6 @@ safeLocalPathForIRI(OFIRI *IRI)
 
 			length = [file readIntoBuffer: buffer length: 4096];
 			[response writeBuffer: buffer length: length];
-		}
-	} @catch (OFOpenItemFailedException *e) {
-		switch (e.errNo) {
-		case EACCES:
-			response.statusCode = 403;
-			return;
-		case ENOENT:
-		case ENOTDIR:
-			response.statusCode = 404;
-			return;
 		}
 	}
 }
