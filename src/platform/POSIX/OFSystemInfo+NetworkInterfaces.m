@@ -227,9 +227,12 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
 			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
 			    == 0x80) {
-#   if defined(HAVE_INET6_GETSCOPEID)
-				inet6_getscopeid(&address.sockaddr.in6,
-				    INET6_IS_ADDR_LINKLOCAL);
+#   if defined(__KAME__)
+#    define addr6 address.sockaddr.in6.sin6_addr.s6_addr
+				address.sockaddr.in6.sin6_scope_id =
+				    (addr6[2] << 8) | addr6[3];
+				addr6[2] = addr6[3] = 0;
+#    undef addr6
 #   elif defined(HAVE_IF_NAMETOINDEX)
 				address.sockaddr.in6.sin6_scope_id =
 				    if_nametoindex(

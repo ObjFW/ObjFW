@@ -1467,8 +1467,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
-
-			AC_CHECK_FUNCS(inet6_getscopeid)
 		])
 	], [
 		dnl Work around a bug in autoconf 2.61 that creates a broken
