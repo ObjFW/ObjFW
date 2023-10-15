@@ -18,7 +18,6 @@
 #include <errno.h>
 
 #import "OFSecureTransportTLSStream.h"
-#import "OFStream+Private.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFNotOpenException.h"
@@ -169,34 +168,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	return bytesWritten;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
 	size_t bufferSize;
 
-	if (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
-	    bufferSize > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
-}
-
-- (bool)of_isWaitingForDelimiter
-{
-	size_t bufferSize;
-
-	/* FIXME: There should be a non-private API for this. */
-
-	/*
-	 * If we still have pending data in the context, we haven't processed
-	 * it yet to see if our delimiter is in there. So return false here, as
-	 * that will signal the stream as ready for reading, which in turn will
-	 * cause a read and checking for the delimiter.
-	 */
-	if (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
-	    bufferSize > 0)
-		return false;
-
-	return super.of_waitingForDelimiter;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
+	    bufferSize > 0));
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host

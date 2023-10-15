@@ -507,9 +507,9 @@ start:
 	    .fileDescriptorForReading;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer ||
+	return (_stream.hasDataInReadBuffer ||
 	    _bufferLength - _bufferIndex > 0);
 }
 

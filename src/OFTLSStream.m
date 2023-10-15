@@ -141,12 +141,6 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)hasDataInReadBuffer
-{
-	return (super.hasDataInReadBuffer ||
-	    _underlyingStream.hasDataInReadBuffer);
-}
-
 - (bool)lowlevelIsAtEndOfStream
 {
 	return _underlyingStream.atEndOfStream;

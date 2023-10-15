@@ -362,9 +362,9 @@ OF_DIRECT_MEMBERS
 	return _atEndOfStream;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
+	return _stream.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading

@@ -61,13 +61,12 @@ typedef enum {
  * if available.
  *
  * Subclasses need to override @ref lowlevelReadIntoBuffer:length:,
- * @ref lowlevelWriteBuffer:length: and
- * @ref asyncPerformClientHandshakeWithHost:runLoopMode:. The method
- * @ref hasDataInReadBuffer should be overridden to return `true` if the TLS
- * stream has cached unprocessed data internally, while returning
- * `self.underlyingStream.hasDataInReadBuffer` if it does not have any
- * unprocessed data. In order to get access to the underlying stream,
- * @ref underlyingStream can be used.
+ * @ref lowlevelWriteBuffer:length:,
+ * @ref lowlevelHasDataInReadBuffer and
+ * @ref asyncPerformClientHandshakeWithHost:runLoopMode:.
+ *
+ * In order to get access to the underlying stream, @ref underlyingStream can
+ * be used.
  */
 @interface OFTLSStream: OFStream <OFReadyForReadingObserving,
     OFReadyForWritingObserving>
@@ -109,7 +108,7 @@ typedef enum {
  * @return A new, autoreleased TLS stream
  */
 + (instancetype)streamWithStream: (OFStream <OFReadyForReadingObserving,
-				       OFReadyForWritingObserving> *)stream;
+				      OFReadyForWritingObserving> *)stream;
 
 /**
  * @brief Initializes the TLS stream with the specified stream as its
@@ -120,7 +119,7 @@ typedef enum {
  * @return An initialized TLS stream
  */
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
-				     OFReadyForWritingObserving> *)stream
+				    OFReadyForWritingObserving> *)stream
     OF_DESIGNATED_INITIALIZER;
 
 /**

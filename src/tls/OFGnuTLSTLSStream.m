@@ -19,7 +19,6 @@
 
 #import "OFGnuTLSTLSStream.h"
 #import "OFData.h"
-#import "OFStream+Private.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -186,28 +185,10 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	return ret;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	if (gnutls_record_check_pending(_session) > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
-}
-
-- (bool)of_isWaitingForDelimiter
-{
-	/* FIXME: There should be a non-private API for this. */
-
-	/*
-	 * If we still have pending data in the session, we haven't processed
-	 * it yet to see if our delimiter is in there. So return false here, as
-	 * that will signal the stream as ready for reading, which in turn will
-	 * cause a read and checking for the delimiter.
-	 */
-	if (gnutls_record_check_pending(_session) > 0)
-		return false;
-
-	return super.of_waitingForDelimiter;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    gnutls_record_check_pending(_session) > 0);
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host

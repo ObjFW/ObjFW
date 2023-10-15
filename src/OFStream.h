@@ -1391,6 +1391,18 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return Whether the lowlevel is at the end of the stream
  */
 - (bool)lowlevelIsAtEndOfStream;
+
+/**
+ * @brief Returns whether the lowlevel has data in the read buffer.
+ *
+ * @warning Do not call this directly!
+ *
+ * @note Override this method in case your stream can buffer data itself, such
+ *	 as when implementing @ref OFTLSStream. If not overridden, it always
+ *	 returns false.
+ * @return Whether the lowlevel has data in the read buffer
+ */
+- (bool)lowlevelHasDataInReadBuffer;
 @end
 
 OF_ASSUME_NONNULL_END

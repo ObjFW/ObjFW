@@ -735,9 +735,9 @@ normalizedKey(OFString *key)
 	}
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _socket.hasDataInReadBuffer);
+	return _socket.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading

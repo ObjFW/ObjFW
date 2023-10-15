@@ -941,10 +941,9 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	return ret;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer ||
-	    [_decompressedStream hasDataInReadBuffer]);
+	return _decompressedStream.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading
