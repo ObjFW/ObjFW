@@ -1818,6 +1818,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
 					"OFOpenSSLTLSStream.m")
+
+				old_LIBS="$LIBS"
+				LIBS="$TLS_LIBS $LIBS"
+				AC_CHECK_FUNCS(SSL_has_pending)
+				LIBS="$old_LIBS"
 			])
 		], [], [-l$crypto])
 	])
