@@ -292,6 +292,12 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
+#ifdef __GNUC__
+# define OF_DEPRECATED(project, major, minor, msg)		\
+    __attribute__((__deprecated__("Deprecated in " #project " "	\
+    #major "." #minor ": " msg)))
+#endif
+
 #if __has_attribute(__objc_boxable__)
 # define OF_BOXABLE __attribute__((__objc_boxable__))
 #else
