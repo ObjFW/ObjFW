@@ -183,8 +183,8 @@ safeLocalPathForIRI(OFIRI *IRI)
 {
 	OFString *path;
 
-	OFLog(@"Handling %s request %@",
-	    OFHTTPRequestMethodName(request.method), request);
+	OFLog(@"Handling %@ request %@",
+	    OFHTTPRequestMethodString(request.method), request);
 
 	if (request.method != OFHTTPRequestMethodGet &&
 	    request.method != OFHTTPRequestMethodHead) {

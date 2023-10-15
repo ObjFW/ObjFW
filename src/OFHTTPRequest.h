@@ -140,12 +140,12 @@ OF_SUBCLASSING_RESTRICTED
 extern "C" {
 #endif
 /**
- * @brief Returns a C string describing the specified request method.
+ * @brief Returns a string describing the specified request method.
  *
- * @param method The request method which should be described as a C string
- * @return A C string describing the specified request method
+ * @param method The request method which should be described as a string
+ * @return A string describing the specified request method
  */
-extern const char *_Nullable OFHTTPRequestMethodName(
+extern OFString *_Nullable OFHTTPRequestMethodString(
     OFHTTPRequestMethod method);
 
 /**
@@ -156,7 +156,31 @@ extern const char *_Nullable OFHTTPRequestMethodName(
  * @throw OFInvalidFormatException The specified string is not a valid HTTP
  *				   request method
  */
-extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string);
+extern OFHTTPRequestMethod OFHTTPRequestMethodParseString(OFString *string);
+
+/**
+ * @brief Returns a C string describing the specified request method.
+ *
+ * @deprecated Use @ref OFHTTPRequestMethodString instead.
+ *
+ * @param method The request method which should be described as a C string
+ * @return A C string describing the specified request method
+ */
+extern const char *_Nullable OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+    OF_DEPRECATED(ObjFW, 1, 1, "Use OFHTTPRequestMethodString instead");
+
+/**
+ * @brief Returns the request method for the specified string.
+ *
+ * @deprecated Use @ref OFHTTPRequestMethodParseString instead.
+ *
+ * @param string The string for which the request method should be returned
+ * @return The request method for the specified string
+ * @throw OFInvalidFormatException The specified string is not a valid HTTP
+ *				   request method
+ */
+extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string)
+    OF_DEPRECATED(ObjFW, 1, 1, "Use OFHTTPRequestMethodParseString instead");
 #ifdef __cplusplus
 }
 #endif

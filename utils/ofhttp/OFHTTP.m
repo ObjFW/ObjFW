@@ -373,7 +373,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	method = method.uppercaseString;
 
 	@try {
-		_method = OFHTTPRequestMethodParseName(method);
+		_method = OFHTTPRequestMethodParseString(method);
 	} @catch (OFInvalidArgumentException *e) {
 		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_input_method",
 		    @"%[prog]: Invalid request method %[method]!",

@@ -132,7 +132,7 @@ constructRequestString(OFHTTPRequest *request)
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
-	    @"%s %@", OFHTTPRequestMethodName(method), path];
+	    @"%@ %@", OFHTTPRequestMethodString(method), path];
 
 	if (IRI.query != nil) {
 		[requestString appendString: @"?"];
@@ -1068,9 +1068,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	    .fileDescriptorForReading;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
+	return _stream.hasDataInReadBuffer;
 }
 
 - (void)close

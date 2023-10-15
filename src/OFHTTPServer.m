@@ -382,7 +382,7 @@ normalizedKey(OFString *key)
 
 	method = [line substringToIndex: pos];
 	@try {
-		_method = OFHTTPRequestMethodParseName(method);
+		_method = OFHTTPRequestMethodParseString(method);
 	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
@@ -735,9 +735,9 @@ normalizedKey(OFString *key)
 	}
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _socket.hasDataInReadBuffer);
+	return _socket.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading

@@ -208,11 +208,16 @@
 	bool foundInReadBuffer = false;
 
 	for (id object in [[_readObjects copy] autorelease]) {
-		void *pool2 = objc_autoreleasePoolPush();
+		void *pool2;
 
-		if ([object isKindOfClass: [OFStream class]] &&
-		    [object hasDataInReadBuffer] &&
-		    ![(OFStream *)object of_isWaitingForDelimiter]) {
+		if (![object isKindOfClass: [OFStream class]])
+			continue;
+
+		pool2 = objc_autoreleasePoolPush();
+
+		if ([object hasDataInReadBuffer] &&
+		    (![object of_isWaitingForDelimiter] ||
+		    [object lowlevelHasDataInReadBuffer])) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: object];

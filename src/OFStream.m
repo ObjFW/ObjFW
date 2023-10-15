@@ -96,11 +96,6 @@
 	[super dealloc];
 }
 
-- (bool)lowlevelIsAtEndOfStream
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -109,6 +104,16 @@
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (bool)lowlevelHasDataInReadBuffer
+{
+	return false;
 }
 
 - (id)copy
@@ -1186,7 +1191,7 @@
 
 - (bool)hasDataInReadBuffer
 {
-	return (_readBufferLength > 0);
+	return (_readBufferLength > 0 || [self lowlevelHasDataInReadBuffer]);
 }
 
 - (bool)canBlock
