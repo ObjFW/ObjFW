@@ -241,11 +241,14 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			[addresses addItem: &address];
 
 next:
-# ifdef _SIZEOF_ADDR_IFREQ
-			buffer += _SIZEOF_ADDR_IFREQ(*current);
-# else
-			buffer += sizeof(struct ifreq);
-# endif
+#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+			if (current->ifr_addr.sa_len > sizeof(struct sockaddr))
+				buffer += sizeof(struct ifreq) -
+				    sizeof(struct sockaddr) +
+				    current->ifr_addr.sa_len;
+			else
+#  endif
+				buffer += sizeof(struct ifreq);
 		}
 	} @finally {
 		free(ifrs);

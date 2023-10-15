@@ -1378,6 +1378,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
+	AC_CHECK_MEMBERS([struct sockaddr.sa_len], [], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
+	])
 	AC_CHECK_TYPE([struct sockaddr_storage], [
 		AC_DEFINE(OF_HAVE_SOCKADDR_STORAGE, 1,
 			[Whether we have struct sockaddr_storage])
