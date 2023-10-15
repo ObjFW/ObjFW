@@ -132,7 +132,7 @@ constructRequestString(OFHTTPRequest *request)
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
-	    @"%s %@", OFHTTPRequestMethodName(method), path];
+	    @"%@ %@", OFHTTPRequestMethodString(method), path];
 
 	if (IRI.query != nil) {
 		[requestString appendString: @"?"];

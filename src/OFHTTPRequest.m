@@ -29,33 +29,33 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
-const char *
-OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+OFString *
+OFHTTPRequestMethodString(OFHTTPRequestMethod method)
 {
 	switch (method) {
 	case OFHTTPRequestMethodOptions:
-		return "OPTIONS";
+		return @"OPTIONS";
 	case OFHTTPRequestMethodGet:
-		return "GET";
+		return @"GET";
 	case OFHTTPRequestMethodHead:
-		return "HEAD";
+		return @"HEAD";
 	case OFHTTPRequestMethodPost:
-		return "POST";
+		return @"POST";
 	case OFHTTPRequestMethodPut:
-		return "PUT";
+		return @"PUT";
 	case OFHTTPRequestMethodDelete:
-		return "DELETE";
+		return @"DELETE";
 	case OFHTTPRequestMethodTrace:
-		return "TRACE";
+		return @"TRACE";
 	case OFHTTPRequestMethodConnect:
-		return "CONNECT";
+		return @"CONNECT";
 	}
 
-	return NULL;
+	return nil;
 }
 
 OFHTTPRequestMethod
-OFHTTPRequestMethodParseName(OFString *string)
+OFHTTPRequestMethodParseString(OFString *string)
 {
 	if ([string isEqual: @"OPTIONS"])
 		return OFHTTPRequestMethodOptions;
@@ -75,6 +75,20 @@ OFHTTPRequestMethodParseName(OFString *string)
 		return OFHTTPRequestMethodConnect;
 
 	@throw [OFInvalidFormatException exception];
+}
+
+/* Deprecated */
+const char *
+OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+{
+	return OFHTTPRequestMethodString(method).UTF8String;
+}
+
+/* Deprecated */
+OFHTTPRequestMethod
+OFHTTPRequestMethodParseName(OFString *string)
+{
+	return OFHTTPRequestMethodParseString(string);
 }
 
 @implementation OFHTTPRequest
@@ -243,7 +257,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *method = OFHTTPRequestMethodName(_method);
+	OFString *method = OFHTTPRequestMethodString(_method);
 	OFString *indentedHeaders, *remoteAddress, *ret;
 
 	indentedHeaders = [_headers.description
@@ -257,7 +271,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	ret = [[OFString alloc] initWithFormat:
 	    @"<%@:\n\tIRI = %@\n"
-	    @"\tMethod = %s\n"
+	    @"\tMethod = %@\n"
 	    @"\tHeaders = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",

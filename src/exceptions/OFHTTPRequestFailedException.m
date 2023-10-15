@@ -61,10 +61,10 @@
 
 - (OFString *)description
 {
-	const char *method = OFHTTPRequestMethodName(_request.method);
+	OFString *method = OFHTTPRequestMethodString(_request.method);
 
 	return [OFString stringWithFormat:
-	    @"An HTTP %s request with IRI %@ failed with code %hd!", method,
+	    @"An HTTP %@ request with IRI %@ failed with code %hd!", method,
 	    _request.IRI, _response.statusCode];
 }
 @end

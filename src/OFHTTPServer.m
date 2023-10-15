@@ -382,7 +382,7 @@ normalizedKey(OFString *key)
 
 	method = [line substringToIndex: pos];
 	@try {
-		_method = OFHTTPRequestMethodParseName(method);
+		_method = OFHTTPRequestMethodParseString(method);
 	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
