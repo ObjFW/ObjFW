@@ -296,6 +296,8 @@
 # define OF_DEPRECATED(project, major, minor, msg)		\
     __attribute__((__deprecated__("Deprecated in " #project " "	\
     #major "." #minor ": " msg)))
+#else
+# define OF_DEPRECATED(project, major, minor, msg)
 #endif
 
 #if __has_attribute(__objc_boxable__)
