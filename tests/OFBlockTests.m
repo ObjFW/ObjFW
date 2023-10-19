@@ -30,7 +30,7 @@ extern void *_NSConcreteMallocBlock;
 #endif
 
 /* Clang on Win32 generates broken code that crashes for global blocks. */
-#if !defined(OF_WINDOWS) || !defined(OF_X86) || !defined(__clang__)
+#if !defined(OF_WINDOWS) || !defined(__clang__)
 static void (^globalBlock)(void) = ^ {};
 #endif
 
@@ -72,7 +72,7 @@ forwardTest(void)
 	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
 	    [stackBlock isKindOfClass: [OFBlock class]])
 
-#if !defined(OF_WINDOWS) || !defined(OF_X86) || !defined(__clang__)
+#if !defined(OF_WINDOWS) || !defined(__clang__)
 	TEST(@"Class of global block",
 	    (Class)&_NSConcreteGlobalBlock == objc_getClass("OFGlobalBlock") &&
 	    [globalBlock isKindOfClass: [OFBlock class]])
@@ -93,7 +93,7 @@ forwardTest(void)
 	    (voidBlock = returnStackBlock()) && voidBlock() == 43 &&
 	    voidBlock() == 44 && voidBlock() == 45)
 
-#if !defined(OF_WINDOWS) || !defined(OF_X86) || !defined(__clang__)
+#if !defined(OF_WINDOWS) || !defined(__clang__)
 	TEST(@"Copying a global block",
 	    (id)globalBlock == [[globalBlock copy] autorelease])
 #endif
@@ -106,7 +106,7 @@ forwardTest(void)
 
 	TEST(@"Autorelease a stack block", R([stackBlock autorelease]))
 
-#if !defined(OF_WINDOWS) || !defined(OF_X86) || !defined(__clang__)
+#if !defined(OF_WINDOWS) || !defined(__clang__)
 	TEST(@"Autorelease a global block", R([globalBlock autorelease]))
 #endif
 
