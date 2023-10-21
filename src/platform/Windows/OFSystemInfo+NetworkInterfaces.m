@@ -49,7 +49,6 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFNetworkInterface) *
 networkInterfacesFromGetAdaptersAddresses(void)
 {
 	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
-	OFStringEncoding encoding = [OFLocale encoding];
 	ULONG adapterAddressesSize = sizeof(IP_ADAPTER_ADDRESSES);
 	PIP_ADAPTER_ADDRESSES adapterAddresses;
 
@@ -81,8 +80,8 @@ networkInterfacesFromGetAdaptersAddresses(void)
 			OFMutableDictionary *interface;
 			OFNumber *index;
 
-			name = [OFString stringWithCString: iter->AdapterName
-						  encoding: encoding];
+			name = [OFString stringWithFormat: @"%lu",
+							   iter->IfIndex];
 
 			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
@@ -195,8 +194,7 @@ networkInterfacesFromGetAdaptersInfo(void)
 			OFSocketAddress IPv4Address;
 			OFData *addresses;
 
-			name = [OFString stringWithCString: iter->AdapterName
-						  encoding: encoding];
+			name = [OFString stringWithFormat: @"%u", iter->Index];
 
 			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
