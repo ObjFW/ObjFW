@@ -967,7 +967,7 @@ appleTalkString(const OFSocketAddress *address)
 {
 	const struct sockaddr_at *addrAT = &address->sockaddr.at;
 
-	return [OFString stringWithFormat: @"%d.%d",
+	return [OFString stringWithFormat: @"%" PRIu8 ".%" PRIu8,
 	    OFFromBigEndian16(addrAT->sat_net), addrAT->sat_node];
 }
 
