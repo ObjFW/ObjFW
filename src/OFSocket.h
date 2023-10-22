@@ -290,9 +290,20 @@ extern unsigned long OFSocketAddressHash(
  * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @return The address as an IP string, without the port
+ * @return The address as a string, without the port
  */
 extern OFString *_Nonnull OFSocketAddressString(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Returns a description for the specified @ref OFSocketAddress.
+ *
+ * This is similar to @ref OFSocketAddressString, but it also contains the port.
+ *
+ * @param address The address to return a description for
+ * @return The address as an string, with the port
+ */
+extern OFString *_Nonnull OFSocketAddressDescription(
     const OFSocketAddress *_Nonnull address);
 
 /**

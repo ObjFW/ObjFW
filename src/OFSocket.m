@@ -990,6 +990,35 @@ OFSocketAddressString(const OFSocketAddress *address)
 	}
 }
 
+OFString *
+OFSocketAddressDescription(const OFSocketAddress *address)
+{
+	switch (address->family) {
+	case OFSocketAddressFamilyIPv4:
+		return [OFString
+		    stringWithFormat: @"%@:%" PRIu16,
+				      IPv4String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPv6:
+		return [OFString
+		    stringWithFormat: @"[%@]:%" PRIu16,
+				      IPv6String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPX:
+		return [OFString
+		    stringWithFormat: @"%@.%" PRIX16,
+				      IPXString(address),
+				      OFSocketAddressIPXPort(address)];
+	case OFSocketAddressFamilyAppleTalk:
+		return [OFString
+		    stringWithFormat: @"%@." PRIu8,
+				      appleTalkString(address),
+				      OFSocketAddressAppleTalkPort(address)];
+	default:
+		return OFSocketAddressString(address);
+	}
+}
+
 void
 OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port)
 {
