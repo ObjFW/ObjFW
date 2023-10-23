@@ -387,16 +387,14 @@ other place, you are most likely using a mirror.
 
    * The [forum](https://objfw.nil.im/forum)
    * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
+   * A [Discord room](https://objfw.nil.im/discord), bridged to the Matrix
+     room above
+   * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
+   * A [Slack room](https://objfw.nil.im/slack), bridged to the Matrix room
+     above
    * An IRC channel named `#objfw` on `irc.oftc.net`
      ([Web chat](https://webchat.oftc.net/?channels=%23objfw)), bridged to the
      Matrix room above
-   * A [Slack channel](https://objfw.nil.im/slack), bridged to the Matrix room
-     above
-   * A [Discord channel](https://objfw.nil.im/discord), bridged to the Matrix
-     room above
-   * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
-   * A [Gitter room](https://gitter.im/ObjFW/ObjFW), bridged to the Matrix room
-     above
 
   Please don't hesitate to join any or all of those!
 
