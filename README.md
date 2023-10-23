@@ -81,19 +81,22 @@ other place, you are most likely using a mirror.
   ObjFW packages are available for various operating systems and can be
   installed as following:
 
-  Operating System | Command
-  -----------------|---------------------------------------------
-  Alpine Linux     | `doas apk add objfw`
-  CRUX             | `sudo prt-get depinst objfw`
-  Fedora           | `sudo dnf install objfw`
-  FreeBSD          | `sudo pkg install objfw`
-  Haiku            | `pkgman install objfw`
-  Haiku (gcc2h)    | `pkgman install objfw_x86`
-  macOS (Homebrew) | `brew install objfw`
-  macOS (pkgsrc)   | `cd $PKGSRCDIR/devel/objfw && make install`
-  NetBSD           | `cd /usr/pkgsrc/devel/objfw && make install`
-  OpenBSD          | `doas pkg_add objfw`
-  OpenIndiana      | `sudo pkg install developer/objfw`
+  Operating System           | Command
+  ---------------------------|---------------------------------------------
+  Alpine Linux               | `doas apk add objfw`
+  CRUX                       | `sudo prt-get depinst objfw`
+  Fedora                     | `sudo dnf install objfw`
+  FreeBSD                    | `sudo pkg install objfw`
+  Haiku                      | `pkgman install objfw`
+  Haiku (gcc2h)              | `pkgman install objfw_x86`
+  macOS (Homebrew)           | `brew install objfw`
+  macOS (pkgsrc)             | `cd $PKGSRCDIR/devel/objfw && make install`
+  NetBSD                     | `cd /usr/pkgsrc/devel/objfw && make install`
+  OpenBSD                    | `doas pkg_add objfw`
+  OpenIndiana                | `sudo pkg install developer/objfw`
+  Windows (MSYS2/MINGW32)    | `pacman -S mingw-w64-i686-objfw`
+  Windows (MSYS2/CLANG64)    | `pacman -S mingw-w64-clang-x86_64-objfw`
+  Windows (MSYS2/CLANGARM64) | `pacman -S mingw-w64-clang-aarch64-objfw`
 
   If your operating system is not listed, you can
   <a href="#building-from-source">build ObjFW from source</a>.  
