@@ -644,11 +644,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+	if ((module = GetModuleHandle("msvcrt.dll")) != NULL)
 		_wutime64FuncPtr = (int (*)(const wchar_t *,
 		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
 
-	if ((module = LoadLibrary("kernel32.dll")) != NULL) {
+	if ((module = GetModuleHandleA("kernel32.dll")) != NULL) {
 		createSymbolicLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
 		    GetProcAddress(module, "CreateSymbolicLinkW");

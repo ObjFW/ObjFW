@@ -38,7 +38,7 @@ init(void)
 {
 	HMODULE module;
 
-	if ((module = LoadLibrary("iphlpapi.dll")) != NULL)
+	if ((module = GetModuleHandle("iphlpapi.dll")) != NULL)
 		GetAdaptersAddressesFuncPtr = (WINAPI ULONG (*)(ULONG, ULONG,
 		    PVOID, PIP_ADAPTER_ADDRESSES, PULONG))
 		    GetProcAddress(module, "GetAdaptersAddresses");
