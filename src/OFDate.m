@@ -318,7 +318,7 @@ OF_SINGLETON_METHODS
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = LoadLibrary("msvcrt.dll")) != NULL)
+	if ((module = GetModuleHandle("msvcrt.dll")) != NULL)
 		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
 		    GetProcAddress(module, "_mktime64");
 #endif
