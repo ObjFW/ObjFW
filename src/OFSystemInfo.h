@@ -56,6 +56,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) bool supportsAVX2;
 @property (class, readonly, nonatomic) bool supportsAESNI;
 @property (class, readonly, nonatomic) bool supportsSHAExtensions;
+@property (class, readonly, nonatomic) bool supportsF16C;
 @property (class, readonly, nonatomic) bool supportsAVX512Foundation;
 @property (class, readonly, nonatomic)
     bool supportsAVX512ConflictDetectionInstructions;
@@ -79,6 +80,8 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic)
     bool supportsAVX512VectorByteManipulationInstructions2;
 @property (class, readonly, nonatomic) bool supportsAVX512BitAlgorithms;
+@property (class, readonly, nonatomic) bool supportsAVX512Float16Instructions;
+@property (class, readonly, nonatomic) bool supportsAVX512BFloat16Instructions;
 # endif
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
@@ -340,6 +343,15 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)supportsSHAExtensions;
 
 /**
+ * @brief Returns whether the CPU supports F16C.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports F16C
+ */
++ (bool)supportsF16C;
+
+/**
  * @brief Returns whether the CPU supports AVX-512 Foundation.
  *
  * @note This method is only available on AMD64 and x86.
@@ -466,6 +478,24 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU supports AVX-512 Bit Algorithms
  */
 + (bool)supportsAVX512BitAlgorithms;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Float16 Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Float16 Instructions
+ */
++ (bool)supportsAVX512Float16Instructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 BFloat16 Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 BFloat16 Instructions
+ */
++ (bool)supportsAVX512BFloat16Instructions;
 #endif
 
 #if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)

@@ -739,12 +739,14 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (bool)supports3DNow
 {
-	return (x86CPUID(0x80000001, 0).edx & (1u << 31));
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 31));
 }
 
 + (bool)supportsEnhanced3DNow
 {
-	return (x86CPUID(0x80000001, 0).edx & (1u << 30));
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 30));
 }
 
 + (bool)supportsSSE
@@ -795,6 +797,11 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 + (bool)supportsSHAExtensions
 {
 	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 29));
+}
+
++ (bool)supportsF16C
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 29));
 }
 
 + (bool)supportsAVX512Foundation
@@ -860,6 +867,16 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 + (bool)supportsAVX512BitAlgorithms
 {
 	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 12));
+}
+
++ (bool)supportsAVX512Float16Instructions
+{
+	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).edx & (1u << 23));
+}
+
++ (bool)supportsAVX512BFloat16Instructions
+{
+	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 1).eax & (1u << 5));
 }
 #endif
 

@@ -124,6 +124,9 @@ printAddresses(OFData *addresses, bool *firstAddress)
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
 	    [OFSystemInfo supportsSHAExtensions]];
 
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports F16C: %d\n",
+	    [OFSystemInfo supportsF16C]];
+
 	[OFStdOut writeFormat:
 	    @"[OFSystemInfo] Supports AVX-512 Foundation: %d\n",
 	    [OFSystemInfo supportsAVX512Foundation]];
@@ -182,6 +185,14 @@ printAddresses(OFData *addresses, bool *firstAddress)
 	[OFStdOut writeFormat:
 	    @"[OFSystemInfo] Supports AVX-512 Bit Algorithms: %d\n",
 	    [OFSystemInfo supportsAVX512BitAlgorithms]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Float16 Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512Float16Instructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 BFloat16 Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512BFloat16Instructions]];
 #endif
 
 #ifdef OF_POWERPC
