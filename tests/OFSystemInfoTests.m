@@ -123,6 +123,65 @@ printAddresses(OFData *addresses, bool *firstAddress)
 
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
 	    [OFSystemInfo supportsSHAExtensions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Foundation: %d\n",
+	    [OFSystemInfo supportsAVX512Foundation]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Conflict Detection Instructions: "
+	    @"%d\n",
+	    [OFSystemInfo supportsAVX512ConflictDetectionInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Exponential and Reciprocal "
+	    @"Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512ExponentialAndReciprocalInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Prefetch Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512PrefetchInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Vector Length Extensions: %d\n",
+	    [OFSystemInfo supportsAVX512VectorLengthExtensions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Doubleword and Quadword "
+	    @"Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512DoublewordAndQuadwordInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Byte and Word Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512ByteAndWordInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Integer Fused Multiply Add: %d\n",
+	    [OFSystemInfo supportsAVX512IntegerFusedMultiplyAdd]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Vector Byte Manipulation "
+	    @"Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512VectorByteManipulationInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Vector Population Count "
+	    @"Instruction: %d\n",
+	    [OFSystemInfo supportsAVX512VectorPopulationCountInstruction]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Vector Neutral Network "
+	    @"Instructions: %d\n",
+	    [OFSystemInfo supportsAVX512VectorNeuralNetworkInstructions]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Vector Byte Manipulation "
+	    @"Instructions 2: %d\n",
+	    [OFSystemInfo supportsAVX512VectorByteManipulationInstructions2]];
+
+	[OFStdOut writeFormat:
+	    @"[OFSystemInfo] Supports AVX-512 Bit Algorithms: %d\n",
+	    [OFSystemInfo supportsAVX512BitAlgorithms]];
 #endif
 
 #ifdef OF_POWERPC

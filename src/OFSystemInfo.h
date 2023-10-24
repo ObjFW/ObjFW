@@ -56,6 +56,29 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) bool supportsAVX2;
 @property (class, readonly, nonatomic) bool supportsAESNI;
 @property (class, readonly, nonatomic) bool supportsSHAExtensions;
+@property (class, readonly, nonatomic) bool supportsAVX512Foundation;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512ConflictDetectionInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512ExponentialAndReciprocalInstructions;
+@property (class, readonly, nonatomic) bool supportsAVX512PrefetchInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512VectorLengthExtensions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512DoublewordAndQuadwordInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512ByteAndWordInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512IntegerFusedMultiplyAdd;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512VectorByteManipulationInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512VectorPopulationCountInstruction;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512VectorNeuralNetworkInstructions;
+@property (class, readonly, nonatomic)
+    bool supportsAVX512VectorByteManipulationInstructions2;
+@property (class, readonly, nonatomic) bool supportsAVX512BitAlgorithms;
 # endif
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
@@ -315,6 +338,134 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU supports Intel SHA Extensions
  */
 + (bool)supportsSHAExtensions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Foundation.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Foundation
+ */
++ (bool)supportsAVX512Foundation;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Conflict Detection
+ *	  Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Conflict Detection Instructions
+ */
++ (bool)supportsAVX512ConflictDetectionInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Exponential and Reciprocal
+ *	  Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Exponential and Reciprocal
+ *	   Instructions
+ */
++ (bool)supportsAVX512ExponentialAndReciprocalInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Prefetch Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Prefetch Instructions
+ */
++ (bool)supportsAVX512PrefetchInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Vector Length Extensions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Vector Length Extensions
+ */
++ (bool)supportsAVX512VectorLengthExtensions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Doubleword and Quadword
+ *	  Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Doubleword and Quadword Instructions
+ */
++ (bool)supportsAVX512DoublewordAndQuadwordInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Byte and Word Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Byte and Word Instructions
+ */
++ (bool)supportsAVX512ByteAndWordInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Integer Fused Multiply Add.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Integer Fused Multiply Add
+ */
++ (bool)supportsAVX512IntegerFusedMultiplyAdd;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Vector Byte Manipulation
+ *	  Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Vector Byte Manipulation
+ *	   Instructions
+ */
++ (bool)supportsAVX512VectorByteManipulationInstructions;
+
+/**
+ * @brief Returns whether the CPU supports the AVX-512 Vector Population Count
+ *	  Instruction.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 the Vector Population Count
+ *	   Instruction
+ */
++ (bool)supportsAVX512VectorPopulationCountInstruction;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Vector Neural Network
+ *	  Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Vector Neural Network Instructions
+ */
++ (bool)supportsAVX512VectorNeuralNetworkInstructions;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Vector Byte Manipulation
+ *	  Instructions 2.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Vector Byte Manipulation
+ *	   Instructions 2
+ */
++ (bool)supportsAVX512VectorByteManipulationInstructions2;
+
+/**
+ * @brief Returns whether the CPU supports AVX-512 Bit Algorithms.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports AVX-512 Bit Algorithms
+ */
++ (bool)supportsAVX512BitAlgorithms;
 #endif
 
 #if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
