@@ -15,64 +15,66 @@
 
 #include "config.h"
 
+.intel_syntax noprefix
+
 .globl _OFForward
 .globl _OFForward_stret
 
 .section .text
 _OFForward:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
+	mov	eax, [ebp + 8]
+	mov	[esp], eax
 	call	_object_getClass
 
-	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
-	movl	%eax, 4(%esp)
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
-	testl	%eax, %eax
-	jz	0f
+	test	eax, eax
+	jz	short 0f
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
-	movl	%eax, 4(%esp)
+	mov	eax, [ebp + 8]
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], eax
 	call	_objc_msg_lookup
 
-	movl	8(%ebp), %edx
-	movl	%edx, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %edx
-	movl	%edx, 4(%esp)
-	movl	12(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
+	mov	edx, [ebp + 8]
+	mov	[esp], edx
+	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], edx
+	mov	edx, [ebp + 12]
+	mov	[esp + 8], edx
+	call	eax
 
-	testl	%eax, %eax
-	jz	0f
-	cmpl	8(%ebp), %eax
-	je	0f
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp + 8]
+	je	short 0f
 
-	movl	%eax, 8(%ebp)
-	movl	%eax, (%esp)
-	movl	12(%ebp), %eax
-	movl	%eax, 4(%esp)
+	mov	[ebp + 8], eax
+	mov	[esp], eax
+	mov	eax, [ebp + 12]
+	mov	[esp + 4], eax
 	call	_objc_msg_lookup
 
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	jmp	*%eax
+	jmp	eax
 
 0:
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_OFMethodNotFound
 .def _OFForward
@@ -81,59 +83,59 @@ _OFForward:
 .endef
 
 _OFForward_stret:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
+	mov	eax, [ebp + 12]
+	mov	[esp], eax
 	call	_object_getClass
 
-	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
-	movl	%eax, 4(%esp)
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
-	testl	%eax, %eax
-	jz	0f
+	test	eax, eax
+	jz	short 0f
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
-	movl	%eax, 4(%esp)
+	mov	eax, [ebp + 12]
+	mov	[esp], eax
+	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], eax
 	call	_objc_msg_lookup
 
-	movl	12(%ebp), %edx
-	movl	%edx, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %edx
-	movl	%edx, 4(%esp)
-	movl	16(%ebp), %edx
-	movl	%edx, 8(%esp)
-	call	*%eax
+	mov	edx, [ebp + 12]
+	mov	[esp], edx
+	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	[esp + 4], edx
+	mov	edx, [ebp + 16]
+	mov	[esp + 8], edx
+	call	eax
 
-	testl	%eax, %eax
-	jz	0f
-	cmpl	12(%ebp), %eax
-	je	0f
+	test	eax, eax
+	jz	short 0f
+	cmp	eax, [ebp + 12]
+	je	short 0f
 
-	movl	%eax, 12(%ebp)
-	movl	%eax, (%esp)
-	movl	16(%ebp), %eax
-	movl	%eax, 4(%esp)
+	mov	[ebp + 12], eax
+	mov	[esp], eax
+	mov	eax, [ebp + 16]
+	mov	[esp  + 4], eax
 	call	_objc_msg_lookup_stret
 
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
-	jmp	*%eax
+	jmp	eax
 
 0:
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_OFMethodNotFound_stret
 .def _OFForward_stret
@@ -142,19 +144,19 @@ _OFForward_stret:
 .endef
 
 init:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$4, %esp
+	push	ebx
+	sub	esp, 4
 
-	movl	$module, %eax
-	movl	%eax, (%esp)
+	mov	eax, offset module
+	mov	[esp], eax
 	call	___objc_exec_class
 
-	addl	$4, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 4
+	pop	ebx
+	pop	ebp
 	ret
 
 .section .ctors, "aw"
