@@ -17,6 +17,8 @@
 
 #include "platform.h"
 
+.intel_syntax noprefix
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -25,68 +27,68 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	movl	4(%esp), %edx
-	testl	%edx, %edx
-	jz	returnNilMethod
+	mov	edx, [esp + 4]
+	test	edx, edx
+	jz	short returnNilMethod
 
-	testb	$1, %dl
-	jnz	.LtaggedPointer_\name
+	test	dl, 1
+	jnz	short .LtaggedPointer_\name
 
-	movl	(%edx), %edx
-	movl	32(%edx), %edx
+	mov	edx, [edx]
+	mov	edx, [edx + 32]
 
 .Lmain_\name:
-	movl	8(%esp), %eax
+	mov	eax, [esp + 8]
 
 #ifdef OF_SELUID24
-	movzbl	2(%eax), %ecx
-	movl	(%edx,%ecx,4), %edx
+	movzx	ecx, byte ptr [eax + 2]
+	mov	edx, [edx + 4 * ecx]
 #endif
-	movzbl	1(%eax), %ecx
-	movl	(%edx,%ecx,4), %edx
-	movzbl	(%eax), %ecx
-	movl	(%edx,%ecx,4), %eax
+	movzx	ecx, byte ptr [eax + 1]
+	mov	edx, [edx + 4 * ecx]
+	movzx	ecx, byte ptr [eax]
+	mov	eax, [edx + 4 * ecx]
 
-	testl	%eax, %eax
-	jz	0f
+	test	eax, eax
+	jz	short 0f
 
 	ret
 
 0:
 	call	getEIP
-	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	movl	\notFound@GOT(%eax), %eax
-	jmp	*%eax
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
+	mov	eax, [eax + \notFound@GOT]
+	jmp	eax
 
 .LtaggedPointer_\name:
 	call	getEIP
-	addl	$_GLOBAL_OFFSET_TABLE_, %eax
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
 
-	movl	objc_taggedPointerSecret@GOT(%eax), %ecx
-	xorl	(%ecx), %edx
-	andb	$0xE, %dl
-	movzbl	%dl, %edx
+	mov	ecx, [eax + objc_taggedPointerSecret@GOT]
+	xor	edx, [ecx]
+	and	dl, 0xE
+	movzx	edx, dl
 
-	movl	objc_taggedPointerClasses@GOT(%eax), %eax
-	movl	(%eax,%edx,2), %edx
-	movl	32(%edx), %edx
+	mov	eax, [eax + objc_taggedPointerClasses@GOT]
+	mov	edx, [eax + 2 * edx]
+	mov	edx, [edx + 32]
 
-	jmp	.Lmain_\name
+	jmp	short .Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	movl	4(%esp), %edx
-	movl	(%edx), %eax
-	testl	%eax, %eax
-	jz	returnNilMethod
+	mov	edx, [esp + 4]
+	mov	eax, [edx]
+	test	eax, eax
+	jz	short returnNilMethod
 
-	movl	%eax, 4(%esp)
-	mov	4(%edx), %edx
-	mov	32(%edx), %edx
-	jmp	.Lmain_\lookup
+	mov	[esp + 4], eax
+	mov	edx, [edx + 4]
+	mov	edx, [edx + 32]
+	jmp	short .Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -98,16 +100,16 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 returnNilMethod:
 	call	getEIP
-	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	leal	nilMethod@GOTOFF(%eax), %eax
+	add	eax, offset _GLOBAL_OFFSET_TABLE_
+	lea	eax, [eax + nilMethod@GOTOFF]
 	ret
 
 nilMethod:
-	xorl	%eax, %eax
+	xor	eax, eax
 	ret
 
 getEIP:
-	movl	(%esp), %eax
+	mov	eax, [esp]
 	ret
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
