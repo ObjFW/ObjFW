@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+.intel_syntax noprefix
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -23,50 +25,50 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	testq	%rcx, %rcx
-	jz	returnNilMethod
+	test	rcx, rcx
+	jz	short returnNilMethod
 
-	testb	$1, %cl
-	jnz	.LtaggedPointer_\name
+	test	cl, 1
+	jnz	short .LtaggedPointer_\name
 
-	movq	(%rcx), %r8
-	movq	56(%r8), %r8
+	mov	r8, [rcx]
+	mov	r8, [r8 + 56]
 
 .Lmain_\name:
-	movq	%rcx, %r10
-	movq	%rdx, %r11
+	mov	r10, rcx
+	mov	r11, rdx
 
-	movq	(%rdx), %rax
-	movzbl	%ah, %ecx
-	movzbl	%al, %edx
+	mov	rax, [rdx]
+	movzx	ecx, ah
+	movzx	edx, al
 #ifdef OF_SELUID24
-	shrl	$16, %eax
+	shr	eax, 16
 
-	movq	(%r8,%rax,8), %r8
+	mov	r8, [r8 + 8 * rax]
 #endif
-	movq	(%r8,%rcx,8), %r8
-	movq	(%r8,%rdx,8), %rax
+	mov	r8, [r8 + 8 * rcx]
+	mov	rax, [r8 + 8 * rdx]
 
-	testq	%rax, %rax
-	jz	0f
+	test	rax, rax
+	jz	short 0f
 
 	ret
 
 0:
-	movq	%r10, %rcx
-	movq	%r11, %rdx
-	jmp	\notFound
+	mov	rcx, r10
+	mov	rdx, r11
+	jmp	short \notFound
 
 .LtaggedPointer_\name:
-	xorq	objc_taggedPointerSecret(%rip), %rcx
-	andb	$0xE, %cl
-	movzbl	%cl, %r8d
+	xor	rcx, [rip + objc_taggedPointerSecret]
+	and	cl, 0xE
+	movzx	r8d, cl
 
-	leaq	objc_taggedPointerClasses(%rip), %rax
-	movq	(%rax,%r8,4), %r8
-	movq	56(%r8), %r8
+	lea	rax, [rip + objc_taggedPointerClasses]
+	mov	r8, [rax + 4 * r8]
+	mov	r8, [r8 + 56]
 
-	jmp	.Lmain_\name
+	jmp	short .Lmain_\name
 .def \name
 .scl 2
 .type 32
@@ -75,14 +77,14 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	movq	%rcx, %r8
-	movq	(%rcx), %rcx
-	testq	%rcx, %rcx
-	jz	returnNilMethod
+	mov	r8, rcx
+	mov	rcx, [rcx]
+	test	rcx, rcx
+	jz	short returnNilMethod
 
-	movq	8(%r8), %r8
-	movq	56(%r8), %r8
-	jmp	.Lmain_\lookup
+	mov	r8, [r8 + 8]
+	mov	r8, [r8 + 56]
+	jmp	short .Lmain_\lookup
 .def \name
 .scl 2
 .type 32
@@ -95,9 +97,9 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 returnNilMethod:
-	leaq	nilMethod(%rip), %rax
+	lea	rax, [rip + nilMethod]
 	ret
 
 nilMethod:
-	xorq	%rax, %rax
+	xor	rax, rax
 	ret
