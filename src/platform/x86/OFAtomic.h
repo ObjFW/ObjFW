@@ -15,17 +15,25 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+static OF_INLINE int32_t
+OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
+{
+	__asm__ __volatile__ (
+	    "lock\n\t"
+	    "xaddl	%0, %2\n\t"
+	    "addl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
+	);
+
+	return i;
+}
+
 static OF_INLINE int
 OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 {
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "lock\n\t"
-		    "xaddl	%0, %2\n\t"
-		    "addl	%1, %0"
-		    : "+&r"(i)
-		    : "r"(i), "m"(*p)
-		);
+		return OFAtomicInt32Add(p, i);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
@@ -38,20 +46,6 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 #endif
 	else
 		abort();
-
-	return i;
-}
-
-static OF_INLINE int32_t
-OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
-{
-	__asm__ __volatile__ (
-	    "lock\n\t"
-	    "xaddl	%0, %2\n\t"
-	    "addl	%1, %0"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
-	);
 
 	return i;
 }
@@ -82,18 +76,26 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 #endif
 }
 
+static OF_INLINE int32_t
+OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
+{
+	__asm__ __volatile__ (
+	    "negl	%0\n\t"
+	    "lock\n\t"
+	    "xaddl	%0, %2\n\t"
+	    "subl	%1, %0"
+	    : "+&r"(i)
+	    : "r"(i), "m"(*p)
+	);
+
+	return i;
+}
+
 static OF_INLINE int
 OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 {
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "negl	%0\n\t"
-		    "lock\n\t"
-		    "xaddl	%0, %2\n\t"
-		    "subl	%1, %0"
-		    : "+&r"(i)
-		    : "r"(i), "m"(*p)
-		);
+		return OFAtomicInt32Subtract(p, i);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
@@ -107,21 +109,6 @@ OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 #endif
 	else
 		abort();
-
-	return i;
-}
-
-static OF_INLINE int32_t
-OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
-{
-	__asm__ __volatile__ (
-	    "negl	%0\n\t"
-	    "lock\n\t"
-	    "xaddl	%0, %2\n\t"
-	    "subl	%1, %0"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
-	);
 
 	return i;
 }
@@ -154,39 +141,6 @@ OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 #endif
 }
 
-static OF_INLINE int
-OFAtomicIntIncrease(volatile int *_Nonnull p)
-{
-	int i;
-
-	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "xorl	%0, %0\n\t"
-		    "incl	%0\n\t"
-		    "lock\n\t"
-		    "xaddl	%0, %1\n\t"
-		    "incl	%0"
-		    : "=&r"(i)
-		    : "m"(*p)
-		);
-#ifdef OF_AMD64
-	else if (sizeof(int) == 8)
-		__asm__ __volatile__ (
-		    "xorq	%0, %0\n\t"
-		    "incq	%0\n\t"
-		    "lock\n\t"
-		    "xaddq	%0, %1\n\t"
-		    "incq	%0"
-		    : "=&r"(i)
-		    : "m"(*p)
-		);
-#endif
-	else
-		abort();
-
-	return i;
-}
-
 static OF_INLINE int32_t
 OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 {
@@ -206,28 +160,20 @@ OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 }
 
 static OF_INLINE int
-OFAtomicIntDecrease(volatile int *_Nonnull p)
+OFAtomicIntIncrease(volatile int *_Nonnull p)
 {
 	int i;
 
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "xorl	%0, %0\n\t"
-		    "decl	%0\n\t"
-		    "lock\n\t"
-		    "xaddl	%0, %1\n\t"
-		    "decl	%0"
-		    : "=&r"(i)
-		    : "m"(*p)
-		);
+		return OFAtomicInt32Increase(p);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "xorq	%0, %0\n\t"
-		    "decq	%0\n\t"
+		    "incq	%0\n\t"
 		    "lock\n\t"
 		    "xaddq	%0, %1\n\t"
-		    "decq	%0"
+		    "incq	%0"
 		    : "=&r"(i)
 		    : "m"(*p)
 		);
@@ -256,35 +202,23 @@ OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 	return i;
 }
 
-static OF_INLINE unsigned int
-OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
+static OF_INLINE int
+OFAtomicIntDecrease(volatile int *_Nonnull p)
 {
+	int i;
+
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "0:\n\t"
-		    "movl	%2, %0\n\t"
-		    "movl	%0, %%eax\n\t"
-		    "orl	%1, %0\n\t"
-		    "lock\n\t"
-		    "cmpxchg	%0, %2\n\t"
-		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
-		    : "eax", "cc"
-		);
+		return OFAtomicInt32Decrease(p);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
-		    "0:\n\t"
-		    "movq	%2, %0\n\t"
-		    "movq	%0, %%rax\n\t"
-		    "orq	%1, %0\n\t"
+		    "xorq	%0, %0\n\t"
+		    "decq	%0\n\t"
 		    "lock\n\t"
-		    "cmpxchg	%0, %2\n\t"
-		    "jne	0b"
+		    "xaddq	%0, %1\n\t"
+		    "decq	%0"
 		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
-		    : "rax", "cc"
+		    : "m"(*p)
 		);
 #endif
 	else
@@ -313,28 +247,17 @@ OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
+OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "0:\n\t"
-		    "movl	%2, %0\n\t"
-		    "movl	%0, %%eax\n\t"
-		    "andl	%1, %0\n\t"
-		    "lock\n\t"
-		    "cmpxchg	%0, %2\n\t"
-		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
-		    : "eax", "cc"
-		);
+		return OFAtomicInt32Or(p, i);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movq	%2, %0\n\t"
 		    "movq	%0, %%rax\n\t"
-		    "andq	%1, %0\n\t"
+		    "orq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
 		    "jne	0b"
@@ -369,28 +292,17 @@ OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
+OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	if (sizeof(int) == 4)
-		__asm__ __volatile__ (
-		    "0:\n\t"
-		    "movl	%2, %0\n\t"
-		    "movl	%0, %%eax\n\t"
-		    "xorl	%1, %0\n\t"
-		    "lock\n\t"
-		    "cmpxchg	%0, %2\n\t"
-		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
-		    : "eax", "cc"
-		);
+		return OFAtomicInt32And(p, i);
 #ifdef OF_AMD64
 	else if (sizeof(int) == 8)
 		__asm__ __volatile__ (
 		    "0:\n\t"
 		    "movq	%2, %0\n\t"
 		    "movq	%0, %%rax\n\t"
-		    "xorq	%1, %0\n\t"
+		    "andq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
 		    "jne	0b"
@@ -424,8 +336,34 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	return i;
 }
 
+static OF_INLINE unsigned int
+OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
+{
+	if (sizeof(int) == 4)
+		return OFAtomicInt32Xor(p, i);
+#ifdef OF_AMD64
+	else if (sizeof(int) == 8)
+		__asm__ __volatile__ (
+		    "0:\n\t"
+		    "movq	%2, %0\n\t"
+		    "movq	%0, %%rax\n\t"
+		    "xorq	%1, %0\n\t"
+		    "lock\n\t"
+		    "cmpxchg	%0, %2\n\t"
+		    "jne	0b"
+		    : "=&r"(i)
+		    : "r"(i), "m"(*p)
+		    : "rax", "cc"
+		);
+#endif
+	else
+		abort();
+
+	return i;
+}
+
 static OF_INLINE bool
-OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
+OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 {
 	int r;
 
@@ -443,7 +381,7 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 }
 
 static OF_INLINE bool
-OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
+OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 {
 	int r;
 
