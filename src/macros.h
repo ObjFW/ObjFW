@@ -292,10 +292,13 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
-#ifdef __GNUC__
+#if defined(__clang__) || OF_GCC_VERSION >= 405
 # define OF_DEPRECATED(project, major, minor, msg)		\
     __attribute__((__deprecated__("Deprecated in " #project " "	\
     #major "." #minor ": " msg)))
+#elif defined(__GNUC__)
+# define OF_DEPRECATED(project, major, minor, msg) \
+    __attribute__((__deprecated__))
 #else
 # define OF_DEPRECATED(project, major, minor, msg)
 #endif
