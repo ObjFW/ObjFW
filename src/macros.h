@@ -490,7 +490,7 @@ OFByteSwap16NonConst(uint16_t i)
 	return __builtin_bswap16(i);
 #elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
-	    "xchgb	%h0, %b0"
+	    "xchg{b}	{ %h0, %b0 | %b0, %h0 }"
 	    : "=Q"(i)
 	    : "0"(i)
 	);
@@ -558,9 +558,9 @@ OFByteSwap64NonConst(uint64_t i)
 	);
 #elif defined(OF_X86) && defined(__GNUC__)
 	__asm__ (
-	    "bswap	%%eax\n\t"
-	    "bswap	%%edx\n\t"
-	    "xchgl	%%eax, %%edx"
+	    "bswap	{%%}eax\n\t"
+	    "bswap	{%%}edx\n\t"
+	    "xchg{l}	{ %%eax, %%edx | edx, eax }"
 	    : "=A"(i)
 	    : "0"(i)
 	);
