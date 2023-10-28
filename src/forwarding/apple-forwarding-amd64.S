@@ -125,13 +125,13 @@ _OFForward_stret:
 
 	/* Save all arguments */
 	sub	rsp, 0xC0	/* 16-byte alignment */
-	movq	[rbp - 0x08], rax
-	movq	[rbp - 0x10], rdi
-	movq	[rbp - 0x18], rsi
-	movq	[rbp - 0x20], rdx
-	movq	[rbp - 0x28], rcx
-	movq	[rbp - 0x30], r8
-	movq	[rbp - 0x38], r9
+	mov	[rbp - 0x08], rax
+	mov	[rbp - 0x10], rdi
+	mov	[rbp - 0x18], rsi
+	mov	[rbp - 0x20], rdx
+	mov	[rbp - 0x28], rcx
+	mov	[rbp - 0x30], r8
+	mov	[rbp - 0x38], r9
 	movaps	[rbp - 0x50], xmm0
 	movaps	[rbp - 0x60], xmm1
 	movaps	[rbp - 0x70], xmm2
