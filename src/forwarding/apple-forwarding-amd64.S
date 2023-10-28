@@ -18,6 +18,22 @@
 .globl _OFForward
 .globl _OFForward_stret
 
+.intel_syntax noprefix
+
+/* Work around assembler bugs. */
+.macro call
+	.att_syntax
+	/* Use uppercase instruction to avoid recursion. */
+	CALL	$0
+	.intel_syntax noprefix
+.endmacro
+.macro jmp
+	.att_syntax
+	/* Use uppercase instruction to avoid recursion. */
+	JMP	$0
+	.intel_syntax noprefix
+.endmacro
+
 .section __TEXT, __objc_methname, cstring_literals
 str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
@@ -31,148 +47,148 @@ sel_forwardingTargetForSelector_:
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
-	pushq	%rbp
-	movq	%rsp, %rbp
+	push	rbp
+	mov	rbp, rsp
 
 	/* Save all arguments */
-	subq	$0xC0, %rsp	/* 16-byte alignment */
-	movq	%rax, -0x8(%rbp)
-	movq	%rdi, -0x10(%rbp)
-	movq	%rsi, -0x18(%rbp)
-	movq	%rdx, -0x20(%rbp)
-	movq	%rcx, -0x28(%rbp)
-	movq	%r8, -0x30(%rbp)
-	movq	%r9, -0x38(%rbp)
-	movaps	%xmm0, -0x50(%rbp)
-	movaps	%xmm1, -0x60(%rbp)
-	movaps	%xmm2, -0x70(%rbp)
-	movaps	%xmm3, -0x80(%rbp)
-	movaps	%xmm4, -0x90(%rbp)
-	movaps	%xmm5, -0xA0(%rbp)
-	movaps	%xmm6, -0xB0(%rbp)
-	movaps	%xmm7, -0xC0(%rbp)
+	sub	rsp, 0xC0	/* 16-byte alignment */
+	mov	[rbp - 0x08], rax
+	mov	[rbp - 0x10], rdi
+	mov	[rbp - 0x18], rsi
+	mov	[rbp - 0x20], rdx
+	mov	[rbp - 0x28], rcx
+	mov	[rbp - 0x30], r8
+	mov	[rbp - 0x38], r9
+	movaps	[rbp - 0x50], xmm0
+	movaps	[rbp - 0x60], xmm1
+	movaps	[rbp - 0x70], xmm2
+	movaps	[rbp - 0x80], xmm3
+	movaps	[rbp - 0x90], xmm4
+	movaps	[rbp - 0xA0], xmm5
+	movaps	[rbp - 0xB0], xmm6
+	movaps	[rbp - 0xC0], xmm7
 
 	call	_object_getClass
 
-	movq	%rax, %rdi
-	movq	sel_forwardingTargetForSelector_(%rip), %rsi
+	mov	rdi, rax
+	mov	rsi, [rip + sel_forwardingTargetForSelector_]
 	call	_class_respondsToSelector
 
-	testq	%rax, %rax
+	test	rax, rax
 	jz	0f
 
-	movq	-0x10(%rbp), %rdi
-	movq	sel_forwardingTargetForSelector_(%rip), %rsi
-	movq	-0x18(%rbp), %rdx
+	mov	rdi, [rbp - 0x10]
+	mov	rsi, [rip + sel_forwardingTargetForSelector_]
+	mov	rdx, [rbp - 0x18]
 	call	_objc_msgSend
 
-	testq	%rax, %rax
+	test	rax, rax
 	jz	0f
-	cmpq	-0x10(%rbp), %rax
+	cmp	rax, [rbp - 0x10]
 	je	0f
 
-	movq	%rax, %rdi
+	mov	rdi, rax
 
 	/* Restore all arguments, except %rdi */
-	movaps	-0xC0(%rbp), %xmm7
-	movaps	-0xB0(%rbp), %xmm6
-	movaps	-0xA0(%rbp), %xmm5
-	movaps	-0x90(%rbp), %xmm4
-	movaps	-0x80(%rbp), %xmm3
-	movaps	-0x70(%rbp), %xmm2
-	movaps	-0x60(%rbp), %xmm1
-	movaps	-0x50(%rbp), %xmm0
-	movq	-0x38(%rbp), %r9
-	movq	-0x30(%rbp), %r8
-	movq	-0x28(%rbp), %rcx
-	movq	-0x20(%rbp), %rdx
-	movq	-0x18(%rbp), %rsi
-	movq	-0x8(%rbp), %rax
+	movaps	xmm7, [rbp - 0xC0]
+	movaps	xmm6, [rbp - 0xB0]
+	movaps	xmm5, [rbp - 0xA0]
+	movaps	xmm4, [rbp - 0x90]
+	movaps	xmm3, [rbp - 0x80]
+	movaps	xmm2, [rbp - 0x70]
+	movaps	xmm1, [rbp - 0x60]
+	movaps	xmm0, [rbp - 0x50]
+	mov	r9, [rbp - 0x38]
+	mov	r8, [rbp - 0x30]
+	mov	rcx, [rbp - 0x28]
+	mov	rdx, [rbp - 0x20]
+	mov	rsi, [rbp - 0x18]
+	mov	rax, [rbp - 0x08]
 
-	movq	%rbp, %rsp
-	popq	%rbp
+	mov	rsp, rbp
+	pop	rbp
 
 	jmp	_objc_msgSend
 
 0:
-	movq	-0x10(%rbp), %rdi
-	movq	-0x18(%rbp), %rsi
+	mov	rdi, [rbp - 0x10]
+	mov	rsi, [rbp - 0x18]
 
-	movq	%rbp, %rsp
-	popq	%rbp
+	mov	rsp, rbp
+	pop	rbp
 
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
-	pushq	%rbp
-	movq	%rsp, %rbp
+	push	rbp
+	mov	rbp, rsp
 
 	/* Save all arguments */
-	subq	$0xC0, %rsp	/* 16-byte alignment */
-	movq	%rax, -0x8(%rbp)
-	movq	%rdi, -0x10(%rbp)
-	movq	%rsi, -0x18(%rbp)
-	movq	%rdx, -0x20(%rbp)
-	movq	%rcx, -0x28(%rbp)
-	movq	%r8, -0x30(%rbp)
-	movq	%r9, -0x38(%rbp)
-	movaps	%xmm0, -0x50(%rbp)
-	movaps	%xmm1, -0x60(%rbp)
-	movaps	%xmm2, -0x70(%rbp)
-	movaps	%xmm3, -0x80(%rbp)
-	movaps	%xmm4, -0x90(%rbp)
-	movaps	%xmm5, -0xA0(%rbp)
-	movaps	%xmm6, -0xB0(%rbp)
-	movaps	%xmm7, -0xC0(%rbp)
+	sub	rsp, 0xC0	/* 16-byte alignment */
+	movq	[rbp - 0x08], rax
+	movq	[rbp - 0x10], rdi
+	movq	[rbp - 0x18], rsi
+	movq	[rbp - 0x20], rdx
+	movq	[rbp - 0x28], rcx
+	movq	[rbp - 0x30], r8
+	movq	[rbp - 0x38], r9
+	movaps	[rbp - 0x50], xmm0
+	movaps	[rbp - 0x60], xmm1
+	movaps	[rbp - 0x70], xmm2
+	movaps	[rbp - 0x80], xmm3
+	movaps	[rbp - 0x90], xmm4
+	movaps	[rbp - 0xA0], xmm5
+	movaps	[rbp - 0xB0], xmm6
+	movaps	[rbp - 0xC0], xmm7
 
-	movq	%rsi, %rdi
+	mov	rdi, rsi
 	call	_object_getClass
 
-	movq	%rax, %rdi
-	movq	sel_forwardingTargetForSelector_(%rip), %rsi
+	mov	rdi, rax
+	mov	rsi, [rip + sel_forwardingTargetForSelector_]
 	call	_class_respondsToSelector
-	testq	%rax, %rax
+	test	rax, rax
 	jz	0f
 
-	movq	-0x18(%rbp), %rdi
-	movq	sel_forwardingTargetForSelector_(%rip), %rsi
-	movq	-0x20(%rbp), %rdx
+	mov	rdi, [rbp - 0x18]
+	mov	rsi, [rip + sel_forwardingTargetForSelector_]
+	mov	rdx, [rbp - 0x20]
 	call	_objc_msgSend
 
-	testq	%rax, %rax
+	test	rax, rax
 	jz	0f
-	cmpq	-0x18(%rbp), %rax
+	cmp	rax, [rbp - 0x18]
 	je	0f
 
-	movq	%rax, %rsi
+	mov	rsi, rax
 
 	/* Restore all arguments, except %rsi */
-	movaps	-0xC0(%rbp), %xmm7
-	movaps	-0xB0(%rbp), %xmm6
-	movaps	-0xA0(%rbp), %xmm5
-	movaps	-0x90(%rbp), %xmm4
-	movaps	-0x80(%rbp), %xmm3
-	movaps	-0x70(%rbp), %xmm2
-	movaps	-0x60(%rbp), %xmm1
-	movaps	-0x50(%rbp), %xmm0
-	movq	-0x38(%rbp), %r9
-	movq	-0x30(%rbp), %r8
-	movq	-0x28(%rbp), %rcx
-	movq	-0x20(%rbp), %rdx
-	movq	-0x10(%rbp), %rdi
-	movq	-0x8(%rbp), %rax
+	movaps	xmm7, [rbp - 0xC0]
+	movaps	xmm6, [rbp - 0xB0]
+	movaps	xmm5, [rbp - 0xA0]
+	movaps	xmm4, [rbp - 0x90]
+	movaps	xmm3, [rbp - 0x80]
+	movaps	xmm2, [rbp - 0x70]
+	movaps	xmm1, [rbp - 0x60]
+	movaps	xmm0, [rbp - 0x50]
+	mov	r9, [rbp - 0x38]
+	mov	r8, [rbp - 0x30]
+	mov	rcx, [rbp - 0x28]
+	mov	rdx, [rbp - 0x20]
+	mov	rdi, [rbp - 0x10]
+	mov	rax, [rbp - 0x08]
 
-	movq	%rbp, %rsp
-	popq	%rbp
+	mov	rsp, rbp
+	pop	rbp
 
 	jmp	_objc_msgSend_stret
 
 0:
-	movq	-0x10(%rbp), %rdi
-	movq	-0x18(%rbp), %rsi
-	movq	-0x20(%rbp), %rdx
+	mov	rdi, [rbp - 0x10]
+	mov	rsi, [rbp - 0x18]
+	mov	rdx, [rbp - 0x20]
 
-	movq	%rbp, %rsp
-	popq	%rbp
+	mov	rsp, rbp
+	pop	rbp
 
 	jmp	_OFMethodNotFound_stret
