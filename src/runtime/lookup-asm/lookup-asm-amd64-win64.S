@@ -26,10 +26,10 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	test	rcx, rcx
-	jz	short .LreturnNilMethod
+	jz	.LreturnNilMethod
 
 	test	cl, 1
-	jnz	short .LtaggedPointer_\name
+	jnz	.LtaggedPointer_\name
 
 	mov	r8, [rcx]
 	mov	r8, [r8 + 56]
@@ -50,14 +50,14 @@
 	mov	rax, [r8 + 8 * rdx]
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	ret
 
 0:
 	mov	rcx, r10
 	mov	rdx, r11
-	jmp	short \notFound
+	jmp	\notFound
 
 .LtaggedPointer_\name:
 	xor	rcx, [rip + objc_taggedPointerSecret]
@@ -68,7 +68,7 @@
 	mov	r8, [rax + 4 * r8]
 	mov	r8, [r8 + 56]
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .def \name
 .scl 2
 .type 32

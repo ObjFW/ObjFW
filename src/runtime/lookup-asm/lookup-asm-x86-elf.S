@@ -29,10 +29,10 @@
 \name:
 	mov	edx, [esp + 4]
 	test	edx, edx
-	jz	short .LreturnNilMethod
+	jz	.LreturnNilMethod
 
 	test	dl, 1
-	jnz	short .LtaggedPointer_\name
+	jnz	.LtaggedPointer_\name
 
 	mov	edx, [edx]
 	mov	edx, [edx + 32]
@@ -50,7 +50,7 @@
 	mov	eax, [edx + 4 * ecx]
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 
 	ret
 
@@ -73,7 +73,7 @@
 	mov	edx, [eax + 2 * edx]
 	mov	edx, [edx + 32]
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -83,12 +83,12 @@
 	mov	edx, [esp + 4]
 	mov	eax, [edx]
 	test	eax, eax
-	jz	short .LreturnNilMethod
+	jz	.LreturnNilMethod
 
 	mov	[esp + 4], eax
 	mov	edx, [edx + 4]
 	mov	edx, [edx + 32]
-	jmp	short .Lmain_\lookup
+	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm

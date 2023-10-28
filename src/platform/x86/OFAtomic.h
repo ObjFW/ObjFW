@@ -237,7 +237,7 @@ OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "or{l}	{ %1, %0 | %0, %1 }\n\t"
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
-	    "jne	{ | short } 0b"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -260,7 +260,7 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "or{q}	{ %1, %0 | %0, %1 }\n\t"
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
-		    "jne	{ | short } 0b"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"
@@ -282,7 +282,7 @@ OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "and{l}	{ %1, %0 | %0, %1 }\n\t"
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
-	    "jne	{ | short } 0b"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -305,7 +305,7 @@ OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "and{q}	{ %1, %0 | %0, %1 }\n\t"
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
-		    "jne	{ | short } 0b"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"
@@ -327,7 +327,7 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "xor{l}	{ %1, %0 | %0, %1 }\n\t"
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
-	    "jne	{ | short } 0b"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -350,7 +350,7 @@ OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "xor{q}	{ %1, %0 | %0, %1 }\n\t"
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
-		    "jne	{ | short } 0b"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"

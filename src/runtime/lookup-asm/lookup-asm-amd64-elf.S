@@ -28,10 +28,10 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	test	rdi, rdi
-	jz	short .LreturnNilMethod
+	jz	.LreturnNilMethod
 
 	test	dil, 1
-	jnz	short .LtaggedPointer_\name
+	jnz	.LtaggedPointer_\name
 
 	mov	r8, [rdi]
 	mov	r8, [r8 + 64]
@@ -49,7 +49,7 @@
 	mov	rax, [r8 + 8 * rdx]
 
 	test	rax, rax
-	jz	short \notFound@PLT
+	jz	\notFound@PLT
 
 	ret
 
@@ -63,7 +63,7 @@
 	mov	r8, [rax + 4 * r8]
 	mov	r8, [r8 + 64]
 
-	jmp	short .Lmain_\name
+	jmp	.Lmain_\name
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -73,11 +73,11 @@
 	mov	r8, rdi
 	mov	rdi, [rdi]
 	test	rdi, rdi
-	jz	short .LreturnNilMethod
+	jz	.LreturnNilMethod
 
 	mov	r8, [r8 + 8]
 	mov	r8, [r8 + 64]
-	jmp	short .Lmain_\lookup
+	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm

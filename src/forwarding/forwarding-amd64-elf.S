@@ -52,7 +52,7 @@ OFForward:
 	call	class_respondsToSelector@PLT
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rdi, [rbp - 0x10]
 	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
@@ -64,9 +64,9 @@ OFForward:
 	call	rax
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp - 0x10]
-	je	short 0f
+	je	0f
 
 	mov	[rbp - 0x10], rax
 
@@ -138,7 +138,7 @@ OFForward_stret:
 	call	class_respondsToSelector@PLT
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rdi, [rbp - 0x18]
 	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
@@ -150,9 +150,9 @@ OFForward_stret:
 	call	rax
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp - 0x18]
-	je	short 0f
+	je	0f
 
 	mov	[rbp - 0x18], rax
 

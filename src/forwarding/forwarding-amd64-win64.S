@@ -44,7 +44,7 @@ OFForward:
 	call	class_respondsToSelector
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rcx, [rbp - 0x30]
 	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
@@ -56,9 +56,9 @@ OFForward:
 	call	rax
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp - 0x30]
-	je	short 0f
+	je	0f
 
 	mov	[rbp - 0x30], rax
 
@@ -120,7 +120,7 @@ OFForward_stret:
 	call	class_respondsToSelector
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 
 	mov	rcx, [rbp - 0x38]
 	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
@@ -132,9 +132,9 @@ OFForward_stret:
 	call	rax
 
 	test	rax, rax
-	jz	short 0f
+	jz	0f
 	cmp	rax, [rbp - 0x38]
-	je	short 0f
+	je	0f
 
 	mov	[rbp - 0x38], rax
 

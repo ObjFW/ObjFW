@@ -38,7 +38,7 @@ _OFForward:
 	call	_class_respondsToSelector
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 
 	mov	eax, [ebp + 8]
 	mov	[esp], eax
@@ -55,9 +55,9 @@ _OFForward:
 	call	eax
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 	cmp	eax, [ebp + 8]
-	je	short 0f
+	je	0f
 
 	mov	[ebp + 8], eax
 	mov	[esp], eax
@@ -99,7 +99,7 @@ _OFForward_stret:
 	call	_class_respondsToSelector
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 
 	mov	eax, [ebp + 12]
 	mov	[esp], eax
@@ -116,14 +116,14 @@ _OFForward_stret:
 	call	eax
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 	cmp	eax, [ebp + 12]
-	je	short 0f
+	je	0f
 
 	mov	[ebp + 12], eax
 	mov	[esp], eax
 	mov	eax, [ebp + 16]
-	mov	[esp  + 4], eax
+	mov	[esp + 4], eax
 	call	_objc_msg_lookup_stret
 
 	add	esp, 20

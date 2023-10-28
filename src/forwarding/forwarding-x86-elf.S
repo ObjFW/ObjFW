@@ -43,7 +43,7 @@ OFForward:
 	call	class_respondsToSelector@PLT
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 
 	mov	eax, [ebp + 8]
 	mov	[esp], eax
@@ -60,9 +60,9 @@ OFForward:
 	call	eax
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 	cmp	eax, [ebp + 8]
-	je	short 0f
+	je	0f
 
 	mov	[ebp + 8], eax
 	mov	[esp], eax
@@ -107,12 +107,12 @@ OFForward_stret:
 	call	class_respondsToSelector@PLT
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 
 	mov	eax, [ebp + 12]
 	mov	[esp], eax
 	lea	eax, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
-	mov	[esp  + 4], eax
+	mov	[esp + 4], eax
 	call	objc_msg_lookup@PLT
 
 	mov	edx, [ebp + 12]
@@ -124,9 +124,9 @@ OFForward_stret:
 	call	eax
 
 	test	eax, eax
-	jz	short 0f
+	jz	0f
 	cmp	eax, [ebp + 12]
-	je	short 0f
+	je	0f
 
 	mov	[ebp + 12], eax
 	mov	[esp], eax
