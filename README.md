@@ -55,7 +55,7 @@ other place, you are most likely using a mirror.
      compatible to a certain degree. This means that a developer still needs to
      care about differences between frameworks if they want to be portable. The
      idea behind ObjFW is that a developer does not need to concern themselves
-     with portablility and making sure their code works with multiple
+     with portability and making sure their code works with multiple
      frameworks: Instead, if it works it ObjFW on one platform, they can
      reasonably expect it to also work with ObjFW on another platform. ObjFW
      behaving differently on different operating systems (unless inevitable
