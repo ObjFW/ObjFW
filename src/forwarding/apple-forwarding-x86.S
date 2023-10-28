@@ -18,6 +18,22 @@
 .globl _OFForward
 .globl _OFForward_stret
 
+.intel_syntax noprefix
+
+/* Work around assembler bugs. */
+.macro call
+	.att_syntax
+	/* Use uppercase instruction to avoid recursion. */
+	CALL	$0
+	.intel_syntax noprefix
+.endmacro
+.macro jmp
+	.att_syntax
+	/* Use uppercase instruction to avoid recursion. */
+	JMP	$0
+	.intel_syntax noprefix
+.endmacro
+
 .section __TEXT, __cstring, cstring_literals
 str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
@@ -31,105 +47,105 @@ sel_forwardingTargetForSelector_:
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	call	get_eip
+	call	getEIP
 0:
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
+	mov	eax, [ebp + 8]
+	mov	[esp], eax
 	call	_object_getClass
 
-	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
+	mov	[esp], eax
+	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
-	testl	%eax, %eax
+	test	eax, eax
 	jz	0f
 
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	12(%ebp), %eax
-	movl	%eax, 8(%esp)
+	mov	eax, [ebp + 8]
+	mov	[esp], eax
+	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	[esp + 4], eax
+	mov	eax, [ebp + 12]
+	mov	[esp + 8], eax
 	call	_objc_msgSend
 
-	testl	%eax, %eax
+	test	eax, eax
 	jz	0f
-	cmpl	8(%ebp), %eax
+	cmp	eax, [ebp + 8]
 	je	0f
 
-	movl	%eax, 8(%ebp)
+	mov	[ebp + 8], eax
 
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_objc_msgSend
 
 0:
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
-	pushl	%ebp
-	movl	%esp, %ebp
+	push	ebp
+	mov	ebp, esp
 
-	pushl	%ebx
-	subl	$20, %esp
+	push	ebx
+	sub	esp, 20
 
-	call	get_eip
+	call	getEIP
 0:
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
+	mov	eax, [ebp + 12]
+	mov	[esp], eax
 	call	_object_getClass
 
-	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
+	mov	[esp], eax
+	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
-	testl	%eax, %eax
+	test	eax, eax
 	jz	0f
 
-	movl	12(%ebp), %eax
-	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
-	movl	%eax, 4(%esp)
-	movl	16(%ebp), %eax
-	movl	%eax, 8(%esp)
+	mov	eax, [ebp + 12]
+	mov	[esp], eax
+	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	[esp + 4], eax
+	mov	eax, [ebp + 16]
+	mov	[esp + 8], eax
 	call	_objc_msgSend
 
-	testl	%eax, %eax
+	test	eax, eax
 	jz	0f
-	cmpl	12(%ebp), %eax
+	cmp	eax, [ebp + 12]
 	je	0f
 
-	movl	%eax, 12(%ebp)
+	mov	[ebp + 12], %eax
 
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_objc_msgSend_stret
 
 0:
-	addl	$20, %esp
-	popl	%ebx
-	popl	%ebp
+	add	esp, 20
+	pop	ebx
+	pop	ebp
 
 	jmp	_OFMethodNotFound_stret
 
-get_eip:
-	movl	(%esp), %ebx
+getEIP:
+	mov	ebx, [esp]
 	ret
