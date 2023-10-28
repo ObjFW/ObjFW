@@ -26,7 +26,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	test	rcx, rcx
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	test	cl, 1
 	jnz	short .LtaggedPointer_\name
@@ -80,7 +80,7 @@
 	mov	r8, rcx
 	mov	rcx, [rcx]
 	test	rcx, rcx
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	mov	r8, [r8 + 8]
 	mov	r8, [r8 + 56]
@@ -96,10 +96,10 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	lea	rax, [rip + nilMethod]
+.LreturnNilMethod:
+	lea	rax, [rip + .LnilMethod]
 	ret
 
-nilMethod:
+.LnilMethod:
 	xor	rax, rax
 	ret

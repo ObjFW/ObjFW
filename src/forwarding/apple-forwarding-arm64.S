@@ -19,12 +19,12 @@
 .globl _OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-sel_forwardingTargetForSelector_:
-	.quad str_forwardingTargetForSelector_
+Lsel_forwardingTargetForSelector_:
+	.quad Lstr_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -52,8 +52,8 @@ _OFForward_stret:
 
 	bl	_object_getClass
 
-	adrp	x19, sel_forwardingTargetForSelector_@PAGE
-	add	x19, x19, sel_forwardingTargetForSelector_@PAGEOFF
+	adrp	x19, Lsel_forwardingTargetForSelector_@PAGE
+	add	x19, x19, Lsel_forwardingTargetForSelector_@PAGEOFF
 	ldr	x19, [x19]
 
 	mov	x1, x19

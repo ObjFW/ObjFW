@@ -26,7 +26,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	tst	%o0
-	bz	returnNilMethod
+	bz	.LreturnNilMethod
 	 btst	1, %o0
 	bnz	.LtaggedPointer_\name	
 	 nop
@@ -104,7 +104,7 @@
 	mov	%o0, %o2
 	ld	[%o0], %o0
 	cmp	%o0, 0
-	be	returnNilMethod
+	be	.LreturnNilMethod
 	 nop
 
 	ld	[%o2 + 4], %o2
@@ -119,7 +119,7 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
+.LreturnNilMethod:
 #ifdef OF_PIC
 	mov	%o7, %g1
 
@@ -129,18 +129,18 @@ returnNilMethod:
 0:
 	add	%o7, %o1, %o1
 
-	sethi	%hi(nilMethod), %o0
-	or	%o0, %lo(nilMethod), %o0
+	sethi	%hi(.LnilMethod), %o0
+	or	%o0, %lo(.LnilMethod), %o0
 
 	jmpl	%g1 + 8, %g0
 	 ld	[%o1 + %o0], %o0
 #else
-	sethi	%hi(nilMethod), %o0
+	sethi	%hi(.LnilMethod), %o0
 	retl
-	 or	%o0, %lo(nilMethod), %o0
+	 or	%o0, %lo(.LnilMethod), %o0
 #endif
 
-nilMethod:
+.LnilMethod:
 	retl
 	 clr	%o0
 

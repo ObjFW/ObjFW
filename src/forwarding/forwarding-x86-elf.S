@@ -30,7 +30,7 @@ OFForward:
 	push	ebx
 	sub	esp, 20
 
-	call	getEIP
+	call	.LgetEIP
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
 	mov	eax, [ebp + 8]
@@ -38,7 +38,7 @@ OFForward:
 	call	object_getClass@PLT
 
 	mov	[esp], eax
-	lea	eax, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	eax, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp + 4], eax
 	call	class_respondsToSelector@PLT
 
@@ -47,13 +47,13 @@ OFForward:
 
 	mov	eax, [ebp + 8]
 	mov	[esp], eax
-	lea	eax, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	eax, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp + 4], eax
 	call	objc_msg_lookup@PLT
 
 	mov	edx, [ebp + 8]
 	mov	[esp], edx
-	lea	edx, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	edx, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp + 4], edx
 	mov	edx, [ebp + 12]
 	mov	[esp + 8], edx
@@ -94,7 +94,7 @@ OFForward_stret:
 	push	ebx
 	sub	esp, 20
 
-	call	getEIP
+	call	.LgetEIP
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
 	mov	eax, [ebp + 12]
@@ -102,7 +102,7 @@ OFForward_stret:
 	call	object_getClass@PLT
 
 	mov	[esp], eax
-	lea	eax, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	eax, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp + 4], eax
 	call	class_respondsToSelector@PLT
 
@@ -111,13 +111,13 @@ OFForward_stret:
 
 	mov	eax, [ebp + 12]
 	mov	[esp], eax
-	lea	eax, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	eax, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp  + 4], eax
 	call	objc_msg_lookup@PLT
 
 	mov	edx, [ebp + 12]
 	mov	[esp], edx
-	lea	edx, [ebx + sel_forwardingTargetForSelector_@GOTOFF]
+	lea	edx, [ebx + .Lsel_forwardingTargetForSelector_@GOTOFF]
 	mov	[esp + 4], edx
 	mov	edx, [ebp + 16]
 	mov	[esp + 8], edx
@@ -151,17 +151,17 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 	push	ebp
 	mov	ebp, esp
 
 	push	ebx
 	sub	esp, 4
 
-	call	getEIP
+	call	.LgetEIP
 	add	ebx, offset _GLOBAL_OFFSET_TABLE_
 
-	lea	eax, [ebx + module@GOTOFF]
+	lea	eax, [ebx + .Lmodule@GOTOFF]
 	mov	[esp], eax
 	call	__objc_exec_class@PLT
 
@@ -170,7 +170,7 @@ init:
 	pop	ebp
 	ret
 
-getEIP:
+.LgetEIP:
 	mov	ebx, [esp]
 	ret
 
@@ -179,23 +179,23 @@ getEIP:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits

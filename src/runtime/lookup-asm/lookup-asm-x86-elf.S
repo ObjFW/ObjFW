@@ -29,7 +29,7 @@
 \name:
 	mov	edx, [esp + 4]
 	test	edx, edx
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	test	dl, 1
 	jnz	short .LtaggedPointer_\name
@@ -55,13 +55,13 @@
 	ret
 
 0:
-	call	getEIP
+	call	.LgetEIP
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
 	mov	eax, [eax + \notFound@GOT]
 	jmp	eax
 
 .LtaggedPointer_\name:
-	call	getEIP
+	call	.LgetEIP
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
 
 	mov	ecx, [eax + objc_taggedPointerSecret@GOT]
@@ -83,7 +83,7 @@
 	mov	edx, [esp + 4]
 	mov	eax, [edx]
 	test	eax, eax
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	mov	[esp + 4], eax
 	mov	edx, [edx + 4]
@@ -98,17 +98,17 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	call	getEIP
+.LreturnNilMethod:
+	call	.LgetEIP
 	add	eax, offset _GLOBAL_OFFSET_TABLE_
-	lea	eax, [eax + nilMethod@GOTOFF]
+	lea	eax, [eax + .LnilMethod@GOTOFF]
 	ret
 
-nilMethod:
+.LnilMethod:
 	xor	eax, eax
 	ret
 
-getEIP:
+.LgetEIP:
 	mov	eax, [esp]
 	ret
 

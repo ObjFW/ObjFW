@@ -74,9 +74,9 @@
 
 0:
 #ifdef OF_PIC
-	addiu	$v0, $t9, nilMethod-\name
+	addiu	$v0, $t9, .LnilMethod-\name
 #else
-	la	$v0, nilMethod
+	la	$v0, .LnilMethod
 #endif
 	jr	$ra
 
@@ -136,9 +136,9 @@
 
 0:
 #ifdef OF_PIC
-	addiu	$v0, $t9, nilMethod-\name
+	addiu	$v0, $t9, .LnilMethod-\name
 #else
-	la	$v0, nilMethod
+	la	$v0, .LnilMethod
 #endif
 	jr	$ra
 .type \name, %function
@@ -150,7 +150,7 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-nilMethod:
+.LnilMethod:
 	move	$v0, $zero
 	jr	$ra
 

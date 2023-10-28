@@ -48,15 +48,15 @@ OFForward:
 	std	%f30, [%sp + BIAS + 296]
 
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %l7
-	call	add_pc
+	call	.LaddPC
 	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
 
 	mov	%i0, %o0
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	call	class_respondsToSelector
 	 nop
@@ -64,16 +64,16 @@ OFForward:
 	brz,pn	%o0, 0f
 
 	 mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	call	objc_msg_lookup
 	 nop
 	mov	%o0, %l0
 
 	mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	jmpl	%l0, %o7
 	 mov	%i1, %o2
@@ -141,15 +141,15 @@ OFForward_stret:
 	std	%f30, [%sp + BIAS + 296]
 
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %l7
-	call	add_pc
+	call	.LaddPC
 	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
 
 	mov	%i1, %o0
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	call	class_respondsToSelector
 	 nop
@@ -157,16 +157,16 @@ OFForward_stret:
 	brz,pn	%o0, 0f
 
 	 mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	call	objc_msg_lookup
 	 nop
 	mov	%o0, %l0
 
 	mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 	ldx	[%l7 + %o1], %o1
 	jmpl	%l0, %o7
 	 mov	%i2, %o2
@@ -209,21 +209,21 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 	save	%sp, -176, %sp
 
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %l7
-	call	add_pc
+	call	.LaddPC
 	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
 
-	sethi	%hi(module), %i0
-	or	%i0, %lo(module), %i0
+	sethi	%hi(.Lmodule), %i0
+	or	%i0, %lo(.Lmodule), %i0
 	ldx	[%l7 + %i0], %i0
 
 	call	__objc_exec_class
 	 restore
 
-add_pc:
+.LaddPC:
 	jmp	%o7 + 8
 	 add	%l7, %o7, %l7
 
@@ -232,23 +232,23 @@ add_pc:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.xword init
+	.xword .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.xword str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.xword .Lstr_forwardingTargetForSelector_, 0
 	.xword 0, 0
-symtab:
-	.xword 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.xword 0, .Lsel_forwardingTargetForSelector_
 	.half 0, 0
 	.word 0
 	.xword 0
-module:
-	.xword 8, 32, 0, symtab
+.Lmodule:
+	.xword 8, 32, 0, .Lsymtab
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits

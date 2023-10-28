@@ -40,18 +40,18 @@ OFForward:
 	call	object_getClass
 
 	mov	rcx, rax
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	call	class_respondsToSelector
 
 	test	rax, rax
 	jz	short 0f
 
 	mov	rcx, [rbp - 0x30]
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	call	objc_msg_lookup
 
 	mov	rcx, [rbp - 0x30]
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	mov	r8, [rbp - 0x38]
 	call	rax
 
@@ -116,18 +116,18 @@ OFForward_stret:
 	call	object_getClass
 
 	mov	rcx, rax
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	call	class_respondsToSelector
 
 	test	rax, rax
 	jz	short 0f
 
 	mov	rcx, [rbp - 0x38]
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	call	objc_msg_lookup
 
 	mov	rcx, [rbp - 0x38]
-	lea	rdx, [rip + sel_forwardingTargetForSelector_]
+	lea	rdx, [rip + .Lsel_forwardingTargetForSelector_]
 	mov	r8, [rbp - 0x40]
 	call	rax
 
@@ -173,27 +173,27 @@ OFForward_stret:
 .type 32
 .endef
 
-init:
-	lea	rcx, [rip + module]
+.Linit:
+	lea	rcx, [rip + .Lmodule]
 	jmp	__objc_exec_class
 
 .section .ctors, "aw"
-	.quad init
+	.quad .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.quad str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.quad .Lstr_forwardingTargetForSelector_, 0
 	.quad 0, 0
-symtab:
+.Lsymtab:
 	.long 0, 0
-	.quad sel_forwardingTargetForSelector_
+	.quad .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.quad 0
-module:
+.Lmodule:
 	.long 8, 32
-	.quad 0, symtab
+	.quad 0, .Lsymtab

@@ -26,7 +26,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	cmp	r0, #0
-	beq	returnNilMethod
+	beq	.LreturnNilMethod
 
 	tst	r0, #1
 	bne	.LtaggedPointer_\name
@@ -92,7 +92,7 @@
 	mov	r2, r0
 	ldr	r0, [r0, #0]
 	cmp	r0, #0
-	beq	returnNilMethod
+	beq	.LreturnNilMethod
 
 	ldr	r2, [r2, #4]
 	ldr	r2, [r2, #32]
@@ -107,11 +107,11 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	adr	r0, nilMethod
+.LreturnNilMethod:
+	adr	r0, .LnilMethod
 	bx	lr
 
-nilMethod:
+.LnilMethod:
 	mov	r0, #0
 	bx	lr
 

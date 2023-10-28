@@ -27,7 +27,7 @@
 \name:
 	mov	edx, [esp + 4]
 	test	edx, edx
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	test	dl, 1
 	jnz	short .LtaggedPointer_\name
@@ -72,7 +72,7 @@
 	mov	edx, [esp + 4]
 	mov	eax, [edx]
 	test	eax, eax
-	jz	short returnNilMethod
+	jz	short .LreturnNilMethod
 
 	mov	[esp + 4], eax
 	mov	edx, [edx  + 4]
@@ -89,10 +89,10 @@ GENERATE_LOOKUP _objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
-returnNilMethod:
-	mov	eax, offset nilMethod
+.LreturnNilMethod:
+	mov	eax, offset .LnilMethod
 	ret
 
-nilMethod:
+.LnilMethod:
 	xor	eax, eax
 	ret

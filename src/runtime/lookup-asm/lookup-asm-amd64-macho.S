@@ -40,7 +40,7 @@
 .macro GENERATE_LOOKUP
 $0:
 	test	rdi, rdi
-	jz	returnNilMethod
+	jz	LreturnNilMethod
 
 	test	dil, 1
 	jnz	LtaggedPointer_$0
@@ -83,7 +83,7 @@ $0:
 	mov	r8, rdi
 	mov	rdi, [rdi]
 	test	rdi, rdi
-	jz	returnNilMethod
+	jz	LreturnNilMethod
 
 	movq	r8, [r8 + 8]
 	movq	r8, [r8 + 64]
@@ -95,10 +95,10 @@ GENERATE_LOOKUP _objc_msg_lookup_stret, _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super, _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 
-returnNilMethod:
-	lea	rax, [rip + nilMethod]
+LreturnNilMethod:
+	lea	rax, [rip + LnilMethod]
 	ret
 
-nilMethod:
+LnilMethod:
 	xor	rax, rax
 	ret

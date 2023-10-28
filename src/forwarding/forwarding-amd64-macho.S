@@ -62,18 +62,18 @@ _OFForward:
 	call	_object_getClass
 
 	mov	rdi, rax
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	call	_class_respondsToSelector
 
 	test	rax, rax
 	jz	0f
 
 	mov	rdi, [rbp - 0x10]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	call	_objc_msg_lookup
 
 	movq	rdi, [rbp - 0x10]
-	leaq	rsi, [rip + sel_forwardingTargetForSelector_]
+	leaq	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	movq	rdx, [rbp - 0x18]
 	call	*%rax
 
@@ -146,18 +146,18 @@ _OFForward_stret:
 	call	_object_getClass
 
 	mov	rdi, rax
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	call	_class_respondsToSelector
 
 	test	rax, rax
 	jz	0f
 
 	mov	rdi, [rbp - 0x18]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	call	_objc_msg_lookup
 
 	mov	rdi, [rbp - 0x18]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + Lsel_forwardingTargetForSelector_]
 	mov	rdx, [rbp - 0x20]
 	call	*%rax
 
@@ -205,25 +205,25 @@ _OFForward_stret:
 
 	jmp	_OFMethodNotFound_stret
 
-init:
-	lea	rdi, [rip + module]
+Linit:
+	lea	rdi, [rip + Lmodule]
 	jmp	___objc_exec_class
 
 .section __DATA, __mod_init_func, mod_init_funcs
-	.quad init
+	.quad Linit
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __data
-sel_forwardingTargetForSelector_:
-	.quad str_forwardingTargetForSelector_, 0
+Lsel_forwardingTargetForSelector_:
+	.quad Lstr_forwardingTargetForSelector_, 0
 	.quad 0, 0
-symtab:
-	.quad 0, sel_forwardingTargetForSelector_
+Lsymtab:
+	.quad 0, Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.quad 0
-module:
-	.quad 8, 32, 0, symtab
+Lmodule:
+	.quad 8, 32, 0, Lsymtab

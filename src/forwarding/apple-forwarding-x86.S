@@ -35,12 +35,12 @@
 .endmacro
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+Lsel_forwardingTargetForSelector_:
+	.long Lstr_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -53,7 +53,7 @@ _OFForward:
 	push	ebx
 	sub	esp, 20
 
-	call	getEIP
+	call	LgetEIP
 0:
 
 	mov	eax, [ebp + 8]
@@ -61,7 +61,7 @@ _OFForward:
 	call	_object_getClass
 
 	mov	[esp], eax
-	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	eax, [ebx + Lsel_forwardingTargetForSelector_ - 0b]
 	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
@@ -70,7 +70,7 @@ _OFForward:
 
 	mov	eax, [ebp + 8]
 	mov	[esp], eax
-	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	eax, [ebx + Lsel_forwardingTargetForSelector_ - 0b]
 	mov	[esp + 4], eax
 	mov	eax, [ebp + 12]
 	mov	[esp + 8], eax
@@ -103,7 +103,7 @@ _OFForward_stret:
 	push	ebx
 	sub	esp, 20
 
-	call	getEIP
+	call	LgetEIP
 0:
 
 	mov	eax, [ebp + 12]
@@ -111,7 +111,7 @@ _OFForward_stret:
 	call	_object_getClass
 
 	mov	[esp], eax
-	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	eax, [ebx + Lsel_forwardingTargetForSelector_ - 0b]
 	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
@@ -120,7 +120,7 @@ _OFForward_stret:
 
 	mov	eax, [ebp + 12]
 	mov	[esp], eax
-	mov	eax, [ebx + sel_forwardingTargetForSelector_ - 0b]
+	mov	eax, [ebx + Lsel_forwardingTargetForSelector_ - 0b]
 	mov	[esp + 4], eax
 	mov	eax, [ebp + 16]
 	mov	[esp + 8], eax
@@ -146,6 +146,6 @@ _OFForward_stret:
 
 	jmp	_OFMethodNotFound_stret
 
-getEIP:
+LgetEIP:
 	mov	ebx, [esp]
 	ret

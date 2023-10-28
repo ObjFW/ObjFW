@@ -48,18 +48,18 @@ OFForward:
 	call	object_getClass@PLT
 
 	mov	rdi, rax
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	call	class_respondsToSelector@PLT
 
 	test	rax, rax
 	jz	short 0f
 
 	mov	rdi, [rbp - 0x10]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	call	objc_msg_lookup@PLT
 
 	mov	rdi, [rbp - 0x10]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	mov	rdx, [rbp - 0x18]
 	call	rax
 
@@ -134,18 +134,18 @@ OFForward_stret:
 	call	object_getClass@PLT
 
 	mov	rdi, rax
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	call	class_respondsToSelector@PLT
 
 	test	rax, rax
 	jz	short 0f
 
 	mov	rdi, [rbp - 0x18]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	call	objc_msg_lookup@PLT
 
 	mov	rdi, [rbp - 0x18]
-	lea	rsi, [rip + sel_forwardingTargetForSelector_]
+	lea	rsi, [rip + .Lsel_forwardingTargetForSelector_]
 	mov	rdx, [rbp - 0x20]
 	call	rax
 
@@ -195,8 +195,8 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
-	lea	rdi, [rip + module]
+.Linit:
+	lea	rdi, [rip + .Lmodule]
 	jmp	__objc_exec_class@PLT
 
 #ifdef OF_SOLARIS
@@ -204,23 +204,23 @@ init:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.quad init
+	.quad .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.quad str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.quad .Lstr_forwardingTargetForSelector_, 0
 	.quad 0, 0
-symtab:
-	.quad 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.quad 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.quad 0
-module:
-	.quad 8, 32, 0, symtab
+.Lmodule:
+	.quad 8, 32, 0, .Lsymtab
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits

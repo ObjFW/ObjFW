@@ -34,8 +34,8 @@ OFForward:
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -46,8 +46,8 @@ OFForward:
 	be	0f
 
 	 mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -56,8 +56,8 @@ OFForward:
 	mov	%o0, %l0
 
 	mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -95,8 +95,8 @@ OFForward_stret:
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -107,8 +107,8 @@ OFForward_stret:
 	be	0f
 
 	 mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -117,8 +117,8 @@ OFForward_stret:
 	mov	%o0, %l0
 
 	mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -143,7 +143,7 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -152,8 +152,8 @@ init:
 	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
 #endif
 
-	sethi	%hi(module), %i0
-	or	%i0, %lo(module), %i0
+	sethi	%hi(.Lmodule), %i0
+	or	%i0, %lo(.Lmodule), %i0
 #ifdef OF_PIC
 	ld	[%l7 + %i0], %i0
 #endif
@@ -172,23 +172,23 @@ add_pc:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.word init
+	.word .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.word str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.word .Lstr_forwardingTargetForSelector_, 0
 	.word 0, 0
-symtab:
-	.word 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.word 0, .Lsel_forwardingTargetForSelector_
 	.half 0, 0
 	.word 0
 	.word 0
-module:
-	.word 8, 16, 0, symtab
+.Lmodule:
+	.word 8, 16, 0, .Lsymtab
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits

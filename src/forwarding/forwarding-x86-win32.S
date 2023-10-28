@@ -33,7 +33,7 @@ _OFForward:
 	call	_object_getClass
 
 	mov	[esp], eax
-	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	eax, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
@@ -42,13 +42,13 @@ _OFForward:
 
 	mov	eax, [ebp + 8]
 	mov	[esp], eax
-	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	eax, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], eax
 	call	_objc_msg_lookup
 
 	mov	edx, [ebp + 8]
 	mov	[esp], edx
-	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	edx, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], edx
 	mov	edx, [ebp + 12]
 	mov	[esp + 8], edx
@@ -94,7 +94,7 @@ _OFForward_stret:
 	call	_object_getClass
 
 	mov	[esp], eax
-	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	eax, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], eax
 	call	_class_respondsToSelector
 
@@ -103,13 +103,13 @@ _OFForward_stret:
 
 	mov	eax, [ebp + 12]
 	mov	[esp], eax
-	mov	eax, offset sel_forwardingTargetForSelector_
+	mov	eax, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], eax
 	call	_objc_msg_lookup
 
 	mov	edx, [ebp + 12]
 	mov	[esp], edx
-	mov	edx, offset sel_forwardingTargetForSelector_
+	mov	edx, offset .Lsel_forwardingTargetForSelector_
 	mov	[esp + 4], edx
 	mov	edx, [ebp + 16]
 	mov	[esp + 8], edx
@@ -143,14 +143,14 @@ _OFForward_stret:
 .type 32
 .endef
 
-init:
+.Linit:
 	push	ebp
 	mov	ebp, esp
 
 	push	ebx
 	sub	esp, 4
 
-	mov	eax, offset module
+	mov	eax, offset .Lmodule
 	mov	[esp], eax
 	call	___objc_exec_class
 
@@ -160,20 +160,20 @@ init:
 	ret
 
 .section .ctors, "aw"
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
