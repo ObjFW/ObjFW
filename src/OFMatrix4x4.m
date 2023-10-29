@@ -88,46 +88,15 @@ static const float identityValues[4][4] = {
 
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix
 {
-	float right[4][4];
-	memcpy(right, _values, sizeof(right));
+	float result[4][4] = {{ 0 }};
 
-#define left matrix->_values
-	_values[0][0] = left[0][0] * right[0][0] + left[0][1] * right[1][0] +
-	    left[0][2] * right[2][0] + left[0][3] * right[3][0];
-	_values[0][1] = left[0][0] * right[0][1] + left[0][1] * right[1][1] +
-	    left[0][2] * right[2][1] + left[0][3] * right[3][1];
-	_values[0][2] = left[0][0] * right[0][2] + left[0][1] * right[1][2] +
-	    left[0][2] * right[2][2] + left[0][3] * right[3][2];
-	_values[0][3] = left[0][0] * right[0][3] + left[0][1] * right[1][3] +
-	    left[0][2] * right[2][3] + left[0][3] * right[3][3];
+	for (uint_fast8_t i = 0; i < 4; i++)
+		for (uint_fast8_t j = 0; j < 4; j++)
+			for (uint_fast8_t k = 0; k < 4; k++)
+				result[i][j] +=
+				    matrix->_values[i][k] * _values[k][j];
 
-	_values[1][0] = left[1][0] * right[0][0] + left[1][1] * right[1][0] +
-	    left[1][2] * right[2][0] + left[1][3] * right[3][0];
-	_values[1][1] = left[1][0] * right[0][1] + left[1][1] * right[1][1] +
-	    left[1][2] * right[2][1] + left[1][3] * right[3][1];
-	_values[1][2] = left[1][0] * right[0][2] + left[1][1] * right[1][2] +
-	    left[1][2] * right[2][2] + left[1][3] * right[3][2];
-	_values[1][3] = left[1][0] * right[0][3] + left[1][1] * right[1][3] +
-	    left[1][2] * right[2][3] + left[1][3] * right[3][3];
-
-	_values[2][0] = left[2][0] * right[0][0] + left[2][1] * right[1][0] +
-	    left[2][2] * right[2][0] + left[2][3] * right[3][0];
-	_values[2][1] = left[2][0] * right[0][1] + left[2][1] * right[1][1] +
-	    left[2][2] * right[2][1] + left[2][3] * right[3][1];
-	_values[2][2] = left[2][0] * right[0][2] + left[2][1] * right[1][2] +
-	    left[2][2] * right[2][2] + left[2][3] * right[3][2];
-	_values[2][3] = left[2][0] * right[0][3] + left[2][1] * right[1][3] +
-	    left[2][2] * right[2][3] + left[2][3] * right[3][3];
-
-	_values[3][0] = left[3][0] * right[0][0] + left[3][1] * right[1][0] +
-	    left[3][2] * right[2][0] + left[3][3] * right[3][0];
-	_values[3][1] = left[3][0] * right[0][1] + left[3][1] * right[1][1] +
-	    left[3][2] * right[2][1] + left[3][3] * right[3][1];
-	_values[3][2] = left[3][0] * right[0][2] + left[3][1] * right[1][2] +
-	    left[3][2] * right[2][2] + left[3][3] * right[3][2];
-	_values[3][3] = left[3][0] * right[0][3] + left[3][1] * right[1][3] +
-	    left[3][2] * right[2][3] + left[3][3] * right[3][3];
-#undef left
+	memcpy(_values, result, sizeof(result));
 }
 
 - (void)translateWithVector: (OFVector3D)vector
