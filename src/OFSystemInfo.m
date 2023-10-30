@@ -298,9 +298,9 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	 * and to pop it afterwards.
 	 */
 	__asm__ (
-	    "xchgl	%%ebx, %%edi\n\t"
+	    "xchg{l}	{ %%ebx, %%edi | edi, ebx }\n\t"
 	    "cpuid\n\t"
-	    "xchgl	%%edi, %%ebx"
+	    "xchg{l}	{ %%edi, %%ebx | ebx, edi }"
 	    : "=a"(regs.eax), "=D"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);

@@ -16,8 +16,10 @@
 #include "config.h"
 
 #import "OFMatrix4x4.h"
-#import "OFOnce.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
+
+#import "OFOnce.h"
 
 static const float identityValues[4][4] = {
 	{ 1, 0, 0, 0 },
@@ -27,6 +29,53 @@ static const float identityValues[4][4] = {
 };
 
 @implementation OFMatrix4x4
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(HAVE_INTEL_SYNTAX)
+static void
+multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
+{
+	float result[4][4] = {{ 0 }};
+
+	for (uint_fast8_t i = 0; i < 4; i++) {
+		for (uint_fast8_t j = 0; j < 4; j++) {
+			__asm__ (
+			    "movd	mm0, [%2]\n\t"
+			    "punpckldq	mm0, [%2 + 16]\n\t"
+			    "pfmul	mm0, [%1]\n\t"
+			    "movd	mm1, [%2 + 32]\n\t"
+			    "punpckldq	mm1, [%2 + 48]\n\t"
+			    "pfmul	mm1, [%1 + 8]\n\t"
+			    "pfadd	mm0, mm1\n\t"
+			    "movq	mm1, mm0\n\t"
+			    "psrlq	mm1, 32\n\t"
+			    "pfadd	mm0, mm1\n\t"
+			    "movd	%0, mm0"
+			    :: "m"(result[i][j]), "r"(&matrix->_values[i][0]),
+			       "r"(&self->_values[0][j])
+			    : "mm0", "mm1", "memory"
+			);
+		}
+	}
+
+	__asm__ ("femms");
+
+	memcpy(self->_values, result, sizeof(result));
+}
+
++ (void)initialize
+{
+	if (self != [OFMatrix4x4 class])
+		return;
+
+	if ([OFSystemInfo supports3DNow]) {
+		const SEL selector = @selector(multiplyWithMatrix:);
+		const char *typeEncoding = method_getTypeEncoding(
+		    class_getInstanceMethod(self, selector));
+		class_replaceMethod(self, selector,
+		    (IMP)multiplyWithMatrix_3DNow, typeEncoding);
+	}
+}
+#endif
+
 + (OFMatrix4x4 *)identityMatrix
 {
 	return [[[OFMatrix4x4 alloc]
