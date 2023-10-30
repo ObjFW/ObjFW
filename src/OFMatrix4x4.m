@@ -61,17 +61,83 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	memcpy(self->_values, result, sizeof(result));
 }
 
+static OFVector4D
+transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
+{
+	OFVector4D result;
+
+	__asm__ (
+	    "movq	mm0, [%2]\n\t"
+	    "movq	mm1, [%2 + 8]\n"
+	    "\n\t"
+	    "movq	mm2, mm0\n\t"
+	    "movq	mm3, mm1\n\t"
+	    "pfmul	mm2, [%1]\n\t"
+	    "pfmul	mm3, [%1 + 8]\n\t"
+	    "pfadd	mm2, mm3\n\t"
+	    "movq	mm3, mm2\n\t"
+	    "psrlq	mm3, 32\n\t"
+	    "pfadd	mm2, mm3\n"
+	    "\n\t"
+	    "movq	mm3, mm0\n\t"
+	    "movq	mm4, mm1\n\t"
+	    "pfmul	mm3, [%1 + 16]\n\t"
+	    "pfmul	mm4, [%1 + 24]\n\t"
+	    "pfadd	mm3, mm4\n\t"
+	    "movq	mm4, mm3\n\t"
+	    "psrlq	mm4, 32\n\t"
+	    "pfadd	mm3, mm4\n"
+	    "\n\t"
+	    "punpckldq	mm2, mm3\n\t"
+	    "movq	[%0], mm2\n"
+	    "\n\t"
+	    "movq	mm2, mm0\n\t"
+	    "movq	mm3, mm1\n\t"
+	    "pfmul	mm2, [%1 + 32]\n\t"
+	    "pfmul	mm3, [%1 + 40]\n\t"
+	    "pfadd	mm2, mm3\n\t"
+	    "movq	mm3, mm2\n\t"
+	    "psrlq	mm3, 32\n\t"
+	    "pfadd	mm2, mm3\n"
+	    "\n\t"
+	    "pfmul	mm0, [%1 + 48]\n\t"
+	    "pfmul	mm1, [%1 + 56]\n\t"
+	    "pfadd	mm0, mm1\n\t"
+	    "movq	mm1, mm0\n\t"
+	    "psrlq	mm1, 32\n\t"
+	    "pfadd	mm0, mm1\n"
+	    "\n\t"
+	    "punpckldq	mm2, mm0\n\t"
+	    "movq	[%0 + 8], mm2\n"
+	    "\n\t"
+	    "femms"
+	    :: "r"(&result), "r"(&self->_values), "r"(&vector)
+	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
+	);
+
+	return result;
+}
+
 + (void)initialize
 {
 	if (self != [OFMatrix4x4 class])
 		return;
 
 	if ([OFSystemInfo supports3DNow]) {
-		const SEL selector = @selector(multiplyWithMatrix:);
-		const char *typeEncoding = method_getTypeEncoding(
+		SEL selector;
+		const char *typeEncoding;
+
+		selector = @selector(multiplyWithMatrix:);
+		typeEncoding = method_getTypeEncoding(
 		    class_getInstanceMethod(self, selector));
 		class_replaceMethod(self, selector,
 		    (IMP)multiplyWithMatrix_3DNow, typeEncoding);
+
+		selector = @selector(transformedVector:);
+		typeEncoding = method_getTypeEncoding(
+		    class_getInstanceMethod(self, selector));
+		class_replaceMethod(self, selector,
+		    (IMP)transformedVector_3DNow, typeEncoding);
 	}
 }
 #endif
