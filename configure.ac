@@ -334,15 +334,6 @@ AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
 
-case "$host_cpu" in
-i*86|x86_64)
-	AX_CHECK_COMPILER_FLAGS([-masm=intel], [
-		OBJCFLAGS="$OBJCFLAGS -masm=intel"
-		AC_DEFINE(HAVE_INTEL_SYNTAX, 1, [Whether asm syntax is Intel])
-	])
-	;;
-esac
-
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
 AS_IF([test x"$with_nds" != x"yes"], [
