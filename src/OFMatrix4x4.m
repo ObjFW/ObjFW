@@ -35,6 +35,36 @@ static const float identityValues[4][4] = {
 #  pragma GCC target("3dnow")
 # endif
 static void
+multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
+    OFMatrix4x4 *matrix)
+{
+	float result[4][4];
+
+	for (uint_fast8_t i = 0; i < 4; i++) {
+		for (uint_fast8_t j = 0; j < 4; j++) {
+			__asm__ (
+			    "movd	(%2), %%mm0\n\t"
+			    "punpckldq	16(%2), %%mm0\n\t"
+			    "pfmul	(%1), %%mm0\n\t"
+			    "movd	32(%2), %%mm1\n\t"
+			    "punpckldq	48(%2), %%mm1\n\t"
+			    "pfmul	8(%1), %%mm1\n\t"
+			    "pfadd	%%mm1, %%mm0\n\t"
+			    "pswapd	%%mm0, %%mm1\n\t"
+			    "pfadd	%%mm1, %%mm0\n\t"
+			    "movd	%%mm0, %0"
+			    :: "m"(result[i][j]), "r"(&matrix->_values[i][0]),
+			       "r"(&self->_values[0][j])
+			    : "mm0", "mm1", "memory"
+			);
+		}
+	}
+
+	__asm__ ("femms");
+
+	memcpy(self->_values, result, sizeof(result));
+}
+static void
 multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 {
 	float result[4][4];
@@ -63,6 +93,59 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	__asm__ ("femms");
 
 	memcpy(self->_values, result, sizeof(result));
+}
+
+static OFVector4D
+transformedVector_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
+{
+	OFVector4D result;
+
+	__asm__ (
+	    "movq	(%2), %%mm0\n\t"
+	    "movq	8(%2), %%mm1\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm1, %%mm3\n\t"
+	    "pfmul	(%1), %%mm2\n\t"
+	    "pfmul	8(%1), %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n\t"
+	    "pswapd	%%mm2, %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm3\n\t"
+	    "movq	%%mm1, %%mm4\n\t"
+	    "pfmul	16(%1), %%mm3\n\t"
+	    "pfmul	24(%1), %%mm4\n\t"
+	    "pfadd	%%mm4, %%mm3\n\t"
+	    "pswapd	%%mm3, %%mm4\n\t"
+	    "pfadd	%%mm4, %%mm3\n"
+	    "\n\t"
+	    "punpckldq	%%mm3, %%mm2\n\t"
+	    "movq	%%mm2, (%0)\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm1, %%mm3\n\t"
+	    "pfmul	32(%1), %%mm2\n\t"
+	    "pfmul	40(%1), %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n\t"
+	    "pswapd	%%mm2, %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n"
+	    "\n\t"
+	    "pfmul	48(%1), %%mm0\n\t"
+	    "pfmul	56(%1), %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "pswapd	%%mm0, %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n"
+	    "\n\t"
+	    "punpckldq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm2, 8(%0)\n"
+	    "\n\t"
+	    "femms"
+	    :: "r"(&result), "r"(&self->_values), "r"(&vector)
+	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
+	);
+
+	return result;
 }
 
 static OFVector4D
@@ -127,25 +210,28 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 
 + (void)initialize
 {
+	const char *typeEncoding;
+
 	if (self != [OFMatrix4x4 class])
 		return;
 
-	if ([OFSystemInfo supports3DNow]) {
-		SEL selector;
-		const char *typeEncoding;
+# define REPLACE(selector, func)					\
+	typeEncoding = method_getTypeEncoding(				\
+	    class_getInstanceMethod(self, selector));			\
+	class_replaceMethod(self, selector, (IMP)func, typeEncoding);
 
-		selector = @selector(multiplyWithMatrix:);
-		typeEncoding = method_getTypeEncoding(
-		    class_getInstanceMethod(self, selector));
-		class_replaceMethod(self, selector,
-		    (IMP)multiplyWithMatrix_3DNow, typeEncoding);
-
-		selector = @selector(transformedVector:);
-		typeEncoding = method_getTypeEncoding(
-		    class_getInstanceMethod(self, selector));
-		class_replaceMethod(self, selector,
-		    (IMP)transformedVector_3DNow, typeEncoding);
+	if ([OFSystemInfo supportsEnhanced3DNow]) {
+		REPLACE(@selector(multiplyWithMatrix:),
+		    multiplyWithMatrix_enhanced3DNow)
+		REPLACE(@selector(transformedVector:),
+		    transformedVector_enhanced3DNow)
+	} else if ([OFSystemInfo supports3DNow]) {
+		REPLACE(@selector(multiplyWithMatrix:),
+		    multiplyWithMatrix_3DNow)
+		REPLACE(@selector(transformedVector:), transformedVector_3DNow)
 	}
+
+# undef REPLACE
 }
 #endif
 
