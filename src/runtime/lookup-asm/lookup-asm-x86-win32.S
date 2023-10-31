@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
@@ -25,40 +23,40 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	mov	edx, [esp + 4]
-	test	edx, edx
+	movl	4(%esp), %edx
+	testl	%edx, %edx
 	jz	.LreturnNilMethod
 
-	test	dl, 1
+	testb	$1, %dl
 	jnz	.LtaggedPointer_\name
 
-	mov	edx, [edx]
-	mov	edx, [edx + 32]
+	movl	(%edx), %edx
+	movl	32(%edx), %edx
 
 .Lmain_\name:
-	mov	eax, [esp + 8]
+	movl	8(%esp), %eax
 
 #ifdef OF_SELUID24
-	movzx	ecx, byte ptr [eax + 2]
-	mov	edx, [edx + 4 * ecx]
+	movzbl	2(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
 #endif
-	movzx	ecx, byte ptr [eax + 1]
-	mov	edx, [edx + 4 * ecx]
-	movzx	ecx, byte ptr [eax]
-	mov	eax, [edx + 4 * ecx]
+	movzbl	1(%eax), %ecx
+	movl	(%edx,%ecx,4), %edx
+	movzbl	(%eax), %ecx
+	movl	(%edx,%ecx,4), %eax
 
-	test	eax, eax
+	testl	%eax, %eax
 	jz	\notFound
 
 	ret
 
 .LtaggedPointer_\name:
-	xor	edx, _objc_taggedPointerSecret
-	and	dl, 0xE
-	movzx	edx, dl
+	xorl	_objc_taggedPointerSecret, %edx
+	andb	$0xE, %dl
+	movzbl	%dl, %edx
 
-	mov	edx, [_objc_taggedPointerClasses + 2 * edx]
-	mov	edx, [edx + 32]
+	movl	_objc_taggedPointerClasses(,%edx,2), %edx
+	movl	32(%edx), %edx
 
 	jmp	.Lmain_\name
 .def \name
@@ -69,14 +67,14 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	mov	edx, [esp + 4]
-	mov	eax, [edx]
-	test	eax, eax
+	movl	4(%esp), %edx
+	movl	(%edx), %eax
+	test	%eax, %eax
 	jz	.LreturnNilMethod
 
-	mov	[esp + 4], eax
-	mov	edx, [edx + 4]
-	mov	edx, [edx + 32]
+	movl	%eax, 4(%esp)
+	movl	4(%edx), %edx
+	movl	32(%edx), %edx
 	jmp	.Lmain_\lookup
 .def \name
 .scl 2
@@ -90,9 +88,9 @@ GENERATE_LOOKUP_SUPER _objc_msg_lookup_super _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
 .LreturnNilMethod:
-	mov	eax, offset .LnilMethod
+	movl	$.LnilMethod, %eax
 	ret
 
 .LnilMethod:
-	xor	eax, eax
+	xorl	%eax, %eax
 	ret
