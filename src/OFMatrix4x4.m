@@ -30,6 +30,10 @@ static const float identityValues[4][4] = {
 
 @implementation OFMatrix4x4
 #if defined(OF_AMD64) || defined(OF_X86)
+# ifndef __clang__
+#  pragma GCC push_options
+#  pragma GCC target("3dnow")
+# endif
 static void
 multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 {
@@ -117,6 +121,9 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 
 	return result;
 }
+# ifndef __clang__
+#  pragma GCC pop_options
+# endif
 
 + (void)initialize
 {
