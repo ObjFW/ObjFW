@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-.intel_syntax noprefix
-
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -25,48 +23,48 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	test	rcx, rcx
+	testq	%rcx, %rcx
 	jz	.LreturnNilMethod
 
-	test	cl, 1
+	testb	$1, %cl
 	jnz	.LtaggedPointer_\name
 
-	mov	r8, [rcx]
-	mov	r8, [r8 + 56]
+	movq	(%rcx), %r8
+	movq	56(%r8), %r8
 
 .Lmain_\name:
-	mov	r10, rcx
-	mov	r11, rdx
+	movq	%rcx, %r10
+	movq	%rdx, %r11
 
-	mov	rax, [rdx]
-	movzx	ecx, ah
-	movzx	edx, al
+	movq	(%rdx), %rax
+	movzbl	%ah, %ecx
+	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shr	eax, 16
+	shrl	$16, %eax
 
-	mov	r8, [r8 + 8 * rax]
+	movq	(%r8,%rax,8), %r8
 #endif
-	mov	r8, [r8 + 8 * rcx]
-	mov	rax, [r8 + 8 * rdx]
+	movq	(%r8,%rcx,8), %r8
+	movq	(%r8,%rdx,8), %rax
 
-	test	rax, rax
+	testq	%rax, %rax
 	jz	0f
 
 	ret
 
 0:
-	mov	rcx, r10
-	mov	rdx, r11
+	movq	%r10, %rcx
+	movq	%r11, %rdx
 	jmp	\notFound
 
 .LtaggedPointer_\name:
-	xor	rcx, [rip + objc_taggedPointerSecret]
-	and	cl, 0xE
-	movzx	r8d, cl
+	xorq	objc_taggedPointerSecret(%rip), %rcx
+	andb	$0xE, %cl
+	movzbl	%cl, %r8d
 
-	lea	rax, [rip + objc_taggedPointerClasses]
-	mov	r8, [rax + 4 * r8]
-	mov	r8, [r8 + 56]
+	leaq	objc_taggedPointerClasses(%rip), %rax
+	movq	(%rax,%r8,4), %r8
+	movq	56(%r8), %r8
 
 	jmp	.Lmain_\name
 .def \name
@@ -77,14 +75,14 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	mov	r8, rcx
-	mov	rcx, [rcx]
-	test	rcx, rcx
-	jz	short .LreturnNilMethod
+	movq	%rcx, %r8
+	movq	(%rcx), %rcx
+	testq	%rcx, %rcx
+	jz	.LreturnNilMethod
 
-	mov	r8, [r8 + 8]
-	mov	r8, [r8 + 56]
-	jmp	short .Lmain_\lookup
+	movq	8(%r8), %r8
+	movq	56(%r8), %r8
+	jmp	.Lmain_\lookup
 .def \name
 .scl 2
 .type 32
@@ -97,9 +95,9 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 .LreturnNilMethod:
-	lea	rax, [rip + .LnilMethod]
+	leaq	.LnilMethod(%rip), %rax
 	ret
 
 .LnilMethod:
-	xor	rax, rax
+	xorq	%rax, %rax
 	ret
