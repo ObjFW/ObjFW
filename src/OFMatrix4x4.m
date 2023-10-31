@@ -203,13 +203,15 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 
 - (void)multiplyWithMatrix: (OFMatrix4x4 *)matrix
 {
-	float result[4][4] = {{ 0 }};
+	float result[4][4];
 
 	for (uint_fast8_t i = 0; i < 4; i++)
 		for (uint_fast8_t j = 0; j < 4; j++)
-			for (uint_fast8_t k = 0; k < 4; k++)
-				result[i][j] +=
-				    matrix->_values[i][k] * _values[k][j];
+			result[i][j] =
+			    matrix->_values[i][0] * _values[0][j] +
+			    matrix->_values[i][1] * _values[1][j] +
+			    matrix->_values[i][2] * _values[2][j] +
+			    matrix->_values[i][3] * _values[3][j];
 
 	memcpy(_values, result, sizeof(result));
 }
