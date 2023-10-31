@@ -20,73 +20,57 @@
 .globl _objc_msg_lookup_super
 .globl _objc_msg_lookup_super_stret
 
-.intel_syntax
-
-/* Work around assembler bugs. */
-.macro jmp
-	.att_syntax
-	/* Use uppercase instruction to avoid recursion. */
-	JMP	$0
-	.intel_syntax noprefix
-.endmacro
-.macro jz
-	.att_syntax
-	/* Use uppercase instruction to avoid recursion. */
-	JZ	$0
-	.intel_syntax noprefix
-.endmacro
-
 .section __TEXT, __text, regular, pure_instructions
 .macro GENERATE_LOOKUP
 $0:
-	test	rdi, rdi
+	testq	%rdi, %rdi
 	jz	LreturnNilMethod
 
-	test	dil, 1
+	testb	$$1, %dil
 	jnz	LtaggedPointer_$0
 
-	mov	r8, [rdi]
-	mov	r8, [r8 + 64]
+	movq	(%rdi), %r8
+	movq	64(%r8), %r8
 
 Lmain_$0:
-	mov	rax, [rsi]
-	movzx	ecx, ah
-	movzx	edx, al
+	movq	(%rsi), %rax
+	movzbl	%ah, %ecx
+	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shr	eax, 16
+	shrl	$$16, %eax
 
-	mov	r8, [r8 + 8 * rax]
+	movq	(%r8,%rax,8), %r8
 #endif
-	movq	r8, [r8 + 8 * rcx]
-	movq	rax, [r8 + 8 * rdx]
+	movq	(%r8,%rcx,8), %r8
+	movq	(%r8,%rdx,8), %rax
 
-	test	rax, rax
+	testq	%rax, %rax
 	jz	$1
 
 	ret
 
 LtaggedPointer_$0:
-	mov	rax, [rip + _objc_taggedPointerSecret@GOTPCREL]
-	xor	rdi, [rax]
-	andb	dil, 0xE
-	movzx	r8d, dil
+	movq	_objc_taggedPointerSecret@GOTPCREL(%rip), %rax
+	xorq	(%rax), %rdi
+	andb	$$0xE, %dil
+	movzbl	%dil, %r8d
 
-	mov	rax, [rip + _objc_taggedPointerClasses@GOTPCREL]
-	mov	r8, [rax + 4 * r8]
-	mov	r8, [r8 + 64]
+	movq	_objc_taggedPointerClasses@GOTPCREL(%rip), %rax
+	movq	(%rax,%r8,4), %r8
+	movq	64(%r8), %r8
 
 	jmp	Lmain_$0
 .endmacro
 
 .macro GENERATE_LOOKUP_SUPER
 $0:
-	mov	r8, rdi
-	mov	rdi, [rdi]
-	test	rdi, rdi
+	movq	%rdi, %r8
+	movq	(%rdi), %rdi
+	testq	%rdi, %rdi
 	jz	LreturnNilMethod
 
-	movq	r8, [r8 + 8]
-	movq	r8, [r8 + 64]
+	movq	8(%r8), %r8
+	movq	64(%r8), %r8
 	jmp	Lmain_$1
 .endmacro
 
@@ -96,9 +80,9 @@ GENERATE_LOOKUP_SUPER _objc_msg_lookup_super, _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 
 LreturnNilMethod:
-	lea	rax, [rip + LnilMethod]
+	leaq	LnilMethod(%rip), %rax
 	ret
 
 LnilMethod:
-	xor	rax, rax
+	xorq	%rax, %rax
 	ret
