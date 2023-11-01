@@ -90,6 +90,13 @@ OF_SUBCLASSING_RESTRICTED
  * @return The transformed vector
  */
 - (OFVector4D)transformedVector: (OFVector4D)vector;
+
+/**
+ * @brief Transforms the specified vectors in-place according to the matrix.
+ *
+ * @param vectors The vectors to transform
+ */
+- (void)transformVectors: (OFVector4D *)vectors count: (size_t)count;
 @end
 
 OF_ASSUME_NONNULL_END

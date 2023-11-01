@@ -29,7 +29,7 @@ static const float identityValues[4][4] = {
 };
 
 @implementation OFMatrix4x4
-#if defined(OF_AMD64) || defined(OF_X86)
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 # ifndef __clang__
 #  pragma GCC push_options
 #  pragma GCC target("3dnow")
@@ -95,72 +95,82 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	memcpy(self->_values, result, sizeof(result));
 }
 
-static OFVector4D
-transformedVector_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
+static void
+transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
+    size_t count)
 {
-	OFVector4D result;
-
 	__asm__ (
-	    "movq	(%2), %%mm0\n\t"
-	    "movq	8(%2), %%mm1\n"
+	    "0:\n\t"
+	    "test	%0, %0\n\t"
+	    "jz		0f\n"
+	    "\n\t"
+	    "movq	(%1), %%mm0\n\t"
+	    "movq	8(%1), %%mm1\n"
 	    "\n\t"
 	    "movq	%%mm0, %%mm2\n\t"
 	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	(%1), %%mm2\n\t"
-	    "pfmul	8(%1), %%mm3\n\t"
+	    "pfmul	(%2), %%mm2\n\t"
+	    "pfmul	8(%2), %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n\t"
 	    "pswapd	%%mm2, %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n"
 	    "\n\t"
 	    "movq	%%mm0, %%mm3\n\t"
 	    "movq	%%mm1, %%mm4\n\t"
-	    "pfmul	16(%1), %%mm3\n\t"
-	    "pfmul	24(%1), %%mm4\n\t"
+	    "pfmul	16(%2), %%mm3\n\t"
+	    "pfmul	24(%2), %%mm4\n\t"
 	    "pfadd	%%mm4, %%mm3\n\t"
 	    "pswapd	%%mm3, %%mm4\n\t"
 	    "pfadd	%%mm4, %%mm3\n"
 	    "\n\t"
 	    "punpckldq	%%mm3, %%mm2\n\t"
-	    "movq	%%mm2, (%0)\n"
+	    "movq	%%mm2, (%1)\n"
 	    "\n\t"
 	    "movq	%%mm0, %%mm2\n\t"
 	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	32(%1), %%mm2\n\t"
-	    "pfmul	40(%1), %%mm3\n\t"
+	    "pfmul	32(%2), %%mm2\n\t"
+	    "pfmul	40(%2), %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n\t"
 	    "pswapd	%%mm2, %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n"
 	    "\n\t"
-	    "pfmul	48(%1), %%mm0\n\t"
-	    "pfmul	56(%1), %%mm1\n\t"
+	    "pfmul	48(%2), %%mm0\n\t"
+	    "pfmul	56(%2), %%mm1\n\t"
 	    "pfadd	%%mm1, %%mm0\n\t"
 	    "pswapd	%%mm0, %%mm1\n\t"
 	    "pfadd	%%mm1, %%mm0\n"
 	    "\n\t"
 	    "punpckldq	%%mm0, %%mm2\n\t"
-	    "movq	%%mm2, 8(%0)\n"
+	    "movq	%%mm2, 8(%1)\n"
 	    "\n\t"
+	    "add	$16, %1\n\t"
+	    "dec	%0\n\t"
+	    "jmp	0b\n"
+	    "\n\t"
+	    "0:\n\t"
 	    "femms"
-	    :: "r"(&result), "r"(&self->_values), "r"(&vector)
+	    : "+r"(count), "+r"(vectors)
+	    : "r"(&self->_values)
 	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
 	);
-
-	return result;
 }
 
-static OFVector4D
-transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
+static void
+transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
+    size_t count)
 {
-	OFVector4D result;
-
 	__asm__ (
-	    "movq	(%2), %%mm0\n\t"
-	    "movq	8(%2), %%mm1\n"
+	    "0:\n\t"
+	    "test	%0, %0\n\t"
+	    "jz		0f\n"
+	    "\n\t"
+	    "movq	(%1), %%mm0\n\t"
+	    "movq	8(%1), %%mm1\n"
 	    "\n\t"
 	    "movq	%%mm0, %%mm2\n\t"
 	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	(%1), %%mm2\n\t"
-	    "pfmul	8(%1), %%mm3\n\t"
+	    "pfmul	(%2), %%mm2\n\t"
+	    "pfmul	8(%2), %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n\t"
 	    "movq	%%mm2, %%mm3\n\t"
 	    "psrlq	$32, %%mm3\n\t"
@@ -168,42 +178,46 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 	    "\n\t"
 	    "movq	%%mm0, %%mm3\n\t"
 	    "movq	%%mm1, %%mm4\n\t"
-	    "pfmul	16(%1), %%mm3\n\t"
-	    "pfmul	24(%1), %%mm4\n\t"
+	    "pfmul	16(%2), %%mm3\n\t"
+	    "pfmul	24(%2), %%mm4\n\t"
 	    "pfadd	%%mm4, %%mm3\n\t"
 	    "movq	%%mm3, %%mm4\n\t"
 	    "psrlq	$32, %%mm4\n\t"
 	    "pfadd	%%mm4, %%mm3\n"
 	    "\n\t"
 	    "punpckldq	%%mm3, %%mm2\n\t"
-	    "movq	%%mm2, (%0)\n"
+	    "movq	%%mm2, (%1)\n"
 	    "\n\t"
 	    "movq	%%mm0, %%mm2\n\t"
 	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	32(%1), %%mm2\n\t"
-	    "pfmul	40(%1), %%mm3\n\t"
+	    "pfmul	32(%2), %%mm2\n\t"
+	    "pfmul	40(%2), %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n\t"
 	    "movq	%%mm2, %%mm3\n\t"
 	    "psrlq	$32, %%mm3\n\t"
 	    "pfadd	%%mm3, %%mm2\n"
 	    "\n\t"
-	    "pfmul	48(%1), %%mm0\n\t"
-	    "pfmul	56(%1), %%mm1\n\t"
+	    "pfmul	48(%2), %%mm0\n\t"
+	    "pfmul	56(%2), %%mm1\n\t"
 	    "pfadd	%%mm1, %%mm0\n\t"
 	    "movq	%%mm0, %%mm1\n\t"
 	    "psrlq	$32, %%mm1\n\t"
 	    "pfadd	%%mm1, %%mm0\n"
 	    "\n\t"
 	    "punpckldq	%%mm0, %%mm2\n\t"
-	    "movq	%%mm2, 8(%0)\n"
+	    "movq	%%mm2, 8(%1)\n"
 	    "\n\t"
+	    "add	$16, %1\n\t"
+	    "dec	%0\n\t"
+	    "jmp	0b\n"
+	    "0:\n\t"
 	    "femms"
-	    :: "r"(&result), "r"(&self->_values), "r"(&vector)
+	    : "+r"(count), "+r"(vectors)
+	    : "r"(&self->_values)
 	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
 	);
-
-	return result;
 }
+
 # ifndef __clang__
 #  pragma GCC pop_options
 # endif
@@ -223,12 +237,13 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 	if ([OFSystemInfo supportsEnhanced3DNow]) {
 		REPLACE(@selector(multiplyWithMatrix:),
 		    multiplyWithMatrix_enhanced3DNow)
-		REPLACE(@selector(transformedVector:),
-		    transformedVector_enhanced3DNow)
+		REPLACE(@selector(transformVectors:count:),
+		    transformVectors_enhanced3DNow)
 	} else if ([OFSystemInfo supports3DNow]) {
 		REPLACE(@selector(multiplyWithMatrix:),
 		    multiplyWithMatrix_3DNow)
-		REPLACE(@selector(transformedVector:), transformedVector_3DNow)
+		REPLACE(@selector(transformVectors:count:),
+		    transformVectors_3DNow)
 	}
 
 # undef REPLACE
@@ -337,15 +352,31 @@ transformedVector_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D vector)
 
 - (OFVector4D)transformedVector: (OFVector4D)vector
 {
-	return OFMakeVector4D(
-	    _values[0][0] * vector.x + _values[0][1] * vector.y +
-	    _values[0][2] * vector.z + _values[0][3] * vector.w,
-	    _values[1][0] * vector.x + _values[1][1] * vector.y +
-	    _values[1][2] * vector.z + _values[1][3] * vector.w,
-	    _values[2][0] * vector.x + _values[2][1] * vector.y +
-	    _values[2][2] * vector.z + _values[2][3] * vector.w,
-	    _values[3][0] * vector.x + _values[3][1] * vector.y +
-	    _values[3][2] * vector.z + _values[3][3] * vector.w);
+	OFVector4D copy = vector;
+
+	[self transformVectors: &copy count: 1];
+
+	return copy;
+}
+
+- (void)transformVectors: (OFVector4D *)vectors count: (size_t)count
+{
+	for (size_t i = 0; i < count; i++) {
+		OFVector4D vector = vectors[i];
+
+		vectors[i].x = _values[0][0] * vector.x +
+		    _values[0][1] * vector.y + _values[0][2] * vector.z +
+		    _values[0][3] * vector.w;
+		vectors[i].y = _values[1][0] * vector.x +
+		    _values[1][1] * vector.y + _values[1][2] * vector.z +
+		    _values[1][3] * vector.w;
+		vectors[i].z = _values[2][0] * vector.x +
+		    _values[2][1] * vector.y + _values[2][2] * vector.z +
+		    _values[2][3] * vector.w;
+		vectors[i].w = _values[3][0] * vector.x +
+		    _values[3][1] * vector.y + _values[3][2] * vector.z +
+		    _values[3][3] * vector.w;
+	}
 }
 
 - (OFString *)description

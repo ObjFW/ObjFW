@@ -25,6 +25,7 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	void *pool = objc_autoreleasePoolPush();
 	OFMatrix4x4 *matrix, *matrix2;
 	OFVector4D point;
+	OFVector4D points[2] = {{ 1, 2, 3, 1 }, { 7, 8, 9, 2 }};
 
 	TEST(@"+[identityMatrix]",
 	    memcmp([[OFMatrix4x4 identityMatrix] values], (const float [4][4]){
@@ -93,10 +94,11 @@ static OFString *const module = @"OFMatrix4x4Tests";
 	    [matrix2 transformedVector: OFMakeVector4D(2, 3, 4, 1)]) &&
 	    point.x == -3 && point.y == 2.5 && point.z == 14 && point.w == 1)
 
-	TEST(@"-[transformedVector:]",
-	    R((point =
-	    [matrix transformedVector: OFMakeVector4D(1, 2, 3, 1)])) &&
-	    point.x == 18 && point.y == 46 && point.z == 74 && point.w == 102)
+	TEST(@"-[transformVectors:count:]",
+	    R([matrix transformVectors: points count: 2]) &&
+	    points[0].x == 18 && points[0].y == 46 && points[0].z == 74 &&
+	    points[0].w == 102 && points[1].x == 58 && points[1].y == 162 &&
+	    points[1].z == 266 && points[1].w == 370)
 
 	objc_autoreleasePoolPop(pool);
 }
