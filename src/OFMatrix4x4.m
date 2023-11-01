@@ -42,7 +42,7 @@ multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
 
 	for (uint_fast8_t i = 0; i < 4; i++) {
 		for (uint_fast8_t j = 0; j < 4; j++) {
-			__asm__ (
+			__asm__ __volatile__ (
 			    "movd	(%2), %%mm0\n\t"
 			    "punpckldq	16(%2), %%mm0\n\t"
 			    "pfmul	(%1), %%mm0\n\t"
@@ -60,7 +60,7 @@ multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
 		}
 	}
 
-	__asm__ ("femms");
+	__asm__ __volatile__ ("femms");
 
 	memcpy(self->_values, result, sizeof(result));
 }
@@ -71,7 +71,7 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 
 	for (uint_fast8_t i = 0; i < 4; i++) {
 		for (uint_fast8_t j = 0; j < 4; j++) {
-			__asm__ (
+			__asm__ __volatile__ (
 			    "movd	(%2), %%mm0\n\t"
 			    "punpckldq	16(%2), %%mm0\n\t"
 			    "pfmul	(%1), %%mm0\n\t"
@@ -90,7 +90,7 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 		}
 	}
 
-	__asm__ ("femms");
+	__asm__ __volatile__ ("femms");
 
 	memcpy(self->_values, result, sizeof(result));
 }
@@ -99,7 +99,7 @@ static void
 transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
     size_t count)
 {
-	__asm__ (
+	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "test	%0, %0\n\t"
 	    "jz		0f\n"
@@ -159,7 +159,7 @@ static void
 transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
     size_t count)
 {
-	__asm__ (
+	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "test	%0, %0\n\t"
 	    "jz		0f\n"
