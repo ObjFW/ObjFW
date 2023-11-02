@@ -32,7 +32,7 @@ static const float identityValues[4][4] = {
 #if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 # ifndef __clang__
 #  pragma GCC push_options
-#  pragma GCC target("3dnow")
+#  pragma GCC target("3dnow,3dnowa")
 # endif
 static void
 multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
@@ -76,6 +76,74 @@ multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
 
 	memcpy(self->_values, result, sizeof(result));
 }
+
+static void
+transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
+    size_t count)
+{
+	__asm__ __volatile__ (
+	    "test	%0, %0\n\t"
+	    "jz		0f\n"
+	    "\n\t"
+	    "0:\n\t"
+	    "movq	(%1), %%mm0\n\t"
+	    "movq	8(%1), %%mm1\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm1, %%mm3\n\t"
+	    "pfmul	(%2), %%mm2\n\t"
+	    "pfmul	8(%2), %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n\t"
+	    "pswapd	%%mm2, %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm3\n\t"
+	    "movq	%%mm1, %%mm4\n\t"
+	    "pfmul	16(%2), %%mm3\n\t"
+	    "pfmul	24(%2), %%mm4\n\t"
+	    "pfadd	%%mm4, %%mm3\n\t"
+	    "pswapd	%%mm3, %%mm4\n\t"
+	    "pfadd	%%mm4, %%mm3\n"
+	    "\n\t"
+	    "punpckldq	%%mm3, %%mm2\n\t"
+	    "movq	%%mm2, (%1)\n"
+	    "\n\t"
+	    "movq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm1, %%mm3\n\t"
+	    "pfmul	32(%2), %%mm2\n\t"
+	    "pfmul	40(%2), %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n\t"
+	    "pswapd	%%mm2, %%mm3\n\t"
+	    "pfadd	%%mm3, %%mm2\n"
+	    "\n\t"
+	    "pfmul	48(%2), %%mm0\n\t"
+	    "pfmul	56(%2), %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "pswapd	%%mm0, %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n"
+	    "\n\t"
+	    "punpckldq	%%mm0, %%mm2\n\t"
+	    "movq	%%mm2, 8(%1)\n"
+	    "\n\t"
+	    "add	$16, %1\n\t"
+	    "dec	%0\n\t"
+	    "jnz	0b\n"
+	    "\n\t"
+	    "0:\n\t"
+	    "femms"
+	    : "+r"(count), "+r"(vectors)
+	    : "r"(&self->_values)
+	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
+	);
+}
+# ifndef __clang__
+#  pragma GCC pop_options
+# endif
+
+# ifndef __clang__
+#  pragma GCC push_options
+#  pragma GCC target("3dnow")
+# endif
 static void
 multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 {
@@ -120,74 +188,14 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 }
 
 static void
-transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
-    size_t count)
-{
-	__asm__ __volatile__ (
-	    "0:\n\t"
-	    "test	%0, %0\n\t"
-	    "jz		0f\n"
-	    "\n\t"
-	    "movq	(%1), %%mm0\n\t"
-	    "movq	8(%1), %%mm1\n"
-	    "\n\t"
-	    "movq	%%mm0, %%mm2\n\t"
-	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	(%2), %%mm2\n\t"
-	    "pfmul	8(%2), %%mm3\n\t"
-	    "pfadd	%%mm3, %%mm2\n\t"
-	    "pswapd	%%mm2, %%mm3\n\t"
-	    "pfadd	%%mm3, %%mm2\n"
-	    "\n\t"
-	    "movq	%%mm0, %%mm3\n\t"
-	    "movq	%%mm1, %%mm4\n\t"
-	    "pfmul	16(%2), %%mm3\n\t"
-	    "pfmul	24(%2), %%mm4\n\t"
-	    "pfadd	%%mm4, %%mm3\n\t"
-	    "pswapd	%%mm3, %%mm4\n\t"
-	    "pfadd	%%mm4, %%mm3\n"
-	    "\n\t"
-	    "punpckldq	%%mm3, %%mm2\n\t"
-	    "movq	%%mm2, (%1)\n"
-	    "\n\t"
-	    "movq	%%mm0, %%mm2\n\t"
-	    "movq	%%mm1, %%mm3\n\t"
-	    "pfmul	32(%2), %%mm2\n\t"
-	    "pfmul	40(%2), %%mm3\n\t"
-	    "pfadd	%%mm3, %%mm2\n\t"
-	    "pswapd	%%mm2, %%mm3\n\t"
-	    "pfadd	%%mm3, %%mm2\n"
-	    "\n\t"
-	    "pfmul	48(%2), %%mm0\n\t"
-	    "pfmul	56(%2), %%mm1\n\t"
-	    "pfadd	%%mm1, %%mm0\n\t"
-	    "pswapd	%%mm0, %%mm1\n\t"
-	    "pfadd	%%mm1, %%mm0\n"
-	    "\n\t"
-	    "punpckldq	%%mm0, %%mm2\n\t"
-	    "movq	%%mm2, 8(%1)\n"
-	    "\n\t"
-	    "add	$16, %1\n\t"
-	    "dec	%0\n\t"
-	    "jmp	0b\n"
-	    "\n\t"
-	    "0:\n\t"
-	    "femms"
-	    : "+r"(count), "+r"(vectors)
-	    : "r"(&self->_values)
-	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
-	);
-}
-
-static void
 transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
     size_t count)
 {
 	__asm__ __volatile__ (
-	    "0:\n\t"
 	    "test	%0, %0\n\t"
 	    "jz		0f\n"
 	    "\n\t"
+	    "0:\n\t"
 	    "movq	(%1), %%mm0\n\t"
 	    "movq	8(%1), %%mm1\n"
 	    "\n\t"
@@ -233,7 +241,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "\n\t"
 	    "add	$16, %1\n\t"
 	    "dec	%0\n\t"
-	    "jmp	0b\n"
+	    "jnz	0b\n"
+	    "\n\t"
 	    "0:\n\t"
 	    "femms"
 	    : "+r"(count), "+r"(vectors)
@@ -257,16 +266,18 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    class_getInstanceMethod(self, selector));			\
 	class_replaceMethod(self, selector, (IMP)func, typeEncoding);
 
-	if ([OFSystemInfo supportsEnhanced3DNow]) {
-		REPLACE(@selector(multiplyWithMatrix:),
-		    multiplyWithMatrix_enhanced3DNow)
-		REPLACE(@selector(transformVectors:count:),
-		    transformVectors_enhanced3DNow)
-	} else if ([OFSystemInfo supports3DNow]) {
-		REPLACE(@selector(multiplyWithMatrix:),
-		    multiplyWithMatrix_3DNow)
-		REPLACE(@selector(transformVectors:count:),
-		    transformVectors_3DNow)
+	if ([OFSystemInfo supports3DNow]) {
+		if ([OFSystemInfo supportsEnhanced3DNow]) {
+			REPLACE(@selector(multiplyWithMatrix:),
+			    multiplyWithMatrix_enhanced3DNow)
+			REPLACE(@selector(transformVectors:count:),
+			    transformVectors_enhanced3DNow)
+		} else {
+			REPLACE(@selector(multiplyWithMatrix:),
+			    multiplyWithMatrix_3DNow)
+			REPLACE(@selector(transformVectors:count:),
+			    transformVectors_3DNow)
+		}
 	}
 
 # undef REPLACE
