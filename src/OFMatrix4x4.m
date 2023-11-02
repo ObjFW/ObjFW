@@ -38,59 +38,83 @@ static void
 multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
     OFMatrix4x4 *matrix)
 {
-	float result[4][4];
+	float *left = &matrix->_values[0][0], *right = &self->_values[0][0];
+	float result[4][4], *resultPtr = &result[0][0];
 
-	for (uint_fast8_t i = 0; i < 4; i++) {
-		for (uint_fast8_t j = 0; j < 4; j++) {
-			__asm__ __volatile__ (
-			    "movd	(%2), %%mm0\n\t"
-			    "punpckldq	16(%2), %%mm0\n\t"
-			    "pfmul	(%1), %%mm0\n\t"
-			    "movd	32(%2), %%mm1\n\t"
-			    "punpckldq	48(%2), %%mm1\n\t"
-			    "pfmul	8(%1), %%mm1\n\t"
-			    "pfadd	%%mm1, %%mm0\n\t"
-			    "pswapd	%%mm0, %%mm1\n\t"
-			    "pfadd	%%mm1, %%mm0\n\t"
-			    "movd	%%mm0, %0"
-			    :: "m"(result[i][j]), "r"(&matrix->_values[i][0]),
-			       "r"(&self->_values[0][j])
-			    : "mm0", "mm1", "memory"
-			);
-		}
-	}
-
-	__asm__ __volatile__ ("femms");
+	__asm__ __volatile__ (
+	    "xorw	%%cx, %%cx\n"
+	    "\n\t"
+	    "0:\n\t"
+	    "movd	(%2), %%mm0\n\t"
+	    "punpckldq	16(%2), %%mm0\n\t"
+	    "pfmul	(%1), %%mm0\n\t"
+	    "movd	32(%2), %%mm1\n\t"
+	    "punpckldq  48(%2), %%mm1\n\t"
+	    "pfmul	8(%1), %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "pswapd	%%mm0, %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "movd	%%mm0, (%0)\n"
+	    "\n\t"
+	    "add	$4, %0\n\t"
+	    "add	$4, %2\n\t"
+	    "incb	%%cl\n\t"
+	    "cmpb	$4, %%cl\n\t"
+	    "jb		0b\n"
+	    "\n\t"
+	    "add	$16, %1\n\t"
+	    "sub	$16, %2\n\t"
+	    "xorb	%%cl, %%cl\n\t"
+	    "incb	%%ch\n\t"
+	    "cmpb	$4, %%ch\n\t"
+	    "jb		0b\n"
+	    "\n\t"
+	    "femms"
+	    : "+r"(resultPtr), "+r"(left), "+r"(right)
+	    :: "cx", "mm0", "mm1", "memory"
+	);
 
 	memcpy(self->_values, result, sizeof(result));
 }
 static void
 multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 {
-	float result[4][4];
+	float *left = &matrix->_values[0][0], *right = &self->_values[0][0];
+	float result[4][4], *resultPtr = &result[0][0];
 
-	for (uint_fast8_t i = 0; i < 4; i++) {
-		for (uint_fast8_t j = 0; j < 4; j++) {
-			__asm__ __volatile__ (
-			    "movd	(%2), %%mm0\n\t"
-			    "punpckldq	16(%2), %%mm0\n\t"
-			    "pfmul	(%1), %%mm0\n\t"
-			    "movd	32(%2), %%mm1\n\t"
-			    "punpckldq	48(%2), %%mm1\n\t"
-			    "pfmul	8(%1), %%mm1\n\t"
-			    "pfadd	%%mm1, %%mm0\n\t"
-			    "movq	%%mm0, %%mm1\n\t"
-			    "psrlq	$32, %%mm1\n\t"
-			    "pfadd	%%mm1, %%mm0\n\t"
-			    "movd	%%mm0, %0"
-			    :: "m"(result[i][j]), "r"(&matrix->_values[i][0]),
-			       "r"(&self->_values[0][j])
-			    : "mm0", "mm1", "memory"
-			);
-		}
-	}
-
-	__asm__ __volatile__ ("femms");
+	__asm__ __volatile__ (
+	    "xorw	%%cx, %%cx\n"
+	    "\n\t"
+	    "0:\n\t"
+	    "movd	(%2), %%mm0\n\t"
+	    "punpckldq	16(%2), %%mm0\n\t"
+	    "pfmul	(%1), %%mm0\n\t"
+	    "movd	32(%2), %%mm1\n\t"
+	    "punpckldq  48(%2), %%mm1\n\t"
+	    "pfmul	8(%1), %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "movq	%%mm0, %%mm1\n\t"
+	    "psrlq	$32, %%mm1\n\t"
+	    "pfadd	%%mm1, %%mm0\n\t"
+	    "movd	%%mm0, (%0)\n"
+	    "\n\t"
+	    "add	$4, %0\n\t"
+	    "add	$4, %2\n\t"
+	    "incb	%%cl\n\t"
+	    "cmpb	$4, %%cl\n\t"
+	    "jb		0b\n"
+	    "\n\t"
+	    "add	$16, %1\n\t"
+	    "sub	$16, %2\n\t"
+	    "xorb	%%cl, %%cl\n\t"
+	    "incb	%%ch\n\t"
+	    "cmpb	$4, %%ch\n\t"
+	    "jb		0b\n"
+	    "\n\t"
+	    "femms"
+	    : "+r"(resultPtr), "+r"(left), "+r"(right)
+	    :: "cx", "mm0", "mm1", "memory"
+	);
 
 	memcpy(self->_values, result, sizeof(result));
 }
@@ -217,7 +241,6 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
 	);
 }
-
 # ifndef __clang__
 #  pragma GCC pop_options
 # endif
