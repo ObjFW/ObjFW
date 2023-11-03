@@ -102,12 +102,16 @@
 # define OF_WEAK_REF(sym)
 #endif
 
+#ifdef __GNUC__
+# define OF_ALIGN(alignment) __attribute__((__aligned__(alignment)))
+#endif
+
 #if __STDC_VERSION__ >= 201112L
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
 #else
 # define OF_ALIGNOF(type) __alignof__(type)
-# define OF_ALIGNAS(type) __attribute__((__aligned__(__alignof__(type))))
+# define OF_ALIGNAS(type) OF_ALIGN(OF_ALIGNOF(type))
 #endif
 
 #if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
