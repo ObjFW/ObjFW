@@ -349,7 +349,7 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
  *
  * @brief A vector in 4D space.
  */
-typedef struct OF_BOXABLE OF_ALIGN(16) OFVector4D {
+typedef struct OF_ALIGN(16) OF_BOXABLE OFVector4D {
 	/** The x coordinate of the vector */
 	float x;
 	/** The y coordinate of the vector */
