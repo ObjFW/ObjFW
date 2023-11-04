@@ -336,8 +336,9 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instanceSize = class_getInstanceSize(class);
 
 	if OF_UNLIKELY (extraAlignment > 1)
-		extraAlignment = ((instanceSize + extraAlignment - 1) &
-		    ~(extraAlignment - 1)) - extraAlignment;
+		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
+		    PRE_IVARS_ALIGN + instanceSize) -
+		    PRE_IVARS_ALIGN - instanceSize;
 
 	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
