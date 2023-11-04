@@ -38,8 +38,8 @@ static void
 multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
     OFMatrix4x4 *matrix)
 {
-	float *left = &matrix->_values[0][0], *right = &self->_values[0][0];
-	float result[4][4], *resultPtr = &result[0][0];
+	float (*left)[4] = matrix->_values, (*right)[4] = self->_values;
+	float result[4][4], (*resultPtr)[4] = result;
 
 	__asm__ __volatile__ (
 	    "xorw	%%cx, %%cx\n"
@@ -74,7 +74,7 @@ multiplyWithMatrix_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd,
 	    :: "cx", "mm0", "mm1", "memory"
 	);
 
-	memcpy(self->_values, result, sizeof(result));
+	memcpy(self->_values, result, 16 * sizeof(float));
 }
 
 static void
@@ -132,7 +132,7 @@ transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "0:\n\t"
 	    "femms"
 	    : "+r"(count), "+r"(vectors)
-	    : "r"(&self->_values)
+	    : "r"(self->_values)
 	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
 	);
 }
@@ -147,8 +147,8 @@ transformVectors_enhanced3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 static void
 multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 {
-	float *left = &matrix->_values[0][0], *right = &self->_values[0][0];
-	float result[4][4], *resultPtr = &result[0][0];
+	float (*left)[4] = matrix->_values, (*right)[4] = self->_values;
+	float result[4][4], (*resultPtr)[4] = result;
 
 	__asm__ __volatile__ (
 	    "xorw	%%cx, %%cx\n"
@@ -184,7 +184,7 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	    :: "cx", "mm0", "mm1", "memory"
 	);
 
-	memcpy(self->_values, result, sizeof(result));
+	memcpy(self->_values, result, 16 * sizeof(float));
 }
 
 static void
@@ -246,7 +246,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "0:\n\t"
 	    "femms"
 	    : "+r"(count), "+r"(vectors)
-	    : "r"(&self->_values)
+	    : "r"(self->_values)
 	    : "mm0", "mm1", "mm2", "mm3", "mm4", "memory"
 	);
 }
@@ -284,6 +284,18 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 }
 #endif
 
++ (instancetype)alloc
+{
+	OFMatrix4x4 *instance;
+	float (*values)[4];
+
+	instance = OFAllocObject(self, 16 * sizeof(float), 16,
+	    (void **)&values);
+	instance->_values = values;
+
+	return instance;
+}
+
 + (OFMatrix4x4 *)identityMatrix
 {
 	return [[[OFMatrix4x4 alloc]
@@ -304,7 +316,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	self = [super init];
 
-	memcpy(_values, values, sizeof(_values));
+	memcpy(_values, values, 16 * sizeof(float));
 
 	return self;
 }
@@ -316,8 +328,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 - (instancetype)copy
 {
-	return [[OFMatrix4x4 alloc]
-	    initWithValues: (const float (*)[4])_values];
+	return [[OFMatrix4x4 alloc] initWithValues: _values];
 }
 
 - (bool)isEqual: (OFMatrix4x4 *)matrix
@@ -325,7 +336,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	if (![matrix isKindOfClass: [OFMatrix4x4 class]])
 		return false;
 
-	return (memcmp(_values, matrix->_values, sizeof(_values)) == 0);
+	return (memcmp(_values, matrix->_values, 16 * sizeof(float)) == 0);
 }
 
 - (unsigned long)hash
@@ -355,7 +366,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 			    matrix->_values[i][2] * _values[2][j] +
 			    matrix->_values[i][3] * _values[3][j];
 
-	memcpy(_values, result, sizeof(result));
+	memcpy(_values, result, 16 * sizeof(float));
 }
 
 - (void)translateWithVector: (OFVector3D)vector
