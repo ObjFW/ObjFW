@@ -375,7 +375,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 - (instancetype)copy
 {
-	return [[OFMatrix4x4 alloc] initWithValues: _values];
+	return [[OFMatrix4x4 alloc]
+	    initWithValues: (const float (*)[4])_values];
 }
 
 - (bool)isEqual: (OFMatrix4x4 *)matrix
