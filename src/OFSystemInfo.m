@@ -799,6 +799,11 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 29));
 }
 
++ (bool)supportsFusedMultiplyAdd
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 12));
+}
+
 + (bool)supportsF16C
 {
 	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 29));

@@ -124,6 +124,10 @@ printAddresses(OFData *addresses, bool *firstAddress)
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports SHA extensions: %d\n",
 	    [OFSystemInfo supportsSHAExtensions]];
 
+	[OFStdOut writeFormat: @"[OFSystemInfo] Supports fused multiply-add: "
+	    @"%d\n",
+	    [OFSystemInfo supportsFusedMultiplyAdd]];
+
 	[OFStdOut writeFormat: @"[OFSystemInfo] Supports F16C: %d\n",
 	    [OFSystemInfo supportsF16C]];
 

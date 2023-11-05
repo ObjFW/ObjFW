@@ -56,6 +56,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nonatomic) bool supportsAVX2;
 @property (class, readonly, nonatomic) bool supportsAESNI;
 @property (class, readonly, nonatomic) bool supportsSHAExtensions;
+@property (class, readonly, nonatomic) bool supportsFusedMultiplyAdd;
 @property (class, readonly, nonatomic) bool supportsF16C;
 @property (class, readonly, nonatomic) bool supportsAVX512Foundation;
 @property (class, readonly, nonatomic)
@@ -341,6 +342,17 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU supports Intel SHA Extensions
  */
 + (bool)supportsSHAExtensions;
+
+/**
+ * @brief Returns whether the CPU supports fused multiply-add.
+ *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU supports fused multiply-add
+ */
++ (bool)supportsFusedMultiplyAdd;
 
 /**
  * @brief Returns whether the CPU supports F16C.
