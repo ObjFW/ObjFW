@@ -4,6 +4,14 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.4 -> ObjFW 1.0.5, 2023-11-05
+ * Fixes the calculation of the extra alignment in OFAllocObject()
+ * Fixes +[OFSystemInfo networkInterfaces] on OpenBSD and Windows 98
+ * Fixes OFSocketAddressString() for AppleTalk addresses
+ * Uses GetModuleHandle() instead of LoadLibrary() where possible on Windows
+ * Disables tests for global blocks on Win64 due to broken compilers
+ * Adds PGP keys to verify tarballs and commits in the code repository
+
 ObjFW 1.0.3 -> ObjFW 1.0.4, 2023-10-08
  * Fixes OFFile closing fd 0 when initialization fails
  * Fixes -[stringByAppendingPathComponent:] on empty strings
