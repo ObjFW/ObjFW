@@ -46,7 +46,10 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "\n\t"
 	    "movaps	(%2), %%xmm0\n\t"
 	    "movaps	16(%2), %%xmm1\n\t"
-	    "movaps	32(%2), %%xmm2\n"
+	    "movaps	32(%2), %%xmm2\n\t"
+# ifdef OF_AMD64
+	    "movaps	48(%2), %%xmm8\n"
+# endif
 	    "\n\t"
 	    "0:\n\t"
 	    "movaps	(%1), %%xmm3\n"
@@ -72,7 +75,11 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "addss	8(%3), %%xmm6\n\t"
 	    "addss	12(%3), %%xmm6\n"
 	    "\n\t"
+# ifdef OF_AMD64
+	    "movaps	%%xmm8, %%xmm7\n\t"
+# else
 	    "movaps	48(%2), %%xmm7\n\t"
+# endif
 	    "mulps	%%xmm3, %%xmm7\n\t"
 	    "movaps	%%xmm7, (%3)\n\t"
 	    "addss	4(%3), %%xmm7\n\t"
@@ -90,6 +97,9 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    : "+r"(count), "+r"(vectors)
 	    : "r"(self->_values), "r"(&tmp)
 	    : "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7",
+# ifdef OF_AMD64
+	      "xmm8",
+# endif
 	      "memory"
 	);
 }
