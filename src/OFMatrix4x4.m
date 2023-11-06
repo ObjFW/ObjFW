@@ -32,12 +32,14 @@ static const float identityValues[4][4] = {
 #if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 # ifndef __clang__
 #  pragma GCC push_options
-#  pragma GCC target("sse4.1")
+#  pragma GCC target("sse")
 # endif
 static void
-transformVectors_SSE41(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
+transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
     size_t count)
 {
+	OF_ALIGN(16) float tmp[4];
+
 	__asm__ __volatile__ (
 	    "test	%0, %0\n\t"
 	    "jz		0f\n"
@@ -45,27 +47,47 @@ transformVectors_SSE41(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "movaps	(%2), %%xmm0\n\t"
 	    "movaps	16(%2), %%xmm1\n\t"
 	    "movaps	32(%2), %%xmm2\n\t"
-	    "movaps	48(%2), %%xmm3\n"
+	    "movaps	(%1), %%xmm3\n"
 	    "\n\t"
 	    "0:\n\t"
-	    "movaps	(%1), %%xmm4\n\t"
-	    "movaps	%%xmm4, %%xmm5\n\t"
-	    "dpps	$0xFF, %%xmm0, %%xmm4\n\t"
-	    "movaps	%%xmm5, %%xmm6\n\t"
-	    "dpps	$0xFF, %%xmm1, %%xmm5\n\t"
-	    "movaps	%%xmm6, %%xmm7\n\t"
-	    "dpps	$0xFF, %%xmm2, %%xmm6\n\t"
-	    "dpps	$0xFF, %%xmm3, %%xmm7\n\t"
-	    "insertps	$0x10, %%xmm5, %%xmm4\n\t"
-	    "insertps	$0x20, %%xmm6, %%xmm4\n\t"
-	    "insertps	$0x30, %%xmm7, %%xmm4\n\t"
-	    "movaps	%%xmm4, (%1)\n"
+	    "movaps	%%xmm0, %%xmm4\n\t"
+	    "mulps	%%xmm3, %%xmm4\n\t"
+	    "movaps	%%xmm4, (%3)\n\t"
+	    "addss	4(%3), %%xmm4\n\t"
+	    "addss	8(%3), %%xmm4\n\t"
+	    "addss	12(%3), %%xmm4\n"
+	    "\n\t"
+	    "movaps	%%xmm1, %%xmm5\n\t"
+	    "mulps	%%xmm3, %%xmm5\n\t"
+	    "movaps	%%xmm5, (%3)\n\t"
+	    "addss	4(%3), %%xmm5\n\t"
+	    "addss	8(%3), %%xmm5\n\t"
+	    "addss	12(%3), %%xmm5\n"
+	    "\n\t"
+	    "movaps	%%xmm2, %%xmm6\n\t"
+	    "mulps	%%xmm3, %%xmm6\n\t"
+	    "movaps	%%xmm6, (%3)\n\t"
+	    "addss	4(%3), %%xmm6\n\t"
+	    "addss	8(%3), %%xmm6\n\t"
+	    "addss	12(%3), %%xmm6\n"
+	    "\n\t"
+	    "movaps	48(%2), %%xmm7\n\t"
+	    "mulps	%%xmm3, %%xmm7\n\t"
+	    "movaps	%%xmm7, (%3)\n\t"
+	    "addss	4(%3), %%xmm7\n\t"
+	    "addss	8(%3), %%xmm7\n\t"
+	    "addss	12(%3), %%xmm7\n"
+	    "\n\t"
+	    "movss	%%xmm4, (%1)\n\t"
+	    "movss	%%xmm5, 4(%1)\n\t"
+	    "movss	%%xmm6, 8(%1)\n\t"
+	    "movss	%%xmm7, 12(%1)\n"
 	    "\n\t"
 	    "add	$16, %1\n\t"
 	    "dec	%0\n\t"
 	    "jnz	0b\n"
 	    : "+r"(count), "+r"(vectors)
-	    : "r"(self->_values)
+	    : "r"(self->_values), "r"(&tmp)
 	    : "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7",
 	      "memory"
 	);
@@ -209,9 +231,9 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    class_getInstanceMethod(self, selector));			\
 	class_replaceMethod(self, selector, (IMP)func, typeEncoding);
 
-	if ([OFSystemInfo supportsSSE41]) {
+	if ([OFSystemInfo supportsSSE]) {
 		REPLACE(@selector(transformVectors:count:),
-		    transformVectors_SSE41)
+		    transformVectors_SSE)
 	} else if ([OFSystemInfo supports3DNow]) {
 		REPLACE(@selector(multiplyWithMatrix:),
 		    multiplyWithMatrix_3DNow)
