@@ -59,7 +59,8 @@ static OFString *const module = @"OFMatrix4x4Tests";
 		{ 0, 0, 0, 1 }
 	    }]])
 
-	TEST(@"-[copy]", (matrix2 = [matrix copy]) && [matrix2 isEqual: matrix])
+	TEST(@"-[copy]", (matrix2 = [[matrix copy] autorelease]) &&
+	    [matrix2 isEqual: matrix])
 
 	TEST(@"-[multiplyWithMatrix:] #1",
 	    R([matrix2 multiplyWithMatrix: [OFMatrix4x4 identityMatrix]]) &&
