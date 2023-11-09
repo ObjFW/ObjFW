@@ -22,8 +22,9 @@ OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "add{l}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return i;
@@ -40,8 +41,9 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 		    "lock\n\t"
 		    "xadd{q}	{ %0, %2 | %2, %0 }\n\t"
 		    "add{q}	{ %1, %0 | %0, %1 }"
-		    : "+&r"(i)
-		    : "r"(i), "m"(*p)
+		    : "+&r" (i)
+		    : "r" (i),
+		      "m" (*p)
 		);
 #endif
 	else
@@ -58,8 +60,9 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "lock\n\t"
 	    "xadd{q}	{ %0, %2 | %2, %0 }\n\t"
 	    "add{q}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return (void *)i;
@@ -68,8 +71,9 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "add{l}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return (void *)i;
@@ -84,8 +88,9 @@ OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "sub{l}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return i;
@@ -103,8 +108,9 @@ OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 		    "lock\n\t"
 		    "xadd{q}	{ %0, %2 | %2, %0 }\n\t"
 		    "sub{q}	{ %1, %0 | %0, %1 }"
-		    : "+&r"(i)
-		    : "r"(i), "m"(*p)
+		    : "+&r" (i)
+		    : "r" (i),
+		      "m" (*p)
 		);
 #endif
 	else
@@ -122,8 +128,9 @@ OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "lock\n\t"
 	    "xadd{q}	{ %0, %2 | %2, %0 }\n\t"
 	    "sub{q}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return (void *)i;
@@ -133,8 +140,9 @@ OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "sub{l}	{ %1, %0 | %0, %1 }"
-	    : "+&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "+&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	);
 
 	return (void *)i;
@@ -152,8 +160,8 @@ OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %1 | %1, %0 }\n\t"
 	    "inc{l}	%0"
-	    : "=&r"(i)
-	    : "m"(*p)
+	    : "=&r" (i)
+	    : "m" (*p)
 	);
 
 	return i;
@@ -174,8 +182,8 @@ OFAtomicIntIncrease(volatile int *_Nonnull p)
 		    "lock\n\t"
 		    "xadd{q}	{ %0, %1 | %1, %0 }\n\t"
 		    "inc{q}	%0"
-		    : "=&r"(i)
-		    : "m"(*p)
+		    : "=&r" (i)
+		    : "m" (*p)
 		);
 #endif
 	else
@@ -195,8 +203,8 @@ OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 	    "lock\n\t"
 	    "xadd{l}	{ %0, %1 | %1, %0 }\n\t"
 	    "dec{l}	%0"
-	    : "=&r"(i)
-	    : "m"(*p)
+	    : "=&r" (i)
+	    : "m" (*p)
 	);
 
 	return i;
@@ -217,8 +225,8 @@ OFAtomicIntDecrease(volatile int *_Nonnull p)
 		    "lock\n\t"
 		    "xadd{q}	{ %0, %1 | %1, %0 }\n\t"
 		    "dec{q}	%0"
-		    : "=&r"(i)
-		    : "m"(*p)
+		    : "=&r" (i)
+		    : "m" (*p)
 		);
 #endif
 	else
@@ -238,8 +246,9 @@ OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "jne	0b"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	    : "eax", "cc"
 	);
 
@@ -261,8 +270,9 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
 		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
+		    : "=&r" (i)
+		    : "r" (i),
+		      "m" (*p)
 		    : "rax", "cc"
 		);
 #endif
@@ -283,8 +293,9 @@ OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "jne	0b"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	    : "eax", "cc"
 	);
 
@@ -306,8 +317,9 @@ OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
 		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
+		    : "=&r" (i)
+		    : "r" (i),
+		      "m" (*p)
 		    : "rax", "cc"
 		);
 #endif
@@ -328,8 +340,9 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "lock\n\t"
 	    "cmpxchg{l}	{ %0, %2 | %2, %0 }\n\t"
 	    "jne	0b"
-	    : "=&r"(i)
-	    : "r"(i), "m"(*p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "m" (*p)
 	    : "eax", "cc"
 	);
 
@@ -351,8 +364,9 @@ OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 		    "lock\n\t"
 		    "cmpxchg{q}	{ %0, %2 | %2, %0 }\n\t"
 		    "jne	0b"
-		    : "=&r"(i)
-		    : "r"(i), "m"(*p)
+		    : "=&r" (i)
+		    : "r" (i),
+		      "m" (*p)
 		    : "rax", "cc"
 		);
 #endif
@@ -372,8 +386,10 @@ OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 	    "cmpxchg{l}	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
-	    : "r"(n), "m"(*p)
+	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	      "+a" (o)
+	    : "r" (n),
+	      "m" (*p)
 	    : "cc"
 	);
 
@@ -390,8 +406,10 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 	    "cmpxchg	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
-	    : "r"(n), "m"(*p)
+	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	      "+a" (o)
+	    : "r" (n),
+	      "m" (*p)
 	    : "cc"
 	);
 
@@ -409,8 +427,10 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 	    "cmpxchg	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
-	    : "r"(n), "m"(*p)
+	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	      "+a" (o)
+	    : "r" (n),
+	      "m" (*p)
 	    : "cc"
 	);
 

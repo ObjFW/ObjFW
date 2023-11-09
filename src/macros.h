@@ -498,20 +498,21 @@ OFByteSwap16NonConst(uint16_t i)
 #elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "xchg{b}	{ %h0, %b0 | %b0, %h0 }"
-	    : "=Q"(i)
-	    : "0"(i)
+	    : "=Q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lhbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev16	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
@@ -528,20 +529,21 @@ OFByteSwap32NonConst(uint32_t i)
 #elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=q"(i)
-	    : "0"(i)
+	    : "=q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lwbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
@@ -560,16 +562,16 @@ OFByteSwap64NonConst(uint64_t i)
 #elif defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_X86) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	{%%}eax\n\t"
 	    "bswap	{%%}edx\n\t"
 	    "xchg{l}	{ %%eax, %%edx | edx, eax }"
-	    : "=A"(i)
-	    : "0"(i)
+	    : "=A" (i)
+	    : "0" (i)
 	);
 #else
 	i = (uint64_t)OFByteSwap32NonConst(

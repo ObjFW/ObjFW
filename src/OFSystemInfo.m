@@ -287,8 +287,12 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 # if defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
-	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=b" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # elif defined(OF_X86) && defined(__GNUC__)
 	/*
@@ -301,8 +305,12 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    "xchgl	%%ebx, %%edi\n\t"
 	    "cpuid\n\t"
 	    "xchgl	%%edi, %%ebx"
-	    : "=a"(regs.eax), "=D"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=D" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # else
 	memset(&regs, 0, sizeof(regs));

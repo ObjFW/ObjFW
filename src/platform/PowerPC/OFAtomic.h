@@ -22,8 +22,9 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -39,8 +40,9 @@ OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -56,8 +58,9 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -73,8 +76,9 @@ OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -90,8 +94,9 @@ OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -107,8 +112,9 @@ OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -126,8 +132,8 @@ OFAtomicIntIncrease(volatile int *_Nonnull p)
 	    "addi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -145,8 +151,8 @@ OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 	    "addi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -164,8 +170,8 @@ OFAtomicIntDecrease(volatile int *_Nonnull p)
 	    "subi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -183,8 +189,8 @@ OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 	    "subi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -200,8 +206,9 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "or		%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -217,8 +224,9 @@ OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "or		%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -234,8 +242,9 @@ OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "and	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -251,8 +260,9 @@ OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "and	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -268,8 +278,9 @@ OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "xor	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -285,8 +296,9 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "xor	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -311,8 +323,10 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -337,8 +351,10 @@ OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -364,8 +380,10 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
