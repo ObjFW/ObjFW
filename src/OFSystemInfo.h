@@ -238,90 +238,74 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)supportsEnhanced3DNow;
 
 /**
- * @brief Returns whether the CPU supports SSE.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSE.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSE
+ * @return Whether the CPU and OS support SSE
  */
 + (bool)supportsSSE;
 
 /**
- * @brief Returns whether the CPU supports SSE2.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSE2.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSE2
+ * @return Whether the CPU and OS support SSE2
  */
 + (bool)supportsSSE2;
 
 /**
- * @brief Returns whether the CPU supports SSE3.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSE3.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSE3
+ * @return Whether the CPU and OS support SSE3
  */
 + (bool)supportsSSE3;
 
 /**
- * @brief Returns whether the CPU supports SSSE3.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSSE3.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSSE3
+ * @return Whether the CPU and OS support SSSE3
  */
 + (bool)supportsSSSE3;
 
 /**
- * @brief Returns whether the CPU supports SSE4.1.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSE4.1.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSE4.1
+ * @return Whether the CPU and OS support SSE4.1
  */
 + (bool)supportsSSE41;
 
 /**
- * @brief Returns whether the CPU supports SSE4.2.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support SSE4.2.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports SSE4.2
+ * @return Whether the CPU and OS support SSE4.2
  */
 + (bool)supportsSSE42;
 
 /**
- * @brief Returns whether the CPU supports AVX.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support AVX.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX
+ * @return Whether the CPU and OS support AVX
  */
 + (bool)supportsAVX;
 
 /**
- * @brief Returns whether the CPU supports AVX2.
- *
- * @warning This method only checks CPU support and assumes OS support!
+ * @brief Returns whether the CPU and OS support AVX2.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX2
+ * @return Whether the CPU and OS support AVX2
  */
 + (bool)supportsAVX2;
 
@@ -346,8 +330,6 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports fused multiply-add.
  *
- * @warning This method only checks CPU support and assumes OS support!
- *
  * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports fused multiply-add
@@ -364,148 +346,154 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)supportsF16C;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Foundation.
+ * @brief Returns whether the CPU and OS support AVX-512 Foundation.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Foundation
+ * @return Whether the CPU and OS support AVX-512 Foundation
  */
 + (bool)supportsAVX512Foundation;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Conflict Detection
+ * @brief Returns whether the CPU and OS support AVX-512 Conflict Detection
  *	  Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Conflict Detection Instructions
+ * @return Whether the CPU and OS support AVX-512 Conflict Detection
+ *	   Instructions
  */
 + (bool)supportsAVX512ConflictDetectionInstructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Exponential and Reciprocal
- *	  Instructions.
+ * @brief Returns whether the CPU and OS support AVX-512 Exponential and
+ *	  Reciprocal Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Exponential and Reciprocal
+ * @return Whether the CPU and OS support AVX-512 Exponential and Reciprocal
  *	   Instructions
  */
 + (bool)supportsAVX512ExponentialAndReciprocalInstructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Prefetch Instructions.
+ * @brief Returns whether the CPU and OS support AVX-512 Prefetch Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Prefetch Instructions
+ * @return Whether the CPU and OS support AVX-512 Prefetch Instructions
  */
 + (bool)supportsAVX512PrefetchInstructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Vector Length Extensions.
+ * @brief Returns whether the CPU and OS support AVX-512 Vector Length
+ *	  Extensions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Vector Length Extensions
+ * @return Whether the CPU and OS support AVX-512 Vector Length Extensions
  */
 + (bool)supportsAVX512VectorLengthExtensions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Doubleword and Quadword
+ * @brief Returns whether the CPU and OS support AVX-512 Doubleword and Quadword
  *	  Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Doubleword and Quadword Instructions
+ * @return Whether the CPU and OS support AVX-512 Doubleword and Quadword
+ *	   Instructions
  */
 + (bool)supportsAVX512DoublewordAndQuadwordInstructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Byte and Word Instructions.
- *
- * @note This method is only available on AMD64 and x86.
- *
- * @return Whether the CPU supports AVX-512 Byte and Word Instructions
- */
-+ (bool)supportsAVX512ByteAndWordInstructions;
-
-/**
- * @brief Returns whether the CPU supports AVX-512 Integer Fused Multiply Add.
- *
- * @note This method is only available on AMD64 and x86.
- *
- * @return Whether the CPU supports AVX-512 Integer Fused Multiply Add
- */
-+ (bool)supportsAVX512IntegerFusedMultiplyAdd;
-
-/**
- * @brief Returns whether the CPU supports AVX-512 Vector Byte Manipulation
+ * @brief Returns whether the CPU and OS support AVX-512 Byte and Word
  *	  Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Vector Byte Manipulation
+ * @return Whether the CPU and OS support AVX-512 Byte and Word Instructions
+ */
++ (bool)supportsAVX512ByteAndWordInstructions;
+
+/**
+ * @brief Returns whether the CPU and OS support AVX-512 Integer Fused
+ *	  Multiply-Add.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU and OS support AVX-512 Integer Fused Multiply-Add
+ */
++ (bool)supportsAVX512IntegerFusedMultiplyAdd;
+
+/**
+ * @brief Returns whether the CPU and OS support AVX-512 Vector Byte
+ *	  Manipulation Instructions.
+ *
+ * @note This method is only available on AMD64 and x86.
+ *
+ * @return Whether the CPU and OS support AVX-512 Vector Byte Manipulation
  *	   Instructions
  */
 + (bool)supportsAVX512VectorByteManipulationInstructions;
 
 /**
- * @brief Returns whether the CPU supports the AVX-512 Vector Population Count
- *	  Instruction.
+ * @brief Returns whether the CPU and OS support the AVX-512 Vector Population
+ *	  Count Instruction.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 the Vector Population Count
+ * @return Whether the CPU and OS support AVX-512 the Vector Population Count
  *	   Instruction
  */
 + (bool)supportsAVX512VectorPopulationCountInstruction;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Vector Neural Network
+ * @brief Returns whether the CPU and OS support AVX-512 Vector Neural Network
  *	  Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Vector Neural Network Instructions
+ * @return Whether the CPU and OS support AVX-512 Vector Neural Network
+ *	   Instructions
  */
 + (bool)supportsAVX512VectorNeuralNetworkInstructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Vector Byte Manipulation
- *	  Instructions 2.
+ * @brief Returns whether the CPU and OS support AVX-512 Vector Byte
+ *	  Manipulation Instructions 2.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Vector Byte Manipulation
+ * @return Whether the CPU and OS support AVX-512 Vector Byte Manipulation
  *	   Instructions 2
  */
 + (bool)supportsAVX512VectorByteManipulationInstructions2;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Bit Algorithms.
+ * @brief Returns whether the CPU and OS support AVX-512 Bit Algorithms.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Bit Algorithms
+ * @return Whether the CPU and OS support AVX-512 Bit Algorithms
  */
 + (bool)supportsAVX512BitAlgorithms;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 Float16 Instructions.
+ * @brief Returns whether the CPU and OS support AVX-512 Float16 Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 Float16 Instructions
+ * @return Whether the CPU and OS support AVX-512 Float16 Instructions
  */
 + (bool)supportsAVX512Float16Instructions;
 
 /**
- * @brief Returns whether the CPU supports AVX-512 BFloat16 Instructions.
+ * @brief Returns whether the CPU and OS support AVX-512 BFloat16 Instructions.
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU supports AVX-512 BFloat16 Instructions
+ * @return Whether the CPU and OS support AVX-512 BFloat16 Instructions
  */
 + (bool)supportsAVX512BFloat16Instructions;
 #endif

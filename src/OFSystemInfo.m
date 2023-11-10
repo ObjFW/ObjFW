@@ -318,6 +318,24 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	return regs;
 }
+
+static OF_INLINE struct X86Regs
+x86XCR(uint32_t ecx)
+{
+	struct X86Regs regs = { 0 };
+
+	if (!(x86CPUID(1, 0).ecx & (1u << 27)))
+		return regs;
+
+	__asm__ (
+	    "xgetbv"
+	    : "=a" (regs.eax),
+	      "=d" (regs.edx)
+	    : "c" (ecx)
+	);
+
+	return regs;
+}
 #endif
 
 @implementation OFSystemInfo
@@ -759,42 +777,50 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (bool)supportsSSE
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20)) &&
+	    x86XCR(0).eax & (1u << 1));
 }
 
 + (bool)supportsAVX
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 28));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 28)) &&
+	    x86XCR(0).eax & (1u << 2));
 }
 
 + (bool)supportsAVX2
 {
-	return (x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5)));
+	return ((x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5))) &&
+	    x86XCR(0).eax & (1u << 2));
 }
 
 + (bool)supportsAESNI
@@ -819,77 +845,92 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (bool)supportsAVX512Foundation
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 16));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 16)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512ConflictDetectionInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 28));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 28)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512ExponentialAndReciprocalInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 27));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 27)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512PrefetchInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 26));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 26)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512VectorLengthExtensions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 31));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 31)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512DoublewordAndQuadwordInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 17));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 17)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512ByteAndWordInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 30));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 30)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512IntegerFusedMultiplyAdd
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 21));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 21)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512VectorByteManipulationInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 1));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 1)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512VectorPopulationCountInstruction
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 14));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 14)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512VectorNeuralNetworkInstructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 11));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 11)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512VectorByteManipulationInstructions2
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 6));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 6)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512BitAlgorithms
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 12));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 12)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512Float16Instructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).edx & (1u << 23));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).edx & (1u << 23)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 
 + (bool)supportsAVX512BFloat16Instructions
 {
-	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 1).eax & (1u << 5));
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 1).eax & (1u << 5)) &&
+	    x86XCR(0).eax & ((1u << 5) | (1u << 6) | (1u << 7)));
 }
 #endif
 
