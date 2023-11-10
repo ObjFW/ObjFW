@@ -238,56 +238,68 @@ OF_SUBCLASSING_RESTRICTED
 + (bool)supportsEnhanced3DNow;
 
 /**
- * @brief Returns whether the CPU and OS support SSE.
+ * @brief Returns whether the CPU supports SSE.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSE
+ * @return Whether the CPU supports SSE
  */
 + (bool)supportsSSE;
 
 /**
- * @brief Returns whether the CPU and OS support SSE2.
+ * @brief Returns whether the CPU supports SSE2.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSE2
+ * @return Whether the CPU supports SSE2
  */
 + (bool)supportsSSE2;
 
 /**
- * @brief Returns whether the CPU and OS support SSE3.
+ * @brief Returns whether the CPU supports SSE3.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSE3
+ * @return Whether the CPU supports SSE3
  */
 + (bool)supportsSSE3;
 
 /**
- * @brief Returns whether the CPU and OS support SSSE3.
+ * @brief Returns whether the CPU supports SSSE3.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSSE3
+ * @return Whether the CPU supports SSSE3
  */
 + (bool)supportsSSSE3;
 
 /**
- * @brief Returns whether the CPU and OS support SSE4.1.
+ * @brief Returns whether the CPU supports SSE4.1.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSE4.1
+ * @return Whether the CPU supports SSE4.1
  */
 + (bool)supportsSSE41;
 
 /**
- * @brief Returns whether the CPU and OS support SSE4.2.
+ * @brief Returns whether the CPU supports SSE4.2.
+ *
+ * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
- * @return Whether the CPU and OS support SSE4.2
+ * @return Whether the CPU supports SSE4.2
  */
 + (bool)supportsSSE42;
 
