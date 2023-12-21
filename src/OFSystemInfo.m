@@ -129,6 +129,10 @@ SSETestSIGILLHandler(int signum)
 	longjmp(SSETestEnv, 1);
 }
 
+# ifndef __clang__
+#  pragma GCC push_options
+#  pragma GCC target("sse")
+# endif
 static void
 SSETest(void)
 {
@@ -145,6 +149,9 @@ SSETest(void)
 
 	signal(SIGILL, oldHandler);
 }
+# ifndef __clang__
+#  pragma GCC pop_options
+# endif
 #endif
 
 static size_t pageSize = 4096;
