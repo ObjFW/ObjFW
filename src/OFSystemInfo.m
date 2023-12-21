@@ -18,6 +18,8 @@
 #include "config.h"
 
 #include <limits.h>	/* include any libc header to get the libc defines */
+#include <setjmp.h>
+#include <signal.h>
 
 #include "unistd_wrapper.h"
 
@@ -117,6 +119,32 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+
+static bool SSESupport;
+static jmp_buf SSETestEnv;
+
+static void
+SSETestSIGILLHandler(int signum)
+{
+	longjmp(SSETestEnv, 1);
+}
+
+static void
+SSETest(void)
+{
+	void (*oldHandler)(int) = signal(SIGILL, SSETestSIGILLHandler);
+
+	if (setjmp(SSETestEnv) == 0) {
+		__asm__ __volatile__ (
+		    "movaps	%%xmm0, %%xmm0"
+		    ::: "xmm0"	/* clang is unhappy if we don't clobber it */
+		);
+		SSESupport = true;
+	} else
+		SSESupport = false;
+
+	signal(SIGILL, oldHandler);
+}
 #endif
 
 static size_t pageSize = 4096;
@@ -345,6 +373,15 @@ x86XCR(uint32_t ecx)
 
 	if (self != [OFSystemInfo class])
 		return;
+
+#if defined(OF_AMD64) || defined(OF_X86)
+	/*
+	 * Do this as early as possible, as it involves signals.
+	 * Required as cpuid can return SSE support while the OS has not
+	 * enabled it.
+	 */
+	SSETest();
+#endif
 
 #if defined(OF_WINDOWS)
 	SYSTEM_INFO si;
@@ -777,32 +814,38 @@ x86XCR(uint32_t ecx)
 
 + (bool)supportsSSE
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20));
 }
 
 + (bool)supportsAVX

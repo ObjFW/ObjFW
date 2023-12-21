@@ -240,8 +240,6 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports SSE.
  *
- * @note This only checks CPU support and assumes OS support!
- *
  * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE
@@ -250,8 +248,6 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns whether the CPU supports SSE2.
- *
- * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
@@ -262,8 +258,6 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports SSE3.
  *
- * @note This only checks CPU support and assumes OS support!
- *
  * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE3
@@ -272,8 +266,6 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns whether the CPU supports SSSE3.
- *
- * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
@@ -284,8 +276,6 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns whether the CPU supports SSE4.1.
  *
- * @note This only checks CPU support and assumes OS support!
- *
  * @note This method is only available on AMD64 and x86.
  *
  * @return Whether the CPU supports SSE4.1
@@ -294,8 +284,6 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns whether the CPU supports SSE4.2.
- *
- * @note This only checks CPU support and assumes OS support!
  *
  * @note This method is only available on AMD64 and x86.
  *
