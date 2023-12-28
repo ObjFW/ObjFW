@@ -706,7 +706,7 @@
 				ret = [OFString
 				    stringWithCString: _readBuffer
 					     encoding: encoding
-					      length: i + 1 - delimiterLength];
+					       length: i + 1 - delimiterLength];
 
 				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
