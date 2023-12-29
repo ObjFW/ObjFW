@@ -137,6 +137,7 @@ OF_SUBCLASSING_RESTRICTED
 	    *_TCPQueries;
 	OFMutableDictionary OF_GENERIC(OFDNSQuery *,
 	    OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *) *_cache;
+	OFTimeInterval _lastCacheCleanup;
 }
 
 /**

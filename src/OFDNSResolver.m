@@ -805,6 +805,37 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 			 runLoopMode: runLoopMode];
 }
 
+- (void)of_cleanUpCache
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimeInterval now = [OFDate date].timeIntervalSince1970;
+	OFMutableArray *removeList;
+
+	if (now - _lastCacheCleanup < 1)
+		return;
+
+	_lastCacheCleanup = now;
+	removeList = [OFMutableArray arrayWithCapacity: _cache.count];
+
+	for (OFDNSQuery *query in _cache) {
+		OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *entry =
+		    [_cache objectForKey: query];
+		uint32_t age =
+		    (uint32_t)now - [entry.firstObject timeIntervalSince1970];
+		OFDNSResponse *response = entry.secondObject;
+
+		if (containsExpiredRecord(response.answerRecords, age) ||
+		    containsExpiredRecord(response.authorityRecords, age) ||
+		    containsExpiredRecord(response.additionalRecords, age))
+			[removeList addObject: query];
+	}
+
+	for (OFDNSQuery *query in removeList)
+		[_cache removeObjectForKey: query];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)asyncPerformQuery: (OFDNSQuery *)query
 		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
@@ -821,6 +852,8 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	OFNumber *ID;
 	OFDNSResolverContext *context;
 	OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *cacheEntry;
+
+	[self of_cleanUpCache];
 
 	if ((cacheEntry = [_cache objectForKey: query]) != nil) {
 		uint32_t age =
@@ -1081,6 +1114,8 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 			   forKey: context->_query];
 	else
 		[_cache removeObjectForKey: context->_query];
+
+	[self of_cleanUpCache];
 
 	[context->_delegate resolver: self
 		     didPerformQuery: context->_query
