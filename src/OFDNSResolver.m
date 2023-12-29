@@ -808,7 +808,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 - (void)of_cleanUpCache
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFTimeInterval now = [OFDate date].timeIntervalSince1970;
+	OFTimeInterval now = [[OFDate date] timeIntervalSince1970];
 	OFMutableArray *removeList;
 
 	if (now - _lastCacheCleanup < 1)
