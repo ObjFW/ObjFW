@@ -32,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
+@class OFPair OF_GENERIC(FirstType, SecondType);
 @class OFTCPSocket;
 @class OFUDPSocket;
 
@@ -134,6 +135,8 @@ OF_SUBCLASSING_RESTRICTED
 	    *_queries;
 	OFMutableDictionary OF_GENERIC(OFTCPSocket *, OFDNSResolverContext *)
 	    *_TCPQueries;
+	OFMutableDictionary OF_GENERIC(OFDNSQuery *,
+	    OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *) *_cache;
 }
 
 /**

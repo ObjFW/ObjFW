@@ -467,6 +467,20 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	return ret;
 }
 
+static bool
+containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
+{
+	OFEnumerator *enumerator = [responseRecords objectEnumerator];
+	OFArray OF_GENERIC(OFDNSResourceRecord *) *records;
+
+	while ((records = [enumerator nextObject]) != nil)
+		for (OFDNSResourceRecord *record in records)
+			if (record.TTL < age)
+				return true;
+
+	return false;
+}
+
 @implementation OFDNSResolverContext
 - (instancetype)initWithQuery: (OFDNSQuery *)query
 			   ID: (OFNumber *)ID
@@ -578,6 +592,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		_settings = [[OFDNSResolverSettings alloc] init];
 		_queries = [[OFMutableDictionary alloc] init];
 		_TCPQueries = [[OFMutableDictionary alloc] init];
+		_cache = [[OFMutableDictionary alloc] init];
 
 		[_settings reload];
 	} @catch (id e) {
@@ -601,6 +616,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 #endif
 	[_queries release];
 	[_TCPQueries release];
+	[_cache release];
 
 	[super dealloc];
 }
@@ -804,6 +820,25 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *ID;
 	OFDNSResolverContext *context;
+	OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *cacheEntry;
+
+	if ((cacheEntry = [_cache objectForKey: query]) != nil) {
+		uint32_t age =
+		    (uint32_t)-[cacheEntry.firstObject timeIntervalSinceNow];
+		OFDNSResponse *response = cacheEntry.secondObject;
+
+		if (!containsExpiredRecord(response.answerRecords, age) &&
+		    !containsExpiredRecord(response.authorityRecords, age) &&
+		    !containsExpiredRecord(response.additionalRecords, age)) {
+			[delegate resolver: self
+			   didPerformQuery: query
+				  response: response
+				 exception: nil];
+
+			objc_autoreleasePoolPop(pool);
+			return;
+		}
+	}
 
 	/* Random, unused ID */
 	do {
@@ -1039,6 +1074,13 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 	if (exception != nil)
 		response = nil;
+
+	if (response != nil)
+		[_cache setObject: [OFPair pairWithFirstObject: [OFDate date]
+						  secondObject: response]
+			   forKey: context->_query];
+	else
+		[_cache removeObjectForKey: context->_query];
 
 	[context->_delegate resolver: self
 		     didPerformQuery: context->_query
