@@ -41,12 +41,13 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine:
 		    @"Options:\n"
-		    @"    --app          Create a new app\n"
-		    @"    --class        Create a new class\n"
-		    @"    --help         Show this help\n"
-		    @"    --superclass=  Specify the superclass for the class\n"
-		    @"    --property=    Add a property to the class.\n"
-		    @"                   E.g.: --property='(readonly, "
+		    @"    -a  --app          Create a new app\n"
+		    @"    -c  --class        Create a new class\n"
+		    @"    -h  --help         Show this help\n"
+		    @"    -s  --superclass=  Specify the superclass for the "
+		    @"class\n"
+		    @"    -p  --property=    Add a property to the class.\n"
+		    @"                       E.g.: --property='(readonly, "
 		    @"nonatomic) id foo'"];
 	}
 
