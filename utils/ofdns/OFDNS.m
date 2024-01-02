@@ -44,13 +44,13 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n    "
-		    @"-c  --class "
+		    @"-c  --class= "
 		    @"  The DNS class to query (defaults to IN)\n    "
-		    @"-h  --help  "
+		    @"-h  --help   "
 		    @"  Show this help\n    "
-		    @"-s  --server"
+		    @"-s  --server="
 		    @"  The server to query\n    "
-		    @"-t  --type  "
+		    @"-t  --type=  "
 		    @"  The record type to query (defaults to ALL, can be "
 		    @"repeated)\n    "
 		    @"    --tcp   "

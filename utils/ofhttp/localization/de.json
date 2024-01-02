@@ -1,7 +1,7 @@
 /*
  * German localization for ofhttp.
  *
- * Copyright (c) 2017-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
  *
  * Permission to use, copy, modify, and/or distribute this localization for
  * any purpose with or without fee is hereby granted.
@@ -13,17 +13,17 @@
     usage: "Benutzung: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
     full_usage: [
         "Optionen:\n",
-        "    -b  --body             Angegebene Datei als Body übergeben\n",
+        "    -b  --body=            Angegebene Datei als Body übergeben\n",
         "                           (- für Standard-Eingabe)\n",
         "    -c  --continue         Download von existierender Datei ",
         "fortsetzen\n",
         "    -f  --force            Existierende Datei überschreiben\n",
         "    -h  --help             Diese Hilfe anzeigen\n",
-        "    -H  --header           Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
-        "    -m  --method           HTTP Request-Methode setzen\n",
-        "    -o  --output           Ausgabe-Dateiname angeben\n",
+        "    -H  --header=          Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
+        "    -m  --method=          HTTP Request-Methode setzen\n",
+        "    -o  --output=          Ausgabe-Dateiname angeben\n",
         "    -O  --detect-filename  Dateiname mittels HEAD-Request ermitteln\n",
-        "    -P  --proxy            SOCKS5-Proxy angeben\n",
+        "    -P  --proxy=           SOCKS5-Proxy angeben\n",
         "    -q  --quiet            Ruhiger Modus (keine Ausgabe außer Fehler)",
         "\n",
         "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",

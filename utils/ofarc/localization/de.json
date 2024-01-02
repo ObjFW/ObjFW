@@ -1,7 +1,7 @@
 /*
  * German localization for ofarc.
  *
- * Copyright (c) 2017-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
  *
  * Permission to use, copy, modify, and/or distribute this localization for
  * any purpose with or without fee is hereby granted.
@@ -17,8 +17,8 @@
         "Optionen:\n",
         "    -a  --append      Zu Archiv hinzufügen\n",
         "    -c  --create      Archiv erstellen\n",
-        "    -C  --directory   In angegebenes Verzeichnis entpacken\n",
-        "    -E  --encoding    Das Encoding des Archivs (nur tar-Dateien)\n",
+        "    -C  --directory=  In angegebenes Verzeichnis entpacken\n",
+        "    -E  --encoding=   Das Encoding des Archivs (nur tar-Dateien)\n",
         "    -f  --force       Existierende Dateien überschreiben\n",
         "    -h  --help        Diese Hilfe anzeigen\n",
         "    -l  --list        Alle Dateien im Archiv auflisten\n",
@@ -26,7 +26,7 @@
         "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",
         "\n",
         "    -q  --quiet       Ruhiger Modus (keine Ausgabe außer Fehler)\n",
-        "    -t  --type        Archiv-Typ (gz, lha, tar, tgz, zip)\n",
+        "    -t  --type=       Archiv-Typ (gz, lha, tar, tgz, zip)\n",
         "    -v  --verbose     Ausführlicher Modus für Datei-Liste\n",
         "    -x  --extract     Dateien entpacken"
     ],

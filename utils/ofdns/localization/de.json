@@ -1,7 +1,7 @@
 /*
  * German localization for ofdns.
  *
- * Copyright (c) 2020-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2020-2024 Jonathan Schleifer <js@nil.im>
  *
  * Permission to use, copy, modify, and/or distribute this localization for
  * any purpose with or without fee is hereby granted.
@@ -13,12 +13,12 @@
     usage: "Benutzung: %[prog] -[chst] domain1 [domain2 ...]",
     full_usage: [
         "Optionen:\n",
-        "    -c  --class   Die anzufragende DNS-Klasse (standardmäßig IN)\n",
-        "    -h  --help    Diese Hilfe anzeigen\n",
-        "    -s  --server  Der abzufragende Server\n",
-        "    -t  --type    Der anzufragende Record-Typ (standardmäßig ALL,\n",
-        "                  kann wiederholt werden)\n",
-        "        --tcp     Benutzung von TCP erzwingen"
+        "    -c  --class=   Die anzufragende DNS-Klasse (standardmäßig IN)\n",
+        "    -h  --help     Diese Hilfe anzeigen\n",
+        "    -s  --server=  Der abzufragende Server\n",
+        "    -t  --type=    Der anzufragende Record-Typ (standardmäßig ALL,\n",
+        "                   kann wiederholt werden)\n",
+        "        --tcp      Benutzung von TCP erzwingen"
     ],
     long_option_requires_argument: [
         "%[prog]: Option --%[opt] benötigt ein Argument"
