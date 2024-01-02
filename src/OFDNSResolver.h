@@ -30,6 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDNSResolverSettings;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
 @class OFPair OF_GENERIC(FirstType, SecondType);
@@ -137,6 +138,7 @@ OF_SUBCLASSING_RESTRICTED
 	    *_TCPQueries;
 	OFMutableDictionary OF_GENERIC(OFDNSQuery *,
 	    OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *) *_cache;
+	OFMutableArray OF_GENERIC(OFString *) *_lastNameServers;
 	OFTimeInterval _lastCacheCleanup;
 }
 
@@ -165,10 +167,6 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The local domain.
- *
- * @warning If you change this, you need to set @ref configReloadInterval to 0
- *	    to disable reloading the config after some time. If you don't, the
- *	    config will be reloaded and your change overridden.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *localDomain;
 

@@ -617,6 +617,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	[_queries release];
 	[_TCPQueries release];
 	[_cache release];
+	[_lastNameServers release];
 
 	[super dealloc];
 }
@@ -807,9 +808,19 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (void)of_cleanUpCache
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFTimeInterval now = [[OFDate date] timeIntervalSince1970];
 	OFMutableArray *removeList;
+
+	if (_lastNameServers != _settings->_nameServers &&
+	    ![_lastNameServers isEqual: _settings->_nameServers]) {
+		OFArray *old = _lastNameServers;
+		_lastNameServers = [_settings->_nameServers copy];
+		[old release];
+
+		[_cache removeAllObjects];
+
+		return;
+	}
 
 	if (now - _lastCacheCleanup < 1)
 		return;
@@ -832,8 +843,6 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 	for (OFDNSQuery *query in removeList)
 		[_cache removeObjectForKey: query];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)asyncPerformQuery: (OFDNSQuery *)query
@@ -1108,14 +1117,14 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	if (exception != nil)
 		response = nil;
 
+	[self of_cleanUpCache];
+
 	if (response != nil)
 		[_cache setObject: [OFPair pairWithFirstObject: [OFDate date]
 						  secondObject: response]
 			   forKey: context->_query];
 	else
 		[_cache removeObjectForKey: context->_query];
-
-	[self of_cleanUpCache];
 
 	[context->_delegate resolver: self
 		     didPerformQuery: context->_query
