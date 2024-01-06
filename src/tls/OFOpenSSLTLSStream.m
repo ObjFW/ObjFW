@@ -319,7 +319,6 @@ static SSL_CTX *clientContext;
 		static const OFTLSStreamErrorCode unknownErrorCode =
 		    OFTLSStreamErrorCodeUnknown;
 		int status;
-		OFData *data;
 
 		OFEnsure(length <= INT_MAX);
 		OFEnsure(BIO_write(_readBIO, buffer, (int)length) ==
@@ -342,7 +341,7 @@ static SSL_CTX *clientContext;
 			switch (SSL_get_error(_SSL, status)) {
 			case SSL_ERROR_WANT_READ:
 				return true;
-			case SSL_ERROR_WANT_WRITE:
+			case SSL_ERROR_WANT_WRITE:;
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
 				[_underlyingStream asyncWriteData: [OFData data]
