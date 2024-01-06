@@ -127,7 +127,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	SSLDisposeContext(_context);
 #endif
 	_context = NULL;
-	_handshakeDone = false;
 
 	[super close];
 }
