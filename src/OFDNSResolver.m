@@ -872,10 +872,19 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		if (!containsExpiredRecord(response.answerRecords, age) &&
 		    !containsExpiredRecord(response.authorityRecords, age) &&
 		    !containsExpiredRecord(response.additionalRecords, age)) {
-			[delegate resolver: self
-			   didPerformQuery: query
-				  response: response
-				 exception: nil];
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: delegate
+					 selector: @selector(resolver:
+						       didPerformQuery:response:
+						       exception:)
+					   object: self
+					   object: query
+					   object: response
+					   object: nil
+					  repeats: false];
+			[[OFRunLoop currentRunLoop] addTimer: timer
+						     forMode: runLoopMode];
 
 			objc_autoreleasePoolPop(pool);
 			return;
