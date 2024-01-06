@@ -114,6 +114,9 @@ typedef enum {
  * @brief Initializes the TLS stream with the specified stream as its
  *	  underlying stream.
  *
+ * @note The delegate of the specified stream will be changed to the TLS
+ *	 stream. You must not change this before the TLS session is completed.
+ *
  * @param stream The stream to use as underlying stream. Must not be closed
  *		 before the TLS stream is closed.
  * @return An initialized TLS stream

@@ -1784,7 +1784,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, openssl, gnutls, securetransport or no)]))
+			(yes, openssl, gnutls, securetransport, mbedtls or
+			no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
 
@@ -1851,6 +1852,28 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			dnl configure with an error.
 			:
 		])
+	])
+
+	AS_IF([test x"$with_tls" = x"mbedtls"], [
+		AC_ARG_WITH(mbedtls-ca-path,
+			AS_HELP_STRING([path to CA file for Mbed TLS]))
+
+		AS_IF([test x"$with_mbedtls_ca_path" = x""], [
+			AC_MSG_ERROR([--mbedtls-ca-path needs to be specified!])
+		])
+		AC_DEFINE_UNQUOTED(OF_MBEDTLS_CA_PATH, "$with_mbedtls_ca_path",
+			[Path to CA file for Mbed TLS])
+
+		AC_CHECK_LIB(mbedtls, mbedtls_net_init, [
+			AC_CHECK_HEADER(mbedtls/ssl.h, [
+				tls_support="Mbed TLS"
+				TLS_LIBS="-lmbedx509 -lmbedcrypto $TLS_LIBS"
+				TLS_LIBS="-lmbedtls $TLS_LIBS"
+
+				AC_SUBST(OF_MBEDTLS_TLS_STREAM_M,
+					"OFMbedTLSTLSStream.m")
+			])
+		], [], [-lmbedx509 -lmbedcrypto])
 	])
 
 	AS_IF([test x"$tls_support" != x"no"], [

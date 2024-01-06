@@ -94,6 +94,8 @@ static SSL_CTX *clientContext;
 	SSL_free(_SSL);
 	_SSL = NULL;
 
+	_handshakeDone = false;
+
 	[_host release];
 	_host = nil;
 
@@ -287,9 +289,8 @@ static SSL_CTX *clientContext;
 			[_delegate retain];
 			return;
 		case SSL_ERROR_WANT_WRITE:
-			[_underlyingStream
-			    asyncWriteData: [OFData dataWithItems: "" count: 0]
-			       runLoopMode: runLoopMode];
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
 			[_delegate retain];
 			return;
 		default:
@@ -342,10 +343,9 @@ static SSL_CTX *clientContext;
 			case SSL_ERROR_WANT_READ:
 				return true;
 			case SSL_ERROR_WANT_WRITE:
-				data = [OFData dataWithItems: "" count: 0];
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: data
+				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
 			default:

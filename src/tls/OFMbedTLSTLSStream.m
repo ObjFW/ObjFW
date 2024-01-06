@@ -17,63 +17,72 @@
 
 #include <errno.h>
 
-#import "OFGnuTLSTLSStream.h"
+#import "OFMbedTLSTLSStream.h"
 #import "OFData.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
 
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/entropy.h>
+
 int _ObjFWTLS_reference;
-static gnutls_certificate_credentials_t systemTrustCreds;
+static mbedtls_entropy_context entropy;
+static mbedtls_ctr_drbg_context CTRDRBG;
+static mbedtls_x509_crt CAChain;
 
-#ifndef GNUTLS_SAFE_PADDING_CHECK
-/* Some older versions don't have it. */
-# define GNUTLS_SAFE_PADDING_CHECK 0
-#endif
-
-@implementation OFGnuTLSTLSStream
-static ssize_t
-readFunc(gnutls_transport_ptr_t transport, void *buffer, size_t length)
+@implementation OFMbedTLSTLSStream
+static int
+readFunc(void *ctx, unsigned char *buffer, size_t length)
 {
-	OFGnuTLSTLSStream *stream = (OFGnuTLSTLSStream *)transport;
+	OFMbedTLSTLSStream *stream = (OFMbedTLSTLSStream *)ctx;
 
 	@try {
 		length = [stream.underlyingStream readIntoBuffer: buffer
 							  length: length];
 	} @catch (OFReadFailedException *e) {
-		gnutls_transport_set_errno(stream->_session, e.errNo);
 		return -1;
 	}
 
-	if (length == 0 && !stream.underlyingStream.atEndOfStream) {
-		gnutls_transport_set_errno(stream->_session, EAGAIN);
-		return -1;
-	}
+	if (length == 0 && !stream.underlyingStream.atEndOfStream)
+		return MBEDTLS_ERR_SSL_WANT_READ;
 
-	return length;
+	if (length > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)length;
 }
 
-static ssize_t
-writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
+static int
+writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 {
-	OFGnuTLSTLSStream *stream = (OFGnuTLSTLSStream *)transport;
+	OFMbedTLSTLSStream *stream = (OFMbedTLSTLSStream *)ctx;
 
 	@try {
 		[stream.underlyingStream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		gnutls_transport_set_errno(stream->_session, e.errNo);
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN) {
+			size_t bytesWritten = e.bytesWritten;
 
-		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
-			return e.bytesWritten;
+			if (bytesWritten > INT_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			return (bytesWritten > 0
+			    ? (int)bytesWritten : MBEDTLS_ERR_SSL_WANT_WRITE);
+		}
 
 		return -1;
 	}
 
-	return length;
+	if (length > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)length;
 }
 
 + (void)load
@@ -84,13 +93,19 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 + (void)initialize
 {
-	if (self != [OFGnuTLSTLSStream class])
+	if (self != [OFMbedTLSTLSStream class])
 		return;
 
-	if (gnutls_certificate_allocate_credentials(&systemTrustCreds) !=
-	    GNUTLS_E_SUCCESS ||
-	    gnutls_certificate_set_x509_system_trust(systemTrustCreds) < 0)
-		@throw [OFInitializationFailedException exception];
+	mbedtls_entropy_init(&entropy);
+	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
+	    NULL, 0) != 0)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	mbedtls_x509_crt_init(&CAChain);
+	if (mbedtls_x509_crt_parse_file(&CAChain, OF_MBEDTLS_CA_PATH) != 0)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
@@ -124,9 +139,10 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_handshakeDone)
-		gnutls_bye(_session, GNUTLS_SHUT_WR);
+		mbedtls_ssl_close_notify(&_SSL);
 
-	gnutls_deinit(_session);
+	mbedtls_ssl_free(&_SSL);
+	mbedtls_ssl_config_free(&_config);
 	_initialized = _handshakeDone = false;
 
 	[_host release];
@@ -137,22 +153,23 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
-	ssize_t ret;
+	int ret;
 
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = gnutls_record_recv(_session, buffer, length)) < 0) {
+	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) < 0) {
 		/*
 		 * The underlying stream might have had data ready, but not
-		 * enough for GnuTLS to return decrypted data. This means the
+		 * enough for MbedTLS to return decrypted data. This means the
 		 * caller might have observed the TLS stream for reading, got a
 		 * ready signal and read - and expects the read to succeed, not
 		 * to fail with EWOULDBLOCK/EAGAIN, as it was signaled ready.
 		 * Therefore, return 0, as we could read 0 decrypted bytes, but
 		 * cleared the ready signal of the underlying stream.
 		 */
-		if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN)
+		if (ret == MBEDTLS_ERR_SSL_WANT_READ ||
+		    ret == MBEDTLS_ERR_SSL_WANT_WRITE)
 			return 0;
 
 		/* FIXME: Translate error to errNo */
@@ -166,13 +183,14 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	ssize_t ret;
+	int ret;
 
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = gnutls_record_send(_session, buffer, length)) < 0) {
-		if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN)
+	if ((ret = mbedtls_ssl_write(&_SSL, buffer, length)) < 0) {
+		if (ret == MBEDTLS_ERR_SSL_WANT_READ ||
+		    ret == MBEDTLS_ERR_SSL_WANT_WRITE)
 			return 0;
 
 		/* FIXME: Translate error to errNo */
@@ -188,7 +206,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 - (bool)lowlevelHasDataInReadBuffer
 {
 	return (_underlyingStream.hasDataInReadBuffer ||
-	    gnutls_record_check_pending(_session) > 0);
+	    mbedtls_ssl_get_bytes_avail(&_SSL));
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
@@ -202,55 +220,51 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	if (_initialized)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
-	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
+	if (mbedtls_ssl_config_defaults(&_config, MBEDTLS_SSL_IS_CLIENT,
+	    MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
 
-	_initialized = true;
+	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
+	mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
+	    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
+	mbedtls_ssl_conf_ca_chain(&_config, &CAChain, NULL);
 
-	gnutls_transport_set_ptr(_session, self);
-	gnutls_transport_set_pull_function(_session, readFunc);
-	gnutls_transport_set_push_function(_session, writeFunc);
-
-	if (gnutls_set_default_priority(_session) != GNUTLS_E_SUCCESS ||
-	    gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
-	    systemTrustCreds) != GNUTLS_E_SUCCESS)
+	mbedtls_ssl_init(&_SSL);
+	if (mbedtls_ssl_setup(&_SSL, &_config) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
+
+	mbedtls_ssl_set_bio(&_SSL, self, writeFunc, readFunc, NULL);
 
 	_host = [host copy];
 
-	if (gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
-	    _host.UTF8String, _host.UTF8StringLength) != GNUTLS_E_SUCCESS)
+	if (mbedtls_ssl_set_hostname(&_SSL, _host.UTF8String) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
 
-	if (_verifiesCertificates)
-		gnutls_session_set_verify_cert(_session, _host.UTF8String, 0);
+	status = mbedtls_ssl_handshake(&_SSL);
 
-	status = gnutls_handshake(_session);
-
-	if (status == GNUTLS_E_INTERRUPTED || status == GNUTLS_E_AGAIN) {
-		if (gnutls_record_get_direction(_session) == 1)
-			[_underlyingStream asyncWriteData: [OFData data]
-					      runLoopMode: runLoopMode];
-		else
-			[_underlyingStream asyncReadIntoBuffer: (void *)""
-							length: 0
-						   runLoopMode: runLoopMode];
-
+	if (status == MBEDTLS_ERR_SSL_WANT_READ) {
+		[_underlyingStream asyncReadIntoBuffer: (void *)""
+						length: 0
+					   runLoopMode: runLoopMode];
+		[_delegate retain];
+		return;
+	} else if (status == MBEDTLS_ERR_SSL_WANT_WRITE) {
+		[_underlyingStream asyncWriteData: [OFData data]
+				      runLoopMode: runLoopMode];
 		[_delegate retain];
 		return;
 	}
 
-	if (status == GNUTLS_E_SUCCESS)
+	if (status == 0)
 		_handshakeDone = true;
 	else
 		/* FIXME: Map to better errors */
@@ -272,21 +286,19 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	  exception: (id)exception
 {
 	if (exception == nil) {
-		int status = gnutls_handshake(_session);
+		int status = mbedtls_ssl_handshake_step(&_SSL);
 
-		if (status == GNUTLS_E_INTERRUPTED ||
-		    status == GNUTLS_E_AGAIN) {
-			if (gnutls_record_get_direction(_session) == 1) {
-				OFRunLoopMode runLoopMode =
-				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: [OFData data]
-						      runLoopMode: runLoopMode];
-				return false;
-			} else
-				return true;
+		if (status == MBEDTLS_ERR_SSL_WANT_READ)
+			return true;
+		else if (status == MBEDTLS_ERR_SSL_WANT_WRITE) {
+			OFRunLoopMode runLoopMode =
+			    [OFRunLoop currentRunLoop].currentMode;
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
+			return false;
 		}
 
-		if (status == GNUTLS_E_SUCCESS)
+		if (status == 0)
 			_handshakeDone = true;
 		else
 			exception = [OFTLSHandshakeFailedException
@@ -312,24 +324,20 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	 exception: (id)exception
 {
 	if (exception == nil) {
-		int status = gnutls_handshake(_session);
+		int status = mbedtls_ssl_handshake_step(&_SSL);
 
-		if (status == GNUTLS_E_INTERRUPTED ||
-		    status == GNUTLS_E_AGAIN) {
-			if (gnutls_record_get_direction(_session) == 1)
-				return data;
-			else {
-				OFRunLoopMode runLoopMode =
-				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream
-				    asyncReadIntoBuffer: (void *)""
-						 length: 0
-					    runLoopMode: runLoopMode];
-				return nil;
-			}
+		if (status == MBEDTLS_ERR_SSL_WANT_WRITE)
+			return data;
+		else if (status == MBEDTLS_ERR_SSL_WANT_READ) {
+			OFRunLoopMode runLoopMode =
+			    [OFRunLoop currentRunLoop].currentMode;
+			[_underlyingStream asyncReadIntoBuffer: (void *)""
+							length: 0
+						   runLoopMode: runLoopMode];
+			return nil;
 		}
 
-		if (status == GNUTLS_E_SUCCESS)
+		if (status == 0)
 			_handshakeDone = true;
 		else
 			exception = [OFTLSHandshakeFailedException
