@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,7 +37,7 @@ typedef __int64 OFStreamOffset;
 #elif defined(OF_ANDROID)
 typedef long long OFStreamOffset;
 #elif defined(OF_MORPHOS)
-typedef signed long long OFStreamOffset;
+typedef long long OFStreamOffset;
 #elif defined(OF_HAVE_OFF64_T)
 typedef off64_t OFStreamOffset;
 #else

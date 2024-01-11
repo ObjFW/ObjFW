@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -97,11 +96,6 @@
 	[super dealloc];
 }
 
-- (bool)lowlevelIsAtEndOfStream
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -110,6 +104,16 @@
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (bool)lowlevelHasDataInReadBuffer
+{
+	return false;
 }
 
 - (id)copy
@@ -702,7 +706,7 @@
 				ret = [OFString
 				    stringWithCString: _readBuffer
 					     encoding: encoding
-					      length: i + 1 - delimiterLength];
+					       length: i + 1 - delimiterLength];
 
 				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
@@ -1187,7 +1191,7 @@
 
 - (bool)hasDataInReadBuffer
 {
-	return (_readBufferLength > 0);
+	return (_readBufferLength > 0 || [self lowlevelHasDataInReadBuffer]);
 }
 
 - (bool)canBlock

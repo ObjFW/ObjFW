@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -105,6 +105,10 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
     OFReadyForWritingObserving>
 {
 	OFSocketHandle _socket;
+#ifdef OF_AMIGAOS
+	LONG _socketID;
+	int _family;	/* unused, reserved for ABI stability */
+#endif
 	bool _canBlock;
 #ifdef OF_WII
 	bool _canSendToBroadcastAddresses;
@@ -118,6 +122,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  *
  * By default, a socket can block.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -125,6 +130,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 /**
  * @brief Whether the socket can send to broadcast addresses.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canSendToBroadcastAddresses;
@@ -296,6 +302,30 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block;
 #endif
+
+/**
+ * @brief Releases the socket from the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * After calling this method, you must no longer use the socket until
+ * @ref obtainSocketForCurrentThread has been called.
+ */
+- (void)releaseSocketFromCurrentThread;
+
+/**
+ * @brief Obtains the socket for the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * You must only call this method after @ref releaseSocketFromCurrentThread has
+ * been called from a different thread.
+ */
+- (void)obtainSocketForCurrentThread;
 
 /**
  * @brief Cancels all pending asynchronous requests on the socket.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,7 +27,7 @@
 \name:
 	movl	4(%esp), %edx
 	testl	%edx, %edx
-	jz	returnNilMethod
+	jz	.LreturnNilMethod
 
 	testb	$1, %dl
 	jnz	.LtaggedPointer_\name
@@ -53,21 +53,21 @@
 	ret
 
 0:
-	call	getEIP
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	lea	\notFound@GOTOFF(%eax), %eax
+	movl	\notFound@GOT(%eax), %eax
 	jmp	*%eax
 
 .LtaggedPointer_\name:
-	call	getEIP
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	leal	objc_taggedPointerSecret@GOTOFF(%eax), %ecx
+	movl	objc_taggedPointerSecret@GOT(%eax), %ecx
 	xorl	(%ecx), %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	leal	objc_taggedPointerClasses@GOTOFF(%eax), %eax
+	movl	objc_taggedPointerClasses@GOT(%eax), %eax
 	movl	(%eax,%edx,2), %edx
 	movl	32(%edx), %edx
 
@@ -81,7 +81,7 @@
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
 	testl	%eax, %eax
-	jz	returnNilMethod
+	jz	.LreturnNilMethod
 
 	movl	%eax, 4(%esp)
 	mov	4(%edx), %edx
@@ -96,20 +96,20 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	call	getEIP
+.LreturnNilMethod:
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
-	leal	nilMethod@GOTOFF(%eax), %eax
+	leal	.LnilMethod@GOTOFF(%eax), %eax
 	ret
 
-nilMethod:
+.LnilMethod:
 	xorl	%eax, %eax
 	ret
 
-getEIP:
+.LgetEIP:
 	movl	(%esp), %eax
 	ret
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,7 +28,6 @@
 
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 #import "OFValue.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -40,20 +39,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief Provides a way to store a number in an object.
  */
-#ifndef OF_NUMBER_M
-OF_SUBCLASSING_RESTRICTED
-#endif
-@interface OFNumber: OFValue <OFComparing, OFSerialization,
-    OFJSONRepresentation, OFMessagePackRepresentation>
-{
-	union {
-		double float_;
-		long long signed_;
-		unsigned long long unsigned_;
-	} _value;
-	const char *_typeEncoding;
-}
-
+@interface OFNumber: OFValue <OFComparing, OFJSONRepresentation,
+    OFMessagePackRepresentation>
 /**
  * @brief The OFNumber as a `bool`.
  */
@@ -124,8 +111,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
-+ (instancetype)valueWithBytes: (const void *)bytes
-		      objCType: (const char *)objCType OF_UNAVAILABLE;
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
 + (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
@@ -236,10 +221,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new autoreleased OFNumber
  */
 + (instancetype)numberWithDouble: (double)value;
-
-- (instancetype)init OF_UNAVAILABLE;
-- (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OFNumber with the specified `bool`.

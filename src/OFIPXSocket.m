@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,8 +25,12 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPXSocketFailedException.h"
+
+#ifndef NSPROTO_IPX
+# define NSPROTO_IPX 0
+#endif
 
 @implementation OFIPXSocket
 @dynamic delegate;
@@ -43,11 +47,11 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeIPX(network, node, port);
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(OF_FREEBSD)
 	protocol = NSPROTO_IPX + packetType;
 #else
 	_packetType = address.sockaddr.ipx.sipx_type = packetType;
@@ -122,7 +126,7 @@
 	return address;
 }
 
-#ifndef OF_WINDOWS
+#if !defined(OF_WINDOWS) && !defined(OF_FREEBSD)
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  receiver: (const OFSocketAddress *)receiver

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,6 @@
 
 #import "OFObject.h"
 #import "OFCollection.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -63,7 +62,7 @@ typedef bool (^OFSetFilterBlock)(id object);
  *	 @ref objectEnumerator.
  */
 @interface OFSet OF_GENERIC(ObjectType): OFObject <OFCollection, OFCopying,
-    OFMutableCopying, OFSerialization>
+    OFMutableCopying>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
@@ -119,6 +118,13 @@ typedef bool (^OFSetFilterBlock)(id object);
 			 count: (size_t)count;
 
 /**
+ * @brief Initializes an already allocated set to be empty.
+ *
+ * @return An initialized set
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated set with the specified set.
  *
  * @param set The set to initialize the set with
@@ -161,7 +167,7 @@ typedef bool (^OFSetFilterBlock)(id object);
  * @return An initialized set with the specified objects
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.

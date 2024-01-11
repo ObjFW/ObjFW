@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,32 +17,37 @@
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFMutableSet.h"
-#import "OFMutableMapTableSet.h"
+#import "OFConcreteMutableSet.h"
+#import "OFString.h"
 
 static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableSetPlaceholder: OFMutableSet
+@interface OFPlaceholderMutableSet: OFMutableSet
 @end
 
-@implementation OFMutableSetPlaceholder
+@implementation OFPlaceholderMutableSet
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFMutableMapTableSet alloc] init];
+	return (id)[[OFConcreteMutableSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteMutableSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteMutableSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -51,7 +56,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteMutableSet alloc] initWithObject: firstObject
 						 arguments: arguments];
 	va_end(arguments);
 
@@ -60,52 +65,33 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableSet alloc] initWithObjects: objects
 							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteMutableSet alloc] initWithObject: firstObject
 						      arguments: arguments];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableMapTableSet alloc]
-	    initWithSerialization: element];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableMapTableSet alloc] initWithCapacity: capacity];
+	return (id)[[OFConcreteMutableSet alloc] initWithCapacity: capacity];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableSet
 + (void)initialize
 {
 	if (self == [OFMutableSet class])
-		placeholder.isa = [OFMutableSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableSet class]);
 }
 
 + (instancetype)alloc
@@ -123,23 +109,27 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFMutableSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
 	return [super init];
+}
+
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (id)copy
 {
@@ -174,7 +164,7 @@ static struct {
 
 		i = 0;
 		for (id object in self) {
-			assert(i < count);
+			OFAssert(i < count);
 			cArray[i++] = object;
 		}
 

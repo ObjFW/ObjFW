@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +17,10 @@
 
 #import "OFTLSKey.h"
 
+#define Class IntuitionClass
 #include <exec/semaphores.h>
 #include <proto/exec.h>
+#undef Class
 
 /*
  * As we use this file in both the runtime and ObjFW, and since AmigaOS always

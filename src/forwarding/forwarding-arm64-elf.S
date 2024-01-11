@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -42,8 +42,8 @@ OFForward_stret:
 
 	bl	object_getClass
 
-	adrp	x19, sel_forwardingTargetForSelector_
-	add	x19, x19, :lo12:sel_forwardingTargetForSelector_
+	adrp	x19, .Lsel_forwardingTargetForSelector_
+	add	x19, x19, :lo12:.Lsel_forwardingTargetForSelector_
 
 	mov	x1, x19
 	bl	class_respondsToSelector
@@ -102,30 +102,30 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
-	adrp	x0, module
-	add	x0, x0, :lo12:module
+.Linit:
+	adrp	x0, .Lmodule
+	add	x0, x0, :lo12:.Lmodule
 	b	__objc_exec_class
 
 .section .init_array, "aw", %init_array
-	.xword init
+	.xword .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.xword str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.xword .Lstr_forwardingTargetForSelector_, 0
 	.xword 0, 0
-symtab:
-	.xword 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.xword 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 4
 	.xword 0
-module:
-	.xword 8, 32, 0, symtab
+.Lmodule:
+	.xword 8, 32, 0, .Lsymtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

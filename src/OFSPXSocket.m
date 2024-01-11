@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,7 +23,7 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPXSocketFailedException.h"
 #import "OFConnectSPXSocketFailedException.h"
 #import "OFNotOpenException.h"
@@ -185,7 +185,7 @@ inform_delegate:
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
@@ -323,7 +323,7 @@ inform_delegate:
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeIPX(network, node, port);
 

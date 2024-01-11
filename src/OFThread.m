@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,8 +32,10 @@
 #include "platform.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 #endif
 
 #ifdef OF_WII

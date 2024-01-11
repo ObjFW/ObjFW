@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -306,13 +306,12 @@
 	return _stream.atEndOfStream;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
 	if (_state == OFGZIPStreamStateData)
-		return (super.hasDataInReadBuffer ||
-		    _inflateStream.hasDataInReadBuffer);
-
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
+		return _inflateStream.hasDataInReadBuffer;
+	else
+		return _stream.hasDataInReadBuffer;
 }
 
 - (void)close

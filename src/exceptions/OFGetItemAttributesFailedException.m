@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,20 +16,20 @@
 #include "config.h"
 
 #import "OFGetItemAttributesFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFGetItemAttributesFailedException
-@synthesize URI = _URI, errNo = _errNo;
+@synthesize IRI = _IRI, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI errNo: (int)errNo
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI errNo: (int)errNo
 {
-	return [[[self alloc] initWithURI: URI errNo: errNo] autorelease];
+	return [[[self alloc] initWithIRI: IRI errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -37,12 +37,12 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURI: (OFURI *)URI errNo: (int)errNo
+- (instancetype)initWithIRI: (OFIRI *)IRI errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URI = [URI copy];
+		_IRI = [IRI copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 
 	[super dealloc];
 }
@@ -63,6 +63,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to get attributes for item %@: %@",
-	    _URI, OFStrError(_errNo)];
+	    _IRI, OFStrError(_errNo)];
 }
 @end

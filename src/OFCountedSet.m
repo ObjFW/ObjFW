@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,32 +18,37 @@
 #include <stdlib.h>
 
 #import "OFCountedSet.h"
-#import "OFCountedMapTableSet.h"
+#import "OFConcreteCountedSet.h"
 #import "OFNumber.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 static struct {
 	Class isa;
 } placeholder;
 
-@interface OFCountedSetPlaceholder: OFCountedSet
+@interface OFPlaceholderCountedSet: OFCountedSet
 @end
 
-@implementation OFCountedSetPlaceholder
+@implementation OFPlaceholderCountedSet
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFCountedMapTableSet alloc] init];
+	return (id)[[OFConcreteCountedSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteCountedSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteCountedSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -52,7 +57,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFCountedMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteCountedSet alloc] initWithObject: firstObject
 						 arguments: arguments];
 	va_end(arguments);
 
@@ -61,47 +66,28 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteCountedSet alloc] initWithObjects: objects
 							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteCountedSet alloc] initWithObject: firstObject
 						      arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFCountedMapTableSet alloc]
-	    initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFCountedSet
 + (void)initialize
 {
 	if (self == [OFCountedSet class])
-		placeholder.isa = [OFCountedSetPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderCountedSet class]);
 }
 
 + (instancetype)alloc
@@ -110,22 +96,6 @@ static struct {
 		return (id)&placeholder;
 
 	return [super alloc];
-}
-
-- (instancetype)init
-{
-	if ([self isMemberOfClass: [OFCountedSet class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-
-		abort();
-	}
-
-	return [super init];
 }
 
 - (size_t)countForObject: (id)object
@@ -175,42 +145,6 @@ static struct {
 - (id)mutableCopy
 {
 	return [[OFCountedSet alloc] initWithSet: self];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: @"OFCountedSet"
-				      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-
-		OFXMLElement *objectElement;
-		OFString *count;
-
-		count =
-		    [OFString stringWithFormat: @"%zu",
-						[self countForObject: object]];
-
-		objectElement = [OFXMLElement
-		    elementWithName: @"object"
-			  namespace: OFSerializationNS];
-		[objectElement addAttributeWithName: @"count"
-					stringValue: count];
-		[objectElement addChild: object.XMLElementBySerializing];
-		[element addChild: objectElement];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 #ifdef OF_HAVE_BLOCKS

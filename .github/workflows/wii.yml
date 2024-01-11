@@ -6,7 +6,7 @@ jobs:
     steps:
     - name: Install dependencies
       run: docker pull devkitpro/devkitppc
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure

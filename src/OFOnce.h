@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,6 +31,10 @@ typedef int OFOnceControl;
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
+typedef void (*OFOnceFunction)(void);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,7 +46,7 @@ extern "C" {
  *		  preinitialized to `OFOnceControlInitValue`.
  * @param function The function to execute once
  */
-extern void OFOnce(OFOnceControl *control, void (*function)(void));
+extern void OFOnce(OFOnceControl *control, OFOnceFunction function);
 #ifdef __cplusplus
 }
 #endif

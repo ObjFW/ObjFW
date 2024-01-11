@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,8 +30,10 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDNSResolverSettings;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
+@class OFPair OF_GENERIC(FirstType, SecondType);
 @class OFTCPSocket;
 @class OFUDPSocket;
 
@@ -134,12 +136,20 @@ OF_SUBCLASSING_RESTRICTED
 	    *_queries;
 	OFMutableDictionary OF_GENERIC(OFTCPSocket *, OFDNSResolverContext *)
 	    *_TCPQueries;
+	OFMutableDictionary OF_GENERIC(OFDNSQuery *,
+	    OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *) *_cache;
+	OFMutableArray OF_GENERIC(OFString *) *_lastNameServers;
+	OFTimeInterval _lastCacheCleanup;
 }
 
 /**
  * @brief A dictionary of static hosts.
  *
  * This dictionary is checked before actually looking up a host.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *,
     OFArray OF_GENERIC(OFString *) *) *staticHosts;
@@ -148,6 +158,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief An array of name servers to use.
  *
  * The name servers are tried in order.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (copy, nonatomic) OFArray OF_GENERIC(OFString *) *nameServers;
 
@@ -158,12 +172,20 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The domains to search for queries for short names.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (copy, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 
 /**
  * @brief The timeout, in seconds, after which the next name server should be
  *	  tried.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (nonatomic) OFTimeInterval timeout;
 
@@ -171,23 +193,39 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The number of attempts before giving up to resolve a host.
  *
  * Trying all name servers once is considered a single attempt.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (nonatomic) unsigned int maxAttempts;
 
 /**
  * @brief The minimum number of dots for a name to be considered absolute.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
 @property (nonatomic) unsigned int minNumberOfDotsInAbsoluteName;
 
 /**
- * @brief Whether the resolver uses TCP to talk to a name server.
+ * @brief Whether the resolver forces TCP to talk to a name server.
+ *
+ * @warning If you change this, you need to set @ref configReloadInterval to 0
+ *	    to disable reloading the config after some time. If you don't, the
+ *	    config will be reloaded and your change overridden.
  */
-@property (nonatomic) bool usesTCP;
+@property (nonatomic) bool forcesTCP;
 
 /**
  * @brief The interval in seconds in which the config should be reloaded.
  *
  * Setting this to 0 disables config reloading.
+ *
+ * @warning If you change this to anything other than 0, the config will be
+ *	    reloaded eventually, which in turn can override the config
+ *	    reloading interval itself again.
  */
 @property (nonatomic) OFTimeInterval configReloadInterval;
 

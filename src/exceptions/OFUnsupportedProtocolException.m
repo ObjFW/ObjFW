@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,38 +16,38 @@
 #include "config.h"
 
 #import "OFUnsupportedProtocolException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFUnsupportedProtocolException
-@synthesize URI = _URI;
+@synthesize IRI = _IRI;
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithURI: URI] autorelease];
+	return [[[self alloc] initWithIRI: IRI] autorelease];
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
-	_URI = [URI retain];
+	_IRI = [IRI retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	if (_URI != nil)
+	if (_IRI != nil)
 		return [OFString stringWithFormat:
-		    @"The protocol of URI %@ is not supported!", _URI];
+		    @"The protocol of IRI %@ is not supported!", _IRI];
 	else
 		return @"The requested protocol is unsupported!";
 }

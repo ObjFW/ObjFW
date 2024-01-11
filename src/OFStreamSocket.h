@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -66,6 +66,10 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
     OFReadyForWritingObserving>
 {
 	OFSocketHandle _socket;
+#ifdef OF_AMIGAOS
+	LONG _socketID;
+	int _family;	/* unused, reserved for ABI stability */
+#endif
 	bool _atEndOfStream, _listening;
 	OFSocketAddress _remoteAddress;
 	OF_RESERVE_IVARS(OFStreamSocket, 4)
@@ -161,6 +165,30 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			     block: (OFStreamSocketAsyncAcceptBlock)block;
 #endif
+
+/**
+ * @brief Releases the socket from the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * After calling this method, you must no longer use the socket until
+ * @ref obtainSocketForCurrentThread has been called.
+ */
+- (void)releaseSocketFromCurrentThread;
+
+/**
+ * @brief Obtains the socket for the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * You must only call this method after @ref releaseSocketFromCurrentThread has
+ * been called from a different thread.
+ */
+- (void)obtainSocketForCurrentThread;
 @end
 
 OF_ASSUME_NONNULL_END

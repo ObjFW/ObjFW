@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
-#import "OFFileURIHandler.h"
+#import "OFFileIRIHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -301,6 +301,9 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
+	if (self.length == 0)
+		return component;
+
 	if ([self hasSuffix: @"/"])
 		return [self stringByAppendingString: component];
 	else {
@@ -339,16 +342,16 @@ int _OFString_PathAdditions_reference;
 - (bool)of_isDirectoryPath
 {
 	return ([self hasSuffix: @"/"] ||
-	    [OFFileURIHandler of_directoryExistsAtPath: self]);
+	    [OFFileIRIHandler of_directoryExistsAtPath: self]);
 }
 
-- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+- (OFString *)of_pathToIRIPathWithPercentEncodedHost:
     (OFString **)percentEncodedHost
 {
 	return [@"/" stringByAppendingString: self];
 }
 
-- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+- (OFString *)of_IRIPathToPathWithPercentEncodedHost:
     (OFString *)percentEncodedHost
 {
 	OFString *path = self;
@@ -359,7 +362,7 @@ int _OFString_PathAdditions_reference;
 	return [path substringFromIndex: 1];
 }
 
-- (OFString *)of_pathComponentToURIPathComponent
+- (OFString *)of_pathComponentToIRIPathComponent
 {
 	return self;
 }

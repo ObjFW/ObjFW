@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,6 +33,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
+#import "OFSetItemAttributesFailedException.h"
 
 static OFArc *app;
 
@@ -66,8 +67,13 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation ZIPArchive
@@ -77,24 +83,29 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithPath: (OFString *)path
+			 stream: (OF_KINDOF(OFStream *))stream
+			   mode: (OFString *)mode
+		       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
+	return [[[self alloc] initWithPath: path
+				    stream: stream
+				      mode: mode
+				  encoding: encoding] autorelease];
 }
 
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
-			  mode: (OFString *)mode
-		      encoding: (OFStringEncoding)encoding
+- (instancetype)initWithPath: (OFString *)path
+		      stream: (OF_KINDOF(OFStream *))stream
+			mode: (OFString *)mode
+		    encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
+		_path = [path copy];
 		_archive = [[OFZIPArchive alloc] initWithStream: stream
 							   mode: mode];
+		_archive.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -105,9 +116,32 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
+	[_path release];
 	[_archive release];
 
 	[super dealloc];
+}
+
+- (OFSeekableStream *)archive: (OFZIPArchive *)archive
+	    wantsPartNumbered: (unsigned int)partNumber
+	       lastPartNumber: (unsigned int)lastPartNumber
+{
+	OFString *path;
+
+	if ([_path.pathExtension caseInsensitiveCompare: @"zip"] !=
+	    OFOrderedSame)
+		return nil;
+
+	if (partNumber > 98)
+		return nil;
+
+	if (partNumber == lastPartNumber)
+		path = _path;
+	else
+		path = [_path.stringByDeletingPathExtension
+		    stringByAppendingFormat: @".z%02u", partNumber + 1];
+
+	return [OFFile fileWithPath: path mode: @"r"];
 }
 
 - (void)listFiles

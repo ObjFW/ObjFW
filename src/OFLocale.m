@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,10 +18,11 @@
 #include <locale.h>
 
 #import "OFLocale.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
+#import "OFString.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -29,9 +30,11 @@
 #import "OFOpenItemFailedException.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/dos.h>
 # include <proto/exec.h>
 # include <proto/locale.h>
+# undef Class
 #endif
 
 static OFLocale *currentLocale = nil;
@@ -361,12 +364,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	return currentLocale.decimalSeparator;
 }
 
-#ifdef OF_HAVE_FILES
-+ (void)addLocalizationDirectory: (OFString *)path
++ (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
-	[currentLocale addLocalizationDirectory: path];
+	[currentLocale addLocalizationDirectoryIRI: IRI];
 }
-#endif
 
 - (instancetype)init
 {
@@ -380,7 +381,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
+# ifdef OF_MSDOS
+		_encoding = OFStringEncodingCodepage437;
+# else
 		_encoding = OFStringEncodingUTF8;
+# endif
 		_decimalSeparator = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
@@ -494,11 +499,11 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	[super dealloc];
 }
 
-#ifdef OF_HAVE_FILES
-- (void)addLocalizationDirectory: (OFString *)path
+- (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
 	void *pool;
-	OFString *mapPath, *languageCode, *countryCode, *localizationFile;
+	OFIRI *mapIRI, *localizationIRI;
+	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
 	if (_languageCode == nil)
@@ -506,9 +511,9 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 	pool = objc_autoreleasePoolPush();
 
-	mapPath = [path stringByAppendingPathComponent: @"localizations.json"];
+	mapIRI = [IRI IRIByAppendingPathComponent: @"localizations.json"];
 	@try {
-		map = [[OFString stringWithContentsOfFile: mapPath]
+		map = [[OFString stringWithContentsOfIRI: mapIRI]
 		     objectByParsingJSON];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
@@ -532,15 +537,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		return;
 	}
 
-	localizationFile = [path stringByAppendingPathComponent:
+	localizationIRI = [IRI IRIByAppendingPathComponent:
 	    [localizationFile stringByAppendingString: @".json"]];
 
-	[_localizedStrings addObject: [[OFString stringWithContentsOfFile:
-	    localizationFile] objectByParsingJSON]];
+	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:
+	    localizationIRI] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }
-#endif
 
 - (OFString *)localizedStringForID: (OFConstantString *)ID
 			  fallback: (id)fallback, ...

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
@@ -35,8 +36,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine:
-	    OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -44,15 +44,17 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n    "
-		    @"-c  --class "
+		    @"-c  --class= "
 		    @"  The DNS class to query (defaults to IN)\n    "
-		    @"-h  --help  "
+		    @"-h  --help   "
 		    @"  Show this help\n    "
-		    @"-s  --server"
+		    @"-s  --server="
 		    @"  The server to query\n    "
-		    @"-t  --type  "
+		    @"-t  --type=  "
 		    @"  The record type to query (defaults to ALL, can be "
-		    @"repeated)")];
+		    @"repeated)\n    "
+		    @"    --tcp   "
+		    @"  Force using TCP for the query")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -69,8 +71,7 @@ help(OFStream *stream, bool full, int status)
 	if (exception == nil)
 		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[OFStdErr writeLine: OF_LOCALIZED(
-		    @"failed_to_resolve",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
 		_errors++;
@@ -80,14 +81,16 @@ help(OFStream *stream, bool full, int status)
 		[OFApplication terminateWithStatus: _errors];
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *DNSClassString, *server;
+	bool forceTCP;
 	const OFOptionsParserOption options[] = {
 		{ 'c', @"class", 1, NULL, &DNSClassString },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 's', @"server", 1, NULL, &server },
 		{ 't', @"type", 1, NULL, NULL },
+		{ '\0', @"tcp", 0, &forceTCP, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
@@ -99,10 +102,11 @@ help(OFStream *stream, bool full, int status)
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 # else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofdns/localization"];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofdns/localization"]];
 # endif
 #endif
 
@@ -180,16 +184,17 @@ help(OFStream *stream, bool full, int status)
 		help(OFStdErr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
+	resolver.configReloadInterval = 0;
+	resolver.forcesTCP = forceTCP;
+
 	DNSClass = (DNSClassString != nil
 	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
 	if (recordTypes.count == 0)
 		[recordTypes addObject: @"ALL"];
 
-	if (server != nil) {
-		resolver.configReloadInterval = 0;
+	if (server != nil)
 		resolver.nameServers = [OFArray arrayWithObject: server];
-	}
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {

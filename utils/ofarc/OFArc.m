@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,11 +21,11 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
-#import "OFURI.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
@@ -59,9 +59,9 @@ help(OFStream *stream, bool full, int status)
 		    @"Options:\n"
 		    @"    -a  --append      Append to archive\n"
 		    @"    -c  --create      Create archive\n"
-		    @"    -C  --directory   Extract into the specified "
+		    @"    -C  --directory=  Extract into the specified "
 		    @"directory\n"
-		    @"    -E  --encoding    The encoding used by the archive "
+		    @"    -E  --encoding=   The encoding used by the archive "
 		    "(only tar files)\n"
 		    @"    -f  --force       Force / overwrite files\n"
 		    @"    -h  --help        Show this help\n"
@@ -71,7 +71,7 @@ help(OFStream *stream, bool full, int status)
 		    @"archive\n"
 		    @"    -q  --quiet       Quiet mode (no output, except "
 		    @"errors)\n"
-		    @"    -t  --type        Archive type (gz, lha, tar, tgz, "
+		    @"    -t  --type=       Archive type (gz, lha, tar, tgz, "
 		    @"zip)\n"
 		    @"    -v  --verbose     Verbose output for file list\n"
 		    @"    -x  --extract     Extract files")];
@@ -167,7 +167,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 }
 
 @implementation OFArc
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *outputDir, *encodingString, *type;
 	const OFOptionsParserOption options[] = {
@@ -207,10 +207,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocale addLocalizationDirectory: @LOCALIZATION_DIR];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
-	[OFLocale addLocalizationDirectory:
-	    @"PROGDIR:/share/ofarc/localization"];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofarc/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -462,7 +463,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", e.URI.fileSystemRepresentation,
+			    @"dir", e.IRI.fileSystemRepresentation,
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {
@@ -487,11 +488,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	[OFApplication terminateWithStatus: _exitStatus];
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString *)path
+- (id <Archive>)openArchiveWithPath: (OFString *)path_
 			       type: (OFString *)type
 			       mode: (char)mode
 			   encoding: (OFStringEncoding)encoding
 {
+	/* To make clang-analyzer happy about assigning nil to path later. */
+	OFString *path = path_;
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;
 	id <Archive> archive = nil;
@@ -533,6 +536,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		default:
 			@throw [OFInvalidArgumentException exception];
 		}
+
+		path = nil;
 	} else {
 		@try {
 			file = [OFFile fileWithPath: path mode: fileModeString];
@@ -567,28 +572,33 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 	@try {
 		if ([type isEqual: @"gz"])
-			archive = [GZIPArchive archiveWithStream: file
-							    mode: modeString
-							encoding: encoding];
+			archive = [GZIPArchive archiveWithPath: path
+							stream: file
+							  mode: modeString
+						      encoding: encoding];
 		else if ([type isEqual: @"lha"])
-			archive = [LHAArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			 archive = [LHAArchive archiveWithPath: path
+							stream: file
+							  mode: modeString
+						      encoding: encoding];
 		else if ([type isEqual: @"tar"])
-			archive = [TarArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			archive = [TarArchive archiveWithPath: path
+						       stream: file
+							 mode: modeString
+						     encoding: encoding];
 		else if ([type isEqual: @"tgz"]) {
 			OFStream *GZIPStream = [OFGZIPStream
 			    streamWithStream: file
 					mode: modeString];
-			archive = [TarArchive archiveWithStream: GZIPStream
-							   mode: modeString
-						       encoding: encoding];
+			archive = [TarArchive archiveWithPath: path
+						       stream: GZIPStream
+							 mode: modeString
+						     encoding: encoding];
 		} else if ([type isEqual: @"zip"])
-			archive = [ZIPArchive archiveWithStream: file
-							   mode: modeString
-						       encoding: encoding];
+			archive = [ZIPArchive archiveWithPath: path
+						       stream: file
+							 mode: modeString
+						     encoding: encoding];
 		else {
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",
@@ -639,11 +649,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	return archive;
 
 error:
-	if (mode == 'c')
+	if (mode == 'c' && path != nil)
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 
 	[OFApplication terminateWithStatus: 1];
-	return nil;
+	abort();
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName

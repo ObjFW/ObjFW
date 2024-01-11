@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -82,11 +82,11 @@ OFForward:
 
 	move	$s0, $gp
 #ifdef OF_PIC
-	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
+	lw	$s1, %got(.Lsel_forwardingTargetForSelector_)($gp)
 #else
-	lui	$s1, %hi(sel_forwardingTargetForSelector_)
+	lui	$s1, %hi(.Lsel_forwardingTargetForSelector_)
 #endif
-	addiu	$s1, $s1, %lo(sel_forwardingTargetForSelector_)
+	addiu	$s1, $s1, %lo(.Lsel_forwardingTargetForSelector_)
 
 	jal_pic	object_getClass
 
@@ -206,11 +206,11 @@ OFForward_stret:
 
 	move	$s0, $gp
 #ifdef OF_PIC
-	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
+	lw	$s1, %got(.Lsel_forwardingTargetForSelector_)($gp)
 #else
-	lui	$s1, %hi(sel_forwardingTargetForSelector_)
+	lui	$s1, %hi(.Lsel_forwardingTargetForSelector_)
 #endif
-	addiu	$s1, $s1, %lo(sel_forwardingTargetForSelector_)
+	addiu	$s1, $s1, %lo(.Lsel_forwardingTargetForSelector_)
 
 	move	$a0, $a1
 	jal_pic	object_getClass
@@ -289,41 +289,41 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
 
-	lw	$a0, %got(module)($gp)
-	addiu	$a0, $a0, %lo(module)
+	lw	$a0, %got(.Lmodule)($gp)
+	addiu	$a0, $a0, %lo(.Lmodule)
 	lw	$t9, %call16(__objc_exec_class)($gp)
 	jr	$t9
 #else
-	lui	$a0, %hi(module)
-	addiu	$a0, $a0, %lo(module)
+	lui	$a0, %hi(.Lmodule)
+	addiu	$a0, $a0, %lo(.Lmodule)
 	j	__objc_exec_class
 #endif
 
 .section .ctors, "aw", %progbits
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

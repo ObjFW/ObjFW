@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,9 +19,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFData;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFIRI;
 @class OFString;
 
 /** @file */
@@ -53,7 +53,7 @@ typedef enum {
  *
  * @brief The HTTP version of the HTTP request.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFHTTPRequestProtocolVersion {
 	/** The major of the HTTP version */
 	unsigned char major;
 	/** The minor of the HTTP version */
@@ -68,7 +68,7 @@ typedef struct OF_BOXABLE {
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPRequest: OFObject <OFCopying>
 {
-	OFURI *_URI;
+	OFIRI *_IRI;
 	OFHTTPRequestMethod _method;
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
@@ -77,9 +77,9 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief The URI of the HTTP request.
+ * @brief The IRI of the HTTP request.
  */
-@property (copy, nonatomic) OFURI *URI;
+@property (copy, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The protocol version of the HTTP request.
@@ -118,20 +118,20 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
- * @brief Creates a new OFHTTPRequest with the specified URI.
+ * @brief Creates a new OFHTTPRequest with the specified IRI.
  *
- * @param URI The URI for the request
+ * @param IRI The IRI for the request
  * @return A new, autoreleased OFHTTPRequest
  */
-+ (instancetype)requestWithURI: (OFURI *)URI;
++ (instancetype)requestWithIRI: (OFIRI *)IRI;
 
 /**
- * @brief Initializes an already allocated OFHTTPRequest with the specified URI.
+ * @brief Initializes an already allocated OFHTTPRequest with the specified IRI.
  *
- * @param URI The URI for the request
+ * @param IRI The IRI for the request
  * @return An initialized OFHTTPRequest
  */
-- (instancetype)initWithURI: (OFURI *)URI;
+- (instancetype)initWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
@@ -140,12 +140,12 @@ OF_SUBCLASSING_RESTRICTED
 extern "C" {
 #endif
 /**
- * @brief Returns a C string describing the specified request method.
+ * @brief Returns a string describing the specified request method.
  *
- * @param method The request method which should be described as a C string
- * @return A C string describing the specified request method
+ * @param method The request method which should be described as a string
+ * @return A string describing the specified request method
  */
-extern const char *_Nullable OFHTTPRequestMethodName(
+extern OFString *_Nullable OFHTTPRequestMethodString(
     OFHTTPRequestMethod method);
 
 /**
@@ -156,7 +156,31 @@ extern const char *_Nullable OFHTTPRequestMethodName(
  * @throw OFInvalidFormatException The specified string is not a valid HTTP
  *				   request method
  */
-extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string);
+extern OFHTTPRequestMethod OFHTTPRequestMethodParseString(OFString *string);
+
+/**
+ * @brief Returns a C string describing the specified request method.
+ *
+ * @deprecated Use @ref OFHTTPRequestMethodString instead.
+ *
+ * @param method The request method which should be described as a C string
+ * @return A C string describing the specified request method
+ */
+extern const char *_Nullable OFHTTPRequestMethodName(OFHTTPRequestMethod method)
+    OF_DEPRECATED(ObjFW, 1, 1, "Use OFHTTPRequestMethodString instead");
+
+/**
+ * @brief Returns the request method for the specified string.
+ *
+ * @deprecated Use @ref OFHTTPRequestMethodParseString instead.
+ *
+ * @param string The string for which the request method should be returned
+ * @return The request method for the specified string
+ * @throw OFInvalidFormatException The specified string is not a valid HTTP
+ *				   request method
+ */
+extern OFHTTPRequestMethod OFHTTPRequestMethodParseName(OFString *string)
+    OF_DEPRECATED(ObjFW, 1, 1, "Use OFHTTPRequestMethodParseString instead");
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,9 +16,8 @@
 #include "config.h"
 
 #import "OFNull.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -41,23 +40,6 @@ static OFNull *null = nil;
 	return null;
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool;
-
-	[self release];
-
-	pool = objc_autoreleasePoolPush();
-
-	if (![element.name isEqual: self.className] ||
-	    ![element.namespace isEqual: OFSerializationNS])
-		@throw [OFInvalidArgumentException exception];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [OFNull null];
-}
-
 - (OFString *)description
 {
 	return @"<null>";
@@ -66,21 +48,6 @@ static OFNull *null = nil;
 - (id)copy
 {
 	return self;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: self.className
-				      namespace: OFSerializationNS];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -113,27 +80,5 @@ static OFNull *null = nil;
 	return [OFData dataWithItems: bytes count: sizeof(bytes)];
 }
 
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end

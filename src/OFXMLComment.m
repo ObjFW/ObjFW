@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +20,6 @@
 #import "OFXMLComment.h"
 #import "OFXMLNode+Private.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -38,28 +37,6 @@
 
 	@try {
 		_text = [text copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [super of_init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		_text = [element.stringValue copy];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -108,12 +85,5 @@
 - (OFString *)description
 {
 	return self.XMLString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	return [OFXMLElement elementWithName: self.className
-				   namespace: OFSerializationNS
-				 stringValue: _text];
 }
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -134,18 +134,18 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 .LreturnNilMethod:
-	addis	%r3, %r2, nilMethod@toc@ha
-	addi	%r3, %r3, nilMethod@toc@l
+	addis	%r3, %r2, .LnilMethod@toc@ha
+	addi	%r3, %r3, .LnilMethod@toc@l
 	blr
 
 #if defined(_CALL_ELF) && _CALL_ELF == 2
-nilMethod:
-	addis	%r2, %r12, .TOC.-nilMethod@ha
-	addi	%r2, %r2, .TOC.-nilMethod@l
-.localentry nilMethod, .-nilMethod
+.LnilMethod:
+	addis	%r2, %r12, .TOC.-.LnilMethod@ha
+	addi	%r2, %r2, .TOC.-.LnilMethod@l
+.localentry .LnilMethod, .-.LnilMethod
 #else
 .section .opd, "aw", @progbits
-nilMethod:
+.LnilMethod:
 	.p2align 3
 	.quad .Lbegin_nilMethod
 	.quad .TOC.@tocbase
@@ -155,9 +155,9 @@ nilMethod:
 .Lbegin_nilMethod:
 	li	%r3, 0
 	blr
-.type nilMethod, @function
-.size nilMethod, .-.Lbegin_nilMethod
+.type .LnilMethod, @function
+.size .LnilMethod, .-.Lbegin_nilMethod
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif

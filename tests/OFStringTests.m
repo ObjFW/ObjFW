@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -357,8 +357,8 @@ static const OFChar16 swappedChar16String[] = {
 			    encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 
-	TEST(@"+[stringWithContentsOfURI:encoding]", (string = [stringClass
-	    stringWithContentsOfURI: [OFURI fileURIWithPath: @"testfile.txt"]
+	TEST(@"+[stringWithContentsOfIRI:encoding]", (string = [stringClass
+	    stringWithContentsOfIRI: [OFIRI fileIRIWithPath: @"testfile.txt"]
 			   encoding: OFStringEncodingISO8859_1]) &&
 	    [string isEqual: @"testäöü"])
 #endif
@@ -1156,7 +1156,7 @@ static const OFChar16 swappedChar16String[] = {
 #  define EXPECTED -0.123456789
 # else
 /*
- * Solaris' strtod() has weird rounding on x86, but not on x86_64.
+ * Solaris' strtod() has weird rounding on x86, but not on AMD64.
  * AmigaOS 3 with libnix has weird rounding as well.
  */
 #  define INPUT @"\t-0.125 "
@@ -1406,16 +1406,6 @@ static const OFChar16 swappedChar16String[] = {
 	    stringWithString: whitespace[1]]) &&
 	    R([mutableString1 deleteEnclosingWhitespaces]) &&
 	    [mutableString1 isEqual: @""])
-
-#ifdef OF_HAVE_UNICODE_TABLES
-	TEST(@"-[decomposedStringWithCanonicalMapping]",
-	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCanonicalMapping
-	    isEqual: @"H\x61\xCC\x88lǉ\x6F\xCC\x88"]);
-
-	TEST(@"-[decomposedStringWithCompatibilityMapping]",
-	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCompatibilityMapping
-	    isEqual: @"H\x61\xCC\x88llj\x6F\xCC\x88"]);
-#endif
 
 	TEST(@"-[stringByXMLEscaping]",
 	    (string = C(@"<hello> &world'\"!&").stringByXMLEscaping) &&

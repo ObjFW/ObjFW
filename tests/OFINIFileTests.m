@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,19 +43,19 @@ static OFString *module;
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
-	OFURI *URI;
+	OFIRI *IRI;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
-	OFURI *writeURI;
+	OFIRI *writeIRI;
 #endif
 
 	module = @"OFINIFile";
 
-	URI = [OFURI URIWithString: @"embedded:testfile.ini"];
-	TEST(@"+[fileWithURI:encoding:]",
-	    (file = [OFINIFile fileWithURI: URI
+	IRI = [OFIRI IRIWithString: @"embedded:testfile.ini"];
+	TEST(@"+[fileWithIRI:encoding:]",
+	    (file = [OFINIFile fileWithIRI: IRI
 				  encoding: OFStringEncodingCodepage437]))
 
 	tests = [file categoryForName: @"tests"];
@@ -66,47 +66,48 @@ static OFString *module;
 
 	module = @"OFINICategory";
 
-	TEST(@"-[stringForKey:]",
-	    [[tests stringForKey: @"foo"] isEqual: @"bar"] &&
-	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
+	TEST(@"-[stringValueForKey:]",
+	    [[tests stringValueForKey: @"foo"] isEqual: @"bar"] &&
+	    [[foobar stringValueForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
 
-	TEST(@"-[setString:forKey:]",
-	    R([tests setString: @"baz" forKey: @"foo"]) &&
-	    R([tests setString: @"new" forKey: @"new"]) &&
-	    R([foobar setString: @"a\fb" forKey: @"qux3"]))
+	TEST(@"-[setStringValue:forKey:]",
+	    R([tests setStringValue: @"baz" forKey: @"foo"]) &&
+	    R([tests setStringValue: @"new" forKey: @"new"]) &&
+	    R([foobar setStringValue: @"a\fb" forKey: @"qux3"]))
 
-	TEST(@"-[longLongForKey:defaultValue:]",
-	    [types longLongForKey: @"integer" defaultValue: 2] == 0x20)
+	TEST(@"-[longLongValueForKey:defaultValue:]",
+	    [types longLongValueForKey: @"integer" defaultValue: 2] == 0x20)
 
-	TEST(@"-[setLongLong:forKey:]",
-	    R([types setLongLong: 0x10 forKey: @"integer"]))
+	TEST(@"-[setLongLongValue:forKey:]",
+	    R([types setLongLongValue: 0x10 forKey: @"integer"]))
 
-	TEST(@"-[boolForKey:defaultValue:]",
-	    [types boolForKey: @"bool" defaultValue: false] == true)
+	TEST(@"-[boolValueForKey:defaultValue:]",
+	    [types boolValueForKey: @"bool" defaultValue: false] == true)
 
-	TEST(@"-[setBool:forKey:]", R([types setBool: false forKey: @"bool"]))
+	TEST(@"-[setBoolValue:forKey:]",
+	    R([types setBoolValue: false forKey: @"bool"]))
 
-	TEST(@"-[floatForKey:defaultValue:]",
-	    [types floatForKey: @"float" defaultValue: 1] == 0.5f)
+	TEST(@"-[floatValueForKey:defaultValue:]",
+	    [types floatValueForKey: @"float" defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]",
-	    R([types setFloat: 0.25f forKey: @"float"]))
+	TEST(@"-[setFloatValue:forKey:]",
+	    R([types setFloatValue: 0.25f forKey: @"float"]))
 
-	TEST(@"-[doubleForKey:defaultValue:]",
-	    [types doubleForKey: @"double" defaultValue: 3] == 0.25)
+	TEST(@"-[doubleValueForKey:defaultValue:]",
+	    [types doubleValueForKey: @"double" defaultValue: 3] == 0.25)
 
-	TEST(@"-[setDouble:forKey:]",
-	    R([types setDouble: 0.75 forKey: @"double"]))
+	TEST(@"-[setDoubleValue:forKey:]",
+	    R([types setDoubleValue: 0.75 forKey: @"double"]))
 
 	array = [OFArray arrayWithObjects: @"1", @"2", nil];
-	TEST(@"-[stringArrayForKey:]",
-	    [[types stringArrayForKey: @"array1"] isEqual: array] &&
-	    [[types stringArrayForKey: @"array2"] isEqual: array] &&
-	    [[types stringArrayForKey: @"array3"] isEqual: [OFArray array]])
+	TEST(@"-[arrayValueForKey:]",
+	    [[types arrayValueForKey: @"array1"] isEqual: array] &&
+	    [[types arrayValueForKey: @"array2"] isEqual: array] &&
+	    [[types arrayValueForKey: @"array3"] isEqual: [OFArray array]])
 
 	array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
-	TEST(@"-[setStringArray:forKey:]",
-	    R([types setStringArray: array forKey: @"array1"]))
+	TEST(@"-[setArrayValue:forKey:]",
+	    R([types setArrayValue: array forKey: @"array1"]))
 
 	TEST(@"-[removeValueForKey:]",
 	    R([foobar removeValueForKey: @"quxqux "]) &&
@@ -116,16 +117,18 @@ static OFString *module;
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
-	writeURI = [[OFSystemInfo temporaryDirectoryURI]
-	    URIByAppendingPathComponent: @"objfw-tests.ini"
-			    isDirectory: false];
+	writeIRI = [OFSystemInfo temporaryDirectoryIRI];
+	if (writeIRI == nil)
+		writeIRI = [[OFFileManager defaultManager] currentDirectoryIRI];
+	writeIRI = [writeIRI IRIByAppendingPathComponent: @"objfw-tests.ini"
+					     isDirectory: false];
 	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToURI: writeURI
+	    R([file writeToIRI: writeIRI
 		      encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString stringWithContentsOfURI: writeURI
+	    [[OFString stringWithContentsOfIRI: writeIRI
 				      encoding: OFStringEncodingCodepage437]
 	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtURI: writeURI];
+	[[OFFileManager defaultManager] removeItemAtIRI: writeIRI];
 #else
 	(void)output;
 #endif

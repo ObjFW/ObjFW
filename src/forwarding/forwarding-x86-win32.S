@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ _OFForward:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
+	movl	$.Lsel_forwardingTargetForSelector_, %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
@@ -40,13 +40,13 @@ _OFForward:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
+	movl	$.Lsel_forwardingTargetForSelector_, %eax
 	movl	%eax, 4(%esp)
 	call	_objc_msg_lookup
 
 	movl	8(%ebp), %edx
 	movl	%edx, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %edx
+	movl	$.Lsel_forwardingTargetForSelector_, %edx
 	movl	%edx, 4(%esp)
 	movl	12(%ebp), %edx
 	movl	%edx, 8(%esp)
@@ -92,7 +92,7 @@ _OFForward_stret:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
+	movl	$.Lsel_forwardingTargetForSelector_, %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
@@ -101,13 +101,13 @@ _OFForward_stret:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %eax
+	movl	$.Lsel_forwardingTargetForSelector_, %eax
 	movl	%eax, 4(%esp)
 	call	_objc_msg_lookup
 
 	movl	12(%ebp), %edx
 	movl	%edx, (%esp)
-	movl	$sel_forwardingTargetForSelector_, %edx
+	movl	$.Lsel_forwardingTargetForSelector_, %edx
 	movl	%edx, 4(%esp)
 	movl	16(%ebp), %edx
 	movl	%edx, 8(%esp)
@@ -141,14 +141,14 @@ _OFForward_stret:
 .type 32
 .endef
 
-init:
+.Linit:
 	pushl	%ebp
 	movl	%esp, %ebp
 
 	pushl	%ebx
 	subl	$4, %esp
 
-	movl	$module, %eax
+	movl	$.Lmodule, %eax
 	movl	%eax, (%esp)
 	call	___objc_exec_class
 
@@ -158,20 +158,20 @@ init:
 	ret
 
 .section .ctors, "aw"
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab

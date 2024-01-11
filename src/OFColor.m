@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,22 +15,90 @@
 
 #include "config.h"
 
-#import "OFColor.h"
-#import "OFOnce.h"
+#include <math.h>
 
-#import "OFInvalidArgumentException.h"
+#import "OFColor.h"
+#import "OFConcreteColor.h"
+#import "OFOnce.h"
+#import "OFString.h"
+#import "OFTaggedPointerColor.h"
+
+@interface OFPlaceholderColor: OFColor
+@end
+
+@interface OFConcreteColorSingleton: OFConcreteColor
+@end
+
+static struct {
+	Class isa;
+} placeholder;
+
+#ifdef OF_OBJFW_RUNTIME
+static const float allowedImprecision = 0.0000001;
+#endif
+
+@implementation OFPlaceholderColor
+- (instancetype)initWithRed: (float)red
+		      green: (float)green
+		       blue: (float)blue
+		      alpha: (float)alpha
+{
+#ifdef OF_OBJFW_RUNTIME
+	uint8_t redInt = nearbyintf(red * 255);
+	uint8_t greenInt = nearbyintf(green * 255);
+	uint8_t blueInt = nearbyintf(blue * 255);
+
+	if (fabsf(red * 255 - redInt) < allowedImprecision &&
+	    fabsf(green * 255 - greenInt) < allowedImprecision &&
+	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1) {
+		id ret = [OFTaggedPointerColor colorWithRed: redInt
+						      green: greenInt
+						       blue: blueInt];
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
+
+	return (id)[[OFConcreteColor alloc] initWithRed: red
+						  green: green
+						   blue: blue
+						  alpha: alpha];
+}
+
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFConcreteColorSingleton
+OF_SINGLETON_METHODS
+@end
 
 @implementation OFColor
++ (void)initialize
+{
+	if (self == [OFColor class])
+		object_setClass((id)&placeholder, [OFPlaceholderColor class]);
+}
+
++ (instancetype)alloc
+{
+	if (self == [OFColor class])
+		return (id)&placeholder;
+
+	return [super alloc];
+}
+
 #define PREDEFINED_COLOR(name, redValue, greenValue, blueValue)		   \
 	static OFColor *name##Color = nil;				   \
 									   \
 	static void							   \
 	initPredefinedColor_##name(void)				   \
 	{								   \
-		name##Color = [[OFColor alloc] initWithRed: redValue	   \
-						     green: greenValue	   \
-						      blue: blueValue	   \
-						     alpha: 1];		   \
+		name##Color = [[OFConcreteColorSingleton alloc]		   \
+		    initWithRed: redValue				   \
+			  green: greenValue				   \
+			   blue: blueValue				   \
+			  alpha: 1];					   \
 	}								   \
 									   \
 	+ (OFColor *)name						   \
@@ -74,30 +142,25 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		       blue: (float)blue
 		      alpha: (float)alpha
 {
-	self = [super init];
+	if ([self isMemberOfClass: [OFColor class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 
-	@try {
-		if (red < 0.0 || red > 1.0 ||
-		    green < 0.0 || green > 1.0 ||
-		    blue < 0.0 || blue > 1.0 ||
-		    alpha < 0.0 || alpha > 1.0)
-			@throw [OFInvalidArgumentException exception];
-
-		_red = red;
-		_green = green;
-		_blue = blue;
-		_alpha = alpha;
-	} @catch (id e) {
-		[self release];
-		@throw e;
+		abort();
 	}
 
-	return self;
+	return [super init];
 }
 
 - (bool)isEqual: (id)object
 {
 	OFColor *other;
+	float red, green, blue, alpha;
+	float otherRed, otherGreen, otherBlue, otherAlpha;
 
 	if (object == self)
 		return true;
@@ -106,14 +169,19 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		return false;
 
 	other = object;
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+	[other getRed: &otherRed
+		green: &otherGreen
+		 blue: &otherBlue
+		alpha: &otherAlpha];
 
-	if (other->_red != _red)
+	if (otherRed != red)
 		return false;
-	if (other->_green != _green)
+	if (otherGreen != green)
 		return false;
-	if (other->_blue != _blue)
+	if (otherBlue != blue)
 		return false;
-	if (other->_alpha != _alpha)
+	if (otherAlpha != alpha)
 		return false;
 
 	return true;
@@ -121,24 +189,27 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 - (unsigned long)hash
 {
+	float red, green, blue, alpha;
 	unsigned long hash;
 	float tmp;
 
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+
 	OFHashInit(&hash);
 
-	tmp = OFToLittleEndianFloat(_red);
+	tmp = OFToLittleEndianFloat(red);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_green);
+	tmp = OFToLittleEndianFloat(green);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_blue);
+	tmp = OFToLittleEndianFloat(blue);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
-	tmp = OFToLittleEndianFloat(_alpha);
+	tmp = OFToLittleEndianFloat(alpha);
 	for (uint_fast8_t i = 0; i < sizeof(float); i++)
 		OFHashAddByte(&hash, ((char *)&tmp)[i]);
 
@@ -152,11 +223,17 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	  blue: (float *)blue
 	 alpha: (float *)alpha
 {
-	*red = _red;
-	*green = _green;
-	*blue = _blue;
+	OF_UNRECOGNIZED_SELECTOR
+}
 
-	if (alpha != NULL)
-		*alpha = _alpha;
+- (OFString *)description
+{
+	float red, green, blue, alpha;
+
+	[self getRed: &red green: &green blue: &blue alpha: &alpha];
+
+	return [OFString stringWithFormat:
+	    @"<%@ red=%f green=%f blue=%f alpha=%f>",
+	    self.class, red, green, blue, alpha];
 }
 @end

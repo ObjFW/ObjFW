@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -462,8 +462,9 @@ OF_SUBCLASSING_RESTRICTED
 - (OFComparisonResult)compare: (OFTimer *)timer;
 
 /**
- * @brief Fires the timer, meaning it will execute the specified selector on the
- *	  target.
+ * @brief Fires the timer without changing its regular schedule.
+ *
+ * A non-repeating timer will be invalidated after firing.
  */
 - (void)fire;
 

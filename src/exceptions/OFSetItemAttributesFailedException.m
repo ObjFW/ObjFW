@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,11 +16,11 @@
 #include "config.h"
 
 #import "OFSetItemAttributesFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFSetItemAttributesFailedException
-@synthesize URI = _URI, attributes = _attributes;
+@synthesize IRI = _IRI, attributes = _attributes;
 @synthesize failedAttribute = _failedAttribute, errNo = _errNo;
 
 + (instancetype)exception
@@ -28,12 +28,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 		      attributes: (OFFileAttributes)attributes
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURI: URI
+	return [[[self alloc] initWithIRI: IRI
 			       attributes: attributes
 			  failedAttribute: failedAttribute
 				    errNo: errNo] autorelease];
@@ -44,7 +44,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo
@@ -52,7 +52,7 @@
 	self = [super init];
 
 	@try {
-		_URI = [URI copy];
+		_IRI = [IRI copy];
 		_attributes = [attributes copy];
 		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
@@ -66,7 +66,7 @@
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 	[_attributes release];
 	[_failedAttribute release];
 
@@ -77,6 +77,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set attribute %@ for item %@: %@",
-	    _failedAttribute, _URI, OFStrError(_errNo)];
+	    _failedAttribute, _IRI, OFStrError(_errNo)];
 }
 @end

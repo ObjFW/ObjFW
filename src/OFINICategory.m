@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -178,13 +178,13 @@ unescapeString(OFString *string)
 	}
 }
 
-- (OFString *)stringForKey: (OFString *)key
+- (OFString *)stringValueForKey: (OFString *)key
 {
-	return [self stringForKey: key defaultValue: nil];
+	return [self stringValueForKey: key defaultValue: nil];
 }
 
-- (OFString *)stringForKey: (OFString *)key
-	      defaultValue: (OFString *)defaultValue
+- (OFString *)stringValueForKey: (OFString *)key
+		   defaultValue: (OFString *)defaultValue
 {
 	for (id line in _lines) {
 		OFINICategoryPair *pair;
@@ -201,11 +201,11 @@ unescapeString(OFString *string)
 	return defaultValue;
 }
 
-- (long long)longLongForKey: (OFString *)key
-	       defaultValue: (long long)defaultValue
+- (long long)longLongValueForKey: (OFString *)key
+		    defaultValue: (long long)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key defaultValue: nil];
+	OFString *value = [self stringValueForKey: key defaultValue: nil];
 	long long ret;
 
 	if (value != nil)
@@ -218,10 +218,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (bool)boolForKey: (OFString *)key defaultValue: (bool)defaultValue
+- (bool)boolValueForKey: (OFString *)key defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key defaultValue: nil];
+	OFString *value = [self stringValueForKey: key defaultValue: nil];
 	bool ret;
 
 	if (value != nil) {
@@ -239,10 +239,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (float)floatForKey: (OFString *)key defaultValue: (float)defaultValue
+- (float)floatValueForKey: (OFString *)key defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key defaultValue: nil];
+	OFString *value = [self stringValueForKey: key defaultValue: nil];
 	float ret;
 
 	if (value != nil)
@@ -255,10 +255,10 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (double)doubleForKey: (OFString *)key defaultValue: (double)defaultValue
+- (double)doubleValueForKey: (OFString *)key defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *value = [self stringForKey: key defaultValue: nil];
+	OFString *value = [self stringValueForKey: key defaultValue: nil];
 	double ret;
 
 	if (value != nil)
@@ -271,7 +271,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (OFArray OF_GENERIC(OFString *) *)stringArrayForKey: (OFString *)key
+- (OFArray OF_GENERIC(OFString *) *)arrayValueForKey: (OFString *)key
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
@@ -295,7 +295,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (void)setString: (OFString *)string forKey: (OFString *)key
+- (void)setStringValue: (OFString *)string forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategoryPair *pair;
@@ -335,43 +335,44 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setLongLong: (long long)longLong forKey: (OFString *)key
+- (void)setLongLongValue: (long long)longLongValue forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%lld", longLong]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat:
+				  @"%lld", longLongValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setBool: (bool)bool_ forKey: (OFString *)key
+- (void)setBoolValue: (bool)boolValue forKey: (OFString *)key
 {
-	[self setString: (bool_ ? @"true" : @"false") forKey: key];
+	[self setStringValue: (boolValue ? @"true" : @"false") forKey: key];
 }
 
-- (void)setFloat: (float)float_ forKey: (OFString *)key
+- (void)setFloatValue: (float)floatValue forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%g", float_]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat: @"%g", floatValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setDouble: (double)double_ forKey: (OFString *)key
+- (void)setDoubleValue: (double)doubleValue forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%g", double_]
-		 forKey: key];
+	[self setStringValue: [OFString stringWithFormat: @"%g", doubleValue]
+		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setStringArray: (OFArray OF_GENERIC(OFString *) *)array
-		forKey: (OFString *)key
+- (void)setArrayValue: (OFArray OF_GENERIC(OFString *) *)arrayValue
+	       forKey: (OFString *)key
 {
 	void *pool;
 	OFMutableArray *pairs;
@@ -379,16 +380,16 @@ unescapeString(OFString *string)
 	size_t count;
 	bool replaced;
 
-	if (array.count == 0) {
+	if (arrayValue.count == 0) {
 		[self removeValueForKey: key];
 		return;
 	}
 
 	pool = objc_autoreleasePoolPush();
 
-	pairs = [OFMutableArray arrayWithCapacity: array.count];
+	pairs = [OFMutableArray arrayWithCapacity: arrayValue.count];
 
-	for (OFString *string in array) {
+	for (OFString *string in arrayValue) {
 		OFINICategoryPair *pair;
 
 		if (![string isKindOfClass: [OFString class]])
@@ -422,7 +423,7 @@ unescapeString(OFString *string)
 
 				replaced = true;
 				/* Continue after inserted pairs */
-				i += array.count - 1;
+				i += arrayValue.count - 1;
 			} else
 				i--;	/* Continue at same position */
 

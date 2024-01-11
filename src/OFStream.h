@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -218,6 +218,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -1390,6 +1391,18 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return Whether the lowlevel is at the end of the stream
  */
 - (bool)lowlevelIsAtEndOfStream;
+
+/**
+ * @brief Returns whether the lowlevel has data in the read buffer.
+ *
+ * @warning Do not call this directly!
+ *
+ * @note Override this method in case your stream can buffer data itself, such
+ *	 as when implementing @ref OFTLSStream. If not overridden, it always
+ *	 returns false.
+ * @return Whether the lowlevel has data in the read buffer
+ */
+- (bool)lowlevelHasDataInReadBuffer;
 @end
 
 OF_ASSUME_NONNULL_END

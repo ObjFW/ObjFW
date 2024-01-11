@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,8 +17,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
 
 #ifndef OF_INFLATE64_STREAM_M
 # import "OFInflateStream.h"
@@ -102,12 +100,14 @@ static const uint8_t codeLengthsOrder[19] = {
 static OFHuffmanTree fixedLitLenTree, fixedDistTree;
 
 @implementation OFInflateStream
+@synthesize underlyingStream = _stream;
+
 static OF_INLINE bool
 tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
-	assert(stream->_savedBitsLength < count);
+	OFAssert(stream->_savedBitsLength < count);
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {
@@ -674,9 +674,9 @@ start:
 	    .fileDescriptorForReading;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer ||
+	return (_stream.hasDataInReadBuffer ||
 	    _bufferLength - _bufferIndex > 0);
 }
 

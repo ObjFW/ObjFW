@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,7 +32,7 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
-# include "OFWin32ConsoleStdIOStream.h"
+# import "OFWin32ConsoleStdIOStream.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -47,8 +47,10 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 # undef HAVE_ISATTY
 #endif
 
@@ -104,6 +106,9 @@ OFLogV(OFConstantString *format, va_list arguments)
 #else
 	me = [OFApplication programName];
 #endif
+
+	if (me == nil)
+		me = @"?";
 
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
@@ -436,7 +441,7 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -451,7 +456,7 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 

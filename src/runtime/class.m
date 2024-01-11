@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -58,14 +58,14 @@ class_registerAlias_np(Class class, const char *name)
 	if (classes == NULL) {
 		objc_globalMutex_unlock();
 
-		return NO;
+		return false;
 	}
 
 	objc_hashtable_set(classes, name, (Class)((uintptr_t)class | 1));
 
 	objc_globalMutex_unlock();
 
-	return YES;
+	return true;
 }
 
 static void
@@ -92,21 +92,21 @@ objc_classnameToClass(const char *name, bool cache)
 	 *
 	 * Instead of looking up the string in a dictionary, which needs
 	 * locking, we use a sparse array to look up the pointer. If
-	 * objc_classname_to_class() gets called a lot, it is most likely that
+	 * objc_classnameToClass() gets called a lot, it is most likely that
 	 * the GCC ABI is used, which always calls into objc_lookup_class(), or
 	 * that it is used in a loop by the user. In both cases, it is very
 	 * likely that the same string pointer is passed again and again.
 	 *
-	 * This is not used before objc_classname_to_class() has been called a
+	 * This is not used before objc_classnameToClass() has been called a
 	 * certain amount of times, so that no memory is wasted if it is only
 	 * used rarely, for example if the ObjFW ABI is used and the user does
 	 * not call it in a loop.
 	 *
 	 * Runtime internal usage does not use the fast path and does not count
-	 * as a call into objc_classname_to_class(). The reason for this is
-	 * that if the runtime calls into objc_classname_to_class(), it already
-	 * has the lock and thus the performance gain would be small, but it
-	 * would waste memory.
+	 * as a call into objc_classnameToClass(). The reason for this is that
+	 * if the runtime calls into objc_classnameToClass(), it already has
+	 * the lock and thus the performance gain would be small, but it would
+	 * waste memory.
 	 */
 	if (cache && fastPath != NULL) {
 		class = objc_sparsearray_get(fastPath, (uintptr_t)name);
@@ -780,7 +780,8 @@ addMethod(Class class, SEL selector, IMP implementation,
 }
 
 Method
-#if defined(__clang__) && __clang_major__ == 3 && __clang_minor__ <= 7
+#if defined(__clang__) && __has_attribute(__optnone__) && \
+    __clang_major__ == 3 && __clang_minor__ <= 7
 /* Work around an ICE in Clang 3.7.0 on Windows/x86 */
 __attribute__((__optnone__))
 #endif

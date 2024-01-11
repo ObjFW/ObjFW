@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -91,7 +91,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
  * @throw OFConnectSPXSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToNetwork: (uint32_t)network
 		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
@@ -169,7 +169,7 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  *	       pick one and return via the returned socket address.
  * @return The address on which this socket can be reached
  * @throw OFBindIPXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (OFSocketAddress)
     bindToNetwork: (uint32_t)network

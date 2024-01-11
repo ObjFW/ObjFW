@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,8 +84,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool sendsKeepAlives;
 #endif
@@ -97,8 +97,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @warning This is not available on the Wii!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool canDelaySendingSegments;
 #endif
@@ -157,7 +157,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  * @throw OFConnectIPSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
@@ -213,11 +213,11 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *	       IPv6 to bind to all.
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
- * @return The port the socket was bound to
+ * @return The address the socket was bound to
  * @throw OFBindIPSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END

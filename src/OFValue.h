@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,10 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for storing arbitrary values in an object.
  */
 @interface OFValue: OFObject <OFCopying>
-{
-	OF_RESERVE_IVARS(OFValue, 4)
-}
-
 /**
  * @brief The ObjC type encoding of the value.
  */
@@ -68,11 +64,25 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFSize sizeValue;
 
 /**
- * @brief The value as a OFRect.
+ * @brief The value as an OFRect.
  *
  * @throw OFOutOfRangeException The value is not OFRect-sized
  */
 @property (readonly, nonatomic) OFRect rectValue;
+
+/**
+ * @brief The value as an OFVector3D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector3D-sized
+ */
+@property (readonly, nonatomic) OFVector3D vector3DValue;
+
+/**
+ * @brief The value as an OFVector4D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector4D-sized
+ */
+@property (readonly, nonatomic) OFVector4D vector4DValue;
 
 /**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -141,6 +151,24 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)valueWithRect: (OFRect)rect;
 
 /**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  3D vector.
+ *
+ * @param vector3D The 3D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector3D: (OFVector3D)vector3D;
+
+/**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  4D vector.
+ *
+ * @param vector4D The 4D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector4D: (OFVector4D)vector4D;
+
+/**
  * @brief Initializes an already allocated OFValue with the specified bytes of
  *	  the specified type.
  *
@@ -149,7 +177,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFValue
  */
 - (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType;
+		     objCType: (const char *)objCType OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Gets the value.

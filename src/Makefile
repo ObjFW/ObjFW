@@ -9,6 +9,7 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
+LIB_PATCH = ${OBJFW_LIB_PATCH}
 
 SRCS = OFASN1BitString.m		\
        OFASN1Boolean.m			\
@@ -40,6 +41,8 @@ SRCS = OFASN1BitString.m		\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFIRI.m				\
+       OFIRIHandler.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -49,19 +52,20 @@ SRCS = OFASN1BitString.m		\
        OFLocale.m			\
        OFMD5Hash.m			\
        OFMapTable.m			\
+       OFMatrix4x4.m			\
        OFMemoryStream.m			\
        OFMessagePackExtension.m		\
        OFMethodSignature.m		\
        OFMutableArray.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
+       OFMutableIRI.m			\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
-       OFMutableURI.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
@@ -69,7 +73,6 @@ SRCS = OFASN1BitString.m		\
        OFNumber.m			\
        OFObject.m			\
        OFObject+KeyValueCoding.m	\
-       OFObject+Serialization.m		\
        OFOnce.m				\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
@@ -86,8 +89,8 @@ SRCS = OFASN1BitString.m		\
        OFScrypt.m			\
        OFSecureData.m			\
        OFSeekableStream.m		\
-       OFSerialization.m		\
        OFSet.m				\
+       OFSettings.m			\
        OFSortedList.m			\
        OFStdIOStream.m			\
        OFStream.m			\
@@ -96,19 +99,15 @@ SRCS = OFASN1BitString.m		\
        OFString+JSONParsing.m		\
        OFString+PercentEncoding.m	\
        OFString+PropertyListParsing.m	\
-       OFString+Serialization.m		\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        ${OF_SUBPROCESS_M}		\
-       OFSettings.m			\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
        OFThread.m			\
        OFTimer.m			\
        OFTriple.m			\
-       OFURI.m				\
-       OFURIHandler.m			\
        OFUUID.m				\
        OFValue.m			\
        OFXMLAttribute.m			\
@@ -116,7 +115,6 @@ SRCS = OFASN1BitString.m		\
        OFXMLCharacters.m		\
        OFXMLComment.m			\
        OFXMLElement.m			\
-       OFXMLElement+Serialization.m	\
        OFXMLElementBuilder.m		\
        OFXMLNode.m			\
        OFXMLParser.m			\
@@ -145,6 +143,7 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
+	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
@@ -190,52 +189,57 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    ${USE_INCLUDES_ATOMIC}
 
 SRCS += OFASPrintF.m			\
-	OFAdjacentArray.m		\
-	OFAdjacentSubarray.m		\
-	OFArchiveURIHandler.m		\
+	OFArchiveIRIHandler.m		\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
-	OFBytesValue.m			\
 	OFCRC16.m			\
 	OFCRC32.m			\
-	OFCountedMapTableSet.m		\
-	OFEmbeddedURIHandler.m		\
+	OFConcreteArray.m		\
+	OFConcreteColor.m		\
+	OFConcreteCountedSet.m		\
+	OFConcreteData.m		\
+	OFConcreteDate.m		\
+	OFConcreteDictionary.m		\
+	OFConcreteMutableArray.m	\
+	OFConcreteMutableData.m		\
+	OFConcreteMutableDictionary.m	\
+	OFConcreteMutableSet.m		\
+	OFConcreteNumber.m		\
+	OFConcreteSet.m			\
+	OFConcreteSubarray.m		\
+	OFConcreteValue.m		\
+	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
-	OFMapTableDictionary.m		\
-	OFMapTableSet.m			\
-	OFMutableAdjacentArray.m	\
-	OFMutableMapTableDictionary.m	\
-	OFMutableMapTableSet.m		\
 	OFMutableUTF8String.m		\
-	OFNonretainedObjectValue.m	\
-	OFPointValue.m			\
-	OFPointerValue.m		\
 	OFRangeCharacterSet.m		\
-	OFRangeValue.m			\
-	OFRectValue.m			\
 	OFSandbox.m			\
-	OFSizeValue.m			\
+	OFStrFTime.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
+	OFSubdata.m			\
 	OFUTF8String.m			\
 	${LIBBASES_M}			\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
-	${UNICODE_M}
-SRCS_FILES += OFFileURIHandler.m
+	${UNICODE_M}			\
+	${USE_SRCS_TAGGED_POINTERS}
+SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
-		OFHTTPURIHandler.m			\
+		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
 		${OF_KQUEUE_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
+		       OFTaggedPointerDate.m		\
+		       OFTaggedPointerNumber.m
 SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 
@@ -260,3 +264,11 @@ RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
 	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
 	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
+
+uninstall-extra:
+	for i in platform/GCC4 platform/GCC4.7 platform/PowerPC platform/macOS \
+	    platform/x86 platform ""; do \
+		if test -d ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			rmdir ${DESTDIR}${includedir}/${includesubdir}/$$i; \
+		fi; \
+	done

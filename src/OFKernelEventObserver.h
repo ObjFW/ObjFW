@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)objectIsReadyForWriting: (id)object;
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief This callback is called when an Exec Signal was received.
  *
@@ -121,18 +121,18 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
-#if defined(OF_AMIGAOS)
+# if defined(OF_AMIGAOS)
 	struct Task *_waitingTask;
 	ULONG _cancelSignal;
-#elif defined(OF_HAVE_PIPE)
+# elif defined(OF_HAVE_PIPE)
 	int _cancelFD[2];
-#else
+# else
 	OFSocketHandle _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
-#endif
-#ifdef OF_AMIGAOS
+# endif
+# ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
-#endif
+# endif
 	OF_RESERVE_IVARS(OFKernelEventObserver, 4)
 }
 
@@ -142,14 +142,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;
 
-#ifdef OF_AMIGAOS
+# if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief A mask of Exec Signals to wait for.
  *
  * @note This is only available on AmigaOS!
  */
 @property (nonatomic) ULONG execSignalMask;
-#endif
+# endif
 
 /**
  * @brief Creates a new OFKernelEventObserver.

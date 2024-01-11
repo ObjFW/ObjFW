@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,7 +25,7 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	cbz	x0, returnNilMethod
+	cbz	x0, .LreturnNilMethod
 
 	tst	x0, #1
 	b.ne	.LtaggedPointer_\name
@@ -70,7 +70,7 @@
 \name:
 	mov	x2, x0
 	ldr	x0, [x0]
-	cbz	x0, returnNilMethod
+	cbz	x0, .LreturnNilMethod
 
 	ldr	x2, [x2, #8]
 	ldr	x2, [x2, #64]
@@ -85,14 +85,14 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	adr	x0, nilMethod
+.LreturnNilMethod:
+	adr	x0, .LnilMethod
 	ret
 
-nilMethod:
+.LnilMethod:
 	mov	x0, #0
 	ret
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

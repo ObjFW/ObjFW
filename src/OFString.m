@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -39,14 +39,13 @@
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
-#import "OFXMLElement.h"
 
 #import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -82,7 +81,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 static locale_t cLocale;
 #endif
 
@@ -98,7 +97,7 @@ static locale_t cLocale;
 			       depth: (size_t)depth;
 @end
 
-@interface OFStringPlaceholder: OFString
+@interface OFPlaceholderString: OFString
 @end
 
 extern bool OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
@@ -135,7 +134,6 @@ _references_to_categories_of_OFString(void)
 #endif
 	_OFString_PercentEncoding_reference = 1;
 	_OFString_PropertyListParsing_reference = 1;
-	_OFString_Serialization_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
 	_OFString_XMLUnescaping_reference = 1;
 }
@@ -348,38 +346,13 @@ OFStrDup(const char *string)
 	return copy;
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-static OFString *
-decomposedString(OFString *self, const char *const *const *table, size_t size)
-{
-	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	const OFUnichar *characters = self.characters;
-	size_t length = self.length;
-
-	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = characters[i];
-		const char *const *page;
-
-		if (c >= size) {
-			[ret appendCharacters: &c length: 1];
-			continue;
-		}
-
-		page = table[c >> 8];
-		if (page != NULL && page[c & 0xFF] != NULL)
-			[ret appendUTF8String: page[c & 0xFF]];
-		else
-			[ret appendCharacters: &c length: 1];
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
+@implementation OFPlaceholderString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #endif
-
-@implementation OFStringPlaceholder
 - (instancetype)init
 {
 	return (id)[[OFUTF8String alloc] init];
@@ -582,41 +555,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI];
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
-	return (id)[[OFUTF8String alloc] initWithContentsOfURI: URI
+	return (id)[[OFUTF8String alloc] initWithContentsOfIRI: IRI
 						      encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFUTF8String alloc] initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFString
@@ -625,9 +579,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (self != [OFString class])
 		return;
 
-	placeholder.isa = [OFStringPlaceholder class];
+	object_setClass((id)&placeholder, [OFPlaceholderString class]);
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -796,21 +750,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfURI: URI] autorelease];
+	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfURI: URI
+	return [[[self alloc] initWithContentsOfIRI: IRI
 					   encoding: encoding] autorelease];
 }
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFString class]]) {
+	if ([self isMemberOfClass: [OFString class]] ||
+	    [self isMemberOfClass: [OFMutableString class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -870,12 +825,21 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			      length: strlen(cString)];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithData: (OFData *)data
 		    encoding: (OFStringEncoding)encoding
@@ -895,6 +859,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithString: (OFString *)string
 {
 	OF_INVALID_INIT_METHOD
@@ -905,6 +875,9 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 {
@@ -929,12 +902,21 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: byteOrder];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithUTF16String: (const OFChar16 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithUTF32String: (const OFChar32 *)string
 {
@@ -959,12 +941,21 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			       byteOrder: byteOrder];
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithUTF32String: (const OFChar32 *)string
 			     length: (size_t)length
 			  byteOrder: (OFByteOrder)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithFormat: (OFConstantString *)format, ...
 {
@@ -978,11 +969,20 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return ret;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
@@ -994,75 +994,38 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding
 {
-	char *buffer = NULL;
-	OFStreamOffset fileSize;
+	void *pool = objc_autoreleasePoolPush();
+	OFIRI *IRI;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFFile *file = [OFFile fileWithPath: path mode: @"r"];
-		fileSize = [file seekToOffset: 0 whence: OFSeekEnd];
-
-		if (fileSize < 0 || (unsigned long long)fileSize > SIZE_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		/*
-		 * We need one extra byte for the terminating zero if we want
-		 * to use -[initWithUTF8StringNoCopy:length:freeWhenDone:].
-		 */
-		if (SIZE_MAX - (size_t)fileSize < 1)
-			@throw [OFOutOfRangeException exception];
-
-		[file seekToOffset: 0 whence: OFSeekSet];
-
-		buffer = OFAllocMemory((size_t)fileSize + 1, 1);
-		[file readIntoBuffer: buffer exactLength: (size_t)fileSize];
-		buffer[(size_t)fileSize] = '\0';
-
-		objc_autoreleasePoolPop(pool);
+		IRI = [OFIRI fileIRIWithPath: path];
 	} @catch (id e) {
-		OFFreeMemory(buffer);
 		[self release];
-
 		@throw e;
 	}
 
-	if (encoding == OFStringEncodingUTF8) {
-		@try {
-			self = [self initWithUTF8StringNoCopy: buffer
-						       length: (size_t)fileSize
-						 freeWhenDone: true];
-		} @catch (id e) {
-			OFFreeMemory(buffer);
-			@throw e;
-		}
-	} else {
-		@try {
-			self = [self initWithCString: buffer
-					    encoding: encoding
-					      length: (size_t)fileSize];
-		} @finally {
-			OFFreeMemory(buffer);
-		}
-	}
+	self = [self initWithContentsOfIRI: IRI encoding: encoding];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [self initWithContentsOfURI: URI
+	return [self initWithContentsOfIRI: IRI
 				  encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	@try {
-		data = [OFData dataWithContentsOfURI: URI];
+		data = [OFData dataWithContentsOfIRI: IRI];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1075,36 +1038,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	self = [self initWithCString: data.items
 			    encoding: encoding
 			      length: data.count * data.itemSize];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *stringValue;
-
-	@try {
-		if (![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		if ([self isKindOfClass: [OFMutableString class]]) {
-			if (![element.name isEqual: @"OFMutableString"])
-				@throw [OFInvalidArgumentException exception];
-		} else {
-			if (![element.name isEqual: @"OFString"])
-				@throw [OFInvalidArgumentException exception];
-		}
-
-		stringValue = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithString: stringValue];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1680,28 +1613,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (OFString *)description
 {
 	return [[self copy] autorelease];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFString *className;
-
-	if ([self isKindOfClass: [OFMutableString class]])
-		className = @"OFMutableString";
-	else
-		className = @"OFString";
-
-	element = [OFXMLElement elementWithName: className
-				      namespace: OFSerializationNS
-				    stringValue: self];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -2426,7 +2337,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#ifdef HAVE_STRTOF_L
+#if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
@@ -2442,8 +2353,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	float value;
 
 	errno = 0;
-#ifdef HAVE_STRTOF_L
+#if defined(HAVE_STRTOF_L)
 	value = strtof_l(UTF8String, &endPtr, cLocale);
+#elif defined(HAVE_USELOCALE)
+	locale_t previousLocale = uselocale(cLocale);
+	value = strtof(UTF8String, &endPtr);
+	uselocale(previousLocale);
 #else
 	value = strtof(UTF8String, &endPtr);
 #endif
@@ -2479,7 +2394,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#ifdef HAVE_STRTOD_L
+#if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
@@ -2495,8 +2410,12 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	double value;
 
 	errno = 0;
-#ifdef HAVE_STRTOD_L
+#if defined(HAVE_STRTOD_L)
 	value = strtod_l(UTF8String, &endPtr, cLocale);
+#elif defined(HAVE_USELOCALE)
+	locale_t previousLocale = uselocale(cLocale);
+	value = strtod(UTF8String, &endPtr);
+	uselocale(previousLocale);
 #else
 	value = strtod(UTF8String, &endPtr);
 #endif
@@ -2665,20 +2584,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [data autorelease];
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionTable,
-	    OFUnicodeDecompositionTableSize);
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	return decomposedString(self, OFUnicodeDecompositionCompatTable,
-	    OFUnicodeDecompositionCompatTableSize);
-}
-#endif
-
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
@@ -2724,17 +2629,17 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
-	[self writeToURI: URI encoding: OFStringEncodingUTF8];
+	[self writeToIRI: IRI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
-	stream = [OFURIHandler openItemAtURI: URI mode: @"w"];
+	stream = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	[stream writeString: self encoding: encoding];
 
 	objc_autoreleasePoolPop(pool);

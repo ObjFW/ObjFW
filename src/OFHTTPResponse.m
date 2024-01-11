@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -214,10 +214,12 @@ encodingForContentType(OFString *contentType)
 			charset = value;
 	}
 
-	@try {
-		ret = OFStringEncodingParseName(charset);
-	} @catch (OFInvalidArgumentException *e) {
-		ret = OFStringEncodingAutodetect;
+	ret = OFStringEncodingAutodetect;
+	if (charset != nil) {
+		@try {
+			ret = OFStringEncodingParseName(charset);
+		} @catch (OFInvalidArgumentException *e) {
+		}
 	}
 
 	return ret;

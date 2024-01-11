@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,15 +22,28 @@
 #endif
 
 #import "OFDDPSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindDDPSocketFailedException.h"
+#import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #ifdef OF_HAVE_NETAT_APPLETALK_H
 # include <netat/ddp.h>
@@ -67,7 +80,7 @@ struct ATInterfaceConfig {
 		@throw [OFInvalidArgumentException exception];
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeAppleTalk(network, node, port);
 

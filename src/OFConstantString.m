@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,29 +52,7 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFConstantString
@@ -135,29 +113,7 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 
 /*
  * In all following methods, the constant string is converted to an
@@ -549,20 +505,6 @@ struct {
 	return [self dataWithEncoding: encoding];
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCanonicalMapping;
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCompatibilityMapping;
-}
-#endif
-
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
@@ -585,16 +527,16 @@ struct {
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	[self finishInitialization];
-	[self writeToURI: URI];
+	[self writeToIRI: IRI];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
-	[self writeToURI: URI encoding: encoding];
+	[self writeToIRI: IRI encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

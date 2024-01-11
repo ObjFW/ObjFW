@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -57,6 +57,8 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)signatureWithObjCTypes: (const char *)types;
 
+- (instancetype)init OF_UNAVAILABLE;
+
 /**
  * @brief Initializes an already allocated OFMethodSignature with the specified
  *	  ObjC types.
@@ -65,7 +67,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return An Initialized OFMethodSignature
  * @throw OFInvalidFormatException The type encoding is invalid
  */
-- (instancetype)initWithObjCTypes: (const char *)types;
+- (instancetype)initWithObjCTypes: (const char *)types
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Returns the ObjC type for the argument at the specified index.

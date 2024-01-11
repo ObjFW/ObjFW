@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -12,9 +12,6 @@
  * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
  * file.
  */
-
-#ifndef OBJFW_OF_STRING_H
-#define OBJFW_OF_STRING_H
 
 #ifndef __STDC_LIMIT_MACROS
 # define __STDC_LIMIT_MACROS
@@ -35,23 +32,19 @@
 # include <inttypes.h>
 #endif
 
-#include "OFObject.h"
-#ifdef __OBJC__
-# import "OFSerialization.h"
-# import "OFJSONRepresentation.h"
-# import "OFMessagePackRepresentation.h"
-#endif
+#import "OFObject.h"
+#import "OFJSONRepresentation.h"
+#import "OFMessagePackRepresentation.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
-#ifdef __OBJC__
+@class OFArray OF_GENERIC(ObjectType);
+@class OFCharacterSet;
 @class OFConstantString;
+@class OFIRI;
 @class OFString;
-#else
-typedef void OFString;
-#endif
 
 #if defined(__cplusplus) && __cplusplus >= 201103L
 typedef char16_t OFChar16;
@@ -133,18 +126,13 @@ typedef enum {
 typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #endif
 
-#ifdef __OBJC__
-@class OFArray OF_GENERIC(ObjectType);
-@class OFCharacterSet;
-@class OFURI;
-
 /**
  * @class OFString OFString.h ObjFW/OFString.h
  *
  * @brief A class for handling strings.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
+    OFJSONRepresentation, OFMessagePackRepresentation>
 /**
  * @brief The length of the string in Unicode codepoints.
  */
@@ -157,7 +145,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  */
-@property (readonly, nonatomic) const char *UTF8String OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const char *UTF8String;
 
 /**
  * @brief The number of bytes the string needs in UTF-8 encoding.
@@ -234,8 +222,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is *not* null-terminated.
  */
-@property (readonly, nonatomic) const OFUnichar *characters
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFUnichar *characters;
 
 /**
  * @brief The string in UTF-16 encoding with native byte order.
@@ -246,8 +233,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar16 *UTF16String
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFChar16 *UTF16String;
 
 /**
  * @brief The length of the string in UTF-16 characters.
@@ -263,8 +249,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar32 *UTF32String
-    OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) const OFChar32 *UTF32String;
 
 /**
  * @brief The string with leading whitespaces deleted.
@@ -281,26 +266,13 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
-# ifdef OF_HAVE_UNICODE_TABLES
-/**
- * @brief The string in Unicode Normalization Form D (NFD).
- */
-@property (readonly, nonatomic) OFString *decomposedStringWithCanonicalMapping;
-
-/**
- * @brief The string in Unicode Normalization Form KD (NFKD).
- */
-@property (readonly, nonatomic)
-    OFString *decomposedStringWithCompatibilityMapping;
-# endif
-
-# ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
  * @brief The string with the Windows Environment Strings expanded.
  */
 @property (readonly, nonatomic)
     OFString *stringByExpandingWindowsEnvironmentStrings;
-# endif
+#endif
 
 /**
  * @brief Creates a new OFString.
@@ -530,7 +502,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithFormat: (OFConstantString *)format, ...;
 
-# ifdef OF_HAVE_FILES
+#ifdef OF_HAVE_FILES
 /**
  * @brief Creates a new OFString with the contents of the specified UTF-8
  *	  encoded file.
@@ -552,34 +524,41 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (OFStringEncoding)encoding;
-# endif
+#endif
 
 /**
- * @brief Creates a new OFString with the contents of the specified URI.
+ * @brief Creates a new OFString with the contents of the specified IRI.
  *
- * If the URI's scheme is file, it tries UTF-8 encoding.
+ * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @return A new autoreleased OFString
  * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI;
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
- * @brief Creates a new OFString with the contents of the specified URI in the
+ * @brief Creates a new OFString with the contents of the specified IRI in the
  *	  specified encoding.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @param encoding The encoding to assume
  * @return A new autoreleased OFString
  * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-+ (instancetype)stringWithContentsOfURI: (OFURI *)URI
++ (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding;
+
+/**
+ * @brief Initializes an already allocated OFString to be empty.
+ *
+ * @return An initialized OFString
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -823,7 +802,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments;
 
-# ifdef OF_HAVE_FILES
+#ifdef OF_HAVE_FILES
 /**
  * @brief Initializes an already allocated OFString with the contents of the
  *	  specified file in the specified encoding.
@@ -845,34 +824,34 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (OFStringEncoding)encoding;
-# endif
+#endif
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URI.
+ *	  specified IRI.
  *
- * If the URI's scheme is file, it tries UTF-8 encoding.
+ * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the URI's scheme is http(s), it tries to detect the encoding from the HTTP
+ * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
  * headers. If it could not detect the encoding using the HTTP headers, it tries
  * UTF-8.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @return An initialized OFString
  * @throw OFInvalidEncodingException The string is not in the expected encoding
  */
-- (instancetype)initWithContentsOfURI: (OFURI *)URI;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated OFString with the contents of the
- *	  specified URI in the specified encoding.
+ *	  specified IRI in the specified encoding.
  *
- * @param URI The URI to the contents for the string
+ * @param IRI The IRI to the contents for the string
  * @param encoding The encoding to assume
  * @return An initialized OFString
  * @throw OFInvalidEncodingException The string is not in the specified encoding
  */
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding;
 
 /**
@@ -920,8 +899,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @throw OFInvalidEncodingException The string cannot be represented in the
  *				     specified encoding
  */
-- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
-    OF_RETURNS_INNER_POINTER;
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the OFString as a C string in the specified encoding,
@@ -935,8 +913,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
-    OF_RETURNS_INNER_POINTER;
+- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Returns the number of bytes the string needs in the specified
@@ -1258,8 +1235,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @return The string in UTF-16 encoding with the specified byte order
  * @throw OFInvalidEncodingException The string cannot be represented in UTF-16
  */
-- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder
-    OF_RETURNS_INNER_POINTER;
+- (const OFChar16 *)UTF16StringWithByteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Returns the string in UTF-32 encoding with the specified byte order.
@@ -1273,8 +1249,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
  */
-- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
-    OF_RETURNS_INNER_POINTER;
+- (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder;
 
 /**
  * @brief Returns the string as OFData with the specified encoding.
@@ -1286,7 +1261,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 - (OFData *)dataWithEncoding: (OFStringEncoding)encoding;
 
-# ifdef OF_HAVE_FILES
+#ifdef OF_HAVE_FILES
 /**
  * @brief Writes the string into the specified file using UTF-8 encoding.
  *
@@ -1304,35 +1279,34 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				     specified encoding
  */
 - (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding;
-# endif
+#endif
 
 /**
- * @brief Writes the string to the specified URI using UTF-8 encoding.
+ * @brief Writes the string to the specified IRI using UTF-8 encoding.
  *
- * @param URI The URI to write to
+ * @param IRI The IRI to write to
  */
-- (void)writeToURI: (OFURI *)URI;
+- (void)writeToIRI: (OFIRI *)IRI;
 
 /**
- * @brief Writes the string to the specified URI using the specified encoding.
+ * @brief Writes the string to the specified IRI using the specified encoding.
  *
- * @param URI The URI to write to
- * @param encoding The encoding to use to write the string to the URI
+ * @param IRI The IRI to write to
+ * @param encoding The encoding to use to write the string to the IRI
  * @throw OFInvalidEncodingException The string cannot be represented in the
  *				     specified encoding
  */
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 /**
  * Enumerates all lines in the receiver using the specified block.
  *
  * @brief block The block to call for each line
  */
 - (void)enumerateLinesUsingBlock: (OFStringLineEnumerationBlock)block;
-# endif
-@end
 #endif
+@end
 
 #ifdef __cplusplus
 extern "C" {
@@ -1368,22 +1342,19 @@ extern size_t OFUTF32StringLength(const OFChar32 *);
 
 OF_ASSUME_NONNULL_END
 
-#include "OFConstantString.h"
-#include "OFMutableString.h"
-#ifdef __OBJC__
-# import "OFString+CryptographicHashing.h"
-# import "OFString+JSONParsing.h"
-# ifdef OF_HAVE_FILES
-#  import "OFString+PathAdditions.h"
-# endif
-# import "OFString+PercentEncoding.h"
-# import "OFString+PropertyListParsing.h"
-# import "OFString+Serialization.h"
-# import "OFString+XMLEscaping.h"
-# import "OFString+XMLUnescaping.h"
+#import "OFConstantString.h"
+#import "OFMutableString.h"
+#import "OFString+CryptographicHashing.h"
+#import "OFString+JSONParsing.h"
+#ifdef OF_HAVE_FILES
+# import "OFString+PathAdditions.h"
 #endif
+#import "OFString+PercentEncoding.h"
+#import "OFString+PropertyListParsing.h"
+#import "OFString+XMLEscaping.h"
+#import "OFString+XMLUnescaping.h"
 
-#if defined(__OBJC__) && !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
 /*
  * Very *ugly* hack required for string boxing literals to work.
  *
@@ -1398,6 +1369,4 @@ OF_ASSUME_NONNULL_END
  */
 @interface NSString: OFString
 @end
-#endif
-
 #endif

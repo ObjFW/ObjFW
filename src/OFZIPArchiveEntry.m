@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -406,6 +406,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 - (uint16_t)of_lastModifiedFileDate
 {
 	return _lastModifiedFileDate;
+}
+
+- (uint32_t)of_startDiskNumber
+{
+	return _startDiskNumber;
 }
 
 - (int64_t)of_localFileHeaderOffset

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,6 @@
 
 #import "OFObject.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,15 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing, accessing and comparing dates.
  */
-#ifndef OF_DATE_M
-OF_SUBCLASSING_RESTRICTED
-#endif
-@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
+@interface OFDate: OFObject <OFCopying, OFComparing,
     OFMessagePackRepresentation>
-{
-	OFTimeInterval _seconds;
-}
-
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFDate *distantFuture;
 @property (class, readonly, nonatomic) OFDate *distantPast;
@@ -284,6 +276,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * See the man page for `strftime` for information on the format.
  *
+ * @warning The format is currently limited to the following format specifiers:
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
+ *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
  * @throw OFInvalidFormatException The specified format is invalid
@@ -294,6 +290,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a string of the local date with the specified format.
  *
  * See the man page for `strftime` for information on the format.
+ *
+ * @warning The format is currently limited to the following format specifiers:
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString

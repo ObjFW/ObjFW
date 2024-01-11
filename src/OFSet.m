@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,32 +19,38 @@
 
 #import "OFSet.h"
 #import "OFArray.h"
-#import "OFMapTableSet.h"
+#import "OFConcreteSet.h"
+#import "OFCountedSet.h"
 #import "OFNull.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 static struct {
 	Class isa;
 } placeholder;
 
-@interface OFSetPlaceholder: OFSet
+@interface OFPlaceholderSet: OFSet
 @end
 
-@implementation OFSetPlaceholder
+@implementation OFPlaceholderSet
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFMapTableSet alloc] init];
+	return (id)[[OFConcreteSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFMapTableSet alloc] initWithSet: set];
+	return (id)[[OFConcreteSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMapTableSet alloc] initWithArray: array];
+	return (id)[[OFConcreteSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -53,7 +59,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMapTableSet alloc] initWithObject: firstObject
+	ret = [[OFConcreteSet alloc] initWithObject: firstObject
 					  arguments: arguments];
 	va_end(arguments);
 
@@ -62,46 +68,27 @@ static struct {
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMapTableSet alloc] initWithObjects: objects
+	return (id)[[OFConcreteSet alloc] initWithObjects: objects
 						    count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMapTableSet alloc] initWithObject: firstObject
+	return (id)[[OFConcreteSet alloc] initWithObject: firstObject
 					       arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMapTableSet alloc] initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFSet
 + (void)initialize
 {
 	if (self == [OFSet class])
-		placeholder.isa = [OFSetPlaceholder class];
+		object_setClass((id)&placeholder, [OFPlaceholderSet class]);
 }
 
 + (instancetype)alloc
@@ -148,7 +135,9 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFSet class]]) {
+	if ([self isMemberOfClass: [OFSet class]] ||
+	    [self isMemberOfClass: [OFMutableSet class]] ||
+	    [self isMemberOfClass: [OFCountedSet class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -164,18 +153,72 @@ static struct {
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	OF_INVALID_INIT_METHOD
+	id *objects = NULL;
+	size_t count;
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		size_t i = 0;
+
+		count = set.count;
+		objects = OFAllocMemory(count, sizeof(id));
+
+		for (id object in set) {
+			OFEnsure(i < count);
+			objects[i++] = object;
+		}
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		OFFreeMemory(objects);
+
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	OF_INVALID_INIT_METHOD
+	void *pool = objc_autoreleasePoolPush();
+	size_t count;
+	const id *objects;
+
+	@try {
+		count = array.count;
+		objects = array.objects;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithObjects: objects count: count];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithObjects: (id)firstObject, ...
 {
@@ -191,12 +234,38 @@ static struct {
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
-}
+	size_t count = 1;
+	va_list argumentsCopy;
+	id *objects;
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
+	if (firstObject == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		objects = OFAllocMemory(count, sizeof(id));
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		objects[0] = firstObject;
+
+		for (size_t i = 1; i < count; i++) {
+			objects[i] = va_arg(arguments, id);
+			OFEnsure(objects[i] != nil);
+		}
+
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
 - (size_t)count
@@ -245,6 +314,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -256,7 +326,7 @@ static struct {
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];
@@ -360,31 +430,6 @@ static struct {
 			return true;
 
 	return false;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	if ([self isKindOfClass: [OFMutableSet class]])
-		element = [OFXMLElement elementWithName: @"OFMutableSet"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFSet"
-					      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-		[element addChild: object.XMLElementBySerializing];
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFSet *)setByAddingObjectsFromSet: (OFSet *)set

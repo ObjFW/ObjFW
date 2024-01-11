@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -139,12 +139,6 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (bool)hasDataInReadBuffer
-{
-	return (super.hasDataInReadBuffer ||
-	    _underlyingStream.hasDataInReadBuffer);
 }
 
 - (bool)lowlevelIsAtEndOfStream

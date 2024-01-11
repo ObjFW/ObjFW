@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,7 +48,9 @@
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 @implementation OFKernelEventObserver
@@ -206,11 +208,16 @@
 	bool foundInReadBuffer = false;
 
 	for (id object in [[_readObjects copy] autorelease]) {
-		void *pool2 = objc_autoreleasePoolPush();
+		void *pool2;
 
-		if ([object isKindOfClass: [OFStream class]] &&
-		    [object hasDataInReadBuffer] &&
-		    ![(OFStream *)object of_isWaitingForDelimiter]) {
+		if (![object isKindOfClass: [OFStream class]])
+			continue;
+
+		pool2 = objc_autoreleasePoolPush();
+
+		if ([object hasDataInReadBuffer] &&
+		    (![object of_isWaitingForDelimiter] ||
+		    [object lowlevelHasDataInReadBuffer])) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: object];

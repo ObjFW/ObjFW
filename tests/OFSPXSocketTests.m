@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -79,6 +79,7 @@ static OFString *const module = @"OFSPXSocket";
 	uint32_t network;
 	unsigned char node[IPX_NODE_LEN], node2[IPX_NODE_LEN];
 	uint16_t port;
+	OFDictionary *networkInterfaces;
 	char buffer[5];
 	SPXSocketDelegate *delegate;
 
@@ -124,6 +125,24 @@ static OFString *const module = @"OFSPXSocket";
 
 	TEST(@"-[listen]", R([sockServer listen]))
 
+	/*
+	 * Find any network interface with IPX and send to it. Any should be
+	 * fine since we bound to 0.0.
+	 */
+	networkInterfaces = [OFSystemInfo networkInterfaces];
+	for (OFString *name in networkInterfaces) {
+		OFNetworkInterface interface = [networkInterfaces
+		    objectForKey: name];
+		OFData *addresses = [interface
+		    objectForKey: OFNetworkInterfaceIPXAddresses];
+
+		if (addresses.count == 0)
+			continue;
+
+		network = OFSocketAddressIPXNetwork([addresses itemAtIndex: 0]);
+		OFSocketAddressGetIPXNode([addresses itemAtIndex: 0], node);
+	}
+
 	TEST(@"-[connectToNetwork:node:port:]",
 	    R([sockClient connectToNetwork: network node: node port: port]))
 
@@ -138,7 +157,6 @@ static OFString *const module = @"OFSPXSocket";
 
 	TEST(@"-[remoteAddress]",
 	    (address2 = sockAccepted.remoteAddress) &&
-	    OFSocketAddressIPXNetwork(address2) == network &&
 	    R(OFSocketAddressGetIPXNode(address2, node2)) &&
 	    memcmp(node, node2, IPX_NODE_LEN) == 0)
 
@@ -173,6 +191,13 @@ static OFString *const module = @"OFSPXSocket";
 		TEST(@"-[asyncAccept] & -[asyncConnectToNetwork:node:port:]",
 		    delegate->_accepted && delegate->_connected)
 	} @catch (OFObserveKernelEventsFailedException *e) {
+		/*
+		 * Make sure it doesn't stay in the run loop and throws again
+		 * next time we run the run loop.
+		 */
+		[sockClient cancelAsyncRequests];
+		[sockServer cancelAsyncRequests];
+
 		switch (e.errNo) {
 		case ENOTSOCK:
 			[OFStdOut setForegroundColor: [OFColor lime]];

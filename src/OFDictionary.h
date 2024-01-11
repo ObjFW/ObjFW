@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,7 +25,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -77,7 +76,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  *	 @ref keyEnumerator.
  */
 @interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define KeyType id
@@ -151,6 +150,13 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
     OF_SENTINEL;
 
 /**
+ * @brief Initializes an already allocated OFDictionary to be empty.
+ *
+ * @return An initialized OFDictionary
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFDictionary with the specified
  *	  OFDictionary.
  *
@@ -192,7 +198,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			forKeys: (KeyType const _Nonnull *_Nonnull)keys
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys

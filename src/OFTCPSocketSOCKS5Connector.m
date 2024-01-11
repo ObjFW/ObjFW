@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFTCPSocketSOCKS5Connector.h"
@@ -268,7 +267,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return false;
 	default:
-		assert(0);
+		OFAssert(0);
 		return false;
 	}
 }
@@ -305,7 +304,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return nil;
 	default:
-		assert(0);
+		OFAssert(0);
 		return nil;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Addresses are of type @ref OFSocketAddress. You can use
  * @ref OFSocketAddressMakeIPX to create an address or
  * @ref OFSocketAddressIPXNetwork to get the IPX network,
- * @ref OFSocketAddressIPXNode to get the IPX node and
+ * @ref OFSocketAddressGetIPXNode to get the IPX node and
  * @ref OFSocketAddressIPXPort to get the port (sometimes also called
  * socket number).
  *
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
  * @throw OFBindIPXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)
     bindToNetwork: (uint32_t)network

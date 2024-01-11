@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -13,14 +13,10 @@
  * file.
  */
 
-#ifndef OBJFW_OF_MUTABLE_STRING_H
-#define OBJFW_OF_MUTABLE_STRING_H
-
-#include "OFString.h"
+#import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef __OBJC__
 /**
  * @class OFMutableString OFString.h ObjFW/OFString.h
  *
@@ -210,8 +206,5 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)makeImmutable;
 @end
-#endif
 
 OF_ASSUME_NONNULL_END
-
-#endif

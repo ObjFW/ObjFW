@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,8 +20,6 @@
 #include <string.h>
 #include "unistd_wrapper.h"
 
-#include <assert.h>
-
 #ifdef OF_APPLE_RUNTIME
 # include <dlfcn.h>
 #endif
@@ -41,6 +39,7 @@
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 # import "OFPlainMutex.h"	/* For OFSpinlock */
 #endif
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -65,7 +64,9 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -252,13 +253,12 @@ typeEncodingForSelector(Class class, SEL selector)
 static void
 uncaughtExceptionHandler(id exception)
 {
-	OFString *description = [exception description];
 	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
 	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
-	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: encoding]);
+	OFLog(@"Runtime error: Unhandled exception:");
+	OFLog(@"%@", exception);
 
 	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
 		stackTraceAddresses = [exception stackTraceAddresses];
@@ -273,7 +273,8 @@ uncaughtExceptionHandler(id exception)
 		if (stackTraceSymbols.count != count)
 			stackTraceSymbols = nil;
 
-		fputs("\nStack trace:\n", stderr);
+		OFLog(@"");
+		OFLog(@"Stack trace:");
 
 		if (stackTraceSymbols != nil) {
 			for (size_t i = 0; i < count; i++) {
@@ -283,18 +284,16 @@ uncaughtExceptionHandler(id exception)
 				    objectAtIndex: i]
 				    cStringWithEncoding: encoding];
 
-				fprintf(stderr, "  %p  %s\n", address, symbol);
+				OFLog(@"  %p  %s", address, symbol);
 			}
 		} else {
 			for (size_t i = 0; i < count; i++) {
 				void *address = [[stackTraceAddresses
 				    objectAtIndex: i] pointerValue];
 
-				fprintf(stderr, "  %p\n", address);
+				OFLog(@"  %p", address);
 			}
 		}
-
-		fputs("\n", stderr);
 	}
 
 	abort();
@@ -337,14 +336,16 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instanceSize = class_getInstanceSize(class);
 
 	if OF_UNLIKELY (extraAlignment > 1)
-		extraAlignment = ((instanceSize + extraAlignment - 1) &
-		    ~(extraAlignment - 1)) - extraAlignment;
+		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
+		    PRE_IVARS_ALIGN + instanceSize) -
+		    PRE_IVARS_ALIGN - instanceSize;
 
 	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
-		allocFailedException.isa = [OFAllocFailedException class];
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
 		@throw (id)&allocFailedException;
 	}
 
@@ -388,7 +389,6 @@ void
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;
-	_OFObject_Serialization_reference = 1;
 }
 
 @implementation OFObject
@@ -440,11 +440,6 @@ _references_to_categories_of_OFObject(void)
 	return OFAllocObject(self, 0, 0, NULL);
 }
 
-+ (instancetype)new
-{
-	return [[self alloc] init];
-}
-
 + (Class)class
 {
 	return self;
@@ -477,10 +472,8 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)conformsToProtocol: (Protocol *)protocol
 {
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
+		if (class_conformsToProtocol(iter, protocol))
 			return true;
 
 	return false;
@@ -582,12 +575,12 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - (instancetype)init
@@ -1171,7 +1164,7 @@ _references_to_categories_of_OFObject(void)
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVARS->retainCount >= 0);
+	OFAssert(PRE_IVARS->retainCount >= 0);
 	return PRE_IVARS->retainCount;
 }
 

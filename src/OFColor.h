@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,11 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for storing a color.
  */
 @interface OFColor: OFObject
-{
-	float _red, _green, _blue, _alpha;
-	OF_RESERVE_IVARS(OFColor, 4)
-}
-
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFColor *black;
 @property (class, readonly, nonatomic) OFColor *silver;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -72,7 +72,7 @@
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	daddu	$v0, $v0, $t9
-	ld	$v0, %got_disp(nilMethod)($v0)
+	ld	$v0, %got_disp(.LnilMethod)($v0)
 	jr	$ra
 
 1:
@@ -119,7 +119,7 @@
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	daddu	$v0, $v0, $t9
-	ld	$v0, %got_disp(nilMethod)($v0)
+	ld	$v0, %got_disp(.LnilMethod)($v0)
 	jr	$ra
 .type \name, %function
 .size \name, .-\name
@@ -130,10 +130,10 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-nilMethod:
+.LnilMethod:
 	move	$v0, $zero
 	jr	$ra
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

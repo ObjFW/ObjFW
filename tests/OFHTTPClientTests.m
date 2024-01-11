@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -38,12 +38,14 @@ static OFHTTPResponse *response = nil;
 - (id)main
 {
 	OFTCPSocket *listener, *client;
+	OFSocketAddress address;
 	char buffer[5];
 
 	[condition lock];
 
 	listener = [OFTCPSocket socket];
-	_port = [listener bindToHost: @"127.0.0.1" port: 0];
+	address = [listener bindToHost: @"127.0.0.1" port: 0];
+	_port = OFSocketAddressIPPort(&address);
 	[listener listen];
 
 	[condition signal];
@@ -101,7 +103,7 @@ static OFHTTPResponse *response = nil;
 {
 	void *pool = objc_autoreleasePoolPush();
 	HTTPClientTestsServer *server;
-	OFURI *URI;
+	OFIRI *IRI;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFData *data;
@@ -116,13 +118,13 @@ static OFHTTPResponse *response = nil;
 	[condition wait];
 	[condition unlock];
 
-	URI = [OFURI URIWithString:
+	IRI = [OFIRI IRIWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->_port]];
 
 	TEST(@"-[asyncPerformRequest:]",
 	    (client = [OFHTTPClient client]) && (client.delegate = self) &&
-	    (request = [OFHTTPRequest requestWithURI: URI]) &&
+	    (request = [OFHTTPRequest requestWithIRI: IRI]) &&
 	    (request.headers =
 	    [OFDictionary dictionaryWithObject: @"5"
 					forKey: @"Content-Length"]) &&

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -349,7 +349,7 @@ main(int argc, char *argv[])
 	}
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 #if defined(OF_IOS) && defined(OF_HAVE_FILES)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -391,6 +391,7 @@ main(int argc, char *argv[])
 	[self dateTests];
 	[self valueTests];
 	[self numberTests];
+	[self colorTests];
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
@@ -428,7 +429,7 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_THREADS
 	[self threadTests];
 #endif
-	[self URITests];
+	[self IRITests];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif
@@ -439,14 +440,17 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-	[self serializationTests];
 	[self JSONTests];
 	[self propertyListTests];
 	[self ASN1DERParsingTests];
 	[self ASN1DERRepresentationTests];
+
+	[self matrix4x4Tests];
+
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
+
 #ifdef OF_WINDOWS
 	[self windowsRegistryKeyTests];
 #endif

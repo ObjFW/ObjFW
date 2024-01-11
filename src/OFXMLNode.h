@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -14,18 +14,15 @@
  */
 
 #import "OFObject.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
-
-@class OFXMLElement;
 
 /**
  * @class OFXMLNode OFXMLNode.h ObjFW/OFXMLNode.h
  *
  * @brief A class which stores an XML element.
  */
-@interface OFXMLNode: OFObject <OFCopying, OFSerialization>
+@interface OFXMLNode: OFObject <OFCopying>
 {
 	OF_RESERVE_IVARS(OFXMLNode, 4)
 }
@@ -77,7 +74,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *XMLString;
 
 - (instancetype)init OF_UNAVAILABLE;
-- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /**
  * @brief The contents of the receiver as a `long long` value in the specified

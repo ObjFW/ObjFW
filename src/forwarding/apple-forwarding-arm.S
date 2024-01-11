@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,11 +19,11 @@
 .globl _OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-sel_forwardingTargetForSelector_:
+Lsel_forwardingTargetForSelector_:
 	.long str_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
@@ -36,7 +36,7 @@ _OFForward:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_L0
+	ldr	r4, Lsel_forwardingTargetForSelector_$indirect_L0
 L0:
 	ldr	r4, [pc, r4]
 
@@ -71,8 +71,8 @@ L0:
 	b	_OFMethodNotFound
 
 .data_region
-sel_forwardingTargetForSelector_$indirect_L0:
-	.long sel_forwardingTargetForSelector_-(L0+8)
+Lsel_forwardingTargetForSelector_$indirect_L0:
+	.long Lsel_forwardingTargetForSelector_-(L0+8)
 .end_data_region
 
 .align 2
@@ -80,7 +80,7 @@ _OFForward_stret:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_L1
+	ldr	r4, Lsel_forwardingTargetForSelector_$indirect_L1
 L1:
 	ldr	r4, [pc, r4]
 
@@ -119,6 +119,6 @@ L1:
 	b	_OFMethodNotFound_stret
 
 .data_region
-sel_forwardingTargetForSelector_$indirect_L1:
-	.long sel_forwardingTargetForSelector_-(L1+8)
+Lsel_forwardingTargetForSelector_$indirect_L1:
+	.long Lsel_forwardingTargetForSelector_-(L1+8)
 .end_data_region

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -86,11 +86,11 @@ extern int _OFString_PathAdditions_reference;
 - (OFString *)stringByAppendingPathExtension: (OFString *)extension;
 
 - (bool)of_isDirectoryPath;
-- (OFString *)of_pathToURIPathWithPercentEncodedHost:
+- (OFString *)of_pathToIRIPathWithPercentEncodedHost:
     (OFString *__autoreleasing _Nullable *_Nonnull)percentEncodedHost;
-- (OFString *)of_URIPathToPathWithPercentEncodedHost:
+- (OFString *)of_IRIPathToPathWithPercentEncodedHost:
     (nullable OFString *)percentEncodedHost;
-- (OFString *)of_pathComponentToURIPathComponent;
+- (OFString *)of_pathComponentToIRIPathComponent;
 @end
 
 OF_ASSUME_NONNULL_END

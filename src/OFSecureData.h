@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,8 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
+	unsigned char *_Nullable _items;
+	size_t _count, _itemSize;
+	bool _freeWhenDone, _allowsSwappableMemory;
 	void *_page;
-	bool _allowsSwappableMemory;
 }
 
 /**
@@ -104,7 +106,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
@@ -135,6 +137,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)initWithItemSize: (size_t)itemSize OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
@@ -150,10 +154,9 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (instancetype)initWithContentsOfURI: (OFURI *)URI OF_UNAVAILABLE;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 - (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
-- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /**
  * @brief Returns a specific item of the OFSecureData.
@@ -187,8 +190,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (void)writeToURI: (OFURI *)URI OF_UNAVAILABLE;
-- (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
+- (void)writeToIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
 @end
 

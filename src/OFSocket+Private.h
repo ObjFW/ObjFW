@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@
 # include <netdb.h>
 #endif
 
-#include "OFSocket.h"
+#import "OFSocket.h"
 
 #ifndef INADDR_NONE
 # define INADDR_NONE ((in_addr_t)-1)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,9 +45,9 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFUUID.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFColor.h"
 
 #import "OFNotification.h"
@@ -138,6 +138,8 @@
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
+#import "OFMatrix4x4.h"
+
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
 #endif
@@ -155,6 +157,7 @@
 #import "OFASN1Value.h"
 
 #import "OFAllocFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFException.h"
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -205,7 +208,6 @@
 #import "OFWriteFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFAcceptSocketFailedException.h"
-# import "OFAlreadyConnectedException.h"
 # import "OFBindIPSocketFailedException.h"
 # import "OFBindSocketFailedException.h"
 # import "OFConnectIPSocketFailedException.h"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,23 +16,50 @@
 #include "config.h"
 
 #import "OFValue.h"
-#import "OFBytesValue.h"
+#import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
-#import "OFNonretainedObjectValue.h"
-#import "OFPointValue.h"
-#import "OFPointerValue.h"
-#import "OFRangeValue.h"
-#import "OFRectValue.h"
-#import "OFSizeValue.h"
 #import "OFString.h"
 
 #import "OFOutOfMemoryException.h"
 
+static struct {
+	Class isa;
+} placeholder;
+
+@interface OFPlaceholderValue: OFValue
+@end
+
+@implementation OFPlaceholderValue
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithBytes: (const void *)bytes
+		     objCType: (const char *)objCType
+{
+	return (id)[[OFConcreteValue alloc] initWithBytes: bytes
+						 objCType: objCType];
+}
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+
+OF_SINGLETON_METHODS
+@end
+
 @implementation OFValue
++ (void)initialize
+{
+	if (self == [OFValue class])
+		object_setClass((id)&placeholder, [OFPlaceholderValue class]);
+}
+
 + (instancetype)alloc
 {
 	if (self == [OFValue class])
-		return [OFBytesValue alloc];
+		return (id)&placeholder;
 
 	return [super alloc];
 }
@@ -40,43 +67,79 @@
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType
 {
-	return [[[OFBytesValue alloc] initWithBytes: bytes
-					   objCType: objCType] autorelease];
+	return [[[OFValue alloc] initWithBytes: bytes
+				      objCType: objCType] autorelease];
 }
 
 + (instancetype)valueWithPointer: (const void *)pointer
 {
-	return [[[OFPointerValue alloc] initWithPointer: pointer] autorelease];
+	return [[[OFValue alloc]
+	    initWithBytes: &pointer
+		 objCType: @encode(const void *)] autorelease];
 }
 
 + (instancetype)valueWithNonretainedObject: (id)object
 {
-	return [[[OFNonretainedObjectValue alloc]
-	    initWithNonretainedObject: object] autorelease];
+	return [[[OFValue alloc] initWithBytes: &object
+				      objCType: @encode(id)] autorelease];
 }
 
 + (instancetype)valueWithRange: (OFRange)range
 {
-	return [[[OFRangeValue alloc] initWithRange: range] autorelease];
+	return [[[OFValue alloc] initWithBytes: &range
+				      objCType: @encode(OFRange)] autorelease];
 }
 
 + (instancetype)valueWithPoint: (OFPoint)point
 {
-	return [[[OFPointValue alloc] initWithPoint: point] autorelease];
+	return [[[OFValue alloc] initWithBytes: &point
+				      objCType: @encode(OFPoint)] autorelease];
 }
 
 + (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[OFSizeValue alloc] initWithSize: size] autorelease];
+	return [[[OFValue alloc] initWithBytes: &size
+				      objCType: @encode(OFSize)] autorelease];
 }
 
 + (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[OFRectValue alloc] initWithRect: rect] autorelease];
+	return [[[OFValue alloc] initWithBytes: &rect
+				      objCType: @encode(OFRect)] autorelease];
+}
+
++ (instancetype)valueWithVector3D: (OFVector3D)vector3D
+{
+	return [[[OFValue alloc]
+	    initWithBytes: &vector3D
+		 objCType: @encode(OFVector3D)] autorelease];
+}
+
++ (instancetype)valueWithVector4D: (OFVector4D)vector4D
+{
+	return [[[OFValue alloc]
+	    initWithBytes: &vector4D
+		 objCType: @encode(OFVector4D)] autorelease];
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
+{
+	if ([self isMemberOfClass: [OFValue class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+
+		abort();
+	}
+
+	return [super init];
+}
+
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -201,13 +264,75 @@
 	return ret;
 }
 
+- (OFVector3D)vector3DValue
+{
+	OFVector3D ret;
+	[self getValue: &ret size: sizeof(ret)];
+	return ret;
+}
+
+- (OFVector4D)vector4DValue
+{
+	OFVector4D ret;
+	[self getValue: &ret size: sizeof(ret)];
+	return ret;
+}
+
 - (OFString *)description
 {
-	OFMutableString *ret =
-	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = OFSizeOfTypeEncoding(self.objCType);
+	const char *objCType = self.objCType;
+	OFMutableString *ret;
+	size_t size;
 	unsigned char *value;
 
+	if (strcmp(objCType, @encode(OFRange)) == 0 ||
+	    strcmp(objCType, @encode(const OFRange)) == 0) {
+		OFRange rangeValue;
+		[self getValue: &rangeValue size: sizeof(rangeValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFRange { %zd, %zd }>",
+		    rangeValue.location, rangeValue.length];
+	} else if (strcmp(objCType, @encode(OFPoint)) == 0 ||
+	    strcmp(objCType, @encode(const OFPoint)) == 0) {
+		OFPoint pointValue;
+		[self getValue: &pointValue size: sizeof(pointValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFPoint { %g, %g }>",
+		    pointValue.x, pointValue.y];
+	} else if (strcmp(objCType, @encode(OFSize)) == 0 ||
+	    strcmp(objCType, @encode(const OFSize)) == 0) {
+		OFSize sizeValue;
+		[self getValue: &sizeValue size: sizeof(sizeValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFSize { %g, %g }>",
+		    sizeValue.width, sizeValue.height];
+	} else if (strcmp(objCType, @encode(OFRect)) == 0 ||
+	    strcmp(objCType, @encode(const OFRect)) == 0) {
+		OFRect rectValue;
+		[self getValue: &rectValue size: sizeof(rectValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFRect { %g, %g, %g, %g }>",
+		    rectValue.origin.x, rectValue.origin.y,
+		    rectValue.size.width, rectValue.size.height];
+	} else if (strcmp(objCType, @encode(OFVector3D)) == 0 ||
+	    strcmp(objCType, @encode(const OFVector3D)) == 0) {
+		OFVector3D vector3DValue;
+		[self getValue: &vector3DValue size: sizeof(vector3DValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFVector3D { %g, %g, %g }>",
+		    vector3DValue.x, vector3DValue.y, vector3DValue.z];
+	} else if (strcmp(objCType, @encode(OFVector4D)) == 0 ||
+	    strcmp(objCType, @encode(const OFVector4D)) == 0) {
+		OFVector4D vector4DValue;
+		[self getValue: &vector4DValue size: sizeof(vector4DValue)];
+		return [OFString stringWithFormat:
+		    @"<OFValue: OFVector4D { %g, %g, %g, %g }>",
+		    vector4DValue.x, vector4DValue.y, vector4DValue.z,
+		    vector4DValue.w];
+	}
+
+	ret = [OFMutableString stringWithString: @"<OFValue: "];
+	size = OFSizeOfTypeEncoding(objCType);
 	value = OFAllocMemory(1, size);
 	@try {
 		[self getValue: value size: size];

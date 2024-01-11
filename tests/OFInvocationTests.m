@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -15,7 +15,6 @@
 
 #include "config.h"
 
-#include <assert.h>
 #include <string.h>
 
 #if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
@@ -58,10 +57,6 @@ struct TestStruct {
 
 	TEST(@"+[invocationWithMethodSignature:]",
 	    (invocation = [OFInvocation invocationWithMethodSignature: sig]))
-
-#ifdef __clang_analyzer__
-	assert(invocation != nil);
-#endif
 
 	TEST(@"-[setReturnValue]", R([invocation setReturnValue: &st]))
 

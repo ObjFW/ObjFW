@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -69,7 +69,7 @@ static OFNotificationCenter *defaultCenter;
 		void *pool = objc_autoreleasePoolPush();
 
 		_name = [name copy];
-		_observer = [observer retain];
+		_observer = observer;
 		_selector = selector;
 		_object = [object retain];
 
@@ -108,7 +108,6 @@ static OFNotificationCenter *defaultCenter;
 - (void)dealloc
 {
 	[_name release];
-	[_observer release];
 	[_object release];
 #ifdef OF_HAVE_BLOCKS
 	[_block release];
@@ -247,10 +246,9 @@ static OFNotificationCenter *defaultCenter;
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFNotificationCenterHandle *)
-    addObserverForName: (OFNotificationName)name
-		object: (id)object
-	    usingBlock: (OFNotificationCenterBlock)block
+- (id)addObserverForName: (OFNotificationName)name
+		  object: (id)object
+	      usingBlock: (OFNotificationCenterBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNotificationCenterHandle *handle =
@@ -269,9 +267,16 @@ static OFNotificationCenter *defaultCenter;
 }
 #endif
 
-- (void)removeObserver: (OFNotificationCenterHandle *)handle
+- (void)removeObserver: (id)handle_
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenterHandle *handle;
+	void *pool;
+
+	if (![handle_ isKindOfClass: [OFNotificationCenterHandle class]])
+		@throw [OFInvalidArgumentException exception];
+
+	handle = handle_;
+	pool = objc_autoreleasePoolPush();
 
 	/* {} required to avoid -Wmisleading-indentation false positive. */
 	if (![handle isKindOfClass: [OFNotificationCenterHandle class]]) {
@@ -378,22 +383,5 @@ static OFNotificationCenter *defaultCenter;
 @end
 
 @implementation OFDefaultNotificationCenter
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end

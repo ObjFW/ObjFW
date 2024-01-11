@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFCreateSymbolicLinkFailedException \
@@ -28,16 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCreateSymbolicLinkFailedException: OFException
 {
-	OFURI *_URI;
+	OFIRI *_IRI;
 	OFString *_target;
 	int _errNo;
 	OF_RESERVE_IVARS(OFCreateSymbolicLinkFailedException, 4)
 }
 
 /**
- * @brief The URI at which the symlink should have been created.
+ * @brief The IRI at which the symlink should have been created.
  */
-@property (readonly, nonatomic) OFURI *URI;
+@property (readonly, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The target for the symlink.
@@ -52,12 +52,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
- * @param URI The URI where the symlink should have been created
+ * @param IRI The IRI where the symlink should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
  */
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 			  target: (OFString *)target
 			   errNo: (int)errNo;
 
@@ -67,12 +67,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated create symbolic link failed
  *	  exception.
  *
- * @param URI The URI where the symlink should have been created
+ * @param IRI The IRI where the symlink should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return An initialized create symbolic link failed exception
  */
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		     target: (OFString *)target
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 

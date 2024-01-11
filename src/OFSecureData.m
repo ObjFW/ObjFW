@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -340,8 +340,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	    autorelease];
 }
 
-+ (instancetype)dataWithItems: (const void *)items
-			count: (size_t)count
++ (instancetype)dataWithItems: (const void *)items count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -375,7 +374,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-+ (instancetype)dataWithContentsOfURI: (OFURI *)URI
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -389,7 +388,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
-
 
 - (instancetype)initWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
@@ -465,6 +463,16 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithItems: (const void *)items count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
@@ -499,7 +507,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -510,11 +518,6 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithBase64EncodedString: (OFString *)string
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -540,7 +543,25 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	}
 #endif
 
+	if (_freeWhenDone)
+		OFFreeMemory(_items);
+
 	[super dealloc];
+}
+
+- (size_t)count
+{
+	return _count;
+}
+
+- (size_t)itemSize
+{
+	return _itemSize;
+}
+
+- (const void *)items
+{
+	return _items;
 }
 
 - (void *)mutableItems
@@ -588,6 +609,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 - (bool)isEqual: (id)object
 {
 	OFData *otherData;
+	const unsigned char *otherDataItems;
 	unsigned char diff;
 
 	if (object == self)
@@ -597,14 +619,15 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		return false;
 
 	otherData = object;
+	otherDataItems = otherData.items;
 
-	if (otherData->_count != _count || otherData->_itemSize != _itemSize)
+	if (otherData.count != _count || otherData.itemSize != _itemSize)
 		return false;
 
 	diff = 0;
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		diff |= otherData->_items[i] ^ _items[i];
+		diff |= otherDataItems[i] ^ _items[i];
 
 	return (diff == 0);
 }
@@ -631,12 +654,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (OFXMLElement *)XMLElementBySerializing
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

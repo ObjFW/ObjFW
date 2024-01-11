@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +19,12 @@
 .globl _OFForward_stret
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+Lsel_forwardingTargetForSelector_:
+	.long Lstr_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -71,8 +71,8 @@ _OFForward:
 	bl	0f
 0:
 	mflr	r13
-	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
-	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
+	addis	r13, r13, ha16(Lsel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(Lsel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector
@@ -174,8 +174,8 @@ _OFForward_stret:
 	bl	0f
 0:
 	mflr	r13
-	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
-	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
+	addis	r13, r13, ha16(Lsel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(Lsel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector

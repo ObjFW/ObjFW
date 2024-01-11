@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,6 +26,7 @@
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
 #endif
+#import "OFString.h"
 
 #import "OFAllocFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -163,7 +164,7 @@ struct class _NSConcreteMallocBlock_metaclass;
 
 static struct {
 	Class isa;
-} alloc_failed_exception;
+} allocFailedException;
 
 #ifndef OF_HAVE_ATOMIC_OPS
 # define numSpinlocks 8	/* needs to be a power of 2 */
@@ -181,10 +182,9 @@ _Block_copy(const void *block_)
 		struct Block *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
-			alloc_failed_exception.isa =
-			    [OFAllocFailedException class];
-			@throw (OFAllocFailedException *)
-			    &alloc_failed_exception;
+			object_setClass((id)&allocFailedException,
+			    [OFAllocFailedException class]);
+			@throw (OFAllocFailedException *)&allocFailedException;
 		}
 		memcpy(copy, block, block->descriptor->size);
 
@@ -270,10 +270,10 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 		if ((src->flags & OFBlockRefCountMask) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
-				alloc_failed_exception.isa =
-				    [OFAllocFailedException class];
+				object_setClass((id)&allocFailedException,
+				    [OFAllocFailedException class]);
 				@throw (OFAllocFailedException *)
-				    &alloc_failed_exception;
+				    &allocFailedException;
 			}
 
 			memcpy(*dst, src, src->size);

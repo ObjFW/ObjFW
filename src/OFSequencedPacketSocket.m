@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +20,6 @@
 #endif
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -362,7 +361,7 @@
 # endif
 #endif
 
-	assert(client->_remoteAddress.length <=
+	OFAssert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
 	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)
@@ -466,6 +465,22 @@
 
 	return (int)_socket;
 #endif
+}
+
+- (void)releaseSocketFromCurrentThread
+{
+	/*
+	 * Currently a nop, as all supported OSes that have SOCK_SEQPACKET do
+	 * not need anything to move sockets between threads.
+	 */
+}
+
+- (void)obtainSocketForCurrentThread
+{
+	/*
+	 * Currently a nop, as all supported OSes that have SOCK_SEQPACKET do
+	 * not need anything to move sockets between threads.
+	 */
 }
 
 - (void)close

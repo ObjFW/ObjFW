@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,7 @@
 
 #import "OFSecureTransportTLSStream.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
@@ -168,15 +168,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	return bytesWritten;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
 	size_t bufferSize;
 
-	if (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
-	    bufferSize > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
+	    bufferSize > 0));
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
@@ -188,7 +186,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	OSStatus status;
 
 	if (_context != NULL)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 #ifdef HAVE_SSLCREATECONTEXT
 	if ((_context = SSLCreateContext(kCFAllocatorDefault, kSSLClientSide,

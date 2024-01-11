@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -153,8 +153,11 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	OFString *domainName;
 
 	if (!_isFQDN) {
-		OFString *searchDomain = [_settings->_searchDomains
-		    objectAtIndex: _searchDomainIndex];
+		OFString *searchDomain = @"";
+
+		if (_searchDomainIndex < _settings->_searchDomains.count)
+			searchDomain = [_settings->_searchDomains
+			    objectAtIndex: _searchDomainIndex];
 
 		domainName = [OFString stringWithFormat: @"%@.%@",
 							 _host, searchDomain];
@@ -288,7 +291,8 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	} @catch (OFInvalidFormatException *e) {
 	}
 
-	if ((aliases = [_settings->_staticHosts objectForKey: _host]) != nil) {
+	if ((aliases = [_settings->_staticHosts objectForKey:
+	    _host.lowercaseString]) != nil) {
 		OFMutableData *addresses = [OFMutableData
 		    dataWithItemSize: sizeof(OFSocketAddress)];
 		id exception = nil;

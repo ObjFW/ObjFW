@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,7 +28,7 @@ OFForward:
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
 	movl	8(%ebp), %eax
@@ -36,7 +36,7 @@ OFForward:
 	call	object_getClass@PLT
 
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	class_respondsToSelector@PLT
 
@@ -45,13 +45,13 @@ OFForward:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	objc_msg_lookup@PLT
 
 	movl	8(%ebp), %edx
 	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
 	movl	%edx, 4(%esp)
 	movl	12(%ebp), %edx
 	movl	%edx, 8(%esp)
@@ -75,7 +75,7 @@ OFForward:
 	jmp	*%eax
 
 0:
-	leal	OFMethodNotFound@GOTOFF(%ebx), %eax
+	movl	OFMethodNotFound@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -92,7 +92,7 @@ OFForward_stret:
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
 	movl	12(%ebp), %eax
@@ -100,7 +100,7 @@ OFForward_stret:
 	call	object_getClass@PLT
 
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	class_respondsToSelector@PLT
 
@@ -109,13 +109,13 @@ OFForward_stret:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	objc_msg_lookup@PLT
 
 	movl	12(%ebp), %edx
 	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
+	leal	.Lsel_forwardingTargetForSelector_@GOTOFF(%ebx), %edx
 	movl	%edx, 4(%esp)
 	movl	16(%ebp), %edx
 	movl	%edx, 8(%esp)
@@ -139,7 +139,7 @@ OFForward_stret:
 	jmp	*%eax
 
 0:
-	leal	OFMethodNotFound_stret@GOTOFF(%ebx), %eax
+	movl	OFMethodNotFound_stret@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -149,17 +149,17 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 	pushl	%ebp
 	movl	%esp, %ebp
 
 	pushl	%ebx
 	subl	$4, %esp
 
-	call	get_eip
+	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
 
-	leal	module@GOTOFF(%ebx), %eax
+	leal	.Lmodule@GOTOFF(%ebx), %eax
 	movl	%eax, (%esp)
 	call	__objc_exec_class@PLT
 
@@ -168,7 +168,7 @@ init:
 	popl	%ebp
 	ret
 
-get_eip:
+.LgetEIP:
 	movl	(%esp), %ebx
 	ret
 
@@ -177,24 +177,24 @@ get_eip:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

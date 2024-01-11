@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -69,6 +69,14 @@ OF_SUBCLASSING_RESTRICTED
 	} _context;
 	bool _inLastBlock, _atEndOfStream;
 }
+
+/**
+ * @brief The underlying stream of the inflate stream.
+ *
+ * Setting this can be useful if the the data to be inflated is coming from
+ * multiple streams, such as split across multiple files.
+ */
+@property (retain, nonatomic) OFStream *underlyingStream;
 
 /**
  * @brief Creates a new OFInflateStream with the specified underlying stream.

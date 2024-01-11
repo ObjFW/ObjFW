@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	OFTimeInterval _timeout;
 	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
-	bool _usesTCP;
+	bool _forcesTCP;
 	OFTimeInterval _configReloadInterval;
 @protected
 	OFDate *_lastConfigReload;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,30 +21,35 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 #ifdef OF_HAVE_FILES
-# if defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS)
+# if (defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 # endif
-# if defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)
+# if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
-# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS)) || defined(OF_WINDOWS)
+# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS)) || defined(OF_WINDOWS) || \
+    defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_LINKS
 # endif
-# if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS)) || defined(OF_WINDOWS)
+# if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS)) || \
+    defined(OF_WINDOWS) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
+# endif
+# if defined(OF_LINUX) || defined(OF_MACOS) || defined(DOXYGEN)
+#  define OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 # endif
 #endif
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFConstantString;
 @class OFDate;
+@class OFIRI;
 @class OFString;
-@class OFURI;
 
 /**
  * @brief A key for a file attribute in the file attributes dictionary.
  *
- * Possible keys for file URIs are:
+ * Possible keys for file IRIs are:
  *
  *  * @ref OFFileSize
  *  * @ref OFFileType
@@ -58,15 +63,16 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFFileStatusChangeDate
  *  * @ref OFFileCreationDate
  *  * @ref OFFileSymbolicLinkDestination
+ *  * @ref OFFileExtendedAttributesNames
  *
- * Other URI schemes might not have all keys and might have keys not listed.
+ * Other IRI schemes might not have all keys and might have keys not listed.
  */
 typedef OFConstantString *OFFileAttributeKey;
 
 /**
  * @brief The type of a file.
  *
- * Possibles values for file URIs are:
+ * Possibles values for file IRIs are:
  *
  *  * @ref OFFileTypeRegular
  *  * @ref OFFileTypeDirectory
@@ -77,7 +83,7 @@ typedef OFConstantString *OFFileAttributeKey;
  *  * @ref OFFileTypeSocket
  *  * @ref OFFileTypeUnknown
  *
- * Other URI schemes might not have all types and might have types not listed.
+ * Other IRI schemes might not have all types and might have types not listed.
  */
 typedef OFConstantString *OFFileAttributeType;
 
@@ -188,12 +194,21 @@ extern const OFFileAttributeKey OFFileStatusChangeDate;
 extern const OFFileAttributeKey OFFileCreationDate;
 
 /**
- * @brief The destination of a symbolic link as an OFString.
+ * @brief The destination of a symbolic link as an @ref OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
  * via @ref OFDictionary#fileSymbolicLinkDestination.
  */
 extern const OFFileAttributeKey OFFileSymbolicLinkDestination;
+
+/**
+ * @brief The names of the extended attributes as an @ref OFArray of
+ *	  @ref OFString.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref OFDictionary#fileExtendedAttributesNames.
+ */
+extern const OFFileAttributeKey OFFileExtendedAttributesNames;
 
 /**
  * @brief A regular file.
@@ -265,11 +280,11 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFString *currentDirectoryPath;
 
 /**
- * @brief The URI of the current working directory.
+ * @brief The IRI of the current working directory.
  *
  * @throw OFGetCurrentDirectoryFailedException Couldn't get current directory
  */
-@property (readonly, nonatomic) OFURI *currentDirectoryURI;
+@property (readonly, nonatomic) OFIRI *currentDirectoryIRI;
 #endif
 
 /**
@@ -291,17 +306,17 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Returns the attributes for the item at the specified URI.
+ * @brief Returns the attributes for the item at the specified IRI.
  *
- * @param URI The URI to return the attributes for
- * @return A dictionary of attributes for the specified URI, with the keys of
+ * @param IRI The IRI to return the attributes for
+ * @return A dictionary of attributes for the specified IRI, with the keys of
  *	   type @ref OFFileAttributeKey
  * @throw OFGetItemAttributesFailedException Failed to get the attributes of
  *					     the item
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (OFFileAttributes)attributesOfItemAtURI: (OFURI *)URI;
+- (OFFileAttributes)attributesOfItemAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -322,21 +337,21 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Sets the attributes for the item at the specified URI.
+ * @brief Sets the attributes for the item at the specified IRI.
  *
  * All attributes not part of the dictionary are left unchanged.
  *
- * @param attributes The attributes to set for the specified URI
- * @param URI The URI of the item to set the attributes for
+ * @param attributes The attributes to set for the specified IRI
+ * @param IRI The IRI of the item to set the attributes for
  * @throw OFSetItemAttributesFailedException Failed to set the attributes of
  *					     the item
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  * @throw OFNotImplementedException Setting one or more of the specified
  *				    attributes is not implemented for the
  *				    specified item
  */
-- (void)setAttributes: (OFFileAttributes)attributes ofItemAtURI: (OFURI *)URI;
+- (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -349,14 +364,14 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Checks whether a file exists at the specified URI.
+ * @brief Checks whether a file exists at the specified IRI.
  *
- * @param URI The URI to check
- * @return A boolean whether there is a file at the specified URI
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @param IRI The IRI to check
+ * @return A boolean whether there is a file at the specified IRI
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (bool)fileExistsAtURI: (OFURI *)URI;
+- (bool)fileExistsAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -369,14 +384,14 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Checks whether a directory exists at the specified URI.
+ * @brief Checks whether a directory exists at the specified IRI.
  *
- * @param URI The URI to check
- * @return A boolean whether there is a directory at the specified URI
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @param IRI The IRI to check
+ * @return A boolean whether there is a directory at the specified IRI
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (bool)directoryExistsAtURI: (OFURI *)URI;
+- (bool)directoryExistsAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -400,26 +415,26 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Creates a directory at the specified URI.
+ * @brief Creates a directory at the specified IRI.
  *
- * @param URI The URI of the directory to create
+ * @param IRI The IRI of the directory to create
  * @throw OFCreateDirectoryFailedException Creating the directory failed
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (void)createDirectoryAtURI: (OFURI *)URI;
+- (void)createDirectoryAtIRI: (OFIRI *)IRI;
 
 /**
- * @brief Creates a directory at the specified URI.
+ * @brief Creates a directory at the specified IRI.
  *
- * @param URI The URI of the directory to create
+ * @param IRI The IRI of the directory to create
  * @param createParents Whether to create the parents of the directory
  * @throw OFCreateDirectoryFailedException Creating the directory or one of its
  *					   parents failed
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (void)createDirectoryAtURI: (OFURI *)URI createParents: (bool)createParents;
+- (void)createDirectoryAtIRI: (OFIRI *)IRI createParents: (bool)createParents;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -436,19 +451,19 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Returns an array with the URIs of the items in the specified
+ * @brief Returns an array with the IRIs of the items in the specified
  *	  directory.
  *
  * @note `.` and `..` are not part of the returned array.
  *
- * @param URI The URI to the directory whose items should be returned
- * @return An array with the URIs of the items in the specified directory
+ * @param IRI The IRI to the directory whose items should be returned
+ * @return An array with the IRIs of the items in the specified directory
  * @throw OFOpenItemFailedException Opening the directory failed
  * @throw OFReadFailedException Reading from the directory failed
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (OFArray OF_GENERIC(OFURI *) *)contentsOfDirectoryAtURI: (OFURI *)URI;
+- (OFArray OF_GENERIC(OFIRI *) *)contentsOfDirectoryAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -474,11 +489,11 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Changes the current working directory.
  *
- * @param URI The new directory to change to
+ * @param IRI The new directory to change to
  * @throw OFChangeCurrentDirectoryFailedException Changing the current working
  *						  directory failed
  */
-- (void)changeCurrentDirectoryURI: (OFURI *)URI;
+- (void)changeCurrentDirectoryIRI: (OFIRI *)IRI;
 
 /**
  * @brief Copies a file, directory or symbolic link (if supported by the OS).
@@ -502,7 +517,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Copies a file, directory or symbolic link (if supported by the OS).
  *
- * The destination URI must have a full path, which means it must include the
+ * The destination IRI must have a full path, which means it must include the
  * name of the item.
  *
  * If an item already exists, the copy operation fails. This is also the case
@@ -510,14 +525,14 @@ OF_SUBCLASSING_RESTRICTED
  * directory.
  *
  * @param source The file, directory or symbolic link to copy
- * @param destination The destination URI
+ * @param destination The destination IRI
  * @throw OFCopyItemFailedException Copying failed
  * @throw OFCreateDirectoryFailedException Creating a destination directory
  *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
- *					 the URI's scheme
+ *					 the IRI's scheme
  */
-- (void)copyItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
+- (void)copyItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -547,12 +562,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Moves an item.
  *
- * The destination URI must have a full path, which means it must include the
+ * The destination IRI must have a full path, which means it must include the
  * name of the item.
  *
  * If the destination is on a different logical device or uses a different
  * scheme, the source will be copied to the destination using
- * @ref copyItemAtURI:toURI: and the source removed using @ref removeItemAtURI:.
+ * @ref copyItemAtIRI:toIRI: and the source removed using @ref removeItemAtIRI:.
  *
  * @param source The item to rename
  * @param destination The new name for the item
@@ -565,9 +580,9 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFCreateDirectoryFailedException Creating a destination directory
  *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
- *					 the URI's scheme
+ *					 the IRI's scheme
  */
-- (void)moveItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
+- (void)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -582,16 +597,16 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Removes the item at the specified URI.
+ * @brief Removes the item at the specified IRI.
  *
- * If the item at the specified URI is a directory, it is removed recursively.
+ * If the item at the specified IRI is a directory, it is removed recursively.
  *
- * @param URI The URI to the item which should be removed
+ * @param IRI The IRI to the item which should be removed
  * @throw OFRemoveItemFailedException Removing the item failed
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (void)removeItemAtURI: (OFURI *)URI;
+- (void)removeItemAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 /**
@@ -606,7 +621,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param destination The path to the item which should link to the source
  * @throw OFLinkItemFailedException Linking the item failed
  * @throw OFNotImplementedException Hardlinks are not implemented for the
- *				    specified URI
+ *				    specified IRI
  */
 - (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -614,20 +629,20 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a hard link for the specified item.
  *
- * The destination URI must have a full path, which means it must include the
+ * The destination IRI must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available for all URIs.
+ * This method is not available for all IRIs.
  *
- * @param source The URI to the item for which a link should be created
- * @param destination The URI to the item which should link to the source
+ * @param source The IRI to the item for which a link should be created
+ * @param destination The IRI to the item which should link to the source
  * @throw OFLinkItemFailedException Linking the item failed
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  * @throw OFNotImplementedException Hardlinks are not implemented for the
- *				    specified URI
+ *				    specified IRI
  */
-- (void)linkItemAtURI: (OFURI *)source toURI: (OFURI *)destination;
+- (void)linkItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /**
@@ -645,7 +660,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param target The target of the symbolic link
  * @throw OFCreateSymbolicLinkFailedException Creating the symbolic link failed
  * @throw OFNotImplementedException Symbolic links are not implemented for the
- *				    specified URI
+ *				    specified IRI
  */
 - (void)createSymbolicLinkAtPath: (OFString *)path
 	     withDestinationPath: (OFString *)target;
@@ -654,21 +669,134 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a symbolic link for an item.
  *
- * The destination URI must have a full path, which means it must include the
+ * The destination IRI must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available for all URIs.
+ * This method is not available for all IRIs.
  *
- * @note On Windows, this requires at least Windows Vista and administrator
- *	 privileges!
+ * @note For file IRIs on Windows, this requires at least Windows Vista and
+ *	 administrator privileges!
  *
- * @param URI The URI to the item which should symbolically link to the target
+ * @param IRI The IRI to the item which should symbolically link to the target
  * @param target The target of the symbolic link
- * @throw OFUnsupportedProtocolException No handler is registered for the URI's
+ * @throw OFOFCreateSymbolicLinkFailedException Creating a symbolic link failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
  *					 scheme
  */
-- (void)createSymbolicLinkAtURI: (OFURI *)URI
+- (void)createSymbolicLinkAtIRI: (OFIRI *)IRI
 	    withDestinationPath: (OFString *)target;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Returns the extended attribute data for the specified name of the
+ *	  item at the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param name The name of the extended attribute
+ * @param path The path of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			    ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Returns the extended attribute data for the specified name of the
+ *	  item at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param data The data for the extended attribute
+ * @param name The name of the extended attribute
+ * @param path The path of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param data The data for the extended attribute
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+/**
+ * @brief Removes the extended attribute for the specified name wof the item at
+ *	  the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param name The name of the extended attribute to remove
+ * @param path The path of the item to remove the extended attribute from
+ * @throw OFSetItemAttributesFailedException Removing the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Removing extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)removeExtendedAttributeForName: (OFString *)name
+			  ofItemAtPath: (OFString *)path;
+#endif
+
+/**
+ * @brief Removes the extended attribute for the specified name wof the item at
+ *	  the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param name The name of the extended attribute to remove
+ * @param IRI The IRI of the item to remove the extended attribute from
+ * @throw OFSetItemAttributesFailedException Removing the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Removing extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)removeExtendedAttributeForName: (OFString *)name
+			   ofItemAtIRI: (OFIRI *)IRI;
 @end
 
 @interface OFDictionary (FileAttributes)
@@ -755,6 +883,14 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileSymbolicLinkDestination;
+
+/**
+ * @brief The @ref OFFileExtendedAttributesNames key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic)
+    OFArray OF_GENERIC(OFString *) *fileExtendedAttributesNames;
 @end
 
 OF_ASSUME_NONNULL_END

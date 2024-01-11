@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,10 +33,16 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableStringPlaceholder: OFMutableString
+@interface OFPlaceholderMutableString: OFMutableString
 @end
 
-@implementation OFMutableStringPlaceholder
+@implementation OFPlaceholderMutableString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFMutableUTF8String alloc] init];
@@ -174,49 +180,31 @@ static struct {
 }
 #endif
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURI: URI];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURI: (OFURI *)URI
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
-	    initWithContentsOfURI: URI
+	    initWithContentsOfIRI: IRI
 			 encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableUTF8String alloc] initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableString
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableStringPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableString class]);
 }
 
 + (instancetype)alloc

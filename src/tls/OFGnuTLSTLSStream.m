@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +20,7 @@
 #import "OFGnuTLSTLSStream.h"
 #import "OFData.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
@@ -127,7 +127,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		gnutls_bye(_session, GNUTLS_SHUT_WR);
 
 	gnutls_deinit(_session);
-	_initialized = false;
+	_initialized = _handshakeDone = false;
 
 	[_host release];
 	_host = nil;
@@ -185,12 +185,10 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	return ret;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	if (gnutls_record_check_pending(_session) > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    gnutls_record_check_pending(_session) > 0);
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
@@ -202,7 +200,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	int status;
 
 	if (_initialized)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
 	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
@@ -241,9 +239,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 	if (status == GNUTLS_E_INTERRUPTED || status == GNUTLS_E_AGAIN) {
 		if (gnutls_record_get_direction(_session) == 1)
-			[_underlyingStream
-			    asyncWriteData: [OFData dataWithItems: "" count: 0]
-			       runLoopMode: runLoopMode];
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
 		else
 			[_underlyingStream asyncReadIntoBuffer: (void *)""
 							length: 0
@@ -272,7 +269,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		int status = gnutls_handshake(_session);
@@ -280,11 +277,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		if (status == GNUTLS_E_INTERRUPTED ||
 		    status == GNUTLS_E_AGAIN) {
 			if (gnutls_record_get_direction(_session) == 1) {
-				OFData *data = [OFData dataWithItems: ""
-							       count: 0];
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: data
+				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
 			} else

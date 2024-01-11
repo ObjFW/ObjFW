@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,8 +27,6 @@ static const OFFileHandle OFInvalidFileHandle = NULL;
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
-
 /**
  * @class OFFile OFFile.h ObjFW/OFFile.h
  *
@@ -41,7 +39,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 {
 	OFFileHandle _handle;
-	bool _atEndOfStream;
+	bool _initialized, _atEndOfStream;
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,30 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFSeekableStream;
 @class OFStream;
+@class OFZIPArchive;
+
+/**
+ * @protocol OFZIPArchiveDelegate OFZIPArchive.h ObjFW/OFZIPArchive.h
+ *
+ * @brief A delegate for OFZIPArchive.
+ */
+@protocol OFZIPArchiveDelegate <OFObject>
+@optional
+/**
+ * @brief A callback that is called when an @ref OFZIPArchive wants to read a
+ *	  different archive part.
+ *
+ * @param archive The archive that wants to read another part
+ * @param partNumber The number of the part the archive wants to read
+ * @param lastPartNumber The number of the last archive part
+ * @return The stream to read the needed part, or `nil` if no such part exists
+ */
+- (nullable OFSeekableStream *)archive: (OFZIPArchive *)archive
+		     wantsPartNumbered: (unsigned int)partNumber
+			lastPartNumber: (unsigned int)lastPartNumber;
+@end
 
 /**
  * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
@@ -32,14 +55,16 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
-	OFStream *_stream;
 #ifdef OF_ZIP_ARCHIVE_M
 @public
 #endif
+	OFObject <OFZIPArchiveDelegate> *_Nullable _delegate;
+	OF_KINDOF(OFStream *) _stream;
 	int64_t _offset;
-@protected
 	uint_least8_t _mode;
-	uint32_t _diskNumber, _centralDirectoryDisk;
+	uint32_t _diskNumber, _lastDiskNumber;
+@protected
+	uint32_t _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
@@ -52,6 +77,12 @@ OF_SUBCLASSING_RESTRICTED
 	    *_pathToEntryMap;
 	OFStream *_Nullable _lastReturnedStream;
 }
+
+/**
+ * @brief The delegate of the ZIP archive.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    OFObject <OFZIPArchiveDelegate> *delegate;
 
 /**
  * @brief The archive comment.
@@ -85,25 +116,25 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates a URI for accessing a the specified file within the specified
- *	  ZIP archive.
+ * @brief Creates an IRI for accessing a the specified file within the
+ *	  specified ZIP archive.
  *
  * @param path The path of the file within the archive
- * @param URI The URI of the archive
- * @return A URI for accessing the specified file within the specified ZIP
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified ZIP
  *	   archive
  */
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -126,14 +157,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param URI The URI to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.
@@ -188,9 +219,11 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFNotOpenException The archive is not open
  * @throw OFInvalidArgumentException The archive is not in write mode
  * @throw OFOpenItemFailedException Opening the specified file within the
- *				    archive failed. If @ref errNo is `EEXIST`,
- *				    because there is already a file with the
- *				    same name in the archive.
+ *				    archive failed. If
+ *				    @ref OFOpenItemFailedException#errNo is
+ *				    `EEXIST`, it failed because there is
+ *				    already a file with the same name in the
+ *				    archive.
  * @throw OFNotImplementedException The desired compression method is not
  *				    implemented
  */

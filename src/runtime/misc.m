@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,14 +27,14 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # define USE_INLINE_STDARG
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
 # define __NOLIBBASE__
-# define Class IntuitionClass
 # include <proto/intuition.h>
-# undef Class
 # undef __NOLIBBASE__
+# undef Class
 #endif
 
 static objc_enumeration_mutation_handler enumerationMutationHandler = NULL;

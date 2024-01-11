@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -14,11 +14,11 @@
  */
 
 #import "OFException.h"
-#import "OFURIHandler.h"
+#import "OFIRIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURI;
+@class OFIRI;
 
 /**
  * @class OFSetItemAttributesFailedException \
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSetItemAttributesFailedException: OFException
 {
-	OFURI *_URI;
+	OFIRI *_IRI;
 	OFFileAttributes _attributes;
 	OFFileAttributeKey _failedAttribute;
 	int _errNo;
@@ -37,9 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The URI of the item whose attributes could not be set.
+ * @brief The IRI of the item whose attributes could not be set.
  */
-@property (readonly, nonatomic) OFURI *URI;
+@property (readonly, nonatomic) OFIRI *IRI;
 
 /**
  * @brief The errno of the error that occurred.
@@ -59,14 +59,14 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased set item attributes failed exception.
  *
- * @param URI The URI of the item whose attributes could not be set
+ * @param IRI The IRI of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased set item attributes failed exception
  */
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 		      attributes: (OFFileAttributes)attributes
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo;
@@ -76,14 +76,14 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an already allocated set item attributes failed exception.
  *
- * @param URI The URI of the item whose attributes could not be set
+ * @param IRI The IRI of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return An initialized set item attributes failed exception
  */
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;

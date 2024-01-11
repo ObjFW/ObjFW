@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,15 +30,15 @@ static OFString *const module = @"OFUNIXStreamSocket";
 	char buffer[5];
 
 #if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryURI]
-	    URIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
 	    .fileSystemRepresentation;
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectoryURI is
+	 * We also use this code path for iOS, as the temporaryDirectory:RI is
 	 * too long on the iOS simulator.
 	 */
 	path = [OFString stringWithFormat: @"/tmp/%@",
@@ -81,8 +81,8 @@ static OFString *const module = @"OFUNIXStreamSocket";
 		    [sockClient readIntoBuffer: buffer length: 5] == 5 &&
 		    memcmp(buffer, "Hello", 5) == 0)
 
-		TEST(@"-[remoteAddress]",
-		    OFSocketAddressUNIXPath(sockAccepted.remoteAddress) == nil)
+		TEST(@"-[remoteAddress]", OFSocketAddressUNIXPath(
+		    sockAccepted.remoteAddress).length == 0)
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];
