@@ -1859,7 +1859,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AS_HELP_STRING([path to CA file for Mbed TLS]))
 
 		AS_IF([test x"$with_mbedtls_ca_path" = x""], [
-			AC_MSG_ERROR([--mbedtls-ca-path needs to be specified!])
+			AC_MSG_ERROR(m4_normalize([
+				--with-mbedtls-ca-path needs to be specified!
+			]))
 		])
 		AC_DEFINE_UNQUOTED(OF_MBEDTLS_CA_PATH, "$with_mbedtls_ca_path",
 			[Path to CA file for Mbed TLS])
@@ -1902,7 +1904,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
 		AC_MSG_ERROR(m4_normalize([
 			No TLS implementation was found. Please install OpenSSL,
-			GnuTLS or use --without-tls.
+			GnuTLS, Mbed TLS or use --without-tls.
 		]))
 	])
 
