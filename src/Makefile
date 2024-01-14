@@ -117,22 +117,33 @@ SRCS = OFApplication.m			\
 SRCS_FILES = OFFile.m			\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFDNSQuery.m			\
+SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
+	       OFADNSResourceRecord.m		\
+	       OFCNAMEDNSResourceRecord.m	\
+	       OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
+	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       OFMXDNSResourceRecord.m		\
+	       OFNSDNSResourceRecord.m		\
+	       OFPTRDNSResourceRecord.m		\
+	       OFRPDNSResourceRecord.m		\
+	       OFSOADNSResourceRecord.m		\
+	       OFSRVDNSResourceRecord.m		\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
+	       OFTXTDNSResourceRecord.m		\
 	       OFTLSStream.m			\
 	       OFUDPSocket.m			\
 	       ${USE_SRCS_APPLETALK}		\
