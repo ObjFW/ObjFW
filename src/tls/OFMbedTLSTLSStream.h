@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 	bool _initialized, _handshakeDone;
 	mbedtls_ssl_config _config;
 	mbedtls_ssl_context _SSL;
+	mbedtls_x509_crt _CAChain;
 	OFString *_host;
 }
 @end

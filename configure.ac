@@ -1855,17 +1855,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 
 	AS_IF([test x"$with_tls" = x"mbedtls"], [
-		AC_ARG_WITH(mbedtls-ca-path,
-			AS_HELP_STRING([path to CA file for Mbed TLS]))
-
-		AS_IF([test x"$with_mbedtls_ca_path" = x""], [
-			AC_MSG_ERROR(m4_normalize([
-				--with-mbedtls-ca-path needs to be specified!
-			]))
-		])
-		AC_DEFINE_UNQUOTED(OF_MBEDTLS_CA_PATH, "$with_mbedtls_ca_path",
-			[Path to CA file for Mbed TLS])
-
 		AC_CHECK_LIB(mbedtls, mbedtls_net_init, [
 			AC_CHECK_HEADER(mbedtls/ssl.h, [
 				tls_support="Mbed TLS"

@@ -196,6 +196,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	int status;
 
@@ -247,6 +248,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 						   runLoopMode: runLoopMode];
 
 		[_delegate retain];
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -264,6 +266,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream
