@@ -147,7 +147,6 @@
 #import "OFASN1BitString.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
-#import "OFASN1Integer.h"
 #import "OFASN1NumericString.h"
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"

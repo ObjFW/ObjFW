@@ -19,7 +19,6 @@
 #import "OFASN1BitString.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
-#import "OFASN1Integer.h"
 #import "OFASN1NumericString.h"
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
@@ -43,6 +42,29 @@ enum {
 int _OFData_ASN1DERParsing_reference;
 
 static size_t parseObject(OFData *self, id *object, size_t depthLimit);
+
+long long
+OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
+{
+	unsigned long long value = 0;
+
+	/* TODO: Support for big numbers */
+	if (length > sizeof(unsigned long long) &&
+	    (length != sizeof(unsigned long long) + 1 || buffer[0] != 0))
+		@throw [OFOutOfRangeException exception];
+
+	if (length >= 2 && ((buffer[0] == 0 && !(buffer[1] & 0x80)) ||
+	    (buffer[0] == 0xFF && buffer[1] & 0x80)))
+		@throw [OFInvalidFormatException exception];
+
+	if (length >= 1 && buffer[0] & 0x80)
+		value = ~0ull;
+
+	while (length--)
+		value = (value << 8) | *buffer++;
+
+	return value;
+}
 
 static OFArray *
 parseSequence(OFData *contents, size_t depthLimit)
@@ -176,8 +198,12 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		*object = [OFNumber numberWithBool: boolValue];
 		return bytesConsumed;
 	case OFASN1TagNumberInteger:
-		valueClass = [OFASN1Integer class];
-		break;
+		if (tag & tagConstructedMask)
+			@throw [OFInvalidFormatException exception];
+
+		*object = [OFNumber numberWithLongLong:
+		    OFASN1DERIntegerParse(contents.items, contents.count)];
+		return bytesConsumed;
 	case OFASN1TagNumberBitString:
 		valueClass = [OFASN1BitString class];
 		break;

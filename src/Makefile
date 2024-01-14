@@ -14,7 +14,6 @@ LIB_PATCH = ${OBJFW_LIB_PATCH}
 SRCS = OFASN1BitString.m		\
        OFASN1Enumerated.m		\
        OFASN1IA5String.m		\
-       OFASN1Integer.m			\
        OFASN1NumericString.m		\
        OFASN1ObjectIdentifier.m		\
        OFASN1OctetString.m		\
