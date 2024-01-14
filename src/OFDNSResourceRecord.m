@@ -62,6 +62,8 @@ OFDNSRecordTypeName(OFDNSRecordType recordType)
 		return @"SRV";
 	case OFDNSRecordTypeAll:
 		return @"all";
+	case OFDNSRecordTypeURI:
+		return @"URI";
 	default:
 		return [OFString stringWithFormat: @"%u", recordType];
 	}
@@ -119,6 +121,8 @@ OFDNSRecordTypeParseName(OFString *string)
 		recordType = OFDNSRecordTypeSRV;
 	else if ([string isEqual: @"ALL"])
 		recordType = OFDNSRecordTypeAll;
+	else if ([string isEqual: @"URI"])
+		recordType = OFDNSRecordTypeURI;
 	else {
 		recordType =
 		    (OFDNSRecordType)[string unsignedLongLongValueWithBase: 0];

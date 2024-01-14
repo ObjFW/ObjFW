@@ -18,17 +18,16 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSRVDNSResourceRecord \
+ * @class OFURIDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
- * @brief A class representing an SRV DNS resource record.
+ * @brief A class representing an URI DNS resource record.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFSRVDNSResourceRecord: OFDNSResourceRecord
+@interface OFURIDNSResourceRecord: OFDNSResourceRecord
 {
 	uint16_t _priority, _weight;
 	OFString *_target;
-	uint16_t _port;
 }
 
 /**
@@ -46,33 +45,28 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFString *target;
 
-/**
- * @brief The port on the target of the resource record.
- */
-@property (readonly, nonatomic) uint16_t port;
-
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (OFDNSClass)DNSClass
 		  recordType: (OFDNSRecordType)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated OFSRVDNSResourceRecord with the
- *	  specified name, priority, weight, target, port and time to live.
+ * @brief Initializes an already allocated OFURIDNSResourceRecord with the
+ *	  specified name, class, priority, weight, target and time to live.
  *
  * @param name The name for the resource record
+ * @param DNSClass The class code for the resource record
  * @param priority The priority for the resource record
  * @param weight The weight for the resource record
  * @param target The target for the resource record
- * @param port The port on the target for the resource record
  * @param TTL The time to live for the resource record
- * @return An initialized OFSRVDNSResourceRecord
+ * @return An initialized OFURIDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
+		    DNSClass: (OFDNSClass)DNSClass
 		    priority: (uint16_t)priority
 		      weight: (uint16_t)weight
 		      target: (OFString *)target
-			port: (uint16_t)port
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
