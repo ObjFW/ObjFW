@@ -23,12 +23,12 @@
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
-#import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 #import "OFArray.h"
 #import "OFNull.h"
 #import "OFNumber.h"
 #import "OFSet.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -226,8 +226,12 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1Enumerated class];
 		break;
 	case OFASN1TagNumberUTF8String:
-		valueClass = [OFASN1UTF8String class];
-		break;
+		if (tag & tagConstructedMask)
+			@throw [OFInvalidFormatException exception];
+
+		*object = [OFString stringWithUTF8String: contents.items
+						  length: contents.count];
+		return bytesConsumed;
 	case OFASN1TagNumberSequence:
 		if (!(tag & tagConstructedMask))
 			@throw [OFInvalidFormatException exception];

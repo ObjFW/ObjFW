@@ -292,18 +292,17 @@ static OFString *module = @"OFData+ASN1DERParsing";
 
 	/* UTF-8 string */
 	TEST(@"Parsing of UTF-8 string",
-	    [[[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
+	    [[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
 			       count: 16] objectByParsingASN1DER]
-	    UTF8StringValue] isEqual: @"Hällo Wörld!"] &&
-	    [[[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      "xxxxxxxxxxxxxxxxxxxx"
-			       count: 131] objectByParsingASN1DER]
-	    UTF8StringValue] isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				      @"xxxxxxxxxxx"])
+	    isEqual: @"Hällo Wörld!"] &&
+	    [[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxx"
+			      count: 131] objectByParsingASN1DER]
+	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		     @"xxxxxxxxxxxxxxxx"])
 
 	EXPECT_EXCEPTION(@"Detection of out of range UTF-8 string",
 	    OFOutOfRangeException,
@@ -343,7 +342,7 @@ static OFString *module = @"OFData+ASN1DERParsing";
 				      count: 11] objectByParsingASN1DER]) &&
 	    [array isKindOfClass: [OFArray class]] && array.count == 2 &&
 	    [[array objectAtIndex: 0] longLongValue] == 123 &&
-	    [[[array objectAtIndex: 1] stringValue] isEqual: @"Test"])
+	    [[array objectAtIndex: 1] isEqual: @"Test"])
 
 	EXPECT_EXCEPTION(@"Detection of truncated sequence #1",
 	    OFTruncatedDataException,
@@ -365,7 +364,7 @@ static OFString *module = @"OFData+ASN1DERParsing";
 	    [set isKindOfClass: [OFSet class]] && set.count == 2 &&
 	    (enumerator = [set objectEnumerator]) &&
 	    [[enumerator nextObject] longLongValue] == 123 &&
-	    [[[enumerator nextObject] stringValue] isEqual: @"Test"])
+	    [[enumerator nextObject] isEqual: @"Test"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid set",
 	    OFInvalidFormatException,
