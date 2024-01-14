@@ -26,6 +26,7 @@
 # include <sys/types.h>
 #endif
 
+#import "OFASN1DERRepresentation.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 #import "OFValue.h"
@@ -39,8 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFValue <OFComparing, OFJSONRepresentation,
-    OFMessagePackRepresentation>
+@interface OFNumber: OFValue <OFComparing, OFASN1DERRepresentation,
+    OFJSONRepresentation, OFMessagePackRepresentation>
 /**
  * @brief The OFNumber as a `bool`.
  */

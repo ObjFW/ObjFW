@@ -17,7 +17,6 @@
 
 #import "OFData+ASN1DERParsing.h"
 #import "OFASN1BitString.h"
-#import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
@@ -29,6 +28,7 @@
 #import "OFASN1Value.h"
 #import "OFArray.h"
 #import "OFNull.h"
+#import "OFNumber.h"
 #import "OFSet.h"
 
 #import "OFInvalidArgumentException.h"
@@ -159,9 +159,22 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	bytesConsumed += contentsLength;
 
 	switch (tag & ~tagConstructedMask) {
-	case OFASN1TagNumberBoolean:
-		valueClass = [OFASN1Boolean class];
-		break;
+	case OFASN1TagNumberBoolean:;
+		unsigned char boolValue;
+
+		if (tag & tagConstructedMask)
+			@throw [OFInvalidFormatException exception];
+
+		if (contents.count != 1)
+			@throw [OFInvalidFormatException exception];
+
+		boolValue = *(unsigned char *)[contents itemAtIndex: 0];
+
+		if (boolValue != 0 && boolValue != 0xFF)
+			@throw [OFInvalidFormatException exception];
+
+		*object = [OFNumber numberWithBool: boolValue];
+		return bytesConsumed;
 	case OFASN1TagNumberInteger:
 		valueClass = [OFASN1Integer class];
 		break;

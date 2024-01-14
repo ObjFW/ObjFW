@@ -40,11 +40,11 @@ static OFString *module;
 	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]])
 
-	module = @"OFASN1Boolean";
-	TEST(@"-[ASN1DERRepresentation]",
-	    [[[OFASN1Boolean booleanWithBool: false] ASN1DERRepresentation]
+	module = @"OFNumber";
+	TEST(@"-[ASN1DERRepresentation] for bool",
+	    [[[OFNumber numberWithBool: false] ASN1DERRepresentation]
 	    isEqual: [OFData dataWithItems: "\x01\x01\x00" count: 3]] &&
-	    [[[OFASN1Boolean booleanWithBool: true] ASN1DERRepresentation]
+	    [[[OFNumber numberWithBool: true] ASN1DERRepresentation]
 	    isEqual: [OFData dataWithItems: "\x01\x01\xFF" count: 3]])
 
 	module = @"OFNull";

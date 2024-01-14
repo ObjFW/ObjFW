@@ -25,6 +25,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 @interface OFNumber ()
@@ -709,6 +710,21 @@ OF_SINGLETON_METHODS
 						   self.unsignedLongLongValue];
 
 	@throw [OFInvalidFormatException exception];
+}
+
+- (OFData *)ASN1DERRepresentation
+{
+	if (self.objCType[0] == 'B' && self.objCType[1] == '\0') {
+		char buffer[] = {
+			OFASN1TagNumberBoolean,
+			1,
+			(self.boolValue ? 0xFF : 0x00)
+		};
+
+		return [OFData dataWithItems: buffer count: sizeof(buffer)];
+	} else
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 }
 
 - (OFString *)JSONRepresentation
