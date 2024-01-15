@@ -415,7 +415,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		priority = (buffer[i] << 8) | buffer[i + 1];
 		weight = (buffer[i + 2] << 8) | buffer[i + 3];
 
-		target = [OFString stringWithUTF8String: (char *)buffer + 4
+		target = [OFString stringWithUTF8String: (char *)buffer + i + 4
 						 length: dataLength - 4];
 
 		return [[[OFURIDNSResourceRecord alloc]
