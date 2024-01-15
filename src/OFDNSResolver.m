@@ -405,6 +405,26 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 			  target: target
 			    port: port
 			     TTL: TTL] autorelease];
+	} else if (recordType == OFDNSRecordTypeURI) {
+		uint16_t priority, weight;
+		OFString *target;
+
+		if (dataLength < 4)
+			@throw [OFInvalidServerResponseException exception];
+
+		priority = (buffer[i] << 8) | buffer[i + 1];
+		weight = (buffer[i + 2] << 8) | buffer[i + 3];
+
+		target = [OFString stringWithUTF8String: (char *)buffer + i + 4
+						 length: dataLength - 4];
+
+		return [[[OFURIDNSResourceRecord alloc]
+		    initWithName: name
+			DNSClass: DNSClass
+			priority: priority
+			  weight: weight
+			  target: target
+			     TTL: TTL] autorelease];
 	} else
 		return [[[OFDNSResourceRecord alloc]
 		    initWithName: name

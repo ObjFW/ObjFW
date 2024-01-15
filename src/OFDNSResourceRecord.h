@@ -62,6 +62,8 @@ typedef enum {
 	OFDNSRecordTypeSRV   =  33,
 	/** All types. Only for queries. */
 	OFDNSRecordTypeAll   = 255,
+	/** URI */
+	OFDNSRecordTypeURI   = 256,
 } OFDNSRecordType;
 
 /**
@@ -168,3 +170,4 @@ OF_ASSUME_NONNULL_END
 #import "OFSOADNSResourceRecord.h"
 #import "OFSRVDNSResourceRecord.h"
 #import "OFTXTDNSResourceRecord.h"
+#import "OFURIDNSResourceRecord.h"

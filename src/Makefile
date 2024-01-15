@@ -143,9 +143,10 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFStreamSocket.m			\
 	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
-	       OFTXTDNSResourceRecord.m		\
 	       OFTLSStream.m			\
+	       OFTXTDNSResourceRecord.m		\
 	       OFUDPSocket.m			\
+	       OFURIDNSResourceRecord.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
