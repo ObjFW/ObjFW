@@ -433,11 +433,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (*i + 10 > length)
 			@throw [OFTruncatedDataException exception];
 
-		recordType = (buffer[*i] << 16) | buffer[*i + 1];
-		DNSClass = (buffer[*i + 2] << 16) | buffer[*i + 3];
+		recordType = (buffer[*i] << 8) | buffer[*i + 1];
+		DNSClass = (buffer[*i + 2] << 8) | buffer[*i + 3];
 		TTL = (buffer[*i + 4] << 24) | (buffer[*i + 5] << 16) |
 		    (buffer[*i + 6] << 8) | buffer[*i + 7];
-		dataLength = (buffer[*i + 8] << 16) | buffer[*i + 9];
+		dataLength = (buffer[*i + 8] << 8) | buffer[*i + 9];
 
 		*i += 10;
 
