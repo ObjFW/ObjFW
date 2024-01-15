@@ -561,7 +561,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Initializes an already allocated OFSRVDNSResourceRecord with the
- *	  specified name, class, preference, mail exchange and time to live.
+ *	  specified name, priority, weight, target, port and time to live.
  *
  * @param name The name for the resource record
  * @param priority The priority for the resource record
