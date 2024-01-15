@@ -151,6 +151,7 @@ morphos*)
 esac
 AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
+AC_PROG_EGREP
 AC_PROG_LN_S
 
 BUILDSYS_CHECK_IOS
