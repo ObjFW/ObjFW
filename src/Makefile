@@ -132,6 +132,7 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       OFLOCDNSResourceRecord.m		\
 	       OFMXDNSResourceRecord.m		\
 	       OFNSDNSResourceRecord.m		\
 	       OFPTRDNSResourceRecord.m		\

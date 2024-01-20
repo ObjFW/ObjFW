@@ -379,6 +379,33 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
+	} else if (recordType == OFDNSRecordTypeLOC) {
+		uint8_t size, horizontalPrecision, verticalPrecision;
+		uint32_t latitude, longitude, altitude;
+
+		if (dataLength < 16 || buffer[i] != 0)
+			@throw [OFInvalidServerResponseException exception];
+
+		size = buffer[i + 1];
+		horizontalPrecision = buffer[i + 2];
+		verticalPrecision = buffer[i + 3];
+		latitude = (buffer[i + 4] << 24) | (buffer[i + 5] << 16) |
+		    (buffer[i + 6] << 8) | buffer[i + 7];
+		longitude = (buffer[i + 8] << 24) | (buffer[i + 9] << 16) |
+		    (buffer[i + 10] << 8) | buffer[i + 11];
+		altitude = (buffer[i + 12] << 24) | (buffer[i + 13] << 16) |
+		    (buffer[i + 14] << 8) | buffer[i + 15];
+
+		return [[[OFLOCDNSResourceRecord alloc]
+			   initWithName: name
+			       DNSClass: DNSClass
+				   size: size
+		    horizontalPrecision: horizontalPrecision
+		      verticalPrecision: verticalPrecision
+			       latitude: latitude
+			      longitude: longitude
+			       altitude: altitude
+				    TTL: TTL] autorelease];
 	} else if (recordType == OFDNSRecordTypeSRV &&
 	    DNSClass == OFDNSClassIN) {
 		uint16_t priority, weight, port;

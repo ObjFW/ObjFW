@@ -58,6 +58,8 @@ OFDNSRecordTypeName(OFDNSRecordType recordType)
 		return @"RP";
 	case OFDNSRecordTypeAAAA:
 		return @"AAAA";
+	case OFDNSRecordTypeLOC:
+		return @"LOC";
 	case OFDNSRecordTypeSRV:
 		return @"SRV";
 	case OFDNSRecordTypeAll:
@@ -117,6 +119,8 @@ OFDNSRecordTypeParseName(OFString *string)
 		recordType = OFDNSRecordTypeRP;
 	else if ([string isEqual: @"AAAA"])
 		recordType = OFDNSRecordTypeAAAA;
+	else if ([string isEqual: @"LOC"])
+		recordType = OFDNSRecordTypeLOC;
 	else if ([string isEqual: @"SRV"])
 		recordType = OFDNSRecordTypeSRV;
 	else if ([string isEqual: @"ALL"])

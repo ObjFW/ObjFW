@@ -58,6 +58,8 @@ typedef enum {
 	OFDNSRecordTypeRP    =  17,
 	/** AAAA */
 	OFDNSRecordTypeAAAA  =  28,
+	/** LOC */
+	OFDNSRecordTypeLOC   =  29,
 	/** SRV */
 	OFDNSRecordTypeSRV   =  33,
 	/** All types. Only for queries. */
@@ -163,6 +165,7 @@ OF_ASSUME_NONNULL_END
 #import "OFADNSResourceRecord.h"
 #import "OFCNAMEDNSResourceRecord.h"
 #import "OFHINFODNSResourceRecord.h"
+#import "OFLOCDNSResourceRecord.h"
 #import "OFMXDNSResourceRecord.h"
 #import "OFNSDNSResourceRecord.h"
 #import "OFPTRDNSResourceRecord.h"
