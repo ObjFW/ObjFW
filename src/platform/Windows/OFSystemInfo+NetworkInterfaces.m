@@ -101,7 +101,7 @@ networkInterfacesFromGetAdaptersAddresses(void)
 				[interface setObject: address forKey: key];
 			}
 
-			for (PIP_ADAPTER_UNICAST_ADDRESS_LH addrIter =
+			for (__typeof__(iter->FirstUnicastAddress) addrIter =
 			    iter->FirstUnicastAddress; addrIter != NULL;
 			    addrIter = addrIter->Next) {
 				OFSocketAddress address;
