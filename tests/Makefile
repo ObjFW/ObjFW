@@ -2,6 +2,7 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}	\
 	  ${OBJC_SYNC}	\
+	  ${SUBPROCESS}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
@@ -61,6 +62,7 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
+       ${USE_SRCS_SUBPROCESS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
        testfile_bin.m			\
@@ -83,6 +85,7 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
+SRCS_SUBPROCESS = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -226,7 +229,12 @@ ${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
 ${PROG_NOINST}.rpx: ${PROG_NOINST}
 	elf2rpl $< $@
 
-CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
+CPPFLAGS += -I../src				\
+	    -I../src/exceptions			\
+	    -I../src/runtime			\
+	    -I..				\
+	    -DSTDOUT				\
+	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}

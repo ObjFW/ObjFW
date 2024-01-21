@@ -44,6 +44,7 @@ tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata
 tests/objc_sync/objc_sync
 tests/plugin/Info.plist
+tests/subprocess/subprocess
 tests/terminal/terminal_tests
 tests/testfile_bin.m
 tests/testfile_ini.m

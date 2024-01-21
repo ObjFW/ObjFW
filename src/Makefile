@@ -89,7 +89,6 @@ SRCS = OFApplication.m			\
        OFString+PropertyListParsing.m	\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       ${OF_SUBPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -112,6 +111,7 @@ SRCS = OFApplication.m			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
+       ${USE_SRCS_SUBPROCESS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
@@ -157,6 +157,7 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
 		    OFUNIXStreamSocket.m
+SRCS_SUBPROCESS = OFSubprocess.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\
