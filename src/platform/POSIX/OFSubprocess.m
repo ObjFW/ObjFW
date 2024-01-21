@@ -377,7 +377,9 @@ extern char **environ;
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self closeForWriting];
+	if (_writePipe[1] != -1)
+		[self closeForWriting];
+
 	close(_readPipe[0]);
 
 	if (_pid != -1) {
