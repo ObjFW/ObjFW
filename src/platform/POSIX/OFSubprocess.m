@@ -178,7 +178,7 @@ extern char **environ;
 # endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
-				    argv, env) != 0)
+				    argv, (env != NULL ? env : environ)) != 0)
 					@throw [OFInitializationFailedException
 					    exceptionWithClass: self.class];
 			} @finally {
@@ -187,7 +187,8 @@ extern char **environ;
 			}
 #else
 			if ((_pid = vfork()) == 0) {
-				environ = env;
+				if (env != NULL)
+					environ = env;
 
 				close(_readPipe[0]);
 				close(_writePipe[1]);
