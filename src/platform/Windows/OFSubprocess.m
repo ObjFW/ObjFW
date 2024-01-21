@@ -383,7 +383,9 @@
 	if (_readPipe[0] == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self closeForWriting];
+	if (_writePipe[1] != NULL)
+		[self closeForWriting];
+
 	CloseHandle(_readPipe[0]);
 
 	if (_handle != INVALID_HANDLE_VALUE) {
