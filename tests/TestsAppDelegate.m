@@ -444,8 +444,11 @@ main(int argc, char *argv[])
 	[self propertyListTests];
 	[self matrix4x4Tests];
 
-#if defined(OF_HAVE_PLUGINS)
+#ifdef OF_HAVE_PLUGINS
 	[self pluginTests];
+#endif
+#ifdef OF_HAVE_SUBPROCESSES
+	[self subprocessTests];
 #endif
 #ifdef OF_WINDOWS
 	[self windowsRegistryKeyTests];
