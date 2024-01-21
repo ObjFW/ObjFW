@@ -23,8 +23,12 @@ static OFString *const module = @"OFSubprocess";
 - (void)subprocessTests
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_HAVE_FILES
 	OFString *program = [@"subprocess" stringByAppendingPathComponent:
 	    @"subprocess" @PROG_SUFFIX];
+#else
+	OFString *program = @"subprocess/subprocess" @PROG_SUFFIX;
+#endif
 	OFArray *arguments = [OFArray arrayWithObjects: @"tést", @"123", nil];
 	OFMutableDictionary *environment =
 	    [[[OFApplication environment] mutableCopy] autorelease];
