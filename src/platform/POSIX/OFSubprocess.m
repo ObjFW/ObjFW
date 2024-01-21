@@ -41,7 +41,10 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#if !defined(HAVE_POSIX_SPAWNP) || !defined(HAVE_SPAWN_H)
+#ifdef OF_MACOS
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+#elif !defined(HAVE_POSIX_SPAWNP) || !defined(HAVE_SPAWN_H)
 extern char **environ;
 #endif
 
