@@ -41,11 +41,11 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef OF_MACOS
+#ifndef OF_MACOS
+extern char **environ;
+#else
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
-#elif !defined(HAVE_POSIX_SPAWNP) || !defined(HAVE_SPAWN_H)
-extern char **environ;
 #endif
 
 @interface OFSubprocess ()
