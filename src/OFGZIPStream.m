@@ -250,8 +250,9 @@
 			_state++;
 			break;
 		case OFGZIPStreamStateCRC32:
-			_bytesRead += [_stream readIntoBuffer: _buffer
-						       length: 4 - _bytesRead];
+			_bytesRead += [_stream
+			    readIntoBuffer: _buffer + _bytesRead
+				    length: 4 - _bytesRead];
 
 			if (_bytesRead < 4)
 				return 0;
@@ -274,10 +275,14 @@
 			_state++;
 			break;
 		case OFGZIPStreamStateUncompressedSize:
-			_bytesRead += [_stream readIntoBuffer: _buffer
-						       length: 4 - _bytesRead];
+			_bytesRead += [_stream
+			    readIntoBuffer: _buffer + _bytesRead
+				    length: 4 - _bytesRead];
 
-			uncompressedSize = ((uint32_t)_buffer[3] << 24) |
+			if (_bytesRead < 4)
+				return 0;
+
+			uncompressedSize = (_buffer[3] << 24) |
 			    (_buffer[2] << 16) | (_buffer[1] << 8) | _buffer[0];
 			if (_uncompressedSize != uncompressedSize) {
 				OFString *actual = [OFString stringWithFormat:
