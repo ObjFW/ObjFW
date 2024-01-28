@@ -1,0 +1,25 @@
+name: dragonflybsd
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-shared
+          - --with-tls=gnutls
+    steps:
+    - uses: actions/checkout@v4
+    - uses: vmactions/dragonflybsd-vm@v1
+      with:
+        usesh: true
+        copyback: false
+        prepare: |
+          pkg install -y autoconf automake gnutls llvm pkgconf
+        run: |
+          ./autogen.sh
+          ./configure OBJC=clang ${{ matrix.configure_flags }}
+          make -j4
+          make check
+          make install

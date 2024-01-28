@@ -1,0 +1,25 @@
+name: netbsd
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-shared
+          - --with-tls=gnutls
+    steps:
+    - uses: actions/checkout@v4
+    - uses: vmactions/netbsd-vm@v1
+      with:
+        usesh: true
+        copyback: false
+        prepare: |
+          /usr/sbin/pkg_add autoconf automake clang gnutls pkgconf
+        run: |
+          ./autogen.sh
+          ./configure OBJC=clang ${{ matrix.configure_flags }}
+          make -j4
+          make check
+          make install
