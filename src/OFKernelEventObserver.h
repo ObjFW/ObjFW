@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief This callback is called when an object did get ready for reading.
  *
  * @note If the object is a subclass of @ref OFStream and
- *	 @ref OFStream::tryReadLine or @ref OFStream::tryReadUntilDelimiter:
+ *	 @ref OFStream#tryReadLine or @ref OFStream#tryReadUntilDelimiter:
  *	 has been called on the stream, this callback will not be called again
  *	 until new data has been received, even though there is still data in
  *	 the cache. The reason for this is to prevent spinning in a loop when

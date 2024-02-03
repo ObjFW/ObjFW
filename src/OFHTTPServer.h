@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    socket
  * @return Whether to continue listening. If you return false, existing
  *	   connections will still be handled and you can start accepting new
- *	   connections again by calling @ref OFHTTPServer::start again.
+ *	   connections again by calling @ref OFHTTPServer#start again.
  */
 -			  (bool)server: (OFHTTPServer *)server
   didReceiveExceptionOnListeningSocket: (id)exception;
