@@ -115,7 +115,8 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
 			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
@@ -144,7 +145,8 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
  * @param network The network on which the node to connect to is
  * @param port The port (sometimes also called socket number) on the node to
  *	       connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToNetwork: (uint32_t)network
