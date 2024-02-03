@@ -32,7 +32,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The diameter in centimeters of a sphere enclosing the position,
- *	  encoded as per RFCC 1876.
+ *	  encoded as per RFC 1876.
  */
 @property (readonly, nonatomic) uint8_t size;
 
@@ -74,7 +74,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param name The name for the resource record
  * @param DNSClass The class code for the resource record
  * @param size The diameter in centimeters of a sphere enclosing the position,
- *	       encoded as per RFCC 1876
+ *	       encoded as per RFC 1876
  * @param horizontalPrecision The horizontal precision in centimeters, encoded
  *			      as per RFC 1876
  * @param verticalPrecision The vertical precision in centimeters, encoded as

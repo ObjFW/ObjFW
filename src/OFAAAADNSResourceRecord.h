@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFAAAADNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
- * @brief A class represenging a DNS resource record.
+ * @brief A class representing a DNS resource record.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord

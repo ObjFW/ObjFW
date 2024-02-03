@@ -134,7 +134,7 @@ typedef bool BOOL;
 #endif
 
 /**
- * @brief A method implemenation.
+ * @brief A method implementation.
  *
  * @param object The messaged object
  * @param selector The selector sent
@@ -312,7 +312,7 @@ extern bool class_conformsToProtocol(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
@@ -327,7 +327,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);

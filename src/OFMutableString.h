@@ -177,7 +177,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string The string to replace
  * @param replacement The string with which it should be replaced
- * @param options Options modifying search behaviour
+ * @param options Options modifying search behavior
  *		  Possible values: None yet
  * @param range The range in which the string should be replaced
  */

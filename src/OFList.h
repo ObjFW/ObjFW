@@ -22,8 +22,8 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /*
- * Make clang's -Wdocumentation shut about about using @struct on someting it
- * thinks is not a struct. Doxygen requires it this way.
+ * Make clang's -Wdocumentation shut up about about using @struct on something
+ * it thinks is not a struct. Doxygen requires it this way.
  */
 #ifdef __clang__
 # pragma clang diagnostic push

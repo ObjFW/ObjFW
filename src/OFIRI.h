@@ -218,7 +218,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The local file path
  * @param isDirectory Whether the path is a directory, in which case a slash is
- *		      appened if there is no slash yet
+ *		      appended if there is no slash yet
  * @return An initialized OFIRI
  */
 + (instancetype)fileIRIWithPath: (OFString *)path
@@ -267,7 +267,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The local file path
  * @param isDirectory Whether the path is a directory, in which case a slash is
- *		      appened if there is no slash yet
+ *		      appended if there is no slash yet
  * @return An initialized OFIRI
  */
 - (instancetype)initFileIRIWithPath: (OFString *)path

@@ -295,7 +295,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief This routine is executed when the thread's main method has finished
  *	  executing or terminate has been called.
  *
- * @note Be sure to call [super handleTermination]!
+ * @note Be sure to call `[super handleTermination]`!
  */
 - (void)handleTermination OF_REQUIRES_SUPER;
 

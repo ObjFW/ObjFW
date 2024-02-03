@@ -62,7 +62,7 @@ OF_SUBCLASSING_RESTRICTED
     OF_DESIGNATED_INITIALIZER;
 
 /**
- * @brief Mulitplies the receiver with the specified matrix on the left side
+ * @brief Multiplies the receiver with the specified matrix on the left side
  *	  and the receiver on the right side.
  *
  * @param matrix The matrix to multiply the receiver with

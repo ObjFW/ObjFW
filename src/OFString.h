@@ -79,11 +79,11 @@ typedef enum {
 	OFStringEncodingWindows1251,
 	/** Windows-1252 */
 	OFStringEncodingWindows1252,
-	/** Codepage 437 */
+	/** Code page 437 */
 	OFStringEncodingCodepage437,
-	/** Codepage 850 */
+	/** Code page 850 */
 	OFStringEncodingCodepage850,
-	/** Codepage 858 */
+	/** Code page 858 */
 	OFStringEncodingCodepage858,
 	/** Mac OS Roman */
 	OFStringEncodingMacRoman,
@@ -134,7 +134,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFJSONRepresentation, OFMessagePackRepresentation>
 /**
- * @brief The length of the string in Unicode codepoints.
+ * @brief The length of the string in Unicode code points.
  */
 @property (readonly, nonatomic) size_t length;
 
@@ -307,7 +307,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  the string, if possible.
  *
  * If initialization fails for whatever reason, the passed C string is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -325,7 +325,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  specified length without copying the string, if possible.
  *
  * If initialization fails for whatever reason, the passed C string is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -531,9 +531,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
- * headers. If it could not detect the encoding using the HTTP headers, it tries
- * UTF-8.
+ * If the IRI's scheme is `http` or `https`, it tries to detect the encoding
+ * from the HTTP headers. If it could not detect the encoding using the HTTP
+ * headers, it tries UTF-8.
  *
  * @param IRI The IRI to the contents for the string
  * @return A new autoreleased OFString
@@ -587,7 +587,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  string without copying the string, if possible.
  *
  * If initialization fails for whatever reason, the passed C string is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -606,7 +606,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	  possible.
  *
  * If initialization fails for whatever reason, the passed C string is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @note OFMutableString always creates a copy!
  *
@@ -832,9 +832,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * If the IRI's scheme is file, it tries UTF-8 encoding.
  *
- * If the IRI's scheme is http(s), it tries to detect the encoding from the HTTP
- * headers. If it could not detect the encoding using the HTTP headers, it tries
- * UTF-8.
+ * If the IRI's scheme is `http` or `https`, it tries to detect the encoding
+ * from the HTTP headers. If it could not detect the encoding using the HTTP
+ * headers, it tries UTF-8.
  *
  * @param IRI The IRI to the contents for the string
  * @return An initialized OFString
@@ -1005,7 +1005,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Returns the index of the first character from the set.
  *
  * @param characterSet The set of characters to search for
- * @param options Options modifying search behaviour
+ * @param options Options modifying search behavior
  * @return The index of the first occurrence of a character from the set or
  *	   `OFNotFound` if it was not found
  */
@@ -1016,7 +1016,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Returns the index of the first character from the set.
  *
  * @param characterSet The set of characters to search for
- * @param options Options modifying search behaviour
+ * @param options Options modifying search behavior
  * @param range The range in which to search
  * @return The index of the first occurrence of a character from the set or
  *	   `OFNotFound` if it was not found
@@ -1045,7 +1045,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Creates a substring from the beginning to the specified index.
  *
  * @param idx The index at which the substring should end, exclusive
- * @return The subtring from the beginning to the specified index
+ * @return The substring from the beginning to the specified index
  */
 - (OFString *)substringToIndex: (size_t)idx;
 
@@ -1151,7 +1151,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * @param string The string to replace
  * @param replacement The string with which it should be replaced
- * @param options Options modifying search behaviour.
+ * @param options Options modifying search behavior.
  *		  Possible values are:
  *		    * None yet, pass 0
  * @param range The range in which to replace the string
