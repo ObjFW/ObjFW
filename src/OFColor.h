@@ -26,7 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFColor *black;
 @property (class, readonly, nonatomic) OFColor *silver;
-@property (class, readonly, nonatomic) OFColor *grey;
+@property (class, readonly, nonatomic) OFColor *gray;
+@property (class, readonly, nonatomic) OFColor *grey
+    OF_DEPRECATED(ObjFW, 1, 1, "Use gray instead");
 @property (class, readonly, nonatomic) OFColor *white;
 @property (class, readonly, nonatomic) OFColor *maroon;
 @property (class, readonly, nonatomic) OFColor *red;
@@ -76,13 +78,24 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFColor *)silver;
 
 /**
- * @brief Returns the HTML color `grey`.
+ * @brief Returns the HTML color `gray`.
  *
  * The RGBA value is (0.5, 0.5, 0.5, 1).
  *
- * @return The HTML color `grey`
+ * @return The HTML color `gray`
  */
-+ (OFColor *)grey;
++ (OFColor *)gray;
+
+/**
+ * @brief Returns the HTML color `gray`.
+ *
+ * @deprecated Use @ref gray instead.
+ *
+ * The RGBA value is (0.5, 0.5, 0.5, 1).
+ *
+ * @return The HTML color `gray`
+ */
++ (OFColor *)grey OF_DEPRECATED(ObjFW, 1, 1, "Use gray instead");
 
 /**
  * @brief Returns the HTML color `white`.

@@ -139,7 +139,7 @@ colorToANSI(OFColor *color)
 		return 36;
 	if ([color isEqual: [OFColor silver]])
 		return 37;
-	if ([color isEqual: [OFColor grey]])
+	if ([color isEqual: [OFColor gray]])
 		return 90;
 	if ([color isEqual: [OFColor red]])
 		return 91;
