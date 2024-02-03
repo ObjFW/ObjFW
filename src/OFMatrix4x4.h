@@ -95,6 +95,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Transforms the specified vectors in-place according to the matrix.
  *
  * @param vectors The vectors to transform
+ * @param count The count of the specified vectors
  */
 - (void)transformVectors: (OFVector4D *)vectors count: (size_t)count;
 @end
